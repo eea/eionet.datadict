@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- 
+<!--
      You can run this change log on your database as many times as you want, it will ignore the
      changes that are already applied. It also means that you can't modify an existing revision.
      Always add to the end.
@@ -1290,6 +1290,11 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     <changeSet author="roug" id="rev-101">
         <comment>Dropping the second of two identical indexes on FXV. See roug@rev-80</comment>
         <dropIndex indexName="OWNER_ID" tableName="FXV" />
+    </changeSet>
+
+    <changeSet author="juhan" id="rev-102">
+        <comment>Changes attribute column's enum declaration.</comment>
+        <sql>alter table ATTRIBUTE change column PARENT_TYPE PARENT_TYPE enum('E','T','DS','SCH','SCS','VCF') NOT NULL default 'E';</sql>
     </changeSet>
 
 </databaseChangeLog>

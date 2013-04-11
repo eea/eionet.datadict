@@ -38,8 +38,10 @@ import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
@@ -484,9 +486,75 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
         }
 
+        // Validate attributes
+        mergeAttributes();
+        for (List<SimpleAttribute> attrs : vocabularyFolder.getAttributes()) {
+            if (attrs != null) {
+                for (SimpleAttribute attr : attrs) {
+                    if (attr != null) {
+                        if (attr.isMandatory() && StringUtils.isEmpty(attr.getValue())) {
+                            addGlobalValidationError(attr.getLabel() + " is missing");
+                        }
+                    }
+                }
+            }
+        }
+
         if (isValidationErrors()) {
             initFilter();
             vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+        }
+    }
+
+    /**
+     * Because not all the properties of dynamic attributes get submitted by form (meta data), but only values, we don't have enough
+     * data to do validation and re-displaying the attributes on the form when validation errors occour. This method loads the
+     * attributes metadata from database and merges them with the submitted attributes.
+     *
+     * @throws ServiceException
+     */
+    private void mergeAttributes() throws ServiceException {
+        List<SimpleAttribute> attrMeta = vocabularyService.getVocabularyFolderAttributesMetadata();
+        List<List<SimpleAttribute>> attributes = new ArrayList<List<SimpleAttribute>>();
+
+        for (int i = 0; i < vocabularyFolder.getAttributes().size(); i++) {
+            List<SimpleAttribute> attrValues = vocabularyFolder.getAttributes().get(i);
+            SimpleAttribute attrMetadata = attrMeta.get(i);
+            List<SimpleAttribute> attrs = new ArrayList<SimpleAttribute>();
+            if (attrValues != null) {
+                for (SimpleAttribute attrValue : attrValues) {
+                    if (attrValue != null) {
+                        attrs.add(mergeTwoAttributes(attrMetadata, attrValue));
+                    } else {
+                        attrs.add(attrMetadata);
+                    }
+                }
+            } else {
+                attrs.add(attrMetadata);
+            }
+            attributes.add(attrs);
+        }
+
+        vocabularyFolder.setAttributes(attributes);
+    }
+
+    /**
+     * Returns new attribute object with merged data.
+     *
+     * @param metadata
+     * @param attributeValue
+     * @return
+     */
+    private SimpleAttribute mergeTwoAttributes(SimpleAttribute metadata, SimpleAttribute attributeValue) {
+        if (metadata.getAttributeId() != attributeValue.getAttributeId()) {
+            throw new IllegalStateException("Illegal set of attributes metadata, failed to synchronize attributes.");
+        }
+        try {
+            SimpleAttribute result = (SimpleAttribute) BeanUtils.cloneBean(metadata);
+            result.setValue(attributeValue.getValue());
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to clone attributes object", e);
         }
     }
 

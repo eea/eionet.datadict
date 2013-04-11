@@ -12,6 +12,11 @@
         // <![CDATA[
         ( function($) {
             $(document).ready(function() {
+
+                $(".delLink").click(function() {
+                    this.parentElement.remove();
+                });
+
                 // Open add concept dialog
                 $("#addNewConceptLink").click(function() {
                     $("#addNewConceptDiv").dialog('open');
@@ -165,7 +170,7 @@
                         <c:set var="regStatuses" value="<%=RegStatus.values()%>"/>
                         <stripes:select name="vocabularyFolder.regStatus" value="${actionBean.vocabularyFolder.regStatus}">
                             <c:forEach items="${regStatuses}" var="aRegStatus">
-                                <stripes:option value="${aRegStatus}" label="${aRegStatus}"/>
+                                <stripes:option value="${aRegStatus}" label="${aRegStatus.label}"/>
                             </c:forEach>
                         </stripes:select>
                     </td>
@@ -192,6 +197,29 @@
                         <stripes:checkbox name="vocabularyFolder.numericConceptIdentifiers" />
                     </td>
                 </tr>
+                <!-- Simple attributes -->
+                <c:forEach var="attributeValues" items="${actionBean.vocabularyFolder.attributes}" varStatus="outerLoop">
+                    <c:set var="attrMeta" value="${attributeValues[0]}"/>
+                    <tr>
+                        <th scope="row" class="scope-row simple_attr_title">
+                            ${attrMeta.label}
+                        </th>
+                        <td class="simple_attr_help">
+                            <c:choose>
+                                <c:when test="${attrMeta.mandatory}">
+                                    <dd:mandatoryIcon />
+                                </c:when>
+                                <c:otherwise>
+                                    <dd:optionalIcon />
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td class="simple_attr_value">
+                            <dd:simpleAttribute fieldName="vocabularyFolder.attributes[${outerLoop.index}]"
+                                attributes="${attributeValues}" uniqueId="attr${outerLoop.index}"/>
+                        </td>
+                    </tr>
+                </c:forEach>
                 <tr>
                     <th>&nbsp;</th>
                     <td colspan="2">

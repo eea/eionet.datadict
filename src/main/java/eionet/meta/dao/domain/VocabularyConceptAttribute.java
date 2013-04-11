@@ -26,7 +26,7 @@ package eionet.meta.dao.domain;
  *
  * @author Juhan Voolaid
  */
-public class VocabularyConceptAttribute {
+public class VocabularyConceptAttribute extends SimpleAttribute {
 
     /** Attribute short names (M_ATTRIBUTE.SHORT_NAME). */
     public static final String BROADER_LOCAL_CONCEPT = "broaderLocalConcept";
@@ -35,16 +35,7 @@ public class VocabularyConceptAttribute {
 
     private int id;
 
-    private int attributeId;
-
     private int vocabularyConceptId;
-
-    /** M_ATTRIBUTE.SHORT_NAME. */
-    private String identifier;
-
-    private String label;
-
-    private String value;
 
     private Integer relatedId;
 
@@ -52,37 +43,12 @@ public class VocabularyConceptAttribute {
 
     private boolean languageUsed;
 
-    private String inputType;
-
-    private String dataType;
-
-    private int width;
-
-    private int height;
-
-    private boolean multiValue;
-
     private String rdfProperty;
 
     private String linkText;
 
     /** Related concept properties. */
     private String relatedIdentifier;
-
-    /**
-     * @return the id
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * @param id
-     *            the id to set
-     */
-    public void setId(int id) {
-        this.id = id;
-    }
 
     /**
      * @return the vocabularyConceptId
@@ -100,48 +66,18 @@ public class VocabularyConceptAttribute {
     }
 
     /**
-     * @return the value
+     * @return the relatedId
      */
-    public String getValue() {
-        return value;
+    public Integer getRelatedId() {
+        return relatedId;
     }
 
     /**
-     * @param value
-     *            the value to set
+     * @param relatedId
+     *            the relatedId to set
      */
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    /**
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
-    }
-
-    /**
-     * @param label
-     *            the label to set
-     */
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    /**
-     * @return the attributeId
-     */
-    public int getAttributeId() {
-        return attributeId;
-    }
-
-    /**
-     * @param attributeId
-     *            the attributeId to set
-     */
-    public void setAttributeId(int attributeId) {
-        this.attributeId = attributeId;
+    public void setRelatedId(Integer relatedId) {
+        this.relatedId = relatedId;
     }
 
     /**
@@ -175,81 +111,6 @@ public class VocabularyConceptAttribute {
     }
 
     /**
-     * @return the inputType
-     */
-    public String getInputType() {
-        return inputType;
-    }
-
-    /**
-     * @param inputType
-     *            the inputType to set
-     */
-    public void setInputType(String inputType) {
-        this.inputType = inputType;
-    }
-
-    /**
-     * @return the dataType
-     */
-    public String getDataType() {
-        return dataType;
-    }
-
-    /**
-     * @param dataType
-     *            the dataType to set
-     */
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
-
-    /**
-     * @return the width
-     */
-    public int getWidth() {
-        return width;
-    }
-
-    /**
-     * @param width
-     *            the width to set
-     */
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    /**
-     * @return the height
-     */
-    public int getHeight() {
-        return height;
-    }
-
-    /**
-     * @param height
-     *            the height to set
-     */
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    /**
-     * @return the multiValue
-     */
-    public boolean isMultiValue() {
-        return multiValue;
-    }
-
-    /**
-     * @param multiValue
-     *            the multiValue to set
-     */
-    public void setMultiValue(boolean multiValue) {
-        this.multiValue = multiValue;
-    }
-
-    /**
      * @return the rdfProperty
      */
     public String getRdfProperty() {
@@ -262,21 +123,6 @@ public class VocabularyConceptAttribute {
      */
     public void setRdfProperty(String rdfProperty) {
         this.rdfProperty = rdfProperty;
-    }
-
-    /**
-     * @return the identifier
-     */
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    /**
-     * @param identifier
-     *            the identifier to set
-     */
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
     }
 
     /**
@@ -310,18 +156,18 @@ public class VocabularyConceptAttribute {
     }
 
     /**
-     * @return the relatedId
+     * @return the id
      */
-    public Integer getRelatedId() {
-        return relatedId;
+    public int getId() {
+        return id;
     }
 
     /**
-     * @param relatedId
-     *            the relatedId to set
+     * @param id
+     *            the id to set
      */
-    public void setRelatedId(Integer relatedId) {
-        this.relatedId = relatedId;
+    public void setId(int id) {
+        this.id = id;
     }
 
 }

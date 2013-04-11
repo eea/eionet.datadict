@@ -173,6 +173,9 @@
                 <th scope="col" class="scope-col">
                                 Schema sets
                 </th>
+                <th scope="col" class="scope-col">
+                                Vocabulary folders
+                </th>
             </tr>
 
             <%
@@ -237,6 +240,9 @@
                     </td>
                     <td class="center">
                         <% if (attribute.displayFor(DElemAttribute.ParentType.SCHEMA_SET.toString())){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                    </td>
+                    <td class="center">
+                        <% if (attribute.displayFor(DElemAttribute.ParentType.VOCABULARY_FOLDER.toString())){ %><img src="images/ok.gif" alt="Yes"/><%}%>
                     </td>
                 </tr>
 

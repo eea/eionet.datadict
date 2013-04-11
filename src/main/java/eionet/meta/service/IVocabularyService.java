@@ -23,6 +23,7 @@ package eionet.meta.service;
 
 import java.util.List;
 
+import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.ObsoleteStatus;
@@ -324,5 +325,13 @@ public interface IVocabularyService {
      * @return
      * @throws ServiceException
      */
-    List<VocabularyFolder> getWorkingCopies(String userName) throws ServiceException;;
+    List<VocabularyFolder> getWorkingCopies(String userName) throws ServiceException;
+
+    /**
+     * Returns vocabulary folder attributes metadata (without values).
+     *
+     * @return
+     * @throws ServiceException
+     */
+    List<SimpleAttribute> getVocabularyFolderAttributesMetadata() throws ServiceException;
 }

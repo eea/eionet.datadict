@@ -29,6 +29,7 @@ public class DElemAttribute {
 
     public static Hashtable<String, Integer> typeWeights = new Hashtable<String, Integer>();
     static {
+        typeWeights.put("VCF", new Integer(1024)); // vocabulary folder
         typeWeights.put("VCO", new Integer(512)); // vocabulary concept
         typeWeights.put(ParentType.SCHEMA_SET.toString(), new Integer(256)); // schema set
         typeWeights.put(ParentType.SCHEMA.toString(), new Integer(128)); // schema
@@ -598,7 +599,7 @@ public class DElemAttribute {
     public enum ParentType {
 
         /** */
-        ELEMENT("E"), TABLE("TBL"), DATASET("DS"), SCHEMA("SCH"), SCHEMA_SET("SCS");
+        ELEMENT("E"), TABLE("TBL"), DATASET("DS"), SCHEMA("SCH"), SCHEMA_SET("SCS"), VOCABULARY_FOLDER("VCF");
 
         /** */
         String s;

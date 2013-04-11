@@ -6,6 +6,7 @@ import java.util.Map;
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.ComplexAttribute;
+import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConceptAttribute;
 
 /**
@@ -96,6 +97,32 @@ public interface IAttributeDAO {
      * @return
      */
     List<List<VocabularyConceptAttribute>> getVocabularyConceptAttributes(int vocabularyConceptId, boolean emptyAttributes);
+
+    /**
+     * Returns attributes.
+     *
+     * @param vocabularyFolderId
+     * @param emptyAttributes
+     * @return
+     */
+    List<List<SimpleAttribute>> getVocabularyFolderAttributes(int vocabularyFolderId, boolean emptyAttributes);
+
+    /**
+     * First removes all the object's attributes and then inserts new ones.
+     *
+     * @param objectId
+     * @param parentType
+     * @param attributes
+     */
+    void updateSimpleAttributes(int objectId, String parentType, List<List<SimpleAttribute>> attributes);
+
+    /**
+     * Returns the attribute metadata according to the typeWeight (DISP_WHEN field).
+     *
+     * @param typeWeight
+     * @return
+     */
+    List<SimpleAttribute> getAttributesMetadata(int typeWeight);
 
     /**
      * Inserts the attributes.

@@ -14,14 +14,14 @@
             response.setHeader("Expires", Util.getExpiresDateString());
 
             request.setCharacterEncoding("UTF-8");
-            
-            ServletContext ctx = getServletContext();            
-            
+
+            ServletContext ctx = getServletContext();
+
             String urlPath = ctx.getInitParameter("basens-path");
             if (urlPath == null) urlPath = "";
 
             DDUser user = SecurityUtil.getUser(request);
-            
+
             if (request.getMethod().equals("POST")){
                   if (user == null){
                       %>
@@ -33,15 +33,15 @@
                       <%
                       return;
                   }
-            }                        
-            
+            }
+
             String attr_id = request.getParameter("attr_id");
-            
+
             mode = request.getParameter("mode");
             if (mode == null || mode.trim().length()==0) {
                 mode = "view";
             }
-            
+
             if (mode.equals("add")){
                 boolean addPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
                 if (!addPrm){ %>
@@ -49,22 +49,22 @@
                     return;
                 }
             }
-            
+
             if (!mode.equals("add") && (attr_id == null || attr_id.length()==0)){ %>
                 <b>Attribute ID is missing!</b> <%
                 return;
             }
-            
+
             String type = request.getParameter("type");
             if (type!=null && type.length()==0)
                 type = null;
-            
+
             String idPrefix = "";
             if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
                 idPrefix = "c";
             else if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE))
                 idPrefix = "s";
-            
+
             // check permissions
             boolean editPrm = false;
             boolean deletePrm = false;
@@ -80,12 +80,12 @@
                 <b>Not allowed!</b> <%
                 return;
             }
-            
+
             if (request.getMethod().equals("POST")){
-                
+
                 Connection userConn = null;
                 String redirUrl = "";
-                
+
                 try{
                     userConn = user.getConnection();
 
@@ -103,7 +103,7 @@
                     AttributeHandler handler = new AttributeHandler(userConn, request, ctx);
                     handler.setUser(user);
                     handler.execute();
-                    
+
                     if (mode.equals("add")){
                         String id = handler.getLastInsertID();
                         if (id != null && id.length()!=0)
@@ -111,7 +111,7 @@
 
                         if (history!=null){
                             int idx = history.getCurrentIndex();
-                            if (backUrl.indexOf("mode=add")>0){ 
+                            if (backUrl.indexOf("mode=add")>0){
                                 history.remove(idx-1);
                                 idx--;
                             }
@@ -134,22 +134,22 @@
                     try { if (userConn!=null) userConn.close();
                     } catch (SQLException e) {}
                 }
-                
+
                 response.sendRedirect(redirUrl);
                 return;
             }
-            
+
             Connection conn = null;
-            
+
             try { // start the whole page try block
-            
+
             conn = ConnectionUtil.getConnection();
             searchEngine = new DDSearchEngine(conn, "", ctx);
-            
+
             String attr_name = null;
             String attr_shortname = null;
             Namespace attrNamespace = null;
-            
+
             if (!mode.equals("add")){
                 Vector v = searchEngine.getDElemAttributes(attr_id,type);
                 if (v!=null && v.size()!=0)
@@ -160,9 +160,9 @@
                     attr_shortname = attribute.getShortName();
                     if (attr_name == null) attr_name = "unknown";
                     if (attr_shortname == null) attr_shortname = "unknown";
-                    
+
                     attrNamespace = attribute.getNamespace();
-                        
+
                     if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
                         attrFields = searchEngine.getAttrFields(attr_id);
                         if (attrFields == null) attrFields = new Vector();
@@ -173,12 +173,12 @@
                     return;
                 }
             }
-            
+
             String disabled = user == null ? "disabled='disabled'" : "";
-            
+
             // init page title
             StringBuffer pageTitle = new StringBuffer();
-            if (mode.equals("edit")){                
+            if (mode.equals("edit")){
                 if (type==null)
                     pageTitle.append("Edit attribute");
                 else if (type.equals(DElemAttribute.TYPE_COMPLEX))
@@ -197,7 +197,7 @@
             if (attribute!=null && attribute.getShortName()!=null)
                 pageTitle.append(" - ").append(attribute.getShortName());
 
-                
+
             %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -207,18 +207,18 @@
   <script type="text/javascript">
   // <![CDATA[
         function submitForm(mode){
-            
+
             if (mode == "delete"){
                 var b = confirm("This attribute will be deleted! Click OK, if you want to continue. Otherwise click Cancel.");
                 if (b==false) return;
             }
-            
+
             if (mode != "delete"){
                 if (!checkObligations()){
                     alert("You have not specified one of the mandatory fields!");
                     return;
                 }
-                
+
                 <%
                 if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
                     %>
@@ -229,19 +229,19 @@
                     <%
                 }
                 %>
-                
+
                 if (hasWhiteSpace("short_name")){
                     alert("Short name cannot contain any white space!");
                     return;
                 }
             }
-            
+
             document.forms["form1"].elements["mode"].value = mode;
             document.forms["form1"].submit();
         }
-        
+
         function checkObligations(){
-            
+
             var oName = document.forms["form1"].name;
             var name = oName==null ? null : oName.value;
 
@@ -251,45 +251,45 @@
                 var oOblig = document.forms["form1"].obligation;
                 var i = oOblig.selectedIndex;
                 var oblig = oOblig==null ? null : oOblig.options[i].value;
-                
+
                 if (oblig == null || oblig.length==0) return false;
                 <%
             }
             %>
-            
+
             var oShort = document.forms["form1"].short_name;
             var shortn = oShort==null ? null : oShort.value;
-            
+
             var oTypeSelect = document.forms["form1"].typeSelect;
             if (oTypeSelect != null){
                 var type = oTypeSelect.value;
                 if (type.length==0)
                     return false;
             }
-            
+
             if (name == null || name.length==0) return false;
-            if (shortn == null || shortn.length==0) return false;            
-            
+            if (shortn == null || shortn.length==0) return false;
+
             return true;
         }
-        
+
         function checkDisplayFor(){
 
             var i;
             var b = false;
-            
-            var checks = document.forms["form1"].elements["dispWhen"];            
+
+            var checks = document.forms["form1"].elements["dispWhen"];
             if (checks!=null && checks.length!=0){
                 for (i=0; i<checks.length; i++){
                     if (checks[i].checked) return true;
                 }
             }
-            
+
             return false;
         }
-        
+
         function hasWhiteSpace(input_name){
-            
+
             var elems = document.forms["form1"].elements;
             if (elems == null) return false;
             for (var i=0; i<elems.length; i++){
@@ -299,9 +299,9 @@
                     if (val.indexOf(" ") != -1) return true;
                 }
             }
-            
+
             return false;
-        }    
+        }
 
         function fields(url){
             wAttrFields = window.open(url,"AttributeFields","height=600,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=yes");
@@ -313,7 +313,7 @@
             String obligation = "";
             String dispType = "";
             if (!mode.equals("add")){
-                
+
                 obligation = attribute.getObligation();
                 if (obligation != null && !mode.equals("view")){
                 %>
@@ -325,9 +325,9 @@
                             break;
                         }
                     }
-                    
+
                 <% }
-                
+
                 dispType = attribute.getDisplayType();
                 if (dispType == null)
                     dispType = "";
@@ -342,45 +342,45 @@
                                 break;
                             }
                         }
-                        
+
                     <%
                 }
             }
-            
+
             %>
         }
-        
+
         function goToEdit(){
             document.location.assign("delem_attribute.jsp?attr_id=<%=attr_id%>&type=<%=type%>&mode=edit");
         }
-        
+
         function fixType(){
             var type = document.forms["form1"].typeSelect.value;
             if (type == null || type.length==0)
                 return;
             document.location.assign("delem_attribute.jsp?mode=add&type=" + type);
         }
-        
+
         function openFxValues(){
             //var url = "fixed_values.jsp?delem_id=<%=attr_id%>&amp;delem_name=<%=Util.processForDisplay(attr_shortname)%>&amp;parent_type=attr";
             var url = "fixed_values.jsp?mode=edit&delem_id=<%=attr_id%>&delem_name=<%=Util.processForDisplay(attr_shortname)%>&parent_type=attr";
             wCh1Values = window.open(url,"AllowableValues","height=600,width=800,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
             if (window.focus) {wCh1Values.focus()}
         }
-        
+
         function helpNamespace(){
             alert('Context is required to produce the XMLSchema exports of data defintions. ' +
                     'Basically it defines the context in which you define this attribute. Attributes can be roughly ' +
                     'divided into two contexts: those originating from ISO11179 and those specific to Data Dictionary.');
         }
-        
+
         function harvest(){
-            var msg = "This might take a couple of minutes, depending on the harvestign connection speed and " +    
+            var msg = "This might take a couple of minutes, depending on the harvestign connection speed and " +
                         "the amount of objects to harvest!";
             wHarvest = window.open("HarvestingServlet","Harvest","height=200,width=300,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
             if (window.focus) {wHarvest.focus()}
         }
-        
+
         // ]]>
     </script>
 </head>
@@ -389,7 +389,7 @@
 String hlpScreen = "simple_attr_def_";
 if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
     hlpScreen = "complex_attr_def_";
-    
+
 if (mode.equals("view"))
     hlpScreen = hlpScreen + "view";
 else if (mode.equals("edit"))
@@ -418,19 +418,19 @@ else
                     if (!mode.equals("add")){
                         %>
                         <input type="hidden" name="attr_id" value="<%=attr_id%>" /><%
-                    
+
                         if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE)){
                             %>
                             <input type="hidden" name="simple_attr_id" value="<%=attr_id%>" /><%
                         }
                         else{
                             %>
-                            <input type="hidden" name="complex_attr_id" value="<%=attr_id%>" /><%                            
-                        }                    
+                            <input type="hidden" name="complex_attr_id" value="<%=attr_id%>" /><%
+                        }
                     }
                     %>
-                </div>                
-            
+                </div>
+
                 <%
                 if (user!=null && mode.equals("view") && editPrm){
                     %>
@@ -441,7 +441,7 @@ else
                         </ul>
                     </div><%
                 }
-                
+
                 if (mode.equals("add")){ %>
                     <h1>Add an attribute definition</h1> <%
                 }
@@ -452,13 +452,13 @@ else
                     <h1>View attribute definition</h1>
                     <%
                 }
-                
+
                 if (!mode.equals("view") && type==null){ %>
                     <div class="attention">NB! Please select the attribute type first. Otherwise your entries will be lost.</div><%
                 }
-                
+
             int displayed = 0;
-            
+
             if (mode.equals("view")){
                 %>
                 <table class="datatable" style="clear:right">
@@ -474,7 +474,7 @@ else
                 <%
             }
             %>
-            
+
             <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebraodd" <%;%>>
                 <th scope="row" class="scope-row">Type</th>
                 <%
@@ -506,7 +506,7 @@ else
                     %>
                 </td>
             </tr>
-            
+
             <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
                 <th scope="row" class="scope-row">Short name</th>
                         <%
@@ -526,9 +526,9 @@ else
                     <% } %>
                 </td>
             </tr>
-            
 
-            
+
+
             <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
                 <th scope="row" class="scope-row">Name</th>
                         <%
@@ -540,7 +540,7 @@ else
                         }
                         %>
                 <td>
-                    <% if(mode.equals("edit")){ %>                        
+                    <% if(mode.equals("edit")){ %>
                         <input <%=disabled%> type="text" class="smalltext" size="30" name="name" value="<%=Util.processForDisplay(attr_name)%>" />
                     <% } else if (mode.equals("add")){ %>
                         <input <%=disabled%> type="text" class="smalltext" size="30" name="name" />
@@ -549,7 +549,7 @@ else
                     <% } %>
                 </td>
             </tr>
-            
+
             <%
             boolean displayNamespace = mode.equals("view") && attrNamespace!=null && attrNamespace.getShortName()!=null;
             if (displayNamespace==false && mode.equals("edit")){
@@ -569,9 +569,9 @@ else
                 displayNamespace = count>0;
             }
             if (displayNamespace){
-                %>                
-                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>    
-                    
+                %>
+                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+
                     <th scope="row" class="scope-row">Context</th>
                             <%
                             displayed++;
@@ -592,7 +592,7 @@ else
                                     nsName = attrNamespace.getShortName();
                             }
                             if (nsName == null) nsName = "";
-                            
+
                             %>
                             <%=Util.processForDisplay(nsName)%> <%
                         }
@@ -603,18 +603,18 @@ else
                                 Vector namespaces = searchEngine.getNamespaces();
                                 for (int k=0; namespaces!=null && k<namespaces.size(); k++){
                                     Namespace ns = (Namespace)namespaces.get(k);
-                                    
+
                                     if (ns.getTable()!=null || ns.getDataset()!=null || (ns.getID()!=null && ns.getID().equals("1")))
                                         continue;
-                                        
+
                                     String nsName = null;
                                     if (ns!=null) nsName = ns.getFullName();
                                     if (nsName == null) nsName = ns.getShortName();
                                     if (nsName == null) nsName = "";
-                                    
+
                                     if (nsName.indexOf("attributes") < 0)
                                         continue;
-                                    
+
                                     String ifSelected = "";
                                     if (attrNamespace!=null){
                                         if (attrNamespace.getID().equals(ns.getID())){
@@ -623,7 +623,7 @@ else
                                     }
                                     else if (nsName.indexOf("Data Dictionary") != -1)
                                         ifSelected = "selected=\"selected\"";
-                                        
+
                                     %>
                                     <option <%=ifSelected%> value="<%=ns.getID()%>"><%=Util.processForDisplay(nsName)%></option>
                                     <%
@@ -637,8 +637,8 @@ else
                 </tr><%
             }
             %>
-            
-            <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>    
+
+            <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
                 <th scope="row" class="scope-row">Definition</th>
                         <%
                         displayed++;
@@ -671,12 +671,12 @@ else
                     %>
                 </td>
             </tr>
-            
+
             <%
             if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
                 %>
-                
-                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>    
+
+                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
                     <th scope="row" class="scope-row">Obligation</th>
                             <%
                             displayed++;
@@ -712,7 +712,7 @@ else
                         %>
                     </td>
                 </tr>
-                
+
                 <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
                     <th scope="row" class="scope-row">Display type</th>
                             <%
@@ -772,7 +772,7 @@ else
                         <%
                             displayed++;
                             Vector fxValues = searchEngine.getFixedValues(attr_id, "attr");
-                            if (fxValues!=null && fxValues.size()>0){ 
+                            if (fxValues!=null && fxValues.size()>0){
                                 for (int g=0; g<fxValues.size(); g++){
                                     FixedValue fxValue = (FixedValue)fxValues.get(g);
                                     %>
@@ -846,7 +846,7 @@ else
                         String inherit = attribute.getInheritable();
                         if (inherit==null) inherit="0";
                         chk =  Integer.parseInt(inherit);
-                    }                        
+                    }
                     if (mode.equals("view")){
                         %>
                         <%=inh_text[chk]%>
@@ -862,7 +862,7 @@ else
                 %>
                 </td>
             </tr>
-            
+
             <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
                 <th scope="row" class="scope-row">Display order</th>
                         <%
@@ -897,10 +897,10 @@ else
                     %>
                 </td>
             </tr>
-            
+
             <%
             if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){ %>
-            
+
                 <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
                     <th scope="row" class="scope-row">Display for</th>
                             <%
@@ -911,7 +911,7 @@ else
                                 <%
                             }
                             %>
-                    <td>                    
+                    <td>
                         <%
                         String ch1Checked = (!mode.equals("add") && attribute.displayFor("CH1")) ? "checked=\"checked\"" : "";
                         String ch2Checked = (!mode.equals("add") && attribute.displayFor("CH2")) ? "checked=\"checked\"" : "";
@@ -921,7 +921,8 @@ else
                         String fxvChecked = (!mode.equals("add") && attribute.displayFor("FXV")) ? "checked=\"checked\"" : "";
                         String schChecked = (!mode.equals("add") && attribute.displayFor(DElemAttribute.ParentType.SCHEMA.toString())) ? "checked=\"checked\"" : "";
                         String scsChecked = (!mode.equals("add") && attribute.displayFor(DElemAttribute.ParentType.SCHEMA_SET.toString())) ? "checked=\"checked\"" : "";
-                        
+                        String vcfChecked = (!mode.equals("add") && attribute.displayFor(DElemAttribute.ParentType.VOCABULARY_FOLDER.toString())) ? "checked=\"checked\"" : "";
+
                         if (mode.equals("view")){
                             boolean hasOne = false;
                             if (ch1Checked.equals("checked=\"checked\"")) { hasOne = true; %>
@@ -945,26 +946,30 @@ else
                             if (scsChecked.equals("checked=\"checked\"")) { hasOne = true; %>
                                 <br/>Schema sets <%
                             }
+                            if (vcfChecked.equals("checked=\"checked\"")) { hasOne = true; %>
+                                <br/>Vocabulary folders <%
+                            }
                             if (!hasOne){ %>
                                 Not specified<%
                             }
                         }
                         else {
-                            %>                            
+                            %>
                             <input <%=disabled%> type="checkbox" <%=ch1Checked%> name="dispWhen" id="dispCH1" value="CH1"/><label for="dispCH1">Data elements with fixed values</label><br/>
                             <input <%=disabled%> type="checkbox" <%=ch2Checked%> name="dispWhen" id="dispCH2" value="CH2"/><label for="dispCH2">Data elements with quanitative values</label><br/>
                             <input <%=disabled%> type="checkbox" <%=dstChecked%> name="dispWhen" id="dispDST" value="DST"/><label for="dispDST">Datasets</label><br/>
                             <input <%=disabled%> type="checkbox" <%=tblChecked%> name="dispWhen" id="dispTBL" value="TBL"/><label for="dispTBL">Dataset tables</label><br/>
                             <input <%=disabled%> type="checkbox" <%=schChecked%> name="dispWhen" id="dispSCH" value="<%=DElemAttribute.ParentType.SCHEMA.toString()%>"/><label for="dispSCH">Schemas</label><br/>
                             <input <%=disabled%> type="checkbox" <%=scsChecked%> name="dispWhen" id="dispSCS" value="<%=DElemAttribute.ParentType.SCHEMA_SET.toString()%>"/><label for="dispSCS">Schema sets</label><br/>
+                            <input <%=disabled%> type="checkbox" <%=vcfChecked%> name="dispWhen" id="dispVCF" value="<%=DElemAttribute.ParentType.VOCABULARY_FOLDER.toString()%>"/><label for="dispVCF">Vocabulary folders</label><br/>
                             <%
                         }
                         %>
-                        
+
                     </td>
                 </tr>
             <%
-            } 
+            }
             %>
             <%
             if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
@@ -1004,7 +1009,7 @@ else
                 </tr>
                 <%
             }
-            
+
             if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
                 %>
                 <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
@@ -1042,17 +1047,17 @@ else
                 </tr>
                 <%
             }
-            
-            
+
+
             // start HARVESTER LINK
-            
+
             boolean dispHarvesterID = false;
             String harvesterID = null;
             if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
-                
+
                 if (!mode.equals("add"))
                     harvesterID = attribute.getHarvesterID();
-                    
+
                 if (mode.equals("view")){
                     if (!Util.isEmpty(harvesterID))
                         dispHarvesterID = true;
@@ -1060,15 +1065,15 @@ else
                 else
                     dispHarvesterID = true;
             }
-            
+
             if (dispHarvesterID){
-                
+
                 Vector harvesters = null;
                 if (!mode.equals("view"))
                     harvesters = searchEngine.getHarvesters();
-                
+
                 %>
-            
+
                 <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
                     <th scope="row" class="scope-row">Linked harvester</th>
                             <%
@@ -1081,7 +1086,7 @@ else
                             %>
                     <td>
                         <%
-                        if (!mode.equals("view")){                            
+                        if (!mode.equals("view")){
                             String noLinkSelected = Util.isEmpty(harvesterID) ? "selected=\"selected\"" : "";
                             %>
                             <select class="small" name="harv_id">
@@ -1097,7 +1102,7 @@ else
                                 }
                                 %>
                             </select><%
-                            
+
                             if (user!=null && user.isAuthentic()){ %>
                                 <input type="button" class="smallbutton" value="Harvest" onclick="harvest()" /><%
                             }
@@ -1111,10 +1116,10 @@ else
                 </tr>
                 <%
             }
-            
+
             // end HARVESTER LINK
             %>
-            
+
         <% if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX) && !mode.equals("add")){ // if COMPLEX and mode=add
         %>
         <tr>
@@ -1131,7 +1136,7 @@ else
                         <th scope="col">Definition</th>
                     </tr>
                     <%
-    
+
                     //String position = String.valueOf(attrFields.size() + 1);
                     int position = 0;
                     if (attrFields!=null){
@@ -1142,10 +1147,10 @@ else
                             String definition = (String)hash.get("definition");
                             if (definition.length()>50) definition = definition.substring(0,50) + " ...";
                             String fieldLink = "m_attr_field.jsp?attr_id=" + attr_id + "&amp;attr_name=" + attr_name + "&amp;attr_ns=basens&amp;field_id=" + id;
-            
+
                             int pos = Integer.parseInt((String)hash.get("position"));
                             if (pos >= position) position = pos +1;
-            
+
                             %>
                             <tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
                                 <td align="center"><a href="<%=fieldLink%>"><%=Util.processForDisplay(name)%></a></td>
@@ -1177,26 +1182,26 @@ else
             <%
         }
         %>
-            
+
         <% } // end if COMPLEX and mode=add
-    
+
         if (!mode.equals("view")){ %>
             <tr style="height:10px;"><td colspan="3"></td></tr>
             <tr>
                 <td colspan="3" style="text-align:center">
-                
-                    <% 
-                    
+
+                    <%
+
                     if (mode.equals("add")){ // if mode is "add"
-                        if (user==null){ %>                                    
+                        if (user==null){ %>
                             <input type="button" class="mediumbuttonb" value="Add" disabled="disabled" />&nbsp;&nbsp;
                         <%} else {%>
                             <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')" />&nbsp;&nbsp;
                         <% }
                     } // end if mode is "add"
-                    
+
                     if (!mode.equals("add")){ // if mode is not "add"
-                        if (user==null){ %>                                    
+                        if (user==null){ %>
                             <input type="button" class="mediumbuttonb" value="Save" disabled="disabled" />&nbsp;&nbsp;
                             <input type="button" class="mediumbuttonb" value="Delete" disabled="disabled" />&nbsp;&nbsp;
                         <%} else {%>
@@ -1204,9 +1209,9 @@ else
                             <input type="button" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')" />&nbsp;&nbsp;
                         <% }
                     } // end if mode is not "add"
-                    
+
                     %>
-                    
+
                 </td>
             </tr> <%
         }
@@ -1218,8 +1223,8 @@ else
                 <input type="hidden" name="type" value="<%=type%>" /> <%
             }
             %>
-            <input type="hidden" name="mode" value="<%=mode%>" />        
-        </div>        
+            <input type="hidden" name="mode" value="<%=mode%>" />
+        </div>
     </form>
 </div> <!-- workarea -->
 </div> <!-- container -->

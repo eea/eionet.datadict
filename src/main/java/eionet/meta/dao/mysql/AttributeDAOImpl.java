@@ -24,6 +24,7 @@ import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.ComplexAttribute;
 import eionet.meta.dao.domain.ComplexAttributeField;
+import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.util.Pair;
 
@@ -395,6 +396,104 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         return result;
     }
 
+    @Override
+    public List<List<SimpleAttribute>> getVocabularyFolderAttributes(int vocabularyFolderId, boolean emptyAttributes) {
+        final Map<String, Object> params = new HashMap<String, Object>();
+        params.put("attributeWeight", DElemAttribute.typeWeights.get("VCF"));
+        params.put("vocabularyFolderId", vocabularyFolderId);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select * from ATTRIBUTE a ");
+        if (emptyAttributes) {
+            sql.append("RIGHT OUTER JOIN M_ATTRIBUTE m ");
+        } else {
+            sql.append("LEFT JOIN M_ATTRIBUTE m ");
+        }
+        sql.append("ON (a.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID and a.DATAELEM_ID = :vocabularyFolderId) ");
+        sql.append("WHERE FLOOR(m.DISP_WHEN / :attributeWeight) %2 != 0 ");
+        sql.append("order by m.DISP_ORDER, a.VALUE");
+
+        final List<List<SimpleAttribute>> result = new ArrayList<List<SimpleAttribute>>();
+
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
+
+            List<SimpleAttribute> attributes = null;
+            String previousShortName = null;
+
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+
+                if (attributes == null) {
+                    attributes = new ArrayList<SimpleAttribute>();
+                    previousShortName = rs.getString("m.SHORT_NAME");
+                }
+
+                SimpleAttribute atr = new SimpleAttribute();
+                atr.setObjectId(rs.getInt("a.DATAELEM_ID"));
+                atr.setValue(rs.getString("a.VALUE"));
+                atr.setAttributeId(rs.getInt("m.M_ATTRIBUTE_ID"));
+                atr.setDataType(rs.getString("m.DATA_TYPE"));
+                atr.setInputType(rs.getString("m.DISP_TYPE"));
+                atr.setLabel(rs.getString("m.NAME"));
+                atr.setHeight(rs.getInt("m.DISP_HEIGHT"));
+                atr.setWidth(rs.getInt("m.DISP_WIDTH"));
+                atr.setMultiValue(rs.getBoolean("m.DISP_MULTIPLE"));
+                atr.setIdentifier(rs.getString("m.SHORT_NAME"));
+                atr.setMandatory("M".equals(rs.getString("m.OBLIGATION")));
+
+                if (!StringUtils.equals(previousShortName, rs.getString("m.SHORT_NAME"))) {
+                    result.add(attributes);
+                    attributes = new ArrayList<SimpleAttribute>();
+                }
+
+                attributes.add(atr);
+                previousShortName = rs.getString("m.SHORT_NAME");
+
+                if (rs.isLast()) {
+                    result.add(attributes);
+                }
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SimpleAttribute> getAttributesMetadata(int typeWeight) {
+        final Map<String, Object> params = new HashMap<String, Object>();
+        params.put("attributeWeight", typeWeight);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select * from M_ATTRIBUTE m ");
+        sql.append("WHERE FLOOR(m.DISP_WHEN / :attributeWeight) %2 != 0 ");
+        sql.append("order by m.DISP_ORDER");
+
+        List<SimpleAttribute> result =
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<SimpleAttribute>() {
+
+                    @Override
+                    public SimpleAttribute mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        SimpleAttribute atr = new SimpleAttribute();
+                        atr.setAttributeId(rs.getInt("m.M_ATTRIBUTE_ID"));
+                        atr.setDataType(rs.getString("m.DATA_TYPE"));
+                        atr.setInputType(rs.getString("m.DISP_TYPE"));
+                        atr.setLabel(rs.getString("m.NAME"));
+                        atr.setHeight(rs.getInt("m.DISP_HEIGHT"));
+                        atr.setWidth(rs.getInt("m.DISP_WIDTH"));
+                        atr.setMultiValue(rs.getBoolean("m.DISP_MULTIPLE"));
+                        atr.setIdentifier(rs.getString("m.SHORT_NAME"));
+                        atr.setMandatory("M".equals(rs.getString("m.OBLIGATION")));
+
+                        return atr;
+                    }
+                });
+
+        return result;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -545,4 +644,54 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateSimpleAttributes(int objectId, String parentType, List<List<SimpleAttribute>> attributes) {
+        if (attributes == null) {
+            return;
+        }
+
+        // Delete first
+        String deleteSql = "delete from ATTRIBUTE where DATAELEM_ID = :elementId and PARENT_TYPE = :parentType";
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("elementId", objectId);
+        parameters.put("parentType", parentType);
+
+        getNamedParameterJdbcTemplate().update(deleteSql, parameters);
+
+        // Insert new ones
+        String insertSql =
+                "insert into ATTRIBUTE (M_ATTRIBUTE_ID, DATAELEM_ID, PARENT_TYPE, VALUE) values (:attributeId,:elementId,:parentType,:value)";
+
+        List<SimpleAttribute> batchAttrs = new ArrayList<SimpleAttribute>();
+        for (List<SimpleAttribute> attrs : attributes) {
+            if (attrs != null) {
+                for (SimpleAttribute attr : attrs) {
+                    if (attr != null && StringUtils.isNotEmpty(attr.getValue())) {
+                        batchAttrs.add(attr);
+                    }
+                }
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object>[] batchParams = new HashMap[batchAttrs.size()];
+
+        for (int i = 0; i < batchAttrs.size(); i++) {
+            SimpleAttribute sa = batchAttrs.get(i);
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("attributeId", sa.getAttributeId());
+            params.put("elementId", objectId);
+            params.put("parentType", parentType);
+            params.put("value", sa.getValue());
+            batchParams[i] = params;
+        }
+
+        getNamedParameterJdbcTemplate().batchUpdate(insertSql, batchParams);
+    }
+
 }

@@ -22,6 +22,7 @@
 package eionet.meta.dao.domain;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Vocabulary folder.
@@ -45,6 +46,8 @@ public class VocabularyFolder {
     private String baseUri;
     private VocabularyType type;
     private String folderName;
+
+    private List<List<SimpleAttribute>> attributes;
 
     /**
      * True, if status is "Draft".
@@ -290,6 +293,21 @@ public class VocabularyFolder {
      */
     public void setFolderName(String folderName) {
         this.folderName = folderName;
+    }
+
+    /**
+     * @return the attributes
+     */
+    public List<List<SimpleAttribute>> getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * @param attributes
+     *            the attributes to set
+     */
+    public void setAttributes(List<List<SimpleAttribute>> attributes) {
+        this.attributes = attributes;
     }
 
 }

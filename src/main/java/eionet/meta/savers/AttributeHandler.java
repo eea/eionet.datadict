@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 
 import javax.servlet.ServletContext;
@@ -33,8 +32,6 @@ public class AttributeHandler extends BaseHandler {
     private String definition = null;
     private String obligation = null;
 
-    private Hashtable typeWeights = new Hashtable();
-
     public AttributeHandler(Connection conn, HttpServletRequest req, ServletContext ctx) {
         this(conn, new Parameters(req), ctx);
     }
@@ -51,16 +48,6 @@ public class AttributeHandler extends BaseHandler {
         this.definition = req.getParameter("definition");
         this.obligation = req.getParameter("obligation");
         this.ns_id = req.getParameter("ns");
-
-        typeWeights.put(DElemAttribute.ParentType.SCHEMA_SET.toString(), new Integer(256)); // schema set
-        typeWeights.put(DElemAttribute.ParentType.SCHEMA.toString(), new Integer(128)); // schema
-        typeWeights.put("TBL", new Integer(64));
-        typeWeights.put("FXV", new Integer(32));
-        typeWeights.put("DCL", new Integer(16));
-        typeWeights.put("DST", new Integer(8));
-        typeWeights.put("AGG", new Integer(4));
-        typeWeights.put("CH1", new Integer(2));
-        typeWeights.put("CH2", new Integer(1));
     }
 
     public AttributeHandler(Connection conn, HttpServletRequest req, ServletContext ctx, String mode) {
@@ -516,19 +503,19 @@ public class AttributeHandler extends BaseHandler {
 
         String[] dispWhen = req.getParameterValues("dispWhen");
         if (dispWhen == null || dispWhen.length == 0) {
-            return String.valueOf(Math.pow(2, typeWeights.size()) - 1);
+            return String.valueOf(Math.pow(2, DElemAttribute.typeWeights.size()) - 1);
         }
 
         int k = 0;
         for (int i = 0; i < dispWhen.length; i++) {
-            Integer weight = (Integer)typeWeights.get(dispWhen[i]);
+            Integer weight = (Integer) DElemAttribute.typeWeights.get(dispWhen[i]);
             if (weight != null) {
                 k = k + weight.intValue();
             }
         }
 
         if (k == 0) {
-            k = (int)Math.pow(2, typeWeights.size()) - 1;
+            k = (int)Math.pow(2, DElemAttribute.typeWeights.size()) - 1;
         }
 
         return String.valueOf(k);

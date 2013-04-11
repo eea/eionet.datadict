@@ -47,10 +47,20 @@ public enum RegStatus {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Enum#toString()
      */
     @Override
     public String toString() {
+        return s;
+    }
+
+    /**
+     * Returns label.
+     *
+     * @return
+     */
+    public String getLabel() {
         return s;
     }
 
@@ -78,6 +88,7 @@ public enum RegStatus {
 
     /**
      * Returns the list of public statuses that can be displayed for anonymous users.
+     *
      * @return List of RegStatues objects converted to String.
      */
     public static List<String> getPublicStatuses() {

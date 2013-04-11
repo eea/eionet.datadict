@@ -37,10 +37,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eionet.meta.DElemAttribute;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.IVocabularyFolderDAO;
+import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyConceptAttribute;
@@ -123,7 +125,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy) throws ServiceException {
         try {
-            return vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, workingCopy);
+            VocabularyFolder result = vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, workingCopy);
+
+            // Load attributes
+            List<List<SimpleAttribute>> attributes = attributeDAO.getVocabularyFolderAttributes(result.getId(), true);
+            result.setAttributes(attributes);
+
+            return result;
         } catch (Exception e) {
             String parameters =
                     "folderName=" + String.valueOf(folderName) + "; identifier=" + String.valueOf(identifier) + "; workingCopy="
@@ -284,6 +292,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vf.setBaseUri(vocabularyFolder.getBaseUri());
             vf.setFolderName(vocabularyFolder.getFolderName());
             vocabularyFolderDAO.updateVocabularyFolder(vf);
+
+            attributeDAO.updateSimpleAttributes(vocabularyFolder.getId(), DElemAttribute.ParentType.VOCABULARY_FOLDER.toString(),
+                    vocabularyFolder.getAttributes());
         } catch (Exception e) {
             throw new ServiceException("Failed to update vocabulary folder: " + e.getMessage(), e);
         }
@@ -332,6 +343,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     public void deleteVocabularyFolders(List<Integer> ids) throws ServiceException {
         try {
             vocabularyFolderDAO.deleteVocabularyFolders(ids);
+            attributeDAO.deleteAttributes(ids, DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
         } catch (Exception e) {
             throw new ServiceException("Failed to delete vocabulary folders: " + e.getMessage(), e);
         }
@@ -379,6 +391,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolder.setCheckedOutCopyId(vocabularyFolderId);
             vocabularyFolder.setWorkingCopy(true);
             int newVocabularyFolderId = vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
+
+            // Copy simple attributes.
+            attributeDAO.copySimpleAttributes(vocabularyFolderId, DElemAttribute.ParentType.VOCABULARY_FOLDER.toString(), newVocabularyFolderId);
 
             // Copy the vocabulary concepts under new vocabulary folder (except of site code type)
             if (!vocabularyFolder.isSiteCodeType()) {
@@ -433,6 +448,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
             if (!vocabularyFolder.isSiteCodeType()) {
                 vocabularyConceptDAO.moveVocabularyConcepts(vocabularyFolderId, originalVocabularyFolderId);
             }
+
+            // Delete old attributes first and then change the parent ID of the new ones
+            attributeDAO.deleteAttributes(Collections.singletonList(originalVocabularyFolderId), DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
+            attributeDAO.replaceParentId(vocabularyFolderId, originalVocabularyFolderId, DElemAttribute.ParentType.VOCABULARY_FOLDER);
 
             // Delete checked out version
             vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId));
@@ -514,6 +533,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             // Delete checked out version
             vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId));
+            attributeDAO.deleteAttributes(Collections.singletonList(vocabularyFolderId), DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
 
             return originalVocabularyFolderId;
         } catch (Exception e) {
@@ -746,6 +766,18 @@ public class VocabularyServiceImpl implements IVocabularyService {
             return vocabularyFolderDAO.getWorkingCopies(userName);
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary folder working copies: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SimpleAttribute> getVocabularyFolderAttributesMetadata() throws ServiceException {
+        try {
+            return attributeDAO.getAttributesMetadata(DElemAttribute.typeWeights.get("VCF"));
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get vocabulary folder attribute metadata: " + e.getMessage(), e);
         }
     }
 }

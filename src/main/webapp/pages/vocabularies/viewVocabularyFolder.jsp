@@ -179,7 +179,21 @@
                         <c:out value="${actionBean.vocabularyFolder.type.label}" />
                     </td>
                 </tr>
-            </tr>
+                <!-- Simple attributes -->
+                <c:forEach var="attributeValues" items="${actionBean.vocabularyFolder.attributes}">
+                    <c:set var="attrMeta" value="${attributeValues[0]}"/>
+                    <tr>
+                        <th scope="row" class="scope-row simple_attr_title">${attrMeta.label}</th>
+                        <td class="simple_attr_value">
+                            <c:forEach var="attr" items="${attributeValues}" varStatus="innerLoop">
+                                <c:out value="${attr.value}" />
+                                <c:if test="${fn:length(attributeValues) - innerLoop.index - 1 >= 1}">
+                                    <hr />
+                                </c:if>
+                            </c:forEach>
+                        </td>
+                    </tr>
+                </c:forEach>
             </table>
         </div>
 
