@@ -1292,7 +1292,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropIndex indexName="OWNER_ID" tableName="FXV" />
     </changeSet>
 
-    <changeSet author="juhan" id="rev-102">
+    <changeSet author="voolajuh" id="rev-102">
         <comment>Changes attribute column's enum declaration.</comment>
         <sql>alter table ATTRIBUTE change column PARENT_TYPE PARENT_TYPE enum('E','T','DS','SCH','SCS','VCF') NOT NULL default 'E';</sql>
     </changeSet>
