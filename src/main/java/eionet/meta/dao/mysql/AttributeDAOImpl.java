@@ -401,6 +401,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         final Map<String, Object> params = new HashMap<String, Object>();
         params.put("attributeWeight", DElemAttribute.typeWeights.get("VCF"));
         params.put("vocabularyFolderId", vocabularyFolderId);
+        params.put("parentType", DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
 
         StringBuilder sql = new StringBuilder();
         sql.append("select * from ATTRIBUTE a ");
@@ -409,7 +410,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         } else {
             sql.append("LEFT JOIN M_ATTRIBUTE m ");
         }
-        sql.append("ON (a.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID and a.DATAELEM_ID = :vocabularyFolderId) ");
+        sql.append("ON (a.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID and a.DATAELEM_ID = :vocabularyFolderId and a.PARENT_TYPE = :parentType) ");
         sql.append("WHERE FLOOR(m.DISP_WHEN / :attributeWeight) %2 != 0 ");
         sql.append("order by m.DISP_ORDER, a.VALUE");
 
