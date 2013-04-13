@@ -29,7 +29,7 @@ import eionet.util.sql.SQL;
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
-public class DocUpload extends HttpServlet{
+public class DocUpload extends HttpServlet {
 
     public  static final String REQPAR_FILE   = "file";
     public  static final String REQPAR_DSID   = "ds_id";
@@ -46,7 +46,7 @@ public class DocUpload extends HttpServlet{
      */
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
-        doPost(req,res);
+        doPost(req, res);
     }
 
     /* (non-Javadoc)
@@ -202,8 +202,7 @@ public class DocUpload extends HttpServlet{
             String absPath = null;
             if (rs.next()) {
                 absPath = rs.getString("ABS_PATH");
-            }
-            else {
+            } else {
                 return; // if the above query returned no rows, there's nothing to de here no more
             }
 
@@ -226,8 +225,7 @@ public class DocUpload extends HttpServlet{
                     file.delete();
                 }
             }
-        }
-        finally {
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }
@@ -253,7 +251,7 @@ public class DocUpload extends HttpServlet{
                 conn.close();
             } catch (SQLException sqle) {
             } finally {
-                conn=null;
+                conn = null;
             }
         }
     }

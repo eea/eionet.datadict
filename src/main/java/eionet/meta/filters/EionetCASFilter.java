@@ -10,7 +10,7 @@ import edu.yale.its.tp.cas.client.filter.CASFilter;
  * @author <a href="mailto:jaanus.heinlaid@tieto.com">Jaanus Heinlaid</a>
  *
  */
-public class EionetCASFilter extends CASFilter{
+public class EionetCASFilter extends CASFilter {
 
     /*
      * (non-Javadoc)

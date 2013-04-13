@@ -5,7 +5,7 @@ package eionet.meta.exports.msaccess.columns;
  * @author <a href="mailto:jaanus.heinlaid@tieto.com">Jaanus Heinlaid</a>
  *
  */
-public enum CodeListsColumn{
+public enum CodeListsColumn {
 
     /** */
 //  DST_IDENTIFIER ("ds_Identifier"),

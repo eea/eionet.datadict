@@ -66,7 +66,7 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
     private void write(boolean caching) throws Exception {
 
         // if available in cache, write from cache and return
-        if (!caching && cacheFileName!=null) {
+        if (!caching && cacheFileName != null) {
             writeFromCache();
             return;
         }
@@ -77,7 +77,7 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
     private void addElements(String tblID) throws Exception {
 
         DsTable tbl = searchEngine.getDatasetTable(tblID);
-        if (tbl==null) throw new Exception("Table " + tblID + " not found!");
+        if (tbl == null) throw new Exception("Table " + tblID + " not found!");
         // fileName = tbl.getDatasetName() + "_" + tbl.getShortName() + FILE_EXT;
         // for the fileName we now use Identifier, cause short name might contain characters
         // illegal for a filename
@@ -93,18 +93,17 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
     private void addElements(DsTable tbl) throws Exception {
 
         Vector elems = searchEngine.getDataElements(null, null, null, null, tbl.getID());
-        if (elems==null || elems.size()==0) return;
+        if (elems == null || elems.size() == 0) return;
 
         int done = 0;
-        for (int i=0; i<elems.size(); i++) {
+        for (int i = 0; i < elems.size(); i++) {
             if (tbl.hasGIS()) {
                 DataElement elm = (DataElement)elems.get(i);
-                if (elm.getGIS()==null) {
+                if (elm.getGIS() == null) {
                     addElement((DataElement)elems.get(i), (short)done);
                     done++;
                 }
-            }
-            else {
+            } else {
                 addElement((DataElement)elems.get(i), (short)done);
                 done++;
             }
@@ -114,9 +113,9 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
             sheet = wb.createSheet(tbl.getIdentifier() + "-meta");
             row = sheet.createRow(0);
             done = 0;
-            for (int i=0; i<elems.size(); i++) {
+            for (int i = 0; i < elems.size(); i++) {
                 DataElement elm = (DataElement)elems.get(i);
-                if (elm.getGIS()!=null) {
+                if (elm.getGIS() != null) {
                     addElement((DataElement)elems.get(i), (short)done);
                     done++;
                 }
@@ -149,22 +148,19 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
     public void updateCache(String id) throws Exception {
 
         create(id, true);
-        if (cachePath!=null && fileName!=null) {
+        if (cachePath != null && fileName != null) {
             String fn = cachePath + fileName;
             try {
                 os = new FileOutputStream(fn);
                 write(true);
                 os.flush();
                 storeCacheEntry(id, fileName, conn);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 try {
                     File file = new File(fn);
                     if (file.exists()) file.delete();
-                }
-                catch (Exception ee) {}
-            }
-            finally {
+                } catch (Exception ee) {}
+            } finally {
                 if (os != null) os.close();
             }
         }
@@ -188,7 +184,7 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
      */
     public void setCachePath(String path) throws Exception {
         cachePath = path;
-        if (cachePath!=null) {
+        if (cachePath != null) {
             cachePath.trim();
             if (!cachePath.endsWith(File.separator))
                 cachePath = cachePath + File.separator;
@@ -234,11 +230,10 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
         FileInputStream in = null;
         try {
             in = new FileInputStream(file);
-            while ((i=in.read(buf, 0, buf.length)) != -1)
+            while ((i = in.read(buf, 0, buf.length)) != -1)
                 os.write(buf, 0, i);
-        }
-        finally {
-            if (in!=null) {
+        } finally {
+            if (in != null) {
                 in.close();
             }
         }
@@ -254,7 +249,7 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
      */
     protected static int storeCacheEntry(String id, String fn, Connection conn) throws SQLException {
 
-        if (id==null || fn==null || conn==null)
+        if (id == null || fn == null || conn == null)
             return -1;
 
         INParameters inParams = new INParameters();
@@ -278,12 +273,10 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
 
             stmt = SQL.preparedStatement(SQL.insertStatement("CACHE", map), inParams, conn);
             return stmt.executeUpdate();
-        }
-        finally {
+        } finally {
             try {
-                if (stmt!=null) stmt.close();
-            }
-            catch (SQLException e) {}
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {}
         }
     }
 
@@ -296,7 +289,7 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
      */
     protected static String deleteCacheEntry(String id, Connection conn) throws SQLException {
 
-        if (id==null || conn==null)
+        if (id == null || conn == null)
             return null;
 
         INParameters inParams = new INParameters();
@@ -317,13 +310,11 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
                 stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
                 stmt.executeUpdate();
             }
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
-            }
-            catch (SQLException e) {}
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {}
         }
 
         return fn;

@@ -36,9 +36,9 @@ public class TblPdfAll {
     public TblPdfAll(DDSearchEngine searchEngine, DstPdfAll owner)
     throws Exception {
 
-        //if (parentSection==null) throw new Exception("parentSection cannot be null!");
+        //if (parentSection == null) throw new Exception("parentSection cannot be null!");
 
-        if (searchEngine==null) {
+        if (searchEngine == null) {
             throw new Exception("searchEngine cannot be null!");
         }
 
@@ -80,7 +80,7 @@ public class TblPdfAll {
      */
     private void write(DsTable dsTable) throws Exception {
 
-        if (dsTable==null) {
+        if (dsTable == null) {
             throw new Exception("Table object was null!");
         }
 
@@ -91,7 +91,7 @@ public class TblPdfAll {
         if (owner != null) {
             nr = owner.getSectioning().level(tblName + " table", 2);
         }
-        nr = nr==null ? "" : nr + " ";
+        nr = nr == null ? "" : nr + " ";
 
         Paragraph prg = new Paragraph();
         prg.add(new Chunk(nr + tblName, Fonts.getUnicode(14, Font.BOLD)));
@@ -126,13 +126,13 @@ public class TblPdfAll {
 
         // write table elements factlist, but first get fixed values & fk rels
         v = dsTable.getElements();
-        if (v==null || v.size()==0) {
+        if (v == null || v.size() == 0) {
             return;
         }
 
         DataElement elem = null;
-        String dstID = params==null ? null : params.getParameter("dstID");
-        for (int i=0; i<v.size(); i++) {
+        String dstID = params == null ? null : params.getParameter("dstID");
+        for (int i = 0; i < v.size(); i++) {
             elem = (DataElement)v.get(i);
             Vector fxValues = searchEngine.getFixedValues(elem.getID(), "elem");
             elem.setFixedValues(fxValues);
@@ -142,7 +142,7 @@ public class TblPdfAll {
             elem.setAttributes(attrs);
         }
 
-        if (owner!=null) {
+        if (owner != null) {
             owner.addTblElms(dsTable.getID(), v);
             owner.addTblNames(dsTable.getID(), tblName);
         }
@@ -152,7 +152,7 @@ public class TblPdfAll {
         addElement(PdfUtil.tableElements(v, null, null));
 
         // write data element full guidelines, each into a separate chapter
-        for (int i=0; v!=null && i<v.size(); i++) {
+        for (int i = 0; v != null && i < v.size(); i++) {
             elem = (DataElement)v.get(i);
             addElement(new Paragraph("\n"));
             ElmPdfAll elmAll = new ElmPdfAll(searchEngine, this);
@@ -163,7 +163,7 @@ public class TblPdfAll {
 
     protected void addElement(Element elm) {
 
-        if (owner!=null) {
+        if (owner != null) {
             owner.addElement(elm);
         }
 
@@ -180,7 +180,7 @@ public class TblPdfAll {
     }
 
     protected Sectioning getSectioning() {
-        if (owner!=null) {
+        if (owner != null) {
             return owner.getSectioning();
         } else {
             return null;

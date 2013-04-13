@@ -83,8 +83,7 @@ public class XmlConvServiceImpl implements IXmlConvService {
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to get scripts and conversions info from XmlConv: " + e.getMessage(), e);
-        }
-        finally{
+        } finally {
             IOUtils.closeQuietly(inputStream);
         }
     }

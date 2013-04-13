@@ -2902,7 +2902,7 @@ public class DDSearchEngine {
             constraints.append("DS_TABLE.DEFINITION like ").append(inParams.add("%" + definition + "%"));
         }
 
-        // params into constraints (if params==null, we ask for all)
+        // params into constraints (if params == null, we ask for all)
         for (int i = 0; params != null && i < params.size(); i++) {
 
             String index = String.valueOf(i + 1);

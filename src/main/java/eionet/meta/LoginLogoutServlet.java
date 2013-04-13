@@ -11,7 +11,7 @@ import eionet.util.SecurityUtil;
  * @author <a href="mailto:jaanus.heinlaid@tietoenator.com">Jaanus Heinlaid</a>
  *
  */
-public abstract class LoginLogoutServlet extends HttpServlet{
+public abstract class LoginLogoutServlet extends HttpServlet {
 
     /**
      * If needed, creates new HttpSession and adds authenticated user object to it.

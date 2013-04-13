@@ -151,7 +151,6 @@ public class Util {
     /**
      * A method for formatting the given timestamp into a String for history.
      */
-
     public static String historyDate(long timestamp) {
 
         Date date = new Date(timestamp);
@@ -312,9 +311,7 @@ public class Util {
                 amount = 7;
             }
             cal.add(Calendar.DAY_OF_WEEK, amount);
-        }
-        // do something about when every date is accepted
-        else if (month >= Calendar.JANUARY && month <= Calendar.DECEMBER) {
+        } else if (month >= Calendar.JANUARY && month <= Calendar.DECEMBER) { // do something about when every date is accepted
             if (date < 1) {
                 date = 1;
             }
@@ -859,12 +856,12 @@ public class Util {
         /*
          * if (literal == null) return null;
          * UnicodeEscapes unicodeEscapes = null;
-         * StringBuffer buf = new StringBuffer(); for (int i=0; i<literal.length(); i++) {
+         * StringBuffer buf = new StringBuffer(); for (int i = 0; i < literal.length(); i++) {
          * char c = literal.charAt(i);
-         * if (c=='&') { int j = literal.indexOf(";", i); if (j > i){ char cc = literal.charAt(i+1); int decimal = -1; if (cc=='#'){
-         * // handle Unicode decimal escape String sDecimal = literal.substring(i+2, j);
+         * if (c=='&') { int j = literal.indexOf(";", i); if (j > i) { char cc = literal.charAt(i + 1); int decimal = -1; if (cc=='#') {
+         * // handle Unicode decimal escape String sDecimal = literal.substring(i + 2, j);
          * try { decimal = Integer.parseInt(sDecimal); } catch (Exception e) {} } else { // handle entity String ent =
-         * literal.substring(i+1, j); if (unicodeEscapes == null) unicodeEscapes = new UnicodeEscapes(); decimal =
+         * literal.substring(i + 1, j); if (unicodeEscapes == null) unicodeEscapes = new UnicodeEscapes(); decimal =
          * unicodeEscapes.getDecimal(ent); }
          * if (decimal >= 0) { // if decimal was found, use the corresponding char. otherwise stick to c. c = (char)decimal; i = j;
          * } } }

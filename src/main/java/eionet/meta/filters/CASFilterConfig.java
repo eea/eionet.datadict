@@ -33,7 +33,7 @@ import eionet.util.Props;
  * @author <a href="mailto:jaanus.heinlaid@tieto.com">Jaanus Heinlaid</a>
  *
  */
-public class CASFilterConfig extends Hashtable<String,String> implements FilterConfig {
+public class CASFilterConfig extends Hashtable<String, String> implements FilterConfig {
 
     /** */
     private static CASFilterConfig instance;
@@ -51,10 +51,10 @@ public class CASFilterConfig extends Hashtable<String,String> implements FilterC
 
         super();
 
-        if (defaultConfig!=null) {
+        if (defaultConfig != null) {
 
             // load default configuration supplied by CAS
-            for (Enumeration names=defaultConfig.getInitParameterNames(); names.hasMoreElements();) {
+            for (Enumeration names = defaultConfig.getInitParameterNames(); names.hasMoreElements();) {
 
                 String name = names.nextElement().toString();
                 put(name, defaultConfig.getInitParameter(name));
@@ -79,13 +79,13 @@ public class CASFilterConfig extends Hashtable<String,String> implements FilterC
      */
     public static void init(FilterConfig defaultConfig) {
 
-        if (instance==null) {
+        if (instance == null) {
 
             synchronized (lock) {
 
                 // double-checked locking pattern
                 // (http://www.ibm.com/developerworks/java/library/j-dcl.html)
-                if (instance==null) {
+                if (instance == null) {
                     instance = new CASFilterConfig(defaultConfig);
                 }
             }
@@ -99,11 +99,10 @@ public class CASFilterConfig extends Hashtable<String,String> implements FilterC
      */
     public static CASFilterConfig getInstance() {
 
-        if (instance==null) {
+        if (instance == null) {
             throw new IllegalStateException(
                     CASFilterConfig.class.getSimpleName() + " not yet initialized");
-        }
-        else {
+        } else {
             return instance;
         }
     }

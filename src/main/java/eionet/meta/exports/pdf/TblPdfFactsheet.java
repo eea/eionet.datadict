@@ -52,7 +52,7 @@ public class TblPdfFactsheet extends PdfHandout {
 
     private void write(DsTable dsTable, Dataset ds) throws Exception {
 
-        if (dsTable==null)
+        if (dsTable == null)
             throw new Exception("Table object was null!");
 
         // add simple attributes
@@ -90,7 +90,7 @@ public class TblPdfFactsheet extends PdfHandout {
 
         /* write image attributes
         Element imgAttrs = PdfUtil.imgAttributes(v, vsPath);
-        if (imgAttrs!=null) {
+        if (imgAttrs != null) {
             addElement(new Phrase("\n"));
             addElement(imgAttrs);
         }*/
@@ -98,11 +98,11 @@ public class TblPdfFactsheet extends PdfHandout {
         // write table elements, but 1st get their fixed values & FK relations
 
         v = dsTable.getElements();
-        if (v==null || v.size()==0)
+        if (v == null || v.size() == 0)
             return;
 
         DataElement elem = null;
-        for (int i=0; i<v.size(); i++) {
+        for (int i = 0; i < v.size(); i++) {
             elem = (DataElement)v.get(i);
             Vector fxValues = searchEngine.getFixedValues(elem.getID(), "elem");
             elem.setFixedValues(fxValues);

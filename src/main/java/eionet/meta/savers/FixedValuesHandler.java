@@ -23,7 +23,7 @@ import eionet.util.sql.SQL;
  * @author Jaanus Heinlaid
  *
  */
-public class FixedValuesHandler extends BaseHandler{
+public class FixedValuesHandler extends BaseHandler {
 
     private static final String DEFAULT_OWNER_TYPE = "elem";
 
@@ -222,8 +222,7 @@ public class FixedValuesHandler extends BaseHandler{
         try {
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             stmt.executeUpdate();
-        }
-        finally {
+        } finally {
             SQL.close(stmt);
         }
     }

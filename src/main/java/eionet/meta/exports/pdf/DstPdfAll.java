@@ -291,7 +291,7 @@ public class DstPdfAll extends PdfHandout {
                 DataElement elm = (DataElement) elms.get(j);
                 // PdfPTable imgTable =
                 // PdfUtil.imgAttributes(elm.getAttributes(), vsPath);
-                // if (imgTable==null || imgTable.size()==0) continue;
+                // if (imgTable == null || imgTable.size() == 0) continue;
                 Vector imgVector = PdfUtil.imgAttributes(elm.getAttributes(), visualsPath);
                 if (imgVector == null || imgVector.size() == 0)
                     continue;

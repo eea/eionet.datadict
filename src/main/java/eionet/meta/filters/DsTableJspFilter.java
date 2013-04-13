@@ -92,7 +92,7 @@ public class DsTableJspFilter implements Filter {
 
             parameterMap.remove("table_id");
             parameterMap.remove("mode");
-            if (isLatestRequested){
+            if (isLatestRequested) {
                 parameterMap.remove("table_idf");
                 parameterMap.remove("pns");
             }

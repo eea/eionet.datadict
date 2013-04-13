@@ -25,7 +25,7 @@ public class PublicOutputs {
 
         HashSet result = new HashSet();
         Hashtable w = getWeights(c);
-        for (Enumeration e=w.keys(); e.hasMoreElements();) {
+        for (Enumeration e = w.keys(); e.hasMoreElements();) {
             String output = (String)e.nextElement();
             Integer weight = (Integer)w.get(output);
             int div = number/weight.intValue();

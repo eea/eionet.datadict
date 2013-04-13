@@ -10,7 +10,7 @@ package eionet.meta.exports.ods.tags;
  *
  * @author jaanus
  */
-public class NumberStyle{
+public class NumberStyle {
 
     /** */
     private String styleName = null;
@@ -65,7 +65,7 @@ public class NumberStyle{
      */
     public String writeInto(String intoStr) {
 
-        if (intoStr==null || intoStr.length()==0)
+        if (intoStr == null || intoStr.length() == 0)
             return intoStr;
 
         String officeAutomaticStyles = new String("<office:automatic-styles>");

@@ -190,7 +190,7 @@ public class ImgUpload extends HttpServlet {
             fileName = sFile.substring(i + 1, sFile.length());
         }
 
-        if (Util.isEmpty(fileName)){
+        if (Util.isEmpty(fileName)) {
             throw new ServletException("Failed to extract the file name!");
         }
 
@@ -374,7 +374,7 @@ public class ImgUpload extends HttpServlet {
 }
 
 /*
- * class PJAThread extends Thread{
+ * class PJAThread extends Thread {
  *
  * private String absPath = null; private boolean wasOK = false;
  *

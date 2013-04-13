@@ -10,7 +10,7 @@ import eionet.meta.DataElement;
 import eionet.meta.FixedValue;
 import eionet.util.Util;
 
-public class CodelistCSV extends Codelist{
+public class CodelistCSV extends Codelist {
 
     /**
      *
@@ -38,14 +38,11 @@ public class CodelistCSV extends Codelist{
             if (elm != null) {
                 elms.add(elm);
             }
-        }
-        else if (objType.equalsIgnoreCase(TBL)) {
+        } else if (objType.equalsIgnoreCase(TBL)) {
             elms = searchEngine.getDataElements(null, null, null, null, objID);
-        }
-        else if (objType.equalsIgnoreCase(DST)) {
+        } else if (objType.equalsIgnoreCase(DST)) {
             elms = searchEngine.getAllDatasetElements(objID);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Unknown object type: " + objType);
         }
 

@@ -58,10 +58,10 @@ public static final String METADATA_TABLENAME = "Metadata_for_GDEM_(NOT_TO_BE_DE
 //      Database db = null;
 //      try {
 //          db = Database.open(file);
-//          if (db==null) throw new NullPointerException();
+//          if (db == null) throw new NullPointerException();
 //
 ////            Set tableNames = db.getTableNames();
-////            if (tableNames!=null && tableNames.contains(METADATA_TABLENAME)) return;
+////            if (tableNames != null && tableNames.contains(METADATA_TABLENAME)) return;
 //
 //          Object[] cols = new Object[3];
 //
@@ -80,7 +80,7 @@ public static final String METADATA_TABLENAME = "Metadata_for_GDEM_(NOT_TO_BE_DE
 //          col3.setSQLType(Types.VARCHAR);
 //          cols[2] = col3;
 //
-////            for (int i=0; i<METADATA_COLS.length; i++) {
+////            for (int i = 0; i < METADATA_COLS.length; i++) {
 ////                Column col = new Column();
 ////                col.setName(METADATA_COLS[i]);
 ////                col.setSQLType(Mdb.DEFAULT_MDB_TYPE);
@@ -89,12 +89,11 @@ public static final String METADATA_TABLENAME = "Metadata_for_GDEM_(NOT_TO_BE_DE
 //
 //          db.createTable(METADATA_TABLENAME, Arrays.asList(cols));
 ////            Table table = db.getTable(METADATA_TABLENAME);
-////            if (table==null) throw new NullPointerException();
+////            if (table == null) throw new NullPointerException();
 //
 //          //addRows(table);
-//      }
-//      finally {
-//          if (db!=null) db.close();
+//      } finally {
+//          if (db != null) db.close();
 //      }
     }
 
@@ -105,7 +104,7 @@ public static final String METADATA_TABLENAME = "Metadata_for_GDEM_(NOT_TO_BE_DE
 
         String dstID = null;
         Vector ddTables = searchEngine.getDatasetTables(dstID, true);
-        for (int i=0; ddTables!=null && i<ddTables.size(); i++) {
+        for (int i = 0; ddTables != null && i < ddTables.size(); i++) {
 
             DsTable ddTable = (DsTable)ddTables.get(i);
 
@@ -124,13 +123,13 @@ public static final String METADATA_TABLENAME = "Metadata_for_GDEM_(NOT_TO_BE_DE
     private void printRows() throws Exception {
 
         Database db = Database.open(file);
-        if (db==null) throw new NullPointerException();
+        if (db == null) throw new NullPointerException();
 
         Table table = db.getTable("Table1");
-        if (table==null) throw new NullPointerException();
+        if (table == null) throw new NullPointerException();
 
         List cols = table.getColumns();
-        for (int i=0; i<cols.size(); i++) {
+        for (int i = 0; i < cols.size(); i++) {
             Column col = (Column)cols.get(i);
             short nr = col.getColumnNumber();
             short len = col.getLength();
@@ -151,8 +150,7 @@ public static final String METADATA_TABLENAME = "Metadata_for_GDEM_(NOT_TO_BE_DE
         MdbGDEM mdbGDEM = new MdbGDEM(file, (DDSearchEngine)null, null);
         try {
             mdbGDEM.printRows();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace(System.out);
         }
 

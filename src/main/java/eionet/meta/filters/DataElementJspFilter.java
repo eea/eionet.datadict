@@ -91,7 +91,7 @@ public class DataElementJspFilter implements Filter {
 
             parameterMap.remove("delem_id");
             parameterMap.remove("mode");
-            if (isLatestRequested){
+            if (isLatestRequested) {
                 parameterMap.remove("delem_idf");
                 parameterMap.remove("pns");
             }

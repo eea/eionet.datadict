@@ -120,7 +120,7 @@ public class QueryString {
 
     private void append(String param, String value) {
 
-        String s =queryString.indexOf("?") > 0 ? "&" : "?";
+        String s = queryString.indexOf("?") > 0 ? "&" : "?";
 
         queryString += s + param + "=" + value;
     }
@@ -196,7 +196,7 @@ public class QueryString {
             }
             boolean ok = false;
             while (tokens.hasMoreTokens()) {
-                String t=tokens.nextToken();
+                String t = tokens.nextToken();
                 while (tokens2.hasMoreTokens()) {
                     if (t.equals(tokens2.nextToken())) {
                         ok = true;
@@ -247,8 +247,7 @@ public class QueryString {
                             result.append(URLEncoder.encode(key, encoding)).append("=");
                             result.append(URLEncoder.encode(values[i], encoding));
                         }
-                    }
-                    else if (value instanceof Iterable) {
+                    } else if (value instanceof Iterable) {
                         Iterable values = (Iterable) value;
                         for (Iterator iter = values.iterator(); iter.hasNext();) {
                             if (result.length() > 0) {

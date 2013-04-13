@@ -22,7 +22,7 @@ import eionet.util.sql.SQL;
  * @author Jaanus Heinlaid
  *
  */
-public class FKHandler extends BaseHandler{
+public class FKHandler extends BaseHandler {
 
     private String mode = null;
     private String lastInsertID = null;
@@ -83,7 +83,7 @@ public class FKHandler extends BaseHandler{
             map.put("B_CARDIN", inParams.add(bCardin));
         }
         String definition = req.getParameter("definition");
-        if (definition==null){
+        if (definition == null) {
             definition = "";
         }
         map.put("DEFINITION", inParams.add(definition));
@@ -135,14 +135,14 @@ public class FKHandler extends BaseHandler{
     private void delete() throws Exception {
 
         String[] rel_ids = req.getParameterValues("rel_id");
-        if (rel_ids==null || rel_ids.length==0) {
+        if (rel_ids == null || rel_ids.length == 0) {
             return;
         }
 
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer("delete from FK_RELATION where ");
-        for (int i=0; i<rel_ids.length; i++) {
-            if (i>0) {
+        for (int i = 0; i < rel_ids.length; i++) {
+            if (i > 0) {
                 buf.append(" or ");
             }
             buf.append("REL_ID=").append(inParams.add(rel_ids[i], Types.INTEGER));

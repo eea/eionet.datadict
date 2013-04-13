@@ -13,7 +13,7 @@ import eionet.util.PropsIF;
  * @author <a href="mailto:jaanus.heinlaid@tieto.com">Jaanus Heinlaid</a>
  *
  */
-public class DefinitionUrls extends HashMap<Class,String>{
+public class DefinitionUrls extends HashMap<Class, String>{
 
     /** */
     private static DefinitionUrls prefixes;

@@ -89,8 +89,7 @@ public class Import extends HttpServlet {
                 responseText.append("<h1>Not allowed!</h1><br/>");
                 bException = true;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             responseText.append("<h1>" + e.toString() + "</h1><br/>");
             bException = true;
         }
@@ -135,8 +134,7 @@ public class Import extends HttpServlet {
         if (type == null) {
             responseText.append("<h1>Failed to get the import type!</h1><br/>");
             bException = true;
-        }
-        else {
+        } else {
             // check that the element id is valid, when type is FXV
             if (type.equals("FXV") && delem_id == null) {
                 responseText.append("<h1>Failed to get data element id!</h1><br/>");
@@ -178,8 +176,7 @@ public class Import extends HttpServlet {
                 // get the data and save to file
                 if (sUrl == null) {
                     writeToFile(raFile, req.getInputStream(), boundary);
-                }
-                else {
+                } else {
                     URL url = new URL(sUrl);
                     HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
 
@@ -209,12 +206,10 @@ public class Import extends HttpServlet {
                     dbImport.execute();
 
                     responseText.append(dbImport.getResponseText());
-                }
-                else {
+                } else {
                     throw new Exception(handler.getErrorBuff().toString());
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
 
                 StringBuffer msg = new StringBuffer();
                 int lineNumber = handler.getLine();
@@ -227,8 +222,7 @@ public class Import extends HttpServlet {
                 responseText.append("<h1>Data Dictionary importer encountered").
                 append(" an exception:</h1><br/>").append(msg.toString()).
                 append("<br/><br/>");
-            }
-            catch (OutOfMemoryError oome) {
+            } catch (OutOfMemoryError oome) {
 
                 StringBuffer msg = new StringBuffer(oome.toString());
                 int lineNumber = handler.getLine();
@@ -238,14 +232,12 @@ public class Import extends HttpServlet {
 
                 responseText.append("<h1>Data Dictionary importer encountered an exception:" +
                         "</h1><br/>" + msg.toString() + "<br/><br/>");
-            }
-            finally {
+            } finally {
                 try {
-                    if (userConn!=null) {
+                    if (userConn != null) {
                         userConn.close();
                     }
-                }
-                catch (SQLException e) {}
+                } catch (SQLException e) {}
             }
 
             // if was fixed values import explicitly, add a link back to the element
@@ -270,7 +262,7 @@ public class Import extends HttpServlet {
 
         byte[] buf = new byte[BUF_SIZE];
         int i;
-        while ((i=in.read(buf, 0, buf.length)) != -1) {
+        while ((i = in.read(buf, 0, buf.length)) != -1) {
             raFile.write(buf, 0, i);
         }
 
@@ -279,7 +271,7 @@ public class Import extends HttpServlet {
     }
 
     /**
-     * Write to file, if import goes through a file upload
+     * Write to file, if import goes through a file upload.
      */
     private void writeToFile(RandomAccessFile raFile, ServletInputStream in, String boundary) throws Exception {
 
@@ -289,7 +281,7 @@ public class Import extends HttpServlet {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         boolean fileStart = false;
         boolean pastContentType = false;
-        do{
+        do {
             int b = in.read();
             if (b == -1)
             {
@@ -303,24 +295,22 @@ public class Import extends HttpServlet {
                 if (s.indexOf("Content-Type") != -1) {
                     pastContentType = true;
                 }
-            }
-            else {
+            } else {
                 // Content-Type is passed, after next double LNF is file start
                 byte[] bs = bout.toByteArray();
                 if (bs != null && bs.length >= 4) {
-                    if (bs[bs.length-1]==10 &&
-                            bs[bs.length-2]==13 &&
-                            bs[bs.length-3]==10 &&
-                            bs[bs.length-4]==13) {
+                    if (bs[bs.length - 1] == 10
+                        && bs[bs.length - 2] == 13
+                        && bs[bs.length - 3] == 10
+                        && bs[bs.length - 4] == 13) {
 
                         fileStart = true;
                     }
                 }
             }
-        }
-        while (!fileStart);
+        } while (!fileStart);
 
-        while ((i=in.readLine(buf, 0, buf.length)) != -1) {
+        while ((i = in.readLine(buf, 0, buf.length)) != -1) {
             String line = new String(buf, 0, i);
             if (boundary != null && line.startsWith(boundary)) {
                 break;
@@ -333,7 +323,7 @@ public class Import extends HttpServlet {
     }
 
     /**
-     * Extract the boundary string in multipart request
+     * Extract the boundary string in multipart request.
      */
     private String extractBoundary(String contentType) {
         int i = contentType.indexOf("boundary=");

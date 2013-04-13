@@ -38,7 +38,7 @@ public class DDhistory {
       return Integer.toString(historySize);
   }
   public int getCurrentIndex() {
-      return historySize-1;
+      return historySize - 1;
   }
   public String toString() {
       return history.toString();
@@ -92,7 +92,7 @@ public class DDhistory {
           QueryString qs = new QueryString(url);
           if (qs.equals(currentUrl)) return;
           if (qs.equals(backUrl)) {  //move back
-              history.remove(historySize-1);
+              history.remove(historySize - 1);
               currentUrl = backUrl;
               historySize--;
               backUrl = historySize > 1 ? (String) history.get(historySize - 2) : "";
@@ -117,7 +117,7 @@ public class DDhistory {
         for (int i = history.size(); i > 0; i--) {
             currentUrl = (String)history.get(i - 1);
             historySize = i;
-            backUrl = historySize > 1 ? (String) history.get(historySize-2):"";
+            backUrl = historySize > 1 ? (String) history.get(historySize - 2):"";
             found = false;
             for (int j = 0; j < find_url.length; j++) {
                 if (currentUrl.indexOf(find_url[j]) > -1) {
@@ -144,7 +144,7 @@ public class DDhistory {
 
       if (historySize > 0) {
         for (int i = history.size(); i > 0; i--) {
-            url = (String)history.get(i-1);
+            url = (String)history.get(i - 1);
             found = false;
             for (int j = 0; j < find_url.length; j++) {
                 if (url.indexOf(find_url[j]) > -1) {

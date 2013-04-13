@@ -58,7 +58,7 @@ public class XmlInstServlet extends HttpServlet {
             // build application context
             String reqUri = req.getRequestURL().toString();
             int i = reqUri.lastIndexOf("/");
-            if (i != -1) xmlInst.setAppContext(reqUri.substring(0,i));
+            if (i != -1) xmlInst.setAppContext(reqUri.substring(0, i));
 
             xmlInst.write(id);
             xmlInst.flush();
@@ -66,24 +66,21 @@ public class XmlInstServlet extends HttpServlet {
             osw.flush();
             writer.close();
             osw.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new ServletException(e.toString());
-        }
-        finally {
+        } finally {
             try {
                 if (writer != null) writer.close();
                 if (conn != null) conn.close();
-            }
-            catch (Exception ee) {}
+            } catch (Exception ee) {}
         }
     }
 
     private void guard(HttpServletRequest req) throws Exception {
 
         DDUser user = SecurityUtil.getUser(req);
-        if (user==null) throw new Exception("Not logged in!");
+        if (user == null) throw new Exception("Not logged in!");
 
         if (!SecurityUtil.hasPerm(user.getUserName(), "/", "xmli"))
             throw new Exception("Not permitted!");

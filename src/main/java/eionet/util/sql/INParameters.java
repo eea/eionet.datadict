@@ -77,12 +77,12 @@ public class INParameters {
      */
     public String toString() {
 
-        StringBuffer buf = new StringBuffer(size()==0 ? "empty" : "");
-        for (int i=0; i<values.size(); i++) {
+        StringBuffer buf = new StringBuffer(size() == 0 ? "empty" : "");
+        for (int i = 0; i < values.size(); i++) {
 
             buf.append((String)values.get(i));
             Integer sqlType = getSQLType(i);
-            buf.append(", ").append(sqlType==null ? "null" : sqlTypeLabel(sqlType)).
+            buf.append(", ").append(sqlType == null ? "null" : sqlTypeLabel(sqlType)).
             append("\n");
         }
         return buf.toString();

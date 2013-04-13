@@ -235,10 +235,9 @@ public class EmailServiceImpl implements IEmailService {
                 }
                 // could not
                 if (to[i].contains(MC_CC_PLACEHOLDER)) {
-                    if (ArrayUtils.contains(MC_COUNTRIES, country.toLowerCase())){
+                    if (ArrayUtils.contains(MC_COUNTRIES, country.toLowerCase())) {
                         StringUtils.replace(to[i], MC_CC_PLACEHOLDER, MC);
-                    }
-                    else{
+                    } else {
                         StringUtils.replace(to[i], MC_CC_PLACEHOLDER, CC);
                     }
                 }

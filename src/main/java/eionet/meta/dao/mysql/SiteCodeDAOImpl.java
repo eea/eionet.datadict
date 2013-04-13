@@ -268,7 +268,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         StringBuilder sql = new StringBuilder();
         sql.append("select count(SITE_CODE_ID) from T_SITE_CODE where STATUS = :status ");
         sql.append("and CC_ISO2 = :countryCode ");
-        if (withoutInitialName){
+        if (withoutInitialName) {
             sql.append("and (INITIAL_SITE_NAME is null or INITIAL_SITE_NAME = '') ");
         }
 

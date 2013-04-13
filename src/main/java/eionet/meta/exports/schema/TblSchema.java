@@ -52,7 +52,7 @@ public class TblSchema extends Schema {
 
         // set target namespace (being the parent dataset's namespace)
         String parentNsID = dsTable.getParentNs();
-        if (parentNsID!=null) {
+        if (parentNsID != null) {
             setTargetNsUrl(parentNsID);
         }
 
@@ -71,8 +71,7 @@ public class TblSchema extends Schema {
         if (ns != null) {
             ROW_NS = ROW_NS + ":";
             addNamespace(ns);
-        }
-        else
+        } else
             ROW_NS = "";*/
 
         //writeElemStart(dsTable.getShortName());
@@ -116,10 +115,10 @@ public class TblSchema extends Schema {
         newLine();
 
         boolean xsKeyStarted = false;
-        for (int i = 0; tableElements != null && i < tableElements.size(); i++){
+        for (int i = 0; tableElements != null && i < tableElements.size(); i++) {
             DataElement dataElement = (DataElement) tableElements.get(i);
-            if (dataElement.isPrimaryKey()){
-                if (xsKeyStarted == false){
+            if (dataElement.isPrimaryKey()) {
+                if (xsKeyStarted == false) {
 
                     addString("\t<xs:key name=\"PK_Row_ID\">");
                     newLine();
@@ -132,7 +131,7 @@ public class TblSchema extends Schema {
             }
         }
 
-        if (xsKeyStarted){
+        if (xsKeyStarted) {
             addString("\t</xs:key>");
             newLine();
         }

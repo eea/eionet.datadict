@@ -149,7 +149,7 @@ public class PdfUtil {
 
                 // JH201103 - skip image attributes, will be treated later
                 String dispType = ((DElemAttribute)o).getDisplayType();
-                if (dispType != null && dispType.equals("image")){
+                if (dispType != null && dispType.equals("image")) {
                     continue;
                 }
             }
@@ -186,7 +186,7 @@ public class PdfUtil {
         }
 
         /*for (c = 0; c < (value.length() / MAX_VALUE_LEN); c++)
-                values.add(value.substring(c*MAX_VALUE_LEN, (c+1)*MAX_VALUE_LEN));
+                values.add(value.substring(c*MAX_VALUE_LEN, (c + 1)*MAX_VALUE_LEN));
             if (value.length() > c*MAX_VALUE_LEN)
                 values.add(value.substring(c*MAX_VALUE_LEN));*/
 
@@ -447,7 +447,7 @@ public class PdfUtil {
                 nr = sect == null ? null : sect.level(" ",3, false);
                 nr = nr == null ? " " : nr;
 
-                cell = new PdfPCell(new Phrase(nr,Fonts.get(Fonts.CELL_VALUE)));
+                cell = new PdfPCell(new Phrase(nr, Fonts.get(Fonts.CELL_VALUE)));
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 cell.setPaddingLeft(5);
 
@@ -1048,7 +1048,7 @@ public class PdfUtil {
             for (int j = 0; values != null && j < values.size(); j++) {
 
                 String value = (String)values.get(j);
-                /*String nrName = name + " #" + String.valueOf(j+1);
+                /*String nrName = name + " #" + String.valueOf(j + 1);
                 nrName = "";
 
                 // add row for name
@@ -1235,22 +1235,22 @@ public class PdfUtil {
         for (int i = 0; i < s.length(); i++) {
 
             char c = s.charAt(i);
-            String tk = s.substring(i, i+1);
+            String tk = s.substring(i, i + 1);
 
             if (c == '&') {
                 int j = s.indexOf(";", i);
                 if (j > i) {
-                    char cc = s.charAt(i+1);
+                    char cc = s.charAt(i + 1);
                     int decimal = -1;
                     if (cc == '#') {
                         // handle Unicode escape
-                        String sDecimal = s.substring(i+2, j);
+                        String sDecimal = s.substring(i + 2, j);
                         try {
                             decimal = Integer.parseInt(sDecimal);
                         } catch (Exception e) {}
                     } else {
                         // handle entity
-                        String ent = s.substring(i+1, j);
+                        String ent = s.substring(i + 1, j);
                         decimal = unicodeEscapes.getDecimal(ent);
                     }
 

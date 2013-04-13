@@ -20,7 +20,7 @@ import eionet.meta.DDException;
  * @author <a href="mailto:jaanus.heinlaid@tieto.com">Jaanus Heinlaid</a>
  *
  */
-public class MSAccessServlet extends HttpServlet{
+public class MSAccessServlet extends HttpServlet {
 
     /*
      * (non-Javadoc)
@@ -30,10 +30,9 @@ public class MSAccessServlet extends HttpServlet{
                                                     throws ServletException, IOException {
 
         String datasetId = req.getParameter("dstID");
-        if (datasetId==null || datasetId.trim().length()==0) {
+        if (datasetId == null || datasetId.trim().length() == 0) {
             throw new ServletException("Missing request parameter: dstID");
-        }
-        else {
+        } else {
             datasetId = datasetId.trim();
         }
 
@@ -49,28 +48,24 @@ public class MSAccessServlet extends HttpServlet{
             res.setHeader("Content-Disposition", contentDisp.toString());
 
             generatedFile = msAccessFile.getGeneratedFile();
-            if (generatedFile!=null && generatedFile.exists()) {
+            if (generatedFile != null && generatedFile.exists()) {
 
                 output = res.getOutputStream();
                 input = new FileInputStream(generatedFile);
                 IOUtils.copy(input, output);
             }
-        }
-        catch (DDException e) {
+        } catch (DDException e) {
             throw new ServletException(e.getMessage(), e);
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new ServletException(e.getMessage(), e);
-        }
-        finally {
+        } finally {
             IOUtils.closeQuietly(output);
             IOUtils.closeQuietly(input);
             try {
-                if (generatedFile!=null && generatedFile.exists()) {
+                if (generatedFile != null && generatedFile.exists()) {
                     generatedFile.delete();
                 }
-            }
-            catch (SecurityException e) {
+            } catch (SecurityException e) {
                 new DDException("Security exception when deleting generated MSAccess file", e).printStackTrace();
             }
         }

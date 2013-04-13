@@ -30,7 +30,7 @@ public class DbSchema {
     private static DbSchema instance = new DbSchema();
 
     /** */
-    private HashMap<String,List<String>> tablesColumns = new HashMap<String, List<String>>();
+    private HashMap<String, List<String>> tablesColumns = new HashMap<String, List<String>>();
 
     /**
      *
@@ -107,11 +107,10 @@ public class DbSchema {
 
         if (skipColumns == null || skipColumns.length == 0) {
             return getTableColumns(tableName);
-        }
-        else {
+        } else {
             List<String> columns = getTableColumns(tableName);
             List<String> result = (columns == null) ? new ArrayList<String>() : new ArrayList<String>(columns);
-            for (int i=0; i<skipColumns.length; i++) {
+            for (int i = 0; i < skipColumns.length; i++) {
                 result.remove(skipColumns[i]);
             }
             return result;

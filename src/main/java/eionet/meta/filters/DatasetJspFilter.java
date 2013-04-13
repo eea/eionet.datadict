@@ -69,10 +69,9 @@ public class DatasetJspFilter implements Filter {
         StringBuilder buf = new StringBuilder(request.getContextPath());
         buf.append("/datasets");
 
-        if (isLatestRequested){
+        if (isLatestRequested) {
             buf.append("/latest/").append(datasetIdentifier);
-        }
-        else{
+        } else {
             if (!StringUtils.isBlank(datasetId)) {
                 buf.append("/").append(datasetId);
             }

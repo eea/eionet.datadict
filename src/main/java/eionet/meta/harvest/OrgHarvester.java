@@ -12,7 +12,7 @@ import java.util.Vector;
 import eionet.directory.DirServiceException;
 import eionet.directory.DirectoryService;
 
-public class OrgHarvester extends DDHarvester{
+public class OrgHarvester extends DDHarvester {
 
     public OrgHarvester() {
         super("Organisations harvester");

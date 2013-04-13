@@ -34,8 +34,7 @@ public class DDCASUser extends DDUser {
         try {
             fullName = AuthMechanism.getFullName(userName);
             LOGGER.debug("User " + userName + " logged in through CAS.");
-        }
-        catch (SignOnException e) {
+        } catch (SignOnException e) {
             LOGGER.error("Fatal error: can not get full name for authaticated user", e);
         }
         //

@@ -25,7 +25,7 @@ public abstract class InServiceClient implements InServiceClientIF{
 
         client = ServiceClients.getServiceClient(serviceName, serviceUrl);
         if (!Util.isEmpty(serviceUsr) && !Util.isEmpty(serviceUsr))
-            client.setCredentials(serviceUsr,servicePsw);
+            client.setCredentials(serviceUsr, servicePsw);
     }
 
     protected void getProps(String clientName) {

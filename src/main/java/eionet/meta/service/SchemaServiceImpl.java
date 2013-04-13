@@ -953,16 +953,15 @@ public class SchemaServiceImpl implements ISchemaService {
     public List<Schema> getSchemasForObligation(String obligationId, boolean releasedOnly) throws ServiceException {
         try {
             SchemaSetFilter schemasetFilter = new SchemaSetFilter();
-            if (releasedOnly){
+            if (releasedOnly) {
                 schemasetFilter.setRegStatuses(Arrays.asList(RegStatus.RELEASED.toString()));
-            }
-            else{
+            } else {
                 schemasetFilter.setRegStatuses(RegStatus.getPublicStatuses());
             }
             //Set up ROD url attribute value
             ComplexAttribute rodAttr = attributeDAO.getComplexAttributeByName("ROD");
             ComplexAttributeField field = rodAttr.getField("url");
-            if (field !=null){
+            if (field  != null) {
                 field.setValue(obligationId);
                 field.setExactMatchInSearch(true);
             }
@@ -975,10 +974,9 @@ public class SchemaServiceImpl implements ISchemaService {
             //search schemasets
             SchemaSetsResult schemasetsResult = schemaSetDAO.searchSchemaSets(schemasetFilter);
 
-            if (schemasetsResult!=null && schemasetsResult.getList().size()>0){
+            if (schemasetsResult != null && schemasetsResult.getList().size()>0) {
                 return schemaDAO.listForSchemaSets(schemasetsResult.getList());
-            }
-            else{
+            } else {
                 return new ArrayList<Schema>();
             }
         } catch (Exception e) {

@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="mailto:jaanus.heinlaid@tietoenator.com">Jaanus Heinlaid</a>
  *
  */
-public class AfterCASLoginServlet extends HttpServlet{
+public class AfterCASLoginServlet extends HttpServlet {
 
     /** */
     public static final String AFTER_LOGIN_ATTR_NAME = "afterLogin";
@@ -30,7 +30,7 @@ public class AfterCASLoginServlet extends HttpServlet{
         if (afterLogin != null)
             ((HttpServletResponse)response).sendRedirect(afterLogin);
         else
-            request.getRequestDispatcher("/").forward(request,response);
+            request.getRequestDispatcher("/").forward(request, response);
     }
 
     /**
@@ -40,8 +40,8 @@ public class AfterCASLoginServlet extends HttpServlet{
      */
     public static boolean isSkipUrl(String url) {
 
-        if (url!=null) {
-            for (int i=0; i<skipUrlPatterns.length; i++) {
+        if (url != null) {
+            for (int i = 0; i < skipUrlPatterns.length; i++) {
                 if (url.indexOf(skipUrlPatterns[i])>0) {
                     return true;
                 }

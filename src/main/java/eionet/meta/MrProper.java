@@ -116,8 +116,7 @@ public class MrProper {
             if (!isOK)
                 throw new Exception("User " + userName +
                                     " does not have this permission!");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             response.add(e.getMessage());
             return;
         }*/
@@ -150,8 +149,7 @@ public class MrProper {
                     releaseDataset(pars.getParameter(DST_IDFIER));
                 //if (fun.equals(CLN_VISUALS))
                 //  cleanVisuals(pars.getParameter(VISUALS_PATH));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 wasExc = true;
                 String stackTrace = eionet.util.Util.getStack(e);
                 if (stackTrace == null) stackTrace = e.toString();
@@ -199,8 +197,7 @@ public class MrProper {
                 buf.append("select DATASET_ID from DATASET where ");
                 buf.append("IDENTIFIER=").append(inParams.add(idfier));
             }
-        }
-        else if (rmCrit.equals("id")) {
+        } else if (rmCrit.equals("id")) {
             String id = pars.getParameter("rm_id");
             if (id != null) {
                 StringTokenizer st = new StringTokenizer(id);
@@ -406,7 +403,7 @@ public class MrProper {
         File[] files = dir.listFiles();
         for (int i = 0; files != null && i < files.length; i++) {
             String fileName = files[i].getName();
-            if (Util.isEmpty(fileName)){
+            if (Util.isEmpty(fileName)) {
                 continue;
             }
 

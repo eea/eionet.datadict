@@ -23,13 +23,12 @@ public class InServicesServlet extends HttpServlet {
 
         try {
             act(req, res);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             handleError(e, req, res);
             return;
         }
 
-        dispatch(req,res);
+        dispatch(req, res);
     }
 
     private void act(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -51,16 +50,16 @@ public class InServicesServlet extends HttpServlet {
     }
 
     private void handleError(HttpServletRequest req, HttpServletResponse res)
-                                                    throws ServletException,IOException {
+                                                    throws ServletException, IOException {
 
         String errHandler = (String)req.getAttribute(Attrs.ERR_HANDLER);
         if (Util.isEmpty(errHandler)) errHandler = "error.jsp";
 
-        req.getRequestDispatcher(errHandler).forward(req,res);
+        req.getRequestDispatcher(errHandler).forward(req, res);
     }
 
     private void handleError(Exception e, HttpServletRequest req, HttpServletResponse res)
-                                                    throws ServletException,IOException {
+                                                    throws ServletException, IOException {
 
         req.setAttribute("DD_ERR_MSG", e.toString());
         ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
@@ -73,6 +72,6 @@ public class InServicesServlet extends HttpServlet {
                                                 throws ServletException, IOException  {
 
         String dispatcher = (String)req.getAttribute(Attrs.DISPATCHER);
-        req.getRequestDispatcher(dispatcher).forward(req,res);
+        req.getRequestDispatcher(dispatcher).forward(req, res);
     }
 }

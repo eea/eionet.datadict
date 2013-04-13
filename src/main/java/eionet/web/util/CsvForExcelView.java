@@ -31,7 +31,7 @@ import org.displaytag.export.CsvView;
 public class CsvForExcelView extends CsvView {
 
     @Override
-    protected String getDocumentStart(){
+    protected String getDocumentStart() {
         return "\ufeff";
     }
 }

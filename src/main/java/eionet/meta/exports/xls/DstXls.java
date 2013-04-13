@@ -174,8 +174,7 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
                 try {
                     File file = new File(fn);
                     if (file.exists()) file.delete();
-                }
-                catch (Exception ee) {}
+                } catch (Exception ee) {}
             } finally {
                 if (os != null) os.close();
             }
@@ -246,7 +245,7 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
         FileInputStream in = null;
         try {
             in = new FileInputStream(file);
-            while ((i=in.read(buf, 0, buf.length)) != -1)
+            while ((i = in.read(buf, 0, buf.length)) != -1)
                 os.write(buf, 0, i);
         } finally {
             if (in != null) {
@@ -264,7 +263,7 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
      */
     protected static int storeCacheEntry(String id, String fn, Connection conn) throws SQLException {
 
-        if (id==null || fn==null || conn==null)
+        if (id == null || fn == null || conn == null)
             return -1;
 
         INParameters inParams = new INParameters();
@@ -291,8 +290,7 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
         } finally {
             try {
                 if (stmt != null) stmt.close();
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -305,7 +303,7 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
      */
     protected static String deleteCacheEntry(String id, Connection conn) throws SQLException {
 
-        if (id==null || conn==null)
+        if (id == null || conn == null)
             return null;
 
         INParameters inParams = new INParameters();
@@ -330,8 +328,7 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
             try {
                 if (rs != null) rs.close();
                 if (stmt != null) stmt.close();
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
 
         return fn;

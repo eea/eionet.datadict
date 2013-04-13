@@ -37,13 +37,12 @@ public class OutService {
     public Vector getParametersByActivityID(String raID) throws Exception {
 
         try {
-            if (conn==null) {
+            if (conn == null) {
                 getConnection();
             }
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
             return searchEngine.getParametersByActivityID(raID);
-        }
-        finally {
+        } finally {
             closeConnection();
         }
     }
@@ -58,13 +57,12 @@ public class OutService {
     public Vector getObligationsWithDatasets() throws Exception {
 
         try {
-            if (conn==null) {
+            if (conn == null) {
                 getConnection();
             }
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
             return searchEngine.getObligationsWithDatasets();
-        }
-        finally {
+        } finally {
             closeConnection();
         }
     }
@@ -89,7 +87,7 @@ public class OutService {
     public Vector getDSTables() throws Exception {
 
         try {
-            if (conn==null) {
+            if (conn == null) {
                 getConnection();
             }
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
@@ -100,7 +98,7 @@ public class OutService {
             Vector result = searchEngine.getDatasetTables(null, null, null, null, null, null, dstStatuses, false);
 
             Vector ret = new Vector();
-            for (int i=0; i<result.size(); i++) {
+            for (int i = 0; i < result.size(); i++) {
                 DsTable table = (DsTable)result.get(i);
 
                 String table_id = table.getID();
@@ -115,7 +113,7 @@ public class OutService {
                 hash.put("shortName", table.getShortName());
                 hash.put("dataSet", table.getDatasetName());
 
-                if (table.getDstStatus()!=null && table.getDstStatus().equals("Released") && table.getDstDate()!=null) {
+                if (table.getDstStatus() != null && table.getDstStatus().equals("Released") && table.getDstDate() != null) {
                     String dateFormatted = (new SimpleDateFormat("ddMMyy")).format(new Date(Long.parseLong(table.getDstDate())));
                     hash.put("dateReleased", dateFormatted);
                 }
@@ -124,8 +122,7 @@ public class OutService {
             }
             return ret;
 
-        }
-        finally {
+        } finally {
             closeConnection();
         }
 
@@ -144,7 +141,7 @@ public class OutService {
      *
      */
     private void closeConnection() {
-        try { if (conn!=null) {
+        try { if (conn != null) {
             conn.close();
         } } catch (SQLException e) {}
     }
@@ -159,19 +156,19 @@ public class OutService {
     public Hashtable getDatasetWithReleaseInfo(String objType, String objId) throws Exception {
 
         // validate objType
-        if (objType==null || (!objType.equals("dst") && !objType.equals("tbl"))) {
+        if (objType == null || (!objType.equals("dst") && !objType.equals("tbl"))) {
             throw new IllegalArgumentException("Missing or invalid objType!");
         }
 
         // validate objId
-        if (objId==null || objId.trim().length()==0 || !Util.isNumericID(objId)) {
+        if (objId == null || objId.trim().length() == 0 || !Util.isNumericID(objId)) {
             throw new IllegalArgumentException("Missing or invalid objId!");
         }
 
         ReplyGetDataset reply = new ReplyGetDataset();
         try {
             // initiate the connection
-            if (conn==null) {
+            if (conn == null) {
                 getConnection();
             }
 
@@ -180,19 +177,18 @@ public class OutService {
             Dataset dst = null;
             if (objType.equals("dst")) {
                 dst = searchEngine.getDataset(objId);
-            }
-            else {
+            } else {
                 DsTable tbl = searchEngine.getDatasetTable(objId);
-                if (tbl!=null) {
+                if (tbl != null) {
                     String dstId = tbl.getDatasetID();
-                    if (dstId!=null) {
+                    if (dstId != null) {
                         dst = searchEngine.getDataset(dstId);
                     }
                 }
             }
 
             // if dataset object found, prepare the reply
-            if (dst!=null) {
+            if (dst != null) {
 
                 // set basics
                 reply.setId(dst.getID());
@@ -204,7 +200,7 @@ public class OutService {
 
                 // set table ids
                 Vector tables = searchEngine.getDatasetTables(dst.getID(), false);
-                for (int i=0; i<tables.size(); i++) {
+                for (int i = 0; i < tables.size(); i++) {
                     reply.addTableId(((DsTable)tables.get(i)).getID());
                 }
 
@@ -212,23 +208,21 @@ public class OutService {
                 Vector statuses = new Vector();
                 statuses.add("Released");
                 String latestReleasedDatasetId = searchEngine.getLatestDstID(dst.getIdentifier(), statuses);
-                if (latestReleasedDatasetId!=null) {
+                if (latestReleasedDatasetId != null) {
 
                     if (latestReleasedDatasetId.equals(dst.getID())) {
                         reply.setIsLatestReleased(true);
-                    }
-                    else {
+                    } else {
                         reply.setIsLatestReleased(false);
                         Dataset latestReleasedDst = searchEngine.getDataset(latestReleasedDatasetId);
-                        if (latestReleasedDst!=null) {
+                        if (latestReleasedDst != null) {
                             reply.setIdOfLatestReleased(latestReleasedDst.getID());
                             reply.setDateOfLatestReleased(latestReleasedDst.getDate());
                         }
                     }
                 }
             }
-        }
-        finally {
+        } finally {
             closeConnection();
         }
 

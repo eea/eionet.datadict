@@ -43,8 +43,7 @@ public class HttpUploader {
         ServletInputStream in = req.getInputStream();
         if (contentType.toLowerCase().startsWith("multipart/form-data")) {
             writeFile(raFile, in, extractBoundary(contentType));
-        }
-        else {
+        } else {
             writeFile(raFile, in);
         }
     }
@@ -58,7 +57,7 @@ public class HttpUploader {
 
         byte[] buf = new byte[BUF_SIZE];
         int i;
-        while ((i=in.read(buf, 0, buf.length)) != -1) {
+        while ((i = in.read(buf, 0, buf.length)) != -1) {
             raFile.write(buf, 0, i);
         }
 
@@ -74,7 +73,7 @@ public class HttpUploader {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         boolean fileStart = false;
         boolean pastContentType = false;
-        do{
+        do {
             int b = in.read();
             if (b == -1) break; // if end of stream, break
 
@@ -84,24 +83,22 @@ public class HttpUploader {
                 String s = bout.toString();
                 if (s.indexOf("Content-Type") != -1)
                     pastContentType = true;
-            }
-            else {
+            } else {
                 // Content-Type is passed, after next double LNF is file start
                 byte[] bs = bout.toByteArray();
                 if (bs != null && bs.length >= 4) {
-                    if (bs[bs.length-1]==10 &&
-                        bs[bs.length-2]==13 &&
-                        bs[bs.length-3]==10 &&
-                        bs[bs.length-4]==13) {
+                    if (bs[bs.length - 1] == 10
+                        && bs[bs.length - 2] == 13
+                        && bs[bs.length - 3] == 10
+                        && bs[bs.length - 4] == 13) {
 
                         fileStart = true;
                     }
                 }
             }
-        }
-        while (!fileStart);
+        } while (!fileStart);
 
-        while ((i=in.readLine(buf, 0, buf.length)) != -1) {
+        while ((i = in.readLine(buf, 0, buf.length)) != -1) {
             String line = new String(buf, 0, i);
             if (boundary != null && line.startsWith(boundary))
                 break;
@@ -128,8 +125,8 @@ public class HttpUploader {
     }
 
     /**
-    * Extract the boundary string in multipart request
-    */
+     * Extract the boundary string in multipart request.
+     */
     private static String extractBoundary(String contentType) {
         int i = contentType.indexOf("boundary=");
         if (i == -1) return null;

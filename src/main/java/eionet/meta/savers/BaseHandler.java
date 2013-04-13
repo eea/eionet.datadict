@@ -41,12 +41,10 @@ public abstract class BaseHandler {
             tx = SQLTransaction.begin(conn);
             execute_();
             tx.commit();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             SQLTransaction.rollback(tx);
             throw e;
-        }
-        finally {
+        } finally {
             SQLTransaction.end(tx);
         }
     }
@@ -76,8 +74,8 @@ public abstract class BaseHandler {
      */
     protected void cleanVisuals() {
 
-        String vp = ctx==null ? null : ctx.getInitParameter("visuals-path");
-        if (Util.isEmpty(vp)){
+        String vp = ctx == null ? null : ctx.getInitParameter("visuals-path");
+        if (Util.isEmpty(vp)) {
             LOGGER.error("cleanVisuals() failed to find visuals path!");
         }
 

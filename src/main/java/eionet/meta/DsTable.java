@@ -317,7 +317,7 @@ public class DsTable implements Comparable {
         StringBuffer buf = new StringBuffer();
 
         String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-        if (jspUrlPrefix!=null) {
+        if (jspUrlPrefix != null) {
             buf.append(jspUrlPrefix);
         }
 

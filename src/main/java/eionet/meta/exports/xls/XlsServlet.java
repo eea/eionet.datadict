@@ -59,8 +59,7 @@ public class XlsServlet extends HttpServlet {
             if (type.equals("dst")) {
                 xls = new DstXls(searchEngine, os);
                 ((CachableIF)xls).setCachePath(cachePath);
-            }
-            else {
+            } else {
                 xls = new TblXls(searchEngine, os);
                 ((CachableIF)xls).setCachePath(cachePath);
             }
@@ -73,17 +72,14 @@ public class XlsServlet extends HttpServlet {
             xls.write();
             os.flush();
             os.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new ServletException(e.toString());
-        }
-        finally {
+        } finally {
             try {
                 if (os != null) os.close();
                 if (conn != null) conn.close();
-            }
-            catch (Exception ee) {}
+            } catch (Exception ee) {}
         }
     }
 }

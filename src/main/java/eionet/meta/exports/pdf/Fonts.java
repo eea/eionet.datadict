@@ -75,8 +75,7 @@ public class Fonts {
             bf = BaseFont.createFont(Props.getProperty(PropsIF.UNI_FONT),
                             BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             font = new Font(bf, 10);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             font = FontFactory.getFont(FontFactory.HELVETICA, 10);
             System.out.println("Problem with unicode font: " + e.toString());
         }
@@ -88,8 +87,7 @@ public class Fonts {
             bf = BaseFont.createFont(Props.getProperty(PropsIF.UNI_FONT),
                             BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             font = new Font(bf, 10, Font.BOLD);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
             System.out.println("Problem with unicode font: " + e.toString());
         }

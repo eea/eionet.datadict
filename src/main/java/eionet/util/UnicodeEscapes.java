@@ -30,7 +30,7 @@ import java.util.Hashtable;
  *
  * @author jaanus
  */
-public class UnicodeEscapes{
+public class UnicodeEscapes {
 
     /** */
     private Hashtable unicodeEscapes = new Hashtable();
@@ -339,8 +339,7 @@ public class UnicodeEscapes{
 
         try {
             Integer.parseInt(s.substring(2, s.length()-1));
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return false;
         }
 

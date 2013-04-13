@@ -36,8 +36,8 @@ public class ElmPdfAll {
     public ElmPdfAll(DDSearchEngine searchEngine, TblPdfAll owner)
         throws Exception {
 
-        //if (parentSection==null) throw new Exception("parentSection cannot be null!");
-        if (searchEngine==null)
+        //if (parentSection == null) throw new Exception("parentSection cannot be null!");
+        if (searchEngine == null)
             throw new Exception("searchEngine cannot be null!");
 
         this.searchEngine = searchEngine;
@@ -71,7 +71,7 @@ public class ElmPdfAll {
     */
     private void write(DataElement elem) throws Exception {
 
-        if (elem==null)
+        if (elem == null)
             throw new Exception("Element object was null!");
 
         String nr = "";
@@ -80,7 +80,7 @@ public class ElmPdfAll {
             sect = owner.getSectioning();
         if (sect != null)
             nr = sect.level(elem.getShortName() + " column", 3);
-        nr = nr==null ? "" : nr + " ";
+        nr = nr == null ? "" : nr + " ";
 
         Paragraph prg = new Paragraph();
         prg.add(new Chunk(nr +
@@ -125,24 +125,24 @@ public class ElmPdfAll {
         addElement(new Phrase("\n"));
 
         // write foreign key reltaions if any exist
-        String dstID = params==null ? null : params.getParameter("dstID");
+        String dstID = params == null ? null : params.getParameter("dstID");
         Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
-        if (fks!=null && fks.size()>0) {
+        if (fks != null && fks.size()>0) {
             addElement(PdfUtil.foreignKeys(fks));
             addElement(new Phrase("\n"));
         }
 
         // write complex attributes, one table for each
         Vector v = elem.getComplexAttributes();
-        if (v!=null && v.size()>0) {
+        if (v != null && v.size()>0) {
 
             DElemAttribute attr = null;
-            for (int i=0; i<v.size(); i++) {
+            for (int i = 0; i < v.size(); i++) {
                 attr = (DElemAttribute)v.get(i);
                 attr.setFields(searchEngine.getAttrFields(attr.getID()));
             }
 
-            for (int i=0; i<v.size(); i++) {
+            for (int i = 0; i < v.size(); i++) {
 
                 addElement(PdfUtil.complexAttributeTable((DElemAttribute)v.get(i)));
                 addElement(new Phrase("\n"));
@@ -151,7 +151,7 @@ public class ElmPdfAll {
 
         // write allowable values (for a factsheet levelling not needed I guess)
         v = searchEngine.getFixedValues(elem.getID(), "elem");
-        if (v!=null && v.size()>0) {
+        if (v != null && v.size()>0) {
             addElement(new Phrase("! This data element may only have the " +
                                 "following fixed values:\n", Fonts.get(Fonts.HEADING_0)));
             addElement(PdfUtil.fixedValuesTable(v, false));
@@ -159,17 +159,17 @@ public class ElmPdfAll {
 
         // write image attributes
         Vector images = PdfUtil.imgAttributes(attrs, vsPath);
-        if (images!=null) {
+        if (images != null) {
             addElement(
                 new Paragraph("Illustrations:", Fonts.get(Fonts.HEADING_0)));
-            for (int i=0; i<images.size(); i++)
+            for (int i = 0; i < images.size(); i++)
                 addElement((Element)images.get(i));
         }
     }
 
     private void addElement(Element elm) {
 
-        if (owner!=null)
+        if (owner != null)
             owner.addElement(elm);
 
         //if (elm != null) section.add(elm);

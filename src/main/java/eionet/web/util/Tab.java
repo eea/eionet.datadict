@@ -14,7 +14,7 @@ public class Tab {
     /**
      * 
      */
-    public Tab(){
+    public Tab() {
         // default constructor
     }
 

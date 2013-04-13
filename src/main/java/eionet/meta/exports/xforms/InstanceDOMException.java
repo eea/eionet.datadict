@@ -1,6 +1,6 @@
 package eionet.meta.exports.xforms;
 
-public class InstanceDOMException extends Throwable{
+public class InstanceDOMException extends Throwable {
 
     public InstanceDOMException(String msg) {
         super(msg);

@@ -181,7 +181,7 @@ public class TableDAOImpl extends GeneralDAOImpl implements ITableDAO {
         sql.append("and ds.WORKING_COPY = 'N' ");
 
         //set dataset filters
-        if (datasets!=null && datasets.size()>0){
+        if (datasets != null && datasets.size()>0) {
             sql.append("and ds.DATASET_ID IN( :datasetIds ) ");
             params.put("datasetIds", CollectionUtils.collect(datasets, new BeanToPropertyValueTransformer("id")));
         }

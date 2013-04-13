@@ -21,7 +21,7 @@ import eionet.util.sql.DDConnectionException;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
-public class DocDownload extends HttpServlet{
+public class DocDownload extends HttpServlet {
 
     private static final int BUF_SIZE = 1024;
     public  static final String REQPAR_FILE  = "file";
@@ -65,7 +65,7 @@ public class DocDownload extends HttpServlet{
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
                                                     throws ServletException, IOException {
-        doGet(req,res);
+        doGet(req, res);
     }
 
     private void writeFile(File file, HttpServletResponse res) throws IOException {

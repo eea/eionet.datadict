@@ -48,7 +48,7 @@ public class DstXmlInst extends XmlInst {
 
         // set the doc element and add the datasets namespace
         Namespace ns = searchEngine.getNamespace(DATASETS_NS_ID);
-        if (ns==null) ns = new Namespace("1", null, null, null, null);
+        if (ns == null) ns = new Namespace("1", null, null, null, null);
         setDocElement(getNamespacePrefix(ns) + ":" + dst.getIdentifier());
         addNamespace(ns);
 
@@ -59,7 +59,7 @@ public class DstXmlInst extends XmlInst {
     private void writeTables(Dataset dst) throws SQLException {
 
         Vector tbls = dst.getTables();
-        for (int i=0; tbls!=null && i<tbls.size(); i++) {
+        for (int i = 0; tbls != null && i<tbls.size(); i++) {
             writeTable((DsTable)tbls.get(i));
         }
     }

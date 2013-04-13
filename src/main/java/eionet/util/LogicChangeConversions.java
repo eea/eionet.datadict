@@ -105,7 +105,7 @@ public class LogicChangeConversions extends DataManipulations {
                     Vector tblDatasets = (Vector)existingTables.get(tblID);
                     SQLGenerator gen = new SQLGenerator();
                     // skip first dataset since for one dataset the table copy already exists
-                    for (int i=1; tblDatasets != null && i<tblDatasets.size(); i++) {
+                    for (int i = 1; tblDatasets != null && i<tblDatasets.size(); i++) {
                         String dstID = (String)tblDatasets.get(i);
                         // delete the table's relation with this dataset,
                         // since that relation will now be created with the new table copy
@@ -203,7 +203,7 @@ public class LogicChangeConversions extends DataManipulations {
                     Vector elmTables = (Vector)existingNonCommonElements.get(elmID);
                     SQLGenerator gen = new SQLGenerator();
                     // skip first table since for one table the element copy already exists
-                    for (int i=1; elmTables != null && i<elmTables.size(); i++) {
+                    for (int i = 1; elmTables != null && i<elmTables.size(); i++) {
                         String[] table = (String[])elmTables.get(i);
                         String tblID = table[IDX_TBL];
                         String tblPos = table[IDX_POS];

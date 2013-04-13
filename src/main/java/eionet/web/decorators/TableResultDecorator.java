@@ -55,7 +55,7 @@ public class TableResultDecorator extends TableDecorator {
         if (clickable) {
 
             String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-            jspUrlPrefix = jspUrlPrefix==null ? "" : jspUrlPrefix;
+            jspUrlPrefix = jspUrlPrefix == null ? "" : jspUrlPrefix;
 
             String url = jspUrlPrefix + "/tables/" + table.getId();
             return "<a href=\"" + url + "\">" + table.getName() + "</a>";

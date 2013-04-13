@@ -511,7 +511,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
      * @param resetVersionAndStatus
      * @throws SQLException
      */
-    private String createNewDataset(String dstId, boolean makeItWorkingCopy, boolean resetVersionAndStatus) throws SQLException{
+    private String createNewDataset(String dstId, boolean makeItWorkingCopy, boolean resetVersionAndStatus) throws SQLException {
 
         LOGGER.debug("Copying dataset row");
 
@@ -541,7 +541,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
      * @param tblId
      * @throws SQLException
      */
-    private String createNewTable(String tblId) throws SQLException{
+    private String createNewTable(String tblId) throws SQLException {
 
         LOGGER.debug("Copying table row");
         Map<String, Object> newValues = toValueMap("DATE", Long.valueOf(System.currentTimeMillis()));
@@ -564,7 +564,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
      * @param resetVersionAndStatus
      * @throws SQLException
      */
-    private String createNewElement(String elmId, boolean makeItWorkingCopy, boolean isCopyTbl2ElmRelations, boolean resetVersionAndStatus) throws SQLException{
+    private String createNewElement(String elmId, boolean makeItWorkingCopy, boolean isCopyTbl2ElmRelations, boolean resetVersionAndStatus) throws SQLException {
 
         LOGGER.debug("Copying element row");
         Map<String, Object> newValues = toValueMap("DATE", Long.valueOf(System.currentTimeMillis()));
@@ -593,7 +593,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
      * @throws SQLException
      *
      */
-    private void copyDependencies(boolean isCopyTbl2ElmRelations) throws SQLException{
+    private void copyDependencies(boolean isCopyTbl2ElmRelations) throws SQLException {
 
         LOGGER.debug("Going to run various copy statements ...");
 

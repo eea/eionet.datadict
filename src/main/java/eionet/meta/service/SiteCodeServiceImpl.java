@@ -193,8 +193,8 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             for (FixedValue fv : countries) {
                 CountryAllocations ca = new CountryAllocations();
                 int usedCodes = siteCodeDao.getCountryUsedAllocations(fv.getValue());
-                int unusedCodes = siteCodeDao.getCountryUnusedAllocations(fv.getValue(),false);
-                int unusedCodesWithoutNames = siteCodeDao.getCountryUnusedAllocations(fv.getValue(),true);
+                int unusedCodes = siteCodeDao.getCountryUnusedAllocations(fv.getValue(), false);
+                int unusedCodesWithoutNames = siteCodeDao.getCountryUnusedAllocations(fv.getValue(), true);
                 ca.setCountry(fv);
                 ca.setUsedCodes(usedCodes);
                 ca.setUnusedCodes(unusedCodes);

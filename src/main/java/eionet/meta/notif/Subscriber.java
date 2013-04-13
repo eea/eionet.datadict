@@ -121,24 +121,24 @@ public class Subscriber extends HttpServlet {
             }
 
             // set up the filters
-            Hashtable<String,String> filter = null;
-            ArrayList<Hashtable<String,String>> filters = new ArrayList<Hashtable<String,String>>();
+            Hashtable<String, String> filter = null;
+            ArrayList<Hashtable<String, String>> filters = new ArrayList<Hashtable<String, String>>();
 
             String newDatasets = req.getParameter("new_datasets");
             String newTables = req.getParameter("new_tables");
             String newCommonElems = req.getParameter("new_common_elems");
             if (newDatasets != null) {
-                filter = new Hashtable<String,String>();
+                filter = new Hashtable<String, String>();
                 filter.put(predEventType, NEW_DATASET_EVENT);
                 filters.add(filter);
             }
             if (newTables != null) {
-                filter = new Hashtable<String,String>();
+                filter = new Hashtable<String, String>();
                 filter.put(predEventType, NEW_TABLE_EVENT);
                 filters.add(filter);
             }
             if (newCommonElems != null) {
-                filter = new Hashtable<String,String>();
+                filter = new Hashtable<String, String>();
                 filter.put(predEventType, NEW_COMMON_ELEMENT_EVENT);
                 filters.add(filter);
             }
@@ -153,7 +153,7 @@ public class Subscriber extends HttpServlet {
                 if (pred != null && event != null) {
                     String parValue = req.getParameter(parName);
                     if (parValue != null && !parValue.equals("_none_")) {
-                        filter = new Hashtable<String,String>();
+                        filter = new Hashtable<String, String>();
                         if (parName != null && !parName.equals("reg_status")) {
                             filter.put(predEventType, event);
                         }
@@ -223,7 +223,7 @@ public class Subscriber extends HttpServlet {
      * @throws Exception
      */
     @SuppressWarnings("deprecation")
-    public static void subscribe(Collection<String> users, Collection<Hashtable<String,String>> filters)
+    public static void subscribe(Collection<String> users, Collection<Hashtable<String, String>> filters)
     throws IOException, XmlRpcException {
 
         // Don't send notifications on Windows platform, because this is most likely a developer machine.
@@ -277,8 +277,8 @@ public class Subscriber extends HttpServlet {
 
         String predicate = (String) predicatesMap.get("common_element");
         if (predicate != null) {
-            Vector<Hashtable<String,String>> filters = new Vector<Hashtable<String,String>>();
-            Hashtable<String,String> filter = new Hashtable<String,String>();
+            Vector<Hashtable<String, String>> filters = new Vector<Hashtable<String, String>>();
+            Hashtable<String, String> filter = new Hashtable<String, String>();
             filter.put(predEventType, COMMON_ELEMENT_CHANGED_EVENT);
             filter.put(predicate, elmIdentifier);
             filters.add(filter);
@@ -312,8 +312,8 @@ public class Subscriber extends HttpServlet {
         String predicate = (String) predicatesMap.get("dataset");
         if (predicate != null) {
 
-            Vector<Hashtable<String,String>> filters = new Vector<Hashtable<String,String>>();
-            Hashtable<String,String> filter = new Hashtable<String,String>();
+            Vector<Hashtable<String, String>> filters = new Vector<Hashtable<String, String>>();
+            Hashtable<String, String> filter = new Hashtable<String, String>();
             filter.put(predEventType, DATASET_CHANGED_EVENT);
             filter.put(predicate, dstIdentifier);
             filters.add(filter);
@@ -348,8 +348,8 @@ public class Subscriber extends HttpServlet {
         String predicate = (String) predicatesMap.get("table");
         if (predicate != null) {
 
-            Vector<Hashtable<String,String>> filters = new Vector<Hashtable<String,String>>();
-            Hashtable<String,String> filter = new Hashtable<String,String>();
+            Vector<Hashtable<String, String>> filters = new Vector<Hashtable<String, String>>();
+            Hashtable<String, String> filter = new Hashtable<String, String>();
             filter.put(predEventType, TABLE_CHANGED_EVENT);
             filter.put(predicate, dstIdentifier + "/" + tblIdentifier);
             filters.add(filter);

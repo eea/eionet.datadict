@@ -9,7 +9,7 @@ import eionet.util.PropsIF;
 /*
  *
  */
-public class DataElement implements Comparable{
+public class DataElement implements Comparable {
 
     private String id = null;
     private String shortName = null;
@@ -391,21 +391,20 @@ public class DataElement implements Comparable{
      */
     public String getReferenceURL() {
 
-        if (identifier == null || identifier.isEmpty()){
+        if (identifier == null || identifier.isEmpty()) {
             return null;
         }
 
         StringBuffer result = new StringBuffer();
         String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-        if (jspUrlPrefix != null){
+        if (jspUrlPrefix != null) {
             result.append(jspUrlPrefix);
         }
 
         boolean isCommonElement = ns == null || ns.getID() == null;
-        if (isCommonElement){
+        if (isCommonElement) {
             result.append("dataelements/latest/" + identifier);
-        }
-        else{
+        } else {
             result.append("datasets/latest/").append(dstIdentifier).
             append("/tables/").append(tblIdentifier).
             append("/elements/").append(identifier);

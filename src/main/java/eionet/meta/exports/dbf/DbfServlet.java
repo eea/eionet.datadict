@@ -15,7 +15,7 @@ import eionet.util.sql.ConnectionUtil;
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
-public class DbfServlet extends HttpServlet{
+public class DbfServlet extends HttpServlet {
 
     /** */
     private static final String FILE_EXT = ".dbf";
@@ -27,7 +27,7 @@ public class DbfServlet extends HttpServlet{
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         String pathInfo = req.getPathInfo();
-        if (pathInfo==null || pathInfo.length()<2)
+        if (pathInfo == null || pathInfo.length()<2)
             throw new ServletException("Missing request path info");
 
         Connection conn = null;
@@ -42,18 +42,15 @@ public class DbfServlet extends HttpServlet{
             // write DBF into servlet output stream
             String fileName = dbf.getFileName();
             res.setContentType("application/x-dbf");
-            res.setHeader("Content-Disposition", "attachment; filename=\"" + (fileName==null ? pathInfo.substring(1) : fileName) + ".dbf\"");
+            res.setHeader("Content-Disposition", "attachment; filename=\"" + (fileName == null ? pathInfo.substring(1) : fileName) + ".dbf\"");
             dbf.write(res.getOutputStream());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new ServletException("Error when creating DBF", e);
-        }
-        finally {
+        } finally {
             try {
                 if (conn != null) conn.close();
-            }
-            catch (Exception ee) {}
+            } catch (Exception ee) {}
         }
     }
 }

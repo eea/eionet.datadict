@@ -24,7 +24,7 @@ import eionet.util.sql.SQLTransaction;
  * @author Jaanus Heinlaid
  *
  */
-public class CleanupServlet extends HttpServlet{
+public class CleanupServlet extends HttpServlet {
 
     /** */
     private static final Logger LOGGER = Logger.getLogger(CleanupServlet.class);
@@ -48,7 +48,7 @@ public class CleanupServlet extends HttpServlet{
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        doPost(req,res);
+        doPost(req, res);
     }
 
     /*
@@ -89,8 +89,7 @@ public class CleanupServlet extends HttpServlet{
 
                 dataManipulations.outputWriteln("");
                 dataManipulations.outputWriteln("ALL DONE!");
-            }
-            else if (action.equals(ACTION_DELETE_ELM) || action.equals(ACTION_DELETE_TBL) || action.equals(ACTION_DELETE_DST)) {
+            } else if (action.equals(ACTION_DELETE_ELM) || action.equals(ACTION_DELETE_TBL) || action.equals(ACTION_DELETE_DST)) {
                 if (objIDs != null && objIDs.trim().length() > 0) {
 
                     tx = SQLTransaction.begin(conn);
@@ -114,13 +113,12 @@ public class CleanupServlet extends HttpServlet{
                     tx.commit();
 
                     req.setAttribute(ATTR_DELETE_SUCCESS, "");
-                    req.getRequestDispatcher("clean.jsp").forward(req,res);
+                    req.getRequestDispatcher("clean.jsp").forward(req, res);
                 }
             } else {
                 throw new Exception("Unkown parameter value: " + action);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
             SQLTransaction.rollback(tx);
             LOGGER.error(e);
@@ -130,8 +128,7 @@ public class CleanupServlet extends HttpServlet{
                 writer.println(trace == null ? e.toString() : trace);
                 writer.flush();
             }
-        }
-        finally {
+        } finally {
 
             SQLTransaction.end(tx);
 
@@ -142,8 +139,7 @@ public class CleanupServlet extends HttpServlet{
                 if (conn != null) {
                     conn.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 

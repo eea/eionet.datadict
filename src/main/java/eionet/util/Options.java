@@ -44,7 +44,7 @@ import java.util.Vector;
  * @author Jaanus Heinlaid
  */
 
-public class Options{
+public class Options {
 
     private Hashtable map = new Hashtable();
     private Hashtable options = new Hashtable();
@@ -99,13 +99,11 @@ public class Options{
                         Vector values = (Vector)map.get(option);
                         if (values.contains(args[i]) || values.size() == 0) {
                             options.put(option, args[i]);
-                        }
-                        else {
+                        } else {
                             error = true;
                             break;
                         }
-                    }
-                    else {
+                    } else {
                         error = true;
                         break;
                     }

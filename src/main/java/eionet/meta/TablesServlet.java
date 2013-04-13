@@ -19,7 +19,7 @@ import eionet.util.DDServletRequestWrapper;
  * @author <a href="mailto:jaanus.heinlaid@tietoenator.com">Jaanus Heinlaid</a>
  *
  */
-public class TablesServlet extends HttpServlet{
+public class TablesServlet extends HttpServlet {
 
     /** */
     private static final Logger LOGGER = Logger.getLogger(TablesServlet.class);
@@ -30,7 +30,7 @@ public class TablesServlet extends HttpServlet{
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        if (LOGGER.isTraceEnabled()){
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Entered request: " + request.getRequestURL());
         }
 
@@ -45,20 +45,19 @@ public class TablesServlet extends HttpServlet{
 
         // If the path has only one segment and its "rdf" or "add",
         // then forward to the manifest-RDF of all tables or to add-table-to-dataset page respectively.
-        if (pathInfoSegments.length==1) {
+        if (pathInfoSegments.length == 1) {
 
             RequestDispatcher requestDispatcher = null;
             DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
-            if (pathInfoSegments[0].equals("rdf")){
+            if (pathInfoSegments[0].equals("rdf")) {
                 wrappedRequest.addParameterValue("type", Rdf.TABLE_TYPE);
                 requestDispatcher = wrappedRequest.getRequestDispatcher("/GetRdf");
-            }
-            else if (pathInfoSegments[0].equals("add")){
+            } else if (pathInfoSegments[0].equals("add")) {
                 wrappedRequest.addParameterValue("mode", "add");
                 requestDispatcher = wrappedRequest.getRequestDispatcher("/dstable.jsp");
             }
 
-            if (requestDispatcher!=null){
+            if (requestDispatcher != null) {
                 requestDispatcher.forward(wrappedRequest, response);
                 return;
             }
@@ -80,8 +79,7 @@ public class TablesServlet extends HttpServlet{
             wrappedRequest.addParameterValue("id", tableId);
             wrappedRequest.addParameterValue("type", Rdf.TABLE_TYPE);
             wrappedRequest.getRequestDispatcher("/GetRdf").forward(wrappedRequest, response);
-        }
-        else {
+        } else {
             // Make sure that the event and table id detected from the path info
             // will be added as query parameters to the wrapped request.
             // If the event is "subscribe", add "action=subscribe" query parameter
@@ -90,11 +88,10 @@ public class TablesServlet extends HttpServlet{
             DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
             wrappedRequest.addParameterValue("table_id", tableId);
 
-            if (event.equals("subscribe")){
+            if (event.equals("subscribe")) {
                 wrappedRequest.addParameterValue("mode", "view");
                 wrappedRequest.addParameterValue("action", event);
-            }
-            else{
+            } else {
                 wrappedRequest.addParameterValue("mode", event);
             }
 

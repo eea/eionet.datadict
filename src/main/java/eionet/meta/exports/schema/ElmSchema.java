@@ -48,7 +48,7 @@ public class ElmSchema extends Schema {
 
         // set target namespace (being the parent table's namespace)
         // String parentNsID = elem.getNamespace().getID();
-        // if (parentNsID!=null) setTargetNsUrl(parentNsID);
+        // if (parentNsID != null) setTargetNsUrl(parentNsID);
 
         String cNamespaceID = getContainerNamespaceID();
         if (Util.isEmpty(cNamespaceID)) {

@@ -19,11 +19,11 @@ public class IsJUnitRuntime {
      *
      * @return
      */
-    private static boolean isJUnitRuntime(){
+    private static boolean isJUnitRuntime() {
 
         String stackTrace = Util.getStack(new Throwable());
         boolean result = Boolean.valueOf(stackTrace.indexOf("at junit.framework.TestCase.run") > 0);
-        if (result == true){
+        if (result == true) {
             LOGGER.info("Detected that the code is running in JUnit runtime");
         }
         return result;

@@ -186,7 +186,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         addElement(new Phrase("\n"));
 
         /*
-         * write image attributes Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath); if (imgAttrs!=null) { addElement(new
+         * write image attributes Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath); if (imgAttrs != null) { addElement(new
          * Phrase("\n")); addElement(imgAttrs); }
          */
 

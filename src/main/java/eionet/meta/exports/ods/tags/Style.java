@@ -11,7 +11,7 @@ package eionet.meta.exports.ods.tags;
  *
  * @author jaanus
  */
-public class Style{
+public class Style {
 
     /** */
     private String styleName = null;
@@ -43,7 +43,7 @@ public class Style{
         buf.append("<style:style style:name=\"");
         buf.append(styleName);
         buf.append("\" style:family=\"table-cell\" style:parent-style-name=\"Default\"");
-        if (dataStyleName!=null) {
+        if (dataStyleName != null) {
             buf.append(" style:data-style-name=\"");
             buf.append(dataStyleName);
             buf.append("\"");
@@ -59,7 +59,7 @@ public class Style{
      */
     public String writeInto(String intoStr) {
 
-        if (intoStr==null || intoStr.length()==0)
+        if (intoStr == null || intoStr.length() == 0)
             return intoStr;
 
         String officeAutomaticStyles = new String("</office:automatic-styles>");

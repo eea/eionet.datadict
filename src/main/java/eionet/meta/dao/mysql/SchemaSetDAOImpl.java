@@ -134,8 +134,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 sql.append("AND ");
                 sql.append("ss.REG_STATUS = :regStatus ");
                 parameters.put("regStatus", searchFilter.getRegStatus());
-            }
-            else if (searchFilter.getRegStatuses() != null && searchFilter.getRegStatuses().size() > 0) {
+            } else if (searchFilter.getRegStatuses() != null && searchFilter.getRegStatuses().size() > 0) {
                 sql.append(" AND ss.REG_STATUS IN ( :regStatuses ) ");
                 parameters.put("regStatuses", searchFilter.getRegStatuses());
             }
@@ -172,7 +171,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 sql.append(" DESC ");
             }
         }
-        if (searchFilter.isUsePaging()){
+        if (searchFilter.isUsePaging()) {
             sql.append("LIMIT ").append(searchFilter.getOffset()).append(",").append(searchFilter.getPageSize());
         }
 

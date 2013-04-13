@@ -137,8 +137,7 @@ public class MdbFile {
             for (int i = 0; tables != null && i < tables.size(); i++) {
                 createTable((DsTable)tables.get(i), db);
             }
-        }
-        finally {
+        } finally {
             if (db != null) {
                 try { db.close(); } catch (Throwable t) {}
             }
@@ -295,8 +294,7 @@ public class MdbFile {
             }
 
             vmdTable.addRows(rows);
-        }
-        finally {
+        } finally {
             if (db != null) {
                 try { db.close(); } catch (Throwable t) {}
             }

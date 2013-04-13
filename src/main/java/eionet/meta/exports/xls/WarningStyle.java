@@ -4,7 +4,7 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
-public class WarningStyle{
+public class WarningStyle {
 
     public static final int FONT_HEIGHT = 12;
 

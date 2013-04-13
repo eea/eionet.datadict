@@ -22,7 +22,7 @@ import eionet.util.sql.SQLGenerator;
  * @author Jaanus Heinlaid
  *
  */
-public abstract class OldCopyHandler{
+public abstract class OldCopyHandler {
 
     /** */
     private static final Logger LOGGER = Logger.getLogger(OldCopyHandler.class);

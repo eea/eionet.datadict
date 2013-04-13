@@ -156,8 +156,7 @@ public abstract class XmlInst implements XmlInstIF {
             if (Character.isISOControl(c)) {
                 if (Character.isWhitespace(c))
                     buf.append(c);
-            }
-            else
+            } else
                 buf.append(c);
         }
 

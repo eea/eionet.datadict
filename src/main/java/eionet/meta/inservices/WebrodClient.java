@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import eionet.util.Util;
 
-public class WebrodClient extends InServiceClient{
+public class WebrodClient extends InServiceClient {
 
     public static final String NAME = "webrod";
     public static final String GET_ACTIVITIES = "get_activities";
@@ -40,9 +40,8 @@ public class WebrodClient extends InServiceClient{
         HttpSession session = req.getSession();
         if (!reload) {
             Object o = session.getAttribute(Attrs.ROD_ACTIVITIES);
-            if (o!=null) return;
-        }
-        else
+            if (o != null) return;
+        } else
             session.removeAttribute(Attrs.ROD_ACTIVITIES);
 
         Vector params = new Vector();

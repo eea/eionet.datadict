@@ -49,7 +49,7 @@ public class SQLGenerator implements Cloneable {
     public void setField(String fldName, String fldValue) {
         int len = fldValue.length();
 
-        if (len > 1 && fldValue.charAt(0) == '\'' && fldValue.charAt(len-1) == '\'')
+        if (len > 1 && fldValue.charAt(0) == '\'' && fldValue.charAt(len - 1) == '\'')
             // fldValue is already escaped
             fields.put(fldName, fldValue);
         else
@@ -76,9 +76,9 @@ public class SQLGenerator implements Cloneable {
             return null;
 
         int len = value.length();
-        if (len > 1 && value.charAt(0) == '\'' && value.charAt(len-1) == '\'')
+        if (len > 1 && value.charAt(0) == '\'' && value.charAt(len - 1) == '\'')
             // strip the enclosing apostrophes
-            return value.substring(1, len-1);
+            return value.substring(1, len - 1);
         else
             return value;
     }
@@ -107,7 +107,7 @@ public class SQLGenerator implements Cloneable {
 
             String value = (String)iter.next();
             buf.append(value);
-            if (i++ != numElems-1)
+            if (i++ != numElems - 1)
                 buf.append(", ");
         }
 
@@ -171,7 +171,7 @@ public class SQLGenerator implements Cloneable {
 
             String name = (String)iter.next();
             buf.append(name);
-            if (i++ != numElems-1)
+            if (i++ != numElems - 1)
                 buf.append(',');
         }
         buf.append(") VALUES(");
@@ -215,8 +215,7 @@ public class SQLGenerator implements Cloneable {
         try {
             theNew = (SQLGenerator)super.clone();
             theNew.fields = new LinkedHashMap(fields);
-        }
-        catch (CloneNotSupportedException e) {
+        } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e.toString(), e);
         }
 

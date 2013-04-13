@@ -115,7 +115,7 @@ public class DataManipulations {
 
             // auto-create fixed values for the above found elements
             int count = 0;
-            for (Iterator i=hashSet.iterator(); !hashSet.isEmpty() && i.hasNext(); count++) {
+            for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext(); count++) {
                 DataElementHandler.autoCreateBooleanFixedValues(stmt, (String)i.next());
             }
             outputWriteln("Created fixed values for " + count + " boolean data elements");

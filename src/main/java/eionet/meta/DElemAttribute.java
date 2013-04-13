@@ -129,7 +129,7 @@ public class DElemAttribute {
             value = inheritedValue;
         }
 
-        // if (displayMultiple!=null && displayMultiple.equals("1")) {
+        // if (displayMultiple != null && displayMultiple.equals("1")) {
         if (values != null) {
             if (values.size() > 0) {
                 StringBuffer buf = new StringBuffer();
@@ -471,7 +471,7 @@ public class DElemAttribute {
     }
 
     public String getInheritedValue() {
-        // if (displayMultiple!=null && displayMultiple.equals("1")) {
+        // if (displayMultiple != null && displayMultiple.equals("1")) {
         if (inheritedValues != null) {
             if (inheritedValues.size() > 0) {
                 StringBuffer buf = new StringBuffer();
@@ -543,7 +543,7 @@ public class DElemAttribute {
     }
 
     public void clearInherited() {
-        // if (inheritedValues!=null)
+        // if (inheritedValues != null)
         inheritedValues = null;
         inheritedValue = null;
     }

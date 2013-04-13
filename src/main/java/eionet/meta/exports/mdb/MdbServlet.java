@@ -41,17 +41,17 @@ public class MdbServlet extends HttpServlet {
         boolean cacheUsed = true;
         try {
             String dstID = req.getParameter("dstID");
-            if (dstID==null || dstID.length()==0)
+            if (dstID == null || dstID.length() == 0)
                 throw new MdbException("Missing request parameter: dstID");
 
             boolean vmdOnly = false;
             String strVmdOnly = req.getParameter("vmdonly");
-            if (strVmdOnly!=null && strVmdOnly.equals("true"))
+            if (strVmdOnly != null && strVmdOnly.equals("true"))
                 vmdOnly = true;
 
             ServletContext ctx = getServletContext();
             String filePath = Props.getProperty(PropsIF.DOC_PATH);
-            if (filePath==null)
+            if (filePath == null)
                 throw new MdbException("Missing property: " + PropsIF.DOC_PATH);
             else if (!filePath.endsWith(File.separator))
                 filePath = filePath + File.separator;
@@ -61,13 +61,13 @@ public class MdbServlet extends HttpServlet {
             if (!vmdOnly)
                 file = Mdb.getCached(conn, dstID, filePath);
 
-            if (file==null || !file.exists()) {
+            if (file == null || !file.exists()) {
                 cacheUsed = false;
                 String fullPath = filePath + dstID + "-" + req.getSession().getId() + ".mdb";
                 file = Mdb.getNew(conn, dstID, fullPath, vmdOnly);
             }
 
-            if (file==null || !file.exists())
+            if (file == null || !file.exists())
                 throw new MdbException("No exceptions thrown, but no file created either");
 
             os = res.getOutputStream();
@@ -80,24 +80,21 @@ public class MdbServlet extends HttpServlet {
 
             int i = 0;
             byte[] buf = new byte[1024];
-            while ((i=in.read(buf, 0, buf.length)) != -1) {
+            while ((i = in.read(buf, 0, buf.length)) != -1) {
                 os.write(buf, 0, i);
             }
 
             os.flush();
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             t.printStackTrace(System.out);
             throw new ServletException(t.toString());
-        }
-        finally {
+        } finally {
             try {
                 if (conn != null) conn.close();
-                if (in!=null) in.close();
+                if (in != null) in.close();
                 if (os != null) os.close();
-                if (!cacheUsed && file!=null && file.exists()) file.delete();
-            }
-            catch (Exception ee) {}
+                if (!cacheUsed && file != null && file.exists()) file.delete();
+            } catch (Exception ee) {}
         }
     }
 }

@@ -123,11 +123,9 @@ public abstract class DDHarvester implements HarvesterIF{
                     for (int i = 0; i < ((Vector)o).size(); i++) {
                         fldValues.add(((Vector)o).get(i));
                     }
-                }
-                else if (o.getClass().getName().endsWith("String")) {
+                } else if (o.getClass().getName().endsWith("String")) {
                     fldValues.add(o);
-                }
-                else {
+                } else {
                     continue; //FIX ME! should through an exception
                 }
 
@@ -188,11 +186,9 @@ public abstract class DDHarvester implements HarvesterIF{
             stmt.executeUpdate();
 
             rmvDeleted(conn);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.fatal("Failed to delete old harvested attributes", e);
-        }
-        finally {
+        } finally {
             try {
                 if (stmt != null) {
                     stmt.close();
@@ -200,8 +196,7 @@ public abstract class DDHarvester implements HarvesterIF{
                 if (conn != null) {
                     conn.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -235,14 +230,12 @@ public abstract class DDHarvester implements HarvesterIF{
                 stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
                 stmt.executeUpdate();
             }
-        }
-        finally {
+        } finally {
             try {
                 if (rs != null) {
                     rs.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -257,8 +250,7 @@ public abstract class DDHarvester implements HarvesterIF{
             if (conn != null) {
                 conn.close();
             }
-        }
-        catch (SQLException e) {}
+        } catch (SQLException e) {}
     }
 
     private String getMD5(String[] flds) {

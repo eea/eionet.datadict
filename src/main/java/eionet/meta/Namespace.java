@@ -2,7 +2,7 @@
 package eionet.meta;
 
 
-public class Namespace{
+public class Namespace {
 
     private String id = null;
     private String shortName = null;

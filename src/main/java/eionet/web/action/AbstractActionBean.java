@@ -219,7 +219,7 @@ public abstract class AbstractActionBean implements ActionBean {
      *
      * @return
      */
-    public boolean isValidationErrors(){
+    public boolean isValidationErrors() {
         return MapUtils.isNotEmpty(getContext().getValidationErrors());
     }
 

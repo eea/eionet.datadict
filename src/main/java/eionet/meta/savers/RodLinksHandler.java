@@ -18,7 +18,7 @@ import eionet.util.sql.SQL;
  * @author Jaanus Heinlaid
  *
  */
-public class RodLinksHandler extends BaseHandler{
+public class RodLinksHandler extends BaseHandler {
 
     /**
      * @param conn
@@ -35,12 +35,12 @@ public class RodLinksHandler extends BaseHandler{
     public void execute_() throws Exception {
 
         String dstID = httpServletRequest.getParameter("dst_id");
-        if (dstID==null) {
+        if (dstID == null) {
             throw new Exception("RodLinksHandler: dstID is missing!");
         }
 
         String mode = httpServletRequest.getParameter("mode");
-        if (mode==null) {
+        if (mode == null) {
             throw new Exception("RodLinksHandler: mode is missing!");
         } else if (mode.equals("add")) {
             addRodLinks(dstID);
@@ -96,13 +96,13 @@ public class RodLinksHandler extends BaseHandler{
             LinkedHashMap map = new LinkedHashMap();
 
             // Prepare map for the up-coming activity insert/update statement.
-            if (raTitle!=null) {
+            if (raTitle != null) {
                 map.put("ACTIVITY_TITLE", inParams.add(raTitle));
             }
-            if (liID!=null) {
+            if (liID != null) {
                 map.put("LEGINSTR_ID", inParams.add(liID, Types.INTEGER));
             }
-            if (liTitle!=null) {
+            if (liTitle != null) {
                 map.put("LEGINSTR_TITLE", inParams.add(liTitle));
             }
 
@@ -110,8 +110,7 @@ public class RodLinksHandler extends BaseHandler{
             if (!activityExists) {
                 map.put("ACTIVITY_ID", inParams.add(raID, Types.INTEGER));
                 SQL.executeUpdate(SQL.insertStatement("ROD_ACTIVITIES", map), inParams, conn);
-            }
-            else{
+            } else {
                 String sql = SQL.updateStatement("ROD_ACTIVITIES", map) + " where ACTIVITY_ID=?";
                 inParams.add(raID, Types.INTEGER);
                 SQL.executeUpdate(sql, inParams, conn);
@@ -123,8 +122,7 @@ public class RodLinksHandler extends BaseHandler{
             map.put("DATASET_ID", inParams.add(dstID, Types.INTEGER));
             map.put("ACTIVITY_ID", inParams.add(raID, Types.INTEGER));
             SQL.executeUpdate(SQL.insertStatement("DST2ROD", map), inParams, conn);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             try {
                 if (rs != null) {
                     rs.close();
@@ -132,8 +130,7 @@ public class RodLinksHandler extends BaseHandler{
                 if (stmt != null) {
                     stmt.close();
                 }
-            }
-            catch (SQLException sqlee) {}
+            } catch (SQLException sqlee) {}
         }
     }
 
@@ -144,15 +141,15 @@ public class RodLinksHandler extends BaseHandler{
     private void rmvRodLinks(String dstID) throws Exception {
 
         String[] raIDs = httpServletRequest.getParameterValues("del_id");
-        if (raIDs==null || raIDs.length==0) {
+        if (raIDs == null || raIDs.length == 0) {
             throw new Exception("ra_id is missing!");
         }
 
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer("delete from DST2ROD where DATASET_ID=");
         buf.append(dstID).append(" and (");
-        for (int i=0; i<raIDs.length; i++) {
-            if (i>0) {
+        for (int i = 0; i < raIDs.length; i++) {
+            if (i > 0) {
                 buf.append(" or ");
             }
             buf.append("ACTIVITY_ID=").append(inParams.add(raIDs[i], Types.INTEGER));

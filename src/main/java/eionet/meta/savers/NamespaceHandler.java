@@ -22,7 +22,7 @@ import eionet.util.sql.SQLGenerator;
  * @author Jaanus Heinlaid
  *
  */
-public class NamespaceHandler extends BaseHandler{
+public class NamespaceHandler extends BaseHandler {
 
     /** */
     private static final Logger LOGGER = Logger.getLogger(NamespaceHandler.class);
@@ -93,7 +93,7 @@ public class NamespaceHandler extends BaseHandler{
      */
     public void execute_() throws Exception {
 
-        if (mode==null || (!mode.equalsIgnoreCase("add") &&
+        if (mode == null || (!mode.equalsIgnoreCase("add") &&
                 !mode.equalsIgnoreCase("edit") &&
                 !mode.equalsIgnoreCase("delete"))) {
             throw new Exception("NamespaceHandler mode unspecified!");
@@ -128,7 +128,7 @@ public class NamespaceHandler extends BaseHandler{
             gen.setFieldExpr("FULL_NAME", inParams.add(fullName));
         }
         if (!Util.isEmpty(shortName)) {
-            gen.setFieldExpr("SHORT_NAME",inParams.add(shortName));
+            gen.setFieldExpr("SHORT_NAME", inParams.add(shortName));
         }
         if (!Util.isEmpty(definition)) {
             gen.setFieldExpr("DEFINITION", inParams.add(definition));
@@ -157,7 +157,7 @@ public class NamespaceHandler extends BaseHandler{
 
     private void update() throws Exception {
 
-        if (nsID == null || nsID.length==0) {
+        if (nsID == null || nsID.length == 0) {
             throw new Exception("Namespace ID not specified!");
         }
 
@@ -225,13 +225,11 @@ public class NamespaceHandler extends BaseHandler{
             qry = "select count(*) as COUNT from NAMESPACE where " +
             "DATASET_ID is null and TABLE_ID is null and SHORT_NAME=" +
             inParams.add(shortName);
-        }
-        else if (!Util.isEmpty(tblID)) {
+        } else if (!Util.isEmpty(tblID)) {
 
             qry = "select count(*) as COUNT from NAMESPACE where " +
             "TABLE_ID=" + inParams.add(tblID, Types.INTEGER);
-        }
-        else {
+        } else {
 
             qry = "select count(*) as COUNT from NAMESPACE where " +
             "TABLE_ID is null and DATASET_ID=" + inParams.add(dsID, Types.INTEGER);

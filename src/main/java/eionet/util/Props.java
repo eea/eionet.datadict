@@ -37,8 +37,7 @@ public class Props implements PropsIF{
 
         try {
             bundle = ResourceBundle.getBundle(getBundleName());
-        }
-        catch (MissingResourceException mre) {
+        } catch (MissingResourceException mre) {
             LOGGER.warn("Properties file " + getBundleName() + ".properties not found. Using defaults.");
         }
 
@@ -51,7 +50,7 @@ public class Props implements PropsIF{
      * @return
      */
     private static Props getInstance() {
-        if (Props.instance==null) {
+        if (Props.instance == null) {
             Props.instance = new Props();
         }
 
@@ -94,7 +93,7 @@ public class Props implements PropsIF{
     public static String getRequiredProperty(String name) {
 
         String value = Props.getInstance().getProperty_(name);
-        if (value==null || value.trim().length()==0) {
+        if (value == null || value.trim().length() == 0) {
             throw new DDRuntimeException("Failed to find required property: " + name);
         }
         return value;
@@ -108,16 +107,15 @@ public class Props implements PropsIF{
     protected final String getProperty_(String name) {
 
         String value = null;
-        if (bundle!=null) {
+        if (bundle != null) {
             try {
                 value = bundle.getString(name);
-            }
-            catch (MissingResourceException mre) {}
+            } catch (MissingResourceException mre) {}
         }
 
-        if (value==null) {
+        if (value == null) {
             value = (String)defaults.get(name);
-            if (value!=null){
+            if (value != null) {
                 LOGGER.warn("Property value for key " + name + " not found. Using default.");
             }
         }
@@ -136,10 +134,9 @@ public class Props implements PropsIF{
         String stringValue = getProperty_(name);
         try {
             return Integer.parseInt(stringValue);
-        }
-        catch (NumberFormatException nfe) {
+        } catch (NumberFormatException nfe) {
             String deflt = (String)defaults.get(name);
-            if (deflt!=null) {
+            if (deflt != null) {
                 LOGGER.warn("Invalid property value for key " + name + ". Using default.");
                 return Integer.parseInt(deflt);
             } else {

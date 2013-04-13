@@ -20,7 +20,7 @@ import eionet.util.DDServletRequestWrapper;
  * @author Jaanus Heinlaid
  *
  */
-public class DatasetsServlet extends HttpServlet{
+public class DatasetsServlet extends HttpServlet {
 
     private static final String DATASET_JSP = "/dataset.jsp";
     /** */
@@ -49,24 +49,20 @@ public class DatasetsServlet extends HttpServlet{
             // a latest dataset definition is requested (i.e. by its alfa-numeric identifier)
             handleRequestForLatest(request, response, pathInfoSegments);
             return;
-        }
-        else if (pathInfoSegments[0].equals("rdf")) {
+        } else if (pathInfoSegments[0].equals("rdf")) {
 
             // RDF of all datasets is requested
             handleRequestForAllRdf(request, response, pathInfoSegments);
             return;
-        }
-        else if (pathInfoSegments[0].equals("add")) {
+        } else if (pathInfoSegments[0].equals("add")) {
 
             // a request for adding a new dataset
             handleRequestForAdd(request, response, pathInfoSegments);
-        }
-        else if (NumberUtils.toInt(pathInfoSegments[0]) > 0) {
+        } else if (NumberUtils.toInt(pathInfoSegments[0]) > 0) {
 
             // a request specific to a particular dataset (i.e. by its auto-generated identifier)
             handleRequestForParticular(request, response, pathInfoSegments);
-        }
-        else{
+        } else {
             throw new DDRuntimeException("Request not supported: " + request.getRequestURL());
         }
     }
@@ -139,8 +135,7 @@ public class DatasetsServlet extends HttpServlet{
         if (event.equals("subscribe") || event.equals("checkout") || event.equals("newversion")) {
             wrappedRequest.addParameterValue("mode", "view");
             wrappedRequest.addParameterValue("action", event);
-        }
-        else{
+        } else {
             wrappedRequest.addParameterValue("mode", event);
         }
 

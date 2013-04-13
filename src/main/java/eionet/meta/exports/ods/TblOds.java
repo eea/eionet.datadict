@@ -13,7 +13,7 @@ import eionet.meta.DsTable;
  *
  * @author jaanus
  */
-public class TblOds extends Ods{
+public class TblOds extends Ods {
 
     /** */
     private String tblID = null;
@@ -37,7 +37,7 @@ public class TblOds extends Ods{
 
         // set the final file name
         String dstIdfier = tbl.getDstIdentifier();
-        if (dstIdfier!=null) finalFileName = dstIdfier + "_";
+        if (dstIdfier != null) finalFileName = dstIdfier + "_";
         finalFileName = finalFileName + tbl.getIdentifier() + "." + DOS_EXTENSION;
         schemaURLTrailer = "TBL" + tbl.getID();
 

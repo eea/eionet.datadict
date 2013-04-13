@@ -23,7 +23,7 @@ public class Sectioning {
     public Sectioning() {
         toc = new Vector();
         levelCounters = new int[10];
-        for (int i=0; i<levelCounters.length; i++)
+        for (int i = 0; i < levelCounters.length; i++)
             levelCounters[i] = 0;
     }
 
@@ -53,13 +53,13 @@ public class Sectioning {
 
     public String up(String title, int toLevel, boolean addtoc) {
 
-        if (toLevel>=curLevel || toLevel<1)
+        if (toLevel >= curLevel || toLevel < 1)
             return null;
 
-        for (int i=curLevel; i>toLevel; i--)
+        for (int i = curLevel; i > toLevel; i--)
             levelCounters[i] = 0;
 
-        curLevel=toLevel;
+        curLevel = toLevel;
         levelCounters[curLevel] = levelCounters[curLevel] + 1;
         String nr = getNumber();
         if (addtoc) addToTOC(title, nr, curLevel);
@@ -76,14 +76,13 @@ public class Sectioning {
             return null;
 
         if (lv > curLevel) {
-            if (lv-curLevel>1)
+            if (lv - curLevel > 1)
                 return null;
             else
                 return down(title, addtoc);
-        }
-        else if (lv == curLevel)
+        } else if (lv == curLevel)
             return inc(title, addtoc);
-        else if (curLevel-lv == 1)
+        else if (curLevel - lv == 1)
             return up(title, addtoc);
         else
             return up(title, lv, addtoc);
@@ -96,14 +95,14 @@ public class Sectioning {
     public Vector getTOCformatted(String leveller) {
 
         Vector v = new Vector();
-        for (int i=0; i<toc.size(); i++) {
+        for (int i = 0; i < toc.size(); i++) {
             Hashtable hash = (Hashtable)toc.get(i);
             String title = (String)hash.get(TITLE);
             String nr = (String)hash.get(NR);
             Integer level = (Integer)hash.get(LEVEL);
 
             StringBuffer buf = new StringBuffer();
-            for (int j=0; leveller!=null && j<level.intValue()-1; j++)
+            for (int j = 0; leveller != null && j < level.intValue() - 1; j++)
                 buf.append(leveller);
 
             buf.append(nr).append(" ").append(title);
@@ -113,11 +112,11 @@ public class Sectioning {
         return v;
     }
 
-    private String getNumber() {
+    String getNumber() {
         StringBuffer buf = new StringBuffer();
-        for (int i=1; i<=curLevel; i++) {
+        for (int i = 1; i <= curLevel; i++) {
             buf.append(levelCounters[i]);
-            if (i!=curLevel || curLevel==1)
+            if (i != curLevel || curLevel == 1)
                 buf.append(".");
         }
 
@@ -144,11 +143,11 @@ public class Sectioning {
         Sectioning sect = new Sectioning();
         sect.curLevel = curLevel;
         sect.mode = mode;
-        if (toc!=null)
+        if (toc != null)
             sect.toc = (Vector)toc.clone();
-        if (levelCounters!=null) {
+        if (levelCounters != null) {
             sect.levelCounters = new int[levelCounters.length];
-            for (int i=0; i<levelCounters.length; i++)
+            for (int i = 0; i < levelCounters.length; i++)
                 sect.levelCounters[i] = levelCounters[i];
         }
 
@@ -169,52 +168,5 @@ public class Sectioning {
 
     public String getRefIllustrations() {
         return this.refIllustrations;
-    }
-
-    public static void main(String[] args) {
-
-        Sectioning sec = new Sectioning();
-        sec.level("Title1", 1);
-        sec.level("Title2", 1);
-        sec.level("Title2.1", 2);
-        sec.level("Title2.2", 2);
-        sec.level("Title3", 1);
-        sec.level("Title3.1", 2);
-        sec.level("Title3.1.1", 3);
-        sec.level("Title3.1.2", 3);
-        sec.level("Title3.2", 2);
-        sec.level("Title4", 1);
-
-        /*sec.inc("title1");
-        System.out.println(sec.getNumber());
-        sec.inc("title2");
-        System.out.println(sec.getNumber());
-        sec.down("title2.1");
-        System.out.println(sec.getNumber());
-        sec.inc("title2.2");
-        System.out.println(sec.getNumber());
-        sec.inc("title2.3");
-        System.out.println(sec.getNumber());
-        sec.up("title3");
-        System.out.println(sec.getNumber());
-        sec.down("title3.1");
-        System.out.println(sec.getNumber());
-        sec.down("title3.1.1");
-        System.out.println(sec.getNumber());
-        sec.inc("title3.1.2");
-        System.out.println(sec.getNumber());
-        sec.up("title4", 1);
-        System.out.println(sec.getNumber());
-        sec.down("title4.1");
-        System.out.println(sec.getNumber());
-        sec.down("title4.1.1");
-        System.out.println(sec.getNumber());
-        sec.up("title4.2");
-        System.out.println(sec.getNumber());
-
-        System.out.println("\n");*/
-        Vector t = sec.getTOCformatted("\t");
-        for (int i=0; i<t.size(); i++)
-            System.out.println(t.get(i));
     }
 }

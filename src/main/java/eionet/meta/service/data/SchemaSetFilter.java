@@ -35,7 +35,7 @@ import eionet.meta.dao.domain.ComplexAttributeField;
  *
  * @author Juhan Voolaid
  */
-public class SchemaSetFilter extends PagedRequest implements IObjectWithDynamicAttrs{
+public class SchemaSetFilter extends PagedRequest implements IObjectWithDynamicAttrs {
 
     /** */
     private String identifier;

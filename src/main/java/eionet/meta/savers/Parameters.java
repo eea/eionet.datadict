@@ -48,7 +48,7 @@ public class Parameters {
         if (req != null) return req.getParameter(parName);
 
         Vector parValues = (Vector)params.get(parName);
-        if (parValues == null || parValues.size()==0) return null;
+        if (parValues == null || parValues.size() == 0) return null;
 
         return (String)parValues.get(0);
     }
@@ -59,10 +59,10 @@ public class Parameters {
         if (req != null) return req.getParameterValues(parName);
 
         Vector parValues = (Vector)params.get(parName);
-        if (parValues == null || parValues.size()==0) return null;
+        if (parValues == null || parValues.size() == 0) return null;
 
         String[] vs = new String[parValues.size()];
-        for (int i=0; i<parValues.size(); i++)
+        for (int i = 0; i < parValues.size(); i++)
             vs[i] = (String)parValues.get(i);
 
         return vs;
@@ -143,7 +143,7 @@ public class Parameters {
      * @return
      */
     public int getSize() {
-        return params==null ? 0 : params.size();
+        return params == null ? 0 : params.size();
     }
 
     /**
@@ -168,7 +168,7 @@ public class Parameters {
         System.out.println("---");
 
         String[] kalad = pars.getParameterValues("kala");
-        for (int i=0; kalad!=null && i<kalad.length; i++)
+        for (int i = 0; kalad != null && i < kalad.length; i++)
             System.out.println(kalad[i]);
 
         System.out.println("---");

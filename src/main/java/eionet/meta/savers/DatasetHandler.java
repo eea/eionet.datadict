@@ -55,10 +55,10 @@ public class DatasetHandler extends BaseHandler {
     private String checkedInCopyID = null;
     private boolean useForce = false;
 
-    /** indicates if top namespace needs to be released after an exception*/
+    /** indicates if top namespace needs to be released after an exception. */
     private boolean doCleanup = false;
 
-    /** hashes for remembering originals and top namespaces for cleanup */
+    /** hashes for remembering originals and top namespaces for cleanup. */
     HashSet origs = new HashSet();
     HashSet nss = new HashSet();
 
@@ -128,9 +128,9 @@ public class DatasetHandler extends BaseHandler {
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("NAMESPACE");
         gen.setFieldExpr("WORKING_USER", "NULL");
-        for (Iterator i = nss.iterator(); i.hasNext(); ) {
+        for (Iterator i = nss.iterator(); i.hasNext();) {
             conn.createStatement().executeUpdate(gen.updateStatement()
-                    + " where NAMESPACE_ID=" + (String)i.next());
+                    + " where NAMESPACE_ID=" + (String) i.next());
         }
     }
 
@@ -147,8 +147,7 @@ public class DatasetHandler extends BaseHandler {
         if (mode.equalsIgnoreCase("add")) {
             insert();
             ds_id = getLastInsertID();
-        }
-        else if (mode.equalsIgnoreCase("edit")) {
+        } else if (mode.equalsIgnoreCase("edit")) {
             update();
         } else if (mode.equalsIgnoreCase("restore")) {
             restore();
@@ -279,8 +278,7 @@ public class DatasetHandler extends BaseHandler {
             gen.setTable("DATASET");
 
             String strType = req.getParameter("str_type");
-            String fldName = strType.equals("simple") ? "VISUAL" :
-                "DETAILED_VISUAL";
+            String fldName = strType.equals("simple") ? "VISUAL" : "DETAILED_VISUAL";
 
             if (dsVisual.equalsIgnoreCase("NULL")) {
                 gen.setFieldExpr(fldName, dsVisual);
@@ -289,7 +287,7 @@ public class DatasetHandler extends BaseHandler {
             }
 
             INParameters inParams = new INParameters();
-            String q = gen.updateStatement() + " where DATASET_ID="+inParams.add(ds_id, Types.INTEGER);
+            String q = gen.updateStatement() + " where DATASET_ID=" + inParams.add(ds_id, Types.INTEGER);
 
             PreparedStatement stmt = null;
             stmt = SQL.preparedStatement(q, inParams, conn);
@@ -319,7 +317,7 @@ public class DatasetHandler extends BaseHandler {
         // execute the statement
 
         INParameters inParams = new INParameters();
-        String q = gen.updateStatement() + " where DATASET_ID="+inParams.add(ds_id, Types.INTEGER);
+        String q = gen.updateStatement() + " where DATASET_ID=" + inParams.add(ds_id, Types.INTEGER);
 
         PreparedStatement stmt = null;
         stmt = SQL.preparedStatement(q, inParams, conn);
@@ -443,8 +441,7 @@ public class DatasetHandler extends BaseHandler {
                         } catch (NullPointerException npe) {}
                     }
                 }
-            }
-            else if (workingUser != null && useForce == false) {
+            } else if (workingUser != null && useForce == false) {
                 throw new Exception("Dataset checked out by another user: " + workingUser);
             } else if (useForce == false) {
                 boolean canDelete = false;
@@ -776,8 +773,7 @@ public class DatasetHandler extends BaseHandler {
                 for (int i = 0; i < attrValues.length; i++) {
                     insertAttribute(attrID, attrValues[i]);
                 }
-            }
-            else {
+            } else {
                 String attrValue = req.getParameter(parName);
                 if (attrValue.length() == 0) {
                     continue;

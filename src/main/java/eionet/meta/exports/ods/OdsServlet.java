@@ -28,7 +28,7 @@ import eionet.util.sql.ConnectionUtil;
  *
  * @author jaanus
  */
-public class OdsServlet extends HttpServlet{
+public class OdsServlet extends HttpServlet {
 
     /*
      *  (non-Javadoc)
@@ -64,11 +64,9 @@ public class OdsServlet extends HttpServlet{
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
             if (type.equals("dst")) {
                 ods = new DstOds(searchEngine, id);
-            }
-            else if (type.equals("tbl")) {
+            } else if (type.equals("tbl")) {
                 ods = new TblOds(searchEngine, id);
-            }
-            else
+            } else
                 throw new Exception("Unknown object type: " + type);
 
             ods.setWorkingFolderPath(workingFolderPath);
@@ -86,25 +84,21 @@ public class OdsServlet extends HttpServlet{
 
             // write the ods result file into response
             writeFileIntoResponse(new File(ods.getWorkingFolderPath() + Ods.ODS_FILE_NAME), res);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new ServletException(Util.getStack(e));
-        }
-        finally {
+        } finally {
 
             // close DB connection
             try {
                 if (conn != null) conn.close();
-            }
-            catch (Exception e) {}
+            } catch (Exception e) {}
 
             // clean up the working folder
             try {
-                if (req.getParameter("keep_working_folder")==null)
+                if (req.getParameter("keep_working_folder") == null)
                     deleteFolder(workingFolderPath);
-            }
-            catch (Exception e) {}
+            } catch (Exception e) {}
         }
     }
 
@@ -116,14 +110,14 @@ public class OdsServlet extends HttpServlet{
 
         // get ods-folder path
         String odsFolder = Props.getProperty(PropsIF.OPENDOC_ODS_PATH);
-        if (odsFolder==null)
+        if (odsFolder == null)
             throw new Exception("Missing property: " + PropsIF.OPENDOC_ODS_PATH);
         else if (!odsFolder.endsWith(File.separator))
             odsFolder = odsFolder + File.separator;
 
         // get DD temporary folder
         String tmpFilePath = Props.getProperty(PropsIF.TEMP_FILE_PATH);
-        if (tmpFilePath==null)
+        if (tmpFilePath == null)
             throw new Exception("Missing property: " + PropsIF.TEMP_FILE_PATH);
         else if (!tmpFilePath.endsWith(File.separator))
             tmpFilePath = tmpFilePath + File.separator;
@@ -168,7 +162,7 @@ public class OdsServlet extends HttpServlet{
 
         File folder = new File(folderPath);
         File[] files = folder.listFiles();
-        for (int i=0; files!=null && i<files.length; i++) {
+        for (int i = 0; files != null && i<files.length; i++) {
             files[i].delete();
         }
 
@@ -190,13 +184,12 @@ public class OdsServlet extends HttpServlet{
             fos = new FileOutputStream(out);
             byte[] buf = new byte[1024];
             int i = 0;
-            while ((i=fis.read(buf))!=-1) {
+            while ((i = fis.read(buf)) != -1) {
                 fos.write(buf, 0, i);
             }
-        }
-        finally {
-            if (fis!=null) fis.close();
-            if (fos!=null) fos.close();
+        } finally {
+            if (fis != null) fis.close();
+            if (fos != null) fos.close();
         }
     }
 
@@ -217,13 +210,12 @@ public class OdsServlet extends HttpServlet{
             in = new FileInputStream(file);
             res.setContentLength(in.available());
             out = res.getOutputStream();
-            while ((i=in.read(buf, 0, buf.length)) != -1) {
+            while ((i = in.read(buf, 0, buf.length)) != -1) {
                 out.write(buf, 0, i);
             }
-        }
-        finally {
-            if (in!=null) in.close();
-            if (out!=null) out.close();
+        } finally {
+            if (in != null) in.close();
+            if (out != null) out.close();
         }
     }
 }

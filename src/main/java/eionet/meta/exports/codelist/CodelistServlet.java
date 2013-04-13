@@ -83,12 +83,10 @@ public class CodelistServlet extends HttpServlet {
             osw.flush();
             writer.close();
             osw.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new ServletException(e.toString());
-        }
-        finally {
+        } finally {
             try { if (conn != null) conn.close(); } catch (Exception ee) {}
         }
     }
@@ -101,7 +99,7 @@ public class CodelistServlet extends HttpServlet {
     private void guard(HttpServletRequest req) throws Exception {
 
         DDUser user = SecurityUtil.getUser(req);
-        if (user==null) throw new Exception("Not logged in!");
+        if (user == null) throw new Exception("Not logged in!");
 
         if (!SecurityUtil.hasPerm(user.getUserName(), "/", "xmli"))
             throw new Exception("Not permitted!");

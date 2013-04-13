@@ -52,21 +52,18 @@ public class GetSchema extends HttpServlet {
             if (compID.startsWith(DST)) {
                 compType = DST;
                 compID = compID.substring(DST.length());
-            }
-            else if (compID.startsWith(TBL)) {
+            } else if (compID.startsWith(TBL)) {
                 compType = TBL;
                 compID = compID.substring(TBL.length());
-            }
-            else if (compID.startsWith(ELM)) {
+            } else if (compID.startsWith(ELM)) {
                 compType = ELM;
                 compID = compID.substring(ELM.length());
-            }
-            else
+            } else
                 throw new Exception("Malformed schema ID!");
 
             // see if this is a "container schema"
             String servletPath = req.getServletPath();
-            boolean isContainerSchema = servletPath!=null && servletPath.trim().startsWith("/GetContainerSchema");
+            boolean isContainerSchema = servletPath != null && servletPath.trim().startsWith("/GetContainerSchema");
 
             ServletContext ctx = getServletContext();
 
@@ -92,8 +89,7 @@ public class GetSchema extends HttpServlet {
                     schema = new ElmSchema(searchEngine, writer);
                 else
                     throw new Exception("Invalid component type!");
-            }
-            else {
+            } else {
                 if (compType.equals(TBL))
                     schema = new ElmsContainerSchema(searchEngine, writer);
                 else
@@ -104,7 +100,7 @@ public class GetSchema extends HttpServlet {
             // build application context
             String reqUri = req.getRequestURL().toString();
             int i = reqUri.lastIndexOf("/");
-            if (i != -1) schema.setAppContext(reqUri.substring(0,i));
+            if (i != -1) schema.setAppContext(reqUri.substring(0, i));
 
             // set content disposition header
             StringBuffer strBuf = new StringBuffer("attachment; filename=\"schema-").
@@ -120,17 +116,14 @@ public class GetSchema extends HttpServlet {
             osw.flush();
             writer.close();
             osw.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new ServletException(e.toString());
-        }
-        finally {
+        } finally {
             try {
                 if (writer != null) writer.close();
                 if (conn != null) conn.close();
-            }
-            catch (Exception ee) {}
+            } catch (Exception ee) {}
         }
     }
 }

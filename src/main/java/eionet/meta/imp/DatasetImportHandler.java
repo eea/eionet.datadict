@@ -15,15 +15,15 @@ import eionet.util.UnicodeEscapes;
 /**
  * @author Enriko Käsper
  */
-public class DatasetImportHandler extends BaseHandler{
+public class DatasetImportHandler extends BaseHandler {
 
     /** */
     public static String ROWSET = "RowSet";
     public static String ROW = "Row";
     public static String IMPORT = "import";
 
-    /** */
-    private StringBuffer fieldData = new StringBuffer(); // buffer for collecting characters
+    /** buffer for collecting characters. */
+    private StringBuffer fieldData = new StringBuffer();
 
     /** */
     private Hashtable tables;
@@ -31,8 +31,8 @@ public class DatasetImportHandler extends BaseHandler{
     private Hashtable row;
 
     /** */
-    private boolean bOK=false;
-    private boolean bTableStart=false;
+    private boolean bOK = false;
+    private boolean bTableStart = false;
     private String tableName;
     private String importType;
 
@@ -55,13 +55,13 @@ public class DatasetImportHandler extends BaseHandler{
      */
     public void startElement(String uri, String localName, String name, Attributes attributes) {
 
-          if (bTableStart==true) {   //start of table
-              bTableStart=false;
-              tableName=name;
+          if (bTableStart == true) {   //start of table
+              bTableStart = false;
+              tableName = name;
           }
 
           if (name.equals(ROWSET)) {
-              bTableStart=true;
+              bTableStart = true;
               table = new Vector();
           }
 
@@ -78,8 +78,8 @@ public class DatasetImportHandler extends BaseHandler{
      *  (non-Javadoc)
      * @see org.xml.sax.ContentHandler#characters(char[], int, int)
      */
-    public void characters(char[] ch,int start,int len) {
-          if (bOK==true)
+    public void characters(char[] ch, int start, int len) {
+          if (bOK == true)
               fieldData.append(ch, start, len);
     }
 
@@ -95,9 +95,8 @@ public class DatasetImportHandler extends BaseHandler{
       if (name.equals(ROW)) {
           table.add(row);
           bOK = false;
-      }
-      else {
-            if (bOK==true)
+      } else {
+            if (bOK == true)
                 row.put(name.toLowerCase(), processFieldData(fieldData.toString().trim()));
       }
 
@@ -131,32 +130,30 @@ public class DatasetImportHandler extends BaseHandler{
     }
 
     /**
-     * Turns all UNICODE esacpes like &#000; and &nbsp; into correct UTF-8 chars
+     * Turns all UNICODE esacpes like &#000; and &nbsp; into correct UTF-8 chars.
      */
     private String processUnicodeEscapes(String data) {
 
-        if (data==null || data.length()==0) return data;
+        if (data == null || data.length() == 0) return data;
         StringBuffer buf = new StringBuffer();
-        for (int i=0; i<data.length(); i++) {
+        for (int i = 0; i < data.length(); i++) {
 
             char c = data.charAt(i);
 
-            if (c=='&') {
+            if (c == '&') {
                 int j = data.indexOf(";", i);
                 if (j > i) {
-                    char cc = data.charAt(i+1);
+                    char cc = data.charAt(i + 1);
                     int decimal = -1;
-                    if (cc=='#') {
+                    if (cc == '#') {
                         // handle Unicode decimal escape
-                        String sDecimal = data.substring(i+2, j);
+                        String sDecimal = data.substring(i + 2, j);
                         try {
                             decimal = Integer.parseInt(sDecimal);
-                        }
-                        catch (Exception e) {}
-                    }
-                    else {
+                        } catch (Exception e) {}
+                    } else {
                         // handle entity
-                        String ent = data.substring(i+1, j);
+                        String ent = data.substring(i + 1, j);
                         decimal = unicodeEscapes.getDecimal(ent);
                     }
 
@@ -205,7 +202,7 @@ public class DatasetImportHandler extends BaseHandler{
         String srcFile = "D:\\projects\\datadict\\tmp\\valid_nuka_tbl.xml";
 
         try {
-            DatasetImportHandler handler=new DatasetImportHandler();
+            DatasetImportHandler handler = new DatasetImportHandler();
             SAXParserFactory spfact = SAXParserFactory.newInstance();
             SAXParser parser = spfact.newSAXParser();
             XMLReader reader = parser.getXMLReader();
@@ -216,8 +213,7 @@ public class DatasetImportHandler extends BaseHandler{
             if (handler.hasError())
                 System.out.println(handler.getErrorBuff().toString());
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
     }

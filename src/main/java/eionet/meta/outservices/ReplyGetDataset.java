@@ -6,7 +6,7 @@ import java.util.Vector;
 /**
  *
  */
-public class ReplyGetDataset{
+public class ReplyGetDataset {
 
     /** */
     private static final String ID = "id";
@@ -93,10 +93,10 @@ public class ReplyGetDataset{
      */
     public void addTableId(String tableId) {
 
-        if (tableId!=null && tableId.trim().length()>0) {
+        if (tableId != null && tableId.trim().length()>0) {
 
             Vector tableIds = (Vector)hashTable.get(TABLE_IDS);
-            if (tableIds==null) {
+            if (tableIds == null) {
                 tableIds = new Vector();
                 hashTable.put(TABLE_IDS, tableIds);
             }

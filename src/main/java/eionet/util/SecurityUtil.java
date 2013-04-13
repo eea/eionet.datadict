@@ -314,14 +314,14 @@ public class SecurityUtil {
 
         List<String> countries = new ArrayList<String>();
 
-        for (String role : dduser.getUserRoles()){
-            for (String parentRole : parentRoles){
-                if (!parentRole.endsWith("-")){
+        for (String role : dduser.getUserRoles()) {
+            for (String parentRole : parentRoles) {
+                if (!parentRole.endsWith("-")) {
                     parentRole = parentRole.concat("-");
                 }
-                if (role.startsWith(parentRole)){
+                if (role.startsWith(parentRole)) {
                     String roleSuffix = StringUtils.substringAfter(role, parentRole).toUpperCase();
-                    if (roleSuffix.length() == 2 && !countries.contains(roleSuffix)){
+                    if (roleSuffix.length() == 2 && !countries.contains(roleSuffix)) {
                         countries.add(roleSuffix);
                     }
                 }

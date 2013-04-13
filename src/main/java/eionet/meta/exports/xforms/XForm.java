@@ -70,7 +70,7 @@ public abstract class XForm implements XFormIF {
 
         String line;
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        while ((line=reader.readLine()) != null)
+        while ((line = reader.readLine()) != null)
             writeLine(line);
 
         in.close();
@@ -253,8 +253,7 @@ public abstract class XForm implements XFormIF {
             if (Character.isISOControl(c)) {
                 if (Character.isWhitespace(c))
                     buf.append(c);
-            }
-            else
+            } else
                 buf.append(c);
         }
 
@@ -281,8 +280,7 @@ public abstract class XForm implements XFormIF {
         if (minInclValue != null) {
             if (buf.length() != 0) buf.append(" and ");
             buf.append("number(.)&gt;=").append(minInclValue);
-        }
-        else if (minExclValue != null) {
+        } else if (minExclValue != null) {
             if (buf.length() != 0) buf.append(" and ");
             buf.append("number(.)&gt;").append(minExclValue);
         }
@@ -292,8 +290,7 @@ public abstract class XForm implements XFormIF {
         if (maxInclValue != null) {
             if (buf.length() != 0) buf.append(" and ");
             buf.append("number(.)&lt;=").append(maxInclValue);
-        }
-        else if (maxExclValue != null) {
+        } else if (maxExclValue != null) {
             if (buf.length() != 0) buf.append(" and ");
             buf.append("number(.)&lt;").append(maxExclValue);
         }

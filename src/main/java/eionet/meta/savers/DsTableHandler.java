@@ -223,8 +223,7 @@ public class DsTableHandler extends BaseHandler {
             stmt.executeUpdate();
             stmt.close();
             return;
-        }
-        else if (rplc_elm != null && rplc_elm.length() > 0) {
+        } else if (rplc_elm != null && rplc_elm.length() > 0) {
 
             INParameters inParams = new INParameters();
             SQLGenerator gen = new SQLGenerator();
@@ -547,8 +546,8 @@ public class DsTableHandler extends BaseHandler {
         while (iter.hasNext()) {
             String s = (String)iter.next();
             int pos = s.indexOf(",");
-            String tblName = s.substring(pos+1);
-            String parentNs = s.substring(0,pos);
+            String tblName = s.substring(pos + 1);
+            String parentNs = s.substring(0, pos);
             if (i > 0) {
                 buf.append(" or ");
             }
@@ -678,8 +677,7 @@ public class DsTableHandler extends BaseHandler {
                     continue;  //some attributes will be inherited from dataset level
                 }
                 insertAttribute(attrID, attrValue);
-            }
-            else if (parName.startsWith(ATTR_MULT_PREFIX)) {
+            } else if (parName.startsWith(ATTR_MULT_PREFIX)) {
                 String[] attrValues = req.getParameterValues(parName);
                 if (attrValues == null || attrValues.length == 0) {
                     continue;
@@ -693,8 +691,7 @@ public class DsTableHandler extends BaseHandler {
                 for (int i = 0; i < attrValues.length; i++) {
                     insertAttribute(attrID, attrValues[i]);
                 }
-            }
-            else if (parName.startsWith(INHERIT_ATTR_PREFIX)
+            } else if (parName.startsWith(INHERIT_ATTR_PREFIX)
                     && !parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)) {
                 attrID = parName.substring(INHERIT_ATTR_PREFIX.length());
                 if (dstID == null) {
@@ -703,8 +700,7 @@ public class DsTableHandler extends BaseHandler {
                 CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
                 ch.setUser(user);
                 ch.copyAttribute(lastInsertID, dstID, "T", "DS", attrID);
-            }
-            else if (parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)) {
+            } else if (parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)) {
                 attrID = parName.substring(INHERIT_COMPLEX_ATTR_PREFIX.length());
                 if (dstID == null) {
                     continue;

@@ -39,7 +39,7 @@ public class Table {
      */
     public void addTableColumn(String defaultCellStyleName) {
 
-        if (tableColumns==null)
+        if (tableColumns == null)
             tableColumns = new Vector();
 
         tableColumns.add(defaultCellStyleName);
@@ -51,7 +51,7 @@ public class Table {
      */
     public void addColumnHeader(String headerText) {
 
-        if (columnHeaders==null)
+        if (columnHeaders == null)
             columnHeaders = new Vector();
 
         columnHeaders.add(headerText);
@@ -69,7 +69,7 @@ public class Table {
         buf.append("\" table:style-name=\"ta1\" table:print=\"false\">");
 
         // add columns
-        for (int i=0; tableColumns!=null && i<tableColumns.size(); i++) {
+        for (int i = 0; tableColumns != null && i<tableColumns.size(); i++) {
             String defaultCellStyleName = (String)tableColumns.get(i);
             buf.append(
                 "<table:table-column table:style-name=\"co1\" table:default-cell-style-name=\"");
@@ -83,7 +83,7 @@ public class Table {
         buf.append("<table:table-row table:style-name=\"ro1\">");
 
         // add column headers
-        for (int i=0; columnHeaders!=null && i<columnHeaders.size(); i++) {
+        for (int i = 0; columnHeaders != null && i<columnHeaders.size(); i++) {
             String headerText = (String)columnHeaders.get(i);
             buf.append("<table:table-cell table:style-name=\"ce1\" office:value-type=\"string\">");
             buf.append("<text:p>");
@@ -114,7 +114,7 @@ public class Table {
      */
     public String writeContentInto(String intoStr) {
 
-        if (intoStr==null || intoStr.length()==0)
+        if (intoStr == null || intoStr.length() == 0)
             return intoStr;
 
         String officeSpreadsheet = new String("</office:spreadsheet>");

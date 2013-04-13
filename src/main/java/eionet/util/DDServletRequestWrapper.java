@@ -18,10 +18,10 @@ import org.apache.commons.lang.StringUtils;
  * @author Jaanus Heinlaid
  *
  */
-public class DDServletRequestWrapper extends HttpServletRequestWrapper{
+public class DDServletRequestWrapper extends HttpServletRequestWrapper {
 
     /** */
-    private HashMap<String,HashSet<String>> parameters = new HashMap<String,HashSet<String>>();
+    private HashMap<String, HashSet<String>> parameters = new HashMap<String, HashSet<String>>();
 
     /**
      *
@@ -37,14 +37,14 @@ public class DDServletRequestWrapper extends HttpServletRequestWrapper{
      * @param value
      * @return
      */
-    public DDServletRequestWrapper addParameterValue(String name, String value){
+    public DDServletRequestWrapper addParameterValue(String name, String value) {
 
-        if (StringUtils.isBlank(name)){
+        if (StringUtils.isBlank(name)) {
             throw new IllegalArgumentException("Parameter name must not be blank!");
         }
 
         HashSet<String> values = parameters.get(name);
-        if (values==null){
+        if (values == null) {
             values = new HashSet<String>();
             parameters.put(name, values);
         }
@@ -59,15 +59,15 @@ public class DDServletRequestWrapper extends HttpServletRequestWrapper{
      * @param values
      * @return
      */
-    public DDServletRequestWrapper addParameterValues(String name, String... values){
+    public DDServletRequestWrapper addParameterValues(String name, String... values) {
 
-        if (StringUtils.isBlank(name)){
+        if (StringUtils.isBlank(name)) {
             throw new IllegalArgumentException("Parameter name must not be blank!");
         }
 
-        if (values!=null && values.length>0){
+        if (values != null && values.length>0) {
             HashSet<String> currentValues = parameters.get(name);
-            if (currentValues==null){
+            if (currentValues == null) {
                 currentValues = new HashSet<String>();
                 parameters.put(name, currentValues);
             }
@@ -83,9 +83,9 @@ public class DDServletRequestWrapper extends HttpServletRequestWrapper{
      * @param value
      * @return
      */
-    public DDServletRequestWrapper setParameter(String name, String value){
+    public DDServletRequestWrapper setParameter(String name, String value) {
 
-        if (StringUtils.isBlank(name)){
+        if (StringUtils.isBlank(name)) {
             throw new IllegalArgumentException("Parameter name must not be blank!");
         }
 
@@ -100,9 +100,9 @@ public class DDServletRequestWrapper extends HttpServletRequestWrapper{
      * @param name
      * @return
      */
-    public DDServletRequestWrapper removeParameter(String name){
+    public DDServletRequestWrapper removeParameter(String name) {
 
-        if (StringUtils.isBlank(name)){
+        if (StringUtils.isBlank(name)) {
             throw new IllegalArgumentException("Parameter name must not be blank!");
         }
 
@@ -117,14 +117,14 @@ public class DDServletRequestWrapper extends HttpServletRequestWrapper{
      * @param newValue
      * @return
      */
-    public DDServletRequestWrapper replaceParameterValue(String name, String oldValue, String newValue){
+    public DDServletRequestWrapper replaceParameterValue(String name, String oldValue, String newValue) {
 
-        if (StringUtils.isBlank(name)){
+        if (StringUtils.isBlank(name)) {
             throw new IllegalArgumentException("Parameter name must not be blank!");
         }
 
         HashSet<String> values = parameters.get(name);
-        if (values==null){
+        if (values == null) {
             values = new HashSet<String>();
             parameters.put(name, values);
         }
@@ -138,7 +138,7 @@ public class DDServletRequestWrapper extends HttpServletRequestWrapper{
      * (non-Javadoc)
      * @see javax.servlet.ServletRequestWrapper#getParameter(java.lang.String)
      */
-    public String getParameter(String name){
+    public String getParameter(String name) {
 
         String result = null;
 
@@ -146,11 +146,11 @@ public class DDServletRequestWrapper extends HttpServletRequestWrapper{
         // if that doesn't succeed, get the value from wrapped request.
 
         HashSet<String> values = parameters.get(name);
-        if (values!=null && !values.isEmpty()){
+        if (values != null && !values.isEmpty()) {
             result = values.iterator().next();
         }
 
-        if (result==null){
+        if (result == null) {
             result = getRequest().getParameter(name);
         }
 
@@ -161,7 +161,7 @@ public class DDServletRequestWrapper extends HttpServletRequestWrapper{
      * (non-Javadoc)
      * @see javax.servlet.ServletRequestWrapper#getParameterMap()
      */
-    public Map getParameterMap(){
+    public Map getParameterMap() {
         throw new UnsupportedOperationException("Mehotd not implemented!");
     }
 
@@ -169,15 +169,15 @@ public class DDServletRequestWrapper extends HttpServletRequestWrapper{
      * (non-Javadoc)
      * @see javax.servlet.ServletRequestWrapper#getParameterNames()
      */
-    public Enumeration getParameterNames(){
+    public Enumeration getParameterNames() {
 
         Set<String> names = parameters.keySet();
-        if (names==null || names.isEmpty()){
+        if (names == null || names.isEmpty()) {
             names = new HashSet<String>();
         }
 
         Enumeration wrappedNames = getRequest().getParameterNames();
-        while (wrappedNames!=null && wrappedNames.hasMoreElements()){
+        while (wrappedNames != null && wrappedNames.hasMoreElements()) {
             names.add(wrappedNames.nextElement().toString());
         }
 
@@ -189,20 +189,20 @@ public class DDServletRequestWrapper extends HttpServletRequestWrapper{
      * (non-Javadoc)
      * @see javax.servlet.ServletRequestWrapper#getParameterValues(java.lang.String)
      */
-    public String[] getParameterValues(String name){
+    public String[] getParameterValues(String name) {
 
         HashSet<String> values = parameters.get(name);
-        if (values==null){
+        if (values == null) {
             values = new HashSet<String>();
         }
 
         String[] wrappedValues = getRequest().getParameterValues(name);
-        if (wrappedValues!=null && wrappedValues.length>0){
+        if (wrappedValues != null && wrappedValues.length>0) {
             values.addAll(Arrays.asList(wrappedValues));
         }
 
         String result[] = null;
-        if (!values.isEmpty()){
+        if (!values.isEmpty()) {
             result = new String[values.size()];
             values.toArray(result);
         }

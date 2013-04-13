@@ -10,7 +10,7 @@ import eionet.meta.dao.domain.RegStatus;
 public enum AttributeParentType {
 
     /** */
-    DRAFT("Draft"),RELEASED("Released");
+    DRAFT("Draft"), RELEASED("Released");
 
     /** */
     String s;
@@ -19,7 +19,7 @@ public enum AttributeParentType {
      *
      * @param s
      */
-    AttributeParentType(String s){
+    AttributeParentType(String s) {
         this.s = s;
     }
 
@@ -27,7 +27,7 @@ public enum AttributeParentType {
      * (non-Javadoc)
      * @see java.lang.Enum#toString()
      */
-    public String toString(){
+    public String toString() {
         return s;
     }
 
@@ -36,9 +36,9 @@ public enum AttributeParentType {
      * @param s
      * @return
      */
-    public static RegStatus fromString(String s){
-        for (RegStatus regStatus : RegStatus.values()){
-            if (regStatus.toString().equals(s)){
+    public static RegStatus fromString(String s) {
+        for (RegStatus regStatus : RegStatus.values()) {
+            if (regStatus.toString().equals(s)) {
                 return regStatus;
             }
         }
@@ -49,7 +49,7 @@ public enum AttributeParentType {
      *
      * @return
      */
-    public static RegStatus getDefault(){
+    public static RegStatus getDefault() {
         return RegStatus.DRAFT;
     }
 

@@ -52,7 +52,7 @@ public class XFormServlet extends HttpServlet {
             // build application context (protocol + host + port + context path)
             String reqUrl = req.getRequestURL().toString();
             int i = reqUrl.lastIndexOf("/");
-            if (i != -1) xForm.setAppContext(reqUrl.substring(0,i));
+            if (i != -1) xForm.setAppContext(reqUrl.substring(0, i));
 
             xForm.write(id);
             xForm.flush(template);
@@ -60,17 +60,14 @@ public class XFormServlet extends HttpServlet {
             osw.flush();
             writer.close();
             osw.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new ServletException(e.toString());
-        }
-        finally {
+        } finally {
             try {
                 if (writer != null) writer.close();
                 if (conn != null) conn.close();
-            }
-            catch (Exception ee) {}
+            } catch (Exception ee) {}
         }
     }
 
@@ -79,16 +76,14 @@ public class XFormServlet extends HttpServlet {
         String result = id;
         try {
             Long.parseLong(result);
-        }
-        catch (NumberFormatException nfe) {
+        } catch (NumberFormatException nfe) {
             String pattern = new String("id=TBL");
             int i = result.indexOf(pattern);
             if (i == -1) throw new Exception("Invalid ID!");
             result = result.substring(i + pattern.length());
             try {
                 Long.parseLong(result);
-            }
-            catch (NumberFormatException nfe2) {
+            } catch (NumberFormatException nfe2) {
                 throw new Exception("Invalid ID!");
             }
         }

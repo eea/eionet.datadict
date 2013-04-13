@@ -148,8 +148,7 @@ public class AttributeHandler extends BaseHandler {
             stmt = SQL.preparedStatement(SQL.insertStatement(tableName, map), inParams, conn);
             stmt.executeUpdate();
             setLastInsertID();
-        }
-        finally {
+        } finally {
             SQL.close(stmt);
         }
 
@@ -247,8 +246,7 @@ public class AttributeHandler extends BaseHandler {
                     stmt.executeUpdate();
                 }
             }
-        }
-        finally {
+        } finally {
             SQL.close(stmt);
         }
     }
@@ -300,8 +298,7 @@ public class AttributeHandler extends BaseHandler {
 
                 deleteComplexAttributeValues(complexAttrs);
             }
-        }
-        finally {
+        } finally {
             SQL.close(stmt);
         }
 
@@ -309,14 +306,12 @@ public class AttributeHandler extends BaseHandler {
         for (int i = 0; simpleAttrs != null && i < simpleAttrs.length; i++) {
             try {
                 AccessController.removeAcl("/attributes/s" + simpleAttrs[i]);
-            }
-            catch (Exception e) {}
+            } catch (Exception e) {}
         }
         for (int i = 0; complexAttrs != null && i < complexAttrs.length; i++) {
             try {
                 AccessController.removeAcl("/attributes/c" + complexAttrs[i]);
-            }
-            catch (Exception e) {}
+            } catch (Exception e) {}
         }
     }
 
@@ -344,8 +339,7 @@ public class AttributeHandler extends BaseHandler {
             }
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             stmt.executeUpdate();
-        }
-        finally {
+        } finally {
             SQL.close(stmt);
         }
     }
@@ -406,8 +400,7 @@ public class AttributeHandler extends BaseHandler {
 
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             stmt.executeUpdate();
-        }
-        finally {
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }
@@ -445,8 +438,7 @@ public class AttributeHandler extends BaseHandler {
             while (rs.next()) {
                 pars.addParameterValue("del_id", rs.getString("FXV_ID"));
             }
-        }
-        finally {
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }
@@ -475,8 +467,7 @@ public class AttributeHandler extends BaseHandler {
             if (rs.next()) {
                 lastInsertID = rs.getString(1);
             }
-        }
-        finally {
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }

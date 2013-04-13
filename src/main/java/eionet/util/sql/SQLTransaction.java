@@ -89,7 +89,7 @@ public class SQLTransaction implements Transaction {
      * @param conn
      * @return
      */
-    public static SQLTransaction begin(Connection conn) throws DAOException{
+    public static SQLTransaction begin(Connection conn) throws DAOException {
         SQLTransaction tx = new SQLTransaction(conn);
         tx.begin();
         return tx;
@@ -149,7 +149,7 @@ public class SQLTransaction implements Transaction {
      */
     public void end() {
         try {
-            if (conn!=null && savepoint!=null){
+            if (conn != null && savepoint != null) {
                 conn.releaseSavepoint(savepoint);
                 savepoint = null;
                 if (!isRunningInAnotherTransaction) {
@@ -179,9 +179,9 @@ public class SQLTransaction implements Transaction {
      * 
      * @param transaction
      */
-    public static void rollback(SQLTransaction transaction){
+    public static void rollback(SQLTransaction transaction) {
 
-        if (transaction!=null){
+        if (transaction != null) {
             transaction.rollback();
         }
     }
@@ -190,9 +190,9 @@ public class SQLTransaction implements Transaction {
      * 
      * @param transaction
      */
-    public static void end(SQLTransaction transaction){
+    public static void end(SQLTransaction transaction) {
 
-        if (transaction!=null){
+        if (transaction != null) {
             transaction.end();
         }
     }

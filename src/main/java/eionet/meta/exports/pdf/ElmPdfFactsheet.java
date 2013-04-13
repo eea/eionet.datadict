@@ -129,7 +129,7 @@ public class ElmPdfFactsheet extends PdfHandout {
         // addElement(PdfUtil.imgAttributes(elem.getAttributes(), vsPath));
 
         /*
-         * write image attributes Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath); if (imgAttrs!=null) { addElement(new
+         * write image attributes Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath); if (imgAttrs != null) { addElement(new
          * Phrase("\n")); addElement(imgAttrs); }
          */
 

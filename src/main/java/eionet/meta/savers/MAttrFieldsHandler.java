@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
-public class MAttrFieldsHandler extends BaseHandler{
+public class MAttrFieldsHandler extends BaseHandler {
 
     /** */
     private static final Logger LOGGER = Logger.getLogger(MAttrFieldsHandler.class);
@@ -48,7 +48,7 @@ public class MAttrFieldsHandler extends BaseHandler{
      * @see eionet.meta.savers.BaseHandler#execute_()
      */
     public void execute_() throws Exception {
-        if (mode==null ||
+        if (mode == null ||
                 (!mode.equalsIgnoreCase("add") && !mode.equalsIgnoreCase("delete") && !mode.equalsIgnoreCase("edit") && !mode.equalsIgnoreCase("edit_pos")))
             throw new Exception("MAttrFieldsHandler mode unspecified!");
 
@@ -67,8 +67,8 @@ public class MAttrFieldsHandler extends BaseHandler{
     private void insert() throws Exception {
 
         String[] newFields = req.getParameterValues("new_field");
-        if (newFields!=null) {
-            for (int i=0; i<newFields.length; i++) {
+        if (newFields != null) {
+            for (int i = 0; i < newFields.length; i++) {
                 insertField(newFields[i]);
             }
         }
@@ -85,7 +85,7 @@ public class MAttrFieldsHandler extends BaseHandler{
         if (definition == null) definition = "";
 
         String position = req.getParameter("position");
-        if (position == null || position.length()==0) position = "0";
+        if (position == null || position.length() == 0) position = "0";
 
         INParameters inParams = new INParameters();
         LinkedHashMap map = new LinkedHashMap();
@@ -113,7 +113,7 @@ public class MAttrFieldsHandler extends BaseHandler{
         String[] del_Fields = req.getParameterValues("del_field");
         if (del_Fields == null || del_Fields.length == 0) return;
 
-        for (int i=0; i<del_Fields.length; i++) {
+        for (int i = 0; i < del_Fields.length; i++) {
             deleteField(del_Fields[i]);
         }
     }
@@ -181,19 +181,19 @@ public class MAttrFieldsHandler extends BaseHandler{
     private void processFields() throws Exception {
 
         String[] posIds = req.getParameterValues("pos_id");
-        String old_pos=null;
-        String pos=null;
-        String parName=null;
-        if (posIds==null || posIds.length==0) return;
+        String old_pos = null;
+        String pos = null;
+        String parName = null;
+        if (posIds == null || posIds.length == 0) return;
 
         LOGGER.debug(Integer.toString(posIds.length));
         LOGGER.debug(posIds[0]);
 
-        for (int i=0; i<posIds.length; i++) {
+        for (int i = 0; i < posIds.length; i++) {
             old_pos = req.getParameter(OLDPOS_PREFIX + posIds[i]);
             pos = req.getParameter(POS_PREFIX + posIds[i]);
             LOGGER.debug(old_pos + "|" + pos + "|" + posIds[i]);
-            if (old_pos.length()==0 || pos.length()==0)
+            if (old_pos.length() == 0 || pos.length() == 0)
                 continue;
             if (!old_pos.equals(pos))
                 updateFieldPos(posIds[i], pos);
