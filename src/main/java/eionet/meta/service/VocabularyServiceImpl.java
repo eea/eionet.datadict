@@ -447,6 +447,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolder.setCheckedOutCopyId(0);
             vocabularyFolder.setId(originalVocabularyFolderId);
             vocabularyFolder.setUserModified(userName);
+            vocabularyFolder.setDateModified(new Date());
             vocabularyFolder.setWorkingCopy(false);
             vocabularyFolder.setWorkingUser(null);
             vocabularyFolderDAO.updateVocabularyFolder(vocabularyFolder);

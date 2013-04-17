@@ -246,7 +246,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
     public void updateVocabularyFolder(VocabularyFolder vocabularyFolder) {
         String sql =
                 "update T_VOCABULARY_FOLDER set IDENTIFIER = :identifier,  LABEL = :label, REG_STATUS = :regStatus, CHECKEDOUT_COPY_ID = :checkedOutCopyId, "
-                        + "WORKING_COPY = :workingCopy, WORKING_USER = :workingUser, DATE_MODIFIED = now(), USER_MODIFIED = :userModified,"
+                        + "WORKING_COPY = :workingCopy, WORKING_USER = :workingUser, DATE_MODIFIED = :dateModified, USER_MODIFIED = :userModified,"
                         + " CONCEPT_IDENTIFIER_NUMERIC = :numericConceptIdentifiers, BASE_URI = :baseUri , FOLDER_NAME = :folderName "
                         + "where VOCABULARY_FOLDER_ID = :vocabularyFolderId";
 
@@ -263,6 +263,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         parameters.put("numericConceptIdentifiers", vocabularyFolder.isNumericConceptIdentifiers());
         parameters.put("baseUri", vocabularyFolder.getBaseUri());
         parameters.put("folderName", vocabularyFolder.getFolderName());
+        parameters.put("dateModified", vocabularyFolder.getDateModified());
 
         getNamedParameterJdbcTemplate().update(sql, parameters);
     }
