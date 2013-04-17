@@ -486,14 +486,16 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
         }
 
-        // Validate attributes
-        mergeAttributes();
-        for (List<SimpleAttribute> attrs : vocabularyFolder.getAttributes()) {
-            if (attrs != null) {
-                for (SimpleAttribute attr : attrs) {
-                    if (attr != null) {
-                        if (attr.isMandatory() && StringUtils.isEmpty(attr.getValue())) {
-                            addGlobalValidationError(attr.getLabel() + " is missing");
+        // Validate attributes (only when updating existing vocabulary)
+        if (vocabularyFolder.getId() != 0) {
+            mergeAttributes();
+            for (List<SimpleAttribute> attrs : vocabularyFolder.getAttributes()) {
+                if (attrs != null) {
+                    for (SimpleAttribute attr : attrs) {
+                        if (attr != null) {
+                            if (attr.isMandatory() && StringUtils.isEmpty(attr.getValue())) {
+                                addGlobalValidationError(attr.getLabel() + " is missing");
+                            }
                         }
                     }
                 }
