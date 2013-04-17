@@ -95,10 +95,10 @@
                         </li>
                         <li>
                             <stripes:url var="viewUrl" beanclass="${actionBean.class.name}" event="view">
-						        <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
-						        <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
+                                <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
+                                <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
                                 <stripes:param name="workingCopy" value="true"/>
-						    </stripes:url>
+                            </stripes:url>
                             <a href="${pageContext.request.contextPath}/complex_attrs.jsp?parent_id=${actionBean.schema.id}&parent_type=SCH&parent_name=${actionBean.schema.fileName}&parent_link=${viewUrl}">Edit complex attributes</a>
                         </li>
                         <li>
@@ -269,7 +269,7 @@
                 <c:if test="${not empty attribute.value}">
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">
-                            <c:out value="${attribute.shortName}"/>
+                            <c:out value="${attribute.name}"/>
                         </th>
                         <td class="simple_attr_help">
                             <a href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
@@ -292,20 +292,20 @@
 
     <%-- Display complex attributes if any. --%>
     <c:if test="${not empty actionBean.complexAttributes}">
-	    <h2>
-	        Complex attributes
-	    </h2>
-	    <table class="datatable">
+        <h2>
+            Complex attributes
+        </h2>
+        <table class="datatable">
 
-	        <col style="width:29%"/>
-	        <col style="width:4%"/>
-	        <col style="width:63%"/>
+            <col style="width:29%"/>
+            <col style="width:4%"/>
+            <col style="width:63%"/>
 
-	        <c:forEach items="${actionBean.complexAttributes}" var="complexAttr" varStatus="complexAttrsLoop">
+            <c:forEach items="${actionBean.complexAttributes}" var="complexAttr" varStatus="complexAttrsLoop">
                 <tr class="zebra${complexAttrsLoop.index % 2 != 0 ? 'odd' : 'even'}">
                     <td>
                         <a href="${pageContext.request.contextPath}/complex_attr.jsp?attr_id=${complexAttr.ID}&amp;parent_id=${actionBean.schema.id}&amp;parent_type=SCH&amp;parent_name=${actionBean.schema.fileName}&amp;parent_link=${viewUrl}">
-                            <c:out value="${complexAttr.shortName}"/>
+                            <c:out value="${complexAttr.name}"/>
                         </a>
                     </td>
                     <td>
@@ -323,10 +323,10 @@
                             </c:forEach>
                         </c:forEach>
                     </td>
-	           </tr>
-	        </c:forEach>
+               </tr>
+            </c:forEach>
 
-	    </table>
+        </table>
     </c:if>
 
     <%-- If root-level schema, display its versions if any. --%>

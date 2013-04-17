@@ -1155,7 +1155,7 @@ else if (mode.equals("add"))
 
                                             <tr class="zebra<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
-                                                        <%=Util.processForDisplay(attribute.getShortName())%>
+                                                        <%=Util.processForDisplay(attribute.getName())%>
                                                     </th>
                                                     <td class="simple_attr_help">
                                                         <a  href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
@@ -1644,7 +1644,7 @@ else if (mode.equals("add"))
 
                                                                     DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
                                                                     attrID = attr.getID();
-                                                                    String attrName = attr.getShortName();
+                                                                    String attrName = attr.getName();
                                                                     Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
                                                                     %>
 

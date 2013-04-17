@@ -13,26 +13,26 @@ ServletContext ctx = null;
 private String sel_attr = null;
 private Hashtable inputAttributes=null;
 
-                
+
 private String getAttributeIdByName(String name){
-    
+
     for (int i=0; i<attrs.size(); i++){
         DElemAttribute attr = (DElemAttribute)attrs.get(i);
         if (attr.getName().equalsIgnoreCase(name))
             return attr.getID();
     }
-        
+
     return null;
 }
 
 private String getAttributeNameById(String id){
-    
+
     for (int i=0; i<attrs.size(); i++){
         DElemAttribute attr = (DElemAttribute)attrs.get(i);
         if (attr.getID().equals(id))
-            return attr.getShortName();
+            return attr.getName();
     }
-        
+
     return null;
 }
 
@@ -53,22 +53,22 @@ private String setDefaultAttrs(String name){
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
+
     DDUser user = SecurityUtil.getUser(request);
-    
+
     ctx = getServletContext();
-    
+
     Connection conn = null;
-    
+
     try { // start the whole page try block
-    
+
     conn = ConnectionUtil.getConnection();
 
     DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 
     attrs = searchEngine.getDElemAttributes();
     if (attrs == null) attrs = new Vector();
-    
+
     attr_ids = new Vector();
     def_attrs = new Vector();
 
@@ -88,8 +88,8 @@ private String setDefaultAttrs(String name){
     String short_name = request.getParameter("short_name");
     String idfier = request.getParameter("idfier");
     String search_precision = request.getParameter("search_precision");
-    
-    
+
+
     if (sel_attr == null) sel_attr="";
     if (sel_type == null) sel_type="";
     if (short_name == null) short_name="";
@@ -99,10 +99,10 @@ private String setDefaultAttrs(String name){
     ///get inserted attributes
     String input_attr;
     inputAttributes = new Hashtable();
-    for (int i=0; i<attrs.size(); i++){    
-        DElemAttribute attribute = (DElemAttribute)attrs.get(i);        
+    for (int i=0; i<attrs.size(); i++){
+        DElemAttribute attribute = (DElemAttribute)attrs.get(i);
         String attr_id = attribute.getID();
-        
+
         input_attr = request.getParameter("attr_" + attr_id);
         if (input_attr!=null){
             inputAttributes.put(attr_id, input_attr);
@@ -121,7 +121,7 @@ private String setDefaultAttrs(String name){
         attrWindow=null;
 
         function submitForm(action){
-            
+
             document.forms["form1"].action=action;
             document.forms["form1"].submit();
         }
@@ -143,12 +143,12 @@ private String setDefaultAttrs(String name){
                             o[i].checked = true;
                             break;
                         }
-                    }            
-                <% 
+                    }
+                <%
                 }
             %>
         }
-        
+
     // ]]>
     </script>
 </head>
@@ -160,7 +160,7 @@ private String setDefaultAttrs(String name){
 </jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-    
+
         <%
         if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){
             %>
@@ -172,7 +172,7 @@ private String setDefaultAttrs(String name){
             </div><%
         }
         %>
-        
+
         <form id="form1" action="datasets.jsp" method="get">
         <h1>Search datasets</h1>
         <table width="600" cellspacing="0" style="padding-top:10px">
@@ -199,7 +199,7 @@ private String setDefaultAttrs(String name){
                     </select>
                 </td>
             </tr>
-                                
+
             <tr style="vertical-align:top">
                 <td align="right">
                     <label for="short_name" class="question">Short name</label>
@@ -213,7 +213,7 @@ private String setDefaultAttrs(String name){
                     <input type="text" class="smalltext" size="59" name="short_name" id="short_name" value="<%=Util.processForDisplay(short_name, true)%>"/>
                 </td>
             </tr>
-            
+
             <tr style="vertical-align:top">
                 <td align="right">
                     <label class="question">Identifier</label>
@@ -234,7 +234,7 @@ private String setDefaultAttrs(String name){
                 for (int i=0; i < def_attrs.size(); i++){
                     attrID = (String)def_attrs.get(i);
                     attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
-                    
+
                     attrName = getAttributeNameById(attrID);
 
                     if (inputAttributes.containsKey(attrID)) inputAttributes.remove(attrID);
@@ -264,7 +264,7 @@ private String setDefaultAttrs(String name){
             if (attr_ids!=null){
                 for (int i=0; i < attr_ids.size(); i++){
                     attrID = (String)attr_ids.get(i);
-                     
+
                     if (!inputAttributes.containsKey(attrID)) continue;
                     if (sel_type.equals("remove") && attrID.equals(sel_attr)) continue;
 
@@ -329,8 +329,8 @@ private String setDefaultAttrs(String name){
                         <input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>
                     </td>
                 </tr>
-            
-            <%                    
+
+            <%
             // if authenticated user, enable to get working copies only
             if (user!=null && user.isAuthentic()){
                 %>
@@ -361,19 +361,19 @@ private String setDefaultAttrs(String name){
             <%
             Vector addCriteria = new Vector();
             for (int i=0; attrs!=null && i<attrs.size(); i++){
-                
+
                 DElemAttribute attribute = (DElemAttribute)attrs.get(i);
                 if (!attribute.displayFor("DST"))
                     continue;
-            
+
                 if (!displayedCriteria.contains(attribute.getID())){
                     Hashtable hash = new Hashtable();
                     hash.put("id", attribute.getID());
-                    hash.put("name", attribute.getShortName());
+                    hash.put("name", attribute.getName());
                     addCriteria.add(hash);
                 }
             }
-            
+
             if (addCriteria.size()>0){
                 %>
                 <tr>
@@ -395,9 +395,9 @@ private String setDefaultAttrs(String name){
             %>
         </table>
         <!-- table for 'Add' -->
-        
+
             <div style="display:none">
-                <input type="hidden" name="sel_attr" value=""/>            
+                <input type="hidden" name="sel_attr" value=""/>
                 <input type="hidden" name="sel_type" value=""/>
                 <input type="hidden" name="type" value="DST"/>
                 <!-- collect all the attributes already used in criterias -->

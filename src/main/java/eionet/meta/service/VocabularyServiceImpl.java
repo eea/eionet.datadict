@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -373,6 +374,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
 
         try {
+            StopWatch timer = new StopWatch();
+            timer.start();
             VocabularyFolder vocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
             if (vocabularyFolder.isWorkingCopy()) {
@@ -402,6 +405,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConceptDAO.updateRelatedConceptIds(newVocabularyFolderId);
             }
 
+            timer.stop();
+            LOGGER.debug("Check-out lasted: " + timer.toString());
             return newVocabularyFolderId;
         } catch (Exception e) {
             throw new ServiceException("Failed to check-out vocabulary folder: " + e.getMessage(), e);
@@ -419,6 +424,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
 
         try {
+            StopWatch timer = new StopWatch();
+            timer.start();
             VocabularyFolder vocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
             if (!vocabularyFolder.isWorkingCopy()) {
@@ -456,6 +463,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
             // Delete checked out version
             vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId));
 
+            timer.stop();
+            LOGGER.debug("Check-in lasted: " + timer.toString());
             return originalVocabularyFolderId;
         } catch (Exception e) {
             throw new ServiceException("Failed to check-in vocabulary folder: " + e.getMessage(), e);

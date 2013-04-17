@@ -183,7 +183,7 @@
             <c:forEach items="${actionBean.addedAttributes}" var="attr" varStatus="row">
                 <tr valign="top">
                     <td align="right" style="padding-right:10">
-                        <label for="txtAddedAttr_${attr.id}_${row.index}" class="question"><c:out value="${attr.shortName}" /></label>
+                        <label for="txtAddedAttr_${attr.id}_${row.index}" class="question"><c:out value="${attr.name}" /></label>
                     </td>
                     <td>
                         <a href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
@@ -218,7 +218,7 @@
                     Add criteria:
                     <stripes:select name="addAttr" class="small" onchange="this.form.submit();" >
                         <stripes:option value="0" label="" />
-                        <stripes:options-collection collection="${actionBean.addableAttributes}" label="shortName" value="id"/>
+                        <stripes:options-collection collection="${actionBean.addableAttributes}" label="name" value="id"/>
                     </stripes:select>
                 </td>
             </tr>

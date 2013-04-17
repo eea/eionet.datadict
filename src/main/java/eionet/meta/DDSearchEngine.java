@@ -1766,6 +1766,7 @@ public class DDSearchEngine {
         buf.append("select ");
         buf.append("M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID as ATTR_ID, ");
         buf.append("M_COMPLEX_ATTR.SHORT_NAME as ATTR_NAME, ");
+        buf.append("M_COMPLEX_ATTR.NAME as NAME, ");
         buf.append("M_COMPLEX_ATTR.INHERIT as INHERIT, ");
         buf.append("M_COMPLEX_ATTR.HARVESTER_ID as HARVESTER_ID, ");
         buf.append("M_COMPLEX_ATTR.OBLIGATION as OBLIGATION, ");
@@ -1859,10 +1860,11 @@ public class DDSearchEngine {
 
                     harvFieldsHash = null;
                     attr =
-                            new DElemAttribute(attrID, null, rs.getString("ATTR_NAME"), DElemAttribute.TYPE_COMPLEX, null, null,
+                            new DElemAttribute(attrID, rs.getString("NAME"), rs.getString("ATTR_NAME"), DElemAttribute.TYPE_COMPLEX, null, null,
                                     rs.getString("OBLIGATION"));
                     attr.setInheritable(rs.getString("INHERIT"));
                     attr.setHarvesterID(rs.getString("HARVESTER_ID"));
+
 
                     Namespace ns = new Namespace(null, rs.getString("NS"), null, null, null);
                     attr.setNamespace(ns);
@@ -4374,7 +4376,7 @@ public class DDSearchEngine {
                 stmt = SQL.preparedStatement(qryBuf.toString(), inParams, conn);
                 rs = stmt.executeQuery();
                 if (rs.next()) {
-                    retBuf.append("<br/><b>").append(rs.getString("SHORT_NAME")).append("</b><br/><br/>")
+                    retBuf.append("<br/><b>").append(rs.getString("NAME")).append("</b><br/><br/>")
                             .append(rs.getString("DEFINITION"));
                 }
             } catch (SQLException e) {
@@ -4434,7 +4436,7 @@ public class DDSearchEngine {
                 stmt = SQL.preparedStatement(qryBuf.toString(), inParams, conn);
                 rs = stmt.executeQuery();
                 if (rs.next()) {
-                    retBuf.append("<br/><b>").append(rs.getString("SHORT_NAME")).append("</b><br/><br/>")
+                    retBuf.append("<br/><b>").append(rs.getString("NAME")).append("</b><br/><br/>")
                             .append(rs.getString("DEFINITION"));
                 }
             } catch (SQLException e) {

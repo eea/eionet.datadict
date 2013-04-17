@@ -236,7 +236,7 @@
                 <c:if test="${not empty attribute.value}">
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">
-                            <c:out value="${attribute.shortName}"/>
+                            <c:out value="${attribute.name}"/>
                         </th>
                         <td class="simple_attr_help">
                             <a href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
@@ -294,7 +294,7 @@
                 <tr class="zebra${complexAttrsLoop.index % 2 != 0 ? 'odd' : 'even'}">
                     <td>
                         <a href="${pageContext.request.contextPath}/complex_attr.jsp?attr_id=${complexAttr.ID}&amp;parent_id=${actionBean.schemaSet.id}&amp;parent_type=SCS&amp;parent_name=${actionBean.schemaSet.identifier}&amp;parent_link=${viewUrl}">
-                            <c:out value="${complexAttr.shortName}"/>
+                            <c:out value="${complexAttr.name}"/>
                         </a>
                     </td>
                     <td>

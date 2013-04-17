@@ -91,7 +91,7 @@
                     <c:set var="attribute" value="${attributesEntry.value}"/>
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">
-                            <c:out value="${attribute.shortName}"/>
+                            <c:out value="${attribute.name}"/>
                         </th>
                         <td class="simple_attr_help">
                             <a href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
