@@ -519,22 +519,24 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         List<SimpleAttribute> attrMeta = vocabularyService.getVocabularyFolderAttributesMetadata();
         List<List<SimpleAttribute>> attributes = new ArrayList<List<SimpleAttribute>>();
 
-        for (int i = 0; i < vocabularyFolder.getAttributes().size(); i++) {
-            List<SimpleAttribute> attrValues = vocabularyFolder.getAttributes().get(i);
-            SimpleAttribute attrMetadata = attrMeta.get(i);
-            List<SimpleAttribute> attrs = new ArrayList<SimpleAttribute>();
-            if (attrValues != null) {
-                for (SimpleAttribute attrValue : attrValues) {
-                    if (attrValue != null) {
-                        attrs.add(mergeTwoAttributes(attrMetadata, attrValue));
-                    } else {
-                        attrs.add(attrMetadata);
+        if (vocabularyFolder.getAttributes() != null) {
+            for (int i = 0; i < vocabularyFolder.getAttributes().size(); i++) {
+                List<SimpleAttribute> attrValues = vocabularyFolder.getAttributes().get(i);
+                SimpleAttribute attrMetadata = attrMeta.get(i);
+                List<SimpleAttribute> attrs = new ArrayList<SimpleAttribute>();
+                if (attrValues != null) {
+                    for (SimpleAttribute attrValue : attrValues) {
+                        if (attrValue != null) {
+                            attrs.add(mergeTwoAttributes(attrMetadata, attrValue));
+                        } else {
+                            attrs.add(attrMetadata);
+                        }
                     }
+                } else {
+                    attrs.add(attrMetadata);
                 }
-            } else {
-                attrs.add(attrMetadata);
+                attributes.add(attrs);
             }
-            attributes.add(attrs);
         }
 
         vocabularyFolder.setAttributes(attributes);
@@ -877,8 +879,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyFolder
-     *            the vocabularyFolder to set
+     * @param vocabularyFolder the vocabularyFolder to set
      */
     public void setVocabularyFolder(VocabularyFolder vocabularyFolder) {
         this.vocabularyFolder = vocabularyFolder;
@@ -892,16 +893,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcepts
-     *            the vocabularyConcepts to set
+     * @param vocabularyConcepts the vocabularyConcepts to set
      */
     public void setVocabularyConcepts(VocabularyConceptResult vocabularyConcepts) {
         this.vocabularyConcepts = vocabularyConcepts;
     }
 
     /**
-     * @param vocabularyService
-     *            the vocabularyService to set
+     * @param vocabularyService the vocabularyService to set
      */
     public void setVocabularyService(IVocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
@@ -915,8 +914,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcept
-     *            the vocabularyConcept to set
+     * @param vocabularyConcept the vocabularyConcept to set
      */
     public void setVocabularyConcept(VocabularyConcept vocabularyConcept) {
         this.vocabularyConcept = vocabularyConcept;
@@ -930,8 +928,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param conceptIds
-     *            the conceptIds to set
+     * @param conceptIds the conceptIds to set
      */
     public void setConceptIds(List<Integer> conceptIds) {
         this.conceptIds = conceptIds;
@@ -945,8 +942,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param copyId
-     *            the copyId to set
+     * @param copyId the copyId to set
      */
     public void setCopyId(int copyId) {
         this.copyId = copyId;
@@ -974,8 +970,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param filter
-     *            the filter to set
+     * @param filter the filter to set
      */
     public void setFilter(VocabularyConceptFilter filter) {
         this.filter = filter;
@@ -989,8 +984,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param page
-     *            the page to set
+     * @param page the page to set
      */
     public void setPage(int page) {
         this.page = page;
