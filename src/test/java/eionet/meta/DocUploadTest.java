@@ -2,7 +2,6 @@
 // Therefore we must be in the same package
 package eionet.meta;
 
-
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
@@ -13,8 +12,6 @@ import static org.easymock.EasyMock.verify;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletInputStream;
@@ -24,21 +21,13 @@ import javax.servlet.http.HttpSession;
 
 import junit.framework.TestCase;
 
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
-import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
+import eionet.DDDatabaseTestCase;
 import eionet.test.Seed;
-import eionet.util.Props;
-import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
-import eionet.DDDatabaseTestCase;
-
 
 /*
  * An attempt to mock a ServletInputStream
@@ -57,7 +46,6 @@ class MockServletInputStream extends ServletInputStream {
 
 }
 
-
 /**
  * This unittest tests the DocUpload servlet
  *
@@ -71,10 +59,9 @@ public class DocUploadTest extends DDDatabaseTestCase {
     }
 
     /**
-     * This test simply uploads the seed-hlp file
-     * For some reason, the object is not completely reset at each test, so the first
-     * time the servletContext.getInitParameter("module-db_pool") once, and not again
-     * and user.isAuthentic() is called twice the first time and once on every additional test run
+     * This test simply uploads the seed-hlp file For some reason, the object is not completely reset at each test, so the first
+     * time the servletContext.getInitParameter("module-db_pool") once, and not again and user.isAuthentic() is called twice the
+     * first time and once on every additional test run
      */
     private void runSimpleUpload(String title, String ds_id) throws Exception {
 
@@ -114,7 +101,6 @@ public class DocUploadTest extends DDDatabaseTestCase {
 
         expect(httpSession.getAttribute(SecurityUtil.REMOTEUSER)).andReturn(user);
         expectLastCall().times(1, 2);
-
 
         // this is what expect for the response object
         response.sendRedirect((String) anyObject());
@@ -204,7 +190,8 @@ public class DocUploadTest extends DDDatabaseTestCase {
 
         // verify that there are the expected number of rows in the DOC table
         QueryDataSet queryDataSet = new QueryDataSet(getConnection());
-        queryDataSet.addTable("DOC", "select * from DOC where OWNER_TYPE='dst' and OWNER_ID=" + ds_id + " and MD5_PATH='" + filePathMd5 + "'");
+        queryDataSet.addTable("DOC", "select * from DOC where OWNER_TYPE='dst' and OWNER_ID=" + ds_id + " and MD5_PATH='"
+                + filePathMd5 + "'");
         ITable tmpTable = queryDataSet.getTable("DOC");
         TestCase.assertEquals(tmpTable.getRowCount(), 0);
     }
@@ -227,4 +214,3 @@ public class DocUploadTest extends DDDatabaseTestCase {
         runSimpleDelete("23");
     }
 }
-

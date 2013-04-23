@@ -15,8 +15,8 @@ import eionet.meta.FakeUser;
 import eionet.test.Seed;
 
 /**
- * This class contains unit tests for eionet.meta.DatasetImport.
- * It is essentially a copy of the main() routine that was used to demonstrate the usage.
+ * This class contains unit tests for eionet.meta.DatasetImport. It is essentially a copy of the main() routine that was used to
+ * demonstrate the usage.
  *
  * @author Jaanus Heinlaid
  */
@@ -28,7 +28,8 @@ public class DatasetImportTest extends DDDatabaseTestCase {
     }
 
     /**
-     * @throws Exception if it fails.
+     * @throws Exception
+     *             if it fails.
      */
     public void testXMLDatasetImport() throws Exception {
 
@@ -52,17 +53,14 @@ public class DatasetImportTest extends DDDatabaseTestCase {
         DDUser testUser = new FakeUser();
         testUser.authenticate("jaanus", "jaanus");
 
-        //TODO: You can no longer provide null as the servlet context, so this fails
+        // TODO: You can no longer provide null as the servlet context, so this fails
         /*
-        DatasetImport dbImport = new DatasetImport(handler, conn, null);
-
-        dbImport.setUser(testUser);
-        dbImport.setDate(String.valueOf(System.currentTimeMillis()));
-        dbImport.setImportType("DST");
-        dbImport.execute();
-
-        responseText.append(dbImport.getResponseText());
-        System.out.println(responseText.toString());
-        */
+         * DatasetImport dbImport = new DatasetImport(handler, conn, null);
+         *
+         * dbImport.setUser(testUser); dbImport.setDate(String.valueOf(System.currentTimeMillis())); dbImport.setImportType("DST");
+         * dbImport.execute();
+         *
+         * responseText.append(dbImport.getResponseText()); System.out.println(responseText.toString());
+         */
     }
 }

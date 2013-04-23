@@ -2,14 +2,12 @@
 // Therefore we must be in the same package
 package eionet.meta.savers;
 
-
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -18,27 +16,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.TestCase;
 
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
-import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.meta.FakeUser;
 import eionet.DDDatabaseTestCase;
-
+import eionet.meta.FakeUser;
 
 /**
  * This unittest tests the attributes.
- * 
+ *
  * See www.easymock.org and http://www.evolutionnext.com/blog/2006/01/27.html
  */
 public class AttributeHandlerTest extends DDDatabaseTestCase {
-    
+
     @Override
     protected String getSeedFilename() {
         return "seed-attributes.xml";
@@ -51,7 +41,7 @@ public class AttributeHandlerTest extends DDDatabaseTestCase {
         String attribute_to_delete = "37";
 
         FakeUser masterUser = new FakeUser();
-        masterUser.authenticate("master","master");
+        masterUser.authenticate("master", "master");
 
         QueryDataSet queryDataSet = new QueryDataSet(getConnection());
 
@@ -73,9 +63,9 @@ public class AttributeHandlerTest extends DDDatabaseTestCase {
         HttpServletResponse response = createMock(HttpServletResponse.class);
         ServletConfig servletConfig = createMock(ServletConfig.class);
         ServletContext servletContext = createMock(ServletContext.class);
-        
+
         Connection jdbcConn = getConnection().getConnection();
-    
+
         // This is what we expect for the servletContext object
         expect(servletContext.getInitParameter("visuals-path")).andReturn("HERE-IS-VISUALS-PATH");
         expect(servletContext.getInitParameter("versioning")).andReturn("HERE-IS-VERSIONING");
@@ -95,7 +85,7 @@ public class AttributeHandlerTest extends DDDatabaseTestCase {
         vs[0] = attribute_to_delete;
         expect(request.getParameterValues("simple_attr_id")).andReturn(vs);
         expect(request.getParameterValues("complex_attr_id")).andReturn(null);
-        
+
         // start the replay for all mock objects
         replay(request);
         replay(response);
@@ -129,4 +119,3 @@ public class AttributeHandlerTest extends DDDatabaseTestCase {
     }
 
 }
-

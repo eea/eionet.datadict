@@ -1,6 +1,5 @@
 package eionet.meta.savers;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,22 +8,15 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-
 import org.junit.Test;
 
-import eionet.util.Util;
-import eionet.util.sql.ConnectionUtil;
-import eionet.util.sql.SQL;
 import eionet.DDDatabaseTestCase;
+import eionet.util.Util;
+import eionet.util.sql.SQL;
 
 /**
  *
@@ -46,7 +38,6 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
 
     /** */
     HashMap<String, String> idMap;
-
 
     @Override
     protected void setUp() throws Exception {
@@ -109,7 +100,7 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
 
             conn.commit();
             long endTime = System.currentTimeMillis();
-            LOGGER.debug(i + " inserts took " + (endTime-startTime) + " ms");
+            LOGGER.debug(i + " inserts took " + (endTime - startTime) + " ms");
             // Verify that there are the expected number of rows in the table
             QueryDataSet queryDataSet = new QueryDataSet(getConnection());
             queryDataSet.addTable("ATTRIBUTE", "SELECT count(*) as C FROM ATTRIBUTE");
@@ -152,7 +143,7 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
             stmt.executeBatch();
             conn.commit();
             long endTime = System.currentTimeMillis();
-            LOGGER.debug(i + " inserts took " + (endTime-startTime) + " ms");
+            LOGGER.debug(i + " inserts took " + (endTime - startTime) + " ms");
             // Verify that there are the expected number of rows in the table
             QueryDataSet queryDataSet = new QueryDataSet(getConnection());
             queryDataSet.addTable("ATTRIBUTE", "SELECT count(*) as C FROM ATTRIBUTE");
@@ -199,7 +190,7 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
             pstmt.executeBatch();
             conn.commit();
             long endTime = System.currentTimeMillis();
-            LOGGER.debug(i + " inserts took " + (endTime-startTime) + " ms");
+            LOGGER.debug(i + " inserts took " + (endTime - startTime) + " ms");
             // Verify that there are the expected number of rows in the table
             QueryDataSet queryDataSet = new QueryDataSet(getConnection());
             queryDataSet.addTable("ATTRIBUTE", "SELECT count(*) as C FROM ATTRIBUTE");
@@ -221,8 +212,8 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
     @Test
     public void testSingleExtendedInsert() throws Exception {
 
-        String getCurrentRowsSQL = "select * from ATTRIBUTE where PARENT_TYPE='E' and DATAELEM_ID in ("
-            + Util.toCSV(idMap.keySet()) + ")";
+        String getCurrentRowsSQL =
+                "select * from ATTRIBUTE where PARENT_TYPE='E' and DATAELEM_ID in (" + Util.toCSV(idMap.keySet()) + ")";
 
         StringBuilder insertNewRowsSQL = new StringBuilder();
         insertNewRowsSQL.append("insert into ATTRIBUTE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE) values ");
@@ -271,7 +262,7 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
 
             conn.commit();
             long endTime = System.currentTimeMillis();
-            LOGGER.debug("The single extended insert took " + (endTime-startTime) + " ms");
+            LOGGER.debug("The single extended insert took " + (endTime - startTime) + " ms");
             // Verify that there are the expected number of rows in the table
             QueryDataSet queryDataSet = new QueryDataSet(getConnection());
             queryDataSet.addTable("ATTRIBUTE", "SELECT count(*) as C FROM ATTRIBUTE");
@@ -328,7 +319,7 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
             pstmt.executeBatch();
             conn.commit();
             long endTime = System.currentTimeMillis();
-            LOGGER.debug("The single batch insert took " + (endTime-startTime) + " ms");
+            LOGGER.debug("The single batch insert took " + (endTime - startTime) + " ms");
             // Verify that there are the expected number of rows in the table
             QueryDataSet queryDataSet = new QueryDataSet(getConnection());
             queryDataSet.addTable("ATTRIBUTE", "SELECT count(*) as C FROM ATTRIBUTE");

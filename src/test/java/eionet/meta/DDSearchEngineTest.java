@@ -1,8 +1,6 @@
 package eionet.meta;
 
 import eionet.DDDatabaseTestCase;
-import junit.framework.TestCase;
-
 
 /*
  * This unittest tests the DDSearchEngine on an empty database.

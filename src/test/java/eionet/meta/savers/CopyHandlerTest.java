@@ -6,22 +6,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.dbunit.assertion.DbUnitAssert;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.Column;
 import org.dbunit.dataset.ColumnFilterTable;
-import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.SortedTable;
 import org.dbunit.dataset.filter.IColumnFilter;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Test;
 
-import eionet.test.util.ColumnSpecificReplacementTable;
-import eionet.util.sql.ConnectionUtil;
 import eionet.DDDatabaseTestCase;
+import eionet.test.util.ColumnSpecificReplacementTable;
 
 /**
  *
@@ -35,14 +29,13 @@ public class CopyHandlerTest extends DDDatabaseTestCase {
         return "seed-copyhandler.xml";
     }
 
-
     /**
      * @throws Exception
      * @throws SQLException
      *
      */
     @Test
-    public void testCopyAutoIncRow() throws SQLException, Exception{
+    public void testCopyAutoIncRow() throws SQLException, Exception {
 
         QueryDataSet queryDataSet = new QueryDataSet(getConnection());
         queryDataSet.addTable("DATASET", "select * from DATASET where SHORT_NAME='dataset1' order by DATASET_ID");
@@ -303,7 +296,7 @@ public class CopyHandlerTest extends DDDatabaseTestCase {
      * @param newId
      * @throws Exception
      */
-    private void compareFkRelations(String oldElmId, String newElmId, Map<String,String> oldNewElements) throws Exception {
+    private void compareFkRelations(String oldElmId, String newElmId, Map<String, String> oldNewElements) throws Exception {
 
         if (oldNewElements == null || oldNewElements.isEmpty()) {
             return;
@@ -374,9 +367,9 @@ public class CopyHandlerTest extends DDDatabaseTestCase {
 
         // finally, compare the two resulting tables
         assertEquals(tableOld.getRowCount(), tableNew.getRowCount());
-        //Commented out because the new table versioning creates new table ids
-        //DbUnitAssert dbUnitAssert = new DbUnitAssert();
-        //dbUnitAssert.assertEquals(tableOld, tableNew);
+        // Commented out because the new table versioning creates new table ids
+        // DbUnitAssert dbUnitAssert = new DbUnitAssert();
+        // dbUnitAssert.assertEquals(tableOld, tableNew);
     }
 
     /**
@@ -423,9 +416,9 @@ public class CopyHandlerTest extends DDDatabaseTestCase {
 
         // finally, compare the two resulting tables
         assertEquals(tableOld.getRowCount(), tableNew.getRowCount());
-        //Commented out because the new element versioning creates new auto-incremented ids
-        //DbUnitAssert dbUnitAssert = new DbUnitAssert();
-        //dbUnitAssert.assertEquals(tableOld, tableNew);
+        // Commented out because the new element versioning creates new auto-incremented ids
+        // DbUnitAssert dbUnitAssert = new DbUnitAssert();
+        // dbUnitAssert.assertEquals(tableOld, tableNew);
     }
 
     /**
