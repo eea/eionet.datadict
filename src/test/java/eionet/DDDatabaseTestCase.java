@@ -1,18 +1,14 @@
 package eionet;
 
-import java.util.Properties;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Properties;
 
-import junit.framework.TestCase;
-
+import org.apache.log4j.Logger;
 import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
@@ -21,6 +17,9 @@ import eionet.util.PropsIF;
 
 
 public abstract class DDDatabaseTestCase extends DatabaseTestCase {
+
+    /** Logger. */
+    protected static final Logger LOGGER = Logger.getLogger(DDDatabaseTestCase.class);
 
     /** File name of seed to load with getDataSet() */
     private String seedFilename;

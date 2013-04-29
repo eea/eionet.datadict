@@ -23,16 +23,7 @@ package eionet.meta.service;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-
 import org.apache.log4j.Logger;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,8 +32,6 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.util.Props;
-import eionet.util.PropsIF;
 
 /**
  * JUnit integration test with Unitils for vocabulary service.
@@ -60,39 +49,17 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     private IVocabularyService vocabularyService;
 
     @BeforeClass
-    public static void initData() throws Exception {
-        Class.forName(Props.getProperty(PropsIF.DBDRV));
-        Connection jdbcConnection =
-                DriverManager.getConnection(Props.getProperty(PropsIF.DBURL), Props.getProperty(PropsIF.DBUSR),
-                        Props.getProperty(PropsIF.DBPSW));
-        IDatabaseConnection con = new DatabaseConnection(jdbcConnection);
-
-        InputStream is = VocabularyServiceTest.class.getClassLoader().getResourceAsStream("seed-vocabularies.xml");
-        IDataSet dataSet = new FlatXmlDataSetBuilder().build(is);
-        DatabaseOperation.CLEAN_INSERT.execute(con, dataSet);
-
-        con.close();
+    public static void loadData() throws Exception {
+        DBUnitHelper.loadData("seed-vocabularies.xml");
     }
 
     @AfterClass
     public static void deleteData() throws Exception {
-        Class.forName(Props.getProperty(PropsIF.DBDRV));
-        Connection jdbcConnection =
-                DriverManager.getConnection(Props.getProperty(PropsIF.DBURL), Props.getProperty(PropsIF.DBUSR),
-                        Props.getProperty(PropsIF.DBPSW));
-        IDatabaseConnection con = new DatabaseConnection(jdbcConnection);
-
-        InputStream is = VocabularyServiceTest.class.getClassLoader().getResourceAsStream("seed-vocabularies.xml");
-        IDataSet dataSet = new FlatXmlDataSetBuilder().build(is);
-        DatabaseOperation.DELETE_ALL.execute(con, dataSet);
-
-        con.close();
+        DBUnitHelper.deleteData("seed-vocabularies.xml");
     }
 
     @Test
     public void testGetVodabularyFolder() throws ServiceException {
-        LOGGER.debug("Running testGetVodabularyFolder ... " + Props.getProperty(PropsIF.DBURL));
-
         VocabularyFolder result = vocabularyService.getVocabularyFolder(1);
         assertNotNull("Expected vocabulary folder", result);
     }
