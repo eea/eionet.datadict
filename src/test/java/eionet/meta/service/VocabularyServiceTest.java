@@ -21,7 +21,10 @@
 
 package eionet.meta.service;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
@@ -31,7 +34,11 @@ import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.dao.domain.VocabularyType;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
 
 /**
  * JUnit integration test with Unitils for vocabulary service.
@@ -59,8 +66,60 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     }
 
     @Test
-    public void testGetVodabularyFolder() throws ServiceException {
+    public void testGetVodabularyFolder_byId() throws ServiceException {
         VocabularyFolder result = vocabularyService.getVocabularyFolder(1);
         assertNotNull("Expected vocabulary folder", result);
+    }
+
+    @Test
+    public void testGetVodabularyFolder_byIdentifier() throws ServiceException {
+        VocabularyFolder result = vocabularyService.getVocabularyFolder("common", "test_vocabulary2", true);
+        assertEquals("Expected id", 3, result.getId());
+    }
+
+    @Test
+    public void testGetVocabularyFolders_anonymous() throws ServiceException {
+        List<VocabularyFolder> result = vocabularyService.getVocabularyFolders(null);
+        assertEquals("Result size", 2, result.size());
+    }
+
+    @Test
+    public void testGetVocabularyFolders_testUser() throws ServiceException {
+        List<VocabularyFolder> result = vocabularyService.getVocabularyFolders("testUser");
+        assertEquals("Result size", 3, result.size());
+    }
+
+    @Test
+    public void testCreateVocabularyFolder() throws ServiceException {
+        VocabularyFolder vocabularyFolder = new VocabularyFolder();
+        vocabularyFolder.setFolderName("test");
+        vocabularyFolder.setLabel("test");
+        vocabularyFolder.setIdentifier("test");
+        vocabularyFolder.setType(VocabularyType.COMMON);
+
+        int id = vocabularyService.createVocabularyFolder(vocabularyFolder, "testUser");
+        VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
+        assertNotNull("Expected vocabulary folder", result);
+    }
+
+    @Test
+    public void testSearchVocabularyConcepts() throws ServiceException {
+        VocabularyConceptFilter filter = new VocabularyConceptFilter();
+        filter.setVocabularyFolderId(3);
+
+        VocabularyConceptResult result = vocabularyService.searchVocabularyConcepts(filter);
+        assertEquals("Result size", 2, result.getFullListSize());
+    }
+
+    @Test
+    public void testCreateVocabularyConcept() throws ServiceException {
+        VocabularyConcept concept = new VocabularyConcept();
+        concept.setIdentifier("test3");
+        concept.setLabel("test3");
+
+        int id = vocabularyService.createVocabularyConcept(3, concept);
+
+        VocabularyConcept result = vocabularyService.getVocabularyConcept(id, true);
+        assertNotNull("Expected concept", result);
     }
 }

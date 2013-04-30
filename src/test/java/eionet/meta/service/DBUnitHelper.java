@@ -24,10 +24,13 @@ package eionet.meta.service;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Properties;
 
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 
@@ -48,15 +51,22 @@ public class DBUnitHelper {
      * @throws Exception
      */
     public static void loadData(String xmlFileName) throws Exception {
-        Class.forName(Props.getProperty(PropsIF.DBDRV));
+        Properties properties = new Properties();
+        properties.setProperty("http://www.dbunit.org/properties/datatypeFactory", "org.dbunit.ext.mysql.MySqlDataTypeFactory");
+
         Connection jdbcConnection =
                 DriverManager.getConnection(Props.getProperty(PropsIF.DBURL), Props.getProperty(PropsIF.DBUSR),
                         Props.getProperty(PropsIF.DBPSW));
         IDatabaseConnection con = new DatabaseConnection(jdbcConnection);
+        con.getConfig().setPropertiesByString(properties);
 
-        InputStream is = VocabularyServiceTest.class.getClassLoader().getResourceAsStream(xmlFileName);
-        IDataSet dataSet = new FlatXmlDataSetBuilder().build(is);
-        DatabaseOperation.CLEAN_INSERT.execute(con, dataSet);
+        InputStream is = DBUnitHelper.class.getClassLoader().getResourceAsStream(xmlFileName);
+        FlatXmlDataSet dataSet = new FlatXmlDataSetBuilder().build(is);
+
+        ReplacementDataSet replacementDataSet = new ReplacementDataSet(dataSet);
+        replacementDataSet.addReplacementObject("[NULL]", null);
+
+        DatabaseOperation.CLEAN_INSERT.execute(con, replacementDataSet);
 
         con.close();
     }
@@ -68,7 +78,6 @@ public class DBUnitHelper {
      * @throws Exception
      */
     public static void deleteData(String xmlFileName) throws Exception {
-        Class.forName(Props.getProperty(PropsIF.DBDRV));
         Connection jdbcConnection =
                 DriverManager.getConnection(Props.getProperty(PropsIF.DBURL), Props.getProperty(PropsIF.DBUSR),
                         Props.getProperty(PropsIF.DBPSW));
