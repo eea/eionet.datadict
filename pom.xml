@@ -178,6 +178,18 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <!-- Maven 2.0.4 requires version 2.2 -->
+                <!-- <version>2.5.2</version> -->
+                <configuration>
+                   <formats>
+                       <format>xml</format>
+                   </formats>
+                </configuration>
+            </plugin>
+
         </plugins>
 
         <!-- filters for src/main/resources and src/test/resources -->
