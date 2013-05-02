@@ -23,7 +23,10 @@ package eionet.meta.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -121,5 +124,110 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
         VocabularyConcept result = vocabularyService.getVocabularyConcept(id, true);
         assertNotNull("Expected concept", result);
+    }
+
+    @Test
+    public void testUpdateVocabularyConcept() throws ServiceException {
+        VocabularyConcept result = vocabularyService.getVocabularyConcept(1, true);
+        result.setLabel("modified");
+        vocabularyService.updateVocabularyConcept(result);
+        result = vocabularyService.getVocabularyConcept(1, true);
+        assertEquals("Modified label", "modified", result.getLabel());
+    }
+
+    @Test
+    public void testUpdateVocabularyFolder() throws ServiceException {
+        VocabularyFolder result = vocabularyService.getVocabularyFolder(1);
+        result.setLabel("modified");
+        vocabularyService.updateVocabularyFolder(result);
+        result = vocabularyService.getVocabularyFolder(1);
+        assertEquals("Modified label", "modified", result.getLabel());
+    }
+
+    @Test
+    public void testDeleteVocabularyConcepts() throws ServiceException {
+        vocabularyService.deleteVocabularyConcepts(Collections.singletonList(1));
+
+        Exception exception = null;
+        try {
+            vocabularyService.getVocabularyConcept(1, true);
+            fail("Expected concept not found exception");
+        } catch (ServiceException e) {
+            exception = e;
+        }
+        assertNotNull("Expected exception", exception);
+    }
+
+    @Test
+    public void testMarkConceptsObsolete() throws ServiceException {
+        vocabularyService.markConceptsObsolete(Collections.singletonList(1));
+        VocabularyConcept concept = vocabularyService.getVocabularyConcept(1, true);
+        assertNotNull("Obsolete date", concept.getObsolete());
+    }
+
+    @Test
+    public void testUnMarkConceptsObsolete() throws ServiceException {
+        vocabularyService.markConceptsObsolete(Collections.singletonList(1));
+        vocabularyService.unMarkConceptsObsolete(Collections.singletonList(1));
+        VocabularyConcept concept = vocabularyService.getVocabularyConcept(1, true);
+        assertNull("Obsolete date", concept.getObsolete());
+    }
+
+    @Test
+    public void testDeleteVocabularyFolders() throws ServiceException {
+        vocabularyService.deleteVocabularyFolders(Collections.singletonList(1));
+
+        Exception exception = null;
+        try {
+            vocabularyService.getVocabularyFolder(1);
+            fail("Expected vocabulary not found exception");
+        } catch (ServiceException e) {
+            exception = e;
+        }
+        assertNotNull("Expected exception", exception);
+    }
+
+    @Test
+    public void testCheckOutVocabularyFolder() throws ServiceException {
+        vocabularyService.checkOutVocabularyFolder(1, "testUser");
+        VocabularyFolder result = vocabularyService.getVocabularyFolder("common", "test_vocabulary1", true);
+
+        assertNotNull("Working copy vocabulary", result);
+        assertEquals("Working user", "testUser", result.getWorkingUser());
+        assertEquals("Working copy", true, result.isWorkingCopy());
+        assertEquals("Checked out copy id", 1, result.getCheckedOutCopyId());
+    }
+
+    @Test
+    public void testCheckInVocabularyFolder() throws ServiceException {
+        vocabularyService.checkInVocabularyFolder(3, "testUser");
+
+        Exception exception = null;
+        try {
+            vocabularyService.getVocabularyFolder("common", "test_vocabulary2", true);
+            fail("Expected vocabulary not found exception");
+        } catch (ServiceException e) {
+            exception = e;
+        }
+        assertNotNull("Expected exception", exception);
+
+        VocabularyFolder result = vocabularyService.getVocabularyFolder("common", "test_vocabulary2", false);
+
+        assertNotNull("Original vocabulary", result);
+        assertNull("Working user", result.getWorkingUser());
+        assertEquals("Working copy", false, result.isWorkingCopy());
+        assertEquals("Checked out copy id", 0, result.getCheckedOutCopyId());
+    }
+
+    @Test
+    public void testCreateVocabularyFolderCopy() throws ServiceException {
+        VocabularyFolder vocabularyFolder = new VocabularyFolder();
+        vocabularyFolder.setType(VocabularyType.COMMON);
+        vocabularyFolder.setFolderName("Common");
+        vocabularyFolder.setLabel("copy");
+        vocabularyFolder.setIdentifier("copy");
+        int id = vocabularyService.createVocabularyFolderCopy(vocabularyFolder, 1, "testUser");
+        VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
+        assertNotNull("Expected vocabulary folder", result);
     }
 }
