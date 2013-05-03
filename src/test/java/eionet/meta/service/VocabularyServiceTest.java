@@ -230,4 +230,44 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
         assertNotNull("Expected vocabulary folder", result);
     }
+
+    @Test
+    public void testGetVocabularyFolderVersions() throws ServiceException {
+        List<VocabularyFolder> result = vocabularyService.getVocabularyFolderVersions("123", 1, "testUser");
+        assertEquals("Number of other versions", 2, result.size());
+    }
+
+    @Test
+    public void testUndoCheckOut() throws ServiceException {
+        vocabularyService.checkOutVocabularyFolder(1, "testUser");
+        VocabularyFolder workingCopy = vocabularyService.getVocabularyFolder("common", "test_vocabulary1", true);
+        vocabularyService.undoCheckOut(workingCopy.getId(), "testUser");
+
+        Exception exception = null;
+        try {
+            vocabularyService.getVocabularyFolder("common", "test_vocabulary1", true);
+            fail("Expected vocabulary not found exception");
+        } catch (ServiceException e) {
+            exception = e;
+        }
+        assertNotNull("Expected exception", exception);
+    }
+
+    @Test
+    public void testGetVocabularyWorkingCopy() throws ServiceException {
+        VocabularyFolder result = vocabularyService.getVocabularyWorkingCopy(2);
+        assertNotNull("Expected vocabulary folder", result);
+    }
+
+    @Test
+    public void testIsUniqueFolderIdentifier() throws ServiceException {
+        boolean result = vocabularyService.isUniqueFolderIdentifier("Common", "test", null);
+        assertEquals("Is unique", true, result);
+    }
+
+    @Test
+    public void testiIUniqueConceptIdentifier() throws ServiceException {
+        boolean result = vocabularyService.isUniqueConceptIdentifier("2", 3, 2);
+        assertEquals("Is unique", true, result);
+    }
 }
