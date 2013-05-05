@@ -6,7 +6,7 @@ package eionet.util;
  * @see http://www.java2s.com/Tutorial/Java/0120__Development/EscapeHTML.htm
  * @see http://www.ietf.org/rfc/rfc3986.txt
  */
-public final class StringHelper {
+public final class StringEncoder {
     /**
      * Characters that aren't allowed in IRIs. Special consideration for plus (+): It is historically used to encode space. If we
      * leave it unencoded, then it could be mistakenly decoded back to a space.
@@ -29,7 +29,7 @@ public final class StringHelper {
     /**
      * Constructor. Since all methods are static we don't want instantiations of the class.
      */
-    private StringHelper() {
+    private StringEncoder() {
         throw new UnsupportedOperationException();
     }
 

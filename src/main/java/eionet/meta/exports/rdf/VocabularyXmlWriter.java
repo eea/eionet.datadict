@@ -36,7 +36,7 @@ import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SiteCode;
-import eionet.util.StringHelper;
+import eionet.util.StringEncoder;
 
 /**
  * Vocabulary RDF-XML writer.
@@ -90,7 +90,7 @@ public class VocabularyXmlWriter {
      */
     public static String escapeIRI(String url) {
 
-        return StringHelper.encodeToIRI(url);
+        return StringEncoder.encodeToIRI(url);
     }
 
     /**
