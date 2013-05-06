@@ -61,10 +61,12 @@
             </c:forEach>
         </select>
         <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
+        <%--
         <fieldset>
             <legend>Link text</legend>
             <input name="" class="${fieldClass}" size="${fieldSize}" type="text">
         </fieldset>
+         --%>
     </div>
 </div>
 
@@ -88,10 +90,12 @@
                 </c:forEach>
             </select>
             <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
+            <%--
             <fieldset>
                 <legend>Link text</legend>
                 <input value="${attr.linkText}" name="${fieldName}[${innerLoop.index}].linkText" class="${fieldClass}" size="${fieldSize}" type="text">
             </fieldset>
+            --%>
         </div>
         </c:if>
     </c:forEach>

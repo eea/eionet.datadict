@@ -98,7 +98,7 @@
                                                     <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                                                     <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                                                     <stripes:param name="vocabularyConcept.identifier" value="${attr.relatedIdentifier}" />
-                                                    <c:out value="${attr.relatedIdentifier}" />
+                                                    <c:out value="${attr.relatedLabel}" />
                                                 </stripes:link>
                                             </c:otherwise>
                                         </c:choose>

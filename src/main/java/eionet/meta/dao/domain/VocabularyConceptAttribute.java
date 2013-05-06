@@ -49,6 +49,7 @@ public class VocabularyConceptAttribute extends SimpleAttribute {
 
     /** Related concept properties. */
     private String relatedIdentifier;
+    private String relatedLabel;
 
     /**
      * @return the vocabularyConceptId
@@ -168,6 +169,21 @@ public class VocabularyConceptAttribute extends SimpleAttribute {
      */
     public void setId(int id) {
         this.id = id;
+    }
+
+    /**
+     * @return the relatedLabel
+     */
+    public String getRelatedLabel() {
+        return relatedLabel;
+    }
+
+    /**
+     * @param relatedLabel
+     *            the relatedLabel to set
+     */
+    public void setRelatedLabel(String relatedLabel) {
+        this.relatedLabel = relatedLabel;
     }
 
 }

@@ -378,6 +378,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
                 atr.setLinkText(rs.getString("v.LINK_TEXT"));
                 atr.setRelatedId(rs.getInt("v.RELATED_CONCEPT_ID"));
                 atr.setRelatedIdentifier(rs.getString("c.IDENTIFIER"));
+                atr.setRelatedLabel(rs.getString("c.LABEL"));
 
                 if (!StringUtils.equals(previousShortName, rs.getString("m.SHORT_NAME"))) {
                     result.add(attributes);
