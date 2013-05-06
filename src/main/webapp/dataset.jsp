@@ -1027,7 +1027,7 @@ else if (mode.equals("add"))
 
                                             <tr class="zebra<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">
-                                                    RegistrationStatus
+                                                    Registration status
                                                 </th>
                                                 <td class="simple_attr_help">
                                                     <a  href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
