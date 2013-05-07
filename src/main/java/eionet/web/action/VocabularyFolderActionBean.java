@@ -666,7 +666,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             } else {
                 concepts =
                         vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
-                                vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.VALID_ONLY);
+                                vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
             }
 
             final List<? extends VocabularyConcept> finalConcepts = concepts;
