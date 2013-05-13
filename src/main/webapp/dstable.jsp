@@ -878,6 +878,38 @@ else if (mode.equals("add"))
 
                                           <!-- static attributes -->
 
+                                        <!-- Identifier -->
+                                        <tr class="zebra<%=isOdd%>">
+                                            <th scope="row" class="scope-row simple_attr_title">
+                                                Identifier
+                                            </th>
+                                            <td class="simple_attr_help">
+                                                <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
+                                                </a>
+                                            </td>
+                                            <%
+                                            if (colspan==4){%>
+                                                <td class="simple_attr_help">
+                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
+                                                </td><%
+                                            }
+                                            %>
+                                            <td class="simple_attr_value">
+                                                <%
+                                                if(!mode.equals("add")){ %>
+                                                    <b><%=Util.processForDisplay(dsTable.getIdentifier())%></b>
+                                                    <input type="hidden" name="idfier" value="<%=dsTable.getIdentifier()%>"/><%
+                                                }
+                                                else{ %>
+                                                    <input type="text" class="smalltext" size="30" name="idfier"/><%
+                                                }
+                                                %>
+                                            </td>
+
+                                            <%isOdd = Util.isOdd(++displayed);%>
+                                        </tr>
+
                                         <!-- short name -->
                                         <tr id="short_name_row">
                                             <th scope="row" class="scope-row short_name">Short name</th>
@@ -1221,38 +1253,6 @@ else if (mode.equals("add"))
                                             <%
                                         }
                                         %>
-
-                                        <!-- Identifier -->
-                                        <tr class="zebra<%=isOdd%>">
-                                            <th scope="row" class="scope-row simple_attr_title">
-                                                Identifier
-                                            </th>
-                                            <td class="simple_attr_help">
-                                                <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
-                                                </a>
-                                            </td>
-                                            <%
-                                            if (colspan==4){%>
-                                                <td class="simple_attr_help">
-                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
-                                                </td><%
-                                            }
-                                            %>
-                                            <td class="simple_attr_value">
-                                                <%
-                                                if(!mode.equals("add")){ %>
-                                                    <b><%=Util.processForDisplay(dsTable.getIdentifier())%></b>
-                                                    <input type="hidden" name="idfier" value="<%=dsTable.getIdentifier()%>"/><%
-                                                }
-                                                else{ %>
-                                                    <input type="text" class="smalltext" size="30" name="idfier"/><%
-                                                }
-                                                %>
-                                            </td>
-
-                                            <%isOdd = Util.isOdd(++displayed);%>
-                                        </tr>
                                         <tr>
                                             <th></th>
                                             <td colspan="3">
