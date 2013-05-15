@@ -1316,7 +1316,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <comment>Insert folders from T_VOCABULARY_FOLDER to T_FOLDER.</comment>
         <sql>
             insert into T_FOLDER (IDENTIFIER, LABEL) (
-                select distinct folder_name, folder_name from t_vocabulary_folder
+                select distinct FOLDER_NAME, FOLDER_NAME from T_VOCABULARY_FOLDER
             );
         </sql>
     </changeSet>
