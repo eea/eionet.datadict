@@ -22,6 +22,7 @@
 package eionet.meta.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -37,6 +38,7 @@ import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
+import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
@@ -95,12 +97,28 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     @Test
     public void testCreateVocabularyFolder() throws ServiceException {
         VocabularyFolder vocabularyFolder = new VocabularyFolder();
-        vocabularyFolder.setFolderName("test");
+        vocabularyFolder.setFolderId(1);
         vocabularyFolder.setLabel("test");
         vocabularyFolder.setIdentifier("test");
         vocabularyFolder.setType(VocabularyType.COMMON);
 
-        int id = vocabularyService.createVocabularyFolder(vocabularyFolder, "testUser");
+        int id = vocabularyService.createVocabularyFolder(vocabularyFolder, null, "testUser");
+        VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
+        assertNotNull("Expected vocabulary folder", result);
+    }
+
+    @Test
+    public void testCreateVocabularyFolder_withNewFolder() throws ServiceException {
+        VocabularyFolder vocabularyFolder = new VocabularyFolder();
+        vocabularyFolder.setLabel("test");
+        vocabularyFolder.setIdentifier("test");
+        vocabularyFolder.setType(VocabularyType.COMMON);
+
+        Folder newFolder = new Folder();
+        newFolder.setIdentifier("new");
+        newFolder.setLabel("new");
+
+        int id = vocabularyService.createVocabularyFolder(vocabularyFolder, newFolder, "testUser");
         VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
         assertNotNull("Expected vocabulary folder", result);
     }
@@ -139,7 +157,20 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     public void testUpdateVocabularyFolder() throws ServiceException {
         VocabularyFolder result = vocabularyService.getVocabularyFolder(1);
         result.setLabel("modified");
-        vocabularyService.updateVocabularyFolder(result);
+        vocabularyService.updateVocabularyFolder(result, null);
+        result = vocabularyService.getVocabularyFolder(1);
+        assertEquals("Modified label", "modified", result.getLabel());
+    }
+
+    @Test
+    public void testUpdateVocabularyFolder_withNewFolder() throws ServiceException {
+        Folder newFolder = new Folder();
+        newFolder.setIdentifier("new");
+        newFolder.setLabel("new");
+
+        VocabularyFolder result = vocabularyService.getVocabularyFolder(1);
+        result.setLabel("modified");
+        vocabularyService.updateVocabularyFolder(result, newFolder);
         result = vocabularyService.getVocabularyFolder(1);
         assertEquals("Modified label", "modified", result.getLabel());
     }
@@ -223,10 +254,25 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     public void testCreateVocabularyFolderCopy() throws ServiceException {
         VocabularyFolder vocabularyFolder = new VocabularyFolder();
         vocabularyFolder.setType(VocabularyType.COMMON);
-        vocabularyFolder.setFolderName("Common");
+        vocabularyFolder.setFolderId(1);
         vocabularyFolder.setLabel("copy");
         vocabularyFolder.setIdentifier("copy");
-        int id = vocabularyService.createVocabularyFolderCopy(vocabularyFolder, 1, "testUser");
+        int id = vocabularyService.createVocabularyFolderCopy(vocabularyFolder, 1, "testUser", null);
+        VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
+        assertNotNull("Expected vocabulary folder", result);
+    }
+
+    @Test
+    public void testCreateVocabularyFolderCopy_withNewFolder() throws ServiceException {
+        Folder newFolder = new Folder();
+        newFolder.setIdentifier("new");
+        newFolder.setLabel("new");
+
+        VocabularyFolder vocabularyFolder = new VocabularyFolder();
+        vocabularyFolder.setType(VocabularyType.COMMON);
+        vocabularyFolder.setLabel("copy");
+        vocabularyFolder.setIdentifier("copy");
+        int id = vocabularyService.createVocabularyFolderCopy(vocabularyFolder, 1, "testUser", newFolder);
         VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
         assertNotNull("Expected vocabulary folder", result);
     }
@@ -261,7 +307,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     @Test
     public void testIsUniqueFolderIdentifier() throws ServiceException {
-        boolean result = vocabularyService.isUniqueFolderIdentifier("Common", "test", null);
+        boolean result = vocabularyService.isUniqueVocabularyFolderIdentifier(1, "test", null);
         assertEquals("Is unique", true, result);
     }
 
@@ -269,5 +315,60 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     public void testiIUniqueConceptIdentifier() throws ServiceException {
         boolean result = vocabularyService.isUniqueConceptIdentifier("2", 3, 2);
         assertEquals("Is unique", true, result);
+    }
+
+    @Test
+    public void testGetFolders() throws ServiceException {
+        List<Folder> result = vocabularyService.getFolders("testUser", 1);
+        assertEquals("Folders size", 2, result.size());
+        assertEquals("Items size", 3, result.get(0).getItems().size());
+    }
+
+    @Test
+    public void testGetFolder() throws ServiceException {
+        Folder result = vocabularyService.getFolder(1);
+        assertNotNull("Folder", result);
+    }
+
+    @Test
+    public void testIsFolderEmpty() throws ServiceException {
+        assertFalse("Folder empty", vocabularyService.isFolderEmpty(1));
+    }
+
+    @Test
+    public void testDeleteFolder() throws ServiceException {
+        vocabularyService.deleteFolder(2);
+        Exception exception = null;
+        try {
+            vocabularyService.getFolder(2);
+            fail("Expected vocabulary not found exception");
+        } catch (ServiceException e) {
+            exception = e;
+        }
+        assertNotNull("Expected exception", exception);
+    }
+
+    @Test
+    public void testDeleteFolder_notEmpty() throws ServiceException {
+        Exception exception = null;
+        try {
+            vocabularyService.deleteFolder(1);
+            fail("Expected folder not empty exception");
+        } catch (ServiceException e) {
+            exception = e;
+        }
+        assertNotNull("Expected exception", exception);
+    }
+
+    @Test
+    public void testUpdateFolder() throws ServiceException {
+        Folder folder = vocabularyService.getFolder(2);
+        folder.setIdentifier("new");
+        folder.setLabel("new");
+        vocabularyService.updateFolder(folder);
+        folder = vocabularyService.getFolder(2);
+
+        assertEquals("Modified identifier", "new", folder.getIdentifier());
+        assertEquals("Modified label", "new", folder.getLabel());
     }
 }

@@ -21,6 +21,7 @@
 
 package eionet.web.action;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.stripes.action.DefaultHandler;
@@ -29,7 +30,12 @@ import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
-import eionet.meta.dao.domain.VocabularyFolder;
+import net.sourceforge.stripes.validation.ValidationMethod;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+
+import eionet.meta.dao.domain.Folder;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 
@@ -47,11 +53,23 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     @SpringBean
     private IVocabularyService vocabularyService;
 
-    /** Vocabulary folders. */
-    private List<VocabularyFolder> vocabularyFolders;
+    /** Folders. */
+    private List<Folder> folders;
 
     /** Selected vocabulary folder ids. */
     private List<Integer> folderIds;
+
+    /** Folder ID, currently clicked. */
+    private int folderId;
+
+    /** True, if operation is to expand. To collapse, it is false. */
+    private boolean expand;
+
+    /** Comma separated folder IDs, that are expanded. */
+    private String expanded;
+
+    /** Popup div id to keep open, when validation error occur. */
+    private String editDivId;
 
     /**
      * View vocabulary folders list action.
@@ -61,8 +79,139 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution viewList() throws ServiceException {
-        vocabularyFolders = vocabularyService.getVocabularyFolders(getUserName());
+        folders = vocabularyService.getFolders(getUserName(), parseExpandedIds());
         return new ForwardResolution(BROWSE_VOCABULARY_FOLDERS_JSP);
+    }
+
+    /**
+     * Action for updating folder.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution saveFolder() throws ServiceException {
+        LOGGER.debug("Saving folder: " + getSubmittedFolder().getIdentifier());
+        vocabularyService.updateFolder(getSubmittedFolder());
+        addSystemMessage("Folder successfully updated");
+        return new RedirectResolution(VocabularyFoldersActionBean.class);
+    }
+
+    /**
+     * Action for deleting folder.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution deleteFolder() throws ServiceException {
+        LOGGER.debug("Deleting folder: " + getSubmittedFolder().getIdentifier());
+        vocabularyService.deleteFolder(getSubmittedFolder().getId());
+        addSystemMessage("Folder successfully deleted");
+        return new RedirectResolution(VocabularyFoldersActionBean.class);
+    }
+
+    /**
+     * Validates save folder.
+     *
+     * @throws ServiceException
+     */
+    @ValidationMethod(on = {"saveFolder"})
+    public void validateSaveFolder() throws ServiceException {
+        if (!isUpdateRight()) {
+            addGlobalValidationError("No permission to modify folder");
+        }
+
+        Folder folder = getSubmittedFolder();
+
+        if (StringUtils.isEmpty(folder.getIdentifier())) {
+            addGlobalValidationError("Folder identifier is missing");
+        }
+
+        if (StringUtils.isEmpty(folder.getLabel())) {
+            addGlobalValidationError("Folder label is missing");
+        }
+
+        if (!vocabularyService.isUniqueFolderIdentifier(folder.getIdentifier(), folder.getId())) {
+            addGlobalValidationError("Folder identifier is not unique");
+        }
+
+        if (isValidationErrors()) {
+            editDivId = "editFolderDiv" + folder.getId();
+            folders = vocabularyService.getFolders(getUserName(), null);
+        }
+    }
+
+    /**
+     * Validates delete folder.
+     *
+     * @throws ServiceException
+     */
+    @ValidationMethod(on = {"deleteFolder"})
+    public void validateDeleteFolder() throws ServiceException {
+        if (!isUpdateRight()) {
+            addGlobalValidationError("No permission to modify folder");
+        }
+
+        Folder folder = getSubmittedFolder();
+
+        if (!vocabularyService.isFolderEmpty(folder.getId())) {
+            addGlobalValidationError("Cannot delete, folder is not empty");
+        }
+
+        if (isValidationErrors()) {
+            editDivId = "editFolderDiv" + folder.getId();
+            folders = vocabularyService.getFolders(getUserName(), null);
+        }
+    }
+
+    /**
+     * True, if user has update right.
+     *
+     * @return
+     */
+    public boolean isUpdateRight() {
+        if (getUser() != null) {
+            return getUser().hasPermission("/vocabularies", "u") || getUser().hasPermission("/vocabularies", "i");
+        }
+        return false;
+    }
+
+    /**
+     * Returns the expanded folder IDs and sets the correct expanded[] value.
+     *
+     * @return
+     */
+    private int[] parseExpandedIds() {
+        List<Integer> result = new ArrayList<Integer>();
+
+        if (StringUtils.isNotEmpty(expanded)) {
+            String[] expandedStrArr = StringUtils.split(expanded, ",");
+            for (String s : expandedStrArr) {
+                result.add(Integer.parseInt(s));
+            }
+        }
+        if (expand) {
+            result.add(folderId);
+        } else {
+            result.remove(new Integer(folderId));
+        }
+
+        expanded = StringUtils.join(result, ",");
+
+        return ArrayUtils.toPrimitive(result.toArray(new Integer[result.size()]));
+    }
+
+    /**
+     * Returns the folder that is submitted by form for update.
+     *
+     * @return
+     */
+    public Folder getSubmittedFolder() {
+        for (Folder f : folders) {
+            if (f != null) {
+                return f;
+            }
+        }
+        return null;
     }
 
     /**
@@ -76,21 +225,6 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         addSystemMessage("Vocabularies deleted successfully");
         RedirectResolution resolution = new RedirectResolution(VocabularyFoldersActionBean.class);
         return resolution;
-    }
-
-    /**
-     * @return the vocabularyFolders
-     */
-    public List<VocabularyFolder> getVocabularyFolders() {
-        return vocabularyFolders;
-    }
-
-    /**
-     * @param vocabularyFolders
-     *            the vocabularyFolders to set
-     */
-    public void setVocabularyFolders(List<VocabularyFolder> vocabularyFolders) {
-        this.vocabularyFolders = vocabularyFolders;
     }
 
     /**
@@ -114,6 +248,81 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      */
     public void setFolderIds(List<Integer> folderIds) {
         this.folderIds = folderIds;
+    }
+
+    /**
+     * @return the folderId
+     */
+    public int getFolderId() {
+        return folderId;
+    }
+
+    /**
+     * @param folderId
+     *            the folderId to set
+     */
+    public void setFolderId(int folderId) {
+        this.folderId = folderId;
+    }
+
+    /**
+     * @return the expand
+     */
+    public boolean isExpand() {
+        return expand;
+    }
+
+    /**
+     * @param expand
+     *            the expand to set
+     */
+    public void setExpand(boolean expand) {
+        this.expand = expand;
+    }
+
+    /**
+     * @return the expanded
+     */
+    public String getExpanded() {
+        return expanded;
+    }
+
+    /**
+     * @param expanded
+     *            the expanded to set
+     */
+    public void setExpanded(String expanded) {
+        this.expanded = expanded;
+    }
+
+    /**
+     * @return the folders
+     */
+    public List<Folder> getFolders() {
+        return folders;
+    }
+
+    /**
+     * @param folders
+     *            the folders to set
+     */
+    public void setFolders(List<Folder> folders) {
+        this.folders = folders;
+    }
+
+    /**
+     * @return the editDivId
+     */
+    public String getEditDivId() {
+        return editDivId;
+    }
+
+    /**
+     * @param editDivId
+     *            the editDivId to set
+     */
+    public void setEditDivId(String editDivId) {
+        this.editDivId = editDivId;
     }
 
 }

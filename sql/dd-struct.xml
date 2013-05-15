@@ -1297,4 +1297,52 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <sql>alter table ATTRIBUTE change column PARENT_TYPE PARENT_TYPE enum('E','T','DS','SCH','SCS','VCF') NOT NULL default 'E';</sql>
     </changeSet>
 
+    <changeSet author="voolajuh" id="rev-103">
+        <comment>Create folder table.</comment>
+        <sql>CREATE TABLE T_FOLDER (
+            ID INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+            IDENTIFIER VARCHAR(255) NOT NULL,
+            LABEL VARCHAR(255) NOT NULL,
+            PRIMARY KEY (ID),
+            UNIQUE INDEX UNIQUE_FOLDER (IDENTIFIER)
+            );
+        </sql>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8" />
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="voolajuh" id="rev-104">
+        <comment>Insert folders from T_VOCABULARY_FOLDER to T_FOLDER.</comment>
+        <sql>
+            insert into T_FOLDER (IDENTIFIER, LABEL) (
+                select distinct folder_name, folder_name from t_vocabulary_folder
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet author="voolajuh" id="rev-105">
+        <comment>Add folder_id for vocabulary folder table.</comment>
+        <sql>alter table T_VOCABULARY_FOLDER ADD COLUMN FOLDER_ID INT(10) UNSIGNED NOT NULL default 1;
+            alter table T_VOCABULARY_FOLDER ADD CONSTRAINT FK_FOLDER_ID FOREIGN KEY (FOLDER_ID)
+                REFERENCES T_FOLDER (ID) ON UPDATE CASCADE ON DELETE CASCADE;
+        </sql>
+    </changeSet>
+
+    <changeSet author="voolajuh" id="rev-106">
+        <comment>Update the correct FOLDER_ID values for T_VOCABULARY_FOLDER.</comment>
+        <sql>
+            update T_VOCABULARY_FOLDER, T_FOLDER set
+            T_VOCABULARY_FOLDER.FOLDER_ID = T_FOLDER.ID
+            where T_VOCABULARY_FOLDER.FOLDER_NAME = T_FOLDER.IDENTIFIER;
+        </sql>
+    </changeSet>
+
+    <changeSet author="voolajuh" id="rev-107">
+        <comment>Fix vocabulary folder unique constraint.</comment>
+        <sql>alter table T_VOCABULARY_FOLDER drop index UNIQUE_VOCABULARY;
+            alter table T_VOCABULARY_FOLDER add unique index UNIQUE_VOCABULARY (FOLDER_ID, IDENTIFIER, WORKING_COPY);
+            alter table T_VOCABULARY_FOLDER drop column FOLDER_NAME;
+        </sql>
+    </changeSet>
 </databaseChangeLog>

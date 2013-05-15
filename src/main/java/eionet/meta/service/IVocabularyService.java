@@ -23,6 +23,7 @@ package eionet.meta.service;
 
 import java.util.List;
 
+import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -38,11 +39,56 @@ import eionet.meta.service.data.VocabularyConceptResult;
 public interface IVocabularyService {
 
     /**
+     * Returns folder.
+     *
+     * @param folderId
+     * @return
+     * @throws ServiceException
+     */
+    Folder getFolder(int folderId) throws ServiceException;
+
+    /**
+     * True, when in the folder with given id, are vocabulary folders included.
+     *
+     * @param folderId
+     * @return
+     * @throws ServiceException
+     */
+    boolean isFolderEmpty(int folderId) throws ServiceException;
+
+    /**
+     * Deletes folder.
+     *
+     * @param folderId
+     * @throws ServiceException
+     */
+    void deleteFolder(int folderId) throws ServiceException;
+
+    /**
+     * Updates folder.
+     *
+     * @param folder
+     * @throws ServiceException
+     */
+    void updateFolder(Folder folder) throws ServiceException;
+
+    /**
+     * Returns list of folders.
+     *
+     * @param userName
+     * @param expandedFolders
+     * @return
+     * @throws ServiceException
+     */
+    List<Folder> getFolders(String userName, int... expandedFolders) throws ServiceException;
+
+    /**
      * Returns vocabulary folders.
      *
      * @param userName
      *
      * @return
+     * @throws ServiceException
      */
     List<VocabularyFolder> getVocabularyFolders(String userName) throws ServiceException;
 
@@ -55,18 +101,22 @@ public interface IVocabularyService {
      * @param userName
      *
      * @return
+     * @throws ServiceException
      */
     List<VocabularyFolder> getVocabularyFolderVersions(String continuityId, int vocabularyFolderId, String userName)
             throws ServiceException;
 
     /**
-     * Creates vocabulary folder.
+     * Creates vocabulary folder with new folder.
      *
      * @param vocabularyFolder
+     * @param newFolder
+     *            optional
      * @param userName
      * @return
+     * @throws ServiceException
      */
-    int createVocabularyFolder(VocabularyFolder vocabularyFolder, String userName) throws ServiceException;
+    int createVocabularyFolder(VocabularyFolder vocabularyFolder, Folder newFolder, String userName) throws ServiceException;
 
     /**
      * Creates copy of vocabulary folder - the concepts will be copied.
@@ -75,19 +125,23 @@ public interface IVocabularyService {
      * @param vocabularyFolderId
      *            id from which the copy will be made of
      * @param userName
+     * @param newFolder
+     *            optional
      * @return
      */
-    int createVocabularyFolderCopy(VocabularyFolder vocabularyFolder, int vocabularyFolderId, String userName)
+    int createVocabularyFolderCopy(VocabularyFolder vocabularyFolder, int vocabularyFolderId, String userName, Folder newFolder)
             throws ServiceException;
 
     /**
-     * Updates vocabulary folder. The vocabularyFolder.id must be correctly set. Only fields: identifier, label, regStatus will be
-     * updated.
+     * Updates vocabulary folder. The vocabularyFolder.id must be correctly set. Only fields: identifier, label, regStatus and
+     * folderId will be updated.
      *
      * @param vocabularyFolder
+     * @param newFolder
+     *            optional
      * @throws ServiceException
      */
-    void updateVocabularyFolder(VocabularyFolder vocabularyFolder) throws ServiceException;
+    void updateVocabularyFolder(VocabularyFolder vocabularyFolder, Folder newFolder) throws ServiceException;
 
     /**
      * Returns vocabulary folder.
@@ -256,14 +310,24 @@ public interface IVocabularyService {
     /**
      * True, if identifier is unique.
      *
-     * @param folderName
+     * @param folderId
      * @param identifier
      * @param excludedVocabularyFolderIds
      * @return
      * @throws ServiceException
      */
-    boolean isUniqueFolderIdentifier(String folderName, String identifier, int... excludedVocabularyFolderIds)
+    boolean isUniqueVocabularyFolderIdentifier(int folderId, String identifier, int... excludedVocabularyFolderIds)
             throws ServiceException;
+
+    /**
+     * True, if folder identifier is unique.
+     *
+     * @param identifier
+     * @param excludedId
+     * @return
+     * @throws ServiceException
+     */
+    boolean isUniqueFolderIdentifier(String identifier, int excludedId) throws ServiceException;
 
     /**
      * True, if identifier is unique.

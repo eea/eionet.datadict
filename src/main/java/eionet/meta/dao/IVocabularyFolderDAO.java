@@ -43,6 +43,15 @@ public interface IVocabularyFolderDAO {
     List<VocabularyFolder> getVocabularyFolders(String userName);
 
     /**
+     * Returns vocabulary folders.
+     *
+     * @param folderId
+     * @param userName
+     * @return
+     */
+    List<VocabularyFolder> getVocabularyFolders(int folderId, String userName);
+
+    /**
      * Returns versions of the vocabulary folders.
      *
      * @param continuityId
@@ -115,11 +124,11 @@ public interface IVocabularyFolderDAO {
     /**
      * True, if identifier is unique.
      *
-     * @param folderName
+     * @param folderId
      * @param identifier
      * @param excludedVocabularyFolderIds
      * @return
      */
-    boolean isUniqueFolderIdentifier(String folderName, String identifier, int... excludedVocabularyFolderIds);
+    boolean isUniqueVocabularyFolderIdentifier(int folderId, String identifier, int... excludedVocabularyFolderIds);
 
 }

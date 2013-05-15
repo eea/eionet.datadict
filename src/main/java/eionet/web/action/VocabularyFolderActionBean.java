@@ -41,6 +41,7 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -78,6 +79,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /** Reserved event names, that cannot be vocabulary concept identifiers. */
     public static List<String> RESERVED_VOCABULARY_EVENTS;
+
+    /** Folder choice values. */
+    private static final String FOLDER_CHOICE_EXISTING = "existing";
+    private static final String FOLDER_CHOICE_NEW = "new";
 
     static {
         RESERVED_VOCABULARY_EVENTS = new ArrayList<String>();
@@ -133,6 +138,15 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /** Concepts table page number. */
     private int page = 1;
 
+    /** Folders. */
+    private List<Folder> folders;
+
+    /** New folder to be created. */
+    private Folder folder;
+
+    /** Checkbox value for folder, when creating vocabulary folder. */
+    private String folderChoice;
+
     /**
      * Navigates to view vocabulary folder page.
      *
@@ -185,8 +199,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Navigates to add vocabulary folder form.
      *
      * @return
+     * @throws ServiceException
      */
-    public Resolution add() {
+    public Resolution add() throws ServiceException {
+        folders = vocabularyService.getFolders(getUserName(), null);
         return new ForwardResolution(ADD_VOCABULARY_FOLDER_JSP);
     }
 
@@ -202,6 +218,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                         vocabularyFolder.isWorkingCopy());
         initFilter();
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+        folders = vocabularyService.getFolders(getUserName(), null);
+        folderChoice = FOLDER_CHOICE_EXISTING;
         return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
     }
 
@@ -255,12 +273,33 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public Resolution saveFolder() throws ServiceException {
         if (vocabularyFolder.getId() == 0) {
             if (copyId != 0) {
-                vocabularyService.createVocabularyFolderCopy(vocabularyFolder, copyId, getUserName());
+                if (StringUtils.equals(FOLDER_CHOICE_EXISTING, folderChoice)) {
+                    vocabularyService.createVocabularyFolderCopy(vocabularyFolder, copyId, getUserName(), null);
+                    vocabularyFolder.setFolderName(vocabularyService.getFolder(vocabularyFolder.getFolderId()).getIdentifier());
+                }
+                if (StringUtils.equals(FOLDER_CHOICE_NEW, folderChoice)) {
+                    vocabularyService.createVocabularyFolderCopy(vocabularyFolder, copyId, getUserName(), folder);
+                    vocabularyFolder.setFolderName(folder.getIdentifier());
+                }
             } else {
-                vocabularyService.createVocabularyFolder(vocabularyFolder, getUserName());
+                if (StringUtils.equals(FOLDER_CHOICE_EXISTING, folderChoice)) {
+                    vocabularyService.createVocabularyFolder(vocabularyFolder, null, getUserName());
+                    vocabularyFolder.setFolderName(vocabularyService.getFolder(vocabularyFolder.getFolderId()).getIdentifier());
+                }
+                if (StringUtils.equals(FOLDER_CHOICE_NEW, folderChoice)) {
+                    vocabularyService.createVocabularyFolder(vocabularyFolder, folder, getUserName());
+                    vocabularyFolder.setFolderName(folder.getIdentifier());
+                }
             }
         } else {
-            vocabularyService.updateVocabularyFolder(vocabularyFolder);
+            if (StringUtils.equals(FOLDER_CHOICE_EXISTING, folderChoice)) {
+                vocabularyService.updateVocabularyFolder(vocabularyFolder, null);
+                vocabularyFolder.setFolderName(vocabularyService.getFolder(vocabularyFolder.getFolderId()).getIdentifier());
+            }
+            if (StringUtils.equals(FOLDER_CHOICE_NEW, folderChoice)) {
+                vocabularyService.updateVocabularyFolder(vocabularyFolder, folder);
+                vocabularyFolder.setFolderName(folder.getIdentifier());
+            }
         }
         addSystemMessage("Vocabulary saved successfully");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
@@ -446,13 +485,31 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
         }
 
-        if (StringUtils.isEmpty(vocabularyFolder.getFolderName())) {
-            addGlobalValidationError("Folder name is missing");
-        } else {
-            if (!Util.isValidIdentifier(vocabularyFolder.getFolderName())) {
-                addGlobalValidationError("Folder contains illegal characters (/%?#:\\)");
+        if (StringUtils.isEmpty(folderChoice)) {
+            addGlobalValidationError("Folder is not specified");
+        }
+
+        // Validate new folder
+        if (StringUtils.equals(FOLDER_CHOICE_NEW, folderChoice)) {
+            if (StringUtils.isEmpty(folder.getIdentifier())) {
+                addGlobalValidationError("Folder identifier is missing");
+            }
+
+            if (StringUtils.isEmpty(folder.getLabel())) {
+                addGlobalValidationError("Folder label is missing");
+            }
+
+            if (StringUtils.isNotEmpty(folder.getIdentifier())) {
+                if (!Util.isValidIdentifier(vocabularyFolder.getIdentifier())) {
+                    addGlobalValidationError("Folder contains illegal characters (/%?#:\\)");
+                }
+                if (!vocabularyService.isUniqueFolderIdentifier(folder.getIdentifier(), 0)) {
+                    addGlobalValidationError("The new folder's identifier is not unique");
+                }
             }
         }
+
+        // Validate vocabulary
         if (StringUtils.isEmpty(vocabularyFolder.getIdentifier())) {
             addGlobalValidationError("Vocabulary identifier is missing");
         } else {
@@ -476,12 +533,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
         // Validate unique identifier
         if (vocabularyFolder.getId() == 0) {
-            if (!vocabularyService.isUniqueFolderIdentifier(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier())) {
+            if (!vocabularyService.isUniqueVocabularyFolderIdentifier(vocabularyFolder.getFolderId(),
+                    vocabularyFolder.getIdentifier())) {
                 addGlobalValidationError("Vocabulary identifier is not unique");
             }
         } else {
-            if (!vocabularyService.isUniqueFolderIdentifier(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
-                    vocabularyFolder.getId(), vocabularyFolder.getCheckedOutCopyId())) {
+            if (!vocabularyService.isUniqueVocabularyFolderIdentifier(vocabularyFolder.getFolderId(),
+                    vocabularyFolder.getIdentifier(), vocabularyFolder.getId(), vocabularyFolder.getCheckedOutCopyId())) {
                 addGlobalValidationError("Vocabulary identifier is not unique");
             }
         }
@@ -503,6 +561,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
 
         if (isValidationErrors()) {
+            folders = vocabularyService.getFolders(getUserName(), null);
             initFilter();
             vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         }
@@ -879,7 +938,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyFolder the vocabularyFolder to set
+     * @param vocabularyFolder
+     *            the vocabularyFolder to set
      */
     public void setVocabularyFolder(VocabularyFolder vocabularyFolder) {
         this.vocabularyFolder = vocabularyFolder;
@@ -893,14 +953,16 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcepts the vocabularyConcepts to set
+     * @param vocabularyConcepts
+     *            the vocabularyConcepts to set
      */
     public void setVocabularyConcepts(VocabularyConceptResult vocabularyConcepts) {
         this.vocabularyConcepts = vocabularyConcepts;
     }
 
     /**
-     * @param vocabularyService the vocabularyService to set
+     * @param vocabularyService
+     *            the vocabularyService to set
      */
     public void setVocabularyService(IVocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
@@ -914,7 +976,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcept the vocabularyConcept to set
+     * @param vocabularyConcept
+     *            the vocabularyConcept to set
      */
     public void setVocabularyConcept(VocabularyConcept vocabularyConcept) {
         this.vocabularyConcept = vocabularyConcept;
@@ -928,7 +991,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param conceptIds the conceptIds to set
+     * @param conceptIds
+     *            the conceptIds to set
      */
     public void setConceptIds(List<Integer> conceptIds) {
         this.conceptIds = conceptIds;
@@ -942,7 +1006,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param copyId the copyId to set
+     * @param copyId
+     *            the copyId to set
      */
     public void setCopyId(int copyId) {
         this.copyId = copyId;
@@ -970,7 +1035,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param filter the filter to set
+     * @param filter
+     *            the filter to set
      */
     public void setFilter(VocabularyConceptFilter filter) {
         this.filter = filter;
@@ -984,7 +1050,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param page the page to set
+     * @param page
+     *            the page to set
      */
     public void setPage(int page) {
         this.page = page;
@@ -996,4 +1063,42 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public IVocabularyService getVocabularyService() {
         return vocabularyService;
     }
+
+    /**
+     * @return the folder
+     */
+    public Folder getFolder() {
+        return folder;
+    }
+
+    /**
+     * @param folder
+     *            the folder to set
+     */
+    public void setFolder(Folder folder) {
+        this.folder = folder;
+    }
+
+    /**
+     * @return the folderChoice
+     */
+    public String getFolderChoice() {
+        return folderChoice;
+    }
+
+    /**
+     * @param folderChoice
+     *            the folderChoice to set
+     */
+    public void setFolderChoice(String folderChoice) {
+        this.folderChoice = folderChoice;
+    }
+
+    /**
+     * @return the folders
+     */
+    public List<Folder> getFolders() {
+        return folders;
+    }
+
 }

@@ -13,6 +13,28 @@
         ( function($) {
             $(document).ready(function() {
 
+                $(".folderChoice").click(function() {
+                    handleFolderChoice();
+                });
+
+                handleFolderChoice = function() {
+                    var value = $("input:radio[name=folderChoice]:checked").val();
+
+                    if (value == "new") {
+                        $("#newFolderDiv").show();
+                        $("#existingFolderDiv").hide();
+                    } else if (value == "existing") {
+                        $("#newFolderDiv").hide();
+                        $("#existingFolderDiv").show();
+                    } else {
+                        $("#newFolderDiv").hide();
+                        $("#existingFolderDiv").hide();
+                    }
+                }
+
+                handleFolderChoice();
+
+
                 $(".delLink").click(function() {
                     this.parentElement.remove();
                 });
@@ -123,7 +145,23 @@
                         <dd:mandatoryIcon />
                     </td>
                     <td class="simple_attr_value">
-                        <stripes:text class="smalltext" size="30" name="vocabularyFolder.folderName"/>
+                        <stripes:radio name="folderChoice" id="existingFolderChoice" value="existing" class="folderChoice"/> <label for="existingFolderChoice">Existing folder</label>
+                        <stripes:radio name="folderChoice" id="newFolderChoice" value="new" class="folderChoice" /> <label for="newFolderChoice">New folder</label>
+                        <div id="existingFolderDiv">
+                            <stripes:select name="vocabularyFolder.folderId">
+                                <stripes:options-collection collection="${actionBean.folders}" label="label" value="id"/>
+                            </stripes:select>
+                        </div>
+                        <div id="newFolderDiv">
+                            <fieldset style="border: none">
+                                <label for="folderIdentifier" style="float: left; width: 6em;">Identifier:</label>
+                                <stripes:text id="folderIdentifier" class="smalltext" size="30" name="folder.identifier"/>
+                            </fieldset style="border: none">
+                            <fieldset style="border: none">
+                                <label for="folderLabel" style="float: left; width: 6em;">Label:</label>
+                                <stripes:text id="folderLabel" class="smalltext" size="30" name="folder.label"/>
+                            </fieldset>
+                        </div>
                     </td>
                 </tr>
                 <tr>

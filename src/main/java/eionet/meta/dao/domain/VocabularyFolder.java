@@ -45,6 +45,9 @@ public class VocabularyFolder {
     private boolean numericConceptIdentifiers;
     private String baseUri;
     private VocabularyType type;
+    private int folderId;
+
+    /** Joined property - folder identifier. */
     private String folderName;
 
     private List<List<SimpleAttribute>> attributes;
@@ -308,6 +311,21 @@ public class VocabularyFolder {
      */
     public void setAttributes(List<List<SimpleAttribute>> attributes) {
         this.attributes = attributes;
+    }
+
+    /**
+     * @return the folderId
+     */
+    public int getFolderId() {
+        return folderId;
+    }
+
+    /**
+     * @param folderId
+     *            the folderId to set
+     */
+    public void setFolderId(int folderId) {
+        this.folderId = folderId;
     }
 
 }

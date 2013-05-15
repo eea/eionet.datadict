@@ -40,9 +40,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.IAttributeDAO;
+import eionet.meta.dao.IFolderDAO;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.IVocabularyFolderDAO;
+import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -83,6 +85,87 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Autowired
     private IAttributeDAO attributeDAO;
 
+    /** Folder DAO. */
+    @Autowired
+    private IFolderDAO folderDAO;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Folder getFolder(int folderId) throws ServiceException {
+        try {
+            return folderDAO.getFolder(folderId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get folder: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isFolderEmpty(int folderId) throws ServiceException {
+        try {
+            return folderDAO.isFolderEmpty(folderId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to check if folder is empty: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteFolder(int folderId) throws ServiceException {
+        try {
+            if (!folderDAO.isFolderEmpty(folderId)) {
+                throw new IllegalStateException("Folder is not empty");
+            }
+            folderDAO.deleteFolder(folderId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to delete folder: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateFolder(Folder folder) throws ServiceException {
+        try {
+            Folder f = folderDAO.getFolder(folder.getId());
+            f.setIdentifier(folder.getIdentifier());
+            f.setLabel(folder.getLabel());
+            folderDAO.updateFolder(f);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to update folder: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Folder> getFolders(String userName, int... expandedFolders) throws ServiceException {
+        try {
+            List<Folder> result = folderDAO.getFolders();
+            if (expandedFolders != null && expandedFolders.length > 0) {
+                for (Folder f : result) {
+                    for (int expandedId : expandedFolders) {
+                        if (f.getId() == expandedId) {
+                            f.setExpanded(true);
+                            f.setItems(vocabularyFolderDAO.getVocabularyFolders(expandedId, userName));
+                        }
+                    }
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get folders: " + e.getMessage(), e);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -99,7 +182,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public int createVocabularyFolder(VocabularyFolder vocabularyFolder, String userName) throws ServiceException {
+    @Transactional(rollbackFor = ServiceException.class)
+    public int createVocabularyFolder(VocabularyFolder vocabularyFolder, Folder newFolder, String userName)
+            throws ServiceException {
         try {
             if (StringUtils.isEmpty(vocabularyFolder.getContinuityId())) {
                 vocabularyFolder.setContinuityId(Util.generateContinuityId(vocabularyFolder));
@@ -111,6 +196,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             if (vocabularyFolder.isSiteCodeType() && siteCodeDAO.siteCodeFolderExists()) {
                 throw new IllegalStateException("Vocabulary folder with type 'SITE_CODE' already exists");
+            }
+
+            if (newFolder != null) {
+                int newFolderId = folderDAO.createFolder(newFolder);
+                vocabularyFolder.setFolderId(newFolderId);
             }
 
             vocabularyFolder.setUserModified(userName);
@@ -283,15 +373,22 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public void updateVocabularyFolder(VocabularyFolder vocabularyFolder) throws ServiceException {
+    public void updateVocabularyFolder(VocabularyFolder vocabularyFolder, Folder newFolder) throws ServiceException {
         try {
             VocabularyFolder vf = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolder.getId());
+
             vf.setIdentifier(vocabularyFolder.getIdentifier());
             vf.setLabel(vocabularyFolder.getLabel());
             vf.setRegStatus(vocabularyFolder.getRegStatus());
             vf.setNumericConceptIdentifiers(vocabularyFolder.isNumericConceptIdentifiers());
             vf.setBaseUri(vocabularyFolder.getBaseUri());
-            vf.setFolderName(vocabularyFolder.getFolderName());
+            vf.setFolderId(vocabularyFolder.getFolderId());
+
+            if (newFolder != null) {
+                int newFolderId = folderDAO.createFolder(newFolder);
+                vf.setFolderId(newFolderId);
+            }
+
             vocabularyFolderDAO.updateVocabularyFolder(vf);
 
             attributeDAO.updateSimpleAttributes(vocabularyFolder.getId(), DElemAttribute.ParentType.VOCABULARY_FOLDER.toString(),
@@ -396,7 +493,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
             int newVocabularyFolderId = vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
 
             // Copy simple attributes.
-            attributeDAO.copySimpleAttributes(vocabularyFolderId, DElemAttribute.ParentType.VOCABULARY_FOLDER.toString(), newVocabularyFolderId);
+            attributeDAO.copySimpleAttributes(vocabularyFolderId, DElemAttribute.ParentType.VOCABULARY_FOLDER.toString(),
+                    newVocabularyFolderId);
 
             // Copy the vocabulary concepts under new vocabulary folder (except of site code type)
             if (!vocabularyFolder.isSiteCodeType()) {
@@ -458,8 +556,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
 
             // Delete old attributes first and then change the parent ID of the new ones
-            attributeDAO.deleteAttributes(Collections.singletonList(originalVocabularyFolderId), DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
-            attributeDAO.replaceParentId(vocabularyFolderId, originalVocabularyFolderId, DElemAttribute.ParentType.VOCABULARY_FOLDER);
+            attributeDAO.deleteAttributes(Collections.singletonList(originalVocabularyFolderId),
+                    DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
+            attributeDAO.replaceParentId(vocabularyFolderId, originalVocabularyFolderId,
+                    DElemAttribute.ParentType.VOCABULARY_FOLDER);
 
             // Delete checked out version
             vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId));
@@ -477,13 +577,18 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public int createVocabularyFolderCopy(VocabularyFolder vocabularyFolder, int vocabularyFolderId, String userName)
-            throws ServiceException {
+    public int createVocabularyFolderCopy(VocabularyFolder vocabularyFolder, int vocabularyFolderId, String userName,
+            Folder newFolder) throws ServiceException {
         try {
             VocabularyFolder originalVocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
             if (originalVocabularyFolder.isSiteCodeType()) {
                 throw new IllegalArgumentException("Cannot make copy of vocabulary with type 'SITE_CODE'");
+            }
+
+            if (newFolder != null) {
+                int newFolderId = folderDAO.createFolder(newFolder);
+                vocabularyFolder.setFolderId(newFolderId);
             }
 
             vocabularyFolder.setContinuityId(originalVocabularyFolder.getContinuityId());
@@ -543,7 +648,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             // Delete checked out version
             vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId));
-            attributeDAO.deleteAttributes(Collections.singletonList(vocabularyFolderId), DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
+            attributeDAO.deleteAttributes(Collections.singletonList(vocabularyFolderId),
+                    DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
 
             return originalVocabularyFolderId;
         } catch (Exception e) {
@@ -567,10 +673,22 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public boolean isUniqueFolderIdentifier(String folderName, String identifier, int... excludedVocabularyFolderIds)
+    public boolean isUniqueFolderIdentifier(String identifier, int excludedId) throws ServiceException {
+        try {
+            return folderDAO.isFolderUnique(identifier, excludedId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to check unique folder identifier: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isUniqueVocabularyFolderIdentifier(int folderId, String identifier, int... excludedVocabularyFolderIds)
             throws ServiceException {
         try {
-            return vocabularyFolderDAO.isUniqueFolderIdentifier(folderName, identifier, excludedVocabularyFolderIds);
+            return vocabularyFolderDAO.isUniqueVocabularyFolderIdentifier(folderId, identifier, excludedVocabularyFolderIds);
         } catch (Exception e) {
             throw new ServiceException("Failed to check unique vocabulary identifier: " + e.getMessage(), e);
         }
@@ -790,4 +908,5 @@ public class VocabularyServiceImpl implements IVocabularyService {
             throw new ServiceException("Failed to get vocabulary folder attribute metadata: " + e.getMessage(), e);
         }
     }
+
 }
