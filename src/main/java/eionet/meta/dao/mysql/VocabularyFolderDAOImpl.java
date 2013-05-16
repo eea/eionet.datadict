@@ -50,7 +50,6 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
      */
     @Override
     public List<VocabularyFolder> getVocabularyFolders(String userName) {
-
         Map<String, Object> params = new HashMap<String, Object>();
 
         StringBuilder sql = new StringBuilder();
@@ -202,26 +201,29 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         params.put("workingUser", userName);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, VOCABULARY_TYPE, ");
-        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, FOLDER_NAME ");
-        sql.append("from T_VOCABULARY_FOLDER ");
-        sql.append("where WORKING_USER=:workingUser and WORKING_COPY = 1");
+        sql.append("select v.VOCABULARY_FOLDER_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
+        sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, v.CONCEPT_IDENTIFIER_NUMERIC, ");
+        sql.append("f.ID, f.IDENTIFIER ");
+        sql.append("from T_VOCABULARY_FOLDER v ");
+        sql.append("left join T_FOLDER f on f.ID=v.FOLDER_ID ");
+        sql.append("where v.WORKING_USER=:workingUser and v.WORKING_COPY = 1");
 
         List<VocabularyFolder> items =
                 getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyFolder>() {
                     public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
                         VocabularyFolder vf = new VocabularyFolder();
-                        vf.setId(rs.getInt("VOCABULARY_FOLDER_ID"));
-                        vf.setIdentifier(rs.getString("IDENTIFIER"));
-                        vf.setLabel(rs.getString("LABEL"));
-                        vf.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
-                        vf.setType(VocabularyType.valueOf(rs.getString("VOCABULARY_TYPE")));
-                        vf.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
-                        vf.setWorkingUser(rs.getString("WORKING_USER"));
-                        vf.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
-                        vf.setUserModified(rs.getString("USER_MODIFIED"));
-                        vf.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
-                        vf.setFolderName(rs.getString("FOLDER_NAME"));
+                        vf.setId(rs.getInt("v.VOCABULARY_FOLDER_ID"));
+                        vf.setIdentifier(rs.getString("v.IDENTIFIER"));
+                        vf.setLabel(rs.getString("v.LABEL"));
+                        vf.setRegStatus(RegStatus.fromString(rs.getString("v.REG_STATUS")));
+                        vf.setType(VocabularyType.valueOf(rs.getString("v.VOCABULARY_TYPE")));
+                        vf.setWorkingCopy(rs.getBoolean("v.WORKING_COPY"));
+                        vf.setWorkingUser(rs.getString("v.WORKING_USER"));
+                        vf.setDateModified(rs.getTimestamp("v.DATE_MODIFIED"));
+                        vf.setUserModified(rs.getString("v.USER_MODIFIED"));
+                        vf.setCheckedOutCopyId(rs.getInt("v.CHECKEDOUT_COPY_ID"));
+                        vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                        vf.setFolderId(rs.getInt("f.ID"));
                         return vf;
                     }
                 });
