@@ -909,4 +909,16 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<VocabularyFolder> getReleasedVocabularyFolders(int folderId) throws ServiceException {
+        try {
+            return vocabularyFolderDAO.getReleasedVocabularyFolders(folderId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get released vocabulary folders: " + e.getMessage(), e);
+        }
+    }
+
 }

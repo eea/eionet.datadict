@@ -59,6 +59,8 @@
 
         <c:url var="expandIcon" value="/images/img_plus.gif" />
         <c:url var="collapseIcon" value="/images/img_minus.gif" />
+        <c:url var="editIcon" value="/images/edit.gif" />
+        <c:url var="rdfIcon" value="/images/rdf-icon.gif" />
         <stripes:form id="vocabulariesForm" beanclass="${actionBean.class.name}" method="post" style="margin-top:1em">
             <ul class="menu">
                 <c:forEach var="folder" items="${actionBean.folders}">
@@ -73,48 +75,62 @@
                             </c:choose>
                         </stripes:link>
 
-                        <c:choose>
-                            <c:when test="${not empty actionBean.user}">
-                                <a href="#" data-divid="editFolderDiv${folder.id}" class="openFolderLink"><c:out value="${folder.label}" /></a>
-                            </c:when>
-                            <c:otherwise>
-                                <c:out value="${folder.label}" />
-                            </c:otherwise>
-                        </c:choose>
+                        <stripes:link beanclass="${actionBean.class.name}">
+                            <stripes:param name="folderId" value="${folder.id}" />
+                            <stripes:param name="expand" value="${not folder.expanded}" />
+                            <stripes:param name="expanded" value="${actionBean.expanded}" />
+                            <c:out value="${folder.label}" />
+                        </stripes:link>
                     </li>
+
+                    <c:if test="${folder.expanded && not empty actionBean.user}">
+                        <a href="#" data-divid="editFolderDiv${folder.id}" class="openFolderLink"><img style="border:0" src="${editIcon}" alt="Edit folder" /></a>
+                    </c:if>
+
                     <c:if test="${not empty folder.items}">
-                    <ul class="menu">
-                        <c:forEach var="item" items="${folder.items}" varStatus="itemLoop">
-                            <li class="zebra${itemLoop.index % 2 != 0 ? 'odd' : 'even'}">
-                                <c:if test="${not empty actionBean.user}">
-                                    <stripes:checkbox name="folderIds" value="${item.id}" disabled="${item.workingCopy || not empty item.workingUser}" />
-                                </c:if>
-                                <c:choose>
-                                    <c:when test="${item.draftStatus && empty actionBean.user}">
-                                        <span class="link-folder" style="color:gray;">
-                                            <c:out value="${item.folderName}"/>/<c:out value="${item.identifier}"/>
-                                            (<c:out value="${item.label}"/>)
-                                            <sup style="font-size:0.7em"><c:out value="${item.regStatus}" /></sup>
-                                        </span>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" class="link-folder">
-                                            <stripes:param name="vocabularyFolder.folderName" value="${item.folderName}" />
-                                            <stripes:param name="vocabularyFolder.identifier" value="${item.identifier}" />
-                                            <c:if test="${item.workingCopy}">
-                                                <stripes:param name="vocabularyFolder.workingCopy" value="${item.workingCopy}" />
-                                            </c:if>
-                                            <c:out value="${item.folderName}"/>/<c:out value="${item.identifier}"/>
-                                        </stripes:link>
-                                            (<c:out value="${item.label}"/>)
-                                    </c:otherwise>
-                                </c:choose>
-                                <c:if test="${item.workingCopy && actionBean.userName==item.workingUser}">
-                                    <span title="Your working copy" class="checkedout"><strong>*</strong></span>
-                                </c:if>
-                            </li>
-                        </c:forEach>
-                     </ul>
+
+                        <c:if test="${folder.expanded}">
+                        <stripes:link beanclass="${actionBean.class.name}" event="rdf">
+                            <stripes:param name="folderId" value="${folder.id}" />
+                            <img style="border:0" src="${rdfIcon}" alt="Export RDF" />
+                        </stripes:link>
+                        </c:if>
+
+                        <ul class="menu" style="padding-left: 1em">
+                            <c:forEach var="item" items="${folder.items}" varStatus="itemLoop">
+                                <li class="zebra${itemLoop.index % 2 != 0 ? 'odd' : 'even'}">
+                                    <c:if test="${not empty actionBean.user}">
+                                        <stripes:checkbox name="folderIds" value="${item.id}" disabled="${item.workingCopy || not empty item.workingUser}" />
+                                    </c:if>
+                                    <c:choose>
+                                        <c:when test="${item.draftStatus && empty actionBean.user}">
+                                            <span class="link-folder" style="color:gray;">
+                                                <c:out value="${item.identifier}"/>
+                                                (<c:out value="${item.label}"/>)
+                                                <sup style="font-size:0.7em"><c:out value="${item.regStatus}" /></sup>
+                                            </span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" class="link-folder">
+                                                <stripes:param name="vocabularyFolder.folderName" value="${item.folderName}" />
+                                                <stripes:param name="vocabularyFolder.identifier" value="${item.identifier}" />
+                                                <c:if test="${item.workingCopy}">
+                                                    <stripes:param name="vocabularyFolder.workingCopy" value="${item.workingCopy}" />
+                                                </c:if>
+                                                <c:out value="${item.identifier}"/>
+                                            </stripes:link>
+                                                (<c:out value="${item.label}"/>)
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <c:if test="${item.workingCopy && actionBean.userName==item.workingUser}">
+                                        <span title="Your working copy" class="checkedout"><strong>*</strong></span>
+                                    </c:if>
+                                </li>
+                            </c:forEach>
+                         </ul>
+                     </c:if>
+                     <c:if test="${folder.expanded && empty folder.items}">
+                        The folder is empty
                      </c:if>
                  </c:forEach>
              </ul>

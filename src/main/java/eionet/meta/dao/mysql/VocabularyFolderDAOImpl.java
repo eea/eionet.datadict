@@ -45,6 +45,52 @@ import eionet.meta.dao.domain.VocabularyType;
 @Repository
 public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabularyFolderDAO {
 
+
+    @Override
+    public List<VocabularyFolder> getReleasedVocabularyFolders(int folderId) {
+        List<String> statuses = new ArrayList<String>();
+        statuses.add(RegStatus.RELEASED.toString());
+        statuses.add(RegStatus.PUBLIC_DRAFT.toString());
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("folderId", folderId);
+        params.put("statuses", statuses);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select v.VOCABULARY_FOLDER_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
+        sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, v.CONCEPT_IDENTIFIER_NUMERIC, ");
+        sql.append("f.ID, f.IDENTIFIER ");
+        sql.append("from T_VOCABULARY_FOLDER v ");
+        sql.append("left join T_FOLDER f on f.ID=v.FOLDER_ID ");
+        sql.append("where v.WORKING_COPY=FALSE and v.FOLDER_ID=:folderId and v.REG_STATUS in (:statuses) ");
+        sql.append("order by f.IDENTIFIER, v.IDENTIFIER ");
+
+        List<VocabularyFolder> items =
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyFolder>() {
+                    public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyFolder vf = new VocabularyFolder();
+                        vf.setId(rs.getInt("v.VOCABULARY_FOLDER_ID"));
+                        vf.setIdentifier(rs.getString("v.IDENTIFIER"));
+                        vf.setLabel(rs.getString("v.LABEL"));
+                        vf.setRegStatus(RegStatus.fromString(rs.getString("v.REG_STATUS")));
+                        vf.setType(VocabularyType.valueOf(rs.getString("v.VOCABULARY_TYPE")));
+                        vf.setWorkingCopy(rs.getBoolean("v.WORKING_COPY"));
+                        vf.setWorkingUser(rs.getString("v.WORKING_USER"));
+                        vf.setDateModified(rs.getTimestamp("v.DATE_MODIFIED"));
+                        vf.setUserModified(rs.getString("v.USER_MODIFIED"));
+                        vf.setCheckedOutCopyId(rs.getInt("v.CHECKEDOUT_COPY_ID"));
+                        vf.setContinuityId(rs.getString("v.CONTINUITY_ID"));
+                        vf.setNumericConceptIdentifiers(rs.getBoolean("v.CONCEPT_IDENTIFIER_NUMERIC"));
+                        vf.setBaseUri(rs.getString("v.BASE_URI"));
+                        vf.setFolderId(rs.getShort("f.ID"));
+                        vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                        return vf;
+                    }
+                });
+
+        return items;
+    }
+
     /**
      * {@inheritDoc}
      */

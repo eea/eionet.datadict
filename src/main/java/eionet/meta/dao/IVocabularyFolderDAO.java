@@ -34,6 +34,14 @@ import eionet.meta.service.ServiceException;
 public interface IVocabularyFolderDAO {
 
     /**
+     * Returns released vocabulary folders.
+     *
+     * @param folderId
+     * @return
+     */
+    List<VocabularyFolder> getReleasedVocabularyFolders(int folderId);
+
+    /**
      * Returns vocabulary folders.
      *
      * @param userName

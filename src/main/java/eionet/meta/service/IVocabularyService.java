@@ -83,6 +83,15 @@ public interface IVocabularyService {
     List<Folder> getFolders(String userName, int... expandedFolders) throws ServiceException;
 
     /**
+     * Returns released vocabulary folders.
+     *
+     * @param folderId
+     * @return
+     * @throws ServiceException
+     */
+    List<VocabularyFolder> getReleasedVocabularyFolders(int folderId) throws ServiceException;
+
+    /**
      * Returns vocabulary folders.
      *
      * @param userName

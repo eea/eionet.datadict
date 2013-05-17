@@ -21,13 +21,18 @@
 
 package eionet.web.action;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
@@ -36,8 +41,17 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.exports.rdf.VocabularyXmlWriter;
+import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.ObsoleteStatus;
+import eionet.meta.service.data.SiteCodeFilter;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 
 /**
  * Action bean for listing vocabulary folders.
@@ -47,11 +61,16 @@ import eionet.meta.service.ServiceException;
 @UrlBinding("/vocabularies")
 public class VocabularyFoldersActionBean extends AbstractActionBean {
 
-    /** */
+    /** Page path. */
     private static final String BROWSE_VOCABULARY_FOLDERS_JSP = "/pages/vocabularies/browseVocabularyFolders.jsp";
+
     /** Vocabulary service. */
     @SpringBean
     private IVocabularyService vocabularyService;
+
+    /** Site code service. */
+    @SpringBean
+    private ISiteCodeService siteCodeService;
 
     /** Folders. */
     private List<Folder> folders;
@@ -161,6 +180,75 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
             editDivId = "editFolderDiv" + folder.getId();
             folders = vocabularyService.getFolders(getUserName(), null);
         }
+    }
+
+    /**
+     * Action, that returns RDF output of the folder's vocabularies.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution rdf() {
+        try {
+            final Folder folder = vocabularyService.getFolder(folderId);
+            final List<VocabularyFolder> vocabularyFolders = vocabularyService.getReleasedVocabularyFolders(folderId);
+
+            StreamingResolution result = new StreamingResolution("application/rdf+xml") {
+                @Override
+                public void stream(HttpServletResponse response) throws Exception {
+                    VocabularyXmlWriter xmlWriter = new VocabularyXmlWriter(response.getOutputStream());
+
+                    String folderContextRoot = Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + folder.getIdentifier();
+
+                    xmlWriter.writeXmlStart(true, folderContextRoot);
+                    xmlWriter.writeFolderXml(folderContextRoot, folder.getLabel());
+
+                    for (VocabularyFolder vocabularyFolder : vocabularyFolders) {
+                        VocabularyConceptFilter filter = new VocabularyConceptFilter();
+                        filter.setUsePaging(false);
+                        filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
+                        List<? extends VocabularyConcept> concepts = null;
+                        if (vocabularyFolder.isSiteCodeType()) {
+                            String countryCode = getContext().getRequestParameter("countryCode");
+                            String identifier = getContext().getRequestParameter("identifier");
+                            SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
+                            siteCodeFilter.setUsePaging(false);
+                            siteCodeFilter.setCountryCode(countryCode);
+                            siteCodeFilter.setIdentifier(identifier);
+                            concepts = siteCodeService.searchSiteCodes(siteCodeFilter).getList();
+                        } else {
+                            concepts =
+                                    vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
+                                            vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
+                        }
+
+                        final List<? extends VocabularyConcept> finalConcepts = concepts;
+
+                        String vocabularyContextRoot =
+                                StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
+                                        .getRequiredProperty(PropsIF.DD_URL)
+                                        + "/vocabulary/"
+                                        + vocabularyFolder.getFolderName()
+                                        + "/" + vocabularyFolder.getIdentifier() + "/";
+
+                        xmlWriter.writeVocabularyFolderXml(vocabularyContextRoot, folderContextRoot, vocabularyFolder, finalConcepts);
+                    }
+
+                    xmlWriter.writeXmlEnd();
+                }
+            };
+
+            result.setFilename(folder.getIdentifier() + ".rdf");
+
+            return result;
+
+        } catch (Exception e) {
+            LOGGER.error("Failed to output vocabulary RDF data", e);
+            ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            error.setErrorMessage(e.getMessage());
+            return error;
+        }
+
     }
 
     /**
