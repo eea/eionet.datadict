@@ -77,6 +77,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution view() throws ServiceException {
+        handlePlusIdentifier();
+
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
@@ -87,12 +89,25 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     }
 
     /**
+     * Stripes does handles "+" parameter as " " which results as trim(" ") and then null. This method fixes this rare case.
+     */
+    private void handlePlusIdentifier() {
+        String conceptIdentifier = getContext().getRequest().getParameter("vocabularyConcept.identifier");
+        if (StringUtils.contains(conceptIdentifier, " ")) {
+            vocabularyConcept = new VocabularyConcept();
+            vocabularyConcept.setIdentifier(StringUtils.replace(conceptIdentifier, " ", "+"));
+        }
+    }
+
+    /**
      * Display edit form action.
      *
      * @return
      * @throws ServiceException
      */
     public Resolution edit() throws ServiceException {
+        handlePlusIdentifier();
+
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
