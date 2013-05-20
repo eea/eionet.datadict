@@ -149,7 +149,7 @@
                         <stripes:radio name="folderChoice" id="newFolderChoice" value="new" class="folderChoice" /> <label for="newFolderChoice">New folder</label>
                         <div id="existingFolderDiv">
                             <stripes:select name="vocabularyFolder.folderId">
-                                <stripes:options-collection collection="${actionBean.folders}" label="label" value="id"/>
+                                <stripes:options-collection collection="${actionBean.folders}" label="identifierLabel" value="id"/>
                             </stripes:select>
                         </div>
                         <div id="newFolderDiv">

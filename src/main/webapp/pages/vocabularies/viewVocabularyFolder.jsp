@@ -122,7 +122,7 @@
                         Folder
                     </th>
                     <td class="simple_attr_value">
-                        <c:out value="${actionBean.vocabularyFolder.folderName}" />
+                        <c:out value="${actionBean.vocabularyFolder.folderName} (${actionBean.vocabularyFolder.folderLabel})" />
                     </td>
                 </tr>
                 <tr>

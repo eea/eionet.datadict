@@ -49,6 +49,7 @@ public class VocabularyFolder {
 
     /** Joined property - folder identifier. */
     private String folderName;
+    private String folderLabel;
 
     private List<List<SimpleAttribute>> attributes;
 
@@ -326,6 +327,21 @@ public class VocabularyFolder {
      */
     public void setFolderId(int folderId) {
         this.folderId = folderId;
+    }
+
+    /**
+     * @return the folderLabel
+     */
+    public String getFolderLabel() {
+        return folderLabel;
+    }
+
+    /**
+     * @param folderLabel
+     *            the folderLabel to set
+     */
+    public void setFolderLabel(String folderLabel) {
+        this.folderLabel = folderLabel;
     }
 
 }

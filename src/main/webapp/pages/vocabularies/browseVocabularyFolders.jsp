@@ -64,37 +64,38 @@
         <stripes:form id="vocabulariesForm" beanclass="${actionBean.class.name}" method="post" style="margin-top:1em">
             <ul class="menu">
                 <c:forEach var="folder" items="${actionBean.folders}">
-                    <li>
-                        <stripes:link beanclass="${actionBean.class.name}">
-                            <stripes:param name="folderId" value="${folder.id}" />
-                            <stripes:param name="expand" value="${not folder.expanded}" />
-                            <stripes:param name="expanded" value="${actionBean.expanded}" />
-                            <c:choose>
-                                <c:when test="${folder.expanded}"><img style="border:0" src="${collapseIcon}" alt="Collapse" /></c:when>
-                                <c:otherwise><img style="border:0" src="${expandIcon}" alt="Expand" /></c:otherwise>
-                            </c:choose>
-                        </stripes:link>
+                <li>
+                    <stripes:link beanclass="${actionBean.class.name}">
+                        <stripes:param name="folderId" value="${folder.id}" />
+                        <stripes:param name="expand" value="${not folder.expanded}" />
+                        <stripes:param name="expanded" value="${actionBean.expanded}" />
+                        <c:choose>
+                            <c:when test="${folder.expanded}"><img style="border:0" src="${collapseIcon}" alt="Collapse" /></c:when>
+                            <c:otherwise><img style="border:0" src="${expandIcon}" alt="Expand" /></c:otherwise>
+                        </c:choose>
+                    </stripes:link>
 
-                        <stripes:link beanclass="${actionBean.class.name}">
-                            <stripes:param name="folderId" value="${folder.id}" />
-                            <stripes:param name="expand" value="${not folder.expanded}" />
-                            <stripes:param name="expanded" value="${actionBean.expanded}" />
-                            <c:out value="${folder.label}" />
-                        </stripes:link>
-                    </li>
+                    <stripes:link beanclass="${actionBean.class.name}">
+                        <stripes:param name="folderId" value="${folder.id}" />
+                        <stripes:param name="expand" value="${not folder.expanded}" />
+                        <stripes:param name="expanded" value="${actionBean.expanded}" />
+                        <c:out value="${folder.label}" />
+                    </stripes:link>
+
+                    <c:if test="${folder.expanded}"><br /></c:if>
 
                     <c:if test="${folder.expanded && not empty actionBean.user}">
                         <a href="#" data-divid="editFolderDiv${folder.id}" class="openFolderLink"><img style="border:0" src="${editIcon}" alt="Edit folder" /></a>
                     </c:if>
 
-                    <c:if test="${not empty folder.items}">
-
-                        <c:if test="${folder.expanded}">
+                    <c:if test="${folder.expanded && not empty folder.items}">
                         <stripes:link beanclass="${actionBean.class.name}" event="rdf">
                             <stripes:param name="folderId" value="${folder.id}" />
                             <img style="border:0" src="${rdfIcon}" alt="Export RDF" />
                         </stripes:link>
-                        </c:if>
+                    </c:if>
+
+                    <c:if test="${not empty folder.items}">
 
                         <ul class="menu" style="padding-left: 1em">
                             <c:forEach var="item" items="${folder.items}" varStatus="itemLoop">
@@ -130,8 +131,9 @@
                          </ul>
                      </c:if>
                      <c:if test="${folder.expanded && empty folder.items}">
-                        The folder is empty
+                        <div style="padding-left: 1em">The folder is empty</div>
                      </c:if>
+                 </li>
                  </c:forEach>
              </ul>
              <c:if test="${not empty actionBean.user}">

@@ -46,6 +46,15 @@ public class Folder {
     private List<? extends Object> items;
 
     /**
+     * Returns "identifier (label)".
+     *
+     * @return
+     */
+    public String getIdentifierLabel() {
+        return identifier + " (" + label + ")";
+    }
+
+    /**
      * @return the id
      */
     public int getId() {

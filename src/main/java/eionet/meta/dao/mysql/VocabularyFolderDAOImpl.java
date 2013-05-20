@@ -59,7 +59,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         StringBuilder sql = new StringBuilder();
         sql.append("select v.VOCABULARY_FOLDER_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
         sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, v.CONCEPT_IDENTIFIER_NUMERIC, ");
-        sql.append("f.ID, f.IDENTIFIER ");
+        sql.append("f.ID, f.IDENTIFIER, f.LABEL ");
         sql.append("from T_VOCABULARY_FOLDER v ");
         sql.append("left join T_FOLDER f on f.ID=v.FOLDER_ID ");
         sql.append("where v.WORKING_COPY=FALSE and v.FOLDER_ID=:folderId and v.REG_STATUS in (:statuses) ");
@@ -84,6 +84,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setBaseUri(rs.getString("v.BASE_URI"));
                         vf.setFolderId(rs.getShort("f.ID"));
                         vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                        vf.setFolderLabel(rs.getString("f.LABEL"));
                         return vf;
                     }
                 });
@@ -101,7 +102,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         StringBuilder sql = new StringBuilder();
         sql.append("select v.VOCABULARY_FOLDER_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
         sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, v.CONCEPT_IDENTIFIER_NUMERIC, ");
-        sql.append("f.ID, f.IDENTIFIER ");
+        sql.append("f.ID, f.IDENTIFIER, f.LABEL ");
         sql.append("from T_VOCABULARY_FOLDER v ");
         sql.append("left join T_FOLDER f on f.ID=v.FOLDER_ID ");
         sql.append("where ");
@@ -132,6 +133,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setBaseUri(rs.getString("v.BASE_URI"));
                         vf.setFolderId(rs.getShort("f.ID"));
                         vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                        vf.setFolderLabel(rs.getString("f.LABEL"));
                         return vf;
                     }
                 });
@@ -150,7 +152,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         StringBuilder sql = new StringBuilder();
         sql.append("select v.VOCABULARY_FOLDER_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
         sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, v.CONCEPT_IDENTIFIER_NUMERIC, ");
-        sql.append("f.ID, f.IDENTIFIER ");
+        sql.append("f.ID, f.IDENTIFIER, f.LABEL ");
         sql.append("from T_VOCABULARY_FOLDER v ");
         sql.append("left join T_FOLDER f on f.ID=v.FOLDER_ID ");
         sql.append("where ");
@@ -182,6 +184,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setBaseUri(rs.getString("v.BASE_URI"));
                         vf.setFolderId(rs.getShort("f.ID"));
                         vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                        vf.setFolderLabel(rs.getString("f.LABEL"));
                         return vf;
                     }
                 });
@@ -201,7 +204,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         StringBuilder sql = new StringBuilder();
         sql.append("select v.VOCABULARY_FOLDER_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
         sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, v.CONCEPT_IDENTIFIER_NUMERIC, ");
-        sql.append("f.ID, f.IDENTIFIER ");
+        sql.append("f.ID, f.IDENTIFIER, f.LABEL ");
         sql.append("from T_VOCABULARY_FOLDER v ");
         sql.append("left join T_FOLDER f on f.ID=v.FOLDER_ID ");
         sql.append("where v.CONTINUITY_ID = :continuityId and v.VOCABULARY_FOLDER_ID != :vocabularyFolderId ");
@@ -231,6 +234,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setBaseUri(rs.getString("v.BASE_URI"));
                         vf.setFolderId(rs.getShort("f.ID"));
                         vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                        vf.setFolderLabel(rs.getString("f.LABEL"));
                         return vf;
                     }
                 });
@@ -249,7 +253,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         StringBuilder sql = new StringBuilder();
         sql.append("select v.VOCABULARY_FOLDER_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
         sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, v.CONCEPT_IDENTIFIER_NUMERIC, ");
-        sql.append("f.ID, f.IDENTIFIER ");
+        sql.append("f.ID, f.IDENTIFIER, f.LABEL ");
         sql.append("from T_VOCABULARY_FOLDER v ");
         sql.append("left join T_FOLDER f on f.ID=v.FOLDER_ID ");
         sql.append("where v.WORKING_USER=:workingUser and v.WORKING_COPY = 1");
@@ -270,6 +274,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setCheckedOutCopyId(rs.getInt("v.CHECKEDOUT_COPY_ID"));
                         vf.setFolderName(rs.getString("f.IDENTIFIER"));
                         vf.setFolderId(rs.getInt("f.ID"));
+                        vf.setFolderLabel(rs.getString("f.LABEL"));
                         return vf;
                     }
                 });
@@ -321,7 +326,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         StringBuilder sql = new StringBuilder();
         sql.append("select v.VOCABULARY_FOLDER_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
         sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, v.CONCEPT_IDENTIFIER_NUMERIC, ");
-        sql.append("f.ID, f.IDENTIFIER ");
+        sql.append("f.ID, f.IDENTIFIER, f.LABEL ");
         sql.append("from T_VOCABULARY_FOLDER v ");
         sql.append("left join T_FOLDER f on f.ID=v.FOLDER_ID ");
         sql.append("where v.IDENTIFIER=:identifier and v.WORKING_COPY=:workingCopy and f.IDENTIFIER=:folderIdentifier");
@@ -345,6 +350,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setBaseUri(rs.getString("v.BASE_URI"));
                         vf.setFolderId(rs.getShort("f.ID"));
                         vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                        vf.setFolderLabel(rs.getString("f.LABEL"));
                         return vf;
                     }
                 });
@@ -404,7 +410,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         StringBuilder sql = new StringBuilder();
         sql.append("select v.VOCABULARY_FOLDER_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
         sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, v.CONCEPT_IDENTIFIER_NUMERIC, ");
-        sql.append("f.ID, f.IDENTIFIER ");
+        sql.append("f.ID, f.IDENTIFIER, f.LABEL ");
         sql.append("from T_VOCABULARY_FOLDER v ");
         sql.append("left join T_FOLDER f on f.ID=v.FOLDER_ID ");
         sql.append("where VOCABULARY_FOLDER_ID=:id");
@@ -428,6 +434,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setBaseUri(rs.getString("v.BASE_URI"));
                         vf.setFolderId(rs.getShort("f.ID"));
                         vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                        vf.setFolderLabel(rs.getString("f.LABEL"));
                         return vf;
                     }
                 });
@@ -446,7 +453,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         StringBuilder sql = new StringBuilder();
         sql.append("select v.VOCABULARY_FOLDER_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
         sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, v.CONCEPT_IDENTIFIER_NUMERIC, ");
-        sql.append("f.ID, f.IDENTIFIER ");
+        sql.append("f.ID, f.IDENTIFIER, f.LABEL ");
         sql.append("from T_VOCABULARY_FOLDER v ");
         sql.append("left join T_FOLDER f on f.ID=v.FOLDER_ID ");
         sql.append("where v.CHECKEDOUT_COPY_ID=:checkedOutCopyId");
@@ -470,6 +477,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setBaseUri(rs.getString("v.BASE_URI"));
                         vf.setFolderId(rs.getShort("f.ID"));
                         vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                        vf.setFolderLabel(rs.getString("f.LABEL"));
                         return vf;
                     }
                 });
