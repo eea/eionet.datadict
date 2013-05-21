@@ -51,11 +51,9 @@
 
         <h1>Browse vocabularies</h1>
 
-        <c:if test="${empty actionBean.user}">
-            <div style="margin-top:1em">
-                Please note that unauthenticated users can only see vocabularies in Released status.
-            </div>
-        </c:if>
+        <p class="advise-msg">
+            Note: Unauthenticated users can only see vocabularies in <em>Released</em> and <em>Public Draft</em> statuses.
+        </p>
 
         <c:url var="expandIcon" value="/images/img_plus.gif" />
         <c:url var="collapseIcon" value="/images/img_minus.gif" />
