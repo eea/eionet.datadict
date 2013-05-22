@@ -374,7 +374,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     @Test
     public void testGetFolderByIdentifier() throws ServiceException {
-        Folder result = vocabularyService.getFolderByIdentifier(folderIdentifier)("test1");
+        Folder result = vocabularyService.getFolderByIdentifier("test1");
         assertNotNull("Folder", result);
     }
 }
