@@ -53,16 +53,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
         sql.append("from T_FOLDER ");
         sql.append("order by LABEL");
 
-        List<Folder> items = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Folder>() {
-            @Override
-            public Folder mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Folder f = new Folder();
-                f.setId(rs.getInt("ID"));
-                f.setIdentifier(rs.getString("IDENTIFIER"));
-                f.setLabel(rs.getString("LABEL"));
-                return f;
-            }
-        });
+        List<Folder> items = getNamedParameterJdbcTemplate().query(sql.toString(), params,new FolderRowMapper());
 
         return items;
     }
@@ -115,16 +106,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
         sql.append("from T_FOLDER ");
         sql.append("where ID=:id");
 
-        Folder result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<Folder>() {
-            @Override
-            public Folder mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Folder f = new Folder();
-                f.setId(rs.getInt("ID"));
-                f.setIdentifier(rs.getString("IDENTIFIER"));
-                f.setLabel(rs.getString("LABEL"));
-                return f;
-            }
-        });
+        Folder result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new FolderRowMapper());
 
         return result;
     }

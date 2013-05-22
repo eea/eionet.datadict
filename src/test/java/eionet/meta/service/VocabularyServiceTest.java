@@ -62,7 +62,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     @BeforeClass
     public static void loadData() throws Exception {
-        DBUnitHelper.loadData("");
+        DBUnitHelper.loadData("seed-vocabularies.xml");
     }
 
     @AfterClass
