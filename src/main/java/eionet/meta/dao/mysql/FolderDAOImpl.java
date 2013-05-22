@@ -53,7 +53,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
         sql.append("from T_FOLDER ");
         sql.append("order by LABEL");
 
-        List<Folder> items = getNamedParameterJdbcTemplate().query(sql.toString(), params,new FolderRowMapper());
+        List<Folder> items = getNamedParameterJdbcTemplate().query(sql.toString(), params, new FolderRowMapper());
 
         return items;
     }
@@ -173,7 +173,13 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
         return result;
     }
 
-    class FolderRowMapper implements RowMapper<Folder>{
+    /**
+     *
+     * Map T_FOLDER table fields to Folder object properties.
+     *
+     * @author Enriko Käsper
+     */
+    class FolderRowMapper implements RowMapper<Folder> {
         @Override
         public Folder mapRow(ResultSet rs, int rowNum) throws SQLException {
             Folder f = new Folder();

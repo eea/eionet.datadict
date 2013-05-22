@@ -41,7 +41,6 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
-import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.VocabularyConceptFilter;
@@ -71,7 +70,6 @@ public class FolderActionBean extends AbstractActionBean {
      * Action, that returns RDF output of the folder's vocabularies.
      *
      * @return StreamingResolution
-     * @throws ServiceException
      */
     @DefaultHandler
     public Resolution rdf() {

@@ -37,7 +37,6 @@ import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 
@@ -55,10 +54,6 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /** Vocabulary service. */
     @SpringBean
     private IVocabularyService vocabularyService;
-
-    /** Site code service. */
-    @SpringBean
-    private ISiteCodeService siteCodeService;
 
     /** Folders. */
     private List<Folder> folders;
@@ -87,8 +82,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /**
      * View vocabulary folders list action.
      *
-     * @return
-     * @throws ServiceException
+     * @return Default Resolution.
+     * @throws ServiceException if retrieving folder data fails.
      */
     @DefaultHandler
     public Resolution viewList() throws ServiceException {
@@ -96,14 +91,13 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
 
         if (getUserName() != null && folders != null) {
             for (Folder folder : folders) {
-                if (folder != null && folder.isExpanded() && folder.getItems() != null) {
+                if (folder.isExpanded() && folder.getItems() != null) {
                     for (Object vocabulary : folder.getItems()) {
-                        if (vocabulary != null && vocabulary instanceof VocabularyFolder) {
-                            if (!((VocabularyFolder) vocabulary).isWorkingCopy()
+                        if (vocabulary instanceof VocabularyFolder &&
+                                !((VocabularyFolder) vocabulary).isWorkingCopy()
                                     && StringUtils.isEmpty(((VocabularyFolder) vocabulary).getWorkingUser())) {
-                                setVisibleEditableVocabularies(true);
-                                break;
-                            }
+                            setVisibleEditableVocabularies(true);
+                            break;
                         }
                     }
                 }
