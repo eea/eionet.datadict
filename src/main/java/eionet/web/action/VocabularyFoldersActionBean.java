@@ -21,18 +21,13 @@
 
 package eionet.web.action;
 
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
 import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
@@ -41,17 +36,10 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.Folder;
-import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
-import eionet.meta.service.data.ObsoleteStatus;
-import eionet.meta.service.data.SiteCodeFilter;
-import eionet.meta.service.data.VocabularyConceptFilter;
-import eionet.util.Props;
-import eionet.util.PropsIF;
 
 /**
  * Action bean for listing vocabulary folders.
@@ -78,14 +66,20 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /** Selected vocabulary folder ids. */
     private List<Integer> folderIds;
 
-    /** Folder ID, currently clicked. */
+    /** Folder numeric ID, currently clicked. */
     private int folderId;
+
+    /** Folder Identifier, currently clicked. */
+    private String identifier;
 
     /** True, if operation is to expand. To collapse, it is false. */
     private boolean expand;
 
     /** Comma separated folder IDs, that are expanded. */
     private String expanded;
+
+    /** The page contains visible editable vocabularies. */
+    private boolean visibleEditableVocabularies;
 
     /** Popup div id to keep open, when validation error occur. */
     private String editDivId;
@@ -99,6 +93,22 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution viewList() throws ServiceException {
         folders = vocabularyService.getFolders(getUserName(), parseExpandedIds());
+
+        if (getUserName() != null && folders != null) {
+            for (Folder folder : folders) {
+                if (folder != null && folder.isExpanded() && folder.getItems() != null) {
+                    for (Object vocabulary : folder.getItems()) {
+                        if (vocabulary != null && vocabulary instanceof VocabularyFolder) {
+                            if (!((VocabularyFolder) vocabulary).isWorkingCopy()
+                                    && StringUtils.isEmpty(((VocabularyFolder) vocabulary).getWorkingUser())) {
+                                setVisibleEditableVocabularies(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return new ForwardResolution(BROWSE_VOCABULARY_FOLDERS_JSP);
     }
 
@@ -183,75 +193,6 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * Action, that returns RDF output of the folder's vocabularies.
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution rdf() {
-        try {
-            final Folder folder = vocabularyService.getFolder(folderId);
-            final List<VocabularyFolder> vocabularyFolders = vocabularyService.getReleasedVocabularyFolders(folderId);
-
-            StreamingResolution result = new StreamingResolution("application/rdf+xml") {
-                @Override
-                public void stream(HttpServletResponse response) throws Exception {
-                    VocabularyXmlWriter xmlWriter = new VocabularyXmlWriter(response.getOutputStream());
-
-                    String folderContextRoot = Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + folder.getIdentifier();
-
-                    xmlWriter.writeXmlStart(true, folderContextRoot);
-                    xmlWriter.writeFolderXml(folderContextRoot, folder.getLabel());
-
-                    for (VocabularyFolder vocabularyFolder : vocabularyFolders) {
-                        VocabularyConceptFilter filter = new VocabularyConceptFilter();
-                        filter.setUsePaging(false);
-                        filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
-                        List<? extends VocabularyConcept> concepts = null;
-                        if (vocabularyFolder.isSiteCodeType()) {
-                            String countryCode = getContext().getRequestParameter("countryCode");
-                            String identifier = getContext().getRequestParameter("identifier");
-                            SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
-                            siteCodeFilter.setUsePaging(false);
-                            siteCodeFilter.setCountryCode(countryCode);
-                            siteCodeFilter.setIdentifier(identifier);
-                            concepts = siteCodeService.searchSiteCodes(siteCodeFilter).getList();
-                        } else {
-                            concepts =
-                                    vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
-                                            vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
-                        }
-
-                        final List<? extends VocabularyConcept> finalConcepts = concepts;
-
-                        String vocabularyContextRoot =
-                                StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
-                                        .getRequiredProperty(PropsIF.DD_URL)
-                                        + "/vocabulary/"
-                                        + vocabularyFolder.getFolderName()
-                                        + "/" + vocabularyFolder.getIdentifier() + "/";
-
-                        xmlWriter.writeVocabularyFolderXml(vocabularyContextRoot, folderContextRoot, vocabularyFolder, finalConcepts);
-                    }
-
-                    xmlWriter.writeXmlEnd();
-                }
-            };
-
-            result.setFilename(folder.getIdentifier() + ".rdf");
-
-            return result;
-
-        } catch (Exception e) {
-            LOGGER.error("Failed to output vocabulary RDF data", e);
-            ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
-            error.setErrorMessage(e.getMessage());
-            return error;
-        }
-
-    }
-
-    /**
      * True, if user has update right.
      *
      * @return
@@ -316,8 +257,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyService
-     *            the vocabularyService to set
+     * @param vocabularyService the vocabularyService to set
      */
     public void setVocabularyService(IVocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
@@ -331,8 +271,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folderIds
-     *            the folderIds to set
+     * @param folderIds the folderIds to set
      */
     public void setFolderIds(List<Integer> folderIds) {
         this.folderIds = folderIds;
@@ -346,8 +285,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folderId
-     *            the folderId to set
+     * @param folderId the folderId to set
      */
     public void setFolderId(int folderId) {
         this.folderId = folderId;
@@ -361,8 +299,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param expand
-     *            the expand to set
+     * @param expand the expand to set
      */
     public void setExpand(boolean expand) {
         this.expand = expand;
@@ -376,8 +313,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param expanded
-     *            the expanded to set
+     * @param expanded the expanded to set
      */
     public void setExpanded(String expanded) {
         this.expanded = expanded;
@@ -391,8 +327,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folders
-     *            the folders to set
+     * @param folders the folders to set
      */
     public void setFolders(List<Folder> folders) {
         this.folders = folders;
@@ -406,11 +341,38 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param editDivId
-     *            the editDivId to set
+     * @param editDivId the editDivId to set
      */
     public void setEditDivId(String editDivId) {
         this.editDivId = editDivId;
+    }
+
+    /**
+     * @return the visibleEditableVocabularies
+     */
+    public boolean isVisibleEditableVocabularies() {
+        return visibleEditableVocabularies;
+    }
+
+    /**
+     * @param visibleEditableVocabularies the visibleEditableVocabularies to set
+     */
+    public void setVisibleEditableVocabularies(boolean visibleEditableVocabularies) {
+        this.visibleEditableVocabularies = visibleEditableVocabularies;
+    }
+
+    /**
+     * @return the folderIdentifier
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * @param folderIdentifier the folderIdentifier to set
+     */
+    public void setIdentifier(String folderIdentifier) {
+        this.identifier = folderIdentifier;
     }
 
 }

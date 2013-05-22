@@ -54,6 +54,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
         sql.append("order by LABEL");
 
         List<Folder> items = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Folder>() {
+            @Override
             public Folder mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Folder f = new Folder();
                 f.setId(rs.getInt("ID"));
@@ -115,6 +116,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
         sql.append("where ID=:id");
 
         Folder result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<Folder>() {
+            @Override
             public Folder mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Folder f = new Folder();
                 f.setId(rs.getInt("ID"));
@@ -169,6 +171,35 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
         parameters.put("label", folder.getLabel());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Folder getFolderByIdentifier(String folderIdentifier) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("identifier", folderIdentifier);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select ID, IDENTIFIER, LABEL ");
+        sql.append("from T_FOLDER ");
+        sql.append("where IDENTIFIER=:identifier");
+
+        Folder result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new FolderRowMapper());
+
+        return result;
+    }
+
+    class FolderRowMapper implements RowMapper<Folder>{
+        @Override
+        public Folder mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Folder f = new Folder();
+            f.setId(rs.getInt("ID"));
+            f.setIdentifier(rs.getString("IDENTIFIER"));
+            f.setLabel(rs.getString("LABEL"));
+            return f;
+        }
     }
 
 }

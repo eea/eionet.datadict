@@ -407,4 +407,13 @@ public interface IVocabularyService {
      * @throws ServiceException
      */
     List<SimpleAttribute> getVocabularyFolderAttributesMetadata() throws ServiceException;
+
+    /**
+     * Get folder by folder identifier.
+     * @param folderIdentifier Folder unique textual identifier.
+     * @throws ServiceException Database error.
+     * @return Folder object with metadata.
+     */
+    Folder getFolderByIdentifier(String folderIdentifier) throws ServiceException;
+
 }

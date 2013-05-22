@@ -921,4 +921,16 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Folder getFolderByIdentifier(String folderIdentifier) throws ServiceException {
+        try {
+            return folderDAO.getFolderByIdentifier(folderIdentifier);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get folder by identifier: " + e.getMessage(), e);
+        }
+    }
+
 }

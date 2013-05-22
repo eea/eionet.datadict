@@ -85,4 +85,11 @@ public interface IFolderDAO {
      * @param folder
      */
     void updateFolder(Folder folder);
+
+    /**
+     * Get folder object by identifier.
+     * @param folderIdentifier folderIdentifier Folder unique textual identifier.
+     * @return Folder object.
+     */
+    Folder getFolderByIdentifier(String folderIdentifier);
 }

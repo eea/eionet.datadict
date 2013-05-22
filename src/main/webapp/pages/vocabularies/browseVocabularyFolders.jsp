@@ -55,11 +55,12 @@
             Note: Unauthenticated users can only see vocabularies in <em>Released</em> and <em>Public Draft</em> statuses.
         </p>
 
-        <c:url var="expandIcon" value="/images/img_plus.gif" />
-        <c:url var="collapseIcon" value="/images/img_minus.gif" />
+        <c:url var="expandIcon" value="/images/expand.png" />
+        <c:url var="collapseIcon" value="/images/collapse.png" />
         <c:url var="editIcon" value="/images/edit.gif" />
         <c:url var="rdfIcon" value="/images/rdf-icon.gif" />
         <stripes:form id="vocabulariesForm" beanclass="${actionBean.class.name}" method="post" style="margin-top:1em">
+            <div class="tree-nav">
             <ul class="menu">
                 <c:forEach var="folder" items="${actionBean.folders}">
                 <li>
@@ -73,29 +74,31 @@
                         </c:choose>
                     </stripes:link>
 
-                    <stripes:link beanclass="${actionBean.class.name}">
+                    <stripes:link beanclass="${actionBean.class.name}" class="${folder.expanded ? 'expanded' : 'collapsed'}">
                         <stripes:param name="folderId" value="${folder.id}" />
                         <stripes:param name="expand" value="${not folder.expanded}" />
                         <stripes:param name="expanded" value="${actionBean.expanded}" />
-                        <c:out value="${folder.label}" />
+                        <c:out value="${folder.identifier}" />
                     </stripes:link>
+                    (<c:out value="${folder.label}"/>)
 
-                    <c:if test="${folder.expanded}"><br /></c:if>
 
                     <c:if test="${folder.expanded && not empty actionBean.user}">
-                        <a href="#" data-divid="editFolderDiv${folder.id}" class="openFolderLink"><img style="border:0" src="${editIcon}" alt="Edit folder" /></a>
+                        <a href="#" data-divid="editFolderDiv${folder.id}" class="openFolderLink" title="Edit folder">
+                            <img style="border:0" src="${editIcon}" alt="Edit folder" />
+                        </a>
                     </c:if>
 
                     <c:if test="${folder.expanded && not empty folder.items}">
-                        <stripes:link beanclass="${actionBean.class.name}" event="rdf">
-                            <stripes:param name="folderId" value="${folder.id}" />
-                            <img style="border:0" src="${rdfIcon}" alt="Export RDF" />
+                        <stripes:link beanclass="eionet.web.action.FolderActionBean" event="rdf" title="Export RDF with all vocabularies in the folder">
+                            <stripes:param name="folder.identifier" value="${folder.identifier}" />
+                            <img style="border:0" src="${rdfIcon}" alt="Export RDF"/>
                         </stripes:link>
                     </c:if>
 
                     <c:if test="${not empty folder.items}">
 
-                        <ul class="menu" style="padding-left: 1em">
+                        <ul class="menu" style="margin-left: 1.2em">
                             <c:forEach var="item" items="${folder.items}" varStatus="itemLoop">
                                 <li class="zebra${itemLoop.index % 2 != 0 ? 'odd' : 'even'}">
                                     <c:if test="${not empty actionBean.user}">
@@ -134,10 +137,11 @@
                  </li>
                  </c:forEach>
              </ul>
-             <c:if test="${not empty actionBean.user}">
+             <c:if test="${not empty actionBean.user && actionBean.visibleEditableVocabularies}">
                  <stripes:submit name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete the selected vocabularies?');"/>
                  <input type="button" onclick="toggleSelectAll('vocabulariesForm');return false" value="Select all" name="selectAll" />
              </c:if>
+             </div>
          </stripes:form>
 
 

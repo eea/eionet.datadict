@@ -62,7 +62,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     @BeforeClass
     public static void loadData() throws Exception {
-        DBUnitHelper.loadData("seed-vocabularies.xml");
+        DBUnitHelper.loadData("");
     }
 
     @AfterClass
@@ -370,5 +370,11 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
         assertEquals("Modified identifier", "new", folder.getIdentifier());
         assertEquals("Modified label", "new", folder.getLabel());
+    }
+
+    @Test
+    public void testGetFolderByIdentifier() throws ServiceException {
+        Folder result = vocabularyService.getFolderByIdentifier(folderIdentifier)("test1");
+        assertNotNull("Folder", result);
     }
 }

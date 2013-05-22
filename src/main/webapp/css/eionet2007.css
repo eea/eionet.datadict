@@ -336,3 +336,30 @@ d.simple_attr_title{
     font-weight: bold;
     border-bottom: 2px solid white;
 }
+/*
+* Two level tree navigation on vocabularies page
+*/
+.tree-nav li {
+    list-style: none;
+    list-style-image: none;
+    vertical-align: bottom;
+    margin: 0px 0px 3px 0px;
+}
+.tree-nav li a.expanded {
+    font-weight:bold;
+}
+.tree-nav li a.collapsed{
+    font-weight:normal;
+}
+.tree-nav li li{
+    margin: 0px;
+}
+.tree-nav li a {
+    text-decoration: none;
+}
+.tree-nav li li a {
+    text-decoration: underline;
+}
+.tree-nav li a:hover {
+    text-decoration: underline;
+}

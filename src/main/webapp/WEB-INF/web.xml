@@ -130,6 +130,10 @@
         <filter-name>ContentNegotiationFilter</filter-name>
         <url-pattern>/vocabulary/*</url-pattern>
     </filter-mapping>
+    <filter-mapping>
+        <filter-name>ContentNegotiationFilter</filter-name>
+        <url-pattern>/vocabularyfolder/*</url-pattern>
+    </filter-mapping>
 
     <filter-mapping>
         <filter-name>StripesFilter</filter-name>
@@ -228,6 +232,10 @@
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/vocabulary/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/vocabularyfolder/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
@@ -533,6 +541,11 @@
         </web-resource-collection>
     </security-constraint>
 
+    <env-entry>
+        <env-entry-name>liquibase.should.run</env-entry-name>
+        <env-entry-type>java.lang.Boolean</env-entry-type>
+        <env-entry-value>false</env-entry-value>
+    </env-entry>
 
     <!-- force the entire application to security constraint CONFIDENTIAL -->
     <!-- as a result the non-SSL connector will redirect using the redirectPort
