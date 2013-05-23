@@ -106,6 +106,7 @@ public class VocabularyXmlWriter {
      */
     public void writeXmlStart(boolean siteCodeType, String contextRoot) throws XMLStreamException {
         writer.writeStartDocument(ENCODING, "1.0");
+        writer.writeCharacters("\n");
 
         writer.setPrefix("rdf", RDF_NS);
         writer.setPrefix("rdfs", RDFS_NS);
