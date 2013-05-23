@@ -73,8 +73,7 @@ public class VocabularyXmlWriter {
     /**
      * Escapes IRI's reserved characters in the given URL string.
      *
-     * @param url
-     *            is a string.
+     * @param url is a string.
      * @return escaped URI
      */
     public static String escapeIRI(String url) {
@@ -88,14 +87,12 @@ public class VocabularyXmlWriter {
      * @throws XMLStreamException
      * @throws ServiceException
      */
-    public void writeRDFXml(String contextRoot, String folderContextRoot, String folderLabel, VocabularyFolder vocabularyFolder,
+    public void writeRDFXml(String contextRoot, VocabularyFolder vocabularyFolder,
             List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
 
         writeXmlStart(vocabularyFolder.isSiteCodeType(), contextRoot);
 
-        writeFolderXml(folderContextRoot, folderLabel);
-
-        writeVocabularyFolderXml(contextRoot, folderContextRoot, vocabularyFolder, vocabularyConcepts);
+        writeVocabularyFolderXml(contextRoot, vocabularyFolder, vocabularyConcepts);
 
         writeXmlEnd();
     }
@@ -140,37 +137,15 @@ public class VocabularyXmlWriter {
     }
 
     /**
-     * Writes folder data XML.
-     *
-     * @param folderContextRoot
-     * @param folderLabel
-     * @throws XMLStreamException
-     */
-    public void writeFolderXml(String folderContextRoot, String folderLabel) throws XMLStreamException {
-        writer.writeCharacters("\n");
-        writer.writeStartElement(SKOS_NS, "ConceptScheme");
-        writer.writeAttribute("rdf", RDF_NS, "about", escapeIRI(folderContextRoot));
-
-        writer.writeCharacters("\n");
-        writer.writeStartElement(RDFS_NS, "label");
-        writer.writeCharacters(folderLabel);
-        writer.writeEndElement();
-
-        writer.writeCharacters("\n");
-        writer.writeEndElement(); // End ConceptScheme
-    }
-
-    /**
      * Writes vocabulary folder XML.
      *
      * @param vocabularyContextRoot
-     * @param folderContextRoot
      * @param vocabularyFolder
      * @param vocabularyConcepts
      * @throws XMLStreamException
      */
-    public void writeVocabularyFolderXml(String vocabularyContextRoot, String folderContextRoot,
-            VocabularyFolder vocabularyFolder, List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
+    public void writeVocabularyFolderXml(String vocabularyContextRoot, VocabularyFolder vocabularyFolder,
+            List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
         writer.writeCharacters("\n");
         writer.writeStartElement(SKOS_NS, "ConceptScheme");
         writer.writeAttribute("rdf", RDF_NS, "about", escapeIRI(vocabularyContextRoot));
@@ -179,12 +154,6 @@ public class VocabularyXmlWriter {
         writer.writeStartElement(RDFS_NS, "label");
         writer.writeCharacters(vocabularyFolder.getLabel());
         writer.writeEndElement();
-
-        if (StringUtils.isNotEmpty(folderContextRoot)) {
-            writer.writeCharacters("\n");
-            writer.writeEmptyElement(SKOS_NS, "inScheme");
-            writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(folderContextRoot));
-        }
 
         writer.writeCharacters("\n");
         writer.writeEndElement(); // End ConceptScheme

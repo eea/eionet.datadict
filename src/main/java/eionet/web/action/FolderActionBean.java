@@ -83,10 +83,10 @@ public class FolderActionBean extends AbstractActionBean {
                 public void stream(HttpServletResponse response) throws Exception {
                     VocabularyXmlWriter xmlWriter = new VocabularyXmlWriter(response.getOutputStream());
 
-                    String folderContextRoot = Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + folder.getIdentifier();
+                    String folderContextRoot =
+                            Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + folder.getIdentifier() + "/";
 
                     xmlWriter.writeXmlStart(true, folderContextRoot);
-                    xmlWriter.writeFolderXml(folderContextRoot, folder.getLabel());
 
                     for (VocabularyFolder vocabularyFolder : vocabularyFolders) {
                         VocabularyConceptFilter filter = new VocabularyConceptFilter();
@@ -116,7 +116,7 @@ public class FolderActionBean extends AbstractActionBean {
                                         + vocabularyFolder.getFolderName()
                                         + "/" + vocabularyFolder.getIdentifier() + "/";
 
-                        xmlWriter.writeVocabularyFolderXml(vocabularyContextRoot, folderContextRoot, vocabularyFolder,
+                        xmlWriter.writeVocabularyFolderXml(vocabularyContextRoot, vocabularyFolder,
                                 finalConcepts);
                     }
 

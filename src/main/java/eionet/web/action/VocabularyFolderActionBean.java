@@ -710,8 +710,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             vocabularyFolder =
                     vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                             false);
-            final Folder folder = vocabularyService.getFolder(vocabularyFolder.getFolderId());
-
             initFilter();
             filter.setUsePaging(false);
             filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
@@ -744,14 +742,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                             + "/"
                             + vocabularyFolder.getIdentifier() + "/";
 
-            final String folderContextRoot =
-                    Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + vocabularyFolder.getFolderName() + "/";
-
             StreamingResolution result = new StreamingResolution("application/rdf+xml") {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
                     VocabularyXmlWriter xmlWriter = new VocabularyXmlWriter(response.getOutputStream());
-                    xmlWriter.writeRDFXml(contextRoot, folderContextRoot, folder.getLabel(), vocabularyFolder, finalConcepts);
+                    xmlWriter.writeRDFXml(contextRoot, vocabularyFolder, finalConcepts);
                 }
             };
             result.setFilename(vocabularyFolder.getIdentifier() + ".rdf");
@@ -942,8 +937,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyFolder
-     *            the vocabularyFolder to set
+     * @param vocabularyFolder the vocabularyFolder to set
      */
     public void setVocabularyFolder(VocabularyFolder vocabularyFolder) {
         this.vocabularyFolder = vocabularyFolder;
@@ -957,16 +951,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcepts
-     *            the vocabularyConcepts to set
+     * @param vocabularyConcepts the vocabularyConcepts to set
      */
     public void setVocabularyConcepts(VocabularyConceptResult vocabularyConcepts) {
         this.vocabularyConcepts = vocabularyConcepts;
     }
 
     /**
-     * @param vocabularyService
-     *            the vocabularyService to set
+     * @param vocabularyService the vocabularyService to set
      */
     public void setVocabularyService(IVocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
@@ -980,8 +972,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcept
-     *            the vocabularyConcept to set
+     * @param vocabularyConcept the vocabularyConcept to set
      */
     public void setVocabularyConcept(VocabularyConcept vocabularyConcept) {
         this.vocabularyConcept = vocabularyConcept;
@@ -995,8 +986,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param conceptIds
-     *            the conceptIds to set
+     * @param conceptIds the conceptIds to set
      */
     public void setConceptIds(List<Integer> conceptIds) {
         this.conceptIds = conceptIds;
@@ -1010,8 +1000,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param copyId
-     *            the copyId to set
+     * @param copyId the copyId to set
      */
     public void setCopyId(int copyId) {
         this.copyId = copyId;
@@ -1039,8 +1028,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param filter
-     *            the filter to set
+     * @param filter the filter to set
      */
     public void setFilter(VocabularyConceptFilter filter) {
         this.filter = filter;
@@ -1054,8 +1042,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param page
-     *            the page to set
+     * @param page the page to set
      */
     public void setPage(int page) {
         this.page = page;
@@ -1076,8 +1063,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folder
-     *            the folder to set
+     * @param folder the folder to set
      */
     public void setFolder(Folder folder) {
         this.folder = folder;
@@ -1091,8 +1077,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folderChoice
-     *            the folderChoice to set
+     * @param folderChoice the folderChoice to set
      */
     public void setFolderChoice(String folderChoice) {
         this.folderChoice = folderChoice;
