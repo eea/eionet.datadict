@@ -40,13 +40,13 @@
 
     <stripes:layout-component name="contents">
 
-        <c:if test="${not empty actionBean.user}">
-        <div id="drop-operations">
-            <h2>Operations:</h2>
-            <ul>
-                <li><stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">Add vocabulary</stripes:link></li>
-            </ul>
-        </div>
+        <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
+            <div id="drop-operations">
+                <h2>Operations:</h2>
+                <ul>
+                    <li><stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">Add vocabulary</stripes:link></li>
+                </ul>
+            </div>
         </c:if>
 
         <h1>Browse vocabularies</h1>
@@ -83,7 +83,7 @@
                     (<c:out value="${folder.label}"/>)
 
 
-                    <c:if test="${folder.expanded && not empty actionBean.user}">
+                    <c:if test="${folder.expanded && not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'u')}">
                         <a href="#" data-divid="editFolderDiv${folder.id}" class="openFolderLink" title="Edit folder">
                             <img style="border:0" src="${editIcon}" alt="Edit folder" />
                         </a>
@@ -101,7 +101,7 @@
                         <ul class="menu" style="margin-left: 1.2em">
                             <c:forEach var="item" items="${folder.items}" varStatus="itemLoop">
                                 <li class="zebra${itemLoop.index % 2 != 0 ? 'odd' : 'even'}">
-                                    <c:if test="${not empty actionBean.user}">
+                                    <c:if test="${not empty actionBean.user  && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'd')}">
                                         <stripes:checkbox name="folderIds" value="${item.id}" disabled="${item.workingCopy || not empty item.workingUser}" />
                                     </c:if>
                                     <c:choose>
@@ -132,12 +132,12 @@
                          </ul>
                      </c:if>
                      <c:if test="${folder.expanded && empty folder.items}">
-                        <div style="padding-left: 1em">The folder is empty</div>
+                        <div style="padding-left: 1em;font-style:italic;">The folder is empty</div>
                      </c:if>
                  </li>
                  </c:forEach>
              </ul>
-             <c:if test="${not empty actionBean.user && actionBean.visibleEditableVocabularies}">
+             <c:if test="${not empty actionBean.user && actionBean.visibleEditableVocabularies && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'd')}">
                  <stripes:submit name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete the selected vocabularies?');"/>
                  <input type="button" onclick="toggleSelectAll('vocabulariesForm');return false" value="Select all" name="selectAll" />
              </c:if>
@@ -147,6 +147,7 @@
 
          <%-- Editable folder popups --%>
         <c:forEach var="item" items="${actionBean.folders}" varStatus="loop">
+          <c:if test="${item.expanded && not empty actionBean.user  && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'u')}">
             <div id="editFolderDiv${item.id}" title="Edit folder" class="editFolderDiv">
                 <stripes:form id="form${item.id}" method="post" beanclass="${actionBean.class.name}">
 
@@ -196,6 +197,7 @@
                     </table>
                 </stripes:form>
             </div>
+          </c:if>
         </c:forEach>
 
     </stripes:layout-component>

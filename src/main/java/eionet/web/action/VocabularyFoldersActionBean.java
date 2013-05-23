@@ -135,7 +135,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /**
      * Validates save folder.
      *
-     * @throws ServiceException
+     * @throws ServiceException if user does not have update rights.
      */
     @ValidationMethod(on = {"saveFolder"})
     public void validateSaveFolder() throws ServiceException {
@@ -166,12 +166,12 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /**
      * Validates delete folder.
      *
-     * @throws ServiceException
+     * @throws ServiceException if user does not have delete rights.
      */
     @ValidationMethod(on = {"deleteFolder"})
     public void validateDeleteFolder() throws ServiceException {
-        if (!isUpdateRight()) {
-            addGlobalValidationError("No permission to modify folder");
+        if (!isDeleteRight()) {
+            addGlobalValidationError("No permission to delete folder!");
         }
 
         Folder folder = getSubmittedFolder();
@@ -187,6 +187,22 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
+     * Validates delete vocabulary.
+     *
+     * @throws ServiceException if user does not have delete rights.
+     */
+    @ValidationMethod(on = {"delete"})
+    public void validateDeleteVocabulary() throws ServiceException {
+        if (!isDeleteRight()) {
+            addGlobalValidationError("No permission to delete vocabulary!");
+        }
+
+        if (isValidationErrors()) {
+            folders = vocabularyService.getFolders(getUserName(), null);
+        }
+    }
+
+    /**
      * True, if user has update right.
      *
      * @return
@@ -194,6 +210,18 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     public boolean isUpdateRight() {
         if (getUser() != null) {
             return getUser().hasPermission("/vocabularies", "u") || getUser().hasPermission("/vocabularies", "i");
+        }
+        return false;
+    }
+
+    /**
+     * True, if user has delete right.
+     *
+     * @return
+     */
+    public boolean isDeleteRight() {
+        if (getUser() != null) {
+            return getUser().hasPermission("/vocabularies", "d");
         }
         return false;
     }
