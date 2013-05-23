@@ -1,139 +1,155 @@
 package eionet.util.sql;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-
 
 /**
+ * Utility methods for building SQL INSERT, UPDATE and DELETE statements.
  *
- * @author <a href="mailto:jaanus.heinlaid@tieto.com">Jaanus Heinlaid</a>
+ * @author Jaanus Heinlaid
  *
  */
 public class SQLGenerator implements Cloneable {
 
-    private LinkedHashMap fields;
+    /** Key value pairs of table fields and values. */
+    private LinkedHashMap<String, String> fields;
+    /** Database table name. */
     private String tableName;
+    /** Primary key field in the table. */
     private String pkField;
-    private int    state;
 
     /**
-     * Sets table name.
+     * Sets table name that will be used in SQL statements.
+     *
+     * @param tableName Database table name.
      */
     public void setTable(String tableName) {
         this.tableName = tableName;
     }
+
     /**
      * Gets table name.
+     *
+     * @return table name
      */
     public String getTableName() {
         return tableName;
     }
+
     /**
      * Set primary key field.
+     *
+     * @param pkField Primary key field name.
      */
     public void setPKField(String pkField) {
         this.pkField = pkField;
     }
+
     /**
      * Gets primary key field.
+     *
+     * @return Primary key field name.
      */
     public String getPKField() {
         return pkField;
     }
+
     /**
-     * Sets field value (it will be put between quotes).
+     * Sets field value (it will be put between apostrophes). Apostrophes inside the value will be escaped. If fldValue is already
+     * surrounded with apostrophes, then additional apostrophes and escaping will not applied.
+     *
+     * @param fldName Table field name.
+     * @param fldValue Field value to set.
      */
     public void setField(String fldName, String fldValue) {
         int len = fldValue.length();
 
-        if (len > 1 && fldValue.charAt(0) == '\'' && fldValue.charAt(len - 1) == '\'')
+        if (len > 1 && fldValue.charAt(0) == '\'' && fldValue.charAt(len - 1) == '\'') {
             // fldValue is already escaped
             fields.put(fldName, fldValue);
-        else
+        } else {
             fields.put(fldName, SQL.toLiteral(fldValue));
+        }
     }
+
     /**
-     * Sets unquoted field expression.
+     * Sets unquoted field expression without escaping. Use this method to set numeric or NULL values.
+     *
+     * @param fldName Table field name.
+     * @param fldExpr Field expression to set.
      */
     public void setFieldExpr(String fldName, String fldExpr) {
         fields.put(fldName, fldExpr);
     }
+
     /**
      * Removes field from the collection.
+     *
+     * @param fldName Table field name.
      */
     public void removeField(String fldName) {
         fields.remove(fldName);
     }
+
     /**
      * Gets field value/expression for given field name.
+     *
+     * @param fldName Table field name.
+     * @return Field value.
      */
     public String getFieldValue(String fldName) {
-        String value = (String)fields.get(fldName);
-        if (value == null)
+        String value = fields.get(fldName);
+        if (value == null) {
             return null;
+        }
 
         int len = value.length();
-        if (len > 1 && value.charAt(0) == '\'' && value.charAt(len - 1) == '\'')
+        if (len > 1 && value.charAt(0) == '\'' && value.charAt(len - 1) == '\'') {
             // strip the enclosing apostrophes
             return value.substring(1, len - 1);
-        else
+        } else {
             return value;
+        }
     }
-    /**
-     * Returns generator state - either MODIFY_RECORD, INSERT_RECORD or DELETE_RECORD.
-     */
-    public int getState() {
-        return state;
-    }
-    /**
-     *
-     */
-    public void setState(int state) {
-        this.state = state;
-    }
+
     /**
      * Returns string of comma-separated field values of this SQLGenerator object.
+     *
+     * @return List of comma separated field values.
      */
     public String getValues() {
         StringBuffer buf = new StringBuffer();
         int numElems = fields.size();
 
         int i = 0;
-        Collection values = fields.values();
-        for (Iterator iter = values.iterator(); iter.hasNext();) {
+        for (String value : fields.values()) {
 
-            String value = (String)iter.next();
             buf.append(value);
-            if (i++ != numElems - 1)
+            if (i++ != numElems - 1) {
                 buf.append(", ");
+            }
         }
-
         return buf.toString();
     }
+
     /**
-     * Generates UPDATE statement (without constraint part).
+     * Generates UPDATE statement (without constraint part) from the fields and values added by setter methods.
+     *
+     * @return SQL UPDATE statement without constraint part.
      */
     public String updateStatement() {
-        StringBuffer buf = new StringBuffer();
-        int numElems = fields.size();
+        StringBuilder buf = new StringBuilder();
 
         buf.append("UPDATE ");
         buf.append(tableName);
         buf.append(" SET ");
 
         int i = 0;
-        Set names = fields.keySet();
-        Collection values = fields.values();
 
-        Set entries = fields.entrySet();
-        for (Iterator iter = entries.iterator(); iter.hasNext();) {
+        for (Map.Entry<String, String> entry : fields.entrySet()) {
 
-            Map.Entry entry = (Map.Entry)iter.next();
-            String name = (String)entry.getKey();
-            String value = (String)entry.getValue();
+            String name = entry.getKey();
+            String value = entry.getValue();
 
             // skip primary key field from update statement
             if (pkField != null && pkField.equals(name)) {
@@ -153,11 +169,14 @@ public class SQLGenerator implements Cloneable {
 
         return buf.toString();
     }
+
     /**
-     * Generates INSERT statment.
+     * Generates INSERT statement from the fields and values added by setter methods.
+     *
+     * @return SQL INSERT statement.
      */
     public String insertStatement() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int numElems = fields.size();
 
         buf.append("INSERT INTO ");
@@ -166,13 +185,11 @@ public class SQLGenerator implements Cloneable {
 
         int i = 0;
 
-        Set names = fields.keySet();
-        for (Iterator iter = names.iterator(); iter.hasNext();) {
-
-            String name = (String)iter.next();
+        for (String name : fields.keySet()) {
             buf.append(name);
-            if (i++ != numElems - 1)
+            if (i++ != numElems - 1) {
                 buf.append(',');
+            }
         }
         buf.append(") VALUES(");
         buf.append(this.getValues());
@@ -182,7 +199,9 @@ public class SQLGenerator implements Cloneable {
     }
 
     /**
-     * Generates DELETE statement (withoud constraint part)
+     * Generates DELETE statement (without constraint part).
+     *
+     * @return SQL DELETE statement without constraint part.
      */
     public String deleteStatement() {
         return "DELETE FROM " + tableName + " ";
@@ -195,26 +214,27 @@ public class SQLGenerator implements Cloneable {
         fields.clear();
         tableName = "";
         pkField = null;
-        state = -1;
     }
+
     /**
      * Default constructor.
      */
     public SQLGenerator() {
-        fields = new LinkedHashMap();
+        fields = new LinkedHashMap<String, String>();
         tableName = "";
         pkField = null;
-        state = -1;
     }
+
     /**
-     * Overrides Object.clone() method.
+     * {@inheritDoc}
      */
+    @Override
     public Object clone() {
 
         SQLGenerator theNew = null;
         try {
-            theNew = (SQLGenerator)super.clone();
-            theNew.fields = new LinkedHashMap(fields);
+            theNew = (SQLGenerator) super.clone();
+            theNew.fields = new LinkedHashMap<String, String>(fields);
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e.toString(), e);
         }

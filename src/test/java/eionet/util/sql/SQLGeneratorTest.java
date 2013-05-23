@@ -100,14 +100,12 @@ public class SQLGeneratorTest {
         sqlGenerator = new SQLGenerator();
         sqlGenerator.setTable("dataset");
         sqlGenerator.setPKField("dataset_ID");
-        sqlGenerator.setState(1);
         sqlGenerator.setField("VERSION", "testFieldValue10");
         sqlGenerator.setField("IDENTIFIER", "testFieldValue11");
 
         sqlGenerator.clear();
 
         assertEquals("", sqlGenerator.getValues());
-        assertEquals(-1, sqlGenerator.getState());
         assertEquals(null, sqlGenerator.getPKField());
         assertEquals("", sqlGenerator.getTableName());
 
@@ -118,14 +116,12 @@ public class SQLGeneratorTest {
         sqlGenerator = new SQLGenerator();
         sqlGenerator.setTable("dataset");
         sqlGenerator.setPKField("pkField2");
-        sqlGenerator.setState(2);
         sqlGenerator.setField("VERSION", "testFieldValue12");
         sqlGenerator.setField("testField14", "testFieldValue13");
 
         assertNotEquals(sqlGenerator.toString(), sqlGenerator.clone().toString());
         SQLGenerator newSqlGenerator = (SQLGenerator) sqlGenerator.clone();
         assertEquals("'testFieldValue12', 'testFieldValue13'", newSqlGenerator.getValues());
-        assertEquals(2, newSqlGenerator.getState());
         assertEquals("pkField2", newSqlGenerator.getPKField());
         assertEquals("dataset", newSqlGenerator.getTableName());
 

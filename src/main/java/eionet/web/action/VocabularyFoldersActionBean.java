@@ -93,8 +93,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
             for (Folder folder : folders) {
                 if (folder.isExpanded() && folder.getItems() != null) {
                     for (Object vocabulary : folder.getItems()) {
-                        if (vocabulary instanceof VocabularyFolder &&
-                                !((VocabularyFolder) vocabulary).isWorkingCopy()
+                        if (vocabulary instanceof VocabularyFolder
+                                && !((VocabularyFolder) vocabulary).isWorkingCopy()
                                     && StringUtils.isEmpty(((VocabularyFolder) vocabulary).getWorkingUser())) {
                             setVisibleEditableVocabularies(true);
                             break;
