@@ -51,7 +51,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
         StringBuilder sql = new StringBuilder();
         sql.append("select ID, IDENTIFIER, LABEL ");
         sql.append("from T_FOLDER ");
-        sql.append("order by LABEL");
+        sql.append("order by IDENTIFIER");
 
         List<Folder> items = getNamedParameterJdbcTemplate().query(sql.toString(), params, new FolderRowMapper());
 

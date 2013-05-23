@@ -320,8 +320,14 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     @Test
     public void testGetFolders() throws ServiceException {
         List<Folder> result = vocabularyService.getFolders("testUser", 1);
-        assertEquals("Folders size", 2, result.size());
-        assertEquals("Items size", 3, result.get(0).getItems().size());
+        assertEquals("Folders size", 4, result.size());
+        Folder folderCommon = null;
+        for (Folder folder : result) {
+            if ("common".equals(folder.getIdentifier())) {
+                folderCommon = folder;
+            }
+        }
+        assertEquals("Items size", 3, folderCommon.getItems().size());
     }
 
     @Test
@@ -376,5 +382,11 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     public void testGetFolderByIdentifier() throws ServiceException {
         Folder result = vocabularyService.getFolderByIdentifier("test1");
         assertNotNull("Folder", result);
+    }
+
+    @Test
+    public void testGetFolders_sorting() throws ServiceException {
+        List<Folder> result = vocabularyService.getFolders(null, null);
+        assertEquals("The first folder", "xxx", result.get(0).getLabel());
     }
 }
