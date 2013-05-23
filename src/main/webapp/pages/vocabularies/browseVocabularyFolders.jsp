@@ -90,10 +90,10 @@
                     </c:if>
 
                     <c:if test="${folder.expanded && not empty folder.items}">
-                        <stripes:link beanclass="eionet.web.action.FolderActionBean" event="rdf" title="Export RDF with all vocabularies in the folder">
+                        <div style="float:right; width:20px"><stripes:link beanclass="eionet.web.action.FolderActionBean" event="rdf" title="Export RDF with all vocabularies in the folder">
                             <stripes:param name="folder.identifier" value="${folder.identifier}" />
                             <img style="border:0" src="${rdfIcon}" alt="Export RDF"/>
-                        </stripes:link>
+                        </stripes:link></div>
                     </c:if>
 
                     <c:if test="${not empty folder.items}">
