@@ -32,6 +32,31 @@
         <param-value>classpath:spring-context.xml</param-value>
     </context-param>
 
+    <!-- Liquibase configuration  -->
+    <context-param>
+        <param-name>liquibase.changelog</param-name>
+        <param-value>sql/dd-struct.xml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>liquibase.datasource</param-name>
+        <param-value>java:comp/env/jdbc/datadict</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>liquibase.onerror.fail</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>liquibase.contexts</param-name>
+        <param-value>production</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
+    </listener>
+
     <!-- filters -->
     <filter>
         <filter-name>CAS Filter</filter-name>

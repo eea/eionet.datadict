@@ -127,6 +127,13 @@
                                 <exclude>**/*.sample</exclude>
                             </excludes>
                         </resource>
+                        <resource>
+                            <directory>${basedir}/sql</directory>
+                            <targetPath>WEB-INF/classes/sql</targetPath>
+                            <includes>
+                                <include>dd-struct.xml</include>
+                            </includes>
+                        </resource>
                     </webResources>
                 </configuration>
             </plugin>
