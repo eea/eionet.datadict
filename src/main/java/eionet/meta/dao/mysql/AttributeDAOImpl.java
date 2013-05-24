@@ -24,6 +24,7 @@ import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.ComplexAttribute;
 import eionet.meta.dao.domain.ComplexAttributeField;
+import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.util.Pair;
@@ -342,6 +343,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         }
         sql.append("ON (v.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID and v.VOCABULARY_CONCEPT_ID = :vocabularyConceptId) ");
         sql.append("LEFT JOIN T_VOCABULARY_CONCEPT c ON v.RELATED_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID ");
+        sql.append("LEFT JOIN T_RDF_NAMESPACE r ON m.RDF_PROPERTY_NAMESPACE_ID = r.ID ");
         sql.append("WHERE FLOOR(m.DISP_WHEN / :attributeWeight) %2 != 0 ");
         sql.append("order by m.DISP_ORDER, v.LANGUAGE, v.ATTR_VALUE");
 
@@ -373,12 +375,14 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
                 atr.setHeight(rs.getInt("m.DISP_HEIGHT"));
                 atr.setWidth(rs.getInt("m.DISP_WIDTH"));
                 atr.setMultiValue(rs.getBoolean("m.DISP_MULTIPLE"));
-                atr.setRdfProperty(rs.getString("m.RDF_PROPERTY"));
                 atr.setIdentifier(rs.getString("m.SHORT_NAME"));
                 atr.setLinkText(rs.getString("v.LINK_TEXT"));
                 atr.setRelatedId(rs.getInt("v.RELATED_CONCEPT_ID"));
                 atr.setRelatedIdentifier(rs.getString("c.IDENTIFIER"));
                 atr.setRelatedLabel(rs.getString("c.LABEL"));
+                atr.setRdfPropertyName(rs.getString("m.RDF_PROPERTY_NAME"));
+                atr.setRdfPropertyPrefix(rs.getString("r.NAME_PREFIX"));
+                atr.setRdfPropertyUri(rs.getString("r.URI"));
 
                 if (!StringUtils.equals(previousShortName, rs.getString("m.SHORT_NAME"))) {
                     result.add(attributes);
@@ -694,6 +698,29 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         }
 
         getNamedParameterJdbcTemplate().batchUpdate(insertSql, batchParams);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<RdfNamespace> getRdfNamespaces() {
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select * from T_RDF_NAMESPACE order by URI");
+
+        List<RdfNamespace> items = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<RdfNamespace>() {
+            public RdfNamespace mapRow(ResultSet rs, int rowNum) throws SQLException {
+                RdfNamespace rn = new RdfNamespace();
+                rn.setId(rs.getInt("ID"));
+                rn.setUri(rs.getString("URI"));
+                rn.setPrefix(rs.getString("NAME_PREFIX"));
+                return rn;
+            }
+        });
+
+        return items;
     }
 
 }

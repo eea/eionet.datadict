@@ -75,6 +75,10 @@ public class DElemAttribute {
 
     private HashSet verAttrs = null;
 
+    private int rdfNamespaceId;
+    private String rdfPropertyName;
+    private String rdfPropertyUri;
+
     public DElemAttribute(String id, String name, String shortName, String type, String value) {
         this.id = id;
         this.name = name;
@@ -589,6 +593,51 @@ public class DElemAttribute {
      */
     public boolean isMandatory() {
         return obligation != null && obligation.equals("M");
+    }
+
+    /**
+     * @return the rdfNamespaceId
+     */
+    public int getRdfNamespaceId() {
+        return rdfNamespaceId;
+    }
+
+    /**
+     * @param rdfNamespaceId
+     *            the rdfNamespaceId to set
+     */
+    public void setRdfNamespaceId(int rdfNamespaceId) {
+        this.rdfNamespaceId = rdfNamespaceId;
+    }
+
+    /**
+     * @return the rdfPropertyName
+     */
+    public String getRdfPropertyName() {
+        return rdfPropertyName;
+    }
+
+    /**
+     * @param rdfPropertyName
+     *            the rdfPropertyName to set
+     */
+    public void setRdfPropertyName(String rdfPropertyName) {
+        this.rdfPropertyName = rdfPropertyName;
+    }
+
+    /**
+     * @return the rdfPropertyUri
+     */
+    public String getRdfPropertyUri() {
+        return rdfPropertyUri;
+    }
+
+    /**
+     * @param rdfPropertyUri
+     *            the rdfPropertyUri to set
+     */
+    public void setRdfPropertyUri(String rdfPropertyUri) {
+        this.rdfPropertyUri = rdfPropertyUri;
     }
 
     /**

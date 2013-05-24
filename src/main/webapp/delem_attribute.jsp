@@ -1,6 +1,8 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.sql.ConnectionUtil,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <%!private String type=null;%>
 <%!private String mode=null;%>
 <%!private DElemAttribute attribute=null;%>
@@ -1043,6 +1045,56 @@ else
                             <%
                         }
                         %>
+                    </td>
+                </tr>
+
+                <%
+                pageContext.setAttribute("mode", mode);
+                pageContext.setAttribute("attr", attribute);
+                if (mode.equals("edit") || mode.equals("add")) {
+                    pageContext.setAttribute("rdfNamespaces", searchEngine.getRdfNamespaces());
+                }
+                %>
+                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+                    <th scope="row" class="scope-row">RDF property URI</th>
+                    <c:if test="${mode eq 'edit' || mode eq 'add'}">
+                        <td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
+                    </c:if>
+                    <td>
+                        <c:if test="${mode eq 'view'}">
+                            ${attr.rdfPropertyUri}
+                        </c:if>
+                        <c:if test="${mode eq 'edit' || mode eq 'add'}">
+                            <c:if test="${not empty rdfNamespaces}">
+                                <select name="rdfNamespaceId" class="small">
+                                    <option value="0" />
+                                    <c:forEach items="${rdfNamespaces}" var="rdfNamespace">
+                                        <c:choose>
+                                            <c:when test="${rdfNamespace.id == attr.rdfNamespaceId}">
+                                                <option value="${rdfNamespace.id}" selected="selected">${rdfNamespace.uri}</option>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <option value="${rdfNamespace.id}">${rdfNamespace.uri}</option>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:forEach>
+                                </select>
+                            </c:if>
+                        </c:if>
+                    </td>
+                </tr>
+                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+                    <th scope="row" class="scope-row">RDF property name</th>
+                    <c:if test="${mode eq 'edit' || mode eq 'add'}">
+                        <td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
+                    </c:if>
+                    <td>
+                        <c:if test="${mode eq 'view'}">
+                            ${attr.rdfPropertyName}
+                        </c:if>
+                        <c:if test="${mode eq 'edit' || mode eq 'add'}">
+                            <input type="text" name="rdfPropertyName" value="${attr.rdfPropertyName}" />
+                        </c:if>
                     </td>
                 </tr>
                 <%

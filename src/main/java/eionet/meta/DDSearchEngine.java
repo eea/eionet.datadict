@@ -26,6 +26,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import eionet.meta.dao.DAOException;
+import eionet.meta.dao.IAttributeDAO;
+import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -1457,7 +1459,8 @@ public class DDSearchEngine {
         INParameters inParams = new INParameters();
         StringBuffer qry = new StringBuffer();
         if (type.equals(DElemAttribute.TYPE_SIMPLE)) {
-            qry.append("select distinct M_ATTRIBUTE_ID as ID, M_ATTRIBUTE.* from M_ATTRIBUTE");
+            qry.append("select distinct M_ATTRIBUTE_ID as ID, M_ATTRIBUTE.*, T_RDF_NAMESPACE.URI as RDF_URI, T_RDF_NAMESPACE.ID as RDF_ID from M_ATTRIBUTE ");
+            qry.append("LEFT JOIN T_RDF_NAMESPACE  ON M_ATTRIBUTE.RDF_PROPERTY_NAMESPACE_ID = T_RDF_NAMESPACE.ID");
             if (attrId != null) {
                 qry.append(" where M_ATTRIBUTE_ID=");
             }
@@ -1508,6 +1511,9 @@ public class DDSearchEngine {
                 if (type.equals(DElemAttribute.TYPE_SIMPLE)) {
                     attr.setDisplayProps(rs.getString("DISP_TYPE"), rs.getInt("DISP_ORDER"), rs.getInt("DISP_WHEN"),
                             rs.getString("DISP_WIDTH"), rs.getString("DISP_HEIGHT"), rs.getString("DISP_MULTIPLE"));
+                    attr.setRdfNamespaceId(rs.getInt("RDF_ID"));
+                    attr.setRdfPropertyUri(rs.getString("RDF_URI"));
+                    attr.setRdfPropertyName(rs.getString("RDF_PROPERTY_NAME"));
                 } else {
                     attr.setDisplayProps(null, rs.getInt("DISP_ORDER"), rs.getInt("DISP_WHEN"), null, null, null);
                     attr.setHarvesterID(rs.getString("HARVESTER_ID"));
@@ -1860,11 +1866,10 @@ public class DDSearchEngine {
 
                     harvFieldsHash = null;
                     attr =
-                            new DElemAttribute(attrID, rs.getString("NAME"), rs.getString("ATTR_NAME"), DElemAttribute.TYPE_COMPLEX, null, null,
-                                    rs.getString("OBLIGATION"));
+                            new DElemAttribute(attrID, rs.getString("NAME"), rs.getString("ATTR_NAME"),
+                                    DElemAttribute.TYPE_COMPLEX, null, null, rs.getString("OBLIGATION"));
                     attr.setInheritable(rs.getString("INHERIT"));
                     attr.setHarvesterID(rs.getString("HARVESTER_ID"));
-
 
                     Namespace ns = new Namespace(null, rs.getString("NS"), null, null, null);
                     attr.setNamespace(ns);
@@ -5233,6 +5238,19 @@ public class DDSearchEngine {
         try {
             return xmlConvService.getSchemaConversionsData(schemaUrl);
         } catch (ServiceException e) {
+            LOGGER.error(e);
+            return null;
+        }
+    }
+
+    /**
+     * @return
+     */
+    public List<RdfNamespace> getRdfNamespaces() {
+        IAttributeDAO attributeDAO = getSpringBean(IAttributeDAO.class);
+        try {
+            return attributeDAO.getRdfNamespaces();
+        } catch (Exception e) {
             LOGGER.error(e);
             return null;
         }

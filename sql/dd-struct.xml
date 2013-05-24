@@ -1345,4 +1345,32 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             alter table T_VOCABULARY_FOLDER drop column FOLDER_NAME;
         </sql>
     </changeSet>
+
+    <changeSet author="voolajuh" id="rev-108">
+        <comment>Create RDF namespace table.</comment>
+        <sql>create table T_RDF_NAMESPACE (
+                ID INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                URI VARCHAR(255) NOT NULL,
+                NAME_PREFIX VARCHAR(10) NOT NULL,
+                PRIMARY KEY (ID)
+            );
+        </sql>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8" />
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="voolajuh" id="rev-109">
+        <comment>Fix RDF property related data.</comment>
+        <sql>
+            alter table M_ATTRIBUTE add column RDF_PROPERTY_NAMESPACE_ID INT(10) UNSIGNED;
+            alter table M_ATTRIBUTE add column RDF_PROPERTY_NAME VARCHAR(255);
+            alter table M_ATTRIBUTE ADD CONSTRAINT FK_RDF_PROPERTY_NAMESPACE_ID FOREIGN KEY (RDF_PROPERTY_NAMESPACE_ID)
+                REFERENCES T_RDF_NAMESPACE (ID) ON UPDATE CASCADE ON DELETE CASCADE;
+            insert into T_RDF_NAMESPACE (URI, NAME_PREFIX) values ("http://www.w3.org/2004/02/skos/core#", "skos");
+            update M_ATTRIBUTE set RDF_PROPERTY_NAMESPACE_ID = 1, RDF_PROPERTY_NAME = substring(RDF_PROPERTY, locate(":", RDF_PROPERTY) + 1)
+                where RDF_PROPERTY IS NOT NULL;
+            alter table M_ATTRIBUTE drop column RDF_PROPERTY;
+        </sql>
+    </changeSet>
 </databaseChangeLog>

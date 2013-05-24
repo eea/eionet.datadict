@@ -53,6 +53,12 @@ public class SimpleAttribute {
 
     private boolean mandatory;
 
+    private String rdfPropertyName;
+
+    private String rdfPropertyUri;
+
+    private String rdfPropertyPrefix;
+
     /**
      * @return the attributeId
      */
@@ -216,6 +222,51 @@ public class SimpleAttribute {
      */
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
+    }
+
+    /**
+     * @return the rdfPropertyName
+     */
+    public String getRdfPropertyName() {
+        return rdfPropertyName;
+    }
+
+    /**
+     * @param rdfPropertyName
+     *            the rdfPropertyName to set
+     */
+    public void setRdfPropertyName(String rdfPropertyName) {
+        this.rdfPropertyName = rdfPropertyName;
+    }
+
+    /**
+     * @return the rdfPropertyUri
+     */
+    public String getRdfPropertyUri() {
+        return rdfPropertyUri;
+    }
+
+    /**
+     * @param rdfPropertyUri
+     *            the rdfPropertyUri to set
+     */
+    public void setRdfPropertyUri(String rdfPropertyUri) {
+        this.rdfPropertyUri = rdfPropertyUri;
+    }
+
+    /**
+     * @return the rdfPropertyPrefix
+     */
+    public String getRdfPropertyPrefix() {
+        return rdfPropertyPrefix;
+    }
+
+    /**
+     * @param rdfPropertyPrefix
+     *            the rdfPropertyPrefix to set
+     */
+    public void setRdfPropertyPrefix(String rdfPropertyPrefix) {
+        this.rdfPropertyPrefix = rdfPropertyPrefix;
     }
 
 }

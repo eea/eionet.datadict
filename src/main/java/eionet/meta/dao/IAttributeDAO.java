@@ -6,6 +6,7 @@ import java.util.Map;
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.ComplexAttribute;
+import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConceptAttribute;
 
@@ -15,6 +16,13 @@ import eionet.meta.dao.domain.VocabularyConceptAttribute;
  *
  */
 public interface IAttributeDAO {
+
+    /**
+     * Lists RDF namespaces.
+     *
+     * @return
+     */
+    List<RdfNamespace> getRdfNamespaces();
 
     /**
      *

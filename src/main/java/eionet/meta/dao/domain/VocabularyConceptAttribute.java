@@ -43,8 +43,6 @@ public class VocabularyConceptAttribute extends SimpleAttribute {
 
     private boolean languageUsed;
 
-    private String rdfProperty;
-
     private String linkText;
 
     /** Related concept properties. */
@@ -109,21 +107,6 @@ public class VocabularyConceptAttribute extends SimpleAttribute {
      */
     public void setLanguageUsed(boolean languageUsed) {
         this.languageUsed = languageUsed;
-    }
-
-    /**
-     * @return the rdfProperty
-     */
-    public String getRdfProperty() {
-        return rdfProperty;
-    }
-
-    /**
-     * @param rdfProperty
-     *            the rdfProperty to set
-     */
-    public void setRdfProperty(String rdfProperty) {
-        this.rdfProperty = rdfProperty;
     }
 
     /**

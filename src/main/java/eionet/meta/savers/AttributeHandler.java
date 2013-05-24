@@ -11,6 +11,8 @@ import java.util.LinkedHashMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.tee.uit.security.AccessController;
 
 import eionet.meta.DDUser;
@@ -132,6 +134,16 @@ public class AttributeHandler extends BaseHandler {
             if (dispMultiple != null && dispMultiple.length() > 0) {
                 map.put("DISP_MULTIPLE", inParams.add(dispMultiple));
             }
+
+            String rdfPropertyName = req.getParameter("rdfPropertyName");
+            int rdfNamespaceId = Integer.parseInt(req.getParameter("rdfNamespaceId"));
+            if (StringUtils.isEmpty(rdfPropertyName) || rdfNamespaceId == 0) {
+                map.put("RDF_PROPERTY_NAME", inParams.add(null));
+                map.put("RDF_PROPERTY_NAMESPACE_ID", inParams.add(null));
+            } else {
+                map.put("RDF_PROPERTY_NAME", inParams.add(rdfPropertyName));
+                map.put("RDF_PROPERTY_NAMESPACE_ID", inParams.add(rdfNamespaceId));
+            }
         }
 
         // complex attribute specific fields
@@ -213,6 +225,16 @@ public class AttributeHandler extends BaseHandler {
 
             String dispMultiple = req.getParameter("dispMultiple");
             map.put("DISP_MULTIPLE", inParams.add(dispMultiple != null && dispMultiple.length() > 0 ? dispMultiple : "0"));
+
+            String rdfPropertyName = req.getParameter("rdfPropertyName");
+            int rdfNamespaceId = Integer.parseInt(req.getParameter("rdfNamespaceId"));
+            if (StringUtils.isEmpty(rdfPropertyName) || rdfNamespaceId == 0) {
+                map.put("RDF_PROPERTY_NAME", inParams.add(null));
+                map.put("RDF_PROPERTY_NAMESPACE_ID", inParams.add(null));
+            } else {
+                map.put("RDF_PROPERTY_NAME", inParams.add(rdfPropertyName));
+                map.put("RDF_PROPERTY_NAMESPACE_ID", inParams.add(rdfNamespaceId));
+            }
         }
 
         // complex attribute specific fields

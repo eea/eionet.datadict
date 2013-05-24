@@ -212,12 +212,12 @@ public class VocabularyXmlWriter {
                 if (attrs != null) {
                     for (VocabularyConceptAttribute attr : attrs) {
                         if (StringUtils.isNotEmpty(attr.getValue())
-                                && StringUtils.isNotEmpty(StringUtils.substringAfter(attr.getRdfProperty(), "skos:"))) {
+                                && StringUtils.isNotEmpty(attr.getRdfPropertyName())) {
                             writer.writeCharacters("\n");
-                            writer.writeStartElement(SKOS_NS, StringUtils.substringAfter(attr.getRdfProperty(), "skos:"));
+                            writer.writeStartElement(attr.getRdfPropertyUri(), attr.getRdfPropertyName());
                             if (StringUtils.isNotEmpty(attr.getLanguage())) {
                                 writer.writeAttribute("xml", XML_NS, "lang", attr.getLanguage());
-                            } // TODO: Use } else if {
+                            }
                             if (StringUtils.isNotEmpty(attr.getDataType()) && StringUtils.isEmpty(attr.getLanguage())
                                     && !(attr.getDataType().equalsIgnoreCase("string"))) {
                                 writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(attr.getDataType()));
@@ -225,9 +225,9 @@ public class VocabularyXmlWriter {
                             writer.writeCharacters(attr.getValue());
                             writer.writeEndElement();
                         } else if (StringUtils.isNotEmpty(attr.getRelatedIdentifier())
-                                && StringUtils.isNotEmpty(StringUtils.substringAfter(attr.getRdfProperty(), "skos:"))) {
+                                && StringUtils.isNotEmpty(attr.getRdfPropertyName())) {
                             writer.writeCharacters("\n");
-                            writer.writeEmptyElement(SKOS_NS, StringUtils.substringAfter(attr.getRdfProperty(), "skos:"));
+                            writer.writeEmptyElement(attr.getRdfPropertyUri(), attr.getRdfPropertyName());
                             writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(contextRoot + attr.getRelatedIdentifier()));
                         }
                     }
