@@ -116,7 +116,7 @@ public class DataManipulations {
             // auto-create fixed values for the above found elements
             int count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext(); count++) {
-                DataElementHandler.autoCreateBooleanFixedValues(stmt, (String)i.next());
+                DataElementHandler.autoCreateBooleanFixedValues(stmt, (String) i.next());
             }
             outputWriteln("Created fixed values for " + count + " boolean data elements");
         } finally {
@@ -254,7 +254,7 @@ public class DataManipulations {
 
             count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
-                deleteTbl((String)i.next());
+                deleteTbl((String) i.next());
                 count++;
             }
 
@@ -316,7 +316,7 @@ public class DataManipulations {
 
             count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
-                Hashtable hash = (Hashtable)i.next();
+                Hashtable hash = (Hashtable) i.next();
                 buf = new StringBuffer();
                 buf.append("delete from DST2TBL where DATASET_ID=").append(hash.get("DATASET_ID")).
                 append(" and TABLE_ID=").append(hash.get("TABLE_ID"));
@@ -378,7 +378,7 @@ public class DataManipulations {
 
             count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
-                deleteElm((String)i.next());
+                deleteElm((String) i.next());
                 count++;
             }
 
@@ -442,7 +442,7 @@ public class DataManipulations {
 
             count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
-                Hashtable hash = (Hashtable)i.next();
+                Hashtable hash = (Hashtable) i.next();
                 buf = new StringBuffer();
                 buf.append("delete from TBL2ELEM where DATAELEM_ID=").append(hash.get("DATAELEM_ID")).
                 append(" and TABLE_ID=").append(hash.get("TABLE_ID"));
@@ -491,7 +491,7 @@ public class DataManipulations {
 
             // delete the elements found
             for (int i = 0; i < elmIDs.size(); i++) {
-                this.deleteElm((String)elmIDs.get(i));
+                this.deleteElm((String) elmIDs.get(i));
             }
 
             // now delete the table itself
@@ -537,7 +537,7 @@ public class DataManipulations {
             }
             rs.close();
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
-                String rowID = (String)i.next();
+                String rowID = (String) i.next();
                 buf = new StringBuffer();
                 buf.append("delete from COMPLEX_ATTR_FIELD where ROW_ID='").append(rowID).append("'");
                 stmt.executeUpdate(buf.toString());
@@ -613,7 +613,7 @@ public class DataManipulations {
 
             // delete the tables found
             for (int i = 0; i < tblIDs.size(); i++) {
-                deleteTblWithElements((String)tblIDs.get(i));
+                deleteTblWithElements((String) tblIDs.get(i));
             }
 
             // now delete the dataset itself
@@ -661,7 +661,7 @@ public class DataManipulations {
             }
             rs.close();
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
-                String rowID = (String)i.next();
+                String rowID = (String) i.next();
                 buf = new StringBuffer();
                 buf.append("delete from COMPLEX_ATTR_FIELD where ROW_ID='").append(rowID).append("'");
                 stmt.executeUpdate(buf.toString());
@@ -738,7 +738,7 @@ public class DataManipulations {
             }
             rs.close();
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
-                String rowID = (String)i.next();
+                String rowID = (String) i.next();
                 buf = new StringBuffer();
                 buf.append("delete from COMPLEX_ATTR_FIELD where ROW_ID='").append(rowID).append("'");
                 stmt.executeUpdate(buf.toString());
@@ -913,7 +913,7 @@ public class DataManipulations {
 
             count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
-                aclID = (String)i.next();
+                aclID = (String) i.next();
                 buf = new StringBuffer();
                 buf.append("delete from ACL_ROWS where ACL_ID=").append(aclID);
                 stmt.executeUpdate(buf.toString());

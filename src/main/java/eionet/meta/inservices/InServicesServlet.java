@@ -37,7 +37,7 @@ public class InServicesServlet extends HttpServlet {
         if (Util.isEmpty(clientName))
             throw new Exception(Params.CLIENT + " is missing!");
 
-        InServiceClientIF client = (InServiceClientIF)clients.get(clientName);
+        InServiceClientIF client = (InServiceClientIF) clients.get(clientName);
         if (client == null) {
             if (clientName.equals(WebrodClient.NAME))
                 client = new WebrodClient();
@@ -52,7 +52,7 @@ public class InServicesServlet extends HttpServlet {
     private void handleError(HttpServletRequest req, HttpServletResponse res)
                                                     throws ServletException, IOException {
 
-        String errHandler = (String)req.getAttribute(Attrs.ERR_HANDLER);
+        String errHandler = (String) req.getAttribute(Attrs.ERR_HANDLER);
         if (Util.isEmpty(errHandler)) errHandler = "error.jsp";
 
         req.getRequestDispatcher(errHandler).forward(req, res);
@@ -71,7 +71,7 @@ public class InServicesServlet extends HttpServlet {
     private void dispatch(HttpServletRequest req, HttpServletResponse res)
                                                 throws ServletException, IOException  {
 
-        String dispatcher = (String)req.getAttribute(Attrs.DISPATCHER);
+        String dispatcher = (String) req.getAttribute(Attrs.DISPATCHER);
         req.getRequestDispatcher(dispatcher).forward(req, res);
     }
 }

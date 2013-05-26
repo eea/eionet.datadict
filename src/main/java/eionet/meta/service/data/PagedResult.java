@@ -68,71 +68,36 @@ public abstract class PagedResult<T> implements PaginatedList {
         this.sortOrder = pagedRequest.getSortOrder();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.displaytag.pagination.PaginatedList#getList()
-     */
     @Override
     public List<T> getList() {
         return items;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.displaytag.pagination.PaginatedList#getPageNumber()
-     */
     @Override
     public int getPageNumber() {
         return pageNumber;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.displaytag.pagination.PaginatedList#getObjectsPerPage()
-     */
     @Override
     public int getObjectsPerPage() {
         return pageSize;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.displaytag.pagination.PaginatedList#getFullListSize()
-     */
     @Override
     public int getFullListSize() {
         return totalItems;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.displaytag.pagination.PaginatedList#getSortCriterion()
-     */
     @Override
     public String getSortCriterion() {
         return sortProperty;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.displaytag.pagination.PaginatedList#getSortDirection()
-     */
     @Override
     public SortOrderEnum getSortDirection() {
         return sortOrder;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.displaytag.pagination.PaginatedList#getSearchId()
-     */
     @Override
     public String getSearchId() {
         return null;

@@ -58,10 +58,10 @@ public class XlsServlet extends HttpServlet {
             XlsIF xls = null;
             if (type.equals("dst")) {
                 xls = new DstXls(searchEngine, os);
-                ((CachableIF)xls).setCachePath(cachePath);
+                ((CachableIF) xls).setCachePath(cachePath);
             } else {
                 xls = new TblXls(searchEngine, os);
-                ((CachableIF)xls).setCachePath(cachePath);
+                ((CachableIF) xls).setCachePath(cachePath);
             }
 
             xls.create(id);

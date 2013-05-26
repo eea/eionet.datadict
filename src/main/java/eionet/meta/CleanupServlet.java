@@ -139,7 +139,8 @@ public class CleanupServlet extends HttpServlet {
                 if (conn != null) {
                     conn.close();
                 }
-            } catch (SQLException e) {}
+            } catch (SQLException e) {
+            }
         }
     }
 

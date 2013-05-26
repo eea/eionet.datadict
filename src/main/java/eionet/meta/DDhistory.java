@@ -115,7 +115,7 @@ public class DDhistory {
       boolean found = false;
       if (historySize > 0) {
         for (int i = history.size(); i > 0; i--) {
-            currentUrl = (String)history.get(i - 1);
+            currentUrl = (String) history.get(i - 1);
             historySize = i;
             backUrl = historySize > 1 ? (String) history.get(historySize - 2):"";
             found = false;
@@ -144,7 +144,7 @@ public class DDhistory {
 
       if (historySize > 0) {
         for (int i = history.size(); i > 0; i--) {
-            url = (String)history.get(i - 1);
+            url = (String) history.get(i - 1);
             found = false;
             for (int j = 0; j < find_url.length; j++) {
                 if (url.indexOf(find_url[j]) > -1) {

@@ -55,7 +55,7 @@ public class FixedValue {
             return false;
 
         // comapre the two attr values
-        return value.equals(((FixedValue)o).getValue());
+        return value.equals(((FixedValue) o).getValue());
     }
 
     public String getID() {
@@ -99,7 +99,7 @@ public class FixedValue {
     public DElemAttribute getAttributeByShortName(String name) {
 
         for (int i = 0; i < attributes.size(); i++) {
-            DElemAttribute attr = (DElemAttribute)attributes.get(i);
+            DElemAttribute attr = (DElemAttribute) attributes.get(i);
             if (attr.getShortName().equalsIgnoreCase(name))
                 return attr;
         }
@@ -110,7 +110,7 @@ public class FixedValue {
     public DElemAttribute getAttributeByName(String name) {
 
         for (int i = 0; i < attributes.size(); i++) {
-            DElemAttribute attr = (DElemAttribute)attributes.get(i);
+            DElemAttribute attr = (DElemAttribute) attributes.get(i);
             if (attr.getName().equalsIgnoreCase(name))
                 return attr;
         }
@@ -121,7 +121,7 @@ public class FixedValue {
     public DElemAttribute getAttributeById(String id) {
 
         for (int i = 0; i < attributes.size(); i++) {
-            DElemAttribute attr = (DElemAttribute)attributes.get(i);
+            DElemAttribute attr = (DElemAttribute) attributes.get(i);
             if (attr.getID().equalsIgnoreCase(id))
                 return attr;
         }
@@ -133,7 +133,7 @@ public class FixedValue {
 
         DElemAttribute attr = null;
         for (int i = 0; i < attributes.size(); i++) {
-            attr = (DElemAttribute)attributes.get(i);
+            attr = (DElemAttribute) attributes.get(i);
             if (attr.getShortName().equalsIgnoreCase(name))
                 return attr.getValue();
         }
@@ -145,7 +145,7 @@ public class FixedValue {
 
         DElemAttribute attr = null;
         for (int i = 0; i < attributes.size(); i++) {
-            attr = (DElemAttribute)attributes.get(i);
+            attr = (DElemAttribute) attributes.get(i);
             if (attr.getID().equalsIgnoreCase(id))
                 return attr.getValue();
         }
@@ -157,7 +157,7 @@ public class FixedValue {
 
         DElemAttribute attr = null;
         for (int i = 0; i < attributes.size(); i++) {
-            attr = (DElemAttribute)attributes.get(i);
+            attr = (DElemAttribute) attributes.get(i);
             if (attr.getName().equalsIgnoreCase(name))
                 return attr.getValue();
         }
@@ -240,7 +240,7 @@ public class FixedValue {
 
         buf.append("\nAttributes:\n");
         for (int i = 0; attributes != null && i < attributes.size(); i++) {
-            DElemAttribute attr = (DElemAttribute)attributes.get(i);
+            DElemAttribute attr = (DElemAttribute) attributes.get(i);
             buf.append(attr.getShortName());
             buf.append("=");
             buf.append(attr.getValue());

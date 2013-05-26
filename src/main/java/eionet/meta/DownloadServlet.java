@@ -50,7 +50,7 @@ public class DownloadServlet extends HttpServlet {
 
     // Actions ------------------------------------------------------------------------------------
 
-    /**
+    /*
      * Process HEAD request. This returns the same headers as GET request, but without content.
      *
      * @see HttpServlet#doHead(HttpServletRequest, HttpServletResponse).
@@ -60,7 +60,7 @@ public class DownloadServlet extends HttpServlet {
         processRequest(request, response, false);
     }
 
-    /**
+    /*
      * Process GET request.
      *
      * @see HttpServlet#doGet(HttpServletRequest, HttpServletResponse).

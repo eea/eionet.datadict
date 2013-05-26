@@ -111,7 +111,7 @@ public abstract class DDHarvester implements HarvesterIF{
 
             // store in HARV_ATTR_FIELD (using a do-while cause hasMoreElements() has been called already)
             do {
-                String fldName  = (String)flds.nextElement();
+                String fldName  = (String) flds.nextElement();
                 HashSet fldValues = new HashSet();
 
                 Object o = hash.get(fldName);
@@ -120,8 +120,8 @@ public abstract class DDHarvester implements HarvesterIF{
                 }
 
                 if (o.getClass().getName().endsWith("Vector")) {
-                    for (int i = 0; i < ((Vector)o).size(); i++) {
-                        fldValues.add(((Vector)o).get(i));
+                    for (int i = 0; i < ((Vector) o).size(); i++) {
+                        fldValues.add(((Vector) o).get(i));
                     }
                 } else if (o.getClass().getName().endsWith("String")) {
                     fldValues.add(o);

@@ -138,13 +138,13 @@ public class ElmPdfAll {
 
             DElemAttribute attr = null;
             for (int i = 0; i < v.size(); i++) {
-                attr = (DElemAttribute)v.get(i);
+                attr = (DElemAttribute) v.get(i);
                 attr.setFields(searchEngine.getAttrFields(attr.getID()));
             }
 
             for (int i = 0; i < v.size(); i++) {
 
-                addElement(PdfUtil.complexAttributeTable((DElemAttribute)v.get(i)));
+                addElement(PdfUtil.complexAttributeTable((DElemAttribute) v.get(i)));
                 addElement(new Phrase("\n"));
             }
         }
@@ -163,7 +163,7 @@ public class ElmPdfAll {
             addElement(
                 new Paragraph("Illustrations:", Fonts.get(Fonts.HEADING_0)));
             for (int i = 0; i < images.size(); i++)
-                addElement((Element)images.get(i));
+                addElement((Element) images.get(i));
         }
     }
 

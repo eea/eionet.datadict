@@ -99,7 +99,7 @@ public class OutService {
 
             Vector ret = new Vector();
             for (int i = 0; i < result.size(); i++) {
-                DsTable table = (DsTable)result.get(i);
+                DsTable table = (DsTable) result.get(i);
 
                 String table_id = table.getID();
                 String table_name = table.getShortName();
@@ -201,7 +201,7 @@ public class OutService {
                 // set table ids
                 Vector tables = searchEngine.getDatasetTables(dst.getID(), false);
                 for (int i = 0; i < tables.size(); i++) {
-                    reply.addTableId(((DsTable)tables.get(i)).getID());
+                    reply.addTableId(((DsTable) tables.get(i)).getID());
                 }
 
                 // see if this is the latest released dataset, if no then find the latest and set its id+date

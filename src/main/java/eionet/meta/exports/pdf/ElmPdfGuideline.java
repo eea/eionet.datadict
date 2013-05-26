@@ -137,13 +137,13 @@ public class ElmPdfGuideline {
 
             DElemAttribute attr = null;
             for (int i = 0; i < v.size(); i++) {
-                attr = (DElemAttribute)v.get(i);
+                attr = (DElemAttribute) v.get(i);
                 attr.setFields(searchEngine.getAttrFields(attr.getID()));
             }
 
             for (int i = 0; i < v.size(); i++) {
 
-                addElement(PdfUtil.complexAttributeTable((DElemAttribute)v.get(i)));
+                addElement(PdfUtil.complexAttributeTable((DElemAttribute) v.get(i)));
                 addElement(new Phrase("\n"));
             }
         }

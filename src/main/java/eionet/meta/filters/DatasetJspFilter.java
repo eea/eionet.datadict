@@ -24,17 +24,11 @@ import eionet.util.QueryString;
  */
 public class DatasetJspFilter implements Filter {
 
-    /**
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-     */
     @Override
     public void init(FilterConfig arg0) throws ServletException {
         // Auto-generated method stub
     }
 
-    /**
-     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
-     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
@@ -102,9 +96,6 @@ public class DatasetJspFilter implements Filter {
         response.sendRedirect(buf.toString());
     }
 
-    /**
-     * @see javax.servlet.Filter#destroy()
-     */
     @Override
     public void destroy() {
         // Auto-generated method stub

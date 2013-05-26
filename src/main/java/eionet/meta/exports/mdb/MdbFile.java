@@ -135,7 +135,7 @@ public class MdbFile {
 
             Vector tables = searchEngine.getDatasetTables(dstID, true);
             for (int i = 0; tables != null && i < tables.size(); i++) {
-                createTable((DsTable)tables.get(i), db);
+                createTable((DsTable) tables.get(i), db);
             }
         } finally {
             if (db != null) {
@@ -205,9 +205,9 @@ public class MdbFile {
         for (int i = 0; i < elems.size(); i++) {
 
             Column col = null;
-            DataElement elm = (DataElement)elems.get(i);
+            DataElement elm = (DataElement) elems.get(i);
             if (elm.getGIS() != null) { // we want only GIS elements here!
-                col = createColumn((DataElement)elems.get(i));
+                col = createColumn((DataElement) elems.get(i));
                 if (col != null) {
                     result.add(col);
                 }
@@ -232,9 +232,9 @@ public class MdbFile {
         for (int i = 0; i < elems.size(); i++) {
 
             Column col = null;
-            DataElement elm = (DataElement)elems.get(i);
+            DataElement elm = (DataElement) elems.get(i);
             if (elm.getGIS() == null) { // we want only NON-GIS elements here!
-                col = createColumn((DataElement)elems.get(i));
+                col = createColumn((DataElement) elems.get(i));
                 if (col != null) {
                     result.add(col);
                 }
@@ -318,12 +318,12 @@ public class MdbFile {
         Vector rows = new Vector();
         for (int i = 0; ddTables != null && i < ddTables.size(); i++) {
 
-            DsTable tbl = (DsTable)ddTables.get(i);
+            DsTable tbl = (DsTable) ddTables.get(i);
 
             Vector ddElms = searchEngine.getDataElements(null, null, null, null, tbl.getID());
             for (int j = 0; ddElms != null && j < ddElms.size(); j++) {
 
-                DataElement elm = (DataElement)ddElms.get(j);
+                DataElement elm = (DataElement) ddElms.get(j);
                 Object[] row = constructVmdRow(getDst(), tbl, elm);
                 rows.add(row);
             }
@@ -458,7 +458,7 @@ public class MdbFile {
         Properties props = new Properties();
 
         for (int i = 0; i < v.size(); i++) {
-            String propName  = (String)v.get(i);
+            String propName  = (String) v.get(i);
             String propValue = Props.getProperty(propName);
             if (propValue == null || propValue.length() == 0) {
                 throw new MdbException("Could not find property: " + propName);

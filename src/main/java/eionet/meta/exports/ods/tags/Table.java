@@ -70,7 +70,7 @@ public class Table {
 
         // add columns
         for (int i = 0; tableColumns != null && i<tableColumns.size(); i++) {
-            String defaultCellStyleName = (String)tableColumns.get(i);
+            String defaultCellStyleName = (String) tableColumns.get(i);
             buf.append(
                 "<table:table-column table:style-name=\"co1\" table:default-cell-style-name=\"");
             buf.append(defaultCellStyleName);
@@ -84,7 +84,7 @@ public class Table {
 
         // add column headers
         for (int i = 0; columnHeaders != null && i<columnHeaders.size(); i++) {
-            String headerText = (String)columnHeaders.get(i);
+            String headerText = (String) columnHeaders.get(i);
             buf.append("<table:table-cell table:style-name=\"ce1\" office:value-type=\"string\">");
             buf.append("<text:p>");
             buf.append(headerText);

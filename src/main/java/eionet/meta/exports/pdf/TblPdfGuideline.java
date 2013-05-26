@@ -152,7 +152,7 @@ public class TblPdfGuideline {
         DataElement elem = null;
         String dstID = params == null ? null : params.getParameter("dstID");
         for (int i = 0; i < v.size(); i++) {
-            elem = (DataElement)v.get(i);
+            elem = (DataElement) v.get(i);
             Vector fxValues = searchEngine.getFixedValues(elem.getID(), "elem");
             elem.setFixedValues(fxValues);
             Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
@@ -208,7 +208,7 @@ public class TblPdfGuideline {
 
         /* write data element full guidelines, each into a separate chapter
         for (int i = 0; v != null && i < v.size(); i++) {
-            elem = (DataElement)v.get(i);
+            elem = (DataElement) v.get(i);
             addElement(new Paragraph("\n"));
             ElmPdfGuideline elmGuideln = new ElmPdfGuideline(searchEngine, this); //, section);
             elmGuideln.setVsPath(this.vsPath);

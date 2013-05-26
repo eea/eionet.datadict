@@ -105,9 +105,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#getSchemaSets(String)
-     */
     @Override
     public List<SchemaSet> getSchemaSets(String userName) throws ServiceException {
         try {
@@ -117,9 +114,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#deleteSchemaSets(java.util.List, java.lang.String, boolean)
-     */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void deleteSchemaSets(List<Integer> ids, String userName, boolean includingContents) throws ServiceException {
@@ -186,9 +180,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#deleteSchemas(java.util.List, java.lang.String, boolean)
-     */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void deleteSchemas(List<Integer> ids, String userName, boolean includingContents) throws ServiceException {
@@ -292,9 +283,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#checkInSchemaSet(int, java.lang.String, java.lang.String)
-     */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public int checkInSchemaSet(int schemaSetId, String username, String comment) throws ServiceException {
@@ -360,9 +348,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#checkInSchema(int, java.lang.String, java.lang.String)
-     */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public int checkInSchema(int schemaId, String userName, String comment) throws ServiceException {
@@ -439,9 +424,6 @@ public class SchemaServiceImpl implements ISchemaService {
         schemaDAO.replaceId(replacedId, substituteId);
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#addSchema(eionet.meta.dao.domain.Schema, Map)
-     */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public int addSchema(Schema schema, Map<Integer, Set<String>> attributes) throws ServiceException {
@@ -460,9 +442,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#listSchemaSetSchemas(int)
-     */
     @Override
     public List<Schema> listSchemaSetSchemas(int schemaSetId) throws ServiceException {
 
@@ -478,9 +457,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#checkOutSchemaSet(int, java.lang.String)
-     */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public int checkOutSchemaSet(int schemaSetId, String userName) throws ServiceException {
@@ -525,9 +501,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#undoCheckOutSchemaSet(int, java.lang.String)
-     */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public int undoCheckOutSchemaSet(int schemaSetId, String username) throws ServiceException {
@@ -558,9 +531,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#getWorkingCopyOfSchemaSet(int)
-     */
     @Override
     public SchemaSet getWorkingCopyOfSchemaSet(int checkedOutCopyId) throws ServiceException {
 
@@ -571,10 +541,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @throws ServiceException
-     * @see eionet.meta.service.ISchemaService#getSchemaSetWorkingCopiesOf(java.lang.String)
-     */
     @Override
     public List<SchemaSet> getSchemaSetWorkingCopiesOf(String userName) throws ServiceException {
 
@@ -589,9 +555,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#getSchemaWorkingCopiesOf(java.lang.String)
-     */
     @Override
     public List<Schema> getSchemaWorkingCopiesOf(String userName) throws ServiceException {
 
@@ -624,9 +587,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#getSchema(int)
-     */
     @Override
     public Schema getSchema(int id) throws ServiceException {
         try {
@@ -655,9 +615,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#updateSchema(eionet.meta.dao.domain.Schema, java.util.Map, java.lang.String)
-     */
     @Override
     public void updateSchema(Schema schema, Map<Integer, Set<String>> attributes, String username) throws ServiceException {
 
@@ -671,10 +628,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @throws ServiceException
-     * @see eionet.meta.service.ISchemaService#schemaSetExists(java.lang.String)
-     */
     @Override
     public boolean schemaSetExists(String schemaSetIdentifier) throws ServiceException {
 
@@ -685,10 +638,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @throws ServiceException
-     * @see eionet.meta.service.ISchemaService#checkOutSchema(int, java.lang.String)
-     */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public int checkOutSchema(int schemaId, String userName) throws ServiceException {
@@ -726,10 +675,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @throws ServiceException
-     * @see eionet.meta.service.ISchemaService#getRootLevelSchemas(String)
-     */
     @Override
     public List<Schema> getRootLevelSchemas(String userName) throws ServiceException {
 
@@ -740,10 +685,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @throws ServiceException
-     * @see eionet.meta.service.ISchemaService#getWorkingCopyOfSchema(int)
-     */
     @Override
     public Schema getWorkingCopyOfSchema(int schemaId) throws ServiceException {
 
@@ -754,10 +695,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @throws ServiceException
-     * @see eionet.meta.service.ISchemaService#undoCheckOutSchema(int, java.lang.String)
-     */
     @Override
     public int undoCheckOutSchema(int schemaId, String userName) throws ServiceException {
 
@@ -790,9 +727,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#copySchemaSet(int, java.lang.String, java.lang.String)
-     */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public int copySchemaSet(int schemaSetId, String userName, String identifier) throws ServiceException {
@@ -833,9 +767,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#getSchemaSetVersions(String, java.lang.String, int...)
-     */
     @Override
     public List<SchemaSet> getSchemaSetVersions(String userName, String continuityId, int... excludeIds) throws ServiceException {
 
@@ -846,10 +777,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @throws ServiceException
-     * @see eionet.meta.service.ISchemaService#getSchemaVersions(String, java.lang.String, int...)
-     */
     @Override
     public List<Schema> getSchemaVersions(String userName, String continuityId, int... excludeIds) throws ServiceException {
         try {
@@ -859,9 +786,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @see eionet.meta.service.ISchemaService#copySchema(int, java.lang.String, FileBean)
-     */
     @Override
     public int copySchema(int schemaId, String userName, FileBean newFile) throws ServiceException {
 
@@ -934,10 +858,6 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
-    /**
-     * @throws ServiceException
-     * @see eionet.meta.service.ISchemaService#schemaExists(java.lang.String, int)
-     */
     @Override
     public boolean schemaExists(String fileName, int schemaSetId) throws ServiceException {
         try {
@@ -946,9 +866,7 @@ public class SchemaServiceImpl implements ISchemaService {
             throw new ServiceException(e.getMessage(), e);
         }
     }
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public List<Schema> getSchemasForObligation(String obligationId, boolean releasedOnly) throws ServiceException {
         try {

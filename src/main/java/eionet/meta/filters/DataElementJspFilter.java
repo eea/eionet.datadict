@@ -29,9 +29,6 @@ import eionet.util.sql.SQL;
  */
 public class DataElementJspFilter implements Filter {
 
-    /**
-     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
-     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
@@ -134,18 +131,12 @@ public class DataElementJspFilter implements Filter {
         }
     }
 
-    /**
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-     */
     @Override
     public void init(FilterConfig arg0) throws ServletException {
         // TODO Auto-generated method stub
 
     }
 
-    /**
-     * @see javax.servlet.Filter#destroy()
-     */
     @Override
     public void destroy() {
         // TODO Auto-generated method stub

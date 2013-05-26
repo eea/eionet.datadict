@@ -144,7 +144,7 @@ public class Fonts {
     public static Font get(String style) {
         if (fonts == null)
             init();
-        return (Font)fonts.get(style);
+        return (Font) fonts.get(style);
     }
 
     public static Font getUnicode() {
@@ -158,7 +158,7 @@ public class Fonts {
     public static Font getUnicode(float size, int style) {
 
         if (fonts == null) init();
-        Font f =(Font)fonts.get(Fonts.CELL_VALUE);
+        Font f =(Font) fonts.get(Fonts.CELL_VALUE);
         BaseFont bf = f.getBaseFont();
         return new Font(bf, size, style);
     }

@@ -145,7 +145,7 @@ public class DataElement implements Comparable {
 
         Vector set = new Vector();
         for (int i = 0; i < simpleAttrs.size(); i++) {
-            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
+            DElemAttribute attr = (DElemAttribute) simpleAttrs.get(i);
             if (attr.effectsVersion()) {
                 set.add(attr);
             }
@@ -166,7 +166,7 @@ public class DataElement implements Comparable {
 
         // look from simple attributes
         for (int i = 0; i < simpleAttrs.size(); i++) {
-            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
+            DElemAttribute attr = (DElemAttribute) simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
             }
@@ -174,7 +174,7 @@ public class DataElement implements Comparable {
 
         // if it wasn't in the simple attributes, look from complex ones
         for (int i = 0; i < complexAttrs.size(); i++) {
-            DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
+            DElemAttribute attr = (DElemAttribute) complexAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
             }
@@ -186,7 +186,7 @@ public class DataElement implements Comparable {
     public DElemAttribute getAttributeByName(String name) {
 
         for (int i = 0; i < simpleAttrs.size(); i++) {
-            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
+            DElemAttribute attr = (DElemAttribute) simpleAttrs.get(i);
             if (attr.getName().equalsIgnoreCase(name)) {
                 return attr;
             }
@@ -198,7 +198,7 @@ public class DataElement implements Comparable {
     public DElemAttribute getAttributeById(String id) {
 
         for (int i = 0; i < simpleAttrs.size(); i++) {
-            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
+            DElemAttribute attr = (DElemAttribute) simpleAttrs.get(i);
             if (attr.getID().equalsIgnoreCase(id)) {
                 return attr;
             }
@@ -211,7 +211,7 @@ public class DataElement implements Comparable {
 
         DElemAttribute attr = null;
         for (int i = 0; i < simpleAttrs.size(); i++) {
-            attr = (DElemAttribute)simpleAttrs.get(i);
+            attr = (DElemAttribute) simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr.getValue();
             }
@@ -224,7 +224,7 @@ public class DataElement implements Comparable {
 
         DElemAttribute attr = null;
         for (int i = 0; i < simpleAttrs.size(); i++) {
-            attr = (DElemAttribute)simpleAttrs.get(i);
+            attr = (DElemAttribute) simpleAttrs.get(i);
             if (attr.getName().equalsIgnoreCase(name)) {
                 return attr.getValue();
             }
@@ -347,7 +347,7 @@ public class DataElement implements Comparable {
     public boolean hasImages() {
         boolean hasImages = false;
         for (int t = 0; simpleAttrs != null && t < simpleAttrs.size(); t++) {
-            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(t);
+            DElemAttribute attr = (DElemAttribute) simpleAttrs.get(t);
             String dispType = attr.getDisplayType();
             Vector values = attr.getValues();
             if (dispType != null &&

@@ -26,8 +26,8 @@ public class PublicOutputs {
         HashSet result = new HashSet();
         Hashtable w = getWeights(c);
         for (Enumeration e = w.keys(); e.hasMoreElements();) {
-            String output = (String)e.nextElement();
-            Integer weight = (Integer)w.get(output);
+            String output = (String) e.nextElement();
+            Integer weight = (Integer) w.get(output);
             int div = number/weight.intValue();
             if (div % 2 != 0)
                 result.add(output);
@@ -45,7 +45,7 @@ public class PublicOutputs {
 
         if (orders == null)
             init();
-        return (Vector)orders.get(c);
+        return (Vector) orders.get(c);
     }
     /**
      * @param c
@@ -55,7 +55,7 @@ public class PublicOutputs {
 
         if (weights == null)
             init();
-        return (Hashtable)weights.get(c);
+        return (Hashtable) weights.get(c);
     }
 
     /**

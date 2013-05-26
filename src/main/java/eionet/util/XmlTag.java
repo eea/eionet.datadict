@@ -105,8 +105,8 @@ public class XmlTag {
         if (attributes != null && attributes.size() > 0) {
             Enumeration attrNames = attributes.keys();
             while (attrNames.hasMoreElements()) {
-                String attrName = (String)attrNames.nextElement();
-                String attrValue = (String)attributes.get(attrName);
+                String attrName = (String) attrNames.nextElement();
+                String attrValue = (String) attributes.get(attrName);
                 buf.append(" ");
                 buf.append(attrName);
                 buf.append("=\"");
@@ -190,8 +190,8 @@ public class XmlTag {
         if (defaultAttributes != null && defaultAttributes.size() > 0) {
             Enumeration defaultAttrNames = defaultAttributes.keys();
             while (defaultAttrNames.hasMoreElements()) {
-                String defaultAttrName = (String)defaultAttrNames.nextElement();
-                String defaultAttrValue = (String)defaultAttributes.get(defaultAttrName);
+                String defaultAttrName = (String) defaultAttrNames.nextElement();
+                String defaultAttrValue = (String) defaultAttributes.get(defaultAttrName);
                 setAttribute(defaultAttrName, defaultAttrValue);
             }
         }

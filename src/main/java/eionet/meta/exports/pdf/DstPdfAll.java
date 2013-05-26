@@ -193,7 +193,7 @@ public class DstPdfAll extends PdfHandout {
             DsTable dsTable = (DsTable) tables.get(i);
             // the tables guidelines will be added to the current chapter
             addElement(new Paragraph("\n"));
-            TblPdfAll tblAll = new TblPdfAll(searchEngine, this);// , (Section)chapter);
+            TblPdfAll tblAll = new TblPdfAll(searchEngine, this);// , (Section) chapter);
             tblAll.setVsPath(visualsPath);
             tblAll.write(dsTable.getID(), ds.getID());
             insertPageBreak();

@@ -98,13 +98,13 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
         int done = 0;
         for (int i = 0; i < elems.size(); i++) {
             if (tbl.hasGIS()) {
-                DataElement elm = (DataElement)elems.get(i);
+                DataElement elm = (DataElement) elems.get(i);
                 if (elm.getGIS() == null) {
-                    addElement((DataElement)elems.get(i), (short)done);
+                    addElement((DataElement) elems.get(i), (short) done);
                     done++;
                 }
             } else {
-                addElement((DataElement)elems.get(i), (short)done);
+                addElement((DataElement) elems.get(i), (short) done);
                 done++;
             }
         }
@@ -114,9 +114,9 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
             row = sheet.createRow(0);
             done = 0;
             for (int i = 0; i < elems.size(); i++) {
-                DataElement elm = (DataElement)elems.get(i);
+                DataElement elm = (DataElement) elems.get(i);
                 if (elm.getGIS() != null) {
-                    addElement((DataElement)elems.get(i), (short)done);
+                    addElement((DataElement) elems.get(i), (short) done);
                     done++;
                 }
             }

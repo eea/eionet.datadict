@@ -106,7 +106,7 @@ public static final String METADATA_TABLENAME = "Metadata_for_GDEM_(NOT_TO_BE_DE
         Vector ddTables = searchEngine.getDatasetTables(dstID, true);
         for (int i = 0; ddTables != null && i < ddTables.size(); i++) {
 
-            DsTable ddTable = (DsTable)ddTables.get(i);
+            DsTable ddTable = (DsTable) ddTables.get(i);
 
             Object[] row = new Object[METADATA_COLS.length];
             row[0] = ddTable.getIdentifier();
@@ -130,7 +130,7 @@ public static final String METADATA_TABLENAME = "Metadata_for_GDEM_(NOT_TO_BE_DE
 
         List cols = table.getColumns();
         for (int i = 0; i < cols.size(); i++) {
-            Column col = (Column)cols.get(i);
+            Column col = (Column) cols.get(i);
             short nr = col.getColumnNumber();
             short len = col.getLength();
             byte prec = col.getPrecision();
@@ -147,7 +147,7 @@ public static final String METADATA_TABLENAME = "Metadata_for_GDEM_(NOT_TO_BE_DE
     public static void main(String[] args) {
 
         File file = new File("E:\\test.mdb");
-        MdbGDEM mdbGDEM = new MdbGDEM(file, (DDSearchEngine)null, null);
+        MdbGDEM mdbGDEM = new MdbGDEM(file, (DDSearchEngine) null, null);
         try {
             mdbGDEM.printRows();
         } catch (Exception e) {

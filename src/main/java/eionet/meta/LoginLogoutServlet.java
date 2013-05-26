@@ -35,7 +35,7 @@ public abstract class LoginLogoutServlet extends HttpServlet {
     protected static final void freeSession(HttpServletRequest servReq) {
         HttpSession httpSession = servReq.getSession(false);
         if (httpSession != null) {
-            DDUser user = (DDUser)httpSession.getAttribute(SecurityUtil.REMOTEUSER);
+            DDUser user = (DDUser) httpSession.getAttribute(SecurityUtil.REMOTEUSER);
             if (user != null) {
                 user.invalidate();
                 httpSession.removeAttribute(SecurityUtil.REMOTEUSER);

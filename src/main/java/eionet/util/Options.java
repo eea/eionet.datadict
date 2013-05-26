@@ -96,7 +96,7 @@ public class Options {
                     String option = args[i].substring(1);
                     if (map.containsKey(option)) {
                         i++;
-                        Vector values = (Vector)map.get(option);
+                        Vector values = (Vector) map.get(option);
                         if (values.contains(args[i]) || values.size() == 0) {
                             options.put(option, args[i]);
                         } else {
@@ -126,7 +126,7 @@ public class Options {
  *
  */
     public String get(String option) {
-        return (String)options.get(option);
+        return (String) options.get(option);
     }
 
     public String getErrorMsg() {

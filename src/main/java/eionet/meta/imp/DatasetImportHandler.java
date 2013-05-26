@@ -159,7 +159,7 @@ public class DatasetImportHandler extends BaseHandler {
 
                     // if decimal found, use the corresponding char, otherwise stick to c.
                     if (decimal >= 0) {
-                        c = (char)decimal;
+                        c = (char) decimal;
                         i = j;
                     }
                 }

@@ -138,7 +138,7 @@ public class HttpUploader {
 
         try {
             URL url = new URL("http://localhost:8080/datadict/public/kala.doc");
-            HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
+            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
             File file = new File("d:\\tmp\\Euro 2004 matches.doc");
             InputStream in = url.openStream();
             HttpUploader.upload(in, file);

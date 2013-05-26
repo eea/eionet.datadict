@@ -47,6 +47,6 @@ public class DstOds extends Ods {
 
         Vector tbls = searchEngine.getDatasetTables(dstID, true);
         for (int i = 0; tbls != null && i<tbls.size(); i++)
-            prepareTbl((DsTable)tbls.get(i));
+            prepareTbl((DsTable) tbls.get(i));
     }
 }

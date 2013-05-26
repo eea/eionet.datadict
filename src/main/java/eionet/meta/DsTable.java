@@ -185,7 +185,7 @@ public class DsTable implements Comparable {
 
         Vector set = new Vector();
         for (int i = 0; i < simpleAttrs.size(); i++) {
-            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
+            DElemAttribute attr = (DElemAttribute) simpleAttrs.get(i);
             if (attr.effectsVersion()) {
                 set.add(attr);
             }
@@ -198,7 +198,7 @@ public class DsTable implements Comparable {
 
         DElemAttribute attr = null;
         for (int i = 0; i < simpleAttrs.size(); i++) {
-            attr = (DElemAttribute)simpleAttrs.get(i);
+            attr = (DElemAttribute) simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr.getValue();
             }
@@ -211,7 +211,7 @@ public class DsTable implements Comparable {
 
         // look from simple attributes
         for (int i = 0; i < simpleAttrs.size(); i++) {
-            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
+            DElemAttribute attr = (DElemAttribute) simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
             }
@@ -219,7 +219,7 @@ public class DsTable implements Comparable {
 
         // if it wasn't in the simple attributes, look from complex ones
         for (int i = 0; i < complexAttrs.size(); i++) {
-            DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
+            DElemAttribute attr = (DElemAttribute) complexAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
             }
@@ -266,7 +266,7 @@ public class DsTable implements Comparable {
             return 1;
         }
 
-        DsTable oTbl = (DsTable)o;
+        DsTable oTbl = (DsTable) o;
         String oCompStr = oTbl.getCompStr();
         if (oCompStr == null && compStr == null) {
             return 0;

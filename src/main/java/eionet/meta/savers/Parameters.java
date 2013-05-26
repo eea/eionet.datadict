@@ -47,10 +47,10 @@ public class Parameters {
         if (parName == null) return null;
         if (req != null) return req.getParameter(parName);
 
-        Vector parValues = (Vector)params.get(parName);
+        Vector parValues = (Vector) params.get(parName);
         if (parValues == null || parValues.size() == 0) return null;
 
-        return (String)parValues.get(0);
+        return (String) parValues.get(0);
     }
 
     public String[] getParameterValues(String parName) {
@@ -58,12 +58,12 @@ public class Parameters {
         if (parName == null) return null;
         if (req != null) return req.getParameterValues(parName);
 
-        Vector parValues = (Vector)params.get(parName);
+        Vector parValues = (Vector) params.get(parName);
         if (parValues == null || parValues.size() == 0) return null;
 
         String[] vs = new String[parValues.size()];
         for (int i = 0; i < parValues.size(); i++)
-            vs[i] = (String)parValues.get(i);
+            vs[i] = (String) parValues.get(i);
 
         return vs;
     }
@@ -78,7 +78,7 @@ public class Parameters {
         if (name == null || value == null) return;
         if (req != null) return;
 
-        Vector parValues = (Vector)params.get(name);
+        Vector parValues = (Vector) params.get(name);
         if (parValues == null)
             parValues = new Vector();
 

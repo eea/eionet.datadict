@@ -31,7 +31,7 @@ public class RequestMessages {
                 request.setAttribute(attrName, o);
             }
 
-            ((ArrayList)o).add(message);
+            ((ArrayList) o).add(message);
         }
     }
 
@@ -52,7 +52,7 @@ public class RequestMessages {
 
             Object o = request.getAttribute(attrName);
             if (o != null && o instanceof ArrayList) {
-                ArrayList list = (ArrayList)o;
+                ArrayList list = (ArrayList) o;
                 for (int i = 0; i < list.size(); i++) {
                     if (i > 0)
                         buf.append(delimiter);

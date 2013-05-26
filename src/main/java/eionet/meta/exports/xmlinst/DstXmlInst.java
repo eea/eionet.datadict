@@ -60,7 +60,7 @@ public class DstXmlInst extends XmlInst {
 
         Vector tbls = dst.getTables();
         for (int i = 0; tbls != null && i<tbls.size(); i++) {
-            writeTable((DsTable)tbls.get(i));
+            writeTable((DsTable) tbls.get(i));
         }
     }
 

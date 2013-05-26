@@ -31,7 +31,7 @@ public class IrrelevantAttributes extends Hashtable {
 
         Enumeration propNames = Props.getPropertyNames();
         while (propNames != null && propNames.hasMoreElements()) {
-            String propName = (String)propNames.nextElement();
+            String propName = (String) propNames.nextElement();
             if (propName.trim().startsWith(PropsIF.IRRELEVANT_ATTRS_PREFIX)) {
                 int i = propName.indexOf(PropsIF.IRRELEVANT_ATTRS_PREFIX) + PropsIF.IRRELEVANT_ATTRS_PREFIX.length();
                 if (i < propName.length()) {
@@ -58,7 +58,7 @@ public class IrrelevantAttributes extends Hashtable {
      * @param attrName
      */
     private void addMapping(String dataType, String attrName) {
-        HashSet skipAttrs = (HashSet)this.get(dataType);
+        HashSet skipAttrs = (HashSet) this.get(dataType);
         if (skipAttrs == null)
             skipAttrs = new HashSet();
         skipAttrs.add(attrName);
@@ -83,7 +83,7 @@ public class IrrelevantAttributes extends Hashtable {
      */
     public boolean isIrrelevant(String dataType, String attrName) {
 
-        HashSet hashSet = (HashSet)this.get(new String(dataType.toLowerCase()));
+        HashSet hashSet = (HashSet) this.get(new String(dataType.toLowerCase()));
         return hashSet != null && hashSet.contains(new String(attrName.toLowerCase()));
     }
 }

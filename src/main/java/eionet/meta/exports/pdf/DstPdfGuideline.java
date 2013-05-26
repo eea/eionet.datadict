@@ -260,7 +260,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
             // the tables guidelines will be added to the current chapter
             addElement(new Paragraph("\n"));
-            TblPdfGuideline tblGuideln = new TblPdfGuideline(searchEngine, this);// , (Section)chapter);
+            TblPdfGuideline tblGuideln = new TblPdfGuideline(searchEngine, this);// , (Section) chapter);
             tblGuideln.setVsPath(visualsPath);
             tblGuideln.write(dsTable.getID(), ds.getID());
             insertPageBreak();
@@ -278,7 +278,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             DsTable dsTable = (DsTable) gisTables.get(i);
             // the tables guidelines will be added to the current chapter
             addElement(new Paragraph("\n"));
-            TblPdfGuideline tblGuideln = new TblPdfGuideline(searchEngine, this);// , (Section)chapter);
+            TblPdfGuideline tblGuideln = new TblPdfGuideline(searchEngine, this);// , (Section) chapter);
             tblGuideln.setGIS(true);
             tblGuideln.setVsPath(visualsPath);
             tblGuideln.write(dsTable.getID(), ds.getID());

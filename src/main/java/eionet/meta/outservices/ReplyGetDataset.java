@@ -95,7 +95,7 @@ public class ReplyGetDataset {
 
         if (tableId != null && tableId.trim().length()>0) {
 
-            Vector tableIds = (Vector)hashTable.get(TABLE_IDS);
+            Vector tableIds = (Vector) hashTable.get(TABLE_IDS);
             if (tableIds == null) {
                 tableIds = new Vector();
                 hashTable.put(TABLE_IDS, tableIds);

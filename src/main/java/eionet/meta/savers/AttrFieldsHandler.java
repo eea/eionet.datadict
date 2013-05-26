@@ -156,7 +156,7 @@ public class AttrFieldsHandler extends BaseHandler {
         PreparedStatement stmt = null;
         try {
             do {
-                String parName = (String)params.nextElement();
+                String parName = (String) params.nextElement();
                 if (!parName.startsWith(FLD_PREFIX))
                     continue;
 
@@ -265,7 +265,7 @@ public class AttrFieldsHandler extends BaseHandler {
 
         del_rows = new String[v.size()];
         for (int i = 0; i < v.size(); i++)
-            del_rows[i] = (String)v.get(i);
+            del_rows[i] = (String) v.get(i);
     }
 
     /**
@@ -275,7 +275,7 @@ public class AttrFieldsHandler extends BaseHandler {
     private boolean hasFields() {
         Enumeration pars = req.getParameterNames();
         do {
-            String parName = (String)pars.nextElement();
+            String parName = (String) pars.nextElement();
             if (!parName.startsWith(FLD_PREFIX)) continue;
 
             if (Util.isEmpty(req.getParameter(parName))) continue;

@@ -64,7 +64,7 @@ public class CodelistCSV extends Codelist {
 
         for (int i = 0; i < elms.size(); i++) {
 
-            DataElement elm = (DataElement)elms.get(i);
+            DataElement elm = (DataElement) elms.get(i);
             String elmIdf = elm.getIdentifier();
             if (Util.isEmpty(elmIdf)) {
                 throw new DDRuntimeException("Failed to get the element's identifier");
@@ -86,7 +86,7 @@ public class CodelistCSV extends Codelist {
             Vector fxvs = searchEngine.getFixedValues(elm.getID());
             for (int j = 0; fxvs != null && j < fxvs.size(); j++) {
 
-                FixedValue fxv = (FixedValue)fxvs.get(j);
+                FixedValue fxv = (FixedValue) fxvs.get(j);
                 String value = fxv.getValue();
                 if (value != null && value.trim().length()>0) {
 

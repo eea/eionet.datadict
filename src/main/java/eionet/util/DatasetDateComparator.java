@@ -36,7 +36,7 @@ public class DatasetDateComparator implements Comparator {
         if ((o1 instanceof Dataset) == false || (o2 instanceof Dataset) == false)
             return 0;
         else
-            return compare((Dataset)o1, (Dataset)o2) * sortOrder;
+            return compare((Dataset) o1, (Dataset) o2) * sortOrder;
     }
 
     /**

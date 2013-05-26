@@ -539,7 +539,7 @@ public class DatasetHandler extends BaseHandler {
 
         int i = 0;
         for (Iterator iter = identifiers.iterator(); iter.hasNext(); i++) {
-            AccessController.removeAcl("/datasets/" + (String)iter.next());
+            AccessController.removeAcl("/datasets/" + (String) iter.next());
         }
     }
 
@@ -658,7 +658,7 @@ public class DatasetHandler extends BaseHandler {
             buf.append(") and PARENT_TYPE='DS'");
             // skip image attributes
             for (int i = 0; i < imgAttrs.size(); i++) {
-                buf.append(" and M_ATTRIBUTE_ID<>").append((String)imgAttrs.get(i));
+                buf.append(" and M_ATTRIBUTE_ID<>").append((String) imgAttrs.get(i));
             }
 
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
@@ -759,7 +759,7 @@ public class DatasetHandler extends BaseHandler {
     private void processAttributes() throws SQLException {
         Enumeration parNames = req.getParameterNames();
         while (parNames.hasMoreElements()) {
-            String parName = (String)parNames.nextElement();
+            String parName = (String) parNames.nextElement();
 
             if (!parName.startsWith(ATTR_PREFIX)) {
                 continue;
@@ -839,7 +839,7 @@ public class DatasetHandler extends BaseHandler {
                     }
 
                     for (int j = 0; j < v.size(); j++) {
-                        params.addParameterValue("del_id", (String)v.get(j));
+                        params.addParameterValue("del_id", (String) v.get(j));
                     }
 
                     DsTableHandler tableHandler = new DsTableHandler(conn, params, ctx);
@@ -976,7 +976,7 @@ public class DatasetHandler extends BaseHandler {
         int k = 0;
         Hashtable weights = Dataset.getCreateLinkWeights();
         for (int i = 0; i < dispCreateLinks.length; i++) {
-            Integer weight = (Integer)weights.get(dispCreateLinks[i]);
+            Integer weight = (Integer) weights.get(dispCreateLinks[i]);
             if (weight != null) {
                 k = k + weight.intValue();
             }

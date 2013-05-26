@@ -120,7 +120,7 @@ public abstract class XmlInst implements XmlInstIF {
 
         // write content
         for (int i = 0; i < content.size(); i++) {
-            writer.print((String)content.get(i));
+            writer.print((String) content.get(i));
         }
 
         endDocElement();
@@ -170,7 +170,7 @@ public abstract class XmlInst implements XmlInstIF {
             setLeads();
         }
 
-        String lead = (String)leads.get(leadName);
+        String lead = (String) leads.get(leadName);
         if (lead == null)
             lead = curLead;
         else
@@ -199,7 +199,7 @@ public abstract class XmlInst implements XmlInstIF {
         newLine();
 
         for (int i = 0; elms != null && i < elms.size(); i++) {
-            DataElement elm = (DataElement)elms.get(i);
+            DataElement elm = (DataElement) elms.get(i);
             addString(elm(elm.getIdentifier()));
             newLine();
         }

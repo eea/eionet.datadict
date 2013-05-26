@@ -58,7 +58,7 @@ public class DDSearchParameter {
 
     public void apostrophizeValues() {
         for (int i = 0; attrValues != null && i < attrValues.size(); i++) {
-            String value = (String)attrValues.get(i);
+            String value = (String) attrValues.get(i);
             attrValues.remove(i);
             attrValues.add(i, apostrophize(value));
         }
@@ -66,7 +66,7 @@ public class DDSearchParameter {
 
     private void legalizeValues() {
         for (int i = 0; attrValues != null && i < attrValues.size(); i++) {
-            String value = (String)attrValues.get(i);
+            String value = (String) attrValues.get(i);
             attrValues.remove(i);
             attrValues.add(i, legalize(value));
         }

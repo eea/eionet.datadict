@@ -863,7 +863,7 @@ public class Util {
          * try { decimal = Integer.parseInt(sDecimal); } catch (Exception e) {} } else { // handle entity String ent =
          * literal.substring(i + 1, j); if (unicodeEscapes == null) unicodeEscapes = new UnicodeEscapes(); decimal =
          * unicodeEscapes.getDecimal(ent); }
-         * if (decimal >= 0) { // if decimal was found, use the corresponding char. otherwise stick to c. c = (char)decimal; i = j;
+         * if (decimal >= 0) { // if decimal was found, use the corresponding char. otherwise stick to c. c = (char) decimal; i = j;
          * } } }
          * buf.append(c); }
          * return buf.toString();

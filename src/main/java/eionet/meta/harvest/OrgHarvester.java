@@ -31,7 +31,7 @@ public class OrgHarvester extends DDHarvester {
 
         for (int i = 0; i < orgs.size(); i++) {
 
-            String orgID = (String)orgs.get(i);
+            String orgID = (String) orgs.get(i);
             if (orgID.startsWith("="))
                 orgID = orgID.substring(1).trim();
 
@@ -44,7 +44,7 @@ public class OrgHarvester extends DDHarvester {
             if (h == null)
                 continue;
 
-            String id = (String)h.get("ID");
+            String id = (String) h.get("ID");
             if (id == null)
                 continue;
 

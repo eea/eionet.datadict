@@ -163,7 +163,7 @@ public class DsTableHandler extends BaseHandler {
         Enumeration parNames = req.getParameterNames();
         while (parNames.hasMoreElements()) {
 
-            String parName = (String)parNames.nextElement();
+            String parName = (String) parNames.nextElement();
             if (parName.startsWith(OLDPOS_PREFIX)) {
 
                 Integer id = Integer.valueOf(parName.substring(OLDPOS_PREFIX.length()));
@@ -188,9 +188,9 @@ public class DsTableHandler extends BaseHandler {
                         "update DST2TBL set POSITION=? where TABLE_ID=? and DATASET_ID=?");
                 for (Iterator iter = positions.entrySet().iterator(); iter.hasNext();) {
 
-                    Map.Entry entry = (Map.Entry)iter.next();
-                    stmt.setInt(1, ((Integer)entry.getValue()).intValue());
-                    stmt.setInt(2, ((Integer)entry.getKey()).intValue());
+                    Map.Entry entry = (Map.Entry) iter.next();
+                    stmt.setInt(1, ((Integer) entry.getValue()).intValue());
+                    stmt.setInt(2, ((Integer) entry.getKey()).intValue());
                     stmt.setInt(3, Integer.parseInt(this.dstID));
                     stmt.addBatch();
                 }
@@ -498,7 +498,7 @@ public class DsTableHandler extends BaseHandler {
             }
 
             for (Iterator iter = elems.iterator(); iter.hasNext(); ) {
-                params.addParameterValue("delem_id", (String)iter.next());
+                params.addParameterValue("delem_id", (String) iter.next());
             }
 
             DataElementHandler delemHandler =
@@ -544,7 +544,7 @@ public class DsTableHandler extends BaseHandler {
         Iterator iter = originals.iterator();
         int i = 0;
         while (iter.hasNext()) {
-            String s = (String)iter.next();
+            String s = (String) iter.next();
             int pos = s.indexOf(",");
             String tblName = s.substring(pos + 1);
             String parentNs = s.substring(0, pos);
@@ -572,7 +572,7 @@ public class DsTableHandler extends BaseHandler {
         Statement statement = conn.createStatement();
         while (iter.hasNext()) {
             statement.executeUpdate("update DS_TABLE set WORKING_USER=NULL "
-                    + "where TABLE_ID=" + (String)iter.next());
+                    + "where TABLE_ID=" + (String) iter.next());
         }
     }
 
@@ -664,7 +664,7 @@ public class DsTableHandler extends BaseHandler {
         String attrID = null;
         Enumeration parNames = req.getParameterNames();
         while (parNames.hasMoreElements()) {
-            String parName = (String)parNames.nextElement();
+            String parName = (String) parNames.nextElement();
             if (parName.startsWith(ATTR_PREFIX)
                     && !parName.startsWith(ATTR_MULT_PREFIX)) {
                 String attrValue = req.getParameter(parName);
@@ -833,7 +833,7 @@ public class DsTableHandler extends BaseHandler {
         }
 
         for (int i = 0;i < elems.size();i++) {
-            DataElement elem = (DataElement)elems.get(i);
+            DataElement elem = (DataElement) elems.get(i);
 
             String elem_id = elem.getID();
 

@@ -114,7 +114,7 @@ public class Props implements PropsIF{
         }
 
         if (value == null) {
-            value = (String)defaults.get(name);
+            value = (String) defaults.get(name);
             if (value != null) {
                 LOGGER.warn("Property value for key " + name + " not found. Using default.");
             }
@@ -135,7 +135,7 @@ public class Props implements PropsIF{
         try {
             return Integer.parseInt(stringValue);
         } catch (NumberFormatException nfe) {
-            String deflt = (String)defaults.get(name);
+            String deflt = (String) defaults.get(name);
             if (deflt != null) {
                 LOGGER.warn("Invalid property value for key " + name + ". Using default.");
                 return Integer.parseInt(deflt);

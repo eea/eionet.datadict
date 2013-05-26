@@ -178,7 +178,7 @@ public class Import extends HttpServlet {
                     writeToFile(raFile, req.getInputStream(), boundary);
                 } else {
                     URL url = new URL(sUrl);
-                    HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
 
                     writeToFile(raFile, url.openStream());
                 }
@@ -196,7 +196,7 @@ public class Import extends HttpServlet {
                 if (!handler.hasError()) {
 
                     DatasetImport dbImport =
-                        new DatasetImport((DatasetImportHandler)handler, userConn, ctx);
+                        new DatasetImport((DatasetImportHandler) handler, userConn, ctx);
                     dbImport.setUser(user);
                     dbImport.setDate(String.valueOf(System.currentTimeMillis()));
                     dbImport.setImportType(type);

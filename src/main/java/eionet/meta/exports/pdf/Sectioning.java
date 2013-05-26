@@ -96,10 +96,10 @@ public class Sectioning {
 
         Vector v = new Vector();
         for (int i = 0; i < toc.size(); i++) {
-            Hashtable hash = (Hashtable)toc.get(i);
-            String title = (String)hash.get(TITLE);
-            String nr = (String)hash.get(NR);
-            Integer level = (Integer)hash.get(LEVEL);
+            Hashtable hash = (Hashtable) toc.get(i);
+            String title = (String) hash.get(TITLE);
+            String nr = (String) hash.get(NR);
+            Integer level = (Integer) hash.get(LEVEL);
 
             StringBuffer buf = new StringBuffer();
             for (int j = 0; leveller != null && j < level.intValue() - 1; j++)
@@ -144,7 +144,7 @@ public class Sectioning {
         sect.curLevel = curLevel;
         sect.mode = mode;
         if (toc != null)
-            sect.toc = (Vector)toc.clone();
+            sect.toc = (Vector) toc.clone();
         if (levelCounters != null) {
             sect.levelCounters = new int[levelCounters.length];
             for (int i = 0; i < levelCounters.length; i++)

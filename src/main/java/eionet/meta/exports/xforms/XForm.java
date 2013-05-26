@@ -137,10 +137,10 @@ public abstract class XForm implements XFormIF {
     protected void writeRegularBinds(String lead) throws Exception {
 
         for (int i = 0; i < binds.size(); i++) {
-            Hashtable bind = (Hashtable)binds.get(i);
-            String id = (String)bind.get(ATTR_ID);
-            String type = (String)bind.get(ATTR_TYPE);
-            String nodeset = (String)bind.get(ATTR_NODESET);
+            Hashtable bind = (Hashtable) binds.get(i);
+            String id = (String) bind.get(ATTR_ID);
+            String type = (String) bind.get(ATTR_TYPE);
+            String nodeset = (String) bind.get(ATTR_NODESET);
             String constraint = getConstraint(bind);
 
             StringBuffer buf = new StringBuffer("<f:bind");
@@ -159,12 +159,12 @@ public abstract class XForm implements XFormIF {
     private void writeControls(String lead) throws Exception {
 
         for (int i = 0; i < controls.size(); i++) {
-            Hashtable control = (Hashtable)controls.get(i);
-            String bind  = (String)control.get(ATTR_BIND);
-            String label = (String)control.get(CTRL_LABEL);
-            String hint  = (String)control.get(CTRL_HINT);
-            String type  = (String)control.get(CTRL_TYPE);
-            String alert = (String)control.get(CTRL_ALERT);
+            Hashtable control = (Hashtable) controls.get(i);
+            String bind  = (String) control.get(ATTR_BIND);
+            String label = (String) control.get(CTRL_LABEL);
+            String hint  = (String) control.get(CTRL_HINT);
+            String type  = (String) control.get(CTRL_TYPE);
+            String alert = (String) control.get(CTRL_ALERT);
 
             // start control
             StringBuffer buf = new StringBuffer("<f:").append(type);
@@ -192,7 +192,7 @@ public abstract class XForm implements XFormIF {
             }
 
             // write items if select
-            writeSelectItems((Vector)control.get(CTRL_FXVS), lead + "\t");
+            writeSelectItems((Vector) control.get(CTRL_FXVS), lead + "\t");
 
             // end control
             writer.println(lead + "</f:" + type + ">");
@@ -202,7 +202,7 @@ public abstract class XForm implements XFormIF {
     private void writeSelectItems(Vector fxvs, String lead) throws Exception {
 
         for (int i = 0; fxvs != null && i < fxvs.size(); i++) {
-            writeSelectItem((FixedValue)fxvs.get(i), lead);
+            writeSelectItem((FixedValue) fxvs.get(i), lead);
         }
     }
 
@@ -265,18 +265,18 @@ public abstract class XForm implements XFormIF {
 
         StringBuffer buf = new StringBuffer();
 
-        String minSize = (String)bind.get(ATTR_MINSIZE);
+        String minSize = (String) bind.get(ATTR_MINSIZE);
         if (minSize != null)
             buf.append("string-length(.)&gt;=").append(minSize);
 
-        String maxSize = (String)bind.get(ATTR_MAXSIZE);
+        String maxSize = (String) bind.get(ATTR_MAXSIZE);
         if (maxSize != null) {
             if (buf.length() != 0) buf.append(" and ");
             buf.append("string-length(.)&lt;=").append(maxSize);
         }
 
-        String minInclValue = (String)bind.get(ATTR_MIN_INCL_VALUE);
-        String minExclValue = (String)bind.get(ATTR_MIN_EXCL_VALUE);
+        String minInclValue = (String) bind.get(ATTR_MIN_INCL_VALUE);
+        String minExclValue = (String) bind.get(ATTR_MIN_EXCL_VALUE);
         if (minInclValue != null) {
             if (buf.length() != 0) buf.append(" and ");
             buf.append("number(.)&gt;=").append(minInclValue);
@@ -285,8 +285,8 @@ public abstract class XForm implements XFormIF {
             buf.append("number(.)&gt;").append(minExclValue);
         }
 
-        String maxInclValue = (String)bind.get(ATTR_MAX_INCL_VALUE);
-        String maxExclValue = (String)bind.get(ATTR_MAX_EXCL_VALUE);
+        String maxInclValue = (String) bind.get(ATTR_MAX_INCL_VALUE);
+        String maxExclValue = (String) bind.get(ATTR_MAX_EXCL_VALUE);
         if (maxInclValue != null) {
             if (buf.length() != 0) buf.append(" and ");
             buf.append("number(.)&lt;=").append(maxInclValue);

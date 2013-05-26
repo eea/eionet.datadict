@@ -154,12 +154,12 @@ public class MrProper {
                 String stackTrace = eionet.util.Util.getStack(e);
                 if (stackTrace == null) stackTrace = e.toString();
                 LOGGER.fatal(stackTrace);
-                response.add((String)funNames.get(fun) +
+                response.add((String) funNames.get(fun) +
                         " failed: <b>" + stackTrace + "</b>");
                 continue;
             }
 
-            response.add((String)funNames.get(fun) + " was <b>OK!</b>");
+            response.add((String) funNames.get(fun) + " was <b>OK!</b>");
         }
     }
 
@@ -221,7 +221,7 @@ public class MrProper {
         ps.addParameterValue("mode", "delete");
         ps.addParameterValue("complete", "true");
         for (int i = 0; i < v.size(); i++) {
-            ps.addParameterValue("ds_id", (String)v.get(i));
+            ps.addParameterValue("ds_id", (String) v.get(i));
         }
 
         DatasetHandler handler = new DatasetHandler(conn, ps, ctx);
@@ -275,7 +275,7 @@ public class MrProper {
         Parameters ps = new Parameters();
         ps.addParameterValue("mode", "delete");
         for (int i = 0; i < v.size(); i++) {
-            ps.addParameterValue("del_id", (String)v.get(i));
+            ps.addParameterValue("del_id", (String) v.get(i));
         }
 
         DsTableHandler handler = new DsTableHandler(conn, ps, ctx);
@@ -328,7 +328,7 @@ public class MrProper {
         Parameters ps = new Parameters();
         ps.addParameterValue("mode", "delete");
         for (int i = 0; i < v.size(); i++) {
-            ps.addParameterValue("delem_id", (String)v.get(i));
+            ps.addParameterValue("delem_id", (String) v.get(i));
         }
 
         DataElementHandler handler = new DataElementHandler(conn, ps, ctx);
@@ -458,7 +458,7 @@ public class MrProper {
 
         for (int i = 0; i < v.size(); i++) {
             stmt.executeQuery("delete from TBL2ELEM where TABLE_ID=" +
-                    (String)v.get(i));
+                    (String) v.get(i));
         }
 
         // get the elements
@@ -484,7 +484,7 @@ public class MrProper {
         Parameters params = new Parameters();
         params.addParameterValue("mode", "delete");
         for (int i = 0; i < v.size(); i++) {
-            params.addParameterValue("delem_id", (String)v.get(i));
+            params.addParameterValue("delem_id", (String) v.get(i));
         }
 
         DataElementHandler delemHandler =
@@ -525,7 +525,7 @@ public class MrProper {
 
         for (int i = 0; i < v.size(); i++) {
             stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" +
-                    (String)v.get(i));
+                    (String) v.get(i));
         }
         // get orphan tables
         q = "select distinct DS_TABLE.TABLE_ID from DS_TABLE "
@@ -549,7 +549,7 @@ public class MrProper {
         Parameters params = new Parameters();
         params.addParameterValue("mode", "delete");
         for (int i = 0; i < v.size(); i++) {
-            params.addParameterValue("del_id", (String)v.get(i));
+            params.addParameterValue("del_id", (String) v.get(i));
         }
 
         DsTableHandler dsTableHandler = new DsTableHandler(conn, params, ctx);
@@ -597,7 +597,7 @@ public class MrProper {
         pars.addParameterValue("mode", "delete");
         pars.addParameterValue("complete", "true");
         for (int i = 0; i < odd.size(); i++) {
-            pars.addParameterValue("delem_id", (String)odd.get(i));
+            pars.addParameterValue("delem_id", (String) odd.get(i));
         }
 
         DataElementHandler elmH = new DataElementHandler(conn, pars, ctx);
@@ -633,7 +633,7 @@ public class MrProper {
         pars.addParameterValue("complete", "true");
 
         for (int i = 0; i < odd.size(); i++)
-            pars.addParameterValue("del_id", (String)odd.get(i));
+            pars.addParameterValue("del_id", (String) odd.get(i));
 
         DsTableHandler tblH = new DsTableHandler(conn, pars, ctx);
         tblH.setUser(user);
@@ -669,7 +669,7 @@ public class MrProper {
         pars.addParameterValue("complete", "true");
 
         for (int i = 0; i < odd.size(); i++) {
-            pars.addParameterValue("ds_id", (String)odd.get(i));
+            pars.addParameterValue("ds_id", (String) odd.get(i));
         }
 
         DatasetHandler dstH = new DatasetHandler(conn, pars, ctx);
@@ -745,7 +745,7 @@ public class MrProper {
         // loop over locked objects, delete those not present in WC hash
         for (int i = 0; i < v.size(); i++) {
 
-            HashMap hash = (HashMap)v.get(i);
+            HashMap hash = (HashMap) v.get(i);
 
             if (wcs.contains(hash)) { // if has a WC then skip
                 continue;
@@ -762,7 +762,7 @@ public class MrProper {
             buf.append(inParams.add(hash.get("VERSION"), Types.INTEGER));
 
             if (!tblName.equals("DATASET")) {
-                String pns = (String)hash.get("PARENT_NS");
+                String pns = (String) hash.get("PARENT_NS");
                 if (pns != null) {
                     buf.append(" and PARENT_NS=").append(inParams.add(pns, Types.INTEGER));
                 } else {
@@ -819,7 +819,7 @@ public class MrProper {
 
         for (int i = 0; i < hangingWcs.size(); i++) {
 
-            String id = (String)hangingWcs.get(i);
+            String id = (String) hangingWcs.get(i);
 
             Parameters pars = new Parameters();
             pars.addParameterValue("mode", "delete");
@@ -871,7 +871,7 @@ public class MrProper {
 
         for (int i = 0; i < hangingWcs.size(); i++) {
 
-            String id = (String)hangingWcs.get(i);
+            String id = (String) hangingWcs.get(i);
 
             Parameters pars = new Parameters();
             pars.addParameterValue("mode", "delete");
@@ -913,7 +913,7 @@ public class MrProper {
 
         for (int i = 0; i < hangingWcs.size(); i++) {
 
-            String id = (String)hangingWcs.get(i);
+            String id = (String) hangingWcs.get(i);
 
             Parameters pars = new Parameters();
             pars.addParameterValue("mode", "delete");

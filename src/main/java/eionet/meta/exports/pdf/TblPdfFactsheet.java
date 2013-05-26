@@ -103,7 +103,7 @@ public class TblPdfFactsheet extends PdfHandout {
 
         DataElement elem = null;
         for (int i = 0; i < v.size(); i++) {
-            elem = (DataElement)v.get(i);
+            elem = (DataElement) v.get(i);
             Vector fxValues = searchEngine.getFixedValues(elem.getID(), "elem");
             elem.setFixedValues(fxValues);
 

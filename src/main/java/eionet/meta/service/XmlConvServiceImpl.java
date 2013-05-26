@@ -49,9 +49,6 @@ import eionet.util.PropsIF;
 @Service
 public class XmlConvServiceImpl implements IXmlConvService {
 
-    /**
-     * @see eionet.meta.service.IXmlConvService#getSchemaConversionsData(java.lang.String)
-     */
     @Override
     public SchemaConversionsData getSchemaConversionsData(String schemaUrl) throws ServiceException {
         SchemaConversionsData result = new SchemaConversionsData();

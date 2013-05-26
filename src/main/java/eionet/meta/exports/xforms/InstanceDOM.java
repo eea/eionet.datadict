@@ -40,7 +40,7 @@ public class InstanceDOM {
             System.out.println(node.toString());
         }
 
-        Element element = nodes == null ? null : (Element)nodes.item(0);
+        Element element = nodes == null ? null : (Element) nodes.item(0);
         if (element == null)
             throw new InstanceDOMException("Could not find <" + tagName + "> element!");
 

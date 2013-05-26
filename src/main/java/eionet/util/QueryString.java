@@ -233,7 +233,7 @@ public class QueryString {
         try {
             for (Iterator entryIter = entrySet.iterator(); entryIter.hasNext();) {
 
-                Map.Entry entry = (Map.Entry)entryIter.next();
+                Map.Entry entry = (Map.Entry) entryIter.next();
                 String key = entry.getKey().toString();
 
                 Object value = entry.getValue();

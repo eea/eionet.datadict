@@ -68,7 +68,7 @@ public class INParameters {
      * @return
      */
     public Integer getSQLType(int i) {
-        return (Integer)sqlTypes.get(i);
+        return (Integer) sqlTypes.get(i);
     }
 
     /*
@@ -80,7 +80,7 @@ public class INParameters {
         StringBuffer buf = new StringBuffer(size() == 0 ? "empty" : "");
         for (int i = 0; i < values.size(); i++) {
 
-            buf.append((String)values.get(i));
+            buf.append((String) values.get(i));
             Integer sqlType = getSQLType(i);
             buf.append(", ").append(sqlType == null ? "null" : sqlTypeLabel(sqlType)).
             append("\n");

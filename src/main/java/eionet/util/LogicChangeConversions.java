@@ -79,7 +79,7 @@ public class LogicChangeConversions extends DataManipulations {
                 String tblID = rs.getString(1);
                 String dstID = rs.getString(2);
                 if (existingDatasets.contains(dstID) && existingTables.containsKey(tblID)) {
-                    Vector tblDatasets = (Vector)existingTables.get(tblID);
+                    Vector tblDatasets = (Vector) existingTables.get(tblID);
                     if (tblDatasets == null)
                         tblDatasets = new Vector();
                     tblDatasets.add(dstID);
@@ -101,12 +101,12 @@ public class LogicChangeConversions extends DataManipulations {
             if (!existingTables.isEmpty()) {
                 Iterator iterTables = existingTables.keySet().iterator();
                 while (iterTables != null && iterTables.hasNext()) {
-                    String tblID = (String)iterTables.next();
-                    Vector tblDatasets = (Vector)existingTables.get(tblID);
+                    String tblID = (String) iterTables.next();
+                    Vector tblDatasets = (Vector) existingTables.get(tblID);
                     SQLGenerator gen = new SQLGenerator();
                     // skip first dataset since for one dataset the table copy already exists
                     for (int i = 1; tblDatasets != null && i<tblDatasets.size(); i++) {
-                        String dstID = (String)tblDatasets.get(i);
+                        String dstID = (String) tblDatasets.get(i);
                         // delete the table's relation with this dataset,
                         // since that relation will now be created with the new table copy
                         buf = new StringBuffer();
@@ -173,7 +173,7 @@ public class LogicChangeConversions extends DataManipulations {
                 String elmID  = rs.getString("DATAELEM_ID");
                 String elmPos = rs.getString("POSITION");
                 if (existingTables.contains(tblID) && existingNonCommonElements.containsKey(elmID)) {
-                    Vector elmTables = (Vector)existingNonCommonElements.get(elmID);
+                    Vector elmTables = (Vector) existingNonCommonElements.get(elmID);
                     if (elmTables == null)
                         elmTables = new Vector();
                     String[] elmTable = new String[2];
@@ -199,12 +199,12 @@ public class LogicChangeConversions extends DataManipulations {
             if (!existingNonCommonElements.isEmpty()) {
                 Iterator iterElements = existingNonCommonElements.keySet().iterator();
                 while (iterElements != null && iterElements.hasNext()) {
-                    String elmID = (String)iterElements.next();
-                    Vector elmTables = (Vector)existingNonCommonElements.get(elmID);
+                    String elmID = (String) iterElements.next();
+                    Vector elmTables = (Vector) existingNonCommonElements.get(elmID);
                     SQLGenerator gen = new SQLGenerator();
                     // skip first table since for one table the element copy already exists
                     for (int i = 1; elmTables != null && i<elmTables.size(); i++) {
-                        String[] table = (String[])elmTables.get(i);
+                        String[] table = (String[]) elmTables.get(i);
                         String tblID = table[IDX_TBL];
                         String tblPos = table[IDX_POS];
                         // delete the element's relation with this table,
@@ -290,7 +290,7 @@ public class LogicChangeConversions extends DataManipulations {
 
             count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
-                Hashtable hash = (Hashtable)i.next();
+                Hashtable hash = (Hashtable) i.next();
                 buf = new StringBuffer();
                 buf.append("delete from DST2TBL where DATASET_ID=").append(hash.get("DATASET_ID")).
                 append(" and TABLE_ID=").append(hash.get("TABLE_ID"));
@@ -390,7 +390,7 @@ public class LogicChangeConversions extends DataManipulations {
 
             count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
-                Hashtable hash = (Hashtable)i.next();
+                Hashtable hash = (Hashtable) i.next();
                 buf = new StringBuffer();
                 buf.append("delete from TBL2ELEM where DATAELEM_ID=").append(hash.get("DATAELEM_ID")).
                 append(" and TABLE_ID=").append(hash.get("TABLE_ID"));

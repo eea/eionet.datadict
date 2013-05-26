@@ -83,7 +83,7 @@ public class DocUpload extends HttpServlet {
             res.sendRedirect(req.getContextPath() + "/datasets/" + dstID);
         } catch (Exception e) {
             if (e instanceof SQLException) {
-                int errCode = ((SQLException)e).getErrorCode();
+                int errCode = ((SQLException) e).getErrorCode();
                 System.out.println(errCode);
             }
             e.printStackTrace();
