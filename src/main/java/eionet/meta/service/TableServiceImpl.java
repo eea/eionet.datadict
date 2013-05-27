@@ -42,6 +42,7 @@ import eionet.meta.dao.domain.ComplexAttributeField;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.DataSetTable;
 import eionet.meta.dao.domain.DatasetRegStatus;
+import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.service.data.DatasetFilter;
 import eionet.meta.service.data.TableFilter;
 import eionet.util.Props;
@@ -123,8 +124,8 @@ public class TableServiceImpl implements ITableService {
             // Search datasets by ROD numeric IDs from DST2ROD table
             if (obligationId.startsWith(Props.getRequiredProperty(PropsIF.OUTSERV_ROD_OBLIG_URL))) {
                 int rodId =
-                    NumberUtils.toInt(StringUtils.substringAfter(obligationId,
-                            Props.getRequiredProperty(PropsIF.OUTSERV_ROD_OBLIG_URL)));
+                        NumberUtils.toInt(StringUtils.substringAfter(obligationId,
+                                Props.getRequiredProperty(PropsIF.OUTSERV_ROD_OBLIG_URL)));
                 if (rodId > 0) {
                     List<Integer> rodIds = new ArrayList<Integer>();
                     rodIds.add(Integer.valueOf(rodId));
@@ -158,6 +159,18 @@ public class TableServiceImpl implements ITableService {
             }
         } catch (Exception e) {
             throw new ServiceException("Failed to search tables for obligation: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SimpleAttribute> getTableAttributeValues(int tableId) throws ServiceException {
+        try {
+            return attributeDAO.getSimpleAttributeValues(tableId, "T");
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get table attributes: " + e.getMessage(), e);
         }
     }
 }

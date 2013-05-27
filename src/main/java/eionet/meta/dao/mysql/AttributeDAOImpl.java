@@ -723,4 +723,49 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         return items;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SimpleAttribute> getSimpleAttributeValues(int parentId, String parentType) {
+        final Map<String, Object> params = new HashMap<String, Object>();
+        params.put("parentId", parentId);
+        params.put("parentType", parentType);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select * from ATTRIBUTE a ");
+        sql.append("LEFT JOIN M_ATTRIBUTE m ");
+        sql.append("ON (a.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID and a.DATAELEM_ID = :parentId and a.PARENT_TYPE = :parentType) ");
+        sql.append("LEFT JOIN T_RDF_NAMESPACE r ON m.RDF_PROPERTY_NAMESPACE_ID = r.ID ");
+        sql.append("where a.DATAELEM_ID = :parentId and a.PARENT_TYPE = :parentType ");
+        sql.append("order by m.DISP_ORDER, a.VALUE");
+
+        List<SimpleAttribute> items =
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<SimpleAttribute>() {
+
+                    @Override
+                    public SimpleAttribute mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        SimpleAttribute atr = new SimpleAttribute();
+                        atr.setObjectId(rs.getInt("a.DATAELEM_ID"));
+                        atr.setValue(rs.getString("a.VALUE"));
+                        atr.setAttributeId(rs.getInt("m.M_ATTRIBUTE_ID"));
+                        atr.setDataType(rs.getString("m.DATA_TYPE"));
+                        atr.setInputType(rs.getString("m.DISP_TYPE"));
+                        atr.setLabel(rs.getString("m.NAME"));
+                        atr.setHeight(rs.getInt("m.DISP_HEIGHT"));
+                        atr.setWidth(rs.getInt("m.DISP_WIDTH"));
+                        atr.setMultiValue(rs.getBoolean("m.DISP_MULTIPLE"));
+                        atr.setIdentifier(rs.getString("m.SHORT_NAME"));
+                        atr.setMandatory("M".equals(rs.getString("m.OBLIGATION")));
+                        atr.setRdfPropertyName(rs.getString("m.RDF_PROPERTY_NAME"));
+                        atr.setRdfPropertyPrefix(rs.getString("r.NAME_PREFIX"));
+                        atr.setRdfPropertyUri(rs.getString("r.URI"));
+
+                        return atr;
+                    }
+                });
+
+        return items;
+    }
+
 }

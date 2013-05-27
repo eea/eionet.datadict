@@ -21,6 +21,7 @@ import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
 import eionet.meta.DsTable;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.ITableService;
 import eionet.util.Props;
@@ -127,7 +128,8 @@ public class Rdf {
     /**
      * Writes RDF output of CommonElement fixed values.
      *
-     * @param writer - output
+     * @param writer
+     *            - output
      * @throws Exception
      */
     private void writeCodeList(Writer writer) throws Exception {
@@ -251,6 +253,7 @@ public class Rdf {
         streamWriter.setPrefix("owl", OWL_NS);
         streamWriter.setPrefix("foaf", FOAF_NS);
         streamWriter.setPrefix("dd", DD_NS);
+        streamWriter.setPrefix("skos", SKOS_NS);
 
         streamWriter.writeStartElement(RDF_NS, "RDF");
         streamWriter.writeNamespace("rdf", RDF_NS);
@@ -258,6 +261,7 @@ public class Rdf {
         streamWriter.writeNamespace("owl", OWL_NS);
         streamWriter.writeNamespace("foaf", FOAF_NS);
         streamWriter.writeNamespace("dd", DD_NS);
+        streamWriter.writeNamespace("skos", SKOS_NS);
 
         streamWriter.writeStartElement(RDFS_NS, "Class");
         streamWriter.writeAttribute(RDF_NS, "about", this.baseUri + "/" + tbl.getIdentifier());
@@ -271,6 +275,13 @@ public class Rdf {
 
         streamWriter.writeEmptyElement(RDFS_NS, "isDefinedBy");
         streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri);
+
+        List<SimpleAttribute> attributes = tableService.getTableAttributeValues(Integer.parseInt(tbl.getID()));
+        for (SimpleAttribute attr : attributes) {
+            if (StringUtils.isNotEmpty(attr.getRdfPropertyName())) {
+                writeAttribute(attr, streamWriter);
+            }
+        }
 
         streamWriter.writeEndElement(); // </rdfs:Class>
 
@@ -288,6 +299,20 @@ public class Rdf {
         }
 
         streamWriter.writeEndElement(); // </rdf:RDF>
+    }
+
+    /**
+     * Writes simple attribute RDF.
+     *
+     * @param attr
+     * @param writer
+     * @throws XMLStreamException
+     */
+    private void writeAttribute(SimpleAttribute attr, XMLStreamWriter writer) throws XMLStreamException {
+        writer.writeCharacters("\n");
+        writer.writeStartElement(attr.getRdfPropertyPrefix(), attr.getRdfPropertyName(), attr.getRdfPropertyUri());
+        writer.writeCharacters(attr.getValue());
+        writer.writeEndElement();
     }
 
     /**

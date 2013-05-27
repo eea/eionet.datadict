@@ -25,6 +25,7 @@ import java.util.List;
 
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataSetTable;
+import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.service.data.TableFilter;
 
 /**
@@ -60,5 +61,21 @@ public interface ITableService {
      */
     List<String> getNameAttribute(int tableId) throws ServiceException;
 
+    /**
+     *
+     * @param obligationId
+     * @param releasedOnly
+     * @return
+     * @throws ServiceException
+     */
     List<DataSetTable> getTablesForObligation(String obligationId, boolean releasedOnly) throws ServiceException;
+
+    /**
+     * Returns table attributes.
+     *
+     * @param tableId
+     * @return
+     * @throws ServiceException
+     */
+    List<SimpleAttribute> getTableAttributeValues(int tableId) throws ServiceException;
 }

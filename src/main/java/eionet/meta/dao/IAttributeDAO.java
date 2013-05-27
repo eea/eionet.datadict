@@ -80,6 +80,15 @@ public interface IAttributeDAO {
     Map<String, List<String>> getAttributeValues(int parentId, String parentType);
 
     /**
+     * Returns simple attributes.
+     *
+     * @param parentId
+     * @param parentType
+     * @return
+     */
+    List<SimpleAttribute> getSimpleAttributeValues(int parentId, String parentType);
+
+    /**
      * Returns attribute by shortName.
      *
      * @param shortName
