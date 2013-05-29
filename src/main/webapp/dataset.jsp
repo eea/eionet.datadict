@@ -11,11 +11,11 @@
     /**
     *
     */
-    private String getValue(String id, String mode, Vector attributes){
-        if (id==null) return null;
+    private String getValue(String id, String mode, Vector attributes) {
+        if (id == null) return null;
         if (mode.equals("add")) return null;
 
-        for (int i=0; attributes!=null && i<attributes.size(); i++){
+        for (int i=0; attributes!=null && i<attributes.size(); i++) {
             DElemAttribute attr = (DElemAttribute)attributes.get(i);
             if (id.equals(attr.getID()))
                 return attr.getValue();
@@ -27,11 +27,11 @@
     *
     */
 
-    private Vector getValues(String id, String mode, Vector attributes){
-        if (id==null) return null;
+    private Vector getValues(String id, String mode, Vector attributes) {
+        if (id == null) return null;
         if (mode.equals("add")) return null;
 
-        for (int i=0; attributes!=null && i<attributes.size(); i++){
+        for (int i=0; attributes!=null && i<attributes.size(); i++) {
             DElemAttribute attr = (DElemAttribute)attributes.get(i);
             if (id.equals(attr.getID()))
                 return attr.getValues();
@@ -82,7 +82,7 @@
     }
 
     // POST request not allowed for anybody who hasn't logged in
-    if (request.getMethod().equals("POST") && user==null){
+    if (request.getMethod().equals("POST") && user == null) {
         request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
         request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
@@ -95,27 +95,27 @@
     String dstIdf = request.getParameter("dataset_idf");
     String ds_id = request.getParameter("ds_id");
     mode = request.getParameter("mode");
-    if (mode == null || mode.trim().length()==0){
+    if (mode == null || mode.trim().length() == 0) {
         mode = "view";
     }
 
-    if (mode.equals("add")){
-        if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){
+    if (mode.equals("add")) {
+        if (user == null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")) {
             request.setAttribute("DD_ERR_MSG", "You have no permission to add a dataset!");
             request.getRequestDispatcher("error.jsp").forward(request, response);
             return;
         }
     }
 
-    if (mode.equals("view")){
-        if (Util.isEmpty(dstIdf) && Util.isEmpty(ds_id)){
+    if (mode.equals("view")) {
+        if (Util.isEmpty(dstIdf) && Util.isEmpty(ds_id)) {
             request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id or dataset_idf");
             request.getRequestDispatcher("error.jsp").forward(request, response);
             return;
         }
     }
-    else if (mode.equals("edit")){
-        if (Util.isEmpty(ds_id)){
+    else if (mode.equals("edit")) {
+        if (Util.isEmpty(ds_id)) {
             request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id");
             request.getRequestDispatcher("error.jsp").forward(request, response);
             return;
@@ -124,7 +124,7 @@
 
     // as of Sept 2006,  parameter "action" is a helper to add some extra context to parameter "mode"
     String action = request.getParameter("action");
-    if (action!=null && action.trim().length()==0) action = null;
+    if (action!=null && action.trim().length() == 0) action = null;
 
     // if requested by alphanumeric identifier and not by auto-generated id,
     // then it means the dataset's latest version is requested
@@ -133,7 +133,7 @@
 
     //// handle the POST request//////////////////////
     //////////////////////////////////////////////////
-    if (request.getMethod().equals("POST")){
+    if (request.getMethod().equals("POST")) {
 
         Connection userConn = null;
         DatasetHandler handler = null;
@@ -144,7 +144,7 @@
             try {
                 handler.execute();
             }
-            catch (Exception e){
+            catch (Exception e) {
                 handler.cleanup();
                 String msg = e.getMessage();
                 ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
@@ -153,7 +153,7 @@
                 request.setAttribute("DD_ERR_MSG", msg);
                 request.setAttribute("DD_ERR_TRC", trace);
                 String backLink = request.getParameter("submitter_url");
-                if (backLink==null || backLink.length()==0)
+                if (backLink == null || backLink.length() == 0)
                     backLink = history.getBackUrl();
                 request.setAttribute("DD_ERR_BACK_LINK", backLink);
                 request.getRequestDispatcher("error.jsp").forward(request, response);
@@ -165,35 +165,35 @@
             } catch (SQLException e) {}
         }
 
-        // disptach the POST request
+        // dispatch the POST request
         ////////////////////////////
         String redirUrl = null;
-        if (mode.equals("add")){
+        if (mode.equals("add")) {
             String id = handler.getLastInsertID();
-            if (id!=null && id.length()>0){
+            if (id!=null && id.length() > 0) {
                 redirUrl = request.getContextPath() + "/datasets/" + id;
             }
         }
-        else if (mode.equals("edit")){
+        else if (mode.equals("edit")) {
 
-            if (request.getParameter("check_in")!=null && request.getParameter("check_in").equalsIgnoreCase("true")){
+            if (request.getParameter("check_in")!=null && request.getParameter("check_in").equalsIgnoreCase("true")) {
                 // if this was a check-in, redirect to the view of the checked-in copy
                 redirUrl = request.getContextPath() + "/datasets/" + handler.getCheckedInCopyID() + "/?feedback=checkin";
             }
             else{
                 redirUrl = request.getContextPath() + "/datasets/" + ds_id;
-                if (request.getParameter("saveclose")==null || request.getParameter("saveclose").equals("false")){
+                if (request.getParameter("saveclose") == null || request.getParameter("saveclose").equals("false")) {
                     redirUrl = redirUrl + "/edit";
                 }
             }
         }
-        else if (mode.equals("delete")){
+        else if (mode.equals("delete")) {
             String checkedoutCopyID = request.getParameter("checkedout_copy_id");
             String wasWorkingCopy = request.getParameter("is_working_copy");
             if (checkedoutCopyID != null && !checkedoutCopyID.isEmpty()) {
                 redirUrl = request.getContextPath() + "/datasets/" + checkedoutCopyID + "/?feedback=undo_checkout";
             }
-            else if (wasWorkingCopy != null && wasWorkingCopy.equals("true")){
+            else if (wasWorkingCopy != null && wasWorkingCopy.equals("true")) {
                 redirUrl = request.getContextPath() + "/datasets.jsp?feedback=undo_checkout";
             }
             else {
@@ -236,19 +236,19 @@
         boolean canNewVersion = false;
 
         // if not in add mode, get the dataset object and some parameters based on it
-        if (!mode.equals("add")){
+        if (!mode.equals("add")) {
 
             // get the dataset object
-            if (isLatestRequested){
+            if (isLatestRequested) {
 
                 Vector v = new Vector();
-                if (user==null){
+                if (user == null) {
                     v.add("Released");
                     v.add("Recorded");
                 }
                 dataset = searchEngine.getLatestDst(dstIdf, v);
 
-                if (dataset!=null){
+                if (dataset!=null) {
                     // double-making-sure that ds_id value is correct
                     ds_id = dataset.getID();
                 }
@@ -258,7 +258,7 @@
             }
 
             // if dataset object found, populate some parameters based on it
-            if (dataset!=null){
+            if (dataset!=null) {
 
                 idfier = dataset.getIdentifier();
                 ds_name = dataset.getShortName();
@@ -270,7 +270,7 @@
                 editReleasedPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "er");
 
                 Vector v = null;
-                if (user==null){
+                if (user == null) {
                     v = new Vector();
                     v.add("Released");
                     v.add("Recorded");
@@ -278,15 +278,15 @@
                 latestID = searchEngine.getLatestDstID(idfier, v);
                 isLatestDst = latestID!=null && ds_id.equals(latestID);
 
-                canNewVersion = !dataset.isWorkingCopy() && workingUser==null && regStatus!=null && user!=null && isLatestDst;
-                if (canNewVersion){
+                canNewVersion = !dataset.isWorkingCopy() && workingUser == null && regStatus!=null && user!=null && isLatestDst;
+                if (canNewVersion) {
                     canNewVersion = regStatus.equals("Released") || regStatus.equals("Recorded");
                     if (canNewVersion)
                         canNewVersion = editPrm || editReleasedPrm;
                 }
 
-                canCheckout = !dataset.isWorkingCopy() && workingUser==null && regStatus!=null && user!=null && isLatestDst;
-                if (canCheckout){
+                canCheckout = !dataset.isWorkingCopy() && workingUser == null && regStatus!=null && user!=null && isLatestDst;
+                if (canCheckout) {
                     if (regStatus.equals("Released"))
                             //|| regStatus.equals("Recorded"))
                         canCheckout = editReleasedPrm;
@@ -296,9 +296,9 @@
 
                 // get the visual structure, so it will be displayed already in the dataset view
                 dsVisual = dataset.getVisual();
-                if (dsVisual!=null && dsVisual.length()!=0){
+                if (dsVisual!=null && dsVisual.length()!=0) {
                     int i = dsVisual.lastIndexOf(".");
-                    if (i != -1){
+                    if (i != -1) {
                         String visualType = dsVisual.substring(i+1, dsVisual.length()).toUpperCase();
                         if (visualType.equals("GIF") || visualType.equals("JPG") || visualType.equals("JPEG") || visualType.equals("PNG"))
                             imgVisual = true;
@@ -310,7 +310,7 @@
                     otherVersions = searchEngine.getDstOtherVersions(dataset.getIdentifier(), dataset.getID());
             }
             else{
-                if (user!=null){
+                if (user!=null) {
                     request.setAttribute("DD_ERR_MSG", "Could not find a dataset of this id or identifier in any status!");
                 }
                 else{
@@ -333,38 +333,38 @@
 
         // get the dataset's tables and links to ROD
         tables = searchEngine.getDatasetTables(ds_id, true);
-        Vector rodLinks = dataset==null ? null : searchEngine.getRodLinks(dataset.getID());
+        Vector rodLinks = dataset == null ? null : searchEngine.getRodLinks(dataset.getID());
 
         // init version manager object
         VersionManager verMan = new VersionManager(conn, searchEngine, user);
 
         // security checks, checkin/checkout operations, dispatching of the GET request
-        if (mode.equals("edit")){
-            if (!dataset.isWorkingCopy() || user==null || (workingUser!=null && !workingUser.equals(user.getUserName()))){
+        if (mode.equals("edit")) {
+            if (!dataset.isWorkingCopy() || user == null || (workingUser!=null && !workingUser.equals(user.getUserName()))) {
                 request.setAttribute("DD_ERR_MSG", "You have no permission to edit this dataset!");
                 request.getRequestDispatcher("error.jsp").forward(request, response);
                 return;
             }
         }
-        else if (mode.equals("view") && dataset!=null && action!=null && (action.equals("subscribe"))){
+        else if (mode.equals("view") && dataset!=null && action!=null && (action.equals("subscribe"))) {
             Subscriber.subscribeToDataset(Collections.singleton(user.getUserName()), dataset.getIdentifier());
             response.sendRedirect(request.getContextPath() + "/datasets/" + dataset.getID() + "/?feedback=subscribe");
         }
-        else if (mode.equals("view") && action!=null && (action.equals("checkout") || action.equals("newversion"))){
+        else if (mode.equals("view") && action!=null && (action.equals("checkout") || action.equals("newversion"))) {
 
-            if (action.equals("checkout") && !canCheckout){
+            if (action.equals("checkout") && !canCheckout) {
                 request.setAttribute("DD_ERR_MSG", "You have no permission to check out this dataset!");
                 request.getRequestDispatcher("error.jsp").forward(request, response);
                 return;
             }
-            if (action.equals("newversion") && !canNewVersion){
+            if (action.equals("newversion") && !canNewVersion) {
                 request.setAttribute("DD_ERR_MSG", "You have no permission to create new version of this dataset!");
                 request.getRequestDispatcher("error.jsp").forward(request, response);
                 return;
             }
 
             // if creating new version, let VersionManager know about this
-            if (action.equals("newversion")){
+            if (action.equals("newversion")) {
                 eionet.meta.savers.Parameters pars = new eionet.meta.savers.Parameters();
                 pars.addParameterValue("resetVersionAndStatus", "resetVersionAndStatus");
                 verMan.setServlRequestParams(pars);
@@ -372,28 +372,28 @@
 
             // check out the dataset
             String copyID = verMan.checkOut(ds_id, "dst");
-            if (!ds_id.equals(copyID)){
+            if (!ds_id.equals(copyID)) {
                 // send to copy if created successfully, remove previous url (edit original) from history
                 history.remove(history.getCurrentIndex());
                 response.sendRedirect(request.getContextPath() + "/datasets/" + copyID + "/?feedback=checkout");
             }
         }
-        else if (mode.equals("view") && dataset!=null){
+        else if (mode.equals("view") && dataset!=null) {
             // anonymous users should not be allowed to see anybody's working copy
-            if (dataset.isWorkingCopy() && user==null){
+            if (dataset.isWorkingCopy() && user == null) {
                 request.setAttribute("DD_ERR_MSG", "Anonymous users are not allowed to view a working copy!");
                 request.getRequestDispatcher("error.jsp").forward(request, response);
                 return;
             }
             // anonymous users should not be allowed to see definitions that are NOT in Recorded or Released status
-            if (user==null && regStatus!=null && !regStatus.equals("Recorded") && !regStatus.equals("Released")){
+            if (user == null && regStatus!=null && !regStatus.equals("Recorded") && !regStatus.equals("Released")) {
                 request.setAttribute("DD_ERR_MSG", "Definitions NOT in Recorded or Released status are inaccessible for anonymous users.");
                 request.getRequestDispatcher("error.jsp").forward(request, response);
                 return;
             }
             // redircet user to his working copy of this dataset (if such exists)
             String workingCopyID = verMan.getWorkingCopyID(dataset);
-            if (workingCopyID!=null && workingCopyID.length()>0){
+            if (workingCopyID!=null && workingCopyID.length()>0) {
                 response.sendRedirect(request.getContextPath() + "/datasets/" + workingCopyID);
             }
         }
@@ -419,17 +419,17 @@
     <script type="text/javascript">
     // <![CDATA[
 
-        function deleteDatasetReady(){
+        function deleteDatasetReady() {
             document.forms["form1"].elements["mode"].value = "delete";
             document.forms["form1"].submit();
         }
 
-        function submitForm(mode){
+        function submitForm(mode) {
 
-            if (mode == "delete"){
+            if (mode == "delete") {
                 <%
-                if (regStatus!=null && dataset!=null && !dataset.isWorkingCopy() && regStatus.equals("Released")){
-                    if (!canCheckout){
+                if (regStatus!=null && dataset!=null && !dataset.isWorkingCopy() && regStatus.equals("Released")) {
+                    if (!canCheckout) {
                         %>
                         alert("You have no permission to delete this dataset!");
                         return;
@@ -448,7 +448,7 @@
                 if (b==false) return;
 
                 <%
-                if (dataset!=null && dataset.isWorkingCopy()){ %>
+                if (dataset!=null && dataset.isWorkingCopy()) { %>
                     document.forms["form1"].elements["complete"].value = "true";
                     deleteDatasetReady();
                     return;<%
@@ -461,18 +461,18 @@
                 %>
             }
 
-            if (mode != "delete"){
-                if (!checkObligations()){
+            if (mode != "delete") {
+                if (!checkObligations()) {
                     alert("You have not specified one of the mandatory atttributes!");
                     return;
                 }
 
-                if (hasWhiteSpace("idfier")){
+                if (hasWhiteSpace("idfier")) {
                     alert("Identifier cannot contain any white space!");
                     return;
                 }
 
-                if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
+                if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)) {
                     alert("Identifier not valid for usage as an XML tag! " +
                           "In the first character only underscore or latin characters are allowed! " +
                           "In the rest of characters only underscore or hyphen or dot or 0-9 or latin characters are allowed!");
@@ -482,7 +482,7 @@
                 //slctAllValues();
             }
 
-            if (mode=="editclose"){
+            if (mode=="editclose") {
                 mode = "edit";
                 document.forms["form1"].elements["saveclose"].value = "true";
             }
@@ -491,30 +491,30 @@
             document.forms["form1"].submit();
         }
 
-        function delDialogReturn(){
+        function delDialogReturn() {
             var v = dialogWin.returnValue;
-            if (v==null || v=="" || v=="cancel") return;
+            if (v == null || v=="" || v=="cancel") return;
 
             document.forms["form1"].elements["complete"].value = v;
             deleteDatasetReady();
         }
 
-        function checkObligations(){
+        function checkObligations() {
 
             var o = document.forms["form1"].ds_name;
             if (o!=null && o.value.length == 0) return false;
 
             var elems = document.forms["form1"].elements;
-            for (var i=0; elems!=null && i<elems.length; i++){
+            for (var i=0; elems!=null && i<elems.length; i++) {
                 var elem = elems[i];
                 var elemName = elem.name;
                 var elemValue = elem.value;
-                if (startsWith(elemName, "attr_")){
+                if (startsWith(elemName, "attr_")) {
                     var o = document.forms["form1"].elements[i+1];
                     if (o == null) return false;
                     if (!startsWith(o.name, "oblig_"))
                         continue;
-                    if (o.value == "M" && (elemValue==null || elemValue.length==0)){
+                    if (o.value == "M" && (elemValue == null || elemValue.length == 0)) {
                         return false;
                     }
                 }
@@ -523,13 +523,13 @@
             return true;
         }
 
-        function hasWhiteSpace(input_name){
+        function hasWhiteSpace(input_name) {
 
             var elems = document.forms["form1"].elements;
             if (elems == null) return false;
-            for (var i=0; i<elems.length; i++){
+            for (var i=0; i<elems.length; i++) {
                 var elem = elems[i];
-                if (elem.name == input_name){
+                if (elem.name == input_name) {
                     var val = elem.value;
                     if (val.indexOf(" ") != -1) return true;
                 }
@@ -538,15 +538,15 @@
             return false;
         }
 
-        function startsWith(str, pattern){
+        function startsWith(str, pattern) {
             var i = str.indexOf(pattern,0);
-            if (i!=-1 && i==0)
+            if (i!=-1 && i == 0)
                 return true;
             else
                 return false;
         }
 
-        function endsWith(str, pattern){
+        function endsWith(str, pattern) {
             var i = str.indexOf(pattern, str.length-pattern.length);
             if (i!=-1)
                 return true;
@@ -554,13 +554,13 @@
                 return false;
         }
 
-        function checkIn(){
+        function checkIn() {
             submitCheckIn();
         }
 
-        function submitCheckIn(){
+        function submitCheckIn() {
             <%
-            if (regStatus!=null && regStatus.equals("Released")){
+            if (regStatus!=null && regStatus.equals("Released")) {
                 %>
                 var b = confirm("You are checking in with Released status! This will automatically release your changes into public view. " +
                                 "If you want to continue, click OK. Otherwise click Cancel.");
@@ -574,36 +574,36 @@
             document.forms["form1"].submit();
         }
 
-        function goTo(mode, id){
-            if (mode == "edit"){
+        function goTo(mode, id) {
+            if (mode == "edit") {
                 document.location.assign("<%=request.getContextPath()%>/datasets/" + id + "/edit");
             }
-            else if (mode=="checkout"){
+            else if (mode=="checkout") {
                 document.location.assign("<%=request.getContextPath()%>/datasets/" + id + "/checkout");
             }
-            else if (mode=="newversion"){
+            else if (mode=="newversion") {
                 document.location.assign("<%=request.getContextPath()%>/datasets/" + id + "/newversion");
             }
-            else if (mode=="view"){
+            else if (mode=="view") {
                 document.location.assign("<%=request.getContextPath()%>/datasets/" + id);
             }
         }
-        function slctAllValues(){
+        function slctAllValues() {
 
             var elems = document.forms["form1"].elements;
             if (elems == null) return true;
 
-            for (var j=0; j<elems.length; j++){
+            for (var j=0; j<elems.length; j++) {
                 var elem = elems[j];
                 var elemName = elem.name;
-                if (startsWith(elemName, "attr_mult_")){
+                if (startsWith(elemName, "attr_mult_")) {
                     var slct = document.forms["form1"].elements[elemName];
-                    if (slct.options && slct.length){
-                        if (slct.length==1 && slct.options[0].value=="" && slct.options[0].text==""){
+                    if (slct.options && slct.length) {
+                        if (slct.length==1 && slct.options[0].value=="" && slct.options[0].text=="") {
                             slct.remove(0);
                             slct.length = 0;
                         }
-                        for (var i=0; i<slct.length; i++){
+                        for (var i=0; i<slct.length; i++) {
                             slct.options[i].selected = "true";
                         }
                     }
@@ -611,24 +611,24 @@
             }
         }
 
-        function validForXMLTag(str){
+        function validForXMLTag(str) {
 
             // if empty string not allowed for XML tag
-            if (str==null || str.length==0){
+            if (str == null || str.length == 0) {
                 return false;
             }
 
             // check the first character (only underscore or A-Z or a-z allowed)
             var ch = str.charCodeAt(0);
-            if (!(ch==95 || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))){
+            if (!(ch==95 || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))) {
                 return false;
             }
 
             // check the rets of characters ((only underscore or hyphen or dot or 0-9 or A-Z or a-z allowed))
             if (str.length==1) return true;
-            for (var i=1; i<str.length; i++){
+            for (var i=1; i<str.length; i++) {
                 ch = str.charCodeAt(i);
-                if (!(ch==95 || ch==45 || ch==46 || (ch>=48 && ch<=57) || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))){
+                if (!(ch==95 || ch==45 || ch==46 || (ch>=48 && ch<=57) || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))) {
                     return false;
                 }
             }
@@ -658,8 +658,8 @@ else if (mode.equals("add"))
 <div id="workarea">
             <%
                 boolean goToNewest = false;
-                if (mode.equals("view") && !dataset.isWorkingCopy()){
-                    if (user!=null || (user==null && !isLatestRequested)){
+                if (mode.equals("view") && !dataset.isWorkingCopy()) {
+                    if (user!=null || (user == null && !isLatestRequested)) {
                         if (latestID!=null && !latestID.equals(dataset.getID())) {
                             goToNewest = true;
                         }
@@ -688,8 +688,8 @@ else if (mode.equals("add"))
                         }
                         if (isDisplayOperations) {
                             // the link
-                            if (mode.equals("view") && dataset!=null && dataset.isWorkingCopy()){
-                                if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())){
+                            if (mode.equals("view") && dataset!=null && dataset.isWorkingCopy()) {
+                                if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())) {
                             %>
                                 <%
                                 String dstrodLink = request.getContextPath() + "/dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&amp;dst_id=" + dataset.getID() + "&amp;dst_name=" + dataset.getShortName();
@@ -704,20 +704,20 @@ else if (mode.equals("add"))
                             <%
                                 }
                             }
-                            if (mode.equals("view")){
-                                if (canNewVersion){
+                            if (mode.equals("view")) {
+                                if (canNewVersion) {
                             %>
                                 <li><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/newversion">New version</a></li>
                             <%
                                 }
-                                if (canCheckout){
+                                if (canCheckout) {
                             %>
                                 <li><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/checkout">Check out</a></li>
                                 <li><a href="javascript:submitForm('delete')">Delete</a></li>
                             <%
                                 }
                             }
-                            if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null && !dataset.isWorkingCopy()){%>
+                            if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null && !dataset.isWorkingCopy()) {%>
                                 <li><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/subscribe">Subscribe</a><%
                             }
                         }
@@ -742,7 +742,7 @@ else if (mode.equals("add"))
             <form id="form1" method="post" action="<%=request.getContextPath()%>/datasets" style="clear:both">
                 <div style="display:none">
                 <%
-                if (!mode.equals("add")){ %>
+                if (!mode.equals("add")) { %>
                     <input type="hidden" name="ds_id" value="<%=ds_id%>"/><%
                 }
                 else { %>
@@ -760,7 +760,7 @@ else if (mode.equals("add"))
                                 <!-- quick links -->
 
                                 <%
-                                if (mode.equals("view")){
+                                if (mode.equals("view")) {
                                     Vector quicklinks = new Vector();
 
                                     if (dataset!=null && dataset.getVisual()!=null)
@@ -782,7 +782,7 @@ else if (mode.equals("add"))
                                 <!-- pdfs & schema & docs -->
 
                                 <%
-                                if (mode.equals("view")){
+                                if (mode.equals("view")) {
 
                                     Vector docs = searchEngine.getDocs(ds_id);
                                     boolean dispAll = editPrm || editReleasedPrm;
@@ -795,7 +795,7 @@ else if (mode.equals("add"))
                                     boolean dispUploadAndCache = editPrm || editReleasedPrm;
                                     boolean dispDocs = docs!=null && docs.size()>0;
 
-                                    if (dispAll || dispPDF || dispXLS || dispXmlSchema || dispXmlInstance || dispUploadAndCache || dispDocs || dispMDB || dispODS){
+                                    if (dispAll || dispPDF || dispXLS || dispXmlSchema || dispXmlInstance || dispUploadAndCache || dispDocs || dispMDB || dispODS) {
                                         %>
                                             <div id="createbox">
                                                 <table id="outputsmenu">
@@ -803,7 +803,7 @@ else if (mode.equals("add"))
                                                     <col style="width:27%"/>
                                                     <%
                                                     // PDF link
-                                                    if (dispAll || dispPDF){ %>
+                                                    if (dispAll || dispPDF) { %>
                                                         <tr>
                                                             <td>
                                                                 Create technical specification for this dataset
@@ -817,7 +817,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // XML Schema link
-                                                    if (dispAll || dispXmlSchema){ %>
+                                                    if (dispAll || dispXmlSchema) { %>
                                                         <tr>
                                                             <td>
                                                                 Create an XML Schema for this dataset
@@ -831,7 +831,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // XML Instance link
-                                                    if (dispAll || dispXmlInstance){ %>
+                                                    if (dispAll || dispXmlInstance) { %>
                                                         <tr>
                                                             <td>
                                                                 Create an instance XML for this dataset
@@ -845,7 +845,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // MS Excel link
-                                                    if (dispAll || dispXLS){ %>
+                                                    if (dispAll || dispXLS) { %>
                                                         <tr>
                                                             <td>
                                                                 Create an MS Excel template for this dataset&nbsp;<a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel" onclick="pop(this.href);return false;"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/></a>
@@ -857,7 +857,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // OpenDocument spreadsheet link
-                                                    if (dispAll || dispODS){ %>
+                                                    if (dispAll || dispODS) { %>
                                                         <tr>
                                                             <td>
                                                                 Create an OpenDocument spreadsheet template for this dataset&nbsp;<a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=ods" onclick="pop(this.href);return false;"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/></a>
@@ -869,7 +869,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // MS Access link
-                                                    if (dispAll || dispMDB){ %>
+                                                    if (dispAll || dispMDB) { %>
                                                         <tr>
                                                             <td>
                                                                 Create validation metadata for MS Access template&nbsp;<a  href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href);return false;"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/></a>
@@ -882,7 +882,7 @@ else if (mode.equals("add"))
 
                                                     // Advanced MS Access template generation link
                                                     boolean displayAdvancedMDB = true;
-                                                    if (displayAdvancedMDB){
+                                                    if (displayAdvancedMDB) {
                                                         %>
                                                         <tr>
                                                             <td>
@@ -895,7 +895,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // codelists
-                                                    if (dispAll || dispXmlSchema){ %>
+                                                    if (dispAll || dispXmlSchema) { %>
                                                         <tr>
                                                             <td>
                                                                 Get the comma-separated codelists of this dataset
@@ -919,7 +919,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // display links to uploaded documents
-                                                    for (int i=0; docs!=null && i<docs.size(); i++){
+                                                    for (int i=0; docs!=null && i<docs.size(); i++) {
                                                         Hashtable hash = (Hashtable)docs.get(i);
                                                         String md5   = (String)hash.get("md5");
                                                         String file  = (String)hash.get("file");
@@ -931,7 +931,7 @@ else if (mode.equals("add"))
                                                             <td>
                                                                 <a rel="nofollow" href="<%=request.getContextPath()%>/DocDownload?file=<%=Util.processForDisplay(md5)%>"><img style="border:0" src="<%=request.getContextPath()%>/images/<%=Util.processForDisplay(icon)%>" width="16" height="16" alt="icon"/></a>
                                                                 <%
-                                                                if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")){
+                                                                if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")) {
                                                                     %>&nbsp;<a  href="<%=request.getContextPath()%>/DocUpload?ds_id=<%=ds_id%>&amp;delete=<%=Util.processForDisplay(md5)%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>"><img style="border:0" src="<%=request.getContextPath()%>/images/delete.gif" width="14" height="14"/></a><%
                                                                 }
                                                                 %>
@@ -941,7 +941,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // display the "Upload document" and "Manage cache" links
-                                                    if (dispAll || dispUploadAndCache){
+                                                    if (dispAll || dispUploadAndCache) {
                                                         %>
                                                         <tr style="height:20px;">
                                                             <td colspan="2">
@@ -981,7 +981,7 @@ else if (mode.equals("add"))
                                         <table class="datatable">
                                             <col style="width:<%=titleWidth%>%"/>
                                             <col style="width:4%"/>
-                                            <% if (colspan==4){ %>
+                                            <% if (colspan==4) { %>
                                             <col style="width:4%"/>
                                             <% } %>
                                             <col style="width:<%=valueWidth%>%"/>
@@ -1000,7 +1000,7 @@ else if (mode.equals("add"))
                                                     </a>
                                                 </td>
                                                 <%
-                                                if (colspan==4){%>
+                                                if (colspan==4) {%>
                                                     <td class="simple_attr_help">
                                                         <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
                                                     </td><%
@@ -1008,7 +1008,7 @@ else if (mode.equals("add"))
                                                 %>
                                                 <td class="simple_attr_value">
                                                     <%
-                                                    if(!mode.equals("add")){ %>
+                                                    if(!mode.equals("add")) { %>
                                                         <b><%=Util.processForDisplay(idfier)%></b>
                                                         <input type="hidden" name="idfier" value="<%=Util.processForDisplay(idfier,true)%>"/><%
                                                     }
@@ -1030,7 +1030,7 @@ else if (mode.equals("add"))
                                                     </a>
                                                 </td>
                                                 <%
-                                                if (colspan==4){
+                                                if (colspan==4) {
                                                     %>
                                                     <td class="short_name simple_attr_help">
                                                         <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
@@ -1039,15 +1039,15 @@ else if (mode.equals("add"))
                                                 %>
                                                 <td class="short_name_value">
                                                     <%
-                                                    if (mode.equals("view")){ %>
+                                                    if (mode.equals("view")) { %>
                                                         <%=Util.processForDisplay(dataset.getShortName())%>
                                                         <input type="hidden" name="ds_name" value="<%=Util.processForDisplay(dataset.getShortName(),true)%>"/><%
                                                     }
-                                                    else if (mode.equals("add")){%>
-                                                        <input class="smalltext" type="text" size="30" name="ds_name"/><%
+                                                    else if (mode.equals("add")) {%>
+                                                        <input class="smalltext" type="text" size="40" name="ds_name"/><%
                                                     }
                                                     else{ %>
-                                                        <input class="smalltext" type="text" size="30" name="ds_name" value="<%=Util.processForDisplay(dataset.getShortName())%>"/><%
+                                                        <input class="smalltext" type="text" size="40" name="ds_name" value="<%=Util.processForDisplay(dataset.getShortName())%>"/><%
                                                     }
                                                     %>
                                                 </td>
@@ -1067,7 +1067,7 @@ else if (mode.equals("add"))
                                                     </a>
                                                 </td>
                                                 <%
-                                                if (colspan==4){%>
+                                                if (colspan==4) {%>
                                                     <td class="simple_attr_help">
                                                         <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory"  title="Mandatory"/>
                                                     </td><%
@@ -1075,25 +1075,25 @@ else if (mode.equals("add"))
                                                 %>
                                                 <td class="simple_attr_value">
                                                     <%
-                                                    if (mode.equals("view")){ %>
+                                                    if (mode.equals("view")) { %>
                                                         <%=Util.processForDisplay(regStatus)%>
                                                         <%
-                                                        long timestamp = dataset.getDate()==null ? 0 : Long.parseLong(dataset.getDate());
-                                                        String dateString = timestamp==0 ? "" : eionet.util.Util.releasedDate(timestamp);
-                                                        String dateTimeString = timestamp==0 ? "" : dateString + " " + eionet.util.Util.hoursMinutesSeconds(timestamp);
+                                                        long timestamp = dataset.getDate() == null ? 0 : Long.parseLong(dataset.getDate());
+                                                        String dateString = timestamp == 0 ? "" : eionet.util.Util.releasedDate(timestamp);
+                                                        String dateTimeString = timestamp == 0 ? "" : dateString + " " + eionet.util.Util.hoursMinutesSeconds(timestamp);
 
-                                                        if (workingUser!=null){
-                                                            if (dataset.isWorkingCopy() && user!=null && workingUser.equals(user.getUserName())){
+                                                        if (workingUser!=null) {
+                                                            if (dataset.isWorkingCopy() && user!=null && workingUser.equals(user.getUserName())) {
                                                                 %>
                                                                 <span class="caution" title="Checked out on <%=dateTimeString%>">(Working copy)</span><%
                                                             }
-                                                            else if (user!=null){
+                                                            else if (user!=null) {
                                                                 %>
                                                                 <span class="caution">(checked out by <em><%=workingUser%></em>)</span><%
                                                             }
                                                         }
-                                                        else if (dateString.length()>0 && (regStatus.equalsIgnoreCase("RELEASED") || user!=null)){
-                                                            if (user==null){
+                                                        else if (dateString.length()>0 && (regStatus.equalsIgnoreCase("RELEASED") || user!=null)) {
+                                                            if (user == null) {
                                                                 %><span><%=dateString%></span><%
                                                             }
                                                             else{
@@ -1104,7 +1104,7 @@ else if (mode.equals("add"))
                                                     else{ %>
                                                         <select name="reg_status" onchange="form_changed('form1')"> <%
                                                             Vector regStatuses = verMan.getRegStatuses();
-                                                            for (int i=0; i<regStatuses.size(); i++){
+                                                            for (int i=0; i<regStatuses.size(); i++) {
                                                                 String stat = (String)regStatuses.get(i);
                                                                 String selected = stat.equals(regStatus) ? "selected='selected'" : ""; %>
                                                                 <option <%=selected%> value="<%=Util.processForDisplay(stat)%>"><%=Util.processForDisplay(stat)%></option><%
@@ -1119,7 +1119,7 @@ else if (mode.equals("add"))
 
                                             <!-- Reference URL -->
                                             <%
-                                            if (mode.equals("view")){
+                                            if (mode.equals("view")) {
                                                 String refUrl = dataset.getReferenceURL();
                                                 %>
                                               <tr class="zebra<%=isOdd%>">
@@ -1144,7 +1144,7 @@ else if (mode.equals("add"))
                                             <!-- dynamic attributes -->
 
                                             <%
-                                            for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
+                                            for (int i=0; mAttributes!=null && i<mAttributes.size(); i++) {
 
                                                 attribute = (DElemAttribute)mAttributes.get(i);
                                                 String dispType = attribute.getDisplayType();
@@ -1167,7 +1167,7 @@ else if (mode.equals("add"))
                                                 attrID = attribute.getID();
                                                 attrValue = getValue(attrID, mode, attributes);
 
-                                                if (mode.equals("view") && (attrValue==null || attrValue.length()==0))
+                                                if (mode.equals("view") && (attrValue == null || attrValue.length() == 0))
                                                     continue;
 
                                                 //displayed++; - done below
@@ -1179,7 +1179,7 @@ else if (mode.equals("add"))
 
                                                 boolean dispMultiple = attribute.getDisplayMultiple().equals("1") ? true:false;
                                                 Vector multiValues=null;
-                                                if (dispMultiple){
+                                                if (dispMultiple) {
                                                     multiValues = getValues(attrID, mode, attributes);
                                                 }
 
@@ -1195,7 +1195,7 @@ else if (mode.equals("add"))
                                                         </a>
                                                     </td>
                                                     <%
-                                                    if (colspan==4){%>
+                                                    if (colspan==4) {%>
                                                         <td class="simple_attr_help">
                                                             <img src="<%=request.getContextPath()%>/images/<%=Util.processForDisplay(obligImg)%>" alt="<%=Util.processForDisplay(obligTxt)%>" title="<%=Util.processForDisplay(obligTxt)%>"/>
                                                         </td><%
@@ -1208,9 +1208,9 @@ else if (mode.equals("add"))
                                                         <%
 
                                                         // if mode is 'view', display simple a text, otherwise an input
-                                                        if (mode.equals("view")){
-                                                            if (dispMultiple){
-                                                                for (int k=0; multiValues!=null && k<multiValues.size(); k++){
+                                                        if (mode.equals("view")) {
+                                                            if (dispMultiple) {
+                                                                for (int k=0; multiValues!=null && k<multiValues.size(); k++) {
                                                                     attrValue = (String)multiValues.get(k);
                                                                     %><%if (k>0)%>, <%;%><%=Util.processForDisplay(attrValue)%><%
                                                                 }
@@ -1221,7 +1221,7 @@ else if (mode.equals("add"))
                                                         }
                                                         else{ // start display input
 
-                                                            if (dispMultiple){ // mutliple display
+                                                            if (dispMultiple) { // mutliple display
 
                                                                 Vector allPossibleValues = null;
                                                                 if (dispType.equals("select"))
@@ -1244,7 +1244,7 @@ else if (mode.equals("add"))
                                                                 <div id="<%=divID%>" class="multiselect" style="height:<%=divHeight%>;width:25em;">
                                                                     <%
                                                                     HashSet displayedSet = new HashSet();
-                                                                    for (int k=0; displayValues!=null && k<displayValues.size(); k++){
+                                                                    for (int k=0; displayValues!=null && k<displayValues.size(); k++) {
 
                                                                         Object valueObject = displayValues.get(k);
                                                                         attrValue = (valueObject instanceof FixedValue) ? ((FixedValue)valueObject).getValue() : valueObject.toString();
@@ -1267,8 +1267,8 @@ else if (mode.equals("add"))
                                                             }
                                                             else{ // no multiple display
 
-                                                                if (dispType.equals("text")){
-                                                                    if (attrValue!=null){
+                                                                if (dispType.equals("text")) {
+                                                                    if (attrValue!=null) {
                                                                         %>
                                                                         <input <%=disabled%> class="smalltext" type="text" size="<%=width%>" name="attr_<%=attrID%>" value="<%=Util.processForDisplay(attrValue)%>" onchange="form_changed('form1')"/>
                                                                         <%
@@ -1279,8 +1279,8 @@ else if (mode.equals("add"))
                                                                         <%
                                                                     }
                                                                 }
-                                                                else if (dispType.equals("textarea")){
-                                                                    if (attrValue!=null){
+                                                                else if (dispType.equals("textarea")) {
+                                                                    if (attrValue!=null) {
                                                                         %>
                                                                         <textarea <%=disabled%> class="small" rows="<%=height%>" cols="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"><%=Util.processForDisplay(attrValue, true, true)%></textarea>
                                                                         <%
@@ -1291,21 +1291,21 @@ else if (mode.equals("add"))
                                                                         <%
                                                                     }
                                                                 }
-                                                                else if (dispType.equals("select")){ %>
+                                                                else if (dispType.equals("select")) { %>
                                                                     <select <%=disabled%> class="small" name="attr_<%=attrID%>" onchange="form_changed('form1')">
                                                                         <%
                                                                         Vector fxValues = searchEngine.getFixedValues(attrID, "attr");
-                                                                        if (fxValues==null || fxValues.size()==0){ %>
+                                                                        if (fxValues == null || fxValues.size() == 0) { %>
                                                                             <option selected="selected" value=""></option> <%
                                                                         }
                                                                         else{
                                                                             boolean selectedByValue = false;
-                                                                            for (int g=0; g<fxValues.size(); g++){
+                                                                            for (int g=0; g<fxValues.size(); g++) {
                                                                                 FixedValue fxValue = (FixedValue)fxValues.get(g);
 
                                                                                 String isSelected = (fxValue.getDefault() && !selectedByValue) ? "selected='selected'" : "";
 
-                                                                                if (attrValue!=null && attrValue.equals(fxValue.getValue())){
+                                                                                if (attrValue!=null && attrValue.equals(fxValue.getValue())) {
                                                                                     isSelected = "selected='selected'";
                                                                                     selectedByValue = true;
                                                                                 }
@@ -1347,7 +1347,7 @@ else if (mode.equals("add"))
                                             <!-- public outputs -->
 
                                             <%
-                                            if (!mode.equals("add") && editPrm){
+                                            if (!mode.equals("add") && editPrm) {
                                                 String checkedPDF = dataset.displayCreateLink("PDF") ? "checked='checked'" : "";
                                                 String checkedXLS = dataset.displayCreateLink("XLS") ? "checked='checked'" : "";
                                                 String checkedODS = dataset.displayCreateLink("ODS") ? "checked='checked'" : "";
@@ -1364,7 +1364,7 @@ else if (mode.equals("add"))
                                                         </a>
                                                     </td>
                                                     <%
-                                                    if (colspan==4){%>
+                                                    if (colspan==4) {%>
                                                         <td class="simple_attr_help">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt="optional"/>
                                                         </td><%
@@ -1372,7 +1372,7 @@ else if (mode.equals("add"))
                                                     %>
                                                     <td class="simple_attr_value">
                                                         <%
-                                                        if(mode.equals("view")){ %>
+                                                        if(mode.equals("view")) { %>
                                                             <input type="checkbox" disabled="disabled" <%=checkedPDF%>/>
                                                                 <small>Technical specification in PDF format</small>
                                                             <br/>
@@ -1410,7 +1410,7 @@ else if (mode.equals("add"))
                                             <!-- dataset number -->
                                             <%
                                             // display only in non-add mode and for users with edit prm
-                                            if (!mode.equals("add") && editPrm){
+                                            if (!mode.equals("add") && editPrm) {
                                                 %>
                                                 <tr class="zebra<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
@@ -1422,7 +1422,7 @@ else if (mode.equals("add"))
                                                         </a>
                                                     </td>
                                                     <%
-                                                    if (colspan==4){%>
+                                                    if (colspan==4) {%>
                                                         <td class="simple_attr_help">
                                                             <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
                                                         </td><%
@@ -1442,13 +1442,13 @@ else if (mode.equals("add"))
                                                  <!-- add, save, check-in, undo check-out buttons -->
                                                    <%
                                                    // add case
-                                                   if (mode.equals("add")){ %>
+                                                   if (mode.equals("add")) { %>
                                                        <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
                                                        <%
                                                    }
                                                    // edit case
-                                                   else if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy()){
-                                                       if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())){
+                                                   else if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy()) {
+                                                       if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())) {
                                                            %>
                                                            <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
                                                            <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
@@ -1471,15 +1471,15 @@ else if (mode.equals("add"))
                                         <!-- data model -->
 
                                         <%
-                                        if ((mode.equals("edit") && user!=null) || (mode.equals("view") && dataset.getVisual()!=null)){
+                                        if ((mode.equals("edit") && user!=null) || (mode.equals("view") && dataset.getVisual()!=null)) {
                                             // thumbnail
-                                            if (mode.equals("view") && dataset.getVisual()!=null){
+                                            if (mode.equals("view") && dataset.getVisual()!=null) {
                                             %>
                                             <h2 id="model">
                                                 Data model
                                             </h2>
                                             <%
-                                                if (imgVisual){ %>
+                                                if (imgVisual) { %>
 <div class="figure-plus-container">
   <div class="figure-plus">
     <div class="figure-image">
@@ -1507,9 +1507,9 @@ else if (mode.equals("add"))
                                         <!-- tables list -->
 
                                         <%
-                                        if ((mode.equals("view") && tables!=null && tables.size()>0) || mode.equals("edit")){
+                                        if ((mode.equals("view") && tables!=null && tables.size()>0) || mode.equals("edit")) {
                                             // tables table
-                                            if (mode.equals("view")){
+                                            if (mode.equals("view")) {
                                                 %>
                                             <h2 id="tables">
                                                 Dataset tables
@@ -1526,11 +1526,11 @@ else if (mode.equals("add"))
                                                     <tbody>
                                                     <%
                                                     boolean hasMarkedTables = false;
-                                                    for (int i=0; i<tables.size(); i++){
+                                                    for (int i=0; i<tables.size(); i++) {
 
                                                         DsTable table = (DsTable)tables.get(i);
                                                         String tableLink = "";
-                                                        if (isLatestRequested){
+                                                        if (isLatestRequested) {
                                                             tableLink = request.getContextPath() + "/datasets/latest/" + dataset.getIdentifier() + "/tables/" + table.getIdentifier();
                                                         }
                                                         else{
@@ -1539,7 +1539,7 @@ else if (mode.equals("add"))
 
                                                         String tblFullName = "";
                                                         attributes = searchEngine.getAttributes(table.getID(), "T", DElemAttribute.TYPE_SIMPLE);
-                                                        for (int c=0; c<attributes.size(); c++){
+                                                        for (int c=0; c<attributes.size(); c++) {
                                                             DElemAttribute attr = (DElemAttribute)attributes.get(c);
                                                                if (attr.getName().equalsIgnoreCase("Name"))
                                                                    tblFullName = attr.getValue();
@@ -1570,7 +1570,7 @@ else if (mode.equals("add"))
                                         <!-- rod links -->
 
                                         <%
-                                        if (mode.equals("edit") || (mode.equals("view") && rodLinks!=null && rodLinks.size()>0)){
+                                        if (mode.equals("edit") || (mode.equals("view") && rodLinks!=null && rodLinks.size()>0)) {
 
                                             %>
 
@@ -1578,7 +1578,7 @@ else if (mode.equals("add"))
 
                                                 <!-- table part -->
                                                 <%
-                                                if (mode.equals("view") && rodLinks!=null && rodLinks.size()>0){%>
+                                                if (mode.equals("view") && rodLinks!=null && rodLinks.size()>0) {%>
                                                 <h2 id="rodlinks">
                                                         Obligations in ROD
                                                 </h2>
@@ -1593,7 +1593,7 @@ else if (mode.equals("add"))
                                                                 </tr>
                                                                 <%
                                                                 // rows
-                                                                for (int i=0; i<rodLinks.size(); i++){
+                                                                for (int i=0; i<rodLinks.size(); i++) {
 
                                                                     Hashtable rodLink = (Hashtable)rodLinks.get(i);
                                                                     String raTitle = (String)rodLink.get("ra-title");
@@ -1624,11 +1624,11 @@ else if (mode.equals("add"))
                                         <!-- complex attributes -->
 
                                         <%
-                                        if ((mode.equals("edit") && user!=null) || (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0)){
+                                        if ((mode.equals("edit") && user!=null) || (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0)) {
 
-                                            colspan = user==null ? 1 : 2;
+                                            colspan = user == null ? 1 : 2;
                                                 // the table
-                                                if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
+                                                if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0) {
                                                     %>
                                                 <h2 id="cattrs">
                                                     Complex attributes
@@ -1640,7 +1640,7 @@ else if (mode.equals("add"))
                                                                 <%
                                                                 displayed = 1;
                                                                 isOdd = Util.isOdd(displayed);
-                                                                for (int i=0; i<complexAttrs.size(); i++){
+                                                                for (int i=0; i<complexAttrs.size(); i++) {
 
                                                                     DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
                                                                     attrID = attr.getID();
@@ -1663,17 +1663,17 @@ else if (mode.equals("add"))
                                                                             <%
                                                                             StringBuffer rowValue=null;
                                                                             Vector rows = attr.getRows();
-                                                                            for (int j=0; rows!=null && j<rows.size(); j++){
+                                                                            for (int j=0; rows!=null && j<rows.size(); j++) {
 
-                                                                                if (j>0){%>---<br/><%}
+                                                                                if (j>0) {%>---<br/><%}
 
                                                                                 Hashtable rowHash = (Hashtable)rows.get(j);
                                                                                 rowValue = new StringBuffer();
 
-                                                                                for (int t=0; t<attrFields.size(); t++){
+                                                                                for (int t=0; t<attrFields.size(); t++) {
                                                                                     Hashtable hash = (Hashtable)attrFields.get(t);
                                                                                     String fieldID = (String)hash.get("id");
-                                                                                    String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
+                                                                                    String fieldValue = fieldID == null ? null : (String)rowHash.get(fieldID);
                                                                                     if (fieldValue == null) fieldValue = "";
                                                                                     if (fieldValue.trim().equals("")) continue;
 
@@ -1701,7 +1701,7 @@ else if (mode.equals("add"))
 
                                             <%
                                             // other versions
-                                            if (mode.equals("view") && otherVersions!=null && otherVersions.size()>0){%>
+                                            if (mode.equals("view") && otherVersions!=null && otherVersions.size()>0) {%>
                                                 <h2 id="versions">
                                                     Other versions
                                                 </h2>
@@ -1721,15 +1721,15 @@ else if (mode.equals("add"))
                                                     <tbody>
                                                     <%
                                                     Dataset otherVer;
-                                                    for (int i=0; i<otherVersions.size(); i++){
+                                                    for (int i=0; i<otherVersions.size(); i++) {
                                                         otherVer = (Dataset)otherVersions.get(i);
                                                         String status = otherVer.getStatus();
                                                         String releaseDate = null;
                                                         String releaseDateHint = null;
-                                                        if (status.equals("Released")){
+                                                        if (status.equals("Released")) {
                                                             releaseDate = otherVer.getDate();
                                                         }
-                                                        if (releaseDate!=null){
+                                                        if (releaseDate!=null) {
                                                             long timestamp = Long.parseLong(releaseDate);
                                                             releaseDate = eionet.util.Util.releasedDate(timestamp);
                                                             releaseDateHint = releaseDate + " " + eionet.util.Util.hoursMinutesSeconds(timestamp);
@@ -1745,7 +1745,7 @@ else if (mode.equals("add"))
                                                             <td title="<%=releaseDateHint%>"><%=releaseDate%></td>
                                                             <td>
                                                                 <%
-                                                                if (searchEngine.skipByRegStatus(otherVer.getStatus())){ %>
+                                                                if (searchEngine.skipByRegStatus(otherVer.getStatus())) { %>
                                                                     &nbsp;<%
                                                                 }
                                                                 else{ %>
@@ -1775,25 +1775,25 @@ else if (mode.equals("add"))
                     <input type="hidden" name="complete" value="false"/>
                     <input type="hidden" name="saveclose" value="false"/>
                     <%
-                    String checkedoutCopyID = dataset==null ? null : dataset.getCheckedoutCopyID();
-                    if (checkedoutCopyID!=null){%>
+                    String checkedoutCopyID = dataset == null ? null : dataset.getCheckedoutCopyID();
+                    if (checkedoutCopyID!=null) {%>
                         <input type="hidden" name="checkedout_copy_id" value="<%=checkedoutCopyID%>"/><%
                     }
-                    if (dataset!=null){
+                    if (dataset!=null) {
 
-                        if (dataset.isWorkingCopy()){
+                        if (dataset.isWorkingCopy()) {
                             %>
                             <input type="hidden" name="is_working_copy" value="true"/><%
                         }
                         String checkInNo = dataset.getVersion();
-                        if (checkInNo.equals("1")){
+                        if (checkInNo.equals("1")) {
                             %>
                             <input type="hidden" name="upd_version" value="true"/><%
                         }
                     }
                     // submitter url, might be used by POST handler who might want to send back to POST submitter
                     String submitterUrl = Util.getServletPathWithQueryString(request);
-                    if (submitterUrl!=null){
+                    if (submitterUrl!=null) {
                         submitterUrl = Util.processForDisplay(submitterUrl);
                         %>
                         <input type="hidden" name="submitter_url" value="<%=submitterUrl%>"/><%
@@ -1830,7 +1830,7 @@ else if (mode.equals("add"))
 <%
 // end the whole page try block
 }
-catch (Exception e){
+catch (Exception e) {
     if (response.isCommitted())
         e.printStackTrace(System.out);
     else{

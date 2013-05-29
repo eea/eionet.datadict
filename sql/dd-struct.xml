@@ -1373,4 +1373,10 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             alter table M_ATTRIBUTE drop column RDF_PROPERTY;
         </sql>
     </changeSet>
+
+    <changeSet author="roug" id="rev-110">
+        <comment>Expand the short name for dataset to match identifier in length</comment>
+        <modifyDataType tableName="DATASET" columnName="SHORT_NAME" newDataType="VARCHAR(50)"/>
+    </changeSet>
+
 </databaseChangeLog>
