@@ -111,7 +111,7 @@ private String legalizeAlert(String in){
     // the whole page's try block
     try {
         conn = ConnectionUtil.getConnection();
-        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+        DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
         Vector mComplexAttrs = searchEngine.getDElemAttributes(DElemAttribute.TYPE_COMPLEX);
         if (mComplexAttrs == null)
             mComplexAttrs = new Vector();

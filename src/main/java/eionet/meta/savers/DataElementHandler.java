@@ -175,7 +175,7 @@ public class DataElementHandler extends BaseHandler {
 
         // loop over all possible attributes, set certain business rules
         try {
-            searchEngine = new DDSearchEngine(conn, "", ctx);
+            searchEngine = new DDSearchEngine(conn, "");
             Vector v = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE);
             for (int i = 0; v != null && i < v.size(); i++) {
 
@@ -606,7 +606,7 @@ public class DataElementHandler extends BaseHandler {
 
         // setup search engine object
         if (searchEngine == null) {
-            searchEngine = new DDSearchEngine(conn, "", ctx);
+            searchEngine = new DDSearchEngine(conn, "");
         }
 
         // find ids of attributes whose values must be deleted according to the new datatype's rules
@@ -1423,7 +1423,7 @@ public class DataElementHandler extends BaseHandler {
             // we can do this in insertAttribute() only, because the problem
             // comes from Import tool only.
             if (searchEngine == null) {
-                searchEngine = new DDSearchEngine(conn, "", ctx);
+                searchEngine = new DDSearchEngine(conn, "");
             }
             Vector v = searchEngine.getFixedValues(attrId, "attr");
             boolean hasMatch = false;

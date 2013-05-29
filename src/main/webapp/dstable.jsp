@@ -274,7 +274,7 @@
     // the whole page's try block
     try {
         conn = ConnectionUtil.getConnection();
-        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+        DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
         searchEngine.setUser(user);
 
         // if not in add mode, get the table object

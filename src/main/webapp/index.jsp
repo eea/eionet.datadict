@@ -22,7 +22,7 @@ try{
     conn = ConnectionUtil.getConnection();
 
     DDUser user = SecurityUtil.getUser(request);
-    DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+    DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
     searchEngine.setUser(user);
 
     HashSet filterStatuses = new HashSet();

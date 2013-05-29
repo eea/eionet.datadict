@@ -52,7 +52,7 @@ public class XlsServlet extends HttpServlet {
             // get the DB connection
             conn = ConnectionUtil.getConnection();
 
-            DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+            DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
             os = res.getOutputStream();
 
             XlsIF xls = null;

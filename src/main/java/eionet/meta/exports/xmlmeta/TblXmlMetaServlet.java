@@ -56,7 +56,7 @@ public class TblXmlMetaServlet extends HttpServlet {
             // get the DB connection
             conn = ConnectionUtil.getConnection();
 
-            DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+            DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
             res.setContentType("text/xml; charset=UTF-8");
             OutputStreamWriter osw = new OutputStreamWriter(res
                     .getOutputStream(), "UTF-8");

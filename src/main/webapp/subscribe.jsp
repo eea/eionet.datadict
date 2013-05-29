@@ -30,7 +30,7 @@ try{
 
     if (user!=null){
 
-        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+        DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
         searchEngine.setUser(user);
         // get datasets,
         // take out the ones that should be skipped by registration status

@@ -42,7 +42,7 @@ public class XFormServlet extends HttpServlet {
 
             conn = ConnectionUtil.getConnection();
 
-            DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+            DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
             res.setContentType("text/xml; charset=UTF-8");
             OutputStreamWriter osw = new OutputStreamWriter(res.getOutputStream(), "UTF-8");
             writer = new PrintWriter(osw);

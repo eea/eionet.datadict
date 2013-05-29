@@ -186,7 +186,7 @@
 
            session.removeAttribute(oSearchCacheAttrName);
 
-           searchEngine = new DDSearchEngine(conn, "", ctx);
+           searchEngine = new DDSearchEngine(conn, "");
            searchEngine.setUser(user);
 
         String srchType = request.getParameter("search_precision");

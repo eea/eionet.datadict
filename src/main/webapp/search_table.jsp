@@ -14,24 +14,24 @@ private String sel_attr = null;
 private Hashtable inputAttributes=null;
 
 private String getAttributeIdByName(String name){
-    
+
     for (int i=0; i<attrs.size(); i++){
         DElemAttribute attr = (DElemAttribute)attrs.get(i);
         if (attr.getName().equalsIgnoreCase(name))
             return attr.getID();
     }
-        
+
     return null;
 }
 
 private String getAttributeNameById(String id){
-    
+
     for (int i=0; i<attrs.size(); i++){
         DElemAttribute attr = (DElemAttribute)attrs.get(i);
         if (attr.getID().equals(id))
             return attr.getShortName();
     }
-        
+
     return null;
 }
 
@@ -51,22 +51,22 @@ private String setDefaultAttrs(String name){
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
+
     DDUser user = SecurityUtil.getUser(request);
-    
+
     ctx = getServletContext();
-    
+
     Connection conn = null;
-    
+
     try { // start the whole page try block
-    
+
     conn = ConnectionUtil.getConnection();
 
-    DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+    DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
 
     attrs = searchEngine.getDElemAttributes();
     if (attrs == null) attrs = new Vector();
-    
+
     attr_ids = new Vector();
     def_attrs = new Vector();
 
@@ -89,7 +89,7 @@ private String setDefaultAttrs(String name){
     String search_precision = request.getParameter("search_precision");
     String contextParam = request.getParameter("ctx");
 
-    
+
     String submitForm=null;
     if (contextParam != null && contextParam.equals(POPUP))
         submitForm = "pick_table.jsp";
@@ -107,10 +107,10 @@ private String setDefaultAttrs(String name){
     ///get inserted attributes
     String input_attr;
     inputAttributes = new Hashtable();
-    for (int i=0; i<attrs.size(); i++){    
-        DElemAttribute attribute = (DElemAttribute)attrs.get(i);        
+    for (int i=0; i<attrs.size(); i++){
+        DElemAttribute attribute = (DElemAttribute)attrs.get(i);
         String attr_id = attribute.getID();
-        
+
         input_attr = request.getParameter("attr_" + attr_id);
         if (input_attr!=null){
             inputAttributes.put(attr_id, input_attr);
@@ -132,7 +132,7 @@ private String setDefaultAttrs(String name){
         attrWindow=null;
 
         function submitForm(action){
-            
+
             document.forms["form1"].action=action;
             document.forms["form1"].submit();
         }
@@ -143,7 +143,7 @@ private String setDefaultAttrs(String name){
             submitForm('search_table.jsp');
 
         }
-        
+
         function onLoad(){
             <%
                 if (search_precision != null){
@@ -155,8 +155,8 @@ private String setDefaultAttrs(String name){
                             o[i].checked = true;
                             break;
                         }
-                    }            
-                <% 
+                    }
+                <%
                 }
             %>
         }
@@ -171,7 +171,7 @@ if (!isPopup){
     <body onload="onLoad()">
     <div id="container">
     <jsp:include page="nlocation.jsp" flush="true">
-        <jsp:param name="name" value="Search tables"/>                
+        <jsp:param name="name" value="Search tables"/>
         <jsp:param name="helpscreen" value="search_table"/>
     </jsp:include>
     <%@ include file="nmenu.jsp" %><%
@@ -183,14 +183,14 @@ else {
         <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
         <div id="networktitle">Eionet</div>
         <div id="sitetitle">Data Dictionary (DD)</div>
-        <div id="sitetagline">This service is part of Reportnet</div>    
+        <div id="sitetagline">This service is part of Reportnet</div>
     </div>
     <%
 }
 %>
 
 <div id="workarea">
-    
+
     <%
       if (isPopup){
           %>
@@ -202,7 +202,7 @@ else {
     </div><%
       }
       %>
-      
+
     <h1>Search tables</h1>
         <form id="form1" action="search_results_tbl.jsp" method="get">
 
@@ -220,7 +220,7 @@ else {
                             <input type="text" class="smalltext" size="59" name="short_name" value="<%=Util.processForDisplay(short_name)%>"/>
                         </td>
                     </tr>
-                    
+
                     <tr style="vertical-align:top">
                         <td align="right" style="padding-right:10">
                             <b>Identifier</b>
@@ -253,14 +253,14 @@ else {
                             <input type="text" class="smalltext" size="40" name="definition" value="<%=definition%>"/>
                         </td>
                     </tr-->
-                    
+
                     <%
                     //get default attributes, which are always on the page (defined above)
                     if (def_attrs!=null){
                         for (int i=0; i < def_attrs.size(); i++){
                             attrID = (String)def_attrs.get(i);
                             attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
-                            
+
                             attrName = getAttributeNameById(attrID);
 
                             if (inputAttributes.containsKey(attrID)) inputAttributes.remove(attrID);
@@ -290,7 +290,7 @@ else {
                     if (attr_ids!=null){
                         for (int i=0; i < attr_ids.size(); i++){
                             attrID = (String)attr_ids.get(i);
-                             
+
                             if (!inputAttributes.containsKey(attrID)) continue;
                             if (sel_type.equals("remove") && attrID.equals(sel_attr)) continue;
 
@@ -348,7 +348,7 @@ else {
                         }
                     }
                     %>
-                    
+
                     <tr valign="bottom">
                         <td style="width:150px" colspan="2">&nbsp;</td>
                         <td colspan="2">
@@ -356,9 +356,9 @@ else {
                             <input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>&nbsp;&nbsp;
                         </td>
                     </tr>
-                    
+
                     <tr style="height:10px;"><td colspan="4"></td></tr>
-                    
+
                     <tr style="vertical-align:top">
                         <td colspan="2"></td>
                         <td>
@@ -369,11 +369,11 @@ else {
                     <%
                     Vector addCriteria = new Vector();
                     for (int i=0; attrs!=null && i<attrs.size(); i++){
-                        
+
                         DElemAttribute attribute = (DElemAttribute)attrs.get(i);
                         if (!attribute.displayFor("TBL"))
                             continue;
-                    
+
                         if (!displayedCriteria.contains(attribute.getID())){
                             Hashtable hash = new Hashtable();
                             hash.put("id", attribute.getID());
@@ -381,7 +381,7 @@ else {
                             addCriteria.add(hash);
                         }
                     }
-                    
+
                     if (addCriteria.size()>0){
                         %>
                         <tr>
@@ -404,7 +404,7 @@ else {
                 </table>
 
                     <div style="display:none">
-                        <input type="hidden" name="sel_attr" value=""/>            
+                        <input type="hidden" name="sel_attr" value=""/>
                         <input type="hidden" name="sel_type" value=""/>
                         <input type="hidden" name="type" value="TBL"/>
                         <!-- collect all the attributes already used in criterias -->

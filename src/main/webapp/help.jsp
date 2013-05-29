@@ -20,28 +20,28 @@ if (attrid==null && attrshn==null){
         <b>Missing screen or area!</b> <%
         return;
     }
-    
+
     String _helpText = Helps.get(screen, area);
     if (_helpText!=null)
-        helpText = _helpText;        
+        helpText = _helpText;
 }
 else{
-    
+
     String attrtype = request.getParameter("attrtype");
     if (attrtype==null){ %>
         <b>Missing attribute type!</b><%
         return;
     }
-    
+
     Connection conn = null;
     try {
         conn = ConnectionUtil.getConnection();
-        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", getServletContext());
+        DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
         if (attrid==null || attrid.length()==0)
             helpText = searchEngine.getAttrHelpByShortName(attrshn, attrtype);
         else
             helpText = searchEngine.getAttrHelp(attrid, attrtype);
-        
+
         helpText = helpText==null ? "" : helpText;
     }
     catch (Exception e){ %>
@@ -65,7 +65,7 @@ else{
         <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
         <div id="networktitle">Eionet</div>
         <div id="sitetitle">Data Dictionary (DD)</div>
-        <div id="sitetagline">This service is part of Reportnet</div>    
+        <div id="sitetagline">This service is part of Reportnet</div>
     </div> <!-- pagehead -->
     <div id="operations" style="margin-top:10px">
         <ul>

@@ -11,14 +11,14 @@
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
-    ServletContext ctx = getServletContext();            
-    
+
+    ServletContext ctx = getServletContext();
+
     Connection conn = null;
     DDUser user = SecurityUtil.getUser(request);
 
     try { // start the whole page try block
-    
+
     conn = ConnectionUtil.getConnection();
 
     String short_name = request.getParameter("short_name");
@@ -36,13 +36,13 @@
         oSortCol=null;
         oSortOrder=null;
     }
-    
+
     String searchType=request.getParameter("SearchType");
-    
-    String tableLink="";    
-    
+
+    String tableLink="";
+
     String sel = request.getParameter("selected");
-    
+
     String backUrl = "search_table.jsp?ctx=popup&amp;selected=" + sel;
     String id=null;
     selected= new Vector();
@@ -55,12 +55,12 @@
             i=sel.indexOf("|");
         }
     }
-    
+
     if (sel==null) sel="";
-    
-    DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+
+    DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
     searchEngine.setUser(user);
-    
+
     String srchType = request.getParameter("search_precision");
     String oper="=";
     if (srchType != null && srchType.equals("free"))
@@ -68,17 +68,17 @@
     if (srchType != null && srchType.equals("substr"))
         oper=" like ";
 
-    Vector params = new Vector();    
+    Vector params = new Vector();
     Enumeration parNames = request.getParameterNames();
     while (parNames.hasMoreElements()){
         String parName = (String)parNames.nextElement();
         if (!parName.startsWith(ATTR_PREFIX))
             continue;
-                    
+
         String parValue = request.getParameter(parName);
         if (parValue.length()==0)
             continue;
-                        
+
         DDSearchParameter param =
             new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, oper, "=");
         if (oper!= null && oper.trim().equalsIgnoreCase("like"))
@@ -87,7 +87,7 @@
             param.addValue("'" + parValue + "'");
         params.add(param);
     }
-                    
+
     Vector dsTables = searchEngine.getDatasetTables(params, short_name, idfier, full_name, definition, oper);
 
 %>
@@ -101,7 +101,7 @@
             function pickTable(id, i, name) {
                 if (opener && !opener.closed) {
                     if (window.opener.pickTable(id, name)==true)  //window opener should have function pickTABLE with 2 params - tbl id & tbl name
-                                                                // and if it returns true, then the popup window is closed, 
+                                                                // and if it returns true, then the popup window is closed,
                                                                 // otherwise multiple selection is allowed
                         closeme();
                     hideRow(i);
@@ -120,7 +120,7 @@
         // ]]>
         </script>
     </head>
-    <!--script language="javascript" for="window" event="onload">        
+    <!--script language="javascript" for="window" event="onload">
     </script-->
 
 <body class="popup">
@@ -129,7 +129,7 @@
         <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
         <div id="networktitle">Eionet</div>
         <div id="sitetitle">Data Dictionary (DD)</div>
-        <div id="sitetagline">This service is part of Reportnet</div>    
+        <div id="sitetagline">This service is part of Reportnet</div>
     </div> <!-- pagehead -->
     <div id="operations" style="margin-top:10px">
         <ul>
@@ -141,7 +141,7 @@
 <div id="workarea">
     <form id="form1" action="">
         <h5>Select dataset table:</h5>
-        
+
         <table id="tbl" class="datatable">
             <thead>
                 <tr>
@@ -161,7 +161,7 @@
 
                     int c=0;
                     DElemAttribute attr = null;
-                    
+
                     for (int i=0; i<dsTables.size(); i++){
                         DsTable table = (DsTable)dsTables.get(i);
                         String table_id = table.getID();
@@ -172,39 +172,39 @@
                             Dataset ds = (Dataset)searchEngine.getDataset(ds_id);
                             ds_name = ds.getShortName();
                         }
-                
+
                         if (table_name == null) table_name = "unknown";
                         if (table_name.length() == 0) table_name = "empty";
-                
+
                         if (ds_name == null || ds_name.length() == 0) ds_name = "unknown";
-                
+
                         //String fullName = table.getName();
                         String tblName = "";
-        
+
                         Vector attributes = searchEngine.getAttributes(table_id, "T", DElemAttribute.TYPE_SIMPLE);
-        
+
                         for (int j=0; j<attributes.size(); j++){
                             attr = (DElemAttribute)attributes.get(j);
                             if (attr.getName().equalsIgnoreCase("Name"))
                                 tblName = attr.getValue();
                         }
-                
+
                         String tblFullName = tblName;
                         tblName = tblName.length()>60 && tblName != null ? tblName.substring(0,60) + " ..." : tblName;
-                        
+
                         String trStyle = (i%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
-                        c++;                        
+                        c++;
                     %>
-                
+
                     <tr <%=trStyle%>>
                         <td align="left" style="padding-left:5;padding-right:10">
                             <a href="#" onclick="pickTable(<%=table_id%>, <%=c%>, '<%=table_name%>')">
                             <%=Util.processForDisplay(table_name)%></a>
-                        </td>                    
+                        </td>
                         <td align="left" style="padding-right:10"><%=Util.processForDisplay(ds_name)%></td>
                         <td align="left" style="padding-right:10"><%=Util.processForDisplay(tblName)%></td>
                     </tr>
-                
+
                 <%
             }
             %>

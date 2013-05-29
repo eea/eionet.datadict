@@ -10,7 +10,7 @@ response.setHeader("Expires", Util.getExpiresDateString());
 
 request.setCharacterEncoding("UTF-8");
 
-ServletContext ctx = getServletContext();            
+ServletContext ctx = getServletContext();
 
 DDUser user = SecurityUtil.getUser(request);
 
@@ -25,7 +25,7 @@ if (request.getMethod().equals("POST")){
         <%
         return;
     }
-}                        
+}
 
 String relID = request.getParameter("rel_id");
 if (relID == null || relID.length()==0) {%>
@@ -39,41 +39,41 @@ if (mode==null || mode.trim().length()==0){
 }
 
 if (request.getMethod().equals("POST")){
-    
+
     Connection userConn = null;
     String id = null;
-    
+
     try{
         userConn = user.getConnection();
         FKHandler handler = new FKHandler(userConn, request, ctx);
         handler.execute();
     }
     catch (Exception e){
-        
+
         String msg = e.getMessage();
-        
-        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();                            
+
+        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
         e.printStackTrace(new PrintStream(bytesOut));
         String trace = bytesOut.toString(response.getCharacterEncoding());
-        
+
         String backLink = history.getBackUrl();
-        
+
         request.setAttribute("DD_ERR_MSG", msg);
         request.setAttribute("DD_ERR_TRC", trace);
         request.setAttribute("DD_ERR_BACK_LINK", backLink);
-        
+
         request.getRequestDispatcher("error.jsp").forward(request, response);
     }
     finally{
         try { if (userConn!=null) userConn.close();
         } catch (SQLException e) {}
     }
-    
+
     if (mode.equals("delete"))
         response.sendRedirect(history.getBackUrl());
     else
         response.sendRedirect(currentUrl);
-    
+
     return;
 }
 
@@ -82,7 +82,7 @@ Connection conn = null;
 try { // start the whole page try block
 
 conn = ConnectionUtil.getConnection();
-DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
 
 Hashtable fkRel = searchEngine.getFKRelation(relID);
 
@@ -96,18 +96,18 @@ String disabled = user == null ? "disabled" : "";
     <title>Data Dictionary</title>
     <script type="text/javascript">
         // <![CDATA[
-    
+
         function submitForm(mode){
-            
+
             if (mode == "delete"){
                 var b = confirm("This relation will be deleted! Click OK, if you want to continue. Otherwise click Cancel.");
                 if (b==false) return;
             }
-            
+
             document.forms["form1"].elements["mode"].value = mode;
             document.forms["form1"].submit();
         }
-        
+
         // ]]>
     </script>
 </head>
@@ -120,7 +120,7 @@ String disabled = user == null ? "disabled" : "";
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
     <form id="form1" method="post" action="fk_relation.jsp">
-  <h1>Foreign key relation</h1> 
+  <h1>Foreign key relation</h1>
     <p>
         This is the foreign key relation between elements
         <em><%=Util.processForDisplay((String)fkRel.get("a_name"))%></em> and
@@ -128,22 +128,22 @@ String disabled = user == null ? "disabled" : "";
         The relation is direction-less, so it doesn't matter which
         exactly is A or B.
     </p>
-                
-            
+
+
             <table cellspacing="0" cellpadding="0" class="datatable">
-            
+
             <tr style="height:10"><td colspan="2">&nbsp;</td></tr>
-            
+
             <tr>
                 <th scope="row">Element A</th>
                 <td><em><%=Util.processForDisplay((String)fkRel.get("a_name"))%></em></td>
             </tr>
-            
+
             <tr>
                 <th scope="row">Element B</th>
                 <td><em><%=Util.processForDisplay((String)fkRel.get("b_name"))%></em></td>
             </tr>
-            
+
             <tr>
                 <th scope="row">Cardinality (A to B)</th>
                 <td>
@@ -179,8 +179,8 @@ String disabled = user == null ? "disabled" : "";
                     </a>
                 </td>
             </tr>
-            
-            <tr>    
+
+            <tr>
                 <th scope="row">Description</th>
                 <td>
                     <textarea <%=disabled%>
@@ -189,9 +189,9 @@ String disabled = user == null ? "disabled" : "";
                               name="definition"><%=Util.processForDisplay((String)fkRel.get("definition"), true, true)%></textarea>
                 </td>
             </tr>
-            
+
             <tr style="height:20"><td colspan="2"></td></tr>
-            
+
             <tr>
                 <td></td>
                 <td>
@@ -203,7 +203,7 @@ String disabled = user == null ? "disabled" : "";
     <div style="display:none">
         <input type="hidden" name="rel_id" value="<%=relID%>"/>
         <input type="hidden" name="mode" value="<%=mode%>"/>
-    </div>    
+    </div>
     </form>
 </div> <!-- workarea -->
 </div> <!-- container -->

@@ -72,7 +72,7 @@ try{
     String dstName = request.getParameter("dst_name");
     if (dstName == null || dstName.length()==0) dstName = "?";
 
-    DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+    DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
     Vector rodLinks = searchEngine.getRodLinks(dstID);
     if (rodLinks!=null)
         Collections.sort(rodLinks, new RodLinkComparator());

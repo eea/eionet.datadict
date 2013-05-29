@@ -142,7 +142,7 @@
                // get the DB connection and set up search engine
             ServletContext ctx = getServletContext();
             conn = ConnectionUtil.getConnection();
-            searchEngine = new DDSearchEngine(conn, "", ctx);
+            searchEngine = new DDSearchEngine(conn, "");
             searchEngine.setUser(user);
 
             // get statical search parameters

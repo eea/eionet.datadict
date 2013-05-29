@@ -5,7 +5,7 @@
 
 <%
     request.setCharacterEncoding("UTF-8");
-    
+
     DDUser user = SecurityUtil.getUser(request);
 %>
 
@@ -17,7 +17,7 @@
     // <![CDATA[
 
     function submitForm(mode){
-        
+
         if (mode == 'remove'){
             var trailer = "?mode=remove&ds_id=" + document.forms["Upload"].elements["ds_id"].value;
             var oVisual = document.forms["Upload"].elements["visual"];
@@ -44,7 +44,7 @@
                 }
             }
         }
-        
+
         var url = document.forms["Upload"].elements["url_input"].value;
         var file = document.forms["Upload"].elements["file_input"].value;
         var ok = true;
@@ -76,7 +76,7 @@
             document.forms["Upload"].submit();
         }
     }
-    
+
     function openStructure(url){
         window.open(url,null,"height=600,width=800,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=yes,location=yes");
     }
@@ -89,7 +89,7 @@ response.setHeader("Pragma", "No-cache");
 response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
 response.setHeader("Expires", Util.getExpiresDateString());
 
-ServletContext ctx = getServletContext();            
+ServletContext ctx = getServletContext();
 
 if (request.getMethod().equals("POST")){
     if (user == null){
@@ -102,7 +102,7 @@ if (request.getMethod().equals("POST")){
         <%
         return;
     }
-}                        
+}
 
 String ds_id = request.getParameter("ds_id");
 if (ds_id == null || ds_id.length()==0){ %>
@@ -119,7 +119,7 @@ Connection conn = null;
 try { // start the whole page try block
 
 conn = ConnectionUtil.getConnection();
-DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
 
 Dataset dataset = searchEngine.getDataset(ds_id);
 
@@ -133,7 +133,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
             imgVisual = true;
     }
 }
-            
+
 %>
 
 <body>
@@ -163,7 +163,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
     <br style="clear:left" />
 
                 <table width="500">
-                    
+
                     <%
                     if (dsVisual==null){
                         %>
@@ -177,7 +177,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
                         </tr>
                         <%
                     }
-                    
+
                     if (dsVisual!=null){
                         %>
                         <tr>
@@ -192,13 +192,13 @@ if (dsVisual!=null && dsVisual.length()!=0){
                             } %>
                             </td>
                         </tr>
-                        
+
                         <%
                         if (user!=null){
                             %>
                             <tr style="height:5px;"><td colspan="2"></td></tr>
                             <tr><td colspan="2" style="border-top:1px solid #008B8B;">&nbsp;</td></tr>
-                            
+
                             <tr>
                                 <td colspan="2">
                                     You can replace this structure by uploading a new one below.
@@ -220,7 +220,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
                     <form id="Upload" action="DsVisualUpload" method="post" enctype="multipart/form-data">
 
                         <table width="auto" cellspacing="0">
-                            
+
                             <tr>
                                 <td align="left" style="padding-right:5">
                                     <input type="radio" name="fileORurl" value="file" checked="checked"/>&nbsp;File:</td>
@@ -254,7 +254,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
                                 <%
                             }
                             %>
-                            
+
                             <input type="hidden" name="str_type" value="<%=type%>"/>
                         </div>
                     </form>

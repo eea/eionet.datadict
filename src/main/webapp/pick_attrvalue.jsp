@@ -26,7 +26,7 @@
     try { // start the whole page try block
 
     conn = ConnectionUtil.getConnection();
-    DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+    DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
 
     Vector attrValues=null;
 

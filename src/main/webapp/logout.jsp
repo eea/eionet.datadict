@@ -38,7 +38,7 @@ List<VocabularyFolder> vocabularies = null;
 
         conn = ConnectionUtil.getConnection();
 
-        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+        DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
         searchEngine.setUser(user);
         userHasWorkingCopies = searchEngine.hasUserWorkingCopies();
 

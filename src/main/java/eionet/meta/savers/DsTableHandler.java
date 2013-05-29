@@ -823,7 +823,7 @@ public class DsTableHandler extends BaseHandler {
     public void copyTbl2Elem(String srcTblID) throws SQLException {
 
         if (searchEngine == null) {
-            searchEngine = new DDSearchEngine(conn, "", ctx);
+            searchEngine = new DDSearchEngine(conn, "");
         }
         searchEngine.setUser(user);
         Vector elems = searchEngine.getDataElements(null, null, null, null, srcTblID);

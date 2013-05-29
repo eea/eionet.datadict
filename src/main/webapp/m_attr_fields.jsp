@@ -8,10 +8,10 @@
 <%!
 
 private String legalizeAlert(String in){
-        
+
     in = (in != null ? in : "");
-    StringBuffer ret = new StringBuffer(); 
-  
+    StringBuffer ret = new StringBuffer();
+
     for (int i = 0; i < in.length(); i++) {
         char c = in.charAt(i);
         if (c == '\'')
@@ -28,18 +28,18 @@ private String legalizeAlert(String in){
 %>
 
             <%
-            
+
             request.setCharacterEncoding("UTF-8");
-            
+
             response.setHeader("Pragma", "No-cache");
             response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
             response.setHeader("Expires", Util.getExpiresDateString());
-            
+
             DDUser user = SecurityUtil.getUser(request);
 
-            
-            ServletContext ctx = getServletContext();            
-            
+
+            ServletContext ctx = getServletContext();
+
             if (request.getMethod().equals("POST")){
                   if (user == null){
                       %>
@@ -51,28 +51,28 @@ private String legalizeAlert(String in){
                       <%
                       return;
                   }
-            }                        
-            
+            }
+
             String attr_id = request.getParameter("attr_id");
-            
+
             if (attr_id == null || attr_id.length()==0){ %>
                 <b>Attribute ID is missing!</b> <%
                 return;
             }
-            
+
             String attr_name = request.getParameter("attr_name");
             if (attr_name == null) attr_name = "?";
-            
-        
+
+
             if (request.getMethod().equals("POST")){
 
                 Connection userConn = null;
-                                
+
                 try{
                     userConn = user.getConnection();
-                    
+
                     MAttrFieldsHandler handler = new MAttrFieldsHandler(userConn, request, ctx);
-                    
+
                     try{
                         handler.execute();
                     }
@@ -87,25 +87,25 @@ private String legalizeAlert(String in){
                     try { if (userConn!=null) userConn.close();
                     } catch (SQLException e) {}
                 }
-                    
+
                 //String redirUrl = "" +
                 //                    "/m_attr_fields.jsp?attr_id=" + attr_id + "&attr_name=" + attr_name;
                 String redirUrl = currentUrl;
                 response.sendRedirect(redirUrl);
                 return;
             }
-            
+
             Connection conn = null;
-            
+
             try { // start the whole page try block
-            
+
             conn = ConnectionUtil.getConnection();
-            DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-            
+            DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
+
             attrFields = searchEngine.getAttrFields(attr_id);
-            
+
             if (attrFields == null) attrFields = new Vector();
-            
+
             String disabled = user == null ? "disabled" : "";
             %>
 
@@ -117,19 +117,19 @@ private String legalizeAlert(String in){
         <script type="text/javascript">
         // <![CDATA[
             function submitForm(mode){
-                    
+
                 if (mode == "delete"){
                     var b = confirm("This will delete all the fields you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
                     if (b==false) return;
                 }
-                
+
                 document.forms["form1"].elements["mode"].value = mode;
                 document.forms["form1"].submit();
             }
             function start() {
                 tbl_obj=new dynamic_table("tbl"); //create dynamic_table object
             }
-    
+
             //call to dynamic table methods. Originated from buttons or click on tr.
             function sel_row(o){
                 tbl_obj.selectRow(o);
@@ -170,7 +170,7 @@ private String legalizeAlert(String in){
             // ]]>
             </script>
     </head>
-    
+
 <body onload="start()">
     <div id="container">
         <jsp:include page="nlocation.jsp" flush="true">
@@ -183,7 +183,7 @@ private String legalizeAlert(String in){
                 <h1>Fields of <em><%=Util.processForDisplay(attr_name)%></em></h1>
                 <div>
                     <table style="width:auto">
-                    
+
                         <tr style="height:20px;"><td colspan="2"></td></tr>
                         <tr><td colspan="2" class="smallFont">Enter a new field here:</td></tr>
                         <tr>
@@ -213,7 +213,7 @@ private String legalizeAlert(String in){
                         <tr style="height:10px;"><td colspan="2"></td></tr>
                     </table>
                 </div>
-                
+
                 <%
                 if (user != null) { %>
                     <div style="margin-bottom:10px">
@@ -222,7 +222,7 @@ private String legalizeAlert(String in){
                     </div><%
                 }
                 %>
-                
+
                 <div>
                     <table cellspacing="0" cellpadding="0" id="tbl">
                         <thead>
@@ -234,13 +234,13 @@ private String legalizeAlert(String in){
                                 %>
                                 <th style="background-color:#f6f6f6;">Name</th>
                                 <th style="padding-left:5px;background-color:#f6f6f6;">Definition</th>
-                                <th style="padding-left:5px;background-color:#f6f6f6;">Priority</th>                                
-                            </tr>                            
+                                <th style="padding-left:5px;background-color:#f6f6f6;">Priority</th>
+                            </tr>
                         </thead>
                         <tbody id="tbl_body">
                             <%
                             if (user!=null && attrFields.size()>1){
-                                
+
                                 %>
                                 <tr>
                                     <td colspan="4"></td>
@@ -249,25 +249,25 @@ private String legalizeAlert(String in){
                                         <a href="javascript:moveRowUp()"><img src="images/move_up.gif" title="move selected row up" alt=""/></a>
                                         <img id="dot" src="images/dot.gif" alt=""/>
                                         <a href="javascript:moveRowDown()"><img src="images/move_down.gif" title="move selected row down" alt=""/></a>
-                                        <a href="javascript:moveLast()"><img src="images/move_last.gif" title="move selected row last" alt=""/></a>        
-                                    </td>                            
+                                        <a href="javascript:moveLast()"><img src="images/move_last.gif" title="move selected row last" alt=""/></a>
+                                    </td>
                                 </tr><%
                             }
-                            
+
                             int position = 0;
-                            
+
                             for (int i=0; i<attrFields.size(); i++){
                                 Hashtable hash = (Hashtable)attrFields.get(i);
                                 String id = (String)hash.get("id");
                                 String name = (String)hash.get("name");
                                 String definition = (String)hash.get("definition");
                                 if (definition.length()>50) definition = definition.substring(0,50) + " ...";
-                                
+
                                 String fieldLink = "m_attr_field.jsp?mode=edit&amp;attr_id=" + attr_id + "&amp;attr_name=" + attr_name + "&amp;field_id=" + id;
-                                
+
                                 int pos = Integer.parseInt((String)hash.get("position"));
                                 if (pos >= position) position = pos +1;
-                                    
+
                                 String priority = (String)hash.get("priority");
                                 String pri = (priority!=null && priority.equals(DElemAttribute.FIELD_PRIORITY_HIGH)) ? "High" : "Low";
                                 String trStyle = (i%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
@@ -302,11 +302,11 @@ private String legalizeAlert(String in){
                         </tbody>
                     </table>
                 </div>
-                                
+
                 <div style="display:none">
                     <input type="hidden" name="mode" value="add"/>
                     <input type="hidden" name="position" value="<%=String.valueOf(position)%>"/>
-                    
+
                     <input type="hidden" name="attr_id" value="<%=attr_id%>"/>
                     <input type="hidden" name="attr_name" value="<%=Util.processForDisplay(attr_name, true)%>"/>
                     <input type="hidden" name="changed" value="0"/>

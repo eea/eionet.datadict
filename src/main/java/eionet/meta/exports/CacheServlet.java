@@ -183,7 +183,7 @@ public class CacheServlet extends HttpServlet {
             return;
         }
 
-        DDSearchEngine searchEngine = new DDSearchEngine(getConnection(req), "", getServletContext());
+        DDSearchEngine searchEngine = new DDSearchEngine(getConnection(req), "");
         Hashtable cache = searchEngine.getCache(objID, objType);
         Hashtable supportedArticles = null;
         for (int i = 0; i < objArticles.size(); i++) {

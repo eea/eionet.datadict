@@ -95,7 +95,7 @@ public class DatasetImport {
     public DatasetImport(DatasetImportHandler handler, Connection conn, ServletContext ctx) {
         this.handler = handler;
         this.conn = conn;
-        this.searchEngine = new DDSearchEngine(conn, null, ctx);
+        this.searchEngine = new DDSearchEngine(conn);
         this.ctx = ctx;
         tblMap = new Hashtable();
         allParams = new Hashtable();

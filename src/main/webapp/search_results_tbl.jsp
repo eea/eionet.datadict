@@ -236,7 +236,7 @@
 
                     // we establish a database connection and create a search engine
                     conn = ConnectionUtil.getConnection();
-                    DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+                    DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
                     searchEngine.setUser(user);
 
                     String srchType = request.getParameter("search_precision");

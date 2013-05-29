@@ -433,7 +433,7 @@
 
             // get db connection, init search engine object
             conn = ConnectionUtil.getConnection();
-            DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+            DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
             searchEngine.setUser(user);
 
             // get metadata of attributes

@@ -9,10 +9,10 @@
 <%!
 
 private String legalizeAlert(String in){
-        
+
     in = (in != null ? in : "");
-    StringBuffer ret = new StringBuffer(); 
-  
+    StringBuffer ret = new StringBuffer();
+
     for (int i = 0; i < in.length(); i++) {
         char c = in.charAt(i);
         if (c == '\'')
@@ -34,11 +34,11 @@ private String legalizeAlert(String in){
             response.setHeader("Expires", Util.getExpiresDateString());
 
             request.setCharacterEncoding("UTF-8");
-            
-            ServletContext ctx = getServletContext();    
-            
+
+            ServletContext ctx = getServletContext();
+
             DDUser user = SecurityUtil.getUser(request);
-            
+
             if (request.getMethod().equals("POST")){
                   if (user == null){
                       %>
@@ -50,12 +50,12 @@ private String legalizeAlert(String in){
                       <%
                       return;
                   }
-            }                        
-            
+            }
+
             String field_id = request.getParameter("field_id");
-            
-            String attr_name = request.getParameter("attr_name");            
-            String attr_id = request.getParameter("attr_id");            
+
+            String attr_name = request.getParameter("attr_name");
+            String attr_id = request.getParameter("attr_id");
 
             if (attr_id == null || attr_id.length()==0){ %>
                 <b>Attribute ID is missing!</b> <%
@@ -65,24 +65,24 @@ private String legalizeAlert(String in){
                 <b>Attribute field ID is missing!</b> <%
                 return;
             }
-            
+
             if (attr_name == null) attr_name = "?";
-            
+
 
             mode = request.getParameter("mode");
             if (mode == null || mode.trim().length()==0) {
                 mode = "view";
             }
-            
+
             if (request.getMethod().equals("POST")){
 
                 Connection userConn = null;
-                                
+
                 try{
                     userConn = user.getConnection();
-                    
+
                     MAttrFieldsHandler handler = new MAttrFieldsHandler(userConn, request, ctx);
-                    
+
                     try{
                         handler.execute();
                     }
@@ -112,18 +112,18 @@ private String legalizeAlert(String in){
                 response.sendRedirect(redirUrl);
                 return;
             }
-            
+
             Connection conn = null;
-            
+
             try { // start the whole page try block
-            
+
             conn = ConnectionUtil.getConnection();
-            DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-            
-            attrField = searchEngine.getAttrField(field_id);        
+            DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
+
+            attrField = searchEngine.getAttrField(field_id);
             if (attrField == null) attrField = new Hashtable();
             String disabled = user == null ? "disabled='disabled'" : "";
-            
+
             String name = (String)attrField.get("name");
             String definition = (String)attrField.get("definition");
             String priority = (String)attrField.get("priority");
@@ -136,15 +136,15 @@ private String legalizeAlert(String in){
         <title>Meta</title>
         <script type="text/javascript">
         // <![CDATA[
-    
+
             function submitForm(mode){
-                
+
                 if (mode == "delete"){
                     var b = confirm("This value will be deleted! Click OK, if you want to continue. Otherwise click Cancel.");
                     if (b==false) return;
                 }
-                
-                
+
+
                 document.forms["form1"].elements["mode"].value = mode;
                 document.forms["form1"].submit();
             }
@@ -162,12 +162,12 @@ private String legalizeAlert(String in){
                                 o.selectedIndex = i;
                                 break;
                             }
-                        }            
-                    <% 
+                        }
+                    <%
                     }
                 %>
             }
-            
+
         // ]]>
         </script>
     </head>
@@ -185,9 +185,9 @@ private String legalizeAlert(String in){
     <form id="form1" method="post" action="m_attr_field.jsp">
 
     <h1>Field of <em><%=Util.processForDisplay(attr_name)%></em> attribute</h1>
-            
+
             <table class="datatable">
-            <tr>                
+            <tr>
                 <th scope="row" class="scope-row">
                     Field name
                 </th>
@@ -195,7 +195,7 @@ private String legalizeAlert(String in){
                     <%=Util.processForDisplay(name)%>
                 </td>
             </tr>
-            <tr>                
+            <tr>
                 <th scope="row" class="scope-row">
                     Definition
                 </th>
@@ -215,7 +215,7 @@ private String legalizeAlert(String in){
                     </select>
                 </td>
             </tr>
-            <%            
+            <%
             HashSet includeFields = new HashSet();
             String harvFld = (String)attrField.get("harv_fld");
             if (harvFld!=null)
@@ -229,7 +229,7 @@ private String legalizeAlert(String in){
                     </th>
                     <td>
                         <%
-                        
+
                         %>
                         <select <%=disabled%> name="harv_fld" class="small">
                             <option value="null"></option>
@@ -246,10 +246,10 @@ private String legalizeAlert(String in){
                 </tr><%
             }
             %>
-        
+
     </table>
         <div>
-        <% 
+        <%
         if (user==null){
             %>
             <input class="mediumbuttonb" type="button" value="Save" disabled="disabled"/>&nbsp;&nbsp;
@@ -268,7 +268,7 @@ private String legalizeAlert(String in){
             <input type="hidden" name="del_field" value="<%=field_id%>"/>
             <input type="hidden" name="attr_id" value="<%=attr_id%>"/>
             <input type="hidden" name="attr_name" value="<%=Util.processForDisplay(attr_name, true)%>"/>
-        </div>    
+        </div>
     </form>
 </div>
 </div> <!-- container -->

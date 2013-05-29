@@ -12,17 +12,17 @@
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-        
+
     ServletContext ctx = getServletContext();
-    DDUser user = SecurityUtil.getUser(request);    
-    
-    // POST request not allowed for anybody who hasn't logged in            
+    DDUser user = SecurityUtil.getUser(request);
+
+    // POST request not allowed for anybody who hasn't logged in
     if (request.getMethod().equals("POST") && user==null){
         request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
         request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
-    
+
     // get vital request parameters
     String fxv_id = request.getParameter("fxv_id");
     String delem_id = request.getParameter("delem_id");
@@ -38,7 +38,7 @@
         request.setAttribute("DD_ERR_MSG", "Unknown parent type: " + parent_type);
         request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
-    }    
+    }
 
     String valsType = "CH1";
     if (!parent_type.equals("attr")){
@@ -51,7 +51,7 @@
     String upperCaseTitle = valsType.equals("CH1") ? "ALLOWABLE" : "SUGGESTED";
     String dispParentType = parent_type.equals("elem") ? "element" : "attribute";
     String delem_name = request.getParameter("delem_name");
-                
+
     mode = request.getParameter("mode");
     if (mode == null || mode.trim().length()==0) {
         mode = "view";
@@ -70,7 +70,7 @@
     //// handle the POST request//////////////////////
     //////////////////////////////////////////////////
     if (request.getMethod().equals("POST")){
-        
+
         Connection userConn = null;
         String redirUrl = "";
         try{
@@ -80,10 +80,10 @@
                 handler.execute();
             }
             catch (Exception e){
-                String msg = e.getMessage();                    
+                String msg = e.getMessage();
                 ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
                 e.printStackTrace(new PrintStream(bytesOut));
-                String trace = bytesOut.toString(response.getCharacterEncoding());                    
+                String trace = bytesOut.toString(response.getCharacterEncoding());
                 request.setAttribute("DD_ERR_MSG", msg);
                 request.setAttribute("DD_ERR_TRC", trace);
                 String backLink = request.getParameter("submitter_url");
@@ -98,14 +98,14 @@
             try { if (userConn!=null) userConn.close();
             } catch (SQLException e) {}
         }
-        // dispatch the POST request        
+        // dispatch the POST request
         if (mode.equals("edit"))
             redirUrl=currentUrl;
         else if (mode.equals("delete")){
             String deleteUrl = history.gotoLastNotMatching("fixed_value.jsp");
-            if (deleteUrl!=null && deleteUrl.length()>0) 
+            if (deleteUrl!=null && deleteUrl.length()>0)
                 redirUrl=deleteUrl;
-            else 
+            else
                 redirUrl = redirUrl + "fixed_values.jsp?mode=edit&delem_id=" + delem_id +
                                                      "&delem_name=" + delem_name +
                                                      "&parent_type=" + parent_type;
@@ -117,12 +117,12 @@
 
     Connection conn = null;
     boolean isBooleanDatatype = false;
-    
+
     // the whole page's try block
     try {
         conn = ConnectionUtil.getConnection();
-        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-        
+        DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
+
         // make sure this a working copy of the current user
         if (parent_type.equals("elem") && !mode.equals("view")){
             DataElement dataElement = searchEngine.getDataElement(delem_id);
@@ -173,13 +173,13 @@
                     request.getRequestDispatcher("error.jsp").forward(request, response);
                     return;
                 }
-                
+
                 String dataType = dataElement.getAttributeValueByShortName("Datatype");
                 isBooleanDatatype = dataType!=null && dataType.equals("boolean");
             }
         }
         // end of make sure this a working copy of the current user
-        
+
         String value = "";
         if (!mode.equals("add")){
             fxv = searchEngine.getFixedValue(fxv_id);
@@ -191,7 +191,7 @@
                 return;
             }
         }
-            
+
         // build parent url
         String parentUrl="";
         if (parent_type.equals("elem")){
@@ -201,12 +201,12 @@
             parentUrl="delem_attribute.jsp?attr_id=" + delem_id + "&amp;type=SIMPLE&amp;mode=" + mode;
             if (history!=null){
                 String attrUrl = history.getLastMatching("delem_attribute.jsp");
-            
+
                 if (attrUrl.indexOf("delem_id=" + delem_id)>-1)
                     parentUrl = attrUrl;
             }
         }
-        
+
         String strDeleteDisabled = isBooleanDatatype ? "disabled=\"disabled\"" : "";
 %>
 
@@ -227,22 +227,22 @@
                     alert("You have not specified one of the mandatory atttributes!");
                     return;
                 }
-                                    
+
             }
             document.forms["form1"].elements["mode"].value = mode;
             document.forms["form1"].submit();
         }
-        
+
         function checkObligations(){
-            
+
             var o = document.forms["form1"].class_name;
             if (o!=null){
                 if (o.value.length == 0) return false;
             }
-            
+
             var elems = document.forms["form1"].elements;
             if (elems == null) return true;
-            
+
             for (var i=0; i<elems.length; i++){
                 var elem = elems[i];
                 var elemName = elem.name;
@@ -257,10 +257,10 @@
                     }
                 }
             }
-            
+
             return true;
         }
-        
+
         function startsWith(str, pattern){
             var i = str.indexOf(pattern,0);
             if (i!=-1 && i==0)
@@ -268,7 +268,7 @@
             else
                 return false;
         }
-        
+
         function endsWith(str, pattern){
             var i = str.indexOf(pattern, str.length-pattern.length);
             if (i!=-1)
@@ -277,7 +277,7 @@
                 return false;
         }
 
-            
+
     // ]]>
     </script>
 </head>
@@ -296,24 +296,24 @@ else{ %>
         <jsp:param name="helpscreen" value="suggested_value"/>
     </jsp:include><%
 }
-%>            
+%>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 
         <h1>
             <%=Util.processForDisplay(initCaseTitle)%> value of <a href="<%=Util.processForDisplay(parentUrl, true)%>"><%=Util.processForDisplay(delem_name, true)%></a> <%=dispParentType%>
         </h1>
-            
+
         <form id="form1" method="post" action="fixed_value.jsp">
-        
+
         <%
         String strMandatory = mode.equals("view") ? "" : "<img src=\"images/mandatory.gif\" alt=\"Mandatory\" title=\"Mandatory\"/>";
         String strOptional  = mode.equals("view") ? "" : "<img src=\"images/optional.gif\" alt=\"Optional\" title=\"Optional\"/>";
         String strTableClass = " class=\"datatable\"";
         %>
-    
+
         <table cellspacing="0" class="datatable" style="width:auto">
-            <tr>                
+            <tr>
                 <th scope="row">Value:</th>
                 <td><%=strMandatory%></td>
                 <td>
@@ -328,10 +328,10 @@ else{ %>
                     %>
                 </td>
             </tr>
-            
+
             <%
             if (parent_type.equals("attr")){ %>
-                <tr>                
+                <tr>
                     <th scope="row">Default:</th>
                     <td><%=strOptional%></td>
                     <td>
@@ -362,7 +362,7 @@ else{ %>
                 <%
             }
             %>
-            
+
             <tr>
                 <th scope="row">Definition:</th>
                 <td><%=strOptional%></td>
@@ -376,7 +376,7 @@ else{ %>
                     }
                     %>
                 </td>
-            </tr>            
+            </tr>
             <tr>
                 <th scope="row">Short description:</th>
                 <td><%=strOptional%></td>
@@ -390,7 +390,7 @@ else{ %>
                     }
                     %>
                 </td>
-            </tr>        
+            </tr>
             <%
             if (mode.equals("edit")){ %>
                 <tr>
@@ -403,7 +403,7 @@ else{ %>
             }
             %>
     </table>
-    
+
     <div style="display:none">
         <input type="hidden" name="mode" value="<%=mode%>"/>
         <input type="hidden" name="fxv_id" value="<%=fxv_id%>"/>
@@ -411,7 +411,7 @@ else{ %>
         <input type="hidden" name="delem_id" value="<%=delem_id%>"/>
         <input type="hidden" name="delem_name" value="<%=Util.processForDisplay(delem_name, true)%>"/>
         <input type="hidden" name="parent_type" value="<%=Util.processForDisplay(valsType, true)%>"/>
-    </div>    
+    </div>
     </form>
 </div> <!-- workarea -->
 </div> <!-- container -->

@@ -69,7 +69,7 @@ public class GetSchema extends HttpServlet {
 
             // get the DB connection, initialize DDSearchEngine
             conn = ConnectionUtil.getConnection();
-            DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+            DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
 
             // set response content type
             res.setContentType("text/xml; charset=UTF-8");

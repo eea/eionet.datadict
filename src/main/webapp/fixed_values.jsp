@@ -8,17 +8,17 @@
 <%
     Vector fixedValues = null;
     String mode = null;
-    
+
     response.setHeader("Pragma", "No-cache");
     response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
+
     ServletContext ctx = getServletContext();
-    DDUser user = SecurityUtil.getUser(request);    
-    
-    // POST request not allowed for anybody who hasn't logged in            
+    DDUser user = SecurityUtil.getUser(request);
+
+    // POST request not allowed for anybody who hasn't logged in
     if (request.getMethod().equals("POST") && user==null){
         request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
         request.getRequestDispatcher("error.jsp").forward(request, response);
@@ -36,13 +36,13 @@
     if (mode == null || mode.trim().length()==0){
         mode = "view";
     }
-    
+
     if (!mode.equals("view") && user==null){
         request.setAttribute("DD_ERR_MSG", "Mode not allowed for anonymous users: " + mode);
         request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
-    
+
     String parent_type = request.getParameter("parent_type");
     if (parent_type == null)
         parent_type = "CH1";
@@ -62,11 +62,11 @@
     String upperCaseTitle = valsType.equals("CH1") ? "ALLOWABLE" : "SUGGESTED";
     String dispParentType = parent_type.equals("elem") ? "element" : "attribute";
     String delem_name = request.getParameter("delem_name");
-    
+
     //// handle the POST request//////////////////////
     //////////////////////////////////////////////////
     if (request.getMethod().equals("POST")){
-        
+
         Connection userConn = null;
         try{
             userConn = user.getConnection();
@@ -75,10 +75,10 @@
                 handler.execute();
             }
             catch (Exception e){
-                String msg = e.getMessage();                    
+                String msg = e.getMessage();
                 ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
                 e.printStackTrace(new PrintStream(bytesOut));
-                String trace = bytesOut.toString(response.getCharacterEncoding());                    
+                String trace = bytesOut.toString(response.getCharacterEncoding());
                 request.setAttribute("DD_ERR_MSG", msg);
                 request.setAttribute("DD_ERR_TRC", trace);
                 String backLink = request.getParameter("submitter_url");
@@ -93,21 +93,21 @@
             try { if (userConn!=null) userConn.close();
             } catch (SQLException e) {}
         }
-        
+
         response.sendRedirect(currentUrl);
         return;
     }
     //// end of handle the POST request//////////////////////
-    
+
     Connection conn = null;
     boolean canEdit = false;
     boolean isBooleanDatatype = false;
-    
+
     // the whole page's try block
-    try {    
+    try {
         conn = ConnectionUtil.getConnection();
-        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-        
+        DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
+
         // if fixed values of element, see if working copy and who is working user
         if (parent_type.equals("elem")){
             String workingUser = null;
@@ -144,13 +144,13 @@
                     }
                 }
             }
-            
+
             if (isWorkingCopy && workingUser==null){
                 request.setAttribute("DD_ERR_MSG", "Working copy with no working user");
                 request.getRequestDispatcher("error.jsp").forward(request, response);
                 return;
             }
-            
+
             if (mode.equals("view"))
                 canEdit = user!=null && isWorkingCopy && workingUser.equals(user.getUserName());
             else{
@@ -169,17 +169,17 @@
                     request.getRequestDispatcher("error.jsp").forward(request, response);
                     return;
                 }
-                
+
                 String dataType = dataElement.getAttributeValueByShortName("Datatype");
                 isBooleanDatatype = dataType!=null && dataType.equals("boolean");
             }
         }
         // end if fixed values of element, see if working copy and who is working user
-        
+
         fixedValues = searchEngine.getFixedValues(delem_id, parent_type);
         if (fixedValues == null)
             fixedValues = new Vector();
-                
+
         //find parent url from history
         String parentUrl="";
         if (parent_type.equals("elem")){
@@ -189,12 +189,12 @@
             parentUrl="delem_attribute.jsp?attr_id=" + delem_id + "&amp;type=SIMPLE&amp;mode=" + mode;
             if (history!=null){
                 String attrUrl = history.getLastMatching("delem_attribute.jsp");
-            
+
                 if (attrUrl.indexOf("delem_id=" + delem_id)>-1)
                     parentUrl = attrUrl;
             }
         }
-        
+
         String strFormDisabled = isBooleanDatatype ? "disabled=\"disabled\"" : "";
 %>
 
@@ -204,14 +204,14 @@
     <title>Data Dictionary - Fixed values</title>
     <script type="text/javascript">
     // <![CDATA[
-    
+
         function submitForm(mode){
-            
+
             if (mode == "delete_all"){
                 selectAll();
                 mode = "delete";
             }
-            
+
             document.forms["form1"].elements["mode"].value = mode;
             if (mode == "delete"){
                 var b = confirm("This will delete all the  values you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
@@ -219,7 +219,7 @@
             }
             document.forms["form1"].submit();
         }
-        
+
             function edit(){
             <%
             String modeString = new String("mode=view&");
@@ -232,7 +232,7 @@
             if (modeStart == -1){  //could not find modeString
                 modeStart = 0;
                 modeString = "";
-            }            
+            }
             if (modeStart != -1){
                 StringBuffer buf = new StringBuffer(qryStr.substring(0, modeStart));
                 buf.append("mode=edit&");
@@ -243,14 +243,14 @@
             }
             %>
         }
-        
+
         function importCodes(){
             var url = "import.jsp?mode=FXV&delem_id=<%=delem_id%>&short_name=<%=delem_name%>";
             document.location.assign(url);
         }
-        
+
         function selectAll(){
-            
+
             var checks = document.forms["form1"].elements["del_id"];
             for (var i=0; checks!=null && i<checks.length; i++){
                 checks[i].checked=true;
@@ -279,14 +279,14 @@ hlpScreen = mode.equals("view") ? hlpScreen + "_view" : hlpScreen + "_edit";
             <jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
         </jsp:include><%
     }
-    %>            
+    %>
     <%@ include file="nmenu.jsp" %>
     <div id="workarea">
-        
+
         <h1>
             <%=Util.processForDisplay(initCaseTitle)%> values of <a href="<%=Util.processForDisplay(parentUrl, true)%>"><%=Util.processForDisplay(delem_name, true)%></a> <%=dispParentType%>
         </h1>
-        
+
         <form id="form1" method="post" action="fixed_values.jsp">
             <%
             if (mode.equals("view") && canEdit){ %>
@@ -321,7 +321,7 @@ hlpScreen = mode.equals("view") ? hlpScreen + "_view" : hlpScreen + "_edit";
                     </tr>
                 </table><%
             }
-            
+
             if (mode.equals("view")){%>
                 <table class="datatable">
                     <thead>
@@ -344,11 +344,11 @@ hlpScreen = mode.equals("view") ? hlpScreen + "_view" : hlpScreen + "_edit";
                         for (int j=1; j<level; j++){
                             spaces +="&nbsp;&nbsp;&nbsp;";
                         }
-                        
+
                         String definition = fxv.getDefinition();
                         definition = definition==null ? "" : definition;
                         definition = definition.length()>MAX_CELL_LEN ? definition.substring(0,MAX_CELL_LEN) + "..." : definition;
-                        
+
                         String shortDesc = fxv.getShortDesc();
                         shortDesc = shortDesc==null ? "" : shortDesc;
                         shortDesc = shortDesc.length()>MAX_CELL_LEN ? shortDesc.substring(0,MAX_CELL_LEN) + "..." : shortDesc;
@@ -365,7 +365,7 @@ hlpScreen = mode.equals("view") ? hlpScreen + "_view" : hlpScreen + "_edit";
                             </td>
                             <td>
                                 <%=Util.processForDisplay(shortDesc)%>
-                            </td>                
+                            </td>
                         </tr><%
                     }
                     %>
@@ -393,16 +393,16 @@ hlpScreen = mode.equals("view") ? hlpScreen + "_view" : hlpScreen + "_edit";
                     <tbody>
                     <%
                     for (int i=0; i<fixedValues.size(); i++){
-                    
+
                         FixedValue fxv = (FixedValue)fixedValues.get(i);
                         String value = fxv.getValue();
                         String fxvID = fxv.getID();
                         String fxvAttrValue = null;
                         String fxvAttrValueShort = null;
-                        
+
                         String definition = fxv.getDefinition();
                         definition = definition==null ? "" : definition;
-                        definition = definition.length()>MAX_CELL_LEN ? definition.substring(0,MAX_CELL_LEN) + "..." : definition;                
+                        definition = definition.length()>MAX_CELL_LEN ? definition.substring(0,MAX_CELL_LEN) + "..." : definition;
                         String trStyle = (i % 2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
                         %>
                         <tr <%=trStyle%>>
@@ -424,7 +424,7 @@ hlpScreen = mode.equals("view") ? hlpScreen + "_view" : hlpScreen + "_edit";
                             </td>
                         </tr><%
                     }
-                    %>            
+                    %>
                     </tbody>
                 </table><%
             }

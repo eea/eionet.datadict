@@ -161,7 +161,7 @@
     // the whole page's try block
     try {
         conn = ConnectionUtil.getConnection();
-        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+        DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
         searchEngine.setUser(user);
 
         // get the table object
@@ -788,7 +788,7 @@ if (messages.trim().length()>0){
                         <tr style="height:10px;">
                             <td style="font-size:70%;width:100%" colspan="<%=String.valueOf(colCount)%>">
                                 (the <sup class="commonelm">C</sup> sign marks a common element)
-                            </td> 
+                            </td>
                         </tr><%
                     }
                     %>

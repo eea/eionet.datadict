@@ -93,7 +93,7 @@
 
                     // if mode==delete, check whether the attribute is used somewhere. if Yes, then prompt user
                     if (mode.equals("delete")){
-                        searchEngine = new DDSearchEngine(userConn, "", ctx);
+                        searchEngine = new DDSearchEngine(userConn, "");
                         int attrUseCount = searchEngine.getAttributeUseCount(attr_id, type);
                         if (attrUseCount>0){
                             String sName = request.getParameter("short_name");
@@ -146,7 +146,7 @@
             try { // start the whole page try block
 
             conn = ConnectionUtil.getConnection();
-            searchEngine = new DDSearchEngine(conn, "", ctx);
+            searchEngine = new DDSearchEngine(conn, "");
 
             String attr_name = null;
             String attr_shortname = null;

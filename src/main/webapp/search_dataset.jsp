@@ -64,7 +64,7 @@ private String setDefaultAttrs(String name){
 
     conn = ConnectionUtil.getConnection();
 
-    DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+    DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
 
     attrs = searchEngine.getDElemAttributes();
     if (attrs == null) attrs = new Vector();

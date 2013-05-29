@@ -12,26 +12,26 @@ private Vector namespaces = null;
 ServletContext ctx = null;
 private String sel_attr = null;
 private Hashtable inputAttributes=null;
-                
+
 private String getAttributeIdByName(String name){
-    
+
     for (int i=0; i<attrs.size(); i++){
         DElemAttribute attr = (DElemAttribute)attrs.get(i);
         if (attr.getName().equalsIgnoreCase(name))
             return attr.getID();
     }
-        
+
     return null;
 }
 
 private String getAttributeNameById(String id){
-    
+
     for (int i=0; i<attrs.size(); i++){
         DElemAttribute attr = (DElemAttribute)attrs.get(i);
         if (attr.getID().equals(id))
             return attr.getShortName();
     }
-        
+
     return null;
 }
 
@@ -52,9 +52,9 @@ private String setDefaultAttrs(String name){
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
+
     DDUser user = SecurityUtil.getUser(request);
-    
+
     ctx = getServletContext();
 
     //Feedback messages
@@ -65,21 +65,21 @@ private String setDefaultAttrs(String name){
     if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("undo_checkout")) {
         feedbackValue = "Working copy successfully discarded!";
     }
-    
+
     Connection conn = null;
-    
+
     try { // start the whole page try block
-    
+
     conn = ConnectionUtil.getConnection();
 
-    DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+    DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
 
     attrs = searchEngine.getDElemAttributes();
     if (attrs == null) attrs = new Vector();
-    
+
     namespaces = searchEngine.getNamespaces();
     if (namespaces == null) namespaces = new Vector();
-    
+
     attr_ids = new Vector();
     def_attrs = new Vector();
 
@@ -103,7 +103,7 @@ private String setDefaultAttrs(String name){
     String contextParam = request.getParameter("ctx");
     String sel_ds = request.getParameter("dataset");
     String search_precision = request.getParameter("search_precision");
-    
+
     if (sel_attr == null) sel_attr="";
     if (sel_type == null) sel_type="";
     if (short_name == null) short_name="";
@@ -116,10 +116,10 @@ private String setDefaultAttrs(String name){
     ///get inserted attributes
     String input_attr;
     inputAttributes = new Hashtable();
-    for (int i=0; i<attrs.size(); i++){    
-        DElemAttribute attribute = (DElemAttribute)attrs.get(i);        
+    for (int i=0; i<attrs.size(); i++){
+        DElemAttribute attribute = (DElemAttribute)attrs.get(i);
         String attr_id = attribute.getID();
-        
+
         input_attr = request.getParameter("attr_" + attr_id);
         if (input_attr!=null){
             inputAttributes.put(attr_id, input_attr);
@@ -139,11 +139,11 @@ private String setDefaultAttrs(String name){
     <title>Search elements - Data Dictionary</title>
     <script type="text/javascript">
     // <![CDATA[
-    
+
         attrWindow=null;
 
         function submitForm(action){
-            
+
             document.forms["form1"].action=action;
             document.forms["form1"].submit();
         }
@@ -153,9 +153,9 @@ private String setDefaultAttrs(String name){
             document.forms["form1"].sel_type.value=type;
             submitForm('search.jsp');
         }
-        
+
         function onLoad(){
-        
+
             <%
             if (type != null){
                 %>
@@ -167,9 +167,9 @@ private String setDefaultAttrs(String name){
                         break;
                     }
                 }
-                <% 
+                <%
             }
-            
+
             if (search_precision != null){
                 %>
                 var sPrecision = '<%=search_precision%>';
@@ -179,21 +179,21 @@ private String setDefaultAttrs(String name){
                         o[i].checked = true;
                         break;
                     }
-                }            
+                }
                 <%
             }
             %>
-            
+
             if (document.forms["form1"].snoncom && document.forms["form1"].snoncom.checked)
                 changeFormStateForNonCommon();
             else if (document.forms["form1"].scom&& document.forms["form1"].scom.checked)
                 changeFormStateForCommon();
         }
-        
+
         function changeFormStateForCommon(){
             document.forms["form1"].dataset_idf.selectedIndex = 0;
             document.forms["form1"].dataset_idf.disabled = true;
-            
+
             if (document.forms["form1"].wrk_copies){
                 <%
                 if (isPopup){ %>
@@ -204,25 +204,25 @@ private String setDefaultAttrs(String name){
                 }
                 %>
             }
-            
+
             if (document.forms["form1"].reg_status)
                 document.forms["form1"].reg_status.disabled = false;
 
         }
-        
+
         function changeFormStateForNonCommon(){
-        
+
             document.forms["form1"].dataset_idf.disabled = false;
-            
+
             if (document.forms["form1"].wrk_copies){
                 document.forms["form1"].wrk_copies.checked = false;
                 document.forms["form1"].wrk_copies.disabled = true;
             }
-            
+
             if (document.forms["form1"].reg_status)
                 document.forms["form1"].reg_status.disabled = true;
         }
-        
+
     // ]]>
     </script>
 </head>
@@ -234,7 +234,7 @@ if (isPopup)
 %>
 
 <body <%=bodyAttrs.toString()%>>
-    
+
 <%
 if (!isPopup){
     %>
@@ -252,7 +252,7 @@ else{ %>
         <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
         <div id="networktitle">Eionet</div>
         <div id="sitetitle">Data Dictionary (DD)</div>
-        <div id="sitetagline">This service is part of Reportnet</div>    
+        <div id="sitetagline">This service is part of Reportnet</div>
     </div> <!-- pagehead -->
     <div id="workarea">
     <%
@@ -280,16 +280,16 @@ if (isDisplayOperations){
     </div><%
 }
 %>
-                
+
                 <h1>Search data elements</h1>
-                
+
                 <%
                 if (feedbackValue != null) {
                 %>
                 <div class="system-msg">
                     <%= feedbackValue %>
                 </div>
-                <%  
+                <%
                 }
                 %>
 
@@ -310,7 +310,7 @@ if (isDisplayOperations){
                     <%
                     boolean commonOnly = request.getParameter("common")!=null;
                     boolean nonCommonOnly = request.getParameter("noncommon")!=null;
-                    
+
                     if (request.getParameter("link")==null){
                         %>
                         <tr valign="top">
@@ -334,7 +334,7 @@ if (isDisplayOperations){
                             </td>
                         </tr><%
                     }
-                    
+
                     if (!(fk!=null && fk.equals("true") && sel_ds!=null && sel_ds.length()>0) && commonOnly==false){
                         %>
                         <tr valign="top">
@@ -364,7 +364,7 @@ if (isDisplayOperations){
                         </tr><%
                     }
                     %>
-                                    
+
                     <tr valign="top">
                         <td align="right" style="padding-right:10">
                             <b>Type</b>
@@ -382,7 +382,7 @@ if (isDisplayOperations){
                             </select>
                         </td>
                     </tr>
-                    
+
                     <tr valign="top">
                         <td align="right" style="padding-right:10">
                             <b>Short name</b>
@@ -396,7 +396,7 @@ if (isDisplayOperations){
                             <input type="text" class="smalltext" size="59" name="short_name" value="<%=Util.processForDisplay(short_name, true)%>"/>
                         </td>
                     </tr>
-                    
+
                     <tr valign="top">
                         <td align="right" style="padding-right:10">
                             <b>Identifier</b>
@@ -410,13 +410,13 @@ if (isDisplayOperations){
                             <input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>"/>
                         </td>
                     </tr>
-                    
+
                     <%
                     /*
                     attrID = getAttributeIdByName("Name");
                     attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
                     if (inputAttributes.containsKey(attrID)) inputAttributes.remove(attrID);
-                        
+
                     if (attrID!=null){
                         %>
                         <tr valign="top">
@@ -490,10 +490,10 @@ if (isDisplayOperations){
                         </tr>
                         <%
                     }
-                    
+
                     attrID = getAttributeIdByName("Keywords");
                     if (attrID!=null){
-                        %>                    
+                        %>
                         <tr name="r" style="display:none">
                             <td width="100"><b>
                                 <a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit">
@@ -510,7 +510,7 @@ if (isDisplayOperations){
                         for (int i=0; i < def_attrs.size(); i++){
                             attrID = (String)def_attrs.get(i);
                             attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
-                            
+
                             attrName = getAttributeNameById(attrID);
 
                             if (inputAttributes.containsKey(attrID)) inputAttributes.remove(attrID);
@@ -540,7 +540,7 @@ if (isDisplayOperations){
                     if (attr_ids!=null){
                         for (int i=0; i < attr_ids.size(); i++){
                             attrID = (String)attr_ids.get(i);
-                             
+
                             if (!inputAttributes.containsKey(attrID)) continue;
                             if (sel_type.equals("remove") && attrID.equals(sel_attr)) continue;
 
@@ -598,7 +598,7 @@ if (isDisplayOperations){
                         }
                     }
                     %>
-                    
+
                     <tr valign="bottom">
                         <td style="width:150px" colspan="2">&nbsp;</td>
                         <td colspan="2" class="smallfont_light">
@@ -606,7 +606,7 @@ if (isDisplayOperations){
                             <input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>&nbsp;&nbsp;
                         </td>
                     </tr>
-                    
+
                     <%
                     if (!commonOnly && !nonCommonOnly){ %>
                         <tr>
@@ -617,7 +617,7 @@ if (isDisplayOperations){
                             </td>
                         </tr><%
                     }
-                    
+
                     // if authenticated user, enable to get working copies only
                     if (user!=null){
                         if (fk==null || !fk.equals("true")){ %>
@@ -633,7 +633,7 @@ if (isDisplayOperations){
                             <input type="hidden" name="wrk_copies" id="wrk_copies" value="true"/><%
                         }
                     }
-                    
+
                     if (fk==null || !fk.equals("true")){ %>
                         <tr>
                             <td colspan="2">&nbsp;</td>
@@ -644,9 +644,9 @@ if (isDisplayOperations){
                         </tr><%
                     }
                     %>
-                    
+
                     <tr style="height:10px;"><td colspan="4"></td></tr>
-                    
+
                     <tr valign="top">
                         <td colspan="2"></td>
                         <td>
@@ -657,16 +657,16 @@ if (isDisplayOperations){
                     <%
                     Vector addCriteria = new Vector();
                     for (int i=0; attrs!=null && i<attrs.size(); i++){
-                        
+
                         DElemAttribute attribute = (DElemAttribute)attrs.get(i);
-                        
+
                         if (type.equals("")){
                             if (!attribute.displayFor("CH1") && !attribute.displayFor("CH2"))
                                 continue;
                         }
                         else if (!attribute.displayFor(type))
                             continue;
-                    
+
                         if (!displayedCriteria.contains(attribute.getID())){
                             Hashtable hash = new Hashtable();
                             hash.put("id", attribute.getID());
@@ -674,7 +674,7 @@ if (isDisplayOperations){
                             addCriteria.add(hash);
                         }
                     }
-                    
+
                     if (addCriteria.size()>0){
                         %>
                         <tr>
@@ -699,29 +699,29 @@ if (isDisplayOperations){
                     <div style="display:none"> <!-- hidden inputs -->
                         <input type="hidden" name="sel_attr" value=""/>
                         <input type="hidden" name="sel_type" value=""/>
-                        
+
                         <!-- collect all the attributes already used in criterias -->
-                        
+
                         <input type="hidden" name="collect_attrs" value="<%=Util.processForDisplay(collect_attrs.toString(), true)%>"/>
                         <input name="ctx" type="hidden" value="<%=Util.processForDisplay(contextParam, true)%>"/>
-                        
+
                         <%
                         String skipID = request.getParameter("skip_id");
                         if (skipID!=null && skipID.length()!=0){ %>
                             <input type="hidden" name="skip_id" value="<%=skipID%>"/><%
                         }
-                        
+
                         String selected = request.getParameter("selected");
                         if (selected!=null && selected.length()!=0){
                             %>
                             <input name='selected' type='hidden' value='<%=selected%>'/>
                             <%
-                        }                
-                        
+                        }
+
                         if (commonOnly){ %>
                             <input type="hidden" name="common" value="true"/><%
                         }
-                        
+
                         if (nonCommonOnly){ %>
                             <input type="hidden" name="common" value="false"/><%
                         }
@@ -740,7 +740,7 @@ if (isDisplayOperations){
                             <input type="hidden" name="reg_status" value="Released"/><%
                         }
                         %>
-                    </div>                
+                    </div>
                 </form>
             </div> <!-- workarea -->
     <%

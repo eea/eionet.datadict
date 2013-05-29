@@ -15,15 +15,11 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
-import javax.servlet.ServletContext;
-
 import org.apache.log4j.Logger;
-import org.springframework.beans.BeansException;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IAttributeDAO;
@@ -60,7 +56,6 @@ public class DDSearchEngine {
     private static final String ELEMENT_TYPE = "elm";
 
     private Connection conn = null;
-    private ServletContext ctx = null;
     private String sessionID = "";
 
     // TODO: Check if the domain needs to be updated
@@ -96,19 +91,6 @@ public class DDSearchEngine {
     public DDSearchEngine(Connection conn, String sessionID) {
         this(conn);
         this.sessionID = sessionID;
-    }
-
-    public DDSearchEngine(Connection conn, String sessionID, ServletContext ctx) {
-        this(conn, sessionID);
-        this.ctx = ctx;
-
-        WebApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ctx);
-        try {
-            Map<String, ISchemaService> beansOfType = springContext.getBeansOfType(ISchemaService.class);
-            System.out.println(springContext);
-        } catch (BeansException e) {
-            e.printStackTrace();
-        }
     }
 
     public void setUser(final DDUser user) {
@@ -5257,31 +5239,15 @@ public class DDSearchEngine {
     }
 
     /**
+     * Returns bean form Spring context.
      *
      * @param <T>
      * @param beanClass
      * @return
      */
     public <T> T getSpringBean(Class<T> beanClass) {
-
-        if (ctx == null) {
-            throw new IllegalStateException("Missing servlet context!");
-        }
-
-        T result = null;
-        WebApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ctx);
-        if (springContext != null) {
-            try {
-                Map<String, T> beans = springContext.getBeansOfType(beanClass);
-                if (beans != null && !beans.isEmpty()) {
-                    result = beans.values().iterator().next();
-                }
-            } catch (BeansException e) {
-                // ignore deliberately
-            }
-        }
-
-        return result;
+        ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-context.xml");
+        return ctx.getBean(beanClass);
     }
 
     /**

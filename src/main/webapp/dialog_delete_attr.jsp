@@ -60,7 +60,7 @@ ServletContext ctx = null;
 
         conn = ConnectionUtil.getConnection();
 
-        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+        DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
 
         objects = null;//searchEngine.getAttributeObjects(attr_id, type);
         attrUseCount = searchEngine.getAttributeUseCount(attr_id, type);

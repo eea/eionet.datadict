@@ -28,18 +28,18 @@
 
     private String oCompStr=null;
     private int iO=0;
-    
+
     public c_SearchResultEntry(String _oID,String _oType,String _oShortName,String _oDsName,String _oTblName, String _oNs) {
-        
+
             oID    = _oID==null ? "" : _oID;
             oType  = _oType==null ? "" : _oType;
             oShortName    = _oShortName==null ? "" : _oShortName;
             oDsName    = _oDsName==null ? "" : _oDsName;
             oTblName= _oTblName==null ? "" : _oTblName;
             oNs    = _oNs==null ? "" : _oNs;
-            
+
     };
-    
+
     public void setComp(int i,int o) {
         switch(i) {
             case 2: oCompStr=oType; break;
@@ -49,7 +49,7 @@
             }
         iO=o;
     }
-    
+
     public String toString() {
         return oCompStr;
     }
@@ -69,7 +69,7 @@
     public boolean SortByColumn(Integer oCol,Integer oOrder) {
         if ((iSortColumn!=oCol.intValue()) || (iSortOrder!=oOrder.intValue())) {
             for(int i=0; i<oElements.size(); i++) {
-                c_SearchResultEntry oEntry=(c_SearchResultEntry)oElements.elementAt(i); 
+                c_SearchResultEntry oEntry=(c_SearchResultEntry)oElements.elementAt(i);
                 oEntry.setComp(oCol.intValue(),oOrder.intValue());
             }
             Collections.sort(oElements);
@@ -85,16 +85,16 @@
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
+
     // get user object from session
     DDUser user = SecurityUtil.getUser(request);
 
     // get page mode
     String pageMode = request.getParameter("sort_column")!=null ? "sort" : "search";
-    
+
     // see if popup
     boolean popup = request.getParameter("ctx")!=null && request.getParameter("ctx").equals("popup");
-    
+
     // get sorting info
     Integer oSortCol=null;
     Integer oSortOrder=null;
@@ -106,73 +106,73 @@
         oSortCol=null;
         oSortOrder=null;
     }
-    
+
     String newerThan = request.getParameter("newerThan");
-    
+
     // declare some global stuff
     Connection conn = null;
     Vector dataElements = null;
     DDSearchEngine searchEngine = null;
-    boolean isIncludeHistoricVersions = request.getParameter("incl_histver")!=null && request.getParameter("incl_histver").equals("true");    
-    
+    boolean isIncludeHistoricVersions = request.getParameter("incl_histver")!=null && request.getParameter("incl_histver").equals("true");
+
     // start the whole page try block
     try {
-    
+
         // if in search mode
         if (pageMode.equals("search")){
-            
+
             // remove the cached result set
             session.removeAttribute(attrCommonElms);
-            
+
                // get the DB connection and set up search engine
             ServletContext ctx = getServletContext();
             conn = ConnectionUtil.getConnection();
-            searchEngine = new DDSearchEngine(conn, "", ctx);
+            searchEngine = new DDSearchEngine(conn, "");
             searchEngine.setUser(user);
-        
+
             // get statical search parameters
             String type = request.getParameter("type");
             String short_name = request.getParameter("short_name");
             String idfier = request.getParameter("idfier");
-        
+
             String searchPrecision = request.getParameter("search_precision");
             String oper="=";
             if (searchPrecision != null && searchPrecision.equals("free"))
                 oper=" match ";
             if (searchPrecision != null && searchPrecision.equals("substr"))
                 oper=" like ";
-            
+
             String parWrkCopies = request.getParameter("wrk_copies");
             boolean wrkCopies = (parWrkCopies!=null && parWrkCopies.equals("true")) ? true : false;
-        
+
             // get dynamical search parameters
-            Vector params = new Vector();    
+            Vector params = new Vector();
             Enumeration parNames = request.getParameterNames();
             while (parNames.hasMoreElements()){
                 String parName = (String)parNames.nextElement();
                 if (!parName.startsWith(ATTR_PREFIX))
                     continue;
-            
+
                 String parValue = request.getParameter(parName);
                 if (parValue.length()==0)
                     continue;
-                
+
                 DDSearchParameter param =
                     new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, oper, "=");
-            
+
                 if (oper!= null && oper.trim().equalsIgnoreCase("like"))
                     param.addValue("'%" + parValue + "%'");
                 else
                     param.addValue("'" + parValue + "'");
                 params.add(param);
             }
-            
+
             // all set up for search, do it
             if (newerThan!=null && newerThan.length()>0)
                 dataElements = searchEngine.getNewerReleases(idfier, newerThan);
             else
                 dataElements = searchEngine.getCommonElements(params, type, short_name, idfier, request.getParameter("reg_status"), wrkCopies, isIncludeHistoricVersions, oper);
-            
+
         } // end if in search mode
 
 %>
@@ -191,7 +191,7 @@
                 document.forms["sort_form"].submit();
             }
         }
-        
+
         <%
         if (popup){ %>
             function pickElem(elmID, rowIndex){
@@ -199,12 +199,12 @@
                 if (opener && !opener.closed) {
                     // if the opener has pickElem(elmID) function at it returns true, close this popup
                     // else don't close it (multiple selection might be wanted)
-                    if (window.opener.pickElem(elmID)==true)  
+                    if (window.opener.pickElem(elmID)==true)
                         closeme();
                     else
                         hideRow(rowIndex);
                 }
-                else 
+                else
                     alert("You have closed the main window!\n\nNo action will be taken.")
             }
             function hideRow(i){
@@ -224,13 +224,13 @@
 
 <%
 if (popup){
-    %>    
+    %>
     <body class="popup">
         <div id="pagehead">
             <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
             <div id="networktitle">Eionet</div>
             <div id="sitetitle">Data Dictionary (DD)</div>
-            <div id="sitetagline">This service is part of Reportnet</div>    
+            <div id="sitetagline">This service is part of Reportnet</div>
         </div> <!-- pagehead -->
         <div id="workarea">
         <%
@@ -243,11 +243,11 @@ else{ %>
             <jsp:param name="helpscreen" value="common_element_search_results"/>
         </jsp:include>
         <%@ include file="nmenu.jsp" %>
-        <div id="workarea">        
+        <div id="workarea">
         <%
 }
 %>
-            
+
             <%
             if (popup){
                 %>
@@ -258,14 +258,14 @@ else{ %>
                 </div><%
             }
             %>
-            
+
             <h1>Search results</h1>
-            
+
             <%
             if (user==null){ %>
                 <p class="advise-msg">Note: Common elements NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
             }
-            
+
             if (pageMode.equals("search")){
                 if (dataElements==null || dataElements.size()==0){
                     %>
@@ -276,9 +276,9 @@ else{ %>
                 }
             }
             %>
-        
+
             <!-- result table -->
-            
+
             <table class="sortable" style="width:auto;clear:right">
             <%
             boolean isDisplayVersionColumn = isIncludeHistoricVersions;
@@ -307,7 +307,7 @@ else{ %>
                 if (isDisplayVersionColumn){
                     sortedImg  = getSortedImg(4, oSortCol, oSortOrder);
                     sortedLink = getSortedLink(4, oSortCol, oSortOrder);
-                    %>                    
+                    %>
                     <th>
                         <a title="Version" href="<%=Util.processForDisplay(sortedLink, true)%>">
                             Version&nbsp;<img src="<%=Util.processForDisplay(sortedImg, true)%>" width="12" height="12" alt=""/>
@@ -333,7 +333,7 @@ else{ %>
             </tr>
             </thead>
             <tbody>
-                
+
             <%
             int displayed = 0;
             if (pageMode.equals("search")){
@@ -341,9 +341,9 @@ else{ %>
                 // set up the search result set
                 c_SearchResultSet oResultSet=new c_SearchResultSet();
                 oResultSet.isAuth = user!=null;
-                oResultSet.oElements=new Vector(); 
+                oResultSet.oElements=new Vector();
                 session.setAttribute(attrCommonElms,oResultSet);
-                
+
                 // get IDs of elements to exclude
                 HashSet excludeIDs = new HashSet();
                 String strExcludeIDs = request.getParameter("exclude");
@@ -353,34 +353,34 @@ else{ %>
                          excludeIDs.add(st.nextToken());
                      }
                 }
-                
+
                 // search results processing loop
                 for (int i=0; i<dataElements.size(); i++){
-                    
+
                     DataElement dataElement = (DataElement)dataElements.get(i);
                     String delem_id = dataElement.getID();
                     String delem_name = dataElement.getShortName();
                     String delem_type = dataElement.getType();
-                    
+
                     String displayType = delem_type;
                     if (delem_type.equals("CH1"))
                         displayType = "Fixed values";
                     else if (delem_type.equals("CH2"))
                         displayType = "Quantitative";
-                    
+
                     String workingUser = dataElement.getWorkingUser();
                     String status = dataElement.getStatus();
                     String checkInNo = dataElement.getVersion();
-                    
+
                     StringBuffer viewLink = new StringBuffer();
                     viewLink.append(request.getContextPath()).append("/dataelements/").append(delem_id);
                     if (popup){
                         viewLink.append("/?popup=");
                     }
-                    
+
                     StringBuffer selectLink = new StringBuffer("javascript:pickElem(");
                     selectLink.append(delem_id).append(",").append(displayed+1).append(")");
-                    
+
                     boolean clickable = status!=null ? !searchEngine.skipByRegStatus(status) : true;
                     if (clickable){
                         if (excludeIDs.contains(delem_id))
@@ -389,13 +389,13 @@ else{ %>
                     String strDisabled = clickable ? "" : " disabled=\"disabled\"";
                     String statusImg   = "images/" + Util.getStatusImage(status);
                     String statusTxt   = Util.getStatusRadics(status);
-                    
+
                     c_SearchResultEntry oEntry = new c_SearchResultEntry(delem_id,
                                                                             displayType,
                                                                          delem_name,
                                                                          null,
                                                                          null,
-                                                                         null);                                                                             
+                                                                         null);
                     oEntry.clickable = clickable;
                     oEntry.status = status;
                     oEntry.checkInNo = checkInNo;
@@ -403,10 +403,10 @@ else{ %>
                     oEntry.viewLink = viewLink.toString();
                     oEntry.selectLink = selectLink.toString();
                     oResultSet.oElements.add(oEntry);
-                    
+
                     String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
                     %>
-                
+
                     <tr class="<%=zebraClass%>">
                         <td<%=strDisabled%>>
                             <%
@@ -478,15 +478,15 @@ else{ %>
                 else {
                     if ((oSortCol!=null) && (oSortOrder!=null))
                         oResultSet.SortByColumn(oSortCol,oSortOrder);
-                    
+
                     c_SearchResultEntry oEntry;
                     for (int i=0; i<oResultSet.oElements.size(); i++){
-                        
+
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
                         String strDisabled = oEntry.clickable ? "" : " disabled=\"disabled\"";
                         String statusImg   = "images/" + Util.getStatusImage(oEntry.status);
                         String statusTxt   = Util.getStatusRadics(oEntry.status);
-                        
+
                         String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
                         %>
                         <tr class="<%=zebraClass%>">
@@ -549,8 +549,8 @@ else{ %>
 
             }
             %>
-            
-        
+
+
         <form id="sort_form" action="common_elms.jsp" method="get">
             <div style="display:none">
                 <input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
@@ -565,7 +565,7 @@ else{ %>
                 %>
             </div>
         </form>
-        
+
     </div> <!-- workarea -->
     <%
     if (!popup){
