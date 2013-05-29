@@ -4,8 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Field;
 import java.util.Enumeration;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -98,4 +100,19 @@ public class CASFilterConfigTest {
         assertNotNull("Test that getServletContext returned object is not null.", casFC.getServletContext());
     }
 
+    /**
+     * Reset the {@link CASFilterConfig} singleton before each test, to keep them isolated.
+     * 
+     * @throws SecurityException
+     * @throws NoSuchFieldException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     */
+    @Before
+    public void resetSingleton() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+
+        Field instance = CASFilterConfig.class.getDeclaredField("instance");
+        instance.setAccessible(true);
+        instance.set(null, null);
+    }
 }
