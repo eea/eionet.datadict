@@ -64,6 +64,7 @@ public class DDSearchEngine {
     private String predTitle = "http://purl.org/dc/elements/1.1/title";
 
     private DDUser user = null;
+    private ApplicationContext springContext;
 
     /**
      *
@@ -71,6 +72,7 @@ public class DDSearchEngine {
      */
     public DDSearchEngine(Connection conn) {
         this.conn = conn;
+        springContext = new ClassPathXmlApplicationContext("spring-context.xml");
 
         String s = Props.getProperty(PropsIF.OUTSERV_ROD_OBLIG_URL);
         if (s != null && s.length() > 0) {
@@ -5177,7 +5179,7 @@ public class DDSearchEngine {
             return new ArrayList<SchemaSet>();
         }
 
-        ISchemaService schemaService = getSpringBean(ISchemaService.class);
+        ISchemaService schemaService = springContext.getBean(ISchemaService.class);
         return schemaService.getSchemaSetWorkingCopiesOf(user.getUserName());
     }
 
@@ -5192,7 +5194,7 @@ public class DDSearchEngine {
             return new ArrayList<Schema>();
         }
 
-        ISchemaService schemaService = getSpringBean(ISchemaService.class);
+        ISchemaService schemaService = springContext.getBean(ISchemaService.class);
         return schemaService.getSchemaWorkingCopiesOf(user.getUserName());
     }
 
@@ -5207,7 +5209,7 @@ public class DDSearchEngine {
             return new ArrayList<VocabularyFolder>();
         }
 
-        IVocabularyService vocabularyService = getSpringBean(IVocabularyService.class);
+        IVocabularyService vocabularyService = springContext.getBean(IVocabularyService.class);
         return vocabularyService.getWorkingCopies(user.getUserName());
     }
 
@@ -5216,7 +5218,7 @@ public class DDSearchEngine {
      * @return
      */
     public SchemaConversionsData getXmlConvData(String schemaUrl) {
-        IXmlConvService xmlConvService = getSpringBean(IXmlConvService.class);
+        IXmlConvService xmlConvService = springContext.getBean(IXmlConvService.class);
         try {
             return xmlConvService.getSchemaConversionsData(schemaUrl);
         } catch (ServiceException e) {
@@ -5229,25 +5231,13 @@ public class DDSearchEngine {
      * @return
      */
     public List<RdfNamespace> getRdfNamespaces() {
-        IAttributeDAO attributeDAO = getSpringBean(IAttributeDAO.class);
+        IAttributeDAO attributeDAO = springContext.getBean(IAttributeDAO.class);
         try {
             return attributeDAO.getRdfNamespaces();
         } catch (Exception e) {
             LOGGER.error(e);
             return null;
         }
-    }
-
-    /**
-     * Returns bean form Spring context.
-     *
-     * @param <T>
-     * @param beanClass
-     * @return
-     */
-    public <T> T getSpringBean(Class<T> beanClass) {
-        ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-context.xml");
-        return ctx.getBean(beanClass);
     }
 
     /**
