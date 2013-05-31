@@ -154,7 +154,8 @@
                         <configuration>
                             <tasks>
                                 <antcall target="prepare_apphome">
-                                    <param name="propertiesFile" value="${env}.properties" />
+                                    <param name="propertiesFile"
+                                        value="${env}.properties" />
                                 </antcall>
                             </tasks>
                         </configuration>
@@ -193,9 +194,9 @@
                 <!-- Maven 2.0.4 requires version 2.2 -->
                 <!-- <version>2.5.2</version> -->
                 <configuration>
-                   <formats>
-                       <format>xml</format>
-                   </formats>
+                    <formats>
+                        <format>xml</format>
+                    </formats>
                 </configuration>
             </plugin>
 
@@ -325,6 +326,11 @@
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>1.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>1.4.0</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>

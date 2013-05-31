@@ -504,6 +504,43 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
      * {@inheritDoc}
      */
     @Override
+    public List<VocabularyConceptAttribute> getVocabularyConceptAttributesMetadata() {
+        final Map<String, Object> params = new HashMap<String, Object>();
+        params.put("attributeWeight", DElemAttribute.typeWeights.get("VCO"));
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select * from M_ATTRIBUTE m ");
+        sql.append("WHERE FLOOR(m.DISP_WHEN / :attributeWeight) %2 != 0 ");
+        sql.append("order by m.DISP_ORDER");
+
+        List<VocabularyConceptAttribute> result =
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyConceptAttribute>() {
+
+                    @Override
+                    public VocabularyConceptAttribute mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyConceptAttribute atr = new VocabularyConceptAttribute();
+                        atr.setAttributeId(rs.getInt("m.M_ATTRIBUTE_ID"));
+                        atr.setDataType(rs.getString("m.DATA_TYPE"));
+                        atr.setInputType(rs.getString("m.DISP_TYPE"));
+                        atr.setLabel(rs.getString("m.NAME"));
+                        atr.setHeight(rs.getInt("m.DISP_HEIGHT"));
+                        atr.setWidth(rs.getInt("m.DISP_WIDTH"));
+                        atr.setMultiValue(rs.getBoolean("m.DISP_MULTIPLE"));
+                        atr.setIdentifier(rs.getString("m.SHORT_NAME"));
+                        atr.setMandatory("M".equals(rs.getString("m.OBLIGATION")));
+                        atr.setLanguageUsed(rs.getBoolean("m.LANGUAGE_USED"));
+
+                        return atr;
+                    }
+                });
+
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void createVocabularyConceptAttributes(List<VocabularyConceptAttribute> attributes) {
         StringBuilder sql = new StringBuilder();
         sql.append("insert into T_VOCABULARY_CONCEPT_ATTRIBUTE (M_ATTRIBUTE_ID, VOCABULARY_CONCEPT_ID, ATTR_VALUE, RELATED_CONCEPT_ID, LANGUAGE, LINK_TEXT) ");

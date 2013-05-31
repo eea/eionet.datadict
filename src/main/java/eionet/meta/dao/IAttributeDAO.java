@@ -142,6 +142,13 @@ public interface IAttributeDAO {
     List<SimpleAttribute> getAttributesMetadata(int typeWeight);
 
     /**
+     * Returns the attribute metadata according.
+     *
+     * @return
+     */
+    List<VocabularyConceptAttribute> getVocabularyConceptAttributesMetadata();
+
+    /**
      * Inserts the attributes.
      *
      * @param attributes

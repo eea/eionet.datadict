@@ -26,6 +26,7 @@ import java.util.List;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
@@ -409,9 +410,20 @@ public interface IVocabularyService {
     List<SimpleAttribute> getVocabularyFolderAttributesMetadata() throws ServiceException;
 
     /**
+     * Returns vocabulary concept attributes metadata (without values).
+     *
+     * @return
+     * @throws ServiceException
+     */
+    List<VocabularyConceptAttribute> getVocabularyConceptAttributesMetadata() throws ServiceException;
+
+    /**
      * Get folder by folder identifier.
-     * @param folderIdentifier Folder unique textual identifier.
-     * @throws ServiceException Database error.
+     *
+     * @param folderIdentifier
+     *            Folder unique textual identifier.
+     * @throws ServiceException
+     *             Database error.
      * @return Folder object with metadata.
      */
     Folder getFolderByIdentifier(String folderIdentifier) throws ServiceException;

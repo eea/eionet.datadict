@@ -21,6 +21,7 @@
 
 package eionet.web.action;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,9 +33,11 @@ import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.IVocabularyService;
@@ -212,11 +215,88 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             addGlobalValidationError("Vocabulary concept identifier is not unique");
         }
 
+        // Validate concept attributes
+        mergeAttributes();
+        for (List<VocabularyConceptAttribute> attrs : vocabularyConcept.getAttributes()) {
+            if (attrs != null) {
+                for (VocabularyConceptAttribute attr : attrs) {
+                    if (attr != null) {
+                        if (attr.getIdentifier().equals("sameAsForeignConcept") && StringUtils.isNotEmpty(attr.getValue())) {
+                            if (!Util.isURL(attr.getValue())) {
+                                addGlobalValidationError(attr.getLabel() + " value must be in URL format");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         if (isValidationErrors()) {
-            vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyConcept.getId(), true);
+            initBeans();
         }
     }
 
+    /**
+     * Because not all the properties of dynamic attributes get submitted by form (meta data), but only values, we don't have enough
+     * data to do validation and re-displaying the attributes on the form when validation errors occur. This method loads the
+     * attributes metadata from database and merges them with the submitted attributes.
+     *
+     * @throws ServiceException
+     */
+    private void mergeAttributes() throws ServiceException {
+        List<VocabularyConceptAttribute> attrMeta = vocabularyService.getVocabularyConceptAttributesMetadata();
+        List<List<VocabularyConceptAttribute>> attributes = new ArrayList<List<VocabularyConceptAttribute>>();
+
+        if (vocabularyConcept.getAttributes() != null) {
+            for (int i = 0; i < vocabularyConcept.getAttributes().size(); i++) {
+                List<VocabularyConceptAttribute> attrValues = vocabularyConcept.getAttributes().get(i);
+                VocabularyConceptAttribute attrMetadata = attrMeta.get(i);
+                List<VocabularyConceptAttribute> attrs = new ArrayList<VocabularyConceptAttribute>();
+                if (attrValues != null) {
+                    for (VocabularyConceptAttribute attrValue : attrValues) {
+                        if (attrValue != null) {
+                            attrs.add(mergeTwoAttributes(attrMetadata, attrValue));
+                        } else {
+                            attrs.add(attrMetadata);
+                        }
+                    }
+                } else {
+                    attrs.add(attrMetadata);
+                }
+                attributes.add(attrs);
+            }
+        }
+
+        vocabularyConcept.setAttributes(attributes);
+    }
+
+    /**
+     * Returns new attribute object with merged data.
+     *
+     * @param metadata
+     * @param attributeValue
+     * @return
+     */
+    private VocabularyConceptAttribute mergeTwoAttributes(VocabularyConceptAttribute metadata, VocabularyConceptAttribute attributeValue) {
+        if (metadata.getAttributeId() != attributeValue.getAttributeId()) {
+            throw new IllegalStateException("Illegal set of attributes metadata, failed to synchronize attributes.");
+        }
+        try {
+            VocabularyConceptAttribute result = (VocabularyConceptAttribute) BeanUtils.cloneBean(metadata);
+            result.setValue(attributeValue.getValue());
+            result.setId(attributeValue.getId());
+            result.setVocabularyConceptId(attributeValue.getVocabularyConceptId());
+            result.setLanguage(attributeValue.getLanguage());
+            result.setRelatedId(attributeValue.getRelatedId());
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to clone attributes object", e);
+        }
+    }
+
+    /**
+     * @throws ServiceException
+     */
     private void initBeans() throws ServiceException {
         VocabularyConceptFilter filter = new VocabularyConceptFilter();
         filter.setVocabularyFolderId(vocabularyFolder.getId());

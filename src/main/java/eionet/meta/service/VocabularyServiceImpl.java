@@ -913,6 +913,18 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
+    public List<VocabularyConceptAttribute> getVocabularyConceptAttributesMetadata() throws ServiceException {
+        try {
+            return attributeDAO.getVocabularyConceptAttributesMetadata();
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get vocabulary concept attribute metadata: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<VocabularyFolder> getReleasedVocabularyFolders(int folderId) throws ServiceException {
         try {
             return vocabularyFolderDAO.getReleasedVocabularyFolders(folderId);

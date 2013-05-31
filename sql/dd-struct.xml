@@ -1379,4 +1379,16 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <modifyDataType tableName="DATASET" columnName="SHORT_NAME" newDataType="VARCHAR(50)"/>
     </changeSet>
 
+    <changeSet author="voolajuh" id="rev-111">
+        <comment>Add sameAs vocabulary concept attribute.</comment>
+        <sql>
+            insert into T_RDF_NAMESPACE (URI, NAME_PREFIX) values ('http://www.w3.org/2002/07/owl#', 'owl');
+
+            insert into M_ATTRIBUTE (NAME, DEFINITION, OBLIGATION, SHORT_NAME, DISP_TYPE, DISP_ORDER, DISP_WHEN, DISP_WIDTH, DISP_HEIGHT, DISP_MULTIPLE,
+            DATA_TYPE, RDF_PROPERTY_NAME, RDF_PROPERTY_NAMESPACE_ID)
+            values ('Same concept', 'Is used to state that two URI references refer to the same individual.', 'O', 'sameAsForeignConcept', 'text', 54, 512,
+            60, 1, 1,'reference', 'sameAs', (select ID from T_RDF_NAMESPACE where NAME_PREFIX = 'owl'));
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

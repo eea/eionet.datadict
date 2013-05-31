@@ -60,6 +60,7 @@ import net.sourceforge.stripes.action.UrlBinding;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 
 import eionet.meta.DDRuntimeException;
 import eionet.meta.dao.domain.Schema;
@@ -647,6 +648,13 @@ public class Util {
         }
 
         return true;
+    }
+
+    /**
+     * Checks if the given string is a well-formed URL.
+     */
+    public static boolean isURL(String s) {
+        return UrlValidator.getInstance().isValid(s);
     }
 
     /**

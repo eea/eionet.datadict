@@ -72,8 +72,9 @@
 
 <div id="multiDiv${uniqueId}">
     <c:forEach var="attr" items="${attributes}" varStatus="innerLoop">
-        <c:if test="${attr.id != 0}">
+        <c:if test="${not empty attr.relatedId && attr.relatedId != 0}">
         <div id="multySpan${uniqueId}-${innerLoop.index}">
+            <input type="hidden" name="${fieldName}[${innerLoop.index}].attributeId" value="${attr.attributeId}" />
             <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
             <input type="hidden" name="${fieldName}[${innerLoop.index}].relatedId" value="${attr.relatedId}" />
             <select name="select-${fieldName}[${innerLoop.index}].relatedId" disabled="disabled">

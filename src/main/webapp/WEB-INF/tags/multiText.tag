@@ -59,8 +59,9 @@
 
 <div id="multiDiv${uniqueId}">
     <c:forEach var="attr" items="${attributes}" varStatus="innerLoop">
-        <c:if test="${attr.id != 0}">
+        <c:if test="${!empty attr.value}">
         <span id="multySpan${uniqueId}-${innerLoop.index}">
+            <input type="hidden" name="${fieldName}[${innerLoop.index}].attributeId" value="${attr.attributeId}" />
             <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
             <input value="${attr.value}" name="${fieldName}[${innerLoop.index}].value" class="${fieldClass}" size="${fieldSize}" type="text">
             <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a><br>
