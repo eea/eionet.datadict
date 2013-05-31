@@ -51,6 +51,7 @@ public class VocabularyXmlWriter {
     private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
     private static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
     private static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
+    private static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
     private static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
 
     /**
@@ -73,7 +74,8 @@ public class VocabularyXmlWriter {
     /**
      * Escapes IRI's reserved characters in the given URL string.
      *
-     * @param url is a string.
+     * @param url
+     *            is a string.
      * @return escaped URI
      */
     public static String escapeIRI(String url) {
@@ -111,6 +113,7 @@ public class VocabularyXmlWriter {
         writer.setPrefix("rdf", RDF_NS);
         writer.setPrefix("rdfs", RDFS_NS);
         writer.setPrefix("skos", SKOS_NS);
+        writer.setPrefix("owl", OWL_NS);
         if (siteCodeType) {
             writer.setPrefix("dd", DD_SCHEMA_NS);
         }
@@ -119,6 +122,7 @@ public class VocabularyXmlWriter {
         writer.writeNamespace("rdf", RDF_NS);
         writer.writeNamespace("rdfs", RDFS_NS);
         writer.writeNamespace("skos", SKOS_NS);
+        writer.writeNamespace("owl", OWL_NS);
         if (siteCodeType) {
             writer.writeNamespace("dd", DD_SCHEMA_NS);
         }
@@ -211,19 +215,22 @@ public class VocabularyXmlWriter {
             for (List<VocabularyConceptAttribute> attrs : attributes) {
                 if (attrs != null) {
                     for (VocabularyConceptAttribute attr : attrs) {
-                        if (StringUtils.isNotEmpty(attr.getValue())
-                                && StringUtils.isNotEmpty(attr.getRdfPropertyName())) {
+                        if (StringUtils.isNotEmpty(attr.getValue()) && StringUtils.isNotEmpty(attr.getRdfPropertyName())) {
                             writer.writeCharacters("\n");
-                            writer.writeStartElement(attr.getRdfPropertyUri(), attr.getRdfPropertyName());
-                            if (StringUtils.isNotEmpty(attr.getLanguage())) {
-                                writer.writeAttribute("xml", XML_NS, "lang", attr.getLanguage());
+                            if (attr.getDataType().equalsIgnoreCase("reference")) {
+                                writer.writeEmptyElement(attr.getRdfPropertyUri(), attr.getRdfPropertyName());
+                                writer.writeAttribute("rdf", RDF_NS, "resource", attr.getValue());
+                            } else {
+                                writer.writeStartElement(attr.getRdfPropertyUri(), attr.getRdfPropertyName());
+                                if (StringUtils.isNotEmpty(attr.getLanguage())) {
+                                    writer.writeAttribute("xml", XML_NS, "lang", attr.getLanguage());
+                                }
+                                if (StringUtils.isNotEmpty(attr.getDataType()) && !(attr.getDataType().equalsIgnoreCase("string"))) {
+                                    writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(attr.getDataType()));
+                                }
+                                writer.writeCharacters(attr.getValue());
+                                writer.writeEndElement();
                             }
-                            if (StringUtils.isNotEmpty(attr.getDataType()) && StringUtils.isEmpty(attr.getLanguage())
-                                    && !(attr.getDataType().equalsIgnoreCase("string"))) {
-                                writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(attr.getDataType()));
-                            }
-                            writer.writeCharacters(attr.getValue());
-                            writer.writeEndElement();
                         } else if (StringUtils.isNotEmpty(attr.getRelatedIdentifier())
                                 && StringUtils.isNotEmpty(attr.getRdfPropertyName())) {
                             writer.writeCharacters("\n");
