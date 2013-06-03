@@ -53,8 +53,6 @@ public class DatasetImportTest extends DDDatabaseTestCase {
         DDUser testUser = new FakeUser();
         testUser.authenticate("jaanus", "jaanus");
 
-        // TODO: You can no longer provide null as the servlet context, so this fails
-
         DatasetImport dbImport = new DatasetImport(handler, conn, null);
 
         dbImport.setUser(testUser);
