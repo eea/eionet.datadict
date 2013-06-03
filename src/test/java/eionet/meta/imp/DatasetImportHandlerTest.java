@@ -73,7 +73,7 @@ public class DatasetImportHandlerTest extends DDDatabaseTestCase {
      * @throws Exception
      *
      */
-    public void X_testSimpleDatasetImport() throws Exception {
+    public void testSimpleDatasetImport() throws Exception {
 
         FakeUser testUser = new FakeUser();
         testUser.authenticate("heinlja", "");
@@ -83,7 +83,7 @@ public class DatasetImportHandlerTest extends DDDatabaseTestCase {
                         ConnectionUtil.getConnection(), testUser);
 
         assertEquals(0, dstImport.getErrorCount());
-        // assertEquals((int)0, dstImport.getWarningCount());
+        assertEquals(1, dstImport.getWarningCount());
         assertEquals(dstImport.getCountDatasetsImported(), dstImport.getCountDatasetsFound());
         assertEquals(dstImport.getCountTablesImported(), dstImport.getCountTablesFound());
         assertEquals(dstImport.getCountElementsImported(), dstImport.getCountElementsFound());
