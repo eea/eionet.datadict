@@ -176,6 +176,9 @@
                 <th scope="col" class="scope-col">
                                 Vocabulary folders
                 </th>
+                <th scope="col" class="scope-col">
+                                Vocabulary concepts
+                </th>
             </tr>
 
             <%
@@ -243,6 +246,9 @@
                     </td>
                     <td class="center">
                         <% if (attribute.displayFor(DElemAttribute.ParentType.VOCABULARY_FOLDER.toString())){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                    </td>
+                    <td class="center">
+                        <% if (attribute.displayFor(DElemAttribute.ParentType.VOCABULARY_CONCEPT.toString())){ %><img src="images/ok.gif" alt="Yes"/><%}%>
                     </td>
                 </tr>
 

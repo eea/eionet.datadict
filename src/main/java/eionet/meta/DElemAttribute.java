@@ -648,7 +648,7 @@ public class DElemAttribute {
     public enum ParentType {
 
         /** */
-        ELEMENT("E"), TABLE("TBL"), DATASET("DS"), SCHEMA("SCH"), SCHEMA_SET("SCS"), VOCABULARY_FOLDER("VCF");
+        ELEMENT("E"), TABLE("TBL"), DATASET("DS"), SCHEMA("SCH"), SCHEMA_SET("SCS"), VOCABULARY_FOLDER("VCF"), VOCABULARY_CONCEPT("VCO");
 
         /** */
         String s;
