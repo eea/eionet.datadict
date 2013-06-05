@@ -107,7 +107,7 @@
                                         </c:if>
                                     </c:when>
                                     <c:otherwise>
-                                        <c:out value="${attr.value}" />
+                                        <dd:linkify value="${attr.value}" />
                                     </c:otherwise>
                                 </c:choose>
                                 <c:if test="${not empty attr.language}">[${attr.language}]</c:if>
