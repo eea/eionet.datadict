@@ -20,6 +20,9 @@
                 </c:if>
                 <c:if test="${actionBean.userWorkingCopy}">
                 <li>
+                    <a href="#" id="addNewConceptLink">Add new concept</a>
+                </li>
+                <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="edit">
                         <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
@@ -196,6 +199,10 @@
                 </c:forEach>
             </table>
         </div>
+
+        <c:if test="${actionBean.userWorkingCopy}">
+            <jsp:include page="newConceptInc.jsp" />
+        </c:if>
 
         <!-- Vocabulary concepts search -->
         <stripes:form method="get" id="searchForm" beanclass="${actionBean.class.name}">
