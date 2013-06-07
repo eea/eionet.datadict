@@ -63,7 +63,7 @@
         </div>
         </c:if>
 
-        <h1>View vocabulary</h1>
+        <h1>Vocabulary: <em><c:out value="${actionBean.vocabularyFolder.label}" /></em></h1>
 
         <c:if test="${actionBean.vocabularyFolder.workingCopy && actionBean.vocabularyFolder.siteCodeType}">
             <div class="note-msg">

@@ -32,7 +32,7 @@
             </ul>
         </div>
 
-        <h1>Vocabulary concept</h1>
+        <h1>Concept: <em><c:out value="${actionBean.vocabularyConcept.label}" /></em> in the <em><c:out value="${actionBean.vocabularyFolder.identifier}" /></em> vocabulary</h1>
 
         <!-- Vocabulary folder -->
         <div id="outerframe" style="padding-top: 20px">
