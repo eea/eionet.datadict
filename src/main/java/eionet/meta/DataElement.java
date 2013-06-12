@@ -1,4 +1,3 @@
-
 package eionet.meta;
 
 import java.util.Vector;
@@ -54,6 +53,11 @@ public class DataElement implements Comparable {
 
     private boolean mandatoryFlag;
     private boolean primaryKey;
+
+    private String rdfTypeName;
+    private String rdfTypeUri;
+    private String rdfTypePrefix;
+    private int rdfNamespaceId;
 
     /*
      *
@@ -130,6 +134,7 @@ public class DataElement implements Comparable {
     public void addAttribute(Object attr) {
         simpleAttrs.add(attr);
     }
+
     public void setAttributes(Vector attrs) {
         simpleAttrs = attrs;
     }
@@ -350,10 +355,7 @@ public class DataElement implements Comparable {
             DElemAttribute attr = (DElemAttribute) simpleAttrs.get(t);
             String dispType = attr.getDisplayType();
             Vector values = attr.getValues();
-            if (dispType != null &&
-                    dispType.equals("image") &&
-                    values != null &&
-                    values.size() > 0) {
+            if (dispType != null && dispType.equals("image") && values != null && values.size() > 0) {
                 hasImages = true;
                 break;
             }
@@ -372,7 +374,8 @@ public class DataElement implements Comparable {
     }
 
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
+     *
      * @see java.lang.Object#toString()
      */
     public String toString() {
@@ -383,7 +386,7 @@ public class DataElement implements Comparable {
      *
      */
     public int compareTo(Object o) {
-        return this.sortOrder*this.sortString.compareTo(o.toString());
+        return this.sortOrder * this.sortString.compareTo(o.toString());
     }
 
     /*
@@ -405,9 +408,8 @@ public class DataElement implements Comparable {
         if (isCommonElement) {
             result.append("dataelements/latest/" + identifier);
         } else {
-            result.append("datasets/latest/").append(dstIdentifier).
-            append("/tables/").append(tblIdentifier).
-            append("/elements/").append(identifier);
+            result.append("datasets/latest/").append(dstIdentifier).append("/tables/").append(tblIdentifier).append("/elements/")
+                    .append(identifier);
         }
 
         return result.toString();
@@ -509,7 +511,8 @@ public class DataElement implements Comparable {
     }
 
     /**
-     * @param valueDelimiter the valueDelimiter to set
+     * @param valueDelimiter
+     *            the valueDelimiter to set
      */
     public void setValueDelimiter(String valueDelimiter) {
         this.valueDelimiter = valueDelimiter;
@@ -523,7 +526,8 @@ public class DataElement implements Comparable {
     }
 
     /**
-     * @param mandatoryFlag the mandatoryFlag to set
+     * @param mandatoryFlag
+     *            the mandatoryFlag to set
      */
     public void setMandatoryFlag(boolean mandatoryFlag) {
         this.mandatoryFlag = mandatoryFlag;
@@ -537,9 +541,71 @@ public class DataElement implements Comparable {
     }
 
     /**
-     * @param primaryKey the primaryKey to set
+     * @param primaryKey
+     *            the primaryKey to set
      */
     public void setPrimaryKey(boolean primaryKey) {
         this.primaryKey = primaryKey;
     }
+
+    /**
+     * @return the rdfTypeName
+     */
+    public String getRdfTypeName() {
+        return rdfTypeName;
+    }
+
+    /**
+     * @param rdfTypeName
+     *            the rdfTypeName to set
+     */
+    public void setRdfTypeName(String rdfTypeName) {
+        this.rdfTypeName = rdfTypeName;
+    }
+
+    /**
+     * @return the rdfTypeUri
+     */
+    public String getRdfTypeUri() {
+        return rdfTypeUri;
+    }
+
+    /**
+     * @param rdfTypeUri
+     *            the rdfTypeUri to set
+     */
+    public void setRdfTypeUri(String rdfTypeUri) {
+        this.rdfTypeUri = rdfTypeUri;
+    }
+
+    /**
+     * @return the rdfTypePrefix
+     */
+    public String getRdfTypePrefix() {
+        return rdfTypePrefix;
+    }
+
+    /**
+     * @param rdfTypePrefix
+     *            the rdfTypePrefix to set
+     */
+    public void setRdfTypePrefix(String rdfTypePrefix) {
+        this.rdfTypePrefix = rdfTypePrefix;
+    }
+
+    /**
+     * @return the rdfNamespaceId
+     */
+    public int getRdfNamespaceId() {
+        return rdfNamespaceId;
+    }
+
+    /**
+     * @param rdfNamespaceId
+     *            the rdfNamespaceId to set
+     */
+    public void setRdfNamespaceId(int rdfNamespaceId) {
+        this.rdfNamespaceId = rdfNamespaceId;
+    }
+
 }

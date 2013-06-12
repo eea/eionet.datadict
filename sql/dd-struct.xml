@@ -1391,4 +1391,19 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         </sql>
     </changeSet>
 
+    <changeSet author="voolajuh" id="rev-112">
+        <comment>Add RDF type properties for DS_TABLE and DATAELEM tables.</comment>
+        <sql>
+            alter table DATAELEM add column RDF_TYPE_NAMESPACE_ID INT(10) UNSIGNED;
+            alter table DATAELEM add column RDF_TYPE_NAME VARCHAR(255);
+            alter table DATAELEM ADD CONSTRAINT FK_RDF_TYPE_NAMESPACE_ID FOREIGN KEY (RDF_TYPE_NAMESPACE_ID)
+                            REFERENCES T_RDF_NAMESPACE (ID) ON UPDATE CASCADE ON DELETE CASCADE;
+
+            alter table DS_TABLE add column RDF_TYPE_NAMESPACE_ID INT(10) UNSIGNED;
+            alter table DS_TABLE add column RDF_TYPE_NAME VARCHAR(255);
+            alter table DS_TABLE ADD CONSTRAINT FK_TABLE_RDF_TYPE_NAMESPACE_ID FOREIGN KEY (RDF_TYPE_NAMESPACE_ID)
+                            REFERENCES T_RDF_NAMESPACE (ID) ON UPDATE CASCADE ON DELETE CASCADE;
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

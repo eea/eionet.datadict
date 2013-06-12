@@ -280,11 +280,13 @@ public class DDSearchEngine {
         StringBuffer monsterQry =
                 new StringBuffer()
                         .append("select distinct DATAELEM.*, ")
+                        .append("T_RDF_NAMESPACE.NAME_PREFIX, T_RDF_NAMESPACE.URI, ")
                         .append("TBL2ELEM.TABLE_ID, TBL2ELEM.POSITION, TBL2ELEM.MULTIVAL_DELIM, TBL2ELEM.MANDATORY, TBL2ELEM.PRIM_KEY, ")
                         .append("DS_TABLE.TABLE_ID, DS_TABLE.IDENTIFIER, ").append("DS_TABLE.SHORT_NAME, DS_TABLE.VERSION, ")
                         .append("DATASET.DATASET_ID, DATASET.IDENTIFIER, DATASET.SHORT_NAME, ")
                         .append("DATASET.VERSION, DATASET.REG_STATUS ").append("from TBL2ELEM ")
                         .append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID ")
+                        .append("left join T_RDF_NAMESPACE on DATAELEM.RDF_TYPE_NAMESPACE_ID=T_RDF_NAMESPACE.ID ")
                         .append("left outer join DS_TABLE on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID ")
                         .append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ")
                         .append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ").append("where ")
@@ -361,6 +363,10 @@ public class DDSearchEngine {
                 elm.setNamespace(new Namespace(elemsRs.getString("DATAELEM.PARENT_NS"), "", "", "", ""));
                 elm.setCheckedoutCopyID(elemsRs.getString("DATAELEM.CHECKEDOUT_COPY_ID"));
                 elm.setDate(elemsRs.getString("DATAELEM.DATE"));
+                elm.setRdfTypeName(elemsRs.getString("DATAELEM.RDF_TYPE_NAME"));
+                elm.setRdfNamespaceId(elemsRs.getInt("DATAELEM.RDF_TYPE_NAMESPACE_ID"));
+                elm.setRdfTypePrefix(elemsRs.getString("T_RDF_NAMESPACE.NAME_PREFIX"));
+                elm.setRdfTypeUri(elemsRs.getString("T_RDF_NAMESPACE.URI"));
 
                 // execute the statement prepared for dynamic attributes
                 attrsStmt.setInt(1, elmID);
@@ -1339,12 +1345,14 @@ public class DDSearchEngine {
             // otherwise take exactly the table wanted by tblID
             inParams = new INParameters();
             qry = new StringBuffer("select DATAELEM.*");
+            qry.append(", T_RDF_NAMESPACE.NAME_PREFIX, T_RDF_NAMESPACE.URI");
             if (!elmCommon) {
                 qry.append(", TBL2ELEM.POSITION, DS_TABLE.TABLE_ID, DS_TABLE.IDENTIFIER, ")
                         .append("DS_TABLE.SHORT_NAME, DS_TABLE.VERSION, DATASET.DATASET_ID, ")
                         .append("DATASET.IDENTIFIER, DATASET.SHORT_NAME, DATASET.VERSION");
             }
             qry.append(" from DATAELEM");
+            qry.append(" left join T_RDF_NAMESPACE on DATAELEM.RDF_TYPE_NAMESPACE_ID=T_RDF_NAMESPACE.ID ");
             if (!elmCommon) {
                 qry.append(" left outer join TBL2ELEM on DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID ")
                         .append("left outer join DS_TABLE on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID ")
@@ -1382,6 +1390,10 @@ public class DDSearchEngine {
                 elm.setUser(rs.getString("DATAELEM.USER"));
                 elm.setCheckedoutCopyID(rs.getString("DATAELEM.CHECKEDOUT_COPY_ID"));
                 elm.setDate(rs.getString("DATAELEM.DATE"));
+                elm.setRdfTypeName(rs.getString("DATAELEM.RDF_TYPE_NAME"));
+                elm.setRdfNamespaceId(rs.getInt("DATAELEM.RDF_TYPE_NAMESPACE_ID"));
+                elm.setRdfTypePrefix(rs.getString("T_RDF_NAMESPACE.NAME_PREFIX"));
+                elm.setRdfTypeUri(rs.getString("T_RDF_NAMESPACE.URI"));
 
                 elm.setNamespace(new Namespace(rs.getString("DATAELEM.PARENT_NS"), null, null, null, null));
 
@@ -3060,11 +3072,13 @@ public class DDSearchEngine {
         INParameters inParams = new INParameters();
 
         StringBuffer buf = new StringBuffer();
-        buf.append("select distinct DS_TABLE.*, DATASET.* ");
+        buf.append("select distinct DS_TABLE.*, DATASET.*, ");
+        buf.append("T_RDF_NAMESPACE.NAME_PREFIX, T_RDF_NAMESPACE.URI ");
         buf.append("from DS_TABLE ");
 
         // JH140803
         // there's now a many-to-many relation btw DS_TABLE & DATASET
+        buf.append("left join T_RDF_NAMESPACE on DS_TABLE.RDF_TYPE_NAMESPACE_ID=T_RDF_NAMESPACE.ID ");
         buf.append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ");
         buf.append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ");
         buf.append("where DS_TABLE.CORRESP_NS is not null and DS_TABLE.TABLE_ID=");
@@ -3102,6 +3116,10 @@ public class DDSearchEngine {
                 dsTable.setDstIdentifier(rs.getString("DATASET.IDENTIFIER"));
                 dsTable.setDstStatus(rs.getString("DATASET.REG_STATUS"));
                 dsTable.setIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
+                dsTable.setRdfTypeName(rs.getString("DS_TABLE.RDF_TYPE_NAME"));
+                dsTable.setRdfNamespaceId(rs.getInt("DS_TABLE.RDF_TYPE_NAMESPACE_ID"));
+                dsTable.setRdfTypePrefix(rs.getString("T_RDF_NAMESPACE.NAME_PREFIX"));
+                dsTable.setRdfTypeUri(rs.getString("T_RDF_NAMESPACE.URI"));
             }
         } finally {
             try {

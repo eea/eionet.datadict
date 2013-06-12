@@ -16,6 +16,7 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eionet.meta.DDSearchEngine;
@@ -48,8 +49,8 @@ public class DsTableHandler extends BaseHandler {
     private String nsID = null;
     private String dstID = null;
 
-    boolean copy = false; //making a copy, exists() not performed
-    String version = null; //used only when making a copy
+    boolean copy = false; // making a copy, exists() not performed
+    String version = null; // used only when making a copy
 
     boolean versioning = true;
     boolean superUser = false;
@@ -76,8 +77,8 @@ public class DsTableHandler extends BaseHandler {
 
     public DsTableHandler(Connection conn, Parameters req, ServletContext ctx) {
         this.conn = conn;
-        this.req  = req;
-        this.ctx  = ctx;
+        this.req = req;
+        this.ctx = ctx;
         this.mode = req.getParameter("mode");
 
         dstID = req.getParameter("ds_id");
@@ -132,10 +133,9 @@ public class DsTableHandler extends BaseHandler {
             version = req.getParameter("version");
         }
 
-        if (mode == null || (!mode.equalsIgnoreCase("add")
-                && !mode.equalsIgnoreCase("edit")
-                && !mode.equalsIgnoreCase("delete")
-                && !mode.equalsIgnoreCase("edit_order"))) {
+        if (mode == null
+                || (!mode.equalsIgnoreCase("add") && !mode.equalsIgnoreCase("edit") && !mode.equalsIgnoreCase("delete") && !mode
+                        .equalsIgnoreCase("edit_order"))) {
 
             throw new Exception("DsTableHandler mode unspecified or unknown!");
         }
@@ -184,8 +184,7 @@ public class DsTableHandler extends BaseHandler {
 
             PreparedStatement stmt = null;
             try {
-                stmt = conn.prepareStatement(
-                        "update DST2TBL set POSITION=? where TABLE_ID=? and DATASET_ID=?");
+                stmt = conn.prepareStatement("update DST2TBL set POSITION=? where TABLE_ID=? and DATASET_ID=?");
                 for (Iterator iter = positions.entrySet().iterator(); iter.hasNext();) {
 
                     Map.Entry entry = (Map.Entry) iter.next();
@@ -236,9 +235,9 @@ public class DsTableHandler extends BaseHandler {
             stmt.executeUpdate();
 
             inParams = new INParameters();
-            String q = "delete from TBL2ELEM where TABLE_ID="
-                    + inParams.add(req.getParameter("table_id"), Types.INTEGER)
-                    + " and DATAELEM_ID=" + inParams.add(req.getParameter("rplc_id"), Types.INTEGER);
+            String q =
+                    "delete from TBL2ELEM where TABLE_ID=" + inParams.add(req.getParameter("table_id"), Types.INTEGER)
+                            + " and DATAELEM_ID=" + inParams.add(req.getParameter("rplc_id"), Types.INTEGER);
 
             stmt = SQL.preparedStatement(q, inParams, conn);
             stmt.executeUpdate();
@@ -294,12 +293,22 @@ public class DsTableHandler extends BaseHandler {
             gen.setFieldExpr("PARENT_NS", inParams.add(parentNS, Types.INTEGER));
         }
 
-        String shortName  = req.getParameter("short_name");
+        String shortName = req.getParameter("short_name");
         if (shortName == null || shortName.length() == 0) {
             shortName = idfier;
         }
         gen.setFieldExpr("SHORT_NAME", inParams.add(shortName, Types.VARCHAR));
 
+        // RDF type
+        String rdfTypeName = req.getParameter("rdfTypeName");
+        int rdfNamespaceId = Integer.parseInt(req.getParameter("rdfNamespaceId"));
+        if (StringUtils.isEmpty(rdfTypeName) || rdfNamespaceId == 0) {
+            gen.setFieldExpr("RDF_TYPE_NAME", null);
+            gen.setFieldExpr("RDF_TYPE_NAMESPACE_ID", null);
+        } else {
+            gen.setField("RDF_TYPE_NAME", rdfTypeName);
+            gen.setFieldExpr("RDF_TYPE_NAMESPACE_ID", Integer.toString(rdfNamespaceId));
+        }
 
         PreparedStatement stmt = SQL.preparedStatement(gen.insertStatement(), inParams, conn);
         stmt.executeUpdate();
@@ -343,6 +352,18 @@ public class DsTableHandler extends BaseHandler {
             SQLGenerator gen = new SQLGenerator();
             gen.setTable("DS_TABLE");
             gen.setFieldExpr("SHORT_NAME", inParams.add(shortName, Types.VARCHAR));
+
+            // RDF type
+            String rdfTypeName = req.getParameter("rdfTypeName");
+            int rdfNamespaceId = Integer.parseInt(req.getParameter("rdfNamespaceId"));
+            if (StringUtils.isEmpty(rdfTypeName) || rdfNamespaceId == 0) {
+                gen.setFieldExpr("RDF_TYPE_NAME", null);
+                gen.setFieldExpr("RDF_TYPE_NAMESPACE_ID", null);
+            } else {
+                gen.setField("RDF_TYPE_NAME", rdfTypeName);
+                gen.setFieldExpr("RDF_TYPE_NAMESPACE_ID", Integer.toString(rdfNamespaceId));
+            }
+
             String q = gen.updateStatement() + " where TABLE_ID=" + inParams.add(tableID, Types.INTEGER);
 
             PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
@@ -366,7 +387,6 @@ public class DsTableHandler extends BaseHandler {
         if (del_IDs == null || del_IDs.length == 0) {
             return;
         }
-
 
         INParameters inParams = new INParameters();
         // get id numbers of corresponding namespaces
@@ -497,12 +517,11 @@ public class DsTableHandler extends BaseHandler {
                 params.addParameterValue("complete", "true");
             }
 
-            for (Iterator iter = elems.iterator(); iter.hasNext(); ) {
+            for (Iterator iter = elems.iterator(); iter.hasNext();) {
                 params.addParameterValue("delem_id", (String) iter.next());
             }
 
-            DataElementHandler delemHandler =
-                    new DataElementHandler(conn, params, ctx);
+            DataElementHandler delemHandler = new DataElementHandler(conn, params, ctx);
             delemHandler.setUser(user);
             delemHandler.setSuperUser(superUser);
             delemHandler.setVersioning(false);
@@ -571,19 +590,17 @@ public class DsTableHandler extends BaseHandler {
         iter = hash.iterator();
         Statement statement = conn.createStatement();
         while (iter.hasNext()) {
-            statement.executeUpdate("update DS_TABLE set WORKING_USER=NULL "
-                    + "where TABLE_ID=" + (String) iter.next());
+            statement.executeUpdate("update DS_TABLE set WORKING_USER=NULL " + "where TABLE_ID=" + (String) iter.next());
         }
     }
 
     /**
      *
      */
-    private String createNamespace(String dstName, String tblIdfier, String tblParentNS)
-            throws Exception {
+    private String createNamespace(String dstName, String tblIdfier, String tblParentNS) throws Exception {
         dstName = dstName == null ? "" : dstName;
-        String shortName  = tblIdfier + "_tbl_" + dstName + "_dst";
-        String fullName   = tblIdfier + " table in " + dstName + " dataset";
+        String shortName = tblIdfier + "_tbl_" + dstName + "_dst";
+        String fullName = tblIdfier + " table in " + dstName + " dataset";
         String definition = "The namespace of " + fullName;
 
         Parameters pars = new Parameters();
@@ -607,9 +624,9 @@ public class DsTableHandler extends BaseHandler {
             return;
         }
 
-        StringBuffer buf = new StringBuffer().
-                append("delete from ATTRIBUTE where PARENT_TYPE='T' and DATAELEM_ID in (").
-                append(eionet.util.Util.toCSV(del_IDs)).append(")");
+        StringBuffer buf =
+                new StringBuffer().append("delete from ATTRIBUTE where PARENT_TYPE='T' and DATAELEM_ID in (")
+                        .append(eionet.util.Util.toCSV(del_IDs)).append(")");
 
         // Skip the deletion of image-attributes if not in complete-delete mode.
         // That's because image-attributes are handled by image upload servlet instead.
@@ -617,8 +634,7 @@ public class DsTableHandler extends BaseHandler {
         // that all must be deleted with no exceptions.
         String completeDelete = req.getParameter("complete");
         if (completeDelete == null || !completeDelete.equals("true")) {
-            buf.append(" and M_ATTRIBUTE_ID not in ").
-            append("(select M_ATTRIBUTE_ID from M_ATTRIBUTE where DISP_TYPE='image')");
+            buf.append(" and M_ATTRIBUTE_ID not in ").append("(select M_ATTRIBUTE_ID from M_ATTRIBUTE where DISP_TYPE='image')");
         }
 
         LOGGER.debug(buf.toString());
@@ -645,9 +661,8 @@ public class DsTableHandler extends BaseHandler {
             params.addParameterValue("parent_id", del_IDs[i]);
             params.addParameterValue("parent_type", "T");
 
-            AttrFieldsHandler attrFieldsHandler =
-                    new AttrFieldsHandler(conn, params, ctx);
-            //attrFieldsHandler.setVersioning(this.versioning);
+            AttrFieldsHandler attrFieldsHandler = new AttrFieldsHandler(conn, params, ctx);
+            // attrFieldsHandler.setVersioning(this.versioning);
             attrFieldsHandler.setVersioning(false);
             try {
                 attrFieldsHandler.execute();
@@ -665,16 +680,14 @@ public class DsTableHandler extends BaseHandler {
         Enumeration parNames = req.getParameterNames();
         while (parNames.hasMoreElements()) {
             String parName = (String) parNames.nextElement();
-            if (parName.startsWith(ATTR_PREFIX)
-                    && !parName.startsWith(ATTR_MULT_PREFIX)) {
+            if (parName.startsWith(ATTR_PREFIX) && !parName.startsWith(ATTR_MULT_PREFIX)) {
                 String attrValue = req.getParameter(parName);
                 if (attrValue.length() == 0) {
                     continue;
                 }
                 attrID = parName.substring(ATTR_PREFIX.length());
-                if (req.getParameterValues(INHERIT_ATTR_PREFIX + attrID) != null)
-                {
-                    continue;  //some attributes will be inherited from dataset level
+                if (req.getParameterValues(INHERIT_ATTR_PREFIX + attrID) != null) {
+                    continue; // some attributes will be inherited from dataset level
                 }
                 insertAttribute(attrID, attrValue);
             } else if (parName.startsWith(ATTR_MULT_PREFIX)) {
@@ -685,14 +698,13 @@ public class DsTableHandler extends BaseHandler {
                 attrID = parName.substring(ATTR_MULT_PREFIX.length());
 
                 if (req.getParameterValues(INHERIT_ATTR_PREFIX + attrID) != null) {
-                    continue;  //some attributes will be inherited from dataset level
+                    continue; // some attributes will be inherited from dataset level
                 }
 
                 for (int i = 0; i < attrValues.length; i++) {
                     insertAttribute(attrID, attrValues[i]);
                 }
-            } else if (parName.startsWith(INHERIT_ATTR_PREFIX)
-                    && !parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)) {
+            } else if (parName.startsWith(INHERIT_ATTR_PREFIX) && !parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)) {
                 attrID = parName.substring(INHERIT_ATTR_PREFIX.length());
                 if (dstID == null) {
                     continue;
@@ -731,6 +743,7 @@ public class DsTableHandler extends BaseHandler {
         stmt.executeUpdate();
         stmt.close();
     }
+
     private void setLastInsertID() throws SQLException {
 
         String qry = "SELECT LAST_INSERT_ID()";
@@ -773,11 +786,10 @@ public class DsTableHandler extends BaseHandler {
 
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer();
-        buf.append("select count(DS_TABLE.TABLE_ID) from DST2TBL ").
-        append("left outer join DS_TABLE on DST2TBL.TABLE_ID=DS_TABLE.TABLE_ID where ").
-        append("DST2TBL.DATASET_ID=").append(inParams.add(dstID, Types.INTEGER)).
-        append(" and DS_TABLE.TABLE_ID is not null and DS_TABLE.IDENTIFIER=").
-        append(inParams.add(tblIdfier, Types.VARCHAR));
+        buf.append("select count(DS_TABLE.TABLE_ID) from DST2TBL ")
+                .append("left outer join DS_TABLE on DST2TBL.TABLE_ID=DS_TABLE.TABLE_ID where ").append("DST2TBL.DATASET_ID=")
+                .append(inParams.add(dstID, Types.INTEGER)).append(" and DS_TABLE.TABLE_ID is not null and DS_TABLE.IDENTIFIER=")
+                .append(inParams.add(tblIdfier, Types.VARCHAR));
 
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -791,8 +803,8 @@ public class DsTableHandler extends BaseHandler {
     }
 
     /**
-     * Checks if a table already exists with such identifier in such a dataset namespace.
-     * If so, then returns the table's CORRESP_NS. Otherwise returns null.
+     * Checks if a table already exists with such identifier in such a dataset namespace. If so, then returns the table's
+     * CORRESP_NS. Otherwise returns null.
      *
      * @param dstNamespaceID
      * @param tblIdfier
@@ -807,9 +819,9 @@ public class DsTableHandler extends BaseHandler {
         INParameters inParams = new INParameters();
 
         String qry =
-                "select distinct CORRESP_NS from DS_TABLE"
-                        + " where DS_TABLE.IDENTIFIER=" + inParams.add(tblIdfier, Types.VARCHAR)
-                        + " and DS_TABLE.PARENT_NS=" + inParams.add(dstNamespaceID, Types.INTEGER);
+                "select distinct CORRESP_NS from DS_TABLE" + " where DS_TABLE.IDENTIFIER="
+                        + inParams.add(tblIdfier, Types.VARCHAR) + " and DS_TABLE.PARENT_NS="
+                        + inParams.add(dstNamespaceID, Types.INTEGER);
 
         PreparedStatement stmt = SQL.preparedStatement(qry, inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -832,7 +844,7 @@ public class DsTableHandler extends BaseHandler {
             return;
         }
 
-        for (int i = 0;i < elems.size();i++) {
+        for (int i = 0; i < elems.size(); i++) {
             DataElement elem = (DataElement) elems.get(i);
 
             String elem_id = elem.getID();
@@ -875,8 +887,8 @@ public class DsTableHandler extends BaseHandler {
     }
 
     /**
-     * Deletes those given namespaces that are not present in CORRESP_NS of DS_TABLE.
-     * NB! Modifies the namespaces HashSet by removing those that are not to be deleted.
+     * Deletes those given namespaces that are not present in CORRESP_NS of DS_TABLE. NB! Modifies the namespaces HashSet by
+     * removing those that are not to be deleted.
      *
      * @throws SQLException
      */
@@ -932,7 +944,8 @@ public class DsTableHandler extends BaseHandler {
                     if (rs != null) {
                         rs.close();
                     }
-                } catch (SQLException sqle) {}
+                } catch (SQLException sqle) {
+                }
             }
         }
 
