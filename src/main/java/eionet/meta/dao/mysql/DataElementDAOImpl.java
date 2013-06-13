@@ -343,7 +343,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public DataElement getDataElement(int id) {
-        String sql = "select * from DATAELEM de where de.DATAELEM_ID = :id";
+        String sql = "select * from DATAELEM de left join T_RDF_NAMESPACE ns on de.RDF_TYPE_NAMESPACE_ID = ns.ID where de.DATAELEM_ID = :id";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", id);
 
@@ -356,6 +356,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setType(rs.getString("de.TYPE"));
                 de.setModified(new Date(rs.getLong("de.DATE")));
                 de.setWorkingUser(rs.getString("de.WORKING_USER"));
+                de.setRdfNamespaceId(rs.getInt("de.RDF_TYPE_NAMESPACE_ID"));
+                de.setRdfTypeName(rs.getString("de.RDF_TYPE_NAME"));
+                de.setRdfTypePrefix(rs.getString("ns.NAME_PREFIX"));
+                de.setRdfTypeUri(rs.getString("ns.URI"));
                 return de;
             }
         });
