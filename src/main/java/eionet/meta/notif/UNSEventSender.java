@@ -46,7 +46,7 @@ public class UNSEventSender {
      * @param eventType
      * @param user
      */
-    public static void definitionChanged(DataElement elm, String eventType, String user) {
+    public void definitionChanged(DataElement elm, String eventType, String user) {
 
         if (elm == null || eventType == null) {
             return;
@@ -109,7 +109,7 @@ public class UNSEventSender {
      * @param eventType
      * @param user
      */
-    public static void definitionChanged(DsTable tbl, String eventType, String user) {
+    public void definitionChanged(DsTable tbl, String eventType, String user) {
 
         if (tbl == null || eventType == null) {
             return;
@@ -170,7 +170,7 @@ public class UNSEventSender {
      * @param eventType
      * @param user
      */
-    public static void definitionChanged(Dataset dst, String eventType, String user) {
+    public void definitionChanged(Dataset dst, String eventType, String user) {
 
         if (dst == null || eventType == null) {
             return;
@@ -226,7 +226,11 @@ public class UNSEventSender {
         sendEvent(predicateObjects, user);
     }
 
-    public static void siteCodesAdded(SiteCodeAddedNotification siteCodeAddedNotif, String user) {
+    /**
+     * @param siteCodeAddedNotif
+     * @param user
+     */
+    public void siteCodesAdded(SiteCodeAddedNotification siteCodeAddedNotif, String user) {
 
         if (siteCodeAddedNotif == null) {
             return;
@@ -234,14 +238,19 @@ public class UNSEventSender {
         Hashtable predicateObjects = new Hashtable();
         Vector objects = null;
 
-        //TODO convert siteCodeAddedNotif object to XML - RPC equest.
+        // TODO convert siteCodeAddedNotif object to XML - RPC equest.
         predicateObjects.put(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE), objects);
 
         // FIXME
-        //sendEvent(predicateObjects, user);
+        // sendEvent(predicateObjects, user);
     }
 
-    public static void siteCodesAllocated(SiteCodeAllocationNotification siteCodeAllocatedNotif, String user) {
+    /**
+     *
+     * @param siteCodeAllocatedNotif
+     * @param user
+     */
+    public void siteCodesAllocated(SiteCodeAllocationNotification siteCodeAllocatedNotif, String user) {
 
         if (siteCodeAllocatedNotif == null) {
             return;
@@ -249,17 +258,19 @@ public class UNSEventSender {
         Hashtable predicateObjects = new Hashtable();
         Vector objects = null;
 
-        //TODO convert siteCodeAllocatedNotif object to XML - RPC equest.
+        // TODO convert siteCodeAllocatedNotif object to XML - RPC equest.
         predicateObjects.put(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE), objects);
 
         // FIXME
-        //sendEvent(predicateObjects, user);
+        // sendEvent(predicateObjects, user);
     }
 
-    /*
+    /**
      *
+     * @param predicateObjects
+     * @param eventIDTrailer
      */
-    public static void sendEvent(Hashtable predicateObjects, String eventIDTrailer) {
+    protected void sendEvent(Hashtable predicateObjects, String eventIDTrailer) {
 
         if (predicateObjects == null || predicateObjects.size() == 0) {
             return;
@@ -309,10 +320,11 @@ public class UNSEventSender {
         makeCall(rdfTriples);
     }
 
-    /*
+    /**
      *
+     * @param rdfTriples
      */
-    public static void makeCall(Object rdfTriples) {
+    protected void makeCall(Object rdfTriples) {
 
         // we don't make UNS calls when in development environment (assume it's Win32)
         if (File.separatorChar == '\\') {
@@ -325,14 +337,17 @@ public class UNSEventSender {
             return;
         }
 
-        // get server URL and channel name from configuration
+        // get server URL, channel name and function-name from configuration
         String serverURL = Props.getProperty(Subscriber.PROP_UNS_XMLRPC_SERVER_URL);
         String channelName = Props.getProperty(Subscriber.PROP_UNS_CHANNEL_NAME);
+        String functionName = Props.getProperty(Subscriber.PROP_UNS_SEND_NOTIFICATION_FUNC);
+        String userName = Props.getProperty(Subscriber.PROP_UNS_USERNAME);
+        String password = Props.getProperty(Subscriber.PROP_UNS_PASSWORD);
 
         try {
             // instantiate XML-RPC client object, set username/password from configuration
             XmlRpcClient client = new XmlRpcClient(serverURL);
-            client.setBasicAuthentication(Props.getProperty(Subscriber.PROP_UNS_USERNAME), Props.getProperty(Subscriber.PROP_UNS_PASSWORD));
+            client.setBasicAuthentication(userName, password);
 
             // prepare call parameters
             Vector params = new Vector();
@@ -340,27 +355,41 @@ public class UNSEventSender {
             params.add(rdfTriples);
 
             // perform the call
-            XmlRpcCallThread.execute(client, Props.getProperty(Subscriber.PROP_UNS_SEND_NOTIFICATION_FUNC), params);
+            XmlRpcCallThread.execute(client, functionName, params);
         } catch (IOException e) {
             LOGGER.error("Sending UNS notification failed: " + e.toString(), e);
         }
     }
 
-    /*
+    /**
      *
+     * @param triples
      */
-    private static void logTriples(Vector triples) {
+    private void logTriples(Vector triples) {
 
-        for (int i = 0; triples != null && i < triples.size(); i++) {
-            Vector triple = (Vector) triples.get(i);
-            for (int j = 0; triple != null && j < triple.size(); j++) {
-                if (j > 0) {
-                    System.out.print(" | ");
+        if (triples != null) {
+
+            int noOfTriples = triples.size();
+            for (int i = 0; i < noOfTriples; i++) {
+
+                Vector triple = (Vector) triples.get(i);
+                if (triple != null) {
+
+                    int tripleSize = triple.size();
+                    if (tripleSize > 0) {
+
+                        StringBuilder sb = new StringBuilder();
+                        for (int j = 0; j < tripleSize; j++) {
+
+                            if (j > 0) {
+                                sb.append(" | ");
+                            }
+                            sb.append(triple.get(j));
+                        }
+                        LOGGER.debug(sb.append("\n").toString());
+                    }
                 }
-                System.out.print(triple.get(j));
             }
-            System.out.println();
         }
-        System.out.println();
     }
 }
