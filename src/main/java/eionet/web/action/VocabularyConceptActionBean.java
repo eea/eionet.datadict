@@ -249,6 +249,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      *
      * @throws ServiceException
      */
+    // Old implementation that will be replaced by data element attributes. See #14721.
+    @Deprecated
     private void mergeAttributes() throws ServiceException {
         List<VocabularyConceptAttribute> attrMeta = vocabularyService.getVocabularyConceptAttributesMetadata();
         List<List<VocabularyConceptAttribute>> attributes = new ArrayList<List<VocabularyConceptAttribute>>();
@@ -283,6 +285,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @param attributeValue
      * @return
      */
+    // Old implementation that will be replaced by data element attributes. See #14721.
+    @Deprecated
     private VocabularyConceptAttribute mergeTwoAttributes(VocabularyConceptAttribute metadata,
             VocabularyConceptAttribute attributeValue) {
         if (metadata.getAttributeId() != attributeValue.getAttributeId()) {

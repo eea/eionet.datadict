@@ -209,6 +209,8 @@ public class VocabularyXmlWriter {
      * @param attributes
      * @throws XMLStreamException
      */
+    // Old implementation that will be replaced by data element attributes. See #14721.
+    @Deprecated
     private void writeAdditionalAttributes(String contextRoot, List<List<VocabularyConceptAttribute>> attributes)
             throws XMLStreamException {
         if (attributes != null) {

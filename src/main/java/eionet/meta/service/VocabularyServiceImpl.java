@@ -277,6 +277,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
     }
 
+    // Old implementation that will be replaced by data element attributes. See #14721.
+    @Deprecated
     private void updateVocabularyConceptAttributes(VocabularyConcept vocabularyConcept) {
         // Update vocabulary concept attributes.
         List<VocabularyConceptAttribute> toInsert = new ArrayList<VocabularyConceptAttribute>();
@@ -344,6 +346,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * @param vocabularyConceptId
      * @param deletedAttributes
      */
+    // Old implementation that will be replaced by data element attributes. See #14721.
+    @Deprecated
     private void fixRelatedConcepts(int vocabularyConceptId, List<VocabularyConceptAttribute> deletedAttributes) {
         // Delete redundant related attributes
         for (VocabularyConceptAttribute attribute : deletedAttributes) {

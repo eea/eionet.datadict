@@ -146,6 +146,8 @@ public interface IAttributeDAO {
      *
      * @return
      */
+    // Old implementation that will be replaced by data element attributes. See #14721.
+    @Deprecated
     List<VocabularyConceptAttribute> getVocabularyConceptAttributesMetadata();
 
     /**
@@ -153,6 +155,8 @@ public interface IAttributeDAO {
      *
      * @param attributes
      */
+    // Old implementation that will be replaced by data element attributes. See #14721.
+    @Deprecated
     void createVocabularyConceptAttributes(List<VocabularyConceptAttribute> attributes);
 
     /**
@@ -160,6 +164,8 @@ public interface IAttributeDAO {
      *
      * @param attributes
      */
+    // Old implementation that will be replaced by data element attributes. See #14721.
+    @Deprecated
     void updateVocabularyConceptAttributes(List<VocabularyConceptAttribute> attributes);
 
     /**
@@ -168,11 +174,19 @@ public interface IAttributeDAO {
      * @param excludedIds
      * @param vocabularyConceptId
      */
+    // Old implementation that will be replaced by data element attributes. See #14721.
+    @Deprecated
     void deleteVocabularyConceptAttributes(List<Integer> excludedIds, int vocabularyConceptId);
 
+    // Old implementation that will be replaced by data element attributes. See #14721.
+    @Deprecated
     List<VocabularyConceptAttribute> getDeletedConceptAttributes(List<Integer> excludedIds, int vocabularyConceptId);
 
+    // Old implementation that will be replaced by data element attributes. See #14721.
+    @Deprecated
     void checkAndDeleteConceptAttribute(int conceptId, int relatedConceptId, String identifier);
 
+    // Old implementation that will be replaced by data element attributes. See #14721.
+    @Deprecated
     void checkAndAddConceptAttribute(int conceptId, int relatedConceptId, String identifier);
 }

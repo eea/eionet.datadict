@@ -416,6 +416,8 @@ public interface IVocabularyService {
      * @return
      * @throws ServiceException
      */
+    // Old implementation that will be replaced by data element attributes. See #14721.
+    @Deprecated
     List<VocabularyConceptAttribute> getVocabularyConceptAttributesMetadata() throws ServiceException;
 
     /**
