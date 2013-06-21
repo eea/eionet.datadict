@@ -45,7 +45,7 @@ public class UNSEventSenderTest {
         expectedPredicates.add(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE));
         expectedPredicates.add(Props.getProperty(PropsIF.PREDICATE_RDF_TYPE));
 
-        TestingUNSEventSender unsEventSender = new TestingUNSEventSender();
+        UNSEventSenderMock unsEventSender = new UNSEventSenderMock();
         unsEventSender.definitionChanged(elm, eventType, user);
         postCallAssertions(expectedPredicates, null, unsEventSender);
     }
@@ -72,7 +72,7 @@ public class UNSEventSenderTest {
         HashSet<String> unexpectedPredicates = new HashSet<String>();
         unexpectedPredicates.add(Props.getProperty(UNSEventSender.PROP_UNS_DEFINITION_STATUS_PREDICATE));
 
-        TestingUNSEventSender unsEventSender = new TestingUNSEventSender();
+        UNSEventSenderMock unsEventSender = new UNSEventSenderMock();
         unsEventSender.definitionChanged(elm, eventType, user);
         postCallAssertions(expectedPredicates, unexpectedPredicates, unsEventSender);
     }
@@ -97,7 +97,7 @@ public class UNSEventSenderTest {
         expectedPredicates.add(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE));
         expectedPredicates.add(Props.getProperty(PropsIF.PREDICATE_RDF_TYPE));
 
-        TestingUNSEventSender unsEventSender = new TestingUNSEventSender();
+        UNSEventSenderMock unsEventSender = new UNSEventSenderMock();
         unsEventSender.definitionChanged(dst, eventType, user);
         postCallAssertions(expectedPredicates, null, unsEventSender);
     }
@@ -109,7 +109,7 @@ public class UNSEventSenderTest {
     public void testSiteCodesAdded() {
 
         SiteCodeAddedNotification notif = new SiteCodeAddedNotification();
-        TestingUNSEventSender unsEventSender = new TestingUNSEventSender();
+        UNSEventSenderMock unsEventSender = new UNSEventSenderMock();
         unsEventSender.siteCodesAdded(notif, "obama");
 
         // Assert that there was NO XmlRpcClient created.
@@ -125,7 +125,7 @@ public class UNSEventSenderTest {
     public void testSiteCodesAllocated() {
 
         SiteCodeAllocationNotification notif = new SiteCodeAllocationNotification();
-        TestingUNSEventSender unsEventSender = new TestingUNSEventSender();
+        UNSEventSenderMock unsEventSender = new UNSEventSenderMock();
         unsEventSender.siteCodesAllocated(notif, "obama");
 
         // Assert that there was NO XmlRpcClient created.
@@ -181,7 +181,7 @@ public class UNSEventSenderTest {
      * @throws InterruptedException
      */
     private void postCallAssertions(HashSet<String> expectedPredicates, HashSet<String> unexpectedPredicates,
-            TestingUNSEventSender unsEventSender)
+            UNSEventSenderMock unsEventSender)
             throws InterruptedException {
 
         // Assert that there was an XmlRpcClient created.

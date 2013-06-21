@@ -5,18 +5,24 @@ import java.net.MalformedURLException;
 import org.apache.xmlrpc.XmlRpcClient;
 
 /**
- *
- * Type definition ...
+ * A mock of {@link UNSEventSender} that uses the "Subclass and Override Methods" principle to insert desired dependencies.
  *
  * @author jaanus
  */
-public class TestingUNSEventSender extends UNSEventSender {
+public class UNSEventSenderMock extends UNSEventSender {
 
     /** */
     private XmlRpcClientMock rpcClientMock;
 
     /** */
     private boolean dontCallActually = false;
+
+    /**
+     * Default constructor.
+     */
+    public UNSEventSenderMock() {
+        super();
+    }
 
     /*
      * (non-Javadoc)

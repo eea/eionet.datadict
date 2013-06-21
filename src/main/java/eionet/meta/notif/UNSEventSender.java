@@ -42,6 +42,13 @@ public class UNSEventSender {
     public static final String PROP_UNS_DEFINITION_STATUS_PREDICATE = "uns.definition-status.predicate";
 
     /**
+     * Default constructor.
+     */
+    public UNSEventSender() {
+        // Currently does nothing.
+    }
+
+    /**
      *
      * @param elm
      * @param eventType
