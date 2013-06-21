@@ -2,6 +2,7 @@ package eionet.meta.notif;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -99,6 +100,38 @@ public class UNSEventSenderTest {
         TestingUNSEventSender unsEventSender = new TestingUNSEventSender();
         unsEventSender.definitionChanged(dst, eventType, user);
         postCallAssertions(expectedPredicates, null, unsEventSender);
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void testSiteCodesAdded() {
+
+        SiteCodeAddedNotification notif = new SiteCodeAddedNotification();
+        TestingUNSEventSender unsEventSender = new TestingUNSEventSender();
+        unsEventSender.siteCodesAdded(notif, "obama");
+
+        // Assert that there was NO XmlRpcClient created.
+        // TODO change this after unsEventSender.siteCodesAdded(...) has been properly implemented.
+        XmlRpcClientMock client = unsEventSender.getRpcClientMock();
+        assertNull("XmlRpcClient null-check", client);
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void testSiteCodesAllocated() {
+
+        SiteCodeAllocationNotification notif = new SiteCodeAllocationNotification();
+        TestingUNSEventSender unsEventSender = new TestingUNSEventSender();
+        unsEventSender.siteCodesAllocated(notif, "obama");
+
+        // Assert that there was NO XmlRpcClient created.
+        // TODO change this after unsEventSender.siteCodesAllocated(...) has been properly implemented.
+        XmlRpcClientMock client = unsEventSender.getRpcClientMock();
+        assertNull("XmlRpcClient null-check", client);
     }
 
     /**

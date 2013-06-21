@@ -21,7 +21,6 @@ import org.apache.xmlrpc.XmlRpcClient;
 import eionet.meta.DDRuntimeException;
 import eionet.meta.DataElement;
 import eionet.meta.Dataset;
-import eionet.meta.DsTable;
 import eionet.meta.notif.util.RDFTriple;
 import eionet.meta.notif.util.XmlRpcCallThread;
 import eionet.util.Props;
@@ -107,67 +106,6 @@ public class UNSEventSender {
 
     /**
      *
-     * @param tbl
-     * @param eventType
-     * @param user
-     */
-    public void definitionChanged(DsTable tbl, String eventType, String user) {
-
-        if (tbl == null || eventType == null) {
-            return;
-        }
-
-        String tblIdfier = tbl.getIdentifier();
-        String tblURL = tbl.getReferenceURL();
-        if (tblIdfier == null && tblURL == null) {
-            return;
-        }
-
-        // the identifier sent to UNS must be like dataset_identifer/table_identifer
-        String dstIdfier = tbl.getDstIdentifier();
-        if (dstIdfier != null) {
-            tblIdfier = dstIdfier + "/" + tblIdfier;
-        }
-
-        Hashtable predicateObjects = new Hashtable();
-        Vector objects = null;
-
-        if (tblIdfier != null) {
-            objects = new Vector();
-            objects.add(tblIdfier);
-            predicateObjects.put(Props.getProperty(Subscriber.PROP_UNS_TABLE_PREDICATE), objects);
-        }
-
-        if (tblURL != null) {
-            objects = new Vector();
-            objects.add(tblURL);
-            predicateObjects.put(Props.getProperty(PROP_UNS_DEFINITION_URL_PREDICATE), objects);
-        }
-
-        if (user != null) {
-            objects = new Vector();
-            objects.add(user);
-            predicateObjects.put(Props.getProperty(PROP_UNS_USER_PREDICATE), objects);
-        }
-
-        objects = new Vector();
-        objects.add(eventType);
-        predicateObjects.put(Props.getProperty(Subscriber.PROP_UNS_EVENTTYPE_PREDICATE), objects);
-
-        objects = new Vector();
-        StringBuffer buf = new StringBuffer("DD ");
-        buf.append(eventType);
-        if (tblIdfier != null) {
-            buf.append(" ").append(tblIdfier);
-        }
-        objects.add(buf.toString());
-        predicateObjects.put(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE), objects);
-
-        sendEvent(predicateObjects, user);
-    }
-
-    /**
-     *
      * @param dst
      * @param eventType
      * @param user
@@ -238,7 +176,7 @@ public class UNSEventSender {
             return;
         }
         Hashtable predicateObjects = new Hashtable();
-        Vector objects = null;
+        Vector objects = new Vector();
 
         // TODO convert siteCodeAddedNotif object to XML - RPC equest.
         predicateObjects.put(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE), objects);
@@ -258,7 +196,7 @@ public class UNSEventSender {
             return;
         }
         Hashtable predicateObjects = new Hashtable();
-        Vector objects = null;
+        Vector objects = new Vector();
 
         // TODO convert siteCodeAllocatedNotif object to XML - RPC equest.
         predicateObjects.put(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE), objects);
