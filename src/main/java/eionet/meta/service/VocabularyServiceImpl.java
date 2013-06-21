@@ -40,10 +40,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.IAttributeDAO;
+import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IFolderDAO;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.IVocabularyFolderDAO;
+import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
@@ -88,6 +90,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
     /** Folder DAO. */
     @Autowired
     private IFolderDAO folderDAO;
+
+    /** Data element DAO. */
+    @Autowired
+    private IDataElementDAO dataElementDAO;
 
     /**
      * {@inheritDoc}
@@ -263,47 +269,71 @@ public class VocabularyServiceImpl implements IVocabularyService {
     public void updateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException {
         try {
             vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
+            updateVocabularyConceptAttributes(vocabularyConcept);
+            updateVocabularyConceptDataElementValues(vocabularyConcept);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
+        }
 
-            // Update vocabulary concept attributes.
-            List<VocabularyConceptAttribute> toInsert = new ArrayList<VocabularyConceptAttribute>();
-            List<VocabularyConceptAttribute> toUpdate = new ArrayList<VocabularyConceptAttribute>();
-            List<Integer> excludedIds = new ArrayList<Integer>();
+    }
 
-            if (vocabularyConcept.getAttributes() != null) {
-                for (List<VocabularyConceptAttribute> attributes : vocabularyConcept.getAttributes()) {
-                    if (attributes != null) {
-                        for (VocabularyConceptAttribute attr : attributes) {
-                            if (attr != null) {
-                                if (attr.getId() != 0) {
-                                    if (StringUtils.isNotEmpty(attr.getValue()) || attr.getRelatedId() != null) {
-                                        excludedIds.add(attr.getId());
-                                        toUpdate.add(attr);
-                                    }
-                                } else {
-                                    if (StringUtils.isNotEmpty(attr.getValue()) || attr.getRelatedId() != null) {
-                                        attr.setVocabularyConceptId(vocabularyConcept.getId());
-                                        toInsert.add(attr);
-                                    }
+    private void updateVocabularyConceptAttributes(VocabularyConcept vocabularyConcept) {
+        // Update vocabulary concept attributes.
+        List<VocabularyConceptAttribute> toInsert = new ArrayList<VocabularyConceptAttribute>();
+        List<VocabularyConceptAttribute> toUpdate = new ArrayList<VocabularyConceptAttribute>();
+        List<Integer> excludedIds = new ArrayList<Integer>();
+
+        if (vocabularyConcept.getAttributes() != null) {
+            for (List<VocabularyConceptAttribute> attributes : vocabularyConcept.getAttributes()) {
+                if (attributes != null) {
+                    for (VocabularyConceptAttribute attr : attributes) {
+                        if (attr != null) {
+                            if (attr.getId() != 0) {
+                                if (StringUtils.isNotEmpty(attr.getValue()) || attr.getRelatedId() != null) {
+                                    excludedIds.add(attr.getId());
+                                    toUpdate.add(attr);
+                                }
+                            } else {
+                                if (StringUtils.isNotEmpty(attr.getValue()) || attr.getRelatedId() != null) {
+                                    attr.setVocabularyConceptId(vocabularyConcept.getId());
+                                    toInsert.add(attr);
                                 }
                             }
                         }
                     }
                 }
             }
-
-            List<VocabularyConceptAttribute> deletedAttributes =
-                    attributeDAO.getDeletedConceptAttributes(excludedIds, vocabularyConcept.getId());
-
-            attributeDAO.updateVocabularyConceptAttributes(toUpdate);
-            attributeDAO.deleteVocabularyConceptAttributes(excludedIds, vocabularyConcept.getId());
-            attributeDAO.createVocabularyConceptAttributes(toInsert);
-
-            fixRelatedConcepts(vocabularyConcept.getId(), deletedAttributes);
-
-        } catch (Exception e) {
-            throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
         }
 
+        List<VocabularyConceptAttribute> deletedAttributes =
+                attributeDAO.getDeletedConceptAttributes(excludedIds, vocabularyConcept.getId());
+
+        attributeDAO.updateVocabularyConceptAttributes(toUpdate);
+        attributeDAO.deleteVocabularyConceptAttributes(excludedIds, vocabularyConcept.getId());
+        attributeDAO.createVocabularyConceptAttributes(toInsert);
+
+        fixRelatedConcepts(vocabularyConcept.getId(), deletedAttributes);
+    }
+
+    private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept) {
+        List<DataElement> dataElementValues = new ArrayList<DataElement>();
+        if (vocabularyConcept.getElementAttributes() != null) {
+            for (List<DataElement> values : vocabularyConcept.getElementAttributes()) {
+                if (values != null) {
+                    for (DataElement value : values) {
+                        if (value != null && StringUtils.isNotEmpty(value.getAttributeValue())) {
+                            dataElementValues.add(value);
+                        }
+                    }
+                }
+
+            }
+        }
+
+        dataElementDAO.deleteVocabularyConceptDataElementValues(vocabularyConcept.getId());
+        if (dataElementValues.size() > 0) {
+            dataElementDAO.insertVocabularyConceptDataElementValues(vocabularyConcept.getId(), dataElementValues);
+        }
     }
 
     /**
@@ -501,7 +531,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConceptDAO.copyVocabularyConcepts(vocabularyFolderId, newVocabularyFolderId);
                 vocabularyConceptDAO.copyVocabularyConceptsAttributes(newVocabularyFolderId);
                 vocabularyConceptDAO.updateRelatedConceptIds(newVocabularyFolderId);
+                dataElementDAO.copyVocabularyConceptDataElementValues(newVocabularyFolderId);
             }
+
+            // Copy data element relations
+            dataElementDAO.copyVocabularyDataElements(vocabularyFolderId, newVocabularyFolderId);
 
             timer.stop();
             LOGGER.debug("Check-out lasted: " + timer.toString());
@@ -536,9 +570,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             int originalVocabularyFolderId = vocabularyFolder.getCheckedOutCopyId();
 
-            // Remove old vocabulary concepts
             if (!vocabularyFolder.isSiteCodeType()) {
+                // Remove old vocabulary concepts
                 vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
+                // Remove old data element relations
+                dataElementDAO.deleteVocabularyDataElements(originalVocabularyFolderId);
             }
 
             // Update original vocabulary folder
@@ -550,9 +586,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolder.setWorkingUser(null);
             vocabularyFolderDAO.updateVocabularyFolder(vocabularyFolder);
 
-            // Move new vocabulary concepts to folder
             if (!vocabularyFolder.isSiteCodeType()) {
+                // Move new vocabulary concepts to folder
                 vocabularyConceptDAO.moveVocabularyConcepts(vocabularyFolderId, originalVocabularyFolderId);
+                // Move data element relations to folder
+                dataElementDAO.moveVocabularyDataElements(vocabularyFolderId, originalVocabularyFolderId);
             }
 
             // Delete old attributes first and then change the parent ID of the new ones
@@ -782,10 +820,14 @@ public class VocabularyServiceImpl implements IVocabularyService {
             throws ServiceException {
         try {
             VocabularyConcept result = vocabularyConceptDAO.getVocabularyConcept(vocabularyFolderId, conceptIdentifier);
+
             List<List<VocabularyConceptAttribute>> attributes =
                     attributeDAO.getVocabularyConceptAttributes(result.getId(), emptyAttributes);
-
             result.setAttributes(attributes);
+
+            List<List<DataElement>> elementAttributes =
+                    dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId, result.getId(), emptyAttributes);
+            result.setElementAttributes(elementAttributes);
 
             return result;
         } catch (Exception e) {
@@ -942,6 +984,42 @@ public class VocabularyServiceImpl implements IVocabularyService {
             return folderDAO.getFolderByIdentifier(folderIdentifier);
         } catch (Exception e) {
             throw new ServiceException("Failed to get folder by identifier: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addDataElement(int vocabularyFolderId, int dataElementId) throws ServiceException {
+        try {
+            dataElementDAO.addDataElement(vocabularyFolderId, dataElementId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to add data element: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeDataElement(int vocabularyFolderId, int dataElementId) throws ServiceException {
+        try {
+            dataElementDAO.removeDataElement(vocabularyFolderId, dataElementId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to remove data element: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<DataElement> getVocabularysDataElemets(int vocabularyFolderId) throws ServiceException {
+        try {
+            return dataElementDAO.getVocabularysDataElemets(vocabularyFolderId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get data elements: " + e.getMessage(), e);
         }
     }
 

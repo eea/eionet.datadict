@@ -118,6 +118,21 @@
                         </td>
                     </tr>
                 </c:forEach>
+                <!-- Data element attributes -->
+                <c:forEach var="elementValues" items="${actionBean.vocabularyConcept.elementAttributes}">
+                    <c:set var="elementMeta" value="${elementValues[0]}"/>
+                    <tr>
+                        <th scope="row" class="scope-row simple_attr_title">${elementMeta.shortName}</th>
+                        <td class="simple_attr_value">
+                            <c:forEach var="attr" items="${elementValues}" varStatus="innerLoop">
+                                <dd:linkify value="${attr.attributeValue}" />
+                                <c:if test="${fn:length(elementValues) - innerLoop.index - 1 >= 1}">
+                                    <hr />
+                                </c:if>
+                            </c:forEach>
+                        </td>
+                    </tr>
+                </c:forEach>
             </table>
         </div>
 

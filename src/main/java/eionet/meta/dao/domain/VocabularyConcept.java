@@ -42,6 +42,8 @@ public class VocabularyConcept {
 
     private List<List<VocabularyConceptAttribute>> attributes;
 
+    private List<List<DataElement>> elementAttributes;
+
     /**
      * @return the id
      */
@@ -160,6 +162,21 @@ public class VocabularyConcept {
      */
     public void setObsolete(Date obsolete) {
         this.obsolete = obsolete;
+    }
+
+    /**
+     * @return the elementAttributes
+     */
+    public List<List<DataElement>> getElementAttributes() {
+        return elementAttributes;
+    }
+
+    /**
+     * @param elementAttributes
+     *            the elementAttributes to set
+     */
+    public void setElementAttributes(List<List<DataElement>> elementAttributes) {
+        this.elementAttributes = elementAttributes;
     }
 
 }

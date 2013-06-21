@@ -23,6 +23,7 @@ package eionet.meta.service;
 
 import java.util.List;
 
+import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -428,4 +429,30 @@ public interface IVocabularyService {
      */
     Folder getFolderByIdentifier(String folderIdentifier) throws ServiceException;
 
+    /**
+     * Adds data element to vocabulary folder.
+     *
+     * @param vocabularyFolderId
+     * @param dataElementId
+     * @throws ServiceException
+     */
+    void addDataElement(int vocabularyFolderId, int dataElementId) throws ServiceException;
+
+    /**
+     * Removes data element from vocabulary folder.
+     *
+     * @param vocabularyFolderId
+     * @param dataElementId
+     * @throws ServiceException
+     */
+    void removeDataElement(int vocabularyFolderId, int dataElementId) throws ServiceException;
+
+    /**
+     * Returns data elements binded with vocabulary folder.
+     *
+     * @param vocabularyFolderId
+     * @return
+     * @throws ServiceException
+     */
+    List<DataElement> getVocabularysDataElemets(int vocabularyFolderId) throws ServiceException;
 }

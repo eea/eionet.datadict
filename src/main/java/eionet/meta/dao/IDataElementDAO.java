@@ -90,4 +90,84 @@ public interface IDataElementDAO {
      */
     String getDataElementDataType(int dataElementId);
 
+    /**
+     * Adds data element to vocabulary folder.
+     *
+     * @param vocabularyFolderId
+     * @param dataElementId
+     */
+    void addDataElement(int vocabularyFolderId, int dataElementId);
+
+    /**
+     * Removes data element from vocabulary folder.
+     *
+     * @param vocabularyFolderId
+     * @param dataElementId
+     */
+    void removeDataElement(int vocabularyFolderId, int dataElementId);
+
+    /**
+     * Returns data elements binded with vocabulary folder.
+     *
+     * @param vocabularyFolderId
+     * @return
+     */
+    List<DataElement> getVocabularysDataElemets(int vocabularyFolderId);
+
+    /**
+     * Deletes all vocabulary's data element relations.
+     *
+     * @param vocabularyFolderId
+     */
+    void deleteVocabularyDataElements(int vocabularyFolderId);
+
+    /**
+     * Deletes all vocabulary concept's data element values.
+     *
+     * @param vocabularyConceptId
+     */
+    void deleteVocabularyConceptDataElementValues(int vocabularyConceptId);
+
+    /**
+     * Inserts data element values.
+     *
+     * @param vocabularyConceptId
+     * @param dataElementValues
+     */
+    void insertVocabularyConceptDataElementValues(int vocabularyConceptId, List<DataElement> dataElementValues);
+
+    /**
+     * Moves all vocabulary's data element relations to other vocabulary.
+     *
+     * @param sourceVocabularyFolderId
+     * @param targetVocabularyFolderId
+     */
+    void moveVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId);
+
+    /**
+     * Copy all vocabulary's data element relations to other vocabulary.
+     *
+     * @param sourceVocabularyFolderId
+     * @param targetVocabularyFolderId
+     */
+    void copyVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId);
+
+    /**
+     * Returns data element attributes for vocabulary concept.
+     *
+     * @param vocabularyFolderId
+     * @param vocabularyConceptId
+     * @param emptyAttributes
+     *            when true, then attributes that are not valued are also included
+     * @return
+     */
+    List<List<DataElement>> getVocabularyConceptDataElementValues(int vocabularyFolderId, int vocabularyConceptId,
+            boolean emptyAttributes);
+
+    /**
+     * Copies data element values from old concepts to new concepts.
+     *
+     * @param newVocabularyFolderId
+     */
+    public void copyVocabularyConceptDataElementValues(int newVocabularyFolderId);
 }

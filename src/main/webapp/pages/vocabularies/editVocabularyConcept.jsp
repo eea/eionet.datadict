@@ -197,6 +197,25 @@
                                     </td>
                                 </tr>
                                 </c:forEach>
+
+                                <!-- Data element attributes -->
+                                <c:forEach var="elementValues" items="${actionBean.vocabularyConcept.elementAttributes}" varStatus="outerLoop">
+                                    <c:set var="attrMeta" value="${elementValues[0]}"/>
+                                    <tr>
+                                        <th scope="row" class="scope-row simple_attr_title">
+                                            ${attrMeta.shortName}
+                                        </th>
+                                        <td class="simple_attr_help">
+                                            <dd:optionalIcon />
+                                        </td>
+                                        <td class="simple_attr_value">
+                                            <dd:elementMultiText dataElements="${elementValues}"
+                                                fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
+                                                uniqueId="conceptElement${outerLoop.index}"
+                                                elementId="${attrMeta.id}" />
+                                        </td>
+                                    </tr>
+                                </c:forEach>
                             </table>
                         </td>
                     </tr>

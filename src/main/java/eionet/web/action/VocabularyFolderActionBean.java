@@ -41,14 +41,18 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
+import eionet.meta.service.IDataService;
 import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.DataElementsFilter;
+import eionet.meta.service.data.DataElementsResult;
 import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.VocabularyConceptFilter;
@@ -111,6 +115,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     @SpringBean
     private ISiteCodeService siteCodeService;
 
+    /** Data elements service. */
+    @SpringBean
+    private IDataService dataService;
+
     /** Vocabulary folder. */
     private VocabularyFolder vocabularyFolder;
 
@@ -147,6 +155,18 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /** Checkbox value for folder, when creating vocabulary folder. */
     private String folderChoice;
 
+    /** Data elements search filter. */
+    private DataElementsFilter elementsFilter;
+
+    /** Data elements search result object. */
+    private DataElementsResult elementsResult;
+
+    /** Binded data elements. */
+    private List<DataElement> bindedElements;
+
+    /** Data element id. */
+    private int elementId;
+
     /**
      * Navigates to view vocabulary folder page.
      *
@@ -172,6 +192,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         vocabularyFolderVersions =
                 vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
                         getUserName());
+
+        bindedElements = vocabularyService.getVocabularysDataElemets(vocabularyFolder.getId());
 
         return new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP);
     }
@@ -220,7 +242,74 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         folders = vocabularyService.getFolders(getUserName(), null);
         folderChoice = FOLDER_CHOICE_EXISTING;
+
+        bindedElements = vocabularyService.getVocabularysDataElemets(vocabularyFolder.getId());
+
         return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
+    }
+
+    /**
+     * Searches data elements.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution searchDataElements() throws ServiceException {
+        vocabularyFolder =
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                        vocabularyFolder.isWorkingCopy());
+        initFilter();
+        vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+        folders = vocabularyService.getFolders(getUserName(), null);
+        folderChoice = FOLDER_CHOICE_EXISTING;
+
+        if (elementsFilter == null) {
+            elementsFilter = new DataElementsFilter();
+        }
+        elementsFilter.setRegStatus("Released");
+        elementsFilter.setElementType(DataElementsFilter.COMMON_ELEMENT_TYPE);
+        elementsResult = dataService.searchDataElements(elementsFilter);
+        editDivId = "addElementsDiv";
+
+        bindedElements = vocabularyService.getVocabularysDataElemets(vocabularyFolder.getId());
+
+        return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
+    }
+
+    /**
+     * Adds data element relation.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution addDataElement() throws ServiceException {
+        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
+        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+        resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+
+        vocabularyService.addDataElement(vocabularyFolder.getId(), elementId);
+        addSystemMessage("Data element added");
+
+        return resolution;
+    }
+
+    /**
+     * Removes data element relation.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution removeDataElement() throws ServiceException {
+        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
+        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+        resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+
+        vocabularyService.removeDataElement(vocabularyFolder.getId(), elementId);
+        addSystemMessage("Data element removed");
+
+        return resolution;
     }
 
     /**
@@ -937,7 +1026,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyFolder the vocabularyFolder to set
+     * @param vocabularyFolder
+     *            the vocabularyFolder to set
      */
     public void setVocabularyFolder(VocabularyFolder vocabularyFolder) {
         this.vocabularyFolder = vocabularyFolder;
@@ -951,14 +1041,16 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcepts the vocabularyConcepts to set
+     * @param vocabularyConcepts
+     *            the vocabularyConcepts to set
      */
     public void setVocabularyConcepts(VocabularyConceptResult vocabularyConcepts) {
         this.vocabularyConcepts = vocabularyConcepts;
     }
 
     /**
-     * @param vocabularyService the vocabularyService to set
+     * @param vocabularyService
+     *            the vocabularyService to set
      */
     public void setVocabularyService(IVocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
@@ -972,7 +1064,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcept the vocabularyConcept to set
+     * @param vocabularyConcept
+     *            the vocabularyConcept to set
      */
     public void setVocabularyConcept(VocabularyConcept vocabularyConcept) {
         this.vocabularyConcept = vocabularyConcept;
@@ -986,7 +1079,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param conceptIds the conceptIds to set
+     * @param conceptIds
+     *            the conceptIds to set
      */
     public void setConceptIds(List<Integer> conceptIds) {
         this.conceptIds = conceptIds;
@@ -1000,7 +1094,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param copyId the copyId to set
+     * @param copyId
+     *            the copyId to set
      */
     public void setCopyId(int copyId) {
         this.copyId = copyId;
@@ -1028,7 +1123,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param filter the filter to set
+     * @param filter
+     *            the filter to set
      */
     public void setFilter(VocabularyConceptFilter filter) {
         this.filter = filter;
@@ -1042,7 +1138,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param page the page to set
+     * @param page
+     *            the page to set
      */
     public void setPage(int page) {
         this.page = page;
@@ -1063,7 +1160,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folder the folder to set
+     * @param folder
+     *            the folder to set
      */
     public void setFolder(Folder folder) {
         this.folder = folder;
@@ -1077,7 +1175,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folderChoice the folderChoice to set
+     * @param folderChoice
+     *            the folderChoice to set
      */
     public void setFolderChoice(String folderChoice) {
         this.folderChoice = folderChoice;
@@ -1088,6 +1187,50 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public List<Folder> getFolders() {
         return folders;
+    }
+
+    /**
+     * @return the elementsFilter
+     */
+    public DataElementsFilter getElementsFilter() {
+        return elementsFilter;
+    }
+
+    /**
+     * @param elementsFilter
+     *            the elementsFilter to set
+     */
+    public void setElementsFilter(DataElementsFilter elementsFilter) {
+        this.elementsFilter = elementsFilter;
+    }
+
+    /**
+     * @return the elementsResult
+     */
+    public DataElementsResult getElementsResult() {
+        return elementsResult;
+    }
+
+    /**
+     * @return the bindedElements
+     */
+    public List<DataElement> getBindedElements() {
+        return bindedElements;
+    }
+
+    /**
+     * @return the elementId
+     */
+    public int getElementId() {
+        return elementId;
+    }
+
+    /**
+     * @param elementId
+     *            the elementId to set
+     */
+    public void setElementId(int elementId) {
+        this.elementId = elementId;
     }
 
 }

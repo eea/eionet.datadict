@@ -343,7 +343,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public DataElement getDataElement(int id) {
-        String sql = "select * from DATAELEM de left join T_RDF_NAMESPACE ns on de.RDF_TYPE_NAMESPACE_ID = ns.ID where de.DATAELEM_ID = :id";
+        String sql =
+                "select * from DATAELEM de left join T_RDF_NAMESPACE ns on de.RDF_TYPE_NAMESPACE_ID = ns.ID where de.DATAELEM_ID = :id";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", id);
 
@@ -379,7 +380,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public int getDataElementId(String identifier) {
-        String sql = "select max(de.DATAELEM_ID) from DATAELEM de where de.IDENTIFIER = :identifier and de.REG_STATUS = :regStatus";
+        String sql =
+                "select max(de.DATAELEM_ID) from DATAELEM de where de.IDENTIFIER = :identifier and de.REG_STATUS = :regStatus";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("identifier", identifier);
         parameters.put("regStatus", RegStatus.RELEASED.toString());
@@ -411,4 +413,237 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addDataElement(int vocabularyFolderId, int dataElementId) {
+        String sql =
+                "insert into T_VOCABULARY_ELEMENT (VOCABULARY_FOLDER_ID, DATAELEM_ID) values (:vocabularyFolderId, :dataElementId)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyFolderId", vocabularyFolderId);
+        params.put("dataElementId", dataElementId);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeDataElement(int vocabularyFolderId, int dataElementId) {
+        String sql =
+                "delete from T_VOCABULARY_ELEMENT where VOCABULARY_FOLDER_ID = :vocabularyFolderId and DATAELEM_ID = :dataElementId";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyFolderId", vocabularyFolderId);
+        params.put("dataElementId", dataElementId);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<DataElement> getVocabularysDataElemets(int vocabularyFolderId) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select ve.*, de.* from T_VOCABULARY_ELEMENT ve left join DATAELEM de on ve.DATAELEM_ID = de.DATAELEM_ID ");
+        sb.append("where ve.VOCABULARY_FOLDER_ID = :vocabularyFolderId");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyFolderId", vocabularyFolderId);
+
+        List<DataElement> result = getNamedParameterJdbcTemplate().query(sb.toString(), params, new RowMapper<DataElement>() {
+
+            @Override
+            public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DataElement de = new DataElement();
+                de.setId(rs.getInt("de.DATAELEM_ID"));
+                de.setShortName(rs.getString("de.SHORT_NAME"));
+                de.setStatus(rs.getString("de.REG_STATUS"));
+                de.setType(rs.getString("de.TYPE"));
+                de.setModified(new Date(rs.getLong("de.DATE")));
+                de.setWorkingUser(rs.getString("de.WORKING_USER"));
+
+                return de;
+            }
+
+        });
+
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteVocabularyDataElements(int vocabularyFolderId) {
+        String sql = "delete from T_VOCABULARY_ELEMENT where VOCABULARY_FOLDER_ID = :vocabularyFolderId";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyFolderId", vocabularyFolderId);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteVocabularyConceptDataElementValues(int vocabularyConceptId) {
+        String sql = "delete from T_CONCEPT_ELEMENT_VALUE where VOCABULARY_CONCEPT_ID = :vocabularyConceptId";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyConceptId", vocabularyConceptId);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void moveVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId) {
+        String sql =
+                "update T_VOCABULARY_ELEMENT set VOCABULARY_FOLDER_ID = :targetVocabularyFolderId where VOCABULARY_FOLDER_ID = :sourceVocabularyFolderId";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("sourceVocabularyFolderId", sourceVocabularyFolderId);
+        params.put("targetVocabularyFolderId", targetVocabularyFolderId);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void copyVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("insert into T_VOCABULARY_ELEMENT (VOCABULARY_FOLDER_ID, DATAELEM_ID) ");
+        sb.append("select :targetVocabularyFolderId, DATAELEM_ID ");
+        sb.append("from T_VOCABULARY_ELEMENT ");
+        sb.append("where VOCABULARY_FOLDER_ID = :sourceVocabularyFolderId");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("sourceVocabularyFolderId", sourceVocabularyFolderId);
+        params.put("targetVocabularyFolderId", targetVocabularyFolderId);
+
+        getNamedParameterJdbcTemplate().update(sb.toString(), params);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<List<DataElement>> getVocabularyConceptDataElementValues(int vocabularyFolderId, int vocabularyConceptId,
+            boolean emptyAttributes) {
+        final Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyFolderId", vocabularyFolderId);
+        params.put("vocabularyConceptId", vocabularyConceptId);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select * from T_CONCEPT_ELEMENT_VALUE v ");
+        if (emptyAttributes) {
+            sql.append("RIGHT OUTER JOIN DATAELEM d ");
+        } else {
+            sql.append("LEFT JOIN DATAELEM d ");
+        }
+        sql.append("ON (v.DATAELEM_ID = d.DATAELEM_ID and v.VOCABULARY_CONCEPT_ID = :vocabularyConceptId) ");
+        sql.append("LEFT JOIN T_VOCABULARY_ELEMENT ve on ve.DATAELEM_ID = d.DATAELEM_ID ");
+        sql.append("LEFT JOIN T_RDF_NAMESPACE r ON d.RDF_TYPE_NAMESPACE_ID = r.ID ");
+        sql.append("where ve.VOCABULARY_FOLDER_ID = :vocabularyFolderId ");
+        sql.append("order by d.SHORT_NAME");
+
+        final List<List<DataElement>> result = new ArrayList<List<DataElement>>();
+
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
+
+            List<DataElement> values = null;
+            int previousDataElemId = 0;
+
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+
+                if (values == null) {
+                    values = new ArrayList<DataElement>();
+                    previousDataElemId = rs.getInt("d.DATAELEM_ID");
+                }
+
+                DataElement de = new DataElement();
+                de.setId(rs.getInt("d.DATAELEM_ID"));
+                de.setShortName(rs.getString("d.SHORT_NAME"));
+                de.setStatus(rs.getString("d.REG_STATUS"));
+                de.setType(rs.getString("d.TYPE"));
+                de.setModified(new Date(rs.getLong("d.DATE")));
+                de.setWorkingUser(rs.getString("d.WORKING_USER"));
+
+                de.setAttributeValue(rs.getString("v.ELEMENT_VALUE"));
+
+                de.setRdfNamespaceId(rs.getInt("d.RDF_TYPE_NAMESPACE_ID"));
+                de.setRdfTypeName(rs.getString("d.RDF_TYPE_NAME"));
+                de.setRdfTypePrefix(rs.getString("r.NAME_PREFIX"));
+                de.setRdfTypeUri(rs.getString("r.URI"));
+
+                if (previousDataElemId != rs.getInt("d.DATAELEM_ID")) {
+                    result.add(values);
+                    values = new ArrayList<DataElement>();
+                }
+
+                values.add(de);
+                previousDataElemId = rs.getInt("d.DATAELEM_ID");
+
+                if (rs.isLast()) {
+                    result.add(values);
+                }
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void insertVocabularyConceptDataElementValues(int vocabularyConceptId, List<DataElement> dataElementValues) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("insert into T_CONCEPT_ELEMENT_VALUE (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE) ");
+        sql.append("values (:vocabularyConceptId, :dataElementId, :elementValue)");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object>[] batchValues = new HashMap[dataElementValues.size()];
+
+        for (int i = 0; i < batchValues.length; i++) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("vocabularyConceptId", vocabularyConceptId);
+            params.put("dataElementId", dataElementValues.get(i).getId());
+            params.put("elementValue", dataElementValues.get(i).getAttributeValue());
+            batchValues[i] = params;
+        }
+
+        getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void copyVocabularyConceptDataElementValues(int newVocabularyFolderId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("insert into T_CONCEPT_ELEMENT_VALUE (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE) ");
+        sql.append("select con.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE ");
+        sql.append("from T_CONCEPT_ELEMENT_VALUE v ");
+        sql.append("left join T_VOCABULARY_CONCEPT con on v.VOCABULARY_CONCEPT_ID = con.ORIGINAL_CONCEPT_ID  ");
+        sql.append("where con.VOCABULARY_FOLDER_ID = :newVocabularyFolderId");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("newVocabularyFolderId", newVocabularyFolderId);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
 }

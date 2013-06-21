@@ -88,6 +88,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         vocabularyConcept =
                 vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), false);
         validateView();
+
+        LOGGER.debug("Element attrivutes: " + vocabularyConcept.getElementAttributes().size());
+
         return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
     }
 
@@ -118,6 +121,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                 vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), true);
         validateView();
         initBeans();
+
+        LOGGER.debug("Element attrivutes: " + vocabularyConcept.getElementAttributes().size());
+
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
     }
 
@@ -277,7 +283,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @param attributeValue
      * @return
      */
-    private VocabularyConceptAttribute mergeTwoAttributes(VocabularyConceptAttribute metadata, VocabularyConceptAttribute attributeValue) {
+    private VocabularyConceptAttribute mergeTwoAttributes(VocabularyConceptAttribute metadata,
+            VocabularyConceptAttribute attributeValue) {
         if (metadata.getAttributeId() != attributeValue.getAttributeId()) {
             throw new IllegalStateException("Illegal set of attributes metadata, failed to synchronize attributes.");
         }

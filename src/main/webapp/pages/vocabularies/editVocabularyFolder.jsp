@@ -251,9 +251,15 @@
         </div>
         </stripes:form>
 
+        <!-- Binded data elements -->
+        <jsp:include page="editBindedElementsInc.jsp" />
+
+        <!-- New concept popup -->
         <jsp:include page="newConceptInc.jsp" />
 
         <!-- Vocabulary concepts search -->
+        <h2>Vocabulary concepts</h2>
+
         <stripes:form method="get" id="searchForm" beanclass="${actionBean.class.name}">
             <div id="searchframe">
                 <stripes:hidden name="vocabularyFolder.folderName" />

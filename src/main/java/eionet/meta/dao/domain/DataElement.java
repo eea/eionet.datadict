@@ -57,6 +57,9 @@ public class DataElement {
     private String rdfTypePrefix;
     private int rdfNamespaceId;
 
+    /** Value from T_CONCEPT_ELEMENT_VALUE table. */
+    private String attributeValue;
+
     public String getStatusImage() {
         return Util.getStatusImage(status);
     }
@@ -258,6 +261,21 @@ public class DataElement {
      */
     public void setRdfNamespaceId(int rdfNamespaceId) {
         this.rdfNamespaceId = rdfNamespaceId;
+    }
+
+    /**
+     * @return the attributeValue
+     */
+    public String getAttributeValue() {
+        return attributeValue;
+    }
+
+    /**
+     * @param attributeValue
+     *            the attributeValue to set
+     */
+    public void setAttributeValue(String attributeValue) {
+        this.attributeValue = attributeValue;
     }
 
 }
