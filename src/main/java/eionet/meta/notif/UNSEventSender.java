@@ -8,11 +8,13 @@ package eionet.meta.notif;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.security.GeneralSecurityException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.xmlrpc.XmlRpcClient;
 
@@ -276,6 +278,19 @@ public class UNSEventSender {
             return;
         }
 
+        Vector rdfTriples = prepareTriples(predicateObjects, eventIDTrailer);
+        logTriples(rdfTriples);
+        makeCall(rdfTriples);
+    }
+
+    /**
+     *
+     * @param predicateObjects
+     * @param eventIDTrailer
+     * @return
+     */
+    protected Vector prepareTriples(Hashtable predicateObjects, String eventIDTrailer) {
+
         Vector rdfTriples = new Vector();
         RDFTriple rdfTriple = new RDFTriple();
         String eventID = String.valueOf(System.currentTimeMillis());
@@ -313,11 +328,7 @@ public class UNSEventSender {
                 rdfTriples.add(rdfTriple.toVector());
             }
         }
-
-        // DEBUG
-        logTriples(rdfTriples);
-
-        makeCall(rdfTriples);
+        return rdfTriples;
     }
 
     /**
@@ -326,14 +337,7 @@ public class UNSEventSender {
      */
     protected void makeCall(Object rdfTriples) {
 
-        // we don't make UNS calls when in development environment (assume it's Win32)
-        if (File.separatorChar == '\\') {
-            return;
-        }
-
-        // don't send if the configuration says so
-        String dontSendEvents = Props.getProperty(Subscriber.PROP_UNS_DONTSENDEVENTS);
-        if (dontSendEvents != null && dontSendEvents.trim().length() > 0) {
+        if (dontCallActually()) {
             return;
         }
 
@@ -346,7 +350,7 @@ public class UNSEventSender {
 
         try {
             // instantiate XML-RPC client object, set username/password from configuration
-            XmlRpcClient client = new XmlRpcClient(serverURL);
+            XmlRpcClient client = newXmlRpcClient(serverURL);
             client.setBasicAuthentication(userName, password);
 
             // prepare call parameters
@@ -359,6 +363,24 @@ public class UNSEventSender {
         } catch (IOException e) {
             LOGGER.error("Sending UNS notification failed: " + e.toString(), e);
         }
+    }
+
+    /**
+     *
+     * @return
+     */
+    protected boolean dontCallActually() {
+        return StringUtils.isNotBlank(Props.getProperty(Subscriber.PROP_UNS_DONTSENDEVENTS)) || File.separatorChar == '\\';
+    }
+
+    /**
+     *
+     * @param serverURL
+     * @return
+     * @throws MalformedURLException
+     */
+    protected XmlRpcClient newXmlRpcClient(String serverURL) throws MalformedURLException {
+        return new XmlRpcClient(serverURL);
     }
 
     /**
@@ -386,7 +408,7 @@ public class UNSEventSender {
                             }
                             sb.append(triple.get(j));
                         }
-                        LOGGER.debug(sb.append("\n").toString());
+                        LOGGER.debug(sb.toString());
                     }
                 }
             }
