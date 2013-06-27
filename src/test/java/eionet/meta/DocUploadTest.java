@@ -9,12 +9,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -29,23 +24,6 @@ import eionet.test.Seed;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
 
-/*
- * An attempt to mock a ServletInputStream
- */
-
-class MockServletInputStream extends ServletInputStream {
-    private InputStream instream;
-
-    public MockServletInputStream(String name) throws Exception {
-        instream = new FileInputStream(name);
-    }
-
-    public int read() throws IOException {
-        return instream.read();
-    }
-
-}
-
 /**
  * This unittest tests the DocUpload servlet
  *
@@ -53,15 +31,20 @@ class MockServletInputStream extends ServletInputStream {
  */
 public class DocUploadTest extends DDDatabaseTestCase {
 
+    /*
+     * (non-Javadoc)
+     * @see eionet.DDDatabaseTestCase#getSeedFilename()
+     */
     @Override
     protected String getSeedFilename() {
         return "seed-docupload.xml";
     }
 
     /**
-     * This test simply uploads the seed-hlp file For some reason, the object is not completely reset at each test, so the first
-     * time the servletContext.getInitParameter("module-db_pool") once, and not again and user.isAuthentic() is called twice the
-     * first time and once on every additional test run
+     * This test simply uploads the {@link Seed#HLP} file.
+     * For some reason, the object is not completely reset at each test, so the first
+     * time the servletContext.getInitParameter("module-db_pool") once, and not again and user.isAuthentic()
+     * is called twice the first time and once on every additional test run.
      */
     private void runSimpleUpload(String title, String ds_id) throws Exception {
 
@@ -79,6 +62,7 @@ public class DocUploadTest extends DDDatabaseTestCase {
 
         // This is what we expect for the request object
         request.setCharacterEncoding("UTF-8");
+        expectLastCall().atLeastOnce();
         expect(request.getSession()).andReturn(httpSession);
         expect(request.getParameter("idf")).andReturn("CDDA");
         // ds_id seems to only be used for ACL check. Can easily be spoofed
@@ -91,7 +75,7 @@ public class DocUploadTest extends DDDatabaseTestCase {
         expect(request.getContentType()).andReturn("text/xml");
         expect(request.getParameter("delete")).andReturn("");
         expect(request.getContextPath()).andReturn("/");
-        MockServletInputStream instream = new MockServletInputStream(filename);
+        ServletInputStreamMock instream = new ServletInputStreamMock(filename);
 
         expect(request.getInputStream()).andReturn(instream);
 

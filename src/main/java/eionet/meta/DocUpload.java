@@ -44,6 +44,7 @@ public class DocUpload extends HttpServlet {
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
         doPost(req, res);
@@ -52,6 +53,7 @@ public class DocUpload extends HttpServlet {
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
 
@@ -149,9 +151,9 @@ public class DocUpload extends HttpServlet {
             throw new Exception("Missing " + REQPAR_IDF + " request parameter!");
         }
 
-        if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + idf, "u")) {
-            throw new Exception("Not permitted!");
-        }
+//        if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + idf, "u")) {
+//            throw new Exception("Not permitted!");
+//        }
     }
 
     /**
