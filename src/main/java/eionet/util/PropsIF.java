@@ -124,4 +124,7 @@ public interface PropsIF {
 
     /** Content Registry URL for making the request to reharvest the source */
     public static final String CR_PING_URL = "cr.reharvest.request.url";
+
+    /** The property that withholds the friendly URI template for DD namespaces. */
+    public static final String NAMESPACE_FRIENDLY_URI_TEMPLATE = "dd.namespaces.friendlyUriTemplate";
 }

@@ -59,6 +59,9 @@ public class Rdf {
     private ITableService tableService;
     private IDataService dataService;
 
+    /** The friendly URI of the namespace representing the table for which the RDF is to be generated. */
+    private String tblNamespaceFriendlyUri;
+
     /**
      *
      * @param tblID
@@ -90,6 +93,9 @@ public class Rdf {
                 }
                 this.baseUri = Props.getRequiredProperty(PropsIF.RDF_TABLES_BASE_URI);
                 this.baseUri = MessageFormat.format(this.baseUri, this.id);
+
+                this.tblNamespaceFriendlyUri = Props.getRequiredProperty(PropsIF.NAMESPACE_FRIENDLY_URI_TEMPLATE);
+                this.tblNamespaceFriendlyUri = MessageFormat.format(this.tblNamespaceFriendlyUri, tbl.getNamespace());
             } else {
                 HashSet datasetStatuses = new HashSet();
                 datasetStatuses.add("Released");
@@ -360,6 +366,9 @@ public class Rdf {
         streamWriter.writeEmptyElement(RDFS_NS, "isDefinedBy");
         streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri);
 
+        streamWriter.writeEmptyElement(RDFS_NS, "subPropertyOf");
+        streamWriter.writeAttribute(RDF_NS, "resource", tblNamespaceFriendlyUri + "#" + element.getIdentifier());
+
         streamWriter.writeEndElement(); // </rdf:Property>
     }
 
@@ -385,6 +394,9 @@ public class Rdf {
         streamWriter.writeStartElement(DD_NS, "usesVocabulary");
         streamWriter.writeAttribute(RDF_NS, "resource", "/dataelements/" + element.getID());
         streamWriter.writeEndElement(); // </dd:usesVocabulary>
+
+        streamWriter.writeEmptyElement(RDFS_NS, "subPropertyOf");
+        streamWriter.writeAttribute(RDF_NS, "resource", tblNamespaceFriendlyUri + "#" + element.getIdentifier());
 
         streamWriter.writeEndElement(); // </owl:DatatypeProperty>
     }
