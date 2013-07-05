@@ -20,11 +20,9 @@
                 </li>
                 <c:if test="${actionBean.vocabularyFolder.workingCopy}">
                 <li>
-                    <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean" event="edit">
-                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                    <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}" event="edit">
                         <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                        <stripes:param name="vocabularyConcept.identifier" value="${actionBean.vocabularyConcept.identifier}" />
+                        <c:out value="${item.label}" />
                         Edit concept
                     </stripes:link>
                 </li>

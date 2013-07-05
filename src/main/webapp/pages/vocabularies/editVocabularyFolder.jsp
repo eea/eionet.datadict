@@ -319,11 +319,8 @@
                     </c:choose>
                 </display:column>
                 <display:column title="Label">
-                    <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean" event="edit">
-                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                        <stripes:param name="vocabularyConcept.identifier" value="${item.identifier}" />
+                    <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${item.identifier}" event="edit">
+                       <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                         <c:out value="${item.label}" />
                     </stripes:link>
                     <a href="#" onClick="openPopup('#editConceptDiv${item.id}')"><img src="${editIcon}" title="Quick edit" alt="Quick edit" style="border:0" /></a>

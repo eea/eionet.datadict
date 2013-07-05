@@ -21,6 +21,7 @@
 
 package eionet.web.action;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +36,7 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.web.util.UriUtils;
 
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyConceptAttribute;
@@ -80,7 +82,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution view() throws ServiceException {
-        handlePlusIdentifier();
+        // to be removed if Stripes is upgraded to 1.5.8
+        handleConceptIdentifier();
 
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
@@ -89,20 +92,27 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                 vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), false);
         validateView();
 
-        LOGGER.debug("Element attrivutes: " + vocabularyConcept.getElementAttributes().size());
+        LOGGER.debug("Element attributes: " + vocabularyConcept.getElementAttributes().size());
 
         return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
     }
 
     /**
-     * Stripes does handles "+" parameter as " " which results as trim(" ") and then null. This method fixes this rare case.
+     * Stripes has a bug that double-decodes the request path info. "+" is converted to " " that makes impossible to distinguish
+     * space and '+' This method extracts the original conceptId.
      */
-    private void handlePlusIdentifier() {
-        String conceptIdentifier = getContext().getRequest().getParameter("vocabularyConcept.identifier");
-        if (StringUtils.contains(conceptIdentifier, " ")) {
-            vocabularyConcept = new VocabularyConcept();
-            vocabularyConcept.setIdentifier(StringUtils.replace(conceptIdentifier, " ", "+"));
+    private void handleConceptIdentifier() {
+        String realRequestPath = getRequestedPath(getContext().getRequest());
+        // vocabularyconcept/{vocabularyFolder.folderName}/{vocabularyFolder.identifier}/{vocabularyConcept.identifier}/{$event}
+        String[] params = realRequestPath.split("\\/", -1);
+        String conceptIdentifier = params[4];
+        try {
+            conceptIdentifier = UriUtils.decode(conceptIdentifier, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.warn("Unsupported Encoding Exception " + e);
         }
+        vocabularyConcept = new VocabularyConcept();
+        vocabularyConcept.setIdentifier(conceptIdentifier);
     }
 
     /**
@@ -112,7 +122,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution edit() throws ServiceException {
-        handlePlusIdentifier();
+        // to be removed if Stripes is upgraded to 1.5.8
+        handleConceptIdentifier();
 
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
@@ -122,7 +133,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         validateView();
         initBeans();
 
-        LOGGER.debug("Element attrivutes: " + vocabularyConcept.getElementAttributes().size());
+        LOGGER.debug("Element attributes: " + vocabularyConcept.getElementAttributes().size());
 
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
     }
@@ -142,7 +153,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
-        resolution.addParameter("vocabularyConcept.identifier", vocabularyConcept.getIdentifier());
+        resolution.addParameter("vocabularyConcept.identifier", vocabularyConcept.getIdentifier().replaceAll(" ", "%20"));
         return resolution;
     }
 
@@ -161,7 +172,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
-        resolution.addParameter("vocabularyConcept.identifier", vocabularyConcept.getIdentifier());
+        resolution.addParameter("vocabularyConcept.identifier", vocabularyConcept.getIdentifier().replaceAll(" ", "%20"));
         return resolution;
     }
 
@@ -180,7 +191,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
-        resolution.addParameter("vocabularyConcept.identifier", vocabularyConcept.getIdentifier());
+        resolution.addParameter("vocabularyConcept.identifier", vocabularyConcept.getIdentifier().replaceAll(" ", "%20"));
         return resolution;
     }
 

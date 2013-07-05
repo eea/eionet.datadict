@@ -29,6 +29,7 @@ import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.SimpleMessage;
 import net.sourceforge.stripes.controller.AnnotatedClassActionResolver;
+import net.sourceforge.stripes.controller.StripesConstants;
 import net.sourceforge.stripes.validation.SimpleError;
 
 import org.apache.commons.collections.MapUtils;
@@ -223,6 +224,28 @@ public abstract class AbstractActionBean implements ActionBean {
         return MapUtils.isNotEmpty(getContext().getValidationErrors());
     }
 
+    /**
+     * Returns the real request path.
+     *
+     * @param request http request
+     * @return full urlbinding without decoding
+     */
+    protected String getRequestedPath(HttpServletRequest request) {
+        String servletPath, pathInfo;
+
+        // Check to see if the request is processing an include, and pull the path
+        // information from the appropriate source.
+        servletPath = (String) request.getAttribute(StripesConstants.REQ_ATTR_INCLUDE_PATH);
+        if (servletPath != null) {
+            pathInfo = (String) request.getAttribute(StripesConstants.REQ_ATTR_INCLUDE_PATH_INFO);
+        } else {
+            servletPath = request.getServletPath();
+            pathInfo = request.getPathInfo();
+        }
+
+        String finalPath = (servletPath != null ? servletPath : "") + (pathInfo != null ? pathInfo : "" );
+        return finalPath;
+    }
     /**
      *
      */
