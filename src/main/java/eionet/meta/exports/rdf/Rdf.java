@@ -292,6 +292,9 @@ public class Rdf {
         streamWriter.writeEmptyElement(RDFS_NS, "isDefinedBy");
         streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri);
 
+        streamWriter.writeEmptyElement(RDFS_NS, "subClassOf");
+        streamWriter.writeAttribute(RDF_NS, "resource", this.tblNamespaceFriendlyUri);
+
         List<SimpleAttribute> attributes = tableService.getTableAttributeValues(Integer.parseInt(tbl.getID()));
         for (SimpleAttribute attr : attributes) {
             if (StringUtils.isNotEmpty(attr.getRdfPropertyName())) {
