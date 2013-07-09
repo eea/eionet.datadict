@@ -319,7 +319,8 @@
                     </c:choose>
                 </display:column>
                 <display:column title="Label">
-                    <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${item.identifier}" event="edit">
+                    <!-- beanClass encodes incorrectly identifiers containing '+'. Can be replaced back after upgrading to Stripes 1.5.8 -->
+                    <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${item.identifier}/edit">
                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                         <c:out value="${item.label}" />
                     </stripes:link>

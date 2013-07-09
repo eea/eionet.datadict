@@ -59,6 +59,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /** JSP pages. */
     private static final String VIEW_VOCABULARY_CONCEPT_JSP = "/pages/vocabularies/viewVocabularyConcept.jsp";
+    /** JSP page for edit screen. */
     private static final String EDIT_VOCABULARY_CONCEPT_JSP = "/pages/vocabularies/editVocabularyConcept.jsp";
 
     /** Vocabulary service. */
@@ -73,6 +74,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /** Other vocabulary concepts in the vocabulary folder. */
     private List<VocabularyConcept> vocabularyConcepts;
+
+    /** private helper property for vocabulary concept identifier . */
+    private String conceptIdentifier;
 
     /**
      * View action.
@@ -89,7 +93,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
         vocabularyConcept =
-                vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), false);
+                vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), false);
         validateView();
 
         LOGGER.debug("Element attributes: " + vocabularyConcept.getElementAttributes().size());
@@ -105,14 +109,14 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         String realRequestPath = getRequestedPath(getContext().getRequest());
         // vocabularyconcept/{vocabularyFolder.folderName}/{vocabularyFolder.identifier}/{vocabularyConcept.identifier}/{$event}
         String[] params = realRequestPath.split("\\/", -1);
-        String conceptIdentifier = params[4];
+        String identifier = params[4];
         try {
-            conceptIdentifier = UriUtils.decode(conceptIdentifier, "utf-8");
+            identifier = UriUtils.decode(identifier, "utf-8");
         } catch (UnsupportedEncodingException e) {
             LOGGER.warn("Unsupported Encoding Exception " + e);
         }
-        vocabularyConcept = new VocabularyConcept();
-        vocabularyConcept.setIdentifier(conceptIdentifier);
+
+        setConceptIdentifier(identifier);
     }
 
     /**
@@ -129,7 +133,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
         vocabularyConcept =
-                vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), true);
+                vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
         validateView();
         initBeans();
 
@@ -145,6 +149,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution saveConcept() throws ServiceException {
+        vocabularyConcept.setIdentifier(getConceptIdentifier());
         vocabularyService.updateVocabularyConcept(vocabularyConcept);
 
         addSystemMessage("Vocabulary concept saved successfully");
@@ -153,7 +158,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
-        resolution.addParameter("vocabularyConcept.identifier", vocabularyConcept.getIdentifier().replaceAll(" ", "%20"));
+        resolution.addParameter("vocabularyConcept.identifier", Util.encodeURLPath(vocabularyConcept.getIdentifier()));
         return resolution;
     }
 
@@ -164,6 +169,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution markConceptObsolete() throws ServiceException {
+        vocabularyConcept.setIdentifier(getConceptIdentifier());
         vocabularyService.markConceptsObsolete(Collections.singletonList(vocabularyConcept.getId()));
 
         addSystemMessage("Vocabulary concept marked obsolete");
@@ -172,7 +178,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
-        resolution.addParameter("vocabularyConcept.identifier", vocabularyConcept.getIdentifier().replaceAll(" ", "%20"));
+        resolution.addParameter("vocabularyConcept.identifier", Util.encodeURLPath(vocabularyConcept.getIdentifier()));
         return resolution;
     }
 
@@ -183,6 +189,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution unMarkConceptObsolete() throws ServiceException {
+        vocabularyConcept.setIdentifier(getConceptIdentifier());
         vocabularyService.unMarkConceptsObsolete(Collections.singletonList(vocabularyConcept.getId()));
 
         addSystemMessage("Obsolete status removed from vocabulary concept");
@@ -191,7 +198,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
-        resolution.addParameter("vocabularyConcept.identifier", vocabularyConcept.getIdentifier().replaceAll(" ", "%20"));
+        resolution.addParameter("vocabularyConcept.identifier", Util.encodeURLPath(vocabularyConcept.getIdentifier()));
         return resolution;
     }
 
@@ -206,18 +213,18 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             addGlobalValidationError("No permission to modify vocabulary");
         }
 
-        if (StringUtils.isEmpty(vocabularyConcept.getIdentifier())) {
+        if (StringUtils.isEmpty(getConceptIdentifier())) {
             addGlobalValidationError("Vocabulary concept identifier is missing");
         } else {
             if (vocabularyFolder.isNumericConceptIdentifiers()) {
-                if (!Util.isNumericID(vocabularyConcept.getIdentifier())) {
+                if (!Util.isNumericID(getConceptIdentifier())) {
                     addGlobalValidationError("Vocabulary concept identifier must be numeric value");
                 }
             } else {
-                if (!Util.isValidIdentifier(vocabularyConcept.getIdentifier())) {
+                if (!Util.isValidIdentifier(getConceptIdentifier())) {
                     addGlobalValidationError("Vocabulary concept identifier contains illegal characters (/%?#:\\)");
                 }
-                if (VocabularyFolderActionBean.RESERVED_VOCABULARY_EVENTS.contains(vocabularyConcept.getIdentifier())) {
+                if (VocabularyFolderActionBean.RESERVED_VOCABULARY_EVENTS.contains(getConceptIdentifier())) {
                     addGlobalValidationError("This vocabulary concept identifier is reserved value and cannot be used");
                 }
             }
@@ -227,7 +234,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         }
 
         // Validate unique identifier
-        if (!vocabularyService.isUniqueConceptIdentifier(vocabularyConcept.getIdentifier(), vocabularyFolder.getId(),
+        if (!vocabularyService.isUniqueConceptIdentifier(getConceptIdentifier(), vocabularyFolder.getId(),
                 vocabularyConcept.getId())) {
             addGlobalValidationError("Vocabulary concept identifier is not unique");
         }
@@ -381,7 +388,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @return
      */
     public String getConceptUri() {
-        return VocabularyXmlWriter.escapeIRI(getUriPrefix() + vocabularyConcept.getIdentifier());
+        return VocabularyXmlWriter.escapeIRI(getUriPrefix() + getConceptIdentifier());
     }
 
     /**
@@ -440,4 +447,22 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         return vocabularyConcepts;
     }
 
-}
+    /**
+     * Helper property for concept identifier to make it work properly with tricky charaters: '+' etc.
+     * @return vocabularyConcept.identifier
+     */
+    public String getConceptIdentifier() {
+        //return vocabularyConcept.getIdentifier();
+        return conceptIdentifier;
+    }
+
+    /**
+     * Sets concept identifier.
+     * @param identifier vocabulary concept identifier
+     */
+    public void setConceptIdentifier(String identifier) {
+        conceptIdentifier = identifier;
+    }
+
+
+ }

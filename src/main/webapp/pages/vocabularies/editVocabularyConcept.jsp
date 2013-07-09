@@ -31,7 +31,8 @@
                         <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                         Back to vocabulary
                     </stripes:link>
-                    <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}" event="view">
+                    <!-- beanClass usage interprets some symbols incorrect because of a Stripes bug. Will be fixed in Stripes 1.5.8 -->
+                    <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/view">
                         <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                         View concept
                     </stripes:link>
@@ -72,7 +73,7 @@
                             <dd:mandatoryIcon />
                         </td>
                         <td class="simple_attr_value">
-                            <stripes:text class="smalltext" size="30" name="vocabularyConcept.identifier" />
+                             <stripes:text class="smalltext" size="30" name="conceptIdentifier" />
                         </td>
                     </tr>
                     <tr>

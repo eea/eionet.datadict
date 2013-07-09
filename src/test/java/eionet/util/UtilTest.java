@@ -57,4 +57,12 @@ public class UtilTest extends TestCase {
                 Util.processForLink("Some text ( http://en.wikipedia.org/wiki/Fahrvergnügen).", false, 100));
     }
 
+    public void testEncodeUrl() {
+        assertEquals("a%20b", Util.encodeURLPath("a b"));
+        assertEquals("ABC", Util.encodeURLPath("ABC"));
+        assertEquals("A+b%20%20%20c", Util.encodeURLPath("A+b   c"));
+
+
+
+    }
 }

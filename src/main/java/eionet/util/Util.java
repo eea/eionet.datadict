@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -61,6 +62,7 @@ import net.sourceforge.stripes.action.UrlBinding;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.springframework.web.util.UriUtils;
 
 import eionet.meta.DDRuntimeException;
 import eionet.meta.dao.domain.Schema;
@@ -93,6 +95,12 @@ public class Util {
     /** */
     private static String expiresDateString;
 
+    /**
+     * To prevent direct initialization.
+     */
+    private Util() {
+        throw new UnsupportedOperationException();
+    }
     /**
      * Returns true if the given string is null or its length is 0.
      *
@@ -1375,4 +1383,21 @@ public class Util {
     public static String formatDateTime(Date date) {
         return dateTimeFormat.format(date);
     }
+
+    /**
+     * Encodes URL fragment to UTF-8.
+     * @param value value to be encoded
+     * @return encoded value
+     */
+    public static String encodeURLPath(String value) {
+        String retValue = value;
+        try {
+            retValue = UriUtils.encodePath(value, "utf-8");
+        } catch (UnsupportedEncodingException ue) {
+            return retValue;
+        }
+
+        return retValue;
+    }
+
 }
