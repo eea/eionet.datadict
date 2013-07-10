@@ -1434,5 +1434,14 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
                     REFERENCES DATAELEM (DATAELEM_ID) ON UPDATE CASCADE ON DELETE CASCADE;
         </sql>
     </changeSet>
+    
+    <changeSet author="heinlja" id="rev-114">
+        <comment>Add vocabulary folder column that indicates if concept notations in the vocabulary should always be forced as equal to concept identifiers.</comment>
+        <addColumn tableName="T_VOCABULARY_FOLDER">
+            <column name="NOTATIONS_EQUAL_IDENTIFIERS" type="tinyint(1)" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

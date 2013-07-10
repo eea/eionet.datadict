@@ -253,8 +253,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public int createVocabularyConcept(int vocabularyFolderId, VocabularyConcept vocabularyConcept) throws ServiceException {
         try {
+            VocabularyFolder vocFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
+            if (vocFolder != null && vocFolder.isNotationsEqualIdentifiers()) {
+                vocabularyConcept.setNotation(vocabularyConcept.getIdentifier());
+            }
             return vocabularyConceptDAO.createVocabularyConcept(vocabularyFolderId, vocabularyConcept);
         } catch (Exception e) {
             throw new ServiceException("Failed to create vocabulary concept: " + e.getMessage(), e);
@@ -268,6 +273,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Transactional(rollbackFor = ServiceException.class)
     public void updateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException {
         try {
+            VocabularyFolder vocFolder = vocabularyFolderDAO.getVocabularyFolderOfConcept(vocabularyConcept.getId());
+            if (vocFolder != null && vocFolder.isNotationsEqualIdentifiers()) {
+                vocabularyConcept.setNotation(vocabularyConcept.getIdentifier());
+            }
+
             vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
             updateVocabularyConceptAttributes(vocabularyConcept);
             updateVocabularyConceptDataElementValues(vocabularyConcept);
@@ -397,6 +407,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public void quickUpdateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException {
         try {
+            VocabularyFolder vocFolder = vocabularyFolderDAO.getVocabularyFolderOfConcept(vocabularyConcept.getId());
+            if (vocFolder != null && vocFolder.isNotationsEqualIdentifiers()) {
+                vocabularyConcept.setNotation(vocabularyConcept.getIdentifier());
+            }
             vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
         } catch (Exception e) {
             throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
@@ -407,6 +421,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public void updateVocabularyFolder(VocabularyFolder vocabularyFolder, Folder newFolder) throws ServiceException {
         try {
             VocabularyFolder vf = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolder.getId());
@@ -415,6 +430,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vf.setLabel(vocabularyFolder.getLabel());
             vf.setRegStatus(vocabularyFolder.getRegStatus());
             vf.setNumericConceptIdentifiers(vocabularyFolder.isNumericConceptIdentifiers());
+            vf.setNotationsEqualIdentifiers(vocabularyFolder.isNotationsEqualIdentifiers());
             vf.setBaseUri(vocabularyFolder.getBaseUri());
             vf.setFolderId(vocabularyFolder.getFolderId());
 
@@ -427,6 +443,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             attributeDAO.updateSimpleAttributes(vocabularyFolder.getId(), DElemAttribute.ParentType.VOCABULARY_FOLDER.toString(),
                     vocabularyFolder.getAttributes());
+
+            if (vf.isNotationsEqualIdentifiers()) {
+                LOGGER.debug("Forcing all concept notations to be equal with identifiers!");
+                vocabularyFolderDAO.forceNotationsToIdentifiers(vf.getId());
+            }
         } catch (Exception e) {
             throw new ServiceException("Failed to update vocabulary folder: " + e.getMessage(), e);
         }

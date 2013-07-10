@@ -91,7 +91,14 @@
                     <dd:optionalIcon />
                 </td>
                 <td class="simple_attr_value">
-                    <stripes:text class="smalltext" size="30" name="vocabularyConcept.notation" />
+                    <c:choose>
+                        <c:when test="${actionBean.vocabularyFolder != null && actionBean.vocabularyFolder.notationsEqualIdentifiers}">
+                            <span style="font-size:0.7em">(forcefully equal to identifier in this vocabulary)</span>
+                        </c:when>
+                        <c:otherwise>
+                            <stripes:text class="smalltext" size="30" name="vocabularyConcept.notation" />
+                        </c:otherwise>
+                    </c:choose>
                 </td>
             </tr>
             <tr>

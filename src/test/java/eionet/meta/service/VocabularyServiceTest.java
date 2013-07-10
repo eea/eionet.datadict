@@ -23,8 +23,10 @@ package eionet.meta.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Collections;
@@ -71,13 +73,13 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     }
 
     @Test
-    public void testGetVodabularyFolder_byId() throws ServiceException {
+    public void testGetVocabularyFolder_byId() throws ServiceException {
         VocabularyFolder result = vocabularyService.getVocabularyFolder(1);
         assertNotNull("Expected vocabulary folder", result);
     }
 
     @Test
-    public void testGetVodabularyFolder_byIdentifier() throws ServiceException {
+    public void testGetVocabularyFolder_byIdentifier() throws ServiceException {
         VocabularyFolder result = vocabularyService.getVocabularyFolder("common", "test_vocabulary2", true);
         assertEquals("Expected id", 3, result.getId());
     }
@@ -388,5 +390,83 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     public void testGetFolders_sorting() throws ServiceException {
         List<Folder> result = vocabularyService.getFolders(null, null);
         assertEquals("The first folder", "xxx", result.get(0).getLabel());
+    }
+
+    /**
+     * The purpose is to test the vocabularies' "enforce concept notation equals concept identifier" functionality.
+     *
+     * @throws ServiceException An error happens in the called services.
+     */
+    @Test
+    public void testNotationEqualsIdentifier() throws ServiceException {
+
+        String userName = "testUser";
+
+        // First lets create a vocabulary with no particular setting on the enforce-notation-equals-identifier policy.
+
+        VocabularyFolder vocabulary = new VocabularyFolder();
+        vocabulary.setFolderId(1);
+        vocabulary.setLabel("TestVoc1");
+        vocabulary.setIdentifier("test_voc_1");
+        vocabulary.setType(VocabularyType.COMMON);
+        int vocId = vocabularyService.createVocabularyFolder(vocabulary, null, userName);
+        vocabulary = vocabularyService.getVocabularyFolder(vocId);
+        assertNotNull("Expected a vocabulary folder", vocabulary);
+        assertFalse("Expected the enforcement flag to be down", vocabulary.isNotationsEqualIdentifiers());
+
+        // Now lets check out the freshly created vocabulary, so that we can start adding concepts to it.
+
+        vocId = vocabularyService.checkOutVocabularyFolder(vocId, userName);
+        assertTrue("Expected working copy id to be greater than the original id", vocId > vocabulary.getId());
+        vocabulary = vocabularyService.getVocabularyFolder(vocId);
+        assertNotNull("Expected a vocbulary working copy", vocabulary);
+        assertEquals("Expected a working user", userName, vocabulary.getWorkingUser());
+        assertEquals("Expected working copy flag set", true, vocabulary.isWorkingCopy());
+
+        // Now lets add concepts to the freshly created vocabulary working copy.
+
+        VocabularyConcept concept1 = new VocabularyConcept();
+        concept1.setIdentifier("conc1");
+        concept1.setLabel("Concept 1");
+        concept1.setNotation("Conc_1");
+        int concId1 = vocabularyService.createVocabularyConcept(vocId, concept1);
+        concept1 = vocabularyService.getVocabularyConcept(concId1, true);
+        assertNotNull("Expected a concept", concept1);
+        assertNotEquals("Expected unequal notation and identifier", concept1.getNotation(), concept1.getIdentifier());
+
+        VocabularyConcept concept2 = new VocabularyConcept();
+        concept2.setIdentifier("conc2");
+        concept2.setLabel("Concept 2");
+        concept2.setNotation("Conc_2");
+        int concId2 = vocabularyService.createVocabularyConcept(vocId, concept2);
+        concept2 = vocabularyService.getVocabularyConcept(concId2, true);
+        assertNotNull("Expected a concept", concept2);
+        assertNotEquals("Expected unequal notation and identifier", concept2.getNotation(), concept2.getIdentifier());
+
+        // Now lets enforce the notation=identifier rule on the vocabulary working copy.
+
+        vocabulary.setNotationsEqualIdentifiers(true);
+        vocabularyService.updateVocabularyFolder(vocabulary, null);
+        vocabulary = vocabularyService.getVocabularyFolder(vocabulary.getId());
+        assertNotNull("Expected an updated vocbulary", vocabulary);
+        assertTrue("Expected the enforcement flag to be up", vocabulary.isNotationsEqualIdentifiers());
+
+        // Check that both concept notations have now been forcefully made equal to the identifiers.
+
+        concept1 = vocabularyService.getVocabularyConcept(concId1, true);
+        assertEquals("Expected equal notation and identifier", concept1.getNotation(), concept1.getIdentifier());
+        concept2 = vocabularyService.getVocabularyConcept(concId2, true);
+        assertEquals("Expected equal notation and identifier", concept2.getNotation(), concept2.getIdentifier());
+
+        // Add one more concept, and check that its notation now gets forcefully overwritten with identifier.
+
+        VocabularyConcept concept3 = new VocabularyConcept();
+        concept3.setIdentifier("conc3");
+        concept3.setLabel("Concept 3");
+        concept3.setNotation("Conc_3");
+        int concId3 = vocabularyService.createVocabularyConcept(vocId, concept3);
+        concept3 = vocabularyService.getVocabularyConcept(concId3, true);
+        assertNotNull("Expected a concept", concept3);
+        assertEquals("Expected equal notation and identifier", concept3.getNotation(), concept3.getIdentifier());
     }
 }

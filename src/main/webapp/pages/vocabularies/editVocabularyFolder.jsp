@@ -217,6 +217,17 @@
                         <stripes:checkbox name="vocabularyFolder.numericConceptIdentifiers" />
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        <label for="chkNotationsEqualIdentifiers" title="Enforce that concept notations in this vocabulary are always equal to concept identifiers. Saving with this checked will overwirte the notations of all sub-ordinating concepts with their identifiers!">Notations equal identifiers</label>
+                    </th>
+                    <td class="simple_attr_help">
+                        <dd:optionalIcon />
+                    </td>
+                    <td class="simple_attr_value">
+                        <stripes:checkbox name="vocabularyFolder.notationsEqualIdentifiers" id="chkNotationsEqualIdentifiers"/>
+                    </td>
+                </tr>
                 <!-- Simple attributes -->
                 <c:forEach var="attributeValues" items="${actionBean.vocabularyFolder.attributes}" varStatus="outerLoop">
                     <c:set var="attrMeta" value="${attributeValues[0]}"/>
@@ -243,7 +254,7 @@
                 <tr>
                     <th>&nbsp;</th>
                     <td colspan="2">
-                        <stripes:submit name="saveFolder" value="Save" class="mediumbuttonb"/>
+                        <stripes:submit name="saveFolder" value="Save" class="mediumbuttonb" onclick="return document.getElementById('chkNotationsEqualIdentifiers').checked==false ? true : confirm('You have chosen notations to be equal with identifiers. This will overwrite the notations of all sub-ordinating concepts with their identifiers! Click OK if you are absolutely sure you want to continue, otherwise click Cancel.');"/>
                         <stripes:submit name="cancelSave" value="Cancel" class="mediumbuttonb"/>
                     </td>
                 </tr>
@@ -427,7 +438,14 @@
                                     <dd:optionalIcon />
                                 </td>
                                 <td class="simple_attr_value">
-                                    <stripes:text class="smalltext" size="30" name="vocabularyConcepts.list[${loop.index}].notation" />
+                                    <c:choose>
+		                                <c:when test="${actionBean.vocabularyFolder != null && actionBean.vocabularyFolder.notationsEqualIdentifiers}">
+		                                    <span title="Forcefully equal to identifier in this vocabulary."><c:out value="${item.notation}"/></span>
+		                                </c:when>
+		                                <c:otherwise>
+		                                    <stripes:text class="smalltext" size="30" name="vocabularyConcepts.list[${loop.index}].notation" />
+		                                </c:otherwise>
+		                            </c:choose>
                                 </td>
                             </tr>
                             <tr>

@@ -139,4 +139,17 @@ public interface IVocabularyFolderDAO {
      */
     boolean isUniqueVocabularyFolderIdentifier(int folderId, String identifier, int... excludedVocabularyFolderIds);
 
+    /**
+     * Forcefully sets notations to identifiers in all concepts within the vocabulary with the given id.
+     * @param vocabularyId The given vocabulary id.
+     * @return The number of concepts where the notation was different from identifier.
+     */
+    int forceNotationsToIdentifiers(int vocabularyId);
+
+    /**
+     * Returns the vocabulary by the vocabulary id of the given concept.
+     * @param conceptId Id of the concept whose parent vocabulary is to be returned.
+     * @return The vocabulary object as described above.
+     */
+    VocabularyFolder getVocabularyFolderOfConcept(int conceptId);
 }

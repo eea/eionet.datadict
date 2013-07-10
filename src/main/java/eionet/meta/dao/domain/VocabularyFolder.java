@@ -46,6 +46,7 @@ public class VocabularyFolder {
     private String baseUri;
     private VocabularyType type;
     private int folderId;
+    private boolean notationsEqualIdentifiers;
 
     /** Joined property - folder identifier. */
     private String folderName;
@@ -342,6 +343,20 @@ public class VocabularyFolder {
      */
     public void setFolderLabel(String folderLabel) {
         this.folderLabel = folderLabel;
+    }
+
+    /**
+     * @return the notationsEqualIdentifiers
+     */
+    public boolean isNotationsEqualIdentifiers() {
+        return notationsEqualIdentifiers;
+    }
+
+    /**
+     * @param notationsEqualIdentifiers the notationsEqualIdentifiers to set
+     */
+    public void setNotationsEqualIdentifiers(boolean enforceNotationToId) {
+        this.notationsEqualIdentifiers = enforceNotationToId;
     }
 
 }

@@ -142,6 +142,17 @@
                     </td>
                 </tr>
                 <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        <label for="chkNotationsEqualIdentifiers" title="Enforce that concept notations in this vocabulary are always equal to concept identifiers.">Notations equal identifiers</label>
+                    </th>
+                    <td class="simple_attr_help">
+                        <dd:optionalIcon />
+                    </td>
+                    <td class="simple_attr_value">
+                        <stripes:checkbox name="vocabularyFolder.notationsEqualIdentifiers" id="chkNotationsEqualIdentifiers"/>
+                    </td>
+                </tr>
+                <tr>
                     <th>&nbsp;</th>
                     <td colspan="2">
                         <stripes:submit name="saveFolder" value="Add" class="mediumbuttonb"/>
