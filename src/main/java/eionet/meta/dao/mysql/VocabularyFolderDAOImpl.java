@@ -560,7 +560,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         sql.append("from T_VOCABULARY_FOLDER v ");
         sql.append("left join T_FOLDER f on f.ID=v.FOLDER_ID ");
         sql.append("where VOCABULARY_FOLDER_ID=");
-        sql.append("(select VOCABULARY_FOLDER_ID from t_vocabulary_concept where VOCABULARY_CONCEPT_ID=:conceptId)");
+        sql.append("(select VOCABULARY_FOLDER_ID from T_VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID=:conceptId)");
 
         VocabularyFolder result =
                 getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyFolder>() {
