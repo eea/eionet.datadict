@@ -60,7 +60,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         StringBuilder sql = new StringBuilder();
         sql.append("select v.VOCABULARY_FOLDER_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
         sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, v.CONCEPT_IDENTIFIER_NUMERIC, ");
-        sql.append("f.ID, f.IDENTIFIER, f.LABEL, v.NOTATIONS_EQUAL_IDENTIFIERS");
+        sql.append("f.ID, f.IDENTIFIER, f.LABEL, v.NOTATIONS_EQUAL_IDENTIFIERS ");
         sql.append("from T_VOCABULARY_FOLDER v ");
         sql.append("left join T_FOLDER f on f.ID=v.FOLDER_ID ");
         sql.append("where v.WORKING_COPY=FALSE and v.FOLDER_ID=:folderId and v.REG_STATUS in (:statuses) ");

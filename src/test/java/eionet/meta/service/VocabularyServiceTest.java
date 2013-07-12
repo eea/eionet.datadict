@@ -393,6 +393,19 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     }
 
     /**
+     * The purpose is to test the {@link IVocabularyService#getReleasedVocabularyFolders(int)} function.
+     * @throws ServiceException An error happens in the called service(s).
+     */
+    @Test
+    public void testReleasedVocabularyFolders() throws ServiceException {
+
+        List<VocabularyFolder> releasedVocabularies = vocabularyService.getReleasedVocabularyFolders(1);
+        int size = releasedVocabularies == null ? 0 : releasedVocabularies.size();
+        assertEquals("Expected exactly 1 released vocabulary", 1, size);
+        assertEquals("Expected released vocabulary with ID=2", 2, releasedVocabularies.iterator().next().getId());
+    }
+
+    /**
      * The purpose is to test the vocabularies' "enforce concept notation equals concept identifier" functionality.
      *
      * @throws ServiceException An error happens in the called services.
