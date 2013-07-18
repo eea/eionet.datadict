@@ -2,6 +2,7 @@ package eionet.meta.exports.rdf;
 
 import java.io.Writer;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.bea.xml.stream.XMLOutputFactoryBase;
 
+import eionet.meta.DDRuntimeException;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
 import eionet.meta.DsTable;
@@ -46,9 +48,9 @@ public class Rdf {
     private static final String FOAF_NS = "http://xmlns.com/foaf/0.1/";
     private static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
     private static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
+    private static final String DCTERMS_NS = "http://purl.org/dc/terms/";
 
     /** */
-    private Connection conn;
     private DDSearchEngine searchEngine;
     private String baseUri;
     private DsTable tbl;
@@ -63,16 +65,26 @@ public class Rdf {
     private String tblNamespaceFriendlyUri;
 
     /**
-     *
-     * @param tblID
-     * @param conn
-     * @throws Exception
-     * @throws Exception
+     * Constructs an instance for the given table id, output type and database connection.
+     * @param id Table id, may be blank, but in that case the given type must be that of {@link #CODE_LIST_TYPE}.
+     * @param type Output type, on of {@link #TABLE_TYPE} or {@link #CODE_LIST_TYPE}.
+     * @param conn Database connection.
+     * @throws SQLException If database access error happens.
      */
-    public Rdf(String id, String type, Connection conn) throws Exception {
+    public Rdf(String id, String type, Connection conn) throws SQLException {
 
-        this.conn = conn;
-        this.searchEngine = new DDSearchEngine(this.conn);
+        this(id, type, new DDSearchEngine(conn));
+    }
+
+    /**
+     * Constructs an instance for the given table id, output type and {@link DDSearchEngine}.
+     * @param id Table id, may be blank, but in that case the given type must be that of {@link #CODE_LIST_TYPE}.
+     * @param type Output type, on of {@link #TABLE_TYPE} or {@link #CODE_LIST_TYPE}.
+     * @param ddSearchEngine Instance of {@link DDSearchEngine} to use for database access.
+     * @throws SQLException If database access error happens.
+     */
+    public Rdf(String id, String type, DDSearchEngine ddSearchEngine) throws SQLException {
+        this.searchEngine = ddSearchEngine;
         this.type = type;
 
         if (StringUtils.isNotEmpty(id)) {
@@ -89,7 +101,7 @@ public class Rdf {
 
                 tbl = searchEngine.getDatasetTable(id);
                 if (tbl == null) {
-                    throw new Exception("Table not found, id=" + id);
+                    throw new DDRuntimeException("Table not found, id=" + id);
                 }
                 this.baseUri = Props.getRequiredProperty(PropsIF.RDF_TABLES_BASE_URI);
                 this.baseUri = MessageFormat.format(this.baseUri, this.id);
@@ -103,7 +115,7 @@ public class Rdf {
                 this.baseUri = Props.getRequiredProperty(PropsIF.RDF_TABLES_BASE_URI);
                 tables = searchEngine.getDatasetTables(null, null, null, null, null, null, datasetStatuses, false);
                 if (tables == null || tables.isEmpty()) {
-                    throw new Exception("No tables found!");
+                    throw new DDRuntimeException("No tables found!");
                 }
             }
         } else if (type.equals(CODE_LIST_TYPE)) {
@@ -265,6 +277,7 @@ public class Rdf {
         streamWriter.setPrefix("foaf", FOAF_NS);
         streamWriter.setPrefix("dd", DD_NS);
         streamWriter.setPrefix("skos", SKOS_NS);
+        streamWriter.setPrefix("dcterms", DCTERMS_NS);
 
         streamWriter.writeStartElement(RDF_NS, "RDF");
         streamWriter.writeNamespace("rdf", RDF_NS);
@@ -273,6 +286,7 @@ public class Rdf {
         streamWriter.writeNamespace("foaf", FOAF_NS);
         streamWriter.writeNamespace("dd", DD_NS);
         streamWriter.writeNamespace("skos", SKOS_NS);
+        streamWriter.writeNamespace("dcterms", DCTERMS_NS);
 
         streamWriter.writeStartElement(RDFS_NS, "Class");
         streamWriter.writeAttribute(RDF_NS, "about", this.baseUri + "/" + tbl.getIdentifier());
@@ -291,6 +305,9 @@ public class Rdf {
 
         streamWriter.writeEmptyElement(RDFS_NS, "isDefinedBy");
         streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri);
+
+        streamWriter.writeEmptyElement(DCTERMS_NS, "isVersionOf");
+        streamWriter.writeAttribute(RDF_NS, "resource", tbl.getReferenceURL());
 
         streamWriter.writeEmptyElement(RDFS_NS, "subClassOf");
         streamWriter.writeAttribute(RDF_NS, "resource", this.tblNamespaceFriendlyUri);

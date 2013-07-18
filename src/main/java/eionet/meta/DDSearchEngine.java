@@ -72,7 +72,7 @@ public class DDSearchEngine {
      */
     public DDSearchEngine(Connection conn) {
         this.conn = conn;
-        springContext = new ClassPathXmlApplicationContext("spring-context.xml");
+        initSpringContext();
 
         String s = Props.getProperty(PropsIF.OUTSERV_ROD_OBLIG_URL);
         if (s != null && s.length() > 0) {
@@ -88,6 +88,13 @@ public class DDSearchEngine {
         if (s != null && s.length() > 0) {
             predTitle = s;
         }
+    }
+
+    /**
+     * Initializes Spring context.
+     */
+    protected void initSpringContext() {
+        springContext = new ClassPathXmlApplicationContext("spring-context.xml");
     }
 
     public DDSearchEngine(Connection conn, String sessionID) {
@@ -5287,6 +5294,7 @@ public class DDSearchEngine {
          *
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
+        @Override
         public int compare(Object o1, Object o2) {
 
             if (compField == DataElementComparator.ID) {
