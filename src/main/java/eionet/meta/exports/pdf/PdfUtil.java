@@ -465,7 +465,7 @@ public class PdfUtil {
             // add short name+full name+public or internal+foreign key+GIS
             String s = elem.getAttributeValueByShortName("Name");
             String name = Util.isEmpty(s) ? elem.getShortName() : s;
-            String shortName = elem.getShortName();
+            String identifier = elem.getIdentifier();
             Vector fks = elem.getFKRelations();
 
             String pori = elem.getAttributeValueByShortName("PublicOrInternal");
@@ -475,7 +475,7 @@ public class PdfUtil {
 
             Phrase phr = new Phrase();
             phr.add(process(name + "\n", Fonts.get(Fonts.CELL_VALUE_BOLD)));
-            phr.add(process("(" + shortName + ")\n",
+            phr.add(process("(" + identifier + ")\n",
                     Fonts.get(Fonts.CELL_VALUE)));
             if (!Util.isEmpty(pori)) {
                 phr.add(new Chunk("\n" + pori,

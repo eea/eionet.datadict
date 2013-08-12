@@ -1420,7 +1420,7 @@ else if (mode.equals("add"))
                                                                     <col style="width:<%=widthDatatype%>"/>
                                                                     <col style="width:<%=widthElemtype%>"/>
                                                                 <tr>
-                                                                    <th>Short name</th>
+                                                                    <th>Element name</th>
                                                                     <%
                                                                     if (curMode.equals("GIS")){ %>
                                                                         <th>GIS type</th><%
@@ -1471,7 +1471,7 @@ else if (mode.equals("add"))
                                                                             }
                                                                             %>
                                                                             <a href="<%=elemLink%>" title="<%=Util.processForDisplay(linkTitle, true, true)%>">
-                                                                                <%=Util.processForDisplay(elem.getShortName())%>
+                                                                                <%=Util.processForDisplay(elem.getAttributeValueByName("Name") + " (" + elem.getIdentifier() + ")")%>
                                                                             </a>
 
                                                                             <%
@@ -1536,7 +1536,7 @@ else if (mode.equals("add"))
                                                       if (hasMandatoryElms){
                                                           %>
                                                           <div class="barfont">
-                                                            (an asterisk in front of element short name indicates that the element is mandatory in this table)
+                                                            (an asterisk in front of element name indicates that the element is mandatory in this table)
                                                         </div><%
                                                       }
                                                       if (user!=null && elems!=null && elems.size()>0 && hasMarkedElems){%>
