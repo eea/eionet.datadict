@@ -22,6 +22,7 @@
 package eionet.meta.service;
 
 import java.util.List;
+import java.util.Map;
 
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
@@ -102,4 +103,12 @@ public interface IDataService {
      * @throws ServiceException
      */
     String getDataElementDataType(int dataElementId) throws ServiceException;
+
+    /**
+     * Returns attribute values of the given data element.
+     * @param dataElementId element ID
+     * @return List of attributes
+     * @throws ServiceException if query fails
+     */
+    Map<String, List<String>> getDataElementSimpleAttributeValues(int dataElementId) throws ServiceException;
 }

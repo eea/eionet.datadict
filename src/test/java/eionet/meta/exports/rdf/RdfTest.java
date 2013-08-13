@@ -1,7 +1,5 @@
 package eionet.meta.exports.rdf;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -9,6 +7,7 @@ import java.util.Vector;
 
 import org.junit.Test;
 
+import eionet.DDDatabaseTestCase;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DsTable;
 
@@ -17,7 +16,7 @@ import eionet.meta.DsTable;
  *
  * @author jaanus
  */
-public class RdfTest  {
+public class RdfTest extends DDDatabaseTestCase {
 
     /**
      * Purpose is to test the RDF generated about a table (not its elements).
@@ -89,4 +88,22 @@ public class RdfTest  {
             return new Vector();
         }
     }
+
+    @Test
+    public void testRdfProperty() throws Exception {
+        Rdf rdfGen = new Rdf("48922", Rdf.CODE_LIST_TYPE, new DDSearchEngineMock(null, null));
+        StringWriter writer = new StringWriter();
+        rdfGen.write(writer);
+        String stringOutput = writer.toString();
+
+        String expectedProperty = "<rdf:Property about=\"48922/RepresentativeStation\"><rdfs:label>Representative Station</rdfs:label><dd:usesVocabulary rdf:resource=\"48922\"></dd:usesVocabulary><rdfs:isDefinedBy rdf:resource=\"48922/rdf\"></rdfs:isDefinedBy></rdf:Property>";
+        assertTrue("Expected common dataelement <rdf:Property> ", stringOutput.contains(expectedProperty));
+    }
+
+    @Override
+    protected String getSeedFilename() {
+        return "seed-rdf.xml";
+    }
+
+
 }

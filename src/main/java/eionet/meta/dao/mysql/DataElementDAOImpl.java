@@ -323,6 +323,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         params.put("ownerType", "elem");
 
         List<FixedValue> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<FixedValue>() {
+            @Override
             public FixedValue mapRow(ResultSet rs, int rowNum) throws SQLException {
                 FixedValue fv = new FixedValue();
                 fv.setId(rs.getInt("FXV_ID"));
@@ -349,9 +350,11 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         parameters.put("id", id);
 
         DataElement result = getNamedParameterJdbcTemplate().queryForObject(sql, parameters, new RowMapper<DataElement>() {
+            @Override
             public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException {
                 DataElement de = new DataElement();
                 de.setId(rs.getInt("de.DATAELEM_ID"));
+                de.setIdentifier(rs.getString("de.IDENTIFIER"));
                 de.setShortName(rs.getString("de.SHORT_NAME"));
                 de.setStatus(rs.getString("de.REG_STATUS"));
                 de.setType(rs.getString("de.TYPE"));

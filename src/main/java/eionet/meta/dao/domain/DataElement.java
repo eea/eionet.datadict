@@ -36,6 +36,8 @@ public class DataElement {
 
     private int id;
 
+    private String identifier;
+
     private String shortName;
 
     private String type;
@@ -276,6 +278,21 @@ public class DataElement {
      */
     public void setAttributeValue(String attributeValue) {
         this.attributeValue = attributeValue;
+    }
+
+    /**
+     * @return identifier of the data element
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     *
+     * @param identifier attribute value to set
+     */
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
 }

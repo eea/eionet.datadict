@@ -2,11 +2,13 @@ package eionet.meta.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eionet.meta.DElemAttribute.ParentType;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IDataSetDAO;
@@ -143,4 +145,15 @@ public class DataServiceImpl implements IDataService {
             throw new ServiceException("Failed to get data element's data type: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public Map<String, List<String>> getDataElementSimpleAttributeValues(int dataElementId) throws ServiceException {
+        try {
+            return attributeDao.getAttributeValues(dataElementId, ParentType.ELEMENT.toString());
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get data element's attributes: " + e.getMessage(), e);
+        }
+    }
+
+
 }

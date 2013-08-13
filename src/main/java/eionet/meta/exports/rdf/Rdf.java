@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -153,6 +154,12 @@ public class Rdf {
     private void writeCodeList(Writer writer) throws Exception {
         List<FixedValue> fixedValues = dataService.getFixedValues(id);
         eionet.meta.dao.domain.DataElement dataElement = dataService.getDataElement(id);
+        Map<String, List<String>> elemAttributeValues = dataService.getDataElementSimpleAttributeValues(id);
+
+        String identifier = dataElement.getIdentifier();
+        List<String> elemNameAttr = elemAttributeValues.get("Name");
+
+        String elemName = elemNameAttr != null ? elemNameAttr.get(0) : identifier;
 
         XMLOutputFactory factory = XMLOutputFactoryBase.newInstance();
         XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
@@ -167,9 +174,30 @@ public class Rdf {
         streamWriter.writeNamespace("rdfs", RDFS_NS);
         streamWriter.writeNamespace("skos", SKOS_NS);
         streamWriter.writeNamespace("foaf", FOAF_NS);
+        streamWriter.writeNamespace("dd", DD_NS);
+
         // Normally the URL in xml:base ends with a slash. Not here.
         // Therefore we have to include the id again in the Collection URI and Concepts.
         streamWriter.writeAttribute("xml", XML_NS, "base", StringUtils.substringBeforeLast(this.baseUri, "/rdf"));
+
+        //rdf:Property declaration
+        streamWriter.writeStartElement(RDF_NS, "Property");
+        streamWriter.writeAttribute("about", Integer.toString(id) + "/" + identifier);
+        streamWriter.writeStartElement(RDFS_NS, "label");
+        //FIXME - name
+        streamWriter.writeCharacters(elemName);
+        streamWriter.writeEndElement();
+
+        streamWriter.writeStartElement(DD_NS, "usesVocabulary");
+        streamWriter.writeAttribute(RDF_NS, "resource", Integer.toString(id));
+        streamWriter.writeEndElement();
+
+        streamWriter.writeStartElement(RDFS_NS, "isDefinedBy");
+        streamWriter.writeAttribute(RDF_NS, "resource", Integer.toString(id) + "/rdf");
+        streamWriter.writeEndElement();
+
+        streamWriter.writeEndElement(); // </rdf:Property>
+
 
         streamWriter.writeStartElement(SKOS_NS, "Collection");
         streamWriter.writeAttribute(RDF_NS, "about", Integer.toString(id));
