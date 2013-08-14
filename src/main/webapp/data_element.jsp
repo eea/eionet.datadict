@@ -2235,62 +2235,10 @@
                                             <%
                                             pageContext.setAttribute("dataElement", dataElement);
                                             pageContext.setAttribute("mode", mode);
-                                            if (mode.equals("edit") || mode.equals("add")) {
+                                            /* if (mode.equals("edit") || mode.equals("add")) {
                                                 pageContext.setAttribute("rdfNamespaces", searchEngine.getRdfNamespaces());
-                                            }
+                                            } */
                                             %>
-                                            <tr class="zebra<%=isOdd%>">
-                                            <tr>
-                                                <th scope="row" class="scope-row simple_attr_title">
-                                                    RDF type
-                                                </th>
-                                                <td class="simple_attr_help">
-                                                    <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=rdf_type" onclick="pop(this.href);return false;">
-                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                    </a>
-                                                </td>
-                                                <%
-                                                if (colspan == 4) {
-                                                %>
-                                                <td class="simple_attr_help">
-                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt=""/>
-                                                </td>
-                                                <%
-                                                }
-                                                %>
-                                                <td class="simple_attr_value">
-                                                    <c:choose>
-                                                        <c:when test="${mode eq 'view'}">
-                                                            <c:if test="${not empty dataElement.rdfTypeName}">
-                                                                ${dataElement.rdfTypePrefix}:${dataElement.rdfTypeName}
-                                                            </c:if>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <c:if test="${not empty rdfNamespaces}">
-                                                                <select name="rdfNamespaceId" class="small">
-                                                                    <option value="0" />
-                                                                    <c:forEach items="${rdfNamespaces}" var="rdfNamespace">
-                                                                        <c:choose>
-                                                                            <c:when test="${rdfNamespace.id == dataElement.rdfNamespaceId}">
-                                                                                <option value="${rdfNamespace.id}" selected="selected">${rdfNamespace.uri}</option>
-                                                                            </c:when>
-                                                                            <c:otherwise>
-                                                                                <option value="${rdfNamespace.id}">${rdfNamespace.uri}</option>
-                                                                            </c:otherwise>
-                                                                        </c:choose>
-                                                                    </c:forEach>
-                                                                </select>
-                                                                <br />
-                                                                <input type="text" name="rdfTypeName" value="${dataElement.rdfTypeName}" />
-                                                            </c:if>
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </td>
-
-                                                <%
-                                                    isOdd = Util.isOdd(++displayed);
-                                                %>
-                                            </tr>
                                             <tr>
                                                 <th></th>
                                                 <td colspan="3">

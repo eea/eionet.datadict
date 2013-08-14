@@ -19,7 +19,6 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.tee.uit.security.AccessController;
@@ -387,17 +386,6 @@ public class DataElementHandler extends BaseHandler {
             gen.setField("IS_ROD_PARAM", isRodParam);
         }
 
-        // RDF type
-        String rdfTypeName = req.getParameter("rdfTypeName");
-        int rdfNamespaceId = Integer.parseInt(req.getParameter("rdfNamespaceId"));
-        if (StringUtils.isEmpty(rdfTypeName) || rdfNamespaceId == 0) {
-            gen.setFieldExpr("RDF_TYPE_NAME", null);
-            gen.setFieldExpr("RDF_TYPE_NAMESPACE_ID", null);
-        } else {
-            gen.setField("RDF_TYPE_NAME", rdfTypeName);
-            gen.setFieldExpr("RDF_TYPE_NAMESPACE_ID", Integer.toString(rdfNamespaceId));
-        }
-
         // if not in import mode, treat new common elements as working copies until checked in
         if (elmCommon && !isImportMode) {
             gen.setField("WORKING_COPY", "Y");
@@ -563,17 +551,6 @@ public class DataElementHandler extends BaseHandler {
                 throw new Exception("Invalid value for is_rod_param!");
             }
             gen.setField("IS_ROD_PARAM", isRodParam);
-        }
-
-        // RDF type
-        String rdfTypeName = req.getParameter("rdfTypeName");
-        int rdfNamespaceId = Integer.parseInt(req.getParameter("rdfNamespaceId"));
-        if (StringUtils.isEmpty(rdfTypeName) || rdfNamespaceId == 0) {
-            gen.setFieldExpr("RDF_TYPE_NAME", null);
-            gen.setFieldExpr("RDF_TYPE_NAMESPACE_ID", null);
-        } else {
-            gen.setField("RDF_TYPE_NAME", rdfTypeName);
-            gen.setFieldExpr("RDF_TYPE_NAMESPACE_ID", Integer.toString(rdfNamespaceId));
         }
 
         // set the gis type (relevant for common elements only)

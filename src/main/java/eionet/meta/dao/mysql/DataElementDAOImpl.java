@@ -345,7 +345,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public DataElement getDataElement(int id) {
         String sql =
-                "select * from DATAELEM de left join T_RDF_NAMESPACE ns on de.RDF_TYPE_NAMESPACE_ID = ns.ID where de.DATAELEM_ID = :id";
+                "select * from DATAELEM de where de.DATAELEM_ID = :id";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", id);
 
@@ -360,10 +360,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setType(rs.getString("de.TYPE"));
                 de.setModified(new Date(rs.getLong("de.DATE")));
                 de.setWorkingUser(rs.getString("de.WORKING_USER"));
-                de.setRdfNamespaceId(rs.getInt("de.RDF_TYPE_NAMESPACE_ID"));
-                de.setRdfTypeName(rs.getString("de.RDF_TYPE_NAME"));
-                de.setRdfTypePrefix(rs.getString("ns.NAME_PREFIX"));
-                de.setRdfTypeUri(rs.getString("ns.URI"));
                 return de;
             }
         });
@@ -558,7 +554,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         }
         sql.append("ON (v.DATAELEM_ID = d.DATAELEM_ID and v.VOCABULARY_CONCEPT_ID = :vocabularyConceptId) ");
         sql.append("LEFT JOIN T_VOCABULARY_ELEMENT ve on ve.DATAELEM_ID = d.DATAELEM_ID ");
-        sql.append("LEFT JOIN T_RDF_NAMESPACE r ON d.RDF_TYPE_NAMESPACE_ID = r.ID ");
         sql.append("where ve.VOCABULARY_FOLDER_ID = :vocabularyFolderId ");
         sql.append("order by d.SHORT_NAME");
 
@@ -586,11 +581,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setWorkingUser(rs.getString("d.WORKING_USER"));
 
                 de.setAttributeValue(rs.getString("v.ELEMENT_VALUE"));
-
-                de.setRdfNamespaceId(rs.getInt("d.RDF_TYPE_NAMESPACE_ID"));
-                de.setRdfTypeName(rs.getString("d.RDF_TYPE_NAME"));
-                de.setRdfTypePrefix(rs.getString("r.NAME_PREFIX"));
-                de.setRdfTypeUri(rs.getString("r.URI"));
 
                 if (previousDataElemId != rs.getInt("d.DATAELEM_ID")) {
                     result.add(values);

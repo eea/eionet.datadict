@@ -39,11 +39,6 @@ public class DsTable implements Comparable {
 
     private int positionInDataset;
 
-    private String rdfTypeName;
-    private String rdfTypeUri;
-    private String rdfTypePrefix;
-    private int rdfNamespaceId;
-
     /**
      *
      * @param id
@@ -263,6 +258,7 @@ public class DsTable implements Comparable {
         this.owner = owner;
     }
 
+    @Override
     public int compareTo(Object o) {
 
         if (!o.getClass().getName().endsWith("DsTable")) {
@@ -390,66 +386,6 @@ public class DsTable implements Comparable {
      */
     public void setPositionInDataset(int positionInDataset) {
         this.positionInDataset = positionInDataset;
-    }
-
-    /**
-     * @return the rdfTypeName
-     */
-    public String getRdfTypeName() {
-        return rdfTypeName;
-    }
-
-    /**
-     * @param rdfTypeName
-     *            the rdfTypeName to set
-     */
-    public void setRdfTypeName(String rdfTypeName) {
-        this.rdfTypeName = rdfTypeName;
-    }
-
-    /**
-     * @return the rdfTypeUri
-     */
-    public String getRdfTypeUri() {
-        return rdfTypeUri;
-    }
-
-    /**
-     * @param rdfTypeUri
-     *            the rdfTypeUri to set
-     */
-    public void setRdfTypeUri(String rdfTypeUri) {
-        this.rdfTypeUri = rdfTypeUri;
-    }
-
-    /**
-     * @return the rdfTypePrefix
-     */
-    public String getRdfTypePrefix() {
-        return rdfTypePrefix;
-    }
-
-    /**
-     * @param rdfTypePrefix
-     *            the rdfTypePrefix to set
-     */
-    public void setRdfTypePrefix(String rdfTypePrefix) {
-        this.rdfTypePrefix = rdfTypePrefix;
-    }
-
-    /**
-     * @return the rdfNamespaceId
-     */
-    public int getRdfNamespaceId() {
-        return rdfNamespaceId;
-    }
-
-    /**
-     * @param rdfNamespaceId
-     *            the rdfNamespaceId to set
-     */
-    public void setRdfNamespaceId(int rdfNamespaceId) {
-        this.rdfNamespaceId = rdfNamespaceId;
     }
 
 }

@@ -16,7 +16,6 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eionet.meta.DDSearchEngine;
@@ -299,17 +298,6 @@ public class DsTableHandler extends BaseHandler {
         }
         gen.setFieldExpr("SHORT_NAME", inParams.add(shortName, Types.VARCHAR));
 
-        // RDF type
-        String rdfTypeName = req.getParameter("rdfTypeName");
-        int rdfNamespaceId = Integer.parseInt(req.getParameter("rdfNamespaceId"));
-        if (StringUtils.isEmpty(rdfTypeName) || rdfNamespaceId == 0) {
-            gen.setFieldExpr("RDF_TYPE_NAME", null);
-            gen.setFieldExpr("RDF_TYPE_NAMESPACE_ID", null);
-        } else {
-            gen.setField("RDF_TYPE_NAME", rdfTypeName);
-            gen.setFieldExpr("RDF_TYPE_NAMESPACE_ID", Integer.toString(rdfNamespaceId));
-        }
-
         PreparedStatement stmt = SQL.preparedStatement(gen.insertStatement(), inParams, conn);
         stmt.executeUpdate();
         stmt.close();
@@ -352,17 +340,6 @@ public class DsTableHandler extends BaseHandler {
             SQLGenerator gen = new SQLGenerator();
             gen.setTable("DS_TABLE");
             gen.setFieldExpr("SHORT_NAME", inParams.add(shortName, Types.VARCHAR));
-
-            // RDF type
-            String rdfTypeName = req.getParameter("rdfTypeName");
-            int rdfNamespaceId = Integer.parseInt(req.getParameter("rdfNamespaceId"));
-            if (StringUtils.isEmpty(rdfTypeName) || rdfNamespaceId == 0) {
-                gen.setFieldExpr("RDF_TYPE_NAME", null);
-                gen.setFieldExpr("RDF_TYPE_NAMESPACE_ID", null);
-            } else {
-                gen.setField("RDF_TYPE_NAME", rdfTypeName);
-                gen.setFieldExpr("RDF_TYPE_NAMESPACE_ID", Integer.toString(rdfNamespaceId));
-            }
 
             String q = gen.updateStatement() + " where TABLE_ID=" + inParams.add(tableID, Types.INTEGER);
 

@@ -54,11 +54,6 @@ public class DataElement implements Comparable {
     private boolean mandatoryFlag;
     private boolean primaryKey;
 
-    private String rdfTypeName;
-    private String rdfTypeUri;
-    private String rdfTypePrefix;
-    private int rdfNamespaceId;
-
     /*
      *
      */
@@ -378,6 +373,7 @@ public class DataElement implements Comparable {
      *
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return this.sortString;
     }
@@ -385,6 +381,7 @@ public class DataElement implements Comparable {
     /*
      *
      */
+    @Override
     public int compareTo(Object o) {
         return this.sortOrder * this.sortString.compareTo(o.toString());
     }
@@ -548,64 +545,5 @@ public class DataElement implements Comparable {
         this.primaryKey = primaryKey;
     }
 
-    /**
-     * @return the rdfTypeName
-     */
-    public String getRdfTypeName() {
-        return rdfTypeName;
-    }
-
-    /**
-     * @param rdfTypeName
-     *            the rdfTypeName to set
-     */
-    public void setRdfTypeName(String rdfTypeName) {
-        this.rdfTypeName = rdfTypeName;
-    }
-
-    /**
-     * @return the rdfTypeUri
-     */
-    public String getRdfTypeUri() {
-        return rdfTypeUri;
-    }
-
-    /**
-     * @param rdfTypeUri
-     *            the rdfTypeUri to set
-     */
-    public void setRdfTypeUri(String rdfTypeUri) {
-        this.rdfTypeUri = rdfTypeUri;
-    }
-
-    /**
-     * @return the rdfTypePrefix
-     */
-    public String getRdfTypePrefix() {
-        return rdfTypePrefix;
-    }
-
-    /**
-     * @param rdfTypePrefix
-     *            the rdfTypePrefix to set
-     */
-    public void setRdfTypePrefix(String rdfTypePrefix) {
-        this.rdfTypePrefix = rdfTypePrefix;
-    }
-
-    /**
-     * @return the rdfNamespaceId
-     */
-    public int getRdfNamespaceId() {
-        return rdfNamespaceId;
-    }
-
-    /**
-     * @param rdfNamespaceId
-     *            the rdfNamespaceId to set
-     */
-    public void setRdfNamespaceId(int rdfNamespaceId) {
-        this.rdfNamespaceId = rdfNamespaceId;
-    }
 
 }

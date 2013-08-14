@@ -202,11 +202,6 @@ public class Rdf {
         streamWriter.writeStartElement(SKOS_NS, "Collection");
         streamWriter.writeAttribute(RDF_NS, "about", Integer.toString(id));
 
-        if (StringUtils.isNotEmpty(dataElement.getRdfTypeName())) {
-            streamWriter.writeEmptyElement(RDF_NS, "type");
-            streamWriter.writeAttribute(RDF_NS, "resource", dataElement.getRdfTypeUri() + dataElement.getRdfTypeName());
-        }
-
         streamWriter.writeStartElement(RDFS_NS, "label");
         streamWriter.writeCharacters(dataElement.getShortName());
         streamWriter.writeEndElement();
@@ -318,11 +313,6 @@ public class Rdf {
 
         streamWriter.writeStartElement(RDFS_NS, "Class");
         streamWriter.writeAttribute(RDF_NS, "about", this.baseUri + "/" + tbl.getIdentifier());
-
-        if (StringUtils.isNotEmpty(tbl.getRdfTypeName())) {
-            streamWriter.writeEmptyElement(RDF_NS, "type");
-            streamWriter.writeAttribute(RDF_NS, "resource", tbl.getRdfTypeUri() + tbl.getRdfTypeName());
-        }
 
         streamWriter.writeStartElement(RDFS_NS, "label");
         streamWriter.writeCharacters(tableName);

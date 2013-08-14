@@ -1434,7 +1434,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
                     REFERENCES DATAELEM (DATAELEM_ID) ON UPDATE CASCADE ON DELETE CASCADE;
         </sql>
     </changeSet>
-    
+
     <changeSet author="heinlja" id="rev-114">
         <comment>Add vocabulary folder column that indicates if concept notations in the vocabulary should always be forced as equal to concept identifiers.</comment>
         <addColumn tableName="T_VOCABULARY_FOLDER">
@@ -1444,4 +1444,13 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         </addColumn>
     </changeSet>
 
+    <changeSet author="lainekai" id="rev-115">
+        <comment>Remove namespace ID and RDF type from dataelement and ds_table.</comment>
+        <dropForeignKeyConstraint baseTableName="DATAELEM" constraintName="FK_RDF_TYPE_NAMESPACE_ID"/>
+        <dropForeignKeyConstraint baseTableName="DS_TABLE" constraintName="FK_TABLE_RDF_TYPE_NAMESPACE_ID"/>
+        <dropColumn tableName="DATAELEM" columnName="RDF_TYPE_NAMESPACE_ID"/>
+        <dropColumn tableName="DATAELEM" columnName="RDF_TYPE_NAME"/>
+        <dropColumn tableName="DS_TABLE" columnName="RDF_TYPE_NAMESPACE_ID"/>
+        <dropColumn tableName="DS_TABLE" columnName="RDF_TYPE_NAME"/>
+    </changeSet>
 </databaseChangeLog>
