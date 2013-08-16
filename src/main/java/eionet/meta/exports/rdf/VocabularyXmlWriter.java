@@ -31,10 +31,10 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
 
+import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SiteCode;
 import eionet.util.StringEncoder;
 
@@ -52,6 +52,9 @@ public class VocabularyXmlWriter {
     private static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
     private static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
     private static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
+    private static final String DCTYPE_NS = "http://purl.org/dc/dcmitype";
+    private static final String DCTERMS_NS = "http://purl.org/dc/terms";
+
     private static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
 
     /**
@@ -86,15 +89,23 @@ public class VocabularyXmlWriter {
     /**
      * Writes rdf output to stream for one vocabulary folder.
      *
+     * @param folderContextRoot
+     *            IRI for folder
+     * @param contextRoot
+     *            folder context IRI
+     * @param vocabularyFolder
+     *            vocabulary
+     * @param vocabularyConcepts
+     *            concepts in the vocabulary
      * @throws XMLStreamException
-     * @throws ServiceException
+     *             if streaming fails
      */
-    public void writeRDFXml(String contextRoot, VocabularyFolder vocabularyFolder,
+    public void writeRDFXml(String folderContextRoot, String contextRoot, VocabularyFolder vocabularyFolder,
             List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
 
         writeXmlStart(vocabularyFolder.isSiteCodeType(), contextRoot);
 
-        writeVocabularyFolderXml(contextRoot, vocabularyFolder, vocabularyConcepts);
+        writeVocabularyFolderXml(folderContextRoot, contextRoot, vocabularyFolder, vocabularyConcepts);
 
         writeXmlEnd();
     }
@@ -103,7 +114,7 @@ public class VocabularyXmlWriter {
      * Writes start of XML.
      *
      * @param siteCodeType
-     * @param contextRoot
+     * @param contextRoot IRI for context
      * @throws XMLStreamException
      */
     public void writeXmlStart(boolean siteCodeType, String contextRoot) throws XMLStreamException {
@@ -123,10 +134,44 @@ public class VocabularyXmlWriter {
         writer.writeNamespace("rdfs", RDFS_NS);
         writer.writeNamespace("skos", SKOS_NS);
         writer.writeNamespace("owl", OWL_NS);
+        writer.writeNamespace("dctype", DCTYPE_NS);
+        writer.writeNamespace("dcterms", DCTERMS_NS);
+
         if (siteCodeType) {
             writer.writeNamespace("dd", DD_SCHEMA_NS);
         }
         writer.writeAttribute("xml", XML_NS, "base", escapeIRI(contextRoot));
+
+    }
+
+    /**
+     * Writes dcterms:Collection resource of the folder.
+     *
+     * @param folderContext Folder context IRI
+     * @param folder Folder for the vocabularies
+     * @param vocabularies concepts collection in the vocabulary
+     * @throws XMLStreamException if rdf output fails
+     */
+    public void writeFolderXml(String folderContext, Folder folder, List<? extends VocabularyFolder> vocabularies)
+            throws XMLStreamException {
+        // dctype:Collection for Folder:
+        writer.writeCharacters("\n");
+        writer.writeStartElement(DCTYPE_NS, "Collection");
+        writer.writeAttribute("rdf", RDF_NS, "about", escapeIRI(folderContext));
+
+        writer.writeCharacters("\n");
+        writer.writeStartElement(RDFS_NS, "label");
+        writer.writeCharacters(folder.getLabel());
+        writer.writeEndElement();
+
+        // hasPart relations of concepts:
+        for (VocabularyFolder v : vocabularies) {
+            writer.writeCharacters("\n");
+            writer.writeEmptyElement(DCTERMS_NS, "hasPart");
+            writer.writeAttribute("rdf", RDF_NS, "about", escapeIRI(folderContext + v.getIdentifier() + "/"));
+        }
+        writer.writeCharacters("\n");
+        writer.writeEndElement(); // End Collection
 
     }
 
@@ -144,13 +189,14 @@ public class VocabularyXmlWriter {
     /**
      * Writes vocabulary folder XML.
      *
+     * @param folderContextRoot
      * @param vocabularyContextRoot
      * @param vocabularyFolder
      * @param vocabularyConcepts
      * @throws XMLStreamException
      */
-    public void writeVocabularyFolderXml(String vocabularyContextRoot, VocabularyFolder vocabularyFolder,
-            List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
+    public void writeVocabularyFolderXml(String folderContextRoot, String vocabularyContextRoot,
+            VocabularyFolder vocabularyFolder, List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
         writer.writeCharacters("\n");
         writer.writeStartElement(SKOS_NS, "ConceptScheme");
         writer.writeAttribute("rdf", RDF_NS, "about", escapeIRI(vocabularyContextRoot));
@@ -159,6 +205,11 @@ public class VocabularyXmlWriter {
         writer.writeStartElement(RDFS_NS, "label");
         writer.writeCharacters(vocabularyFolder.getLabel());
         writer.writeEndElement();
+
+        writer.writeCharacters("\n");
+
+        writer.writeEmptyElement(DCTERMS_NS, "isPartOf");
+        writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(folderContextRoot));
 
         writer.writeCharacters("\n");
         writer.writeEndElement(); // End ConceptScheme
@@ -227,7 +278,8 @@ public class VocabularyXmlWriter {
                                 if (StringUtils.isNotEmpty(attr.getLanguage())) {
                                     writer.writeAttribute("xml", XML_NS, "lang", attr.getLanguage());
                                 }
-                                if (StringUtils.isNotEmpty(attr.getDataType()) && !(attr.getDataType().equalsIgnoreCase("string"))) {
+                                if (StringUtils.isNotEmpty(attr.getDataType())
+                                        && !(attr.getDataType().equalsIgnoreCase("string"))) {
                                     writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(attr.getDataType()));
                                 }
                                 writer.writeCharacters(attr.getValue());

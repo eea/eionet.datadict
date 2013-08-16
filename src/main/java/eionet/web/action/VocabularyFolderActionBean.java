@@ -799,6 +799,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             vocabularyFolder =
                     vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                             false);
+
             initFilter();
             filter.setUsePaging(false);
             filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
@@ -831,11 +832,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                             + "/"
                             + vocabularyFolder.getIdentifier() + "/";
 
+            final String folderContextRoot = Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/"
+                            + vocabularyFolder.getFolderName() + "/";
+
             StreamingResolution result = new StreamingResolution("application/rdf+xml") {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
                     VocabularyXmlWriter xmlWriter = new VocabularyXmlWriter(response.getOutputStream());
-                    xmlWriter.writeRDFXml(contextRoot, vocabularyFolder, finalConcepts);
+                    xmlWriter.writeRDFXml(folderContextRoot, contextRoot, vocabularyFolder, finalConcepts);
                 }
             };
             result.setFilename(vocabularyFolder.getIdentifier() + ".rdf");

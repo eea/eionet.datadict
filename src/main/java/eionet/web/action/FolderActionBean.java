@@ -87,6 +87,7 @@ public class FolderActionBean extends AbstractActionBean {
                             Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + folder.getIdentifier() + "/";
 
                     xmlWriter.writeXmlStart(true, folderContextRoot);
+                    xmlWriter.writeFolderXml(folderContextRoot, folder, vocabularyFolders);
 
                     for (VocabularyFolder vocabularyFolder : vocabularyFolders) {
                         VocabularyConceptFilter filter = new VocabularyConceptFilter();
@@ -116,7 +117,7 @@ public class FolderActionBean extends AbstractActionBean {
                                         + vocabularyFolder.getFolderName()
                                         + "/" + vocabularyFolder.getIdentifier() + "/";
 
-                        xmlWriter.writeVocabularyFolderXml(vocabularyContextRoot, vocabularyFolder,
+                        xmlWriter.writeVocabularyFolderXml(folderContextRoot, vocabularyContextRoot, vocabularyFolder,
                                 finalConcepts);
                     }
 
