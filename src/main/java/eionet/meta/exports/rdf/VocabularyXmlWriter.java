@@ -168,7 +168,7 @@ public class VocabularyXmlWriter {
         for (VocabularyFolder v : vocabularies) {
             writer.writeCharacters("\n");
             writer.writeEmptyElement(DCTERMS_NS, "hasPart");
-            writer.writeAttribute("rdf", RDF_NS, "about", escapeIRI(folderContext + v.getIdentifier() + "/"));
+            writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(folderContext + v.getIdentifier() + "/"));
         }
         writer.writeCharacters("\n");
         writer.writeEndElement(); // End Collection

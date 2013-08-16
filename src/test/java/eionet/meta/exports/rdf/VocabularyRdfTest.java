@@ -37,7 +37,7 @@ public class VocabularyRdfTest extends DDDatabaseTestCase   {
         String dcTypeCollection = "<dctype:Collection rdf:about=\"" + url + "/vocabulary/wise/\">";
 
         String isPartOf = "<dcterms:isPartOf rdf:resource=\"" + url + "/vocabulary/wise/\"/>";
-        String hasPart = "<dcterms:hasPart rdf:about=\"" + url + "/vocabulary/wise/BWClosed/\"/>";
+        String hasPart = "<dcterms:hasPart rdf:resource=\"" + url + "/vocabulary/wise/BWClosed/\"/>";
 
         String output = trip.getOutputString();
 
