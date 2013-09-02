@@ -34,18 +34,28 @@ import eionet.meta.dao.domain.VocabularyConcept;
  *
  * @author Juhan Voolaid
  */
-public class VocabularyCSVOutputHelper {
+public final class VocabularyCSVOutputHelper {
 
     /**
+     * Prevent public initialization.
+     */
+     private VocabularyCSVOutputHelper() {
+
+     }
+
+   /**
      * Writes CSV to output stream.
      *
-     * @param out
-     * @param uriPrefix
-     * @param concepts
-     * @throws IOException
+     * @param out outputstream
+     * @param uriPrefix uri prefix for teh element identifiers
+     * @param concepts list of vocabulary concepts
+     * @throws IOException if error in I/O
      */
     public static void writeCSV(OutputStream out, String uriPrefix, List<VocabularyConcept> concepts) throws IOException {
-        CSVWriter writer = new CSVWriter(new OutputStreamWriter(out, "UTF-8"), ',');
+        OutputStreamWriter osw = new OutputStreamWriter(out, "UTF-8");
+        addBOM(out);
+
+        CSVWriter writer = new CSVWriter(osw, ',');
         String[] entries = {"URI", "Label", "Definition", "Notation"};
         writer.writeNext(entries);
         for (VocabularyConcept c : concepts) {
@@ -57,5 +67,22 @@ public class VocabularyCSVOutputHelper {
             writer.writeNext(entries);
         }
         writer.close();
+        osw.close();
+    }
+
+    /**
+     * Writes utf-8 BOM in the given writer.
+     *
+     * @param out current outputstream
+     * @throws IOException
+     *             if connection fails
+     */
+    private static void addBOM(OutputStream out) throws IOException {
+        byte[] bom = new byte[] {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+
+        for (byte b : bom) {
+            out.write(b);
+        }
+
     }
 }
