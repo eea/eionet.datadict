@@ -5285,4 +5285,15 @@ public class DDSearchEngine {
             }
         }
     }
+
+    /**
+     * Spring context can be used in classes following the old design pattern: handlers etc.
+     * @return spring context object
+     */
+    public ApplicationContext getSpringContext() {
+        if (springContext == null) {
+            initSpringContext();
+        }
+        return springContext;
+    }
 }

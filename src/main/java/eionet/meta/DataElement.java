@@ -2,6 +2,8 @@ package eionet.meta;
 
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
@@ -545,5 +547,19 @@ public class DataElement implements Comparable {
         this.primaryKey = primaryKey;
     }
 
+    /**
+     * indicates if element is taken from an external schema.
+     * @return true if identifier contains colon, for example geo:lat
+     */
+    public boolean isExternalSchema() {
+        return StringUtils.contains(identifier, ":");
+    }
+    /**
+     * returns external namespace prefix.
+     * @return NS prefix. null if an internal namespace
+     */
+    public String getNameSpacePrefix() {
+        return (isExternalSchema() ? StringUtils.substringBefore(identifier, ":") : null);
+    }
 
 }

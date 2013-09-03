@@ -23,6 +23,7 @@ public class TblXForm extends XForm {
         super(searchEngine, writer);
     }
 
+    @Override
     public void write(String tblID) throws Exception {
 
         if (Util.isEmpty(tblID))
@@ -96,7 +97,11 @@ public class TblXForm extends XForm {
             if (bindType == null)
                 bindType = DEFAULT_DATATYPE;
 
-            nodeset = tblNs + elm.getIdentifier();
+            if (elm.isExternalSchema()) {
+                nodeset = elm.getIdentifier();
+            } else {
+                nodeset = tblNs + elm.getIdentifier();
+            }
             // nodeset = tblNs + elm.getShortName();
 
             Hashtable elmBind = new Hashtable();
@@ -185,6 +190,7 @@ public class TblXForm extends XForm {
         }
     }
 
+    @Override
     protected void writeBinds(String lead) throws Exception {
 
         // element binds will be written into the table bind
@@ -208,6 +214,7 @@ public class TblXForm extends XForm {
         writer.println(lead + "</f:bind>");
     }
 
+    @Override
     protected void writeRepeat(String line) throws Exception {
         line = setAttr(line, "id", REPEAT_ID);
         String tblBindID = (String) tblBind.get(ATTR_ID);
@@ -217,6 +224,7 @@ public class TblXForm extends XForm {
         writer.println(line);
     }
 
+    @Override
     protected void writeInsert(String line) throws Exception {
 
         String tblBindNodeset = (String) tblBind.get(ATTR_NODESET);
@@ -230,6 +238,7 @@ public class TblXForm extends XForm {
         writeInsertValues(tblBindNodeset, extractLead(line));
     }
 
+    @Override
     protected void writeDelete(String line) throws Exception {
 
         line = setAttr(line, "at", "index('" + REPEAT_ID + "')");
@@ -253,7 +262,7 @@ public class TblXForm extends XForm {
             if (elmIdf != null) {
 
                 StringBuffer buf = new StringBuffer(lead).append("<f:setvalue f:ref=\"").append(tblBindNodeset).append("[index('")
-                        .append(REPEAT_ID).append("')]/").append(this.tblNs).append(elmIdf).append("\"/>");
+                        .append(REPEAT_ID).append("')]/").append(elm.isExternalSchema() ? "" : this.tblNs).append(elmIdf).append("\"/>");
 
                 writer.println(buf);
             }

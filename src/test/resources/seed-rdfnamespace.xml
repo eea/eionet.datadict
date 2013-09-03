@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<dataset>
+    <T_RDF_NAMESPACE ID="1" NAME_PREFIX="ns1" URI="http://namespace1.somewhere.com" />
+    <T_RDF_NAMESPACE ID="2" NAME_PREFIX="ns2" URI="http://namespace2.somewhere.com" />
+    <T_RDF_NAMESPACE ID="3" NAME_PREFIX="NS3" URI="http://namespace3.somewhere.com" />
+</dataset>

@@ -19,6 +19,7 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.tee.uit.security.AccessController;
@@ -30,6 +31,7 @@ import eionet.meta.DElemAttribute;
 import eionet.meta.DataElement;
 import eionet.meta.FixedValue;
 import eionet.meta.VersionManager;
+import eionet.meta.dao.IRdfNamespaceDAO;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
 import eionet.util.sql.INParameters;
@@ -42,6 +44,11 @@ import eionet.util.sql.SQLGenerator;
  *
  */
 public class DataElementHandler extends BaseHandler {
+
+    /**
+     * DAO for namespace operations.
+     */
+    private IRdfNamespaceDAO rdfNamespaceDAO;
 
     /** */
     private static final Logger LOGGER = Logger.getLogger(DataElementHandler.class);
@@ -193,6 +200,7 @@ public class DataElementHandler extends BaseHandler {
                 this.attrShortNamesById.put(new Integer(attr.getID()), attr.getShortName());
                 this.attrIdsByShortName.put(attr.getShortName(), attr.getID());
             }
+            rdfNamespaceDAO = searchEngine.getSpringContext().getBean(IRdfNamespaceDAO.class);
         } catch (Exception e) {
         }
     }
@@ -287,6 +295,14 @@ public class DataElementHandler extends BaseHandler {
             if (elmValuesType == null || (!elmValuesType.equalsIgnoreCase("CH1") && !elmValuesType.equalsIgnoreCase("CH2"))) {
                 throw new Exception("Element type not specified!");
             }
+            // check if namespace exists
+            checkNameSpace();
+//            if (elmIdfier != null && elmIdfier.indexOf(":") != -1) {
+//                String namespaceId = StringUtils.substringBefore(elmIdfier, ":");
+//                if (!rdfNamespaceDAO.namespaceExists(namespaceId)) {
+//                    throw new Exception("XML namespace '" + namespaceId + "' does not exist.");
+//                }
+//            }
         }
 
         if (mode.equalsIgnoreCase("add") || mode.equalsIgnoreCase("copy")) {
@@ -1579,6 +1595,15 @@ public class DataElementHandler extends BaseHandler {
         if (copyElmID == null) {
             return;
         }
+        // check if namespace exists
+        checkNameSpace();
+//        //TODO make it common method for save & copy
+//        if (elmIdfier != null && elmIdfier.indexOf(":") != -1) {
+//            String namespaceId = StringUtils.substringBefore(elmIdfier, ":");
+//            if (!rdfNamespaceDAO.namespaceExists(namespaceId)) {
+//                throw new Exception("XML namespace '" + namespaceId + "' does not exist.");
+//            }
+//        }
 
         // copy row in DATAELEM table
         SQLGenerator gen = new SQLGenerator();
@@ -1589,6 +1614,7 @@ public class DataElementHandler extends BaseHandler {
         if (lastInsertID == null) {
             return;
         }
+
 
         Statement stmt = null;
         try {
@@ -1965,5 +1991,18 @@ public class DataElementHandler extends BaseHandler {
         }
 
         return dstNamespaceID;
+    }
+
+    /**
+     * Checks if element identifier contains namespace and it exits in the corresponding table.
+     * @throws Exception if no namespace
+     */
+    private void checkNameSpace() throws Exception {
+        if (elmIdfier != null && elmIdfier.indexOf(":") != -1) {
+            String namespaceId = StringUtils.substringBefore(elmIdfier, ":");
+            if (!rdfNamespaceDAO.namespaceExists(namespaceId)) {
+                throw new Exception("XML namespace '" + namespaceId + "' does not exist.");
+            }
+        }
     }
 }

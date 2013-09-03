@@ -15,6 +15,8 @@ import eionet.meta.DataElement;
 import eionet.meta.DsTable;
 import eionet.meta.GetSchema;
 import eionet.meta.Namespace;
+import eionet.meta.dao.IRdfNamespaceDAO;
+import eionet.meta.dao.domain.RdfNamespace;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
@@ -49,6 +51,9 @@ public abstract class Schema implements SchemaIF {
     private int containerness = NOT_IN_CONTAINER;
     private String containerNamespaceID = null;
 
+    //@Autowired
+    protected IRdfNamespaceDAO namespaceDao;
+
     /*
      *
      */
@@ -68,13 +73,16 @@ public abstract class Schema implements SchemaIF {
         this.nonAnnotationAttributes.put("MinExclusiveValue", "");
         this.nonAnnotationAttributes.put("MaxExclusiveValue", "");
         this.nonAnnotationAttributes.put("DecimalPrecision", "");
+        this.namespaceDao = searchEngine.getSpringContext().getBean(IRdfNamespaceDAO.class);
     }
 
+    @Override
     public void setIdentitation(String identitation) {
         if (identitation != null)
             this.identitation = identitation;
     }
 
+    @Override
     public void setAppContext(String appContext) {
         if (appContext != null) {
             if (!appContext.endsWith("/"))
@@ -181,11 +189,13 @@ public abstract class Schema implements SchemaIF {
     /**
      * Write a schema for an object given by ID.
      */
+    @Override
     public abstract void write(String objID) throws Exception;
 
     /**
      * Flush the written content into the writer.
      */
+    @Override
     public void flush() throws Exception {
 
         // write schema header
@@ -201,7 +211,7 @@ public abstract class Schema implements SchemaIF {
 
         // write content
         for (int i = 0; i < content.size(); i++) {
-            writer.print((String) content.get(i));
+            writer.print(content.get(i));
         }
 
         // write schema footer
@@ -308,6 +318,7 @@ public abstract class Schema implements SchemaIF {
 
             DataElement elem = null;
             DsTable dsTable = null;
+            RdfNamespace namespace = null;
 
             if (oClassName.endsWith("DataElement"))
                 elem = (DataElement) o;
@@ -330,8 +341,13 @@ public abstract class Schema implements SchemaIF {
 
                 addString(tab + "\t");
                 addString("<xs:element ref=\"");
-                addString(referredNsPrefix + ":" + elem.getIdentifier());
-
+                if (elem.isExternalSchema()) {
+                    addString(elem.getIdentifier());
+                    namespace = namespaceDao.getNamespace(elem.getNameSpacePrefix());
+                    addNamespace(namespace.getPrefix(), namespace.getUri());
+                } else {
+                    addString(referredNsPrefix + ":" + elem.getIdentifier());
+                }
                 String minOccs = elem.isMandatoryFlag() ? "1" : "0";
                 String maxOccs = elem.getValueDelimiter() == null ? "1" : "unbounded";
 
@@ -410,7 +426,7 @@ public abstract class Schema implements SchemaIF {
         Iterator<String> iter = imports.iterator();
         while (iter.hasNext()) {
             writer.print("\t");
-            writer.print((String) iter.next());
+            writer.print(iter.next());
             writer.print(lineTerminator);
         }
     }

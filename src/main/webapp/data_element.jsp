@@ -869,6 +869,7 @@
 
             // if not delete mode, do validation of inputs
             if (mode != "delete"){
+                var isCommon = '<%=elmCommon%>';
                 forceAttrMaxLen();
                 if (!checkObligations()){
                     alert("You have not specified one of the mandatory atttributes!");
@@ -878,10 +879,12 @@
                     alert("Identifier cannot contain any white space!");
                     return false;
                 }
-                if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
+                if (!validForXMLTag(document.forms["form1"].elements["idfier"].value, isCommon)){
+
                     alert("Identifier not valid for usage as an XML tag! " +
                           "In the first character only underscore or latin characters are allowed! " +
-                          "In the rest of characters only underscore or hyphen or dot or 0-9 or latin characters are allowed!");
+                          "In the rest of characters only underscore or hyphen or dot or 0-9 or latin characters are allowed!" +
+                          "Only common elements may have namespace prefix.");
                     return false;
                 }
             }
@@ -1112,13 +1115,13 @@
         }
 
         function copyElem(){
-
+            var isCommon = '<%=elmCommon%>';
             if (hasWhiteSpace("idfier")){
                 alert("Identifier cannot contain any white space!");
                 return;
             }
 
-            if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
+            if (!validForXMLTag(document.forms["form1"].elements["idfier"].value, isCommon)){
                 alert("Identifier not valid for usage as an XML tag! " +
                           "In the first character only underscore or latin characters are allowed! " +
                           "In the rest of characters only underscore or hyphen or dot or 0-9 or latin characters are allowed!");
@@ -1153,8 +1156,8 @@
             return true;
         }
 
-        function validForXMLTag(str){
-
+        function validForXMLTag(str, isCommon){
+            var colonCount = 0;
             // if empty string not allowed for XML tag
             if (str==null || str.length==0){
                 return false;
@@ -1166,14 +1169,25 @@
                 return false;
             }
 
-            // check the rets of characters ((only underscore or hyphen or dot or 0-9 or A-Z or a-z allowed))
+            // check the rest of characters ((only underscore or hyphen or dot or 0-9 or A-Z or a-z allowed))
             if (str.length==1) return true;
             for (var i=1; i<str.length; i++){
                 ch = str.charCodeAt(i);
-                if (!(ch==95 || ch==45 || ch==46 || (ch>=48 && ch<=57) || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))){
+                if (ch == 58) {
+                  colonCount = colonCount + 1;
+                }
+                //only common elements may have colon
+                if (!((ch == 58 && isCommon == "true") || ch==95 || ch==45 || ch==46 || (ch>=48 && ch<=57) || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))){
                     return false;
                 }
+
+                if (colonCount > 1) {
+                  return false;
+                }
             }
+
+            //xml element name can contain only one colon:
+
 
             return true;
         }

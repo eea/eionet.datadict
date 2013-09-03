@@ -3,6 +3,8 @@ package eionet.meta.exports.schema;
 import java.io.PrintWriter;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
 import eionet.meta.FixedValue;
@@ -18,6 +20,7 @@ public class ElmSchema extends Schema {
     /**
      * Write a schema for an object given by ID.
      */
+    @Override
     public void write(String elemID) throws Exception {
 
         if (Util.isEmpty(elemID))
@@ -52,16 +55,33 @@ public class ElmSchema extends Schema {
 
         String cNamespaceID = getContainerNamespaceID();
         if (Util.isEmpty(cNamespaceID)) {
-            Namespace parentNs = elem.getNamespace();
-            if (parentNs == null || Util.isEmpty(parentNs.getID()))
-                this.targetNsUrl = this.appContext + "elements/" + elem.getIdentifier();
-            else
-                setTargetNsUrl(parentNs.getID());
-        } else
-            setTargetNsUrl(cNamespaceID);
+            // if it is a common element from an external schema use this schema uri as namespace:
+            if (elem.isExternalSchema()) {
+                this.targetNsUrl = namespaceDao.getNamespace(elem.getNameSpacePrefix()).getUri();
+            } else {
 
+                Namespace parentNs = elem.getNamespace();
+                if (parentNs == null || Util.isEmpty(parentNs.getID())) {
+                    this.targetNsUrl = this.appContext + "elements/" + elem.getIdentifier();
+                } else {
+                    setTargetNsUrl(parentNs.getID());
+                }
+            }
+        } else {
+            setTargetNsUrl(cNamespaceID);
+            //external elements namespace to be added in container:
+            if (elem.isExternalSchema()) {
+                String nsUri = namespaceDao.getNamespace(elem.getNameSpacePrefix()).getUri();
+                addNamespace(elem.getNameSpacePrefix(), nsUri);
+            }
+        }
         // writeElemStart(elem.getShortName());
-        writeElemStart(elem.getIdentifier());
+        //in element schema use external names without NS prefix because it is targetNamespace:
+        String elemName=elem.getIdentifier();
+        if (!isIncontainer() && elem.isExternalSchema()) {
+            elemName = StringUtils.substringAfter(elemName, ":");
+        }
+        writeElemStart(elemName);
         writeAnnotation(elem.getAttributes(), elem.getComplexAttributes());
         writeContent(elem);
         writeElemEnd();
@@ -73,14 +93,14 @@ public class ElmSchema extends Schema {
 
     private void writeSimpleContent(DataElement elem) throws Exception {
 
-        String dataType = (String) nonAnnotationAttributes.get("Datatype");
-        String minSize = (String) nonAnnotationAttributes.get("MinSize");
-        String maxSize = (String) nonAnnotationAttributes.get("MaxSize");
-        String minInclusiveValue = (String) nonAnnotationAttributes.get("MinInclusiveValue");
-        String maxInclusiveValue = (String) nonAnnotationAttributes.get("MaxInclusiveValue");
-        String minExclusiveValue = (String) nonAnnotationAttributes.get("MinExclusiveValue");
-        String maxExclusiveValue = (String) nonAnnotationAttributes.get("MaxExclusiveValue");
-        String decPrec = (String) nonAnnotationAttributes.get("DecimalPrecision");
+        String dataType = nonAnnotationAttributes.get("Datatype");
+        String minSize = nonAnnotationAttributes.get("MinSize");
+        String maxSize = nonAnnotationAttributes.get("MaxSize");
+        String minInclusiveValue = nonAnnotationAttributes.get("MinInclusiveValue");
+        String maxInclusiveValue = nonAnnotationAttributes.get("MaxInclusiveValue");
+        String minExclusiveValue = nonAnnotationAttributes.get("MinExclusiveValue");
+        String maxExclusiveValue = nonAnnotationAttributes.get("MaxExclusiveValue");
+        String decPrec = nonAnnotationAttributes.get("DecimalPrecision");
 
         // overwrite above-prepared attribute values if they are not allowed for this particular datatype
         if (Util.skipAttributeByDatatype("MinSize", dataType)) {
@@ -200,4 +220,11 @@ public class ElmSchema extends Schema {
         newLine();
     }
 
+    /**
+     * indicates if element is in container.
+     * @return true if element schema is inside container
+     */
+    private boolean isIncontainer() {
+        return StringUtils.isNotBlank(getContainerNamespaceID());
+    }
 }

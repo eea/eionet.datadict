@@ -23,6 +23,7 @@ import eionet.meta.DDRuntimeException;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
 import eionet.meta.DsTable;
+import eionet.meta.dao.IRdfNamespaceDAO;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.service.IDataService;
@@ -65,12 +66,20 @@ public class Rdf {
     /** The friendly URI of the namespace representing the table for which the RDF is to be generated. */
     private String tblNamespaceFriendlyUri;
 
+    private IRdfNamespaceDAO namespaceDao;
+
+
     /**
      * Constructs an instance for the given table id, output type and database connection.
-     * @param id Table id, may be blank, but in that case the given type must be that of {@link #CODE_LIST_TYPE}.
-     * @param type Output type, on of {@link #TABLE_TYPE} or {@link #CODE_LIST_TYPE}.
-     * @param conn Database connection.
-     * @throws SQLException If database access error happens.
+     *
+     * @param id
+     *            Table id, may be blank, but in that case the given type must be that of {@link #CODE_LIST_TYPE}.
+     * @param type
+     *            Output type, on of {@link #TABLE_TYPE} or {@link #CODE_LIST_TYPE}.
+     * @param conn
+     *            Database connection.
+     * @throws SQLException
+     *             If database access error happens.
      */
     public Rdf(String id, String type, Connection conn) throws SQLException {
 
@@ -79,10 +88,15 @@ public class Rdf {
 
     /**
      * Constructs an instance for the given table id, output type and {@link DDSearchEngine}.
-     * @param id Table id, may be blank, but in that case the given type must be that of {@link #CODE_LIST_TYPE}.
-     * @param type Output type, on of {@link #TABLE_TYPE} or {@link #CODE_LIST_TYPE}.
-     * @param ddSearchEngine Instance of {@link DDSearchEngine} to use for database access.
-     * @throws SQLException If database access error happens.
+     *
+     * @param id
+     *            Table id, may be blank, but in that case the given type must be that of {@link #CODE_LIST_TYPE}.
+     * @param type
+     *            Output type, on of {@link #TABLE_TYPE} or {@link #CODE_LIST_TYPE}.
+     * @param ddSearchEngine
+     *            Instance of {@link DDSearchEngine} to use for database access.
+     * @throws SQLException
+     *             If database access error happens.
      */
     public Rdf(String id, String type, DDSearchEngine ddSearchEngine) throws SQLException {
         this.searchEngine = ddSearchEngine;
@@ -93,6 +107,7 @@ public class Rdf {
         }
 
         ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-context.xml");
+        this.namespaceDao = ctx.getBean(IRdfNamespaceDAO.class);
 
         if (type.equals(TABLE_TYPE)) {
             tableService = ctx.getBean(ITableService.class);
@@ -109,6 +124,8 @@ public class Rdf {
 
                 this.tblNamespaceFriendlyUri = Props.getRequiredProperty(PropsIF.NAMESPACE_FRIENDLY_URI_TEMPLATE);
                 this.tblNamespaceFriendlyUri = MessageFormat.format(this.tblNamespaceFriendlyUri, tbl.getNamespace());
+
+
             } else {
                 HashSet datasetStatuses = new HashSet();
                 datasetStatuses.add("Released");
@@ -180,63 +197,66 @@ public class Rdf {
         // Therefore we have to include the id again in the Collection URI and Concepts.
         streamWriter.writeAttribute("xml", XML_NS, "base", StringUtils.substringBeforeLast(this.baseUri, "/rdf"));
 
-        //rdf:Property declaration
-        streamWriter.writeStartElement(RDF_NS, "Property");
-        streamWriter.writeAttribute("about", Integer.toString(id) + "/" + identifier);
-        streamWriter.writeStartElement(RDFS_NS, "label");
-        //FIXME - name
-        streamWriter.writeCharacters(elemName);
-        streamWriter.writeEndElement();
+        //external elements are not showin in RDF
+        if (!StringUtils.contains(dataElement.getIdentifier(), ":")) {
 
-        streamWriter.writeStartElement(DD_NS, "usesVocabulary");
-        streamWriter.writeAttribute(RDF_NS, "resource", Integer.toString(id));
-        streamWriter.writeEndElement();
-
-        streamWriter.writeStartElement(RDFS_NS, "isDefinedBy");
-        streamWriter.writeAttribute(RDF_NS, "resource", Integer.toString(id) + "/rdf");
-        streamWriter.writeEndElement();
-
-        streamWriter.writeEndElement(); // </rdf:Property>
-
-
-        streamWriter.writeStartElement(SKOS_NS, "Collection");
-        streamWriter.writeAttribute(RDF_NS, "about", Integer.toString(id));
-
-        streamWriter.writeStartElement(RDFS_NS, "label");
-        streamWriter.writeCharacters(dataElement.getShortName());
-        streamWriter.writeEndElement();
-
-        streamWriter.writeEmptyElement(RDFS_NS, "isDefinedBy");
-        streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri);
-
-        streamWriter.writeEmptyElement(FOAF_NS, "isPrimaryTopicOf");
-        streamWriter.writeAttribute(RDF_NS, "resource", Integer.toString(id));
-
-        for (FixedValue fv : fixedValues) {
-            streamWriter.writeEmptyElement(SKOS_NS, "member");
-            streamWriter.writeAttribute(RDF_NS, "resource", Integer.toString(id) + "/" + fv.getValue());
-        }
-        streamWriter.writeEndElement(); // </skos:Collection>
-
-        for (FixedValue fv : fixedValues) {
-            streamWriter.writeStartElement(SKOS_NS, "Concept");
-            streamWriter.writeAttribute(RDF_NS, "about", Integer.toString(id) + "/" + fv.getValue());
-
-            streamWriter.writeStartElement(SKOS_NS, "prefLabel");
-            streamWriter.writeCharacters(fv.getValue());
+            // rdf:Property declaration
+            streamWriter.writeStartElement(RDF_NS, "Property");
+            streamWriter.writeAttribute("about", Integer.toString(id) + "/" + identifier);
+            streamWriter.writeStartElement(RDFS_NS, "label");
+            // FIXME - name
+            streamWriter.writeCharacters(elemName);
             streamWriter.writeEndElement();
-            if (StringUtils.isNotEmpty(fv.getDefinition())) {
-                streamWriter.writeStartElement(SKOS_NS, "definition");
-                streamWriter.writeCharacters(fv.getDefinition());
+
+            streamWriter.writeStartElement(DD_NS, "usesVocabulary");
+            streamWriter.writeAttribute(RDF_NS, "resource", Integer.toString(id));
+            streamWriter.writeEndElement();
+
+            streamWriter.writeStartElement(RDFS_NS, "isDefinedBy");
+            streamWriter.writeAttribute(RDF_NS, "resource", Integer.toString(id) + "/rdf");
+            streamWriter.writeEndElement();
+
+            streamWriter.writeEndElement(); // </rdf:Property>
+
+            streamWriter.writeStartElement(SKOS_NS, "Collection");
+            streamWriter.writeAttribute(RDF_NS, "about", Integer.toString(id));
+
+            streamWriter.writeStartElement(RDFS_NS, "label");
+            streamWriter.writeCharacters(dataElement.getShortName());
+            streamWriter.writeEndElement();
+
+            streamWriter.writeEmptyElement(RDFS_NS, "isDefinedBy");
+            streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri);
+
+            streamWriter.writeEmptyElement(FOAF_NS, "isPrimaryTopicOf");
+            streamWriter.writeAttribute(RDF_NS, "resource", Integer.toString(id));
+
+            for (FixedValue fv : fixedValues) {
+                streamWriter.writeEmptyElement(SKOS_NS, "member");
+                streamWriter.writeAttribute(RDF_NS, "resource", Integer.toString(id) + "/" + fv.getValue());
+            }
+            streamWriter.writeEndElement(); // </skos:Collection>
+
+            for (FixedValue fv : fixedValues) {
+                streamWriter.writeStartElement(SKOS_NS, "Concept");
+                streamWriter.writeAttribute(RDF_NS, "about", Integer.toString(id) + "/" + fv.getValue());
+
+                streamWriter.writeStartElement(SKOS_NS, "prefLabel");
+                streamWriter.writeCharacters(fv.getValue());
+                streamWriter.writeEndElement();
+                if (StringUtils.isNotEmpty(fv.getDefinition())) {
+                    streamWriter.writeStartElement(SKOS_NS, "definition");
+                    streamWriter.writeCharacters(fv.getDefinition());
+                    streamWriter.writeEndElement();
+                }
+                if (StringUtils.isNotEmpty(fv.getShortDescription())) {
+                    streamWriter.writeStartElement(SKOS_NS, "note");
+                    streamWriter.writeCharacters(fv.getShortDescription());
+                    streamWriter.writeEndElement();
+                }
+
                 streamWriter.writeEndElement();
             }
-            if (StringUtils.isNotEmpty(fv.getShortDescription())) {
-                streamWriter.writeStartElement(SKOS_NS, "note");
-                streamWriter.writeCharacters(fv.getShortDescription());
-                streamWriter.writeEndElement();
-            }
-
-            streamWriter.writeEndElement();
         }
 
         streamWriter.writeEndElement(); // </rdf:RDF>
@@ -346,7 +366,7 @@ public class Rdf {
 
             if (elm.getType().equalsIgnoreCase("CH1")) {
                 writeFixedValueProperty(streamWriter, elm);
-            } else {
+            } else if (!elm.isExternalSchema()) {
                 writeRegularProperty(streamWriter, elm);
             }
 
@@ -484,4 +504,5 @@ public class Rdf {
     public String getFileName() {
         return null; // TODO
     }
+
 }

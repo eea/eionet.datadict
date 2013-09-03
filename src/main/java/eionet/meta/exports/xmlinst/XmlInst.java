@@ -5,11 +5,19 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
 import eionet.meta.Namespace;
+import eionet.meta.dao.DAOException;
+import eionet.meta.dao.IRdfNamespaceDAO;
+import eionet.meta.dao.domain.RdfNamespace;
 
 public abstract class XmlInst implements XmlInstIF {
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(XmlInst.class);
 
     protected static final int ROW_COUNT = 1;
 
@@ -29,6 +37,9 @@ public abstract class XmlInst implements XmlInstIF {
 
     protected String dstNsPrefix = "";
     protected String tblNsPrefix = "";
+    
+    /** namespace dao. */
+    private IRdfNamespaceDAO namespaceDao;
 
     /*
      *
@@ -36,9 +47,11 @@ public abstract class XmlInst implements XmlInstIF {
     public XmlInst(DDSearchEngine searchEngine, PrintWriter writer) {
         this.searchEngine = searchEngine;
         this.writer = writer;
+        this.namespaceDao = searchEngine.getSpringContext().getBean(IRdfNamespaceDAO.class);
         addFixedNamespaces();
     }
 
+    @Override
     public void setAppContext(String appContext) {
         if (appContext != null) {
             if (!appContext.endsWith("/"))
@@ -111,6 +124,7 @@ public abstract class XmlInst implements XmlInstIF {
     /**
     * Flush the written content into the writer.
     */
+    @Override
     public void flush() throws Exception {
 
         writeHeader();
@@ -200,7 +214,7 @@ public abstract class XmlInst implements XmlInstIF {
 
         for (int i = 0; elms != null && i < elms.size(); i++) {
             DataElement elm = (DataElement) elms.get(i);
-            addString(elm(elm.getIdentifier()));
+            addString(elm(elm.getIdentifier(), elm.isExternalSchema()));
             newLine();
         }
 
@@ -216,8 +230,18 @@ public abstract class XmlInst implements XmlInstIF {
         return getLead("row") + "</" + dstNsPrefix + ":" + "Row>";
     }
 
-    private String elm(String name) {
-        String qfName = tblNsPrefix + ":" + name;
+    private String elm(String name, boolean isExternalSchema) {
+        //if it is an external element NS must exist in the header
+        RdfNamespace ns = null;
+        if (isExternalSchema) {
+            try {
+                ns = namespaceDao.getNamespace(StringUtils.substringBefore(name, ":"));
+                addNamespace(ns.getPrefix(), ns.getUri());
+            } catch (DAOException daoe) {
+                LOGGER.error("Namespace query failed:" + daoe.toString());
+            }
+        }
+        String qfName = (isExternalSchema ? name : tblNsPrefix + ":" + name);
         return getLead("elm") + "<" + qfName + "></" + qfName + ">";
     }
 
@@ -234,5 +258,6 @@ public abstract class XmlInst implements XmlInstIF {
     /*
      *
      */
+    @Override
     public abstract void write(String objID) throws Exception;
 }

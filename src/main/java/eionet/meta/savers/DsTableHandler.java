@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
 import eionet.meta.DataElement;
+import eionet.meta.dao.IDataElementDAO;
 import eionet.util.RequestMessages;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
@@ -61,6 +62,8 @@ public class DsTableHandler extends BaseHandler {
     /** for storing restored table ID returned by Restorer.restoreTbl() */
     private String restoredID = null;
 
+    /** DAO for data element qyeries. */
+    private IDataElementDAO dataElemDao;
     private boolean importMode = false;
 
     /**
@@ -88,6 +91,9 @@ public class DsTableHandler extends BaseHandler {
                 setVersioning(false);
             }
         }
+
+        searchEngine = new DDSearchEngine(conn, "");
+        dataElemDao = searchEngine.getSpringContext().getBean(IDataElementDAO.class);
     }
 
     public DsTableHandler(Connection conn, HttpServletRequest req, ServletContext ctx, String mode) {
@@ -210,6 +216,13 @@ public class DsTableHandler extends BaseHandler {
         String rplc_elm = req.getParameter("rplc_elm");
         if (link_elm != null && link_elm.length() > 0) {
 
+            //tables do not support external elements:
+            eionet.meta.dao.domain.DataElement element = dataElemDao.getDataElement(Integer.valueOf(link_elm));
+
+            if (element.isExternalSchema()) {
+                throw new Exception ("Data elements from external schemas are not supported in the tables.");
+            }
+
             INParameters inParams = new INParameters();
             SQLGenerator gen = new SQLGenerator();
             gen.setTable("TBL2ELEM");
@@ -222,6 +235,13 @@ public class DsTableHandler extends BaseHandler {
             stmt.close();
             return;
         } else if (rplc_elm != null && rplc_elm.length() > 0) {
+
+            //tables do not support external elements:
+            eionet.meta.dao.domain.DataElement element = dataElemDao.getDataElement(Integer.valueOf(rplc_elm));
+
+            if (element.isExternalSchema()) {
+                throw new Exception ("Data elements from external schemas are not supported in the tables.");
+            }
 
             INParameters inParams = new INParameters();
             SQLGenerator gen = new SQLGenerator();
