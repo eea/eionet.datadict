@@ -592,11 +592,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public void validaRemoveDataElement() throws ServiceException {
 
         //if this element binding has valued in any concept - do not remove it
-        List <VocabularyConcept> conceptsWithValue = vocabularyService.getConceptsWithElementValue(elementId);
+        List<VocabularyConcept> conceptsWithValue = vocabularyService.getConceptsWithElementValue(elementId);
 
         if (!conceptsWithValue.isEmpty()) {
             String ids = StringUtils.join(conceptsWithValue, ",");
-            addGlobalValidationError("This element has valued in Concepts: " + ids + '\n' + "Please delete the values before removing the element binding.");
+            addGlobalValidationError("This element has valued in Concepts: " + ids
+                    + '\n' + "Please delete the values before removing the element binding.");
         }
 
 
@@ -861,7 +862,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                     vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                             false);
 
-            List <VocabularyFolder> vocabularyFolders = new ArrayList<VocabularyFolder>();
+            List<VocabularyFolder> vocabularyFolders = new ArrayList<VocabularyFolder>();
             vocabularyFolders.add(vocabularyFolder);
             final List<RdfNamespace> nameSpaces = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
 
