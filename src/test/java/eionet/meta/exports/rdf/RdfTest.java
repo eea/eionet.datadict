@@ -89,6 +89,10 @@ public class RdfTest extends DDDatabaseTestCase {
         }
     }
 
+    /**
+     * test on rdf:Property generation.
+     * @throws Exception if error
+     */
     @Test
     public void testRdfProperty() throws Exception {
         Rdf rdfGen = new Rdf("48922", Rdf.CODE_LIST_TYPE, new DDSearchEngineMock(null, null));
@@ -96,7 +100,10 @@ public class RdfTest extends DDDatabaseTestCase {
         rdfGen.write(writer);
         String stringOutput = writer.toString();
 
-        String expectedProperty = "<rdf:Property about=\"48922/RepresentativeStation\"><rdfs:label>Representative Station</rdfs:label><dd:usesVocabulary rdf:resource=\"48922\"></dd:usesVocabulary><rdfs:isDefinedBy rdf:resource=\"48922/rdf\"></rdfs:isDefinedBy></rdf:Property>";
+        String expectedProperty =
+                "<rdf:Property rdf:about=\"48922/RepresentativeStation\"><rdfs:label>Representative Station</rdfs:label>"
+                + "<dd:usesVocabulary rdf:resource=\"48922\"></dd:usesVocabulary><rdfs:isDefinedBy rdf:resource=\"48922/rdf\">"
+                + "</rdfs:isDefinedBy></rdf:Property>";
         assertTrue("Expected common dataelement <rdf:Property> ", stringOutput.contains(expectedProperty));
     }
 

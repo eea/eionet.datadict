@@ -9,6 +9,11 @@ import org.junit.Test;
 import eionet.DDDatabaseTestCase;
 import eionet.meta.DDSearchEngine;
 
+/**
+ * test external element schema genration.
+ *
+ * @author Kaido Laine
+ */
 public class DataElemSchemaTest extends DDDatabaseTestCase {
 
     @Override
@@ -16,6 +21,10 @@ public class DataElemSchemaTest extends DDDatabaseTestCase {
         return "seed-element-schema.xml";
     }
 
+    /**
+     * tests external element output.
+     * @throws Exception if error
+     */
     @Test
     public void testExternalElem() throws Exception {
         DDSearchEngine ddSearchEngine = new DDSearchEngine(getConnection().getConnection());
@@ -45,6 +54,10 @@ public class DataElemSchemaTest extends DDDatabaseTestCase {
 
     }
 
+    /**
+     * test local element schema generation.
+     * @throws Exception if error happens
+     */
     @Test
     public void testLocalElem() throws Exception {
         DDSearchEngine ddSearchEngine = new DDSearchEngine(getConnection().getConnection());
@@ -64,7 +77,6 @@ public class DataElemSchemaTest extends DDDatabaseTestCase {
         writer.flush();
         printWriter.flush();
         String output = writer.toString();
-        System.out.println(output);
 
         printWriter.close();
         writer.close();

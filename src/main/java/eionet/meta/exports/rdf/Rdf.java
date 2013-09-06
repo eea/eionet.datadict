@@ -23,7 +23,6 @@ import eionet.meta.DDRuntimeException;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
 import eionet.meta.DsTable;
-import eionet.meta.dao.IRdfNamespaceDAO;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.service.IDataService;
@@ -66,8 +65,6 @@ public class Rdf {
     /** The friendly URI of the namespace representing the table for which the RDF is to be generated. */
     private String tblNamespaceFriendlyUri;
 
-    private IRdfNamespaceDAO namespaceDao;
-
 
     /**
      * Constructs an instance for the given table id, output type and database connection.
@@ -107,7 +104,6 @@ public class Rdf {
         }
 
         ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-context.xml");
-        this.namespaceDao = ctx.getBean(IRdfNamespaceDAO.class);
 
         if (type.equals(TABLE_TYPE)) {
             tableService = ctx.getBean(ITableService.class);
@@ -202,7 +198,7 @@ public class Rdf {
 
             // rdf:Property declaration
             streamWriter.writeStartElement(RDF_NS, "Property");
-            streamWriter.writeAttribute("about", Integer.toString(id) + "/" + identifier);
+            streamWriter.writeAttribute(RDF_NS,  "about", Integer.toString(id) + "/" + identifier);
             streamWriter.writeStartElement(RDFS_NS, "label");
             // FIXME - name
             streamWriter.writeCharacters(elemName);
@@ -397,9 +393,9 @@ public class Rdf {
      * @throws XMLStreamException
      */
     private void writeRegularProperty(XMLStreamWriter streamWriter, DataElement element) throws XMLStreamException {
-        String type = null;
+        String propertyType = null;
         try {
-            type = dataService.getDataElementDataType(Integer.parseInt(element.getID()));
+            propertyType = dataService.getDataElementDataType(Integer.parseInt(element.getID()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -415,9 +411,9 @@ public class Rdf {
         streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri + "/" + tbl.getIdentifier());
         streamWriter.writeEndElement(); // </rdfs:domain>
 
-        if (StringUtils.isNotEmpty(type)) {
+        if (StringUtils.isNotEmpty(propertyType)) {
             streamWriter.writeStartElement(RDFS_NS, "range");
-            streamWriter.writeAttribute(RDF_NS, "resource", getXmlType(type));
+            streamWriter.writeAttribute(RDF_NS, "resource", getXmlType(propertyType));
             streamWriter.writeEndElement(); // </rdfs:domain>
         }
 

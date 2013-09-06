@@ -181,4 +181,11 @@ public interface IVocabularyConceptDAO {
      * @param newVocabularyFolderId
      */
     void updateRelatedConceptIds(int newVocabularyFolderId);
+
+    /**
+     * Checks if any concept has values in the binded data element. Returns list of such elements.
+     * @param elementId element id
+     * @return list of data elements
+     */
+    List<VocabularyConcept> getConceptsWithValuedElement(int elementId);
 }

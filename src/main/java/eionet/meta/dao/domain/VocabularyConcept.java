@@ -43,7 +43,7 @@ public class VocabularyConcept {
     // Old implementation that will be replaced by data element attributes. See #14721.
     @Deprecated
     private List<List<VocabularyConceptAttribute>> attributes;
-
+    /** Attributes. */
     private List<List<DataElement>> elementAttributes;
 
     /**
@@ -180,5 +180,12 @@ public class VocabularyConcept {
     public void setElementAttributes(List<List<DataElement>> elementAttributes) {
         this.elementAttributes = elementAttributes;
     }
+
+    @Override
+    public String toString() {
+        return getIdentifier();
+    }
+
+
 
 }

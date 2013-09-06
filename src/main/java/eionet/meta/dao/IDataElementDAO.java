@@ -170,4 +170,14 @@ public interface IDataElementDAO {
      * @param newVocabularyFolderId
      */
     public void copyVocabularyConceptDataElementValues(int newVocabularyFolderId);
+
+    /**
+     * Checks if the vocabulary has binding of this element.
+     * @param vocabularyFolderId vocabulary Id
+     * @param elementId element id
+     * @return true if binding exists
+     */
+    boolean vocabularyHasElemendBinding(int vocabularyFolderId, int elementId);
+
+
 }

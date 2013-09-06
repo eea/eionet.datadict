@@ -25,6 +25,7 @@ import java.util.List;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyConceptAttribute;
@@ -363,7 +364,7 @@ public interface IVocabularyService {
     void reserveFreeSiteCodes(int vocabularyFolderId, int amount, int startIdentifier, String userName) throws ServiceException;
 
     /**
-     * Returns the next highest vocabulary concept identifier numeric value.s
+     * Returns the next highest vocabulary concept identifier numeric values.
      *
      * @param vocabularyFolderId
      * @return
@@ -457,4 +458,32 @@ public interface IVocabularyService {
      * @throws ServiceException
      */
     List<DataElement> getVocabularysDataElemets(int vocabularyFolderId) throws ServiceException;
+
+    /**
+     * Checks if vocabulary has binding for the data element.
+     * @param vocabularyFolderId vocabulary Id
+     * @param dataElementId element id
+     * @return true if binding exits
+     * @throws ServiceException if query fails
+     */
+    boolean vocabularyHasDataElementBinding(int vocabularyFolderId, int dataElementId) throws ServiceException;
+
+    /**
+     * Returns list of other concepts that have this dataelement valued.
+     * Checks only editable copy values
+     * @param dataElementId element ID
+     * @return list of elements
+     * @throws ServiceException if query fails
+     */
+    List<VocabularyConcept> getConceptsWithElementValue(int dataElementId) throws ServiceException;
+
+    /**
+     * Returns all namespaces that are used by the binded elements. Both external and internal.
+     * Internal namespaces are composed with prefix dd[element.idand uri BASE_URI/dataelement/[element.id]
+     * @param vocabularyFolders vocabularies
+     * @return container of RDF Namespace objects
+     * @throws ServiceException if query fails
+     */
+    List<RdfNamespace> getVocabularyNamespaces(List<VocabularyFolder> vocabularyFolders) throws ServiceException;
+
 }

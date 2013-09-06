@@ -23,12 +23,14 @@ package eionet.meta.dao.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -467,6 +469,35 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         return vc;
                     }
                 });
+
+        return result;
+    }
+
+    @Override
+    public List<VocabularyConcept> getConceptsWithValuedElement(int elementId) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("elementId", elementId);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select DISTINCT cev.VOCABULARY_CONCEPT_ID from T_CONCEPT_ELEMENT_VALUE cev, T_VOCABULARY_CONCEPT c  ");
+        sql.append("where cev.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID AND c.ORIGINAL_CONCEPT_ID IS NOT NULL ");
+        sql.append("AND cev.DATAELEM_ID = :elementId ");
+
+        final List<VocabularyConcept> result = new ArrayList<VocabularyConcept>();
+
+        getNamedParameterJdbcTemplate().query(sql.toString(), parameters, new RowCallbackHandler() {
+
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+
+                int conceptId = rs.getInt("VOCABULARY_CONCEPT_ID");
+
+                VocabularyConcept concept = getVocabularyConcept(conceptId);
+
+                result.add(concept);
+
+            }
+        });
 
         return result;
     }

@@ -21,6 +21,7 @@
 
 package eionet.meta.dao.domain;
 
+
 /**
  * RDF namespace.
  *
@@ -78,5 +79,24 @@ public class RdfNamespace {
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (prefix == null ? 0 : prefix.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object otherNs) {
+        if (this == otherNs) {
+            return true;
+        }
+        RdfNamespace other = (RdfNamespace) otherNs;
+        return uri.equals(other.uri);
+    }
+
+
 
 }

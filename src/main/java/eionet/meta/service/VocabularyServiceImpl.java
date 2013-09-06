@@ -26,6 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -39,14 +40,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import eionet.meta.DElemAttribute;
+import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IFolderDAO;
+import eionet.meta.dao.IRdfNamespaceDAO;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -94,6 +98,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
     /** Data element DAO. */
     @Autowired
     private IDataElementDAO dataElementDAO;
+
+    /** namespace DAO. */
+    @Autowired
+    private IRdfNamespaceDAO namespaceDAO;
 
     /**
      * {@inheritDoc}
@@ -897,6 +905,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
             for (VocabularyConcept vc : result) {
                 List<List<VocabularyConceptAttribute>> attributes = attributeDAO.getVocabularyConceptAttributes(vc.getId(), false);
                 vc.setAttributes(attributes);
+
+                List<List<DataElement>> elementAttributes =
+                        dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId, vc.getId(), false);
+                vc.setElementAttributes(elementAttributes);
             }
 
             return result;
@@ -1045,6 +1057,66 @@ public class VocabularyServiceImpl implements IVocabularyService {
             return dataElementDAO.getVocabularysDataElemets(vocabularyFolderId);
         } catch (Exception e) {
             throw new ServiceException("Failed to get data elements: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean vocabularyHasDataElementBinding(int vocabularyFolderId, int dataElementId) throws ServiceException {
+        try {
+            return dataElementDAO.vocabularyHasElemendBinding(vocabularyFolderId, dataElementId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to perform element binding existence check: " + e.getMessage(), e);
+        }
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<VocabularyConcept> getConceptsWithElementValue(int dataElementId) throws ServiceException {
+        try {
+            return vocabularyConceptDAO.getConceptsWithValuedElement(dataElementId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to perform binded element values existence check: " + e.getMessage(), e);
+        }
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<RdfNamespace> getVocabularyNamespaces(List<VocabularyFolder> vocabularyFolders) throws ServiceException {
+        List<RdfNamespace> nameSpaces = new ArrayList<RdfNamespace>();
+        String baseUri = Props.getRequiredProperty(PropsIF.RDF_DATAELEMENTS_BASE_URI);
+
+        try {
+            for (VocabularyFolder vocabulary : vocabularyFolders) {
+                List<DataElement> elems = getVocabularysDataElemets(vocabulary.getId());
+                for (DataElement elem : elems) {
+                    RdfNamespace ns;
+                    if (elem.isExternalSchema()) {
+                        ns = namespaceDAO.getNamespace(elem.getNameSpacePrefix());
+                    } else {
+                        ns = new RdfNamespace();
+                        ns.setPrefix("dd" + elem.getId());
+                        ns.setUri(StringUtils.substringBeforeLast(MessageFormat.format(baseUri, elem.getId()), "/"));
+                    }
+                    if (!nameSpaces.contains(ns)) {
+                        nameSpaces.add(ns);
+                    }
+                }
+
+            }
+
+            return nameSpaces;
+
+        } catch (DAOException daoe) {
+            throw new ServiceException("Failed to get vocabulary namespaces " + daoe.getMessage(), daoe);
         }
     }
 

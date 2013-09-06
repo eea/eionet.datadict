@@ -465,6 +465,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setType(rs.getString("de.TYPE"));
                 de.setModified(new Date(rs.getLong("de.DATE")));
                 de.setWorkingUser(rs.getString("de.WORKING_USER"));
+                de.setIdentifier(rs.getString("de.IDENTIFIER"));
 
                 return de;
             }
@@ -580,6 +581,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setModified(new Date(rs.getLong("d.DATE")));
                 de.setWorkingUser(rs.getString("d.WORKING_USER"));
 
+                de.setIdentifier(rs.getString("d.identifier"));
+
                 de.setAttributeValue(rs.getString("v.ELEMENT_VALUE"));
 
                 if (previousDataElemId != rs.getInt("d.DATAELEM_ID")) {
@@ -639,4 +642,20 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
+
+    @Override
+    public boolean vocabularyHasElemendBinding(int vocabularyFolderId, int elementId) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("vocabularyId", vocabularyFolderId);
+        parameters.put("elementId", elementId);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select count(VOCABULARY_FOLDER_ID) from T_VOCABULARY_ELEMENT ");
+        sql.append("where DATAELEM_ID = :elementId and VOCABULARY_FOLDER_ID = :vocabularyId ");
+
+        int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
+
+        return result > 0;
+    }
+
 }

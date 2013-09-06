@@ -43,6 +43,7 @@ import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -557,6 +558,64 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
+     * Validation on adding a binded data element.
+     * @throws ServiceException if checking fails
+     */
+    @ValidationMethod(on = {"addDataElement"})
+    public void validateAddDataElement() throws ServiceException {
+        if (vocabularyService.vocabularyHasDataElementBinding(vocabularyFolder.getId(), elementId)) {
+            addGlobalValidationError("This vocabulary already has binding to this element.");
+        }
+
+        // if validation errors were set make sure the right resolution is returned
+        if (isValidationErrors()) {
+            vocabularyFolder =
+                    vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                            vocabularyFolder.isWorkingCopy());
+            initFilter();
+            vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+            folders = vocabularyService.getFolders(getUserName(), null);
+            folderChoice = FOLDER_CHOICE_EXISTING;
+
+            bindedElements = vocabularyService.getVocabularysDataElemets(vocabularyFolder.getId());
+            Resolution resolution = new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
+            getContext().setSourcePageResolution(resolution);
+        }
+    }
+
+    /**
+     * validates removing data elements.
+     * Elements which have values in any concepts cannot be removed.
+     * @throws ServiceException if checking fails
+     */
+    @ValidationMethod(on = {"removeDataElement"})
+    public void validaRemoveDataElement() throws ServiceException {
+
+        //if this element binding has valued in any concept - do not remove it
+        List <VocabularyConcept> conceptsWithValue = vocabularyService.getConceptsWithElementValue(elementId);
+
+        if (!conceptsWithValue.isEmpty()) {
+            String ids = StringUtils.join(conceptsWithValue, ",");
+            addGlobalValidationError("This element has valued in Concepts: " + ids + '\n' + "Please delete the values before removing the element binding.");
+        }
+
+
+        if (isValidationErrors()) {
+            vocabularyFolder =
+                    vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                            vocabularyFolder.isWorkingCopy());
+            initFilter();
+            vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+            folders = vocabularyService.getFolders(getUserName(), null);
+            folderChoice = FOLDER_CHOICE_EXISTING;
+
+            bindedElements = vocabularyService.getVocabularysDataElemets(vocabularyFolder.getId());
+            Resolution resolution = new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
+            getContext().setSourcePageResolution(resolution);
+        }
+
+    }
+    /**
      * Validates save folder.
      *
      * @throws ServiceException
@@ -757,10 +816,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             addGlobalValidationError("Vocabulary concept identifier is not unique");
         }
 
+
         if (isValidationErrors()) {
             vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getId());
             initFilter();
             vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+            bindedElements = vocabularyService.getVocabularysDataElemets(vocabularyFolder.getId());
         }
     }
 
@@ -800,7 +861,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                     vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                             false);
 
-            initFilter();
+            List <VocabularyFolder> vocabularyFolders = new ArrayList<VocabularyFolder>();
+            vocabularyFolders.add(vocabularyFolder);
+            final List<RdfNamespace> nameSpaces = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
+
+                    initFilter();
             filter.setUsePaging(false);
             filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
             List<? extends VocabularyConcept> concepts = null;
@@ -839,7 +904,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
                     VocabularyXmlWriter xmlWriter = new VocabularyXmlWriter(response.getOutputStream());
-                    xmlWriter.writeRDFXml(folderContextRoot, contextRoot, vocabularyFolder, finalConcepts);
+                    xmlWriter.writeRDFXml(folderContextRoot, contextRoot, vocabularyFolder, finalConcepts, nameSpaces);
                 }
             };
             result.setFilename(vocabularyFolder.getIdentifier() + ".rdf");

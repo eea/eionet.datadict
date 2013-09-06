@@ -24,7 +24,6 @@ package eionet.meta.dao;
 import java.util.List;
 
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.ServiceException;
 
 /**
  * Vocabulary DAO interface.
@@ -152,4 +151,5 @@ public interface IVocabularyFolderDAO {
      * @return The vocabulary object as described above.
      */
     VocabularyFolder getVocabularyFolderOfConcept(int conceptId);
+
 }

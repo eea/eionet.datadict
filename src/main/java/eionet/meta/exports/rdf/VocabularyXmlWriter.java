@@ -23,6 +23,7 @@ package eionet.meta.exports.rdf;
 
 import java.io.OutputStream;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -31,7 +32,9 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
 
+import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -57,6 +60,9 @@ public class VocabularyXmlWriter {
 
     private static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
 
+    /** default namespaces that are present in all vocabulary RDFs. */
+    private static final HashMap<String, String> DEFAULT_NAMESPACES = new HashMap<String, String>();
+
     /**
      * XMLWriter to write XML to.
      */
@@ -75,6 +81,17 @@ public class VocabularyXmlWriter {
     }
 
     /**
+     * inits default namespaces container.
+     */
+    static {
+        DEFAULT_NAMESPACES.put("rdf", RDF_NS);
+        DEFAULT_NAMESPACES.put("rdfs", RDFS_NS);
+        DEFAULT_NAMESPACES.put("skos", SKOS_NS);
+        DEFAULT_NAMESPACES.put("owl", OWL_NS);
+        DEFAULT_NAMESPACES.put("dctype", DCTYPE_NS);
+        DEFAULT_NAMESPACES.put("dcterms", DCTERMS_NS);
+    }
+    /**
      * Escapes IRI's reserved characters in the given URL string.
      *
      * @param url
@@ -82,7 +99,6 @@ public class VocabularyXmlWriter {
      * @return escaped URI
      */
     public static String escapeIRI(String url) {
-
         return StringEncoder.encodeToIRI(url);
     }
 
@@ -97,13 +113,14 @@ public class VocabularyXmlWriter {
      *            vocabulary
      * @param vocabularyConcepts
      *            concepts in the vocabulary
+     * @param rdfNamespaces Namespaces that are used in the RDF entities
      * @throws XMLStreamException
      *             if streaming fails
      */
     public void writeRDFXml(String folderContextRoot, String contextRoot, VocabularyFolder vocabularyFolder,
-            List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
+            List<? extends VocabularyConcept> vocabularyConcepts, List<RdfNamespace> rdfNamespaces) throws XMLStreamException {
 
-        writeXmlStart(vocabularyFolder.isSiteCodeType(), contextRoot);
+        writeXmlStart(vocabularyFolder.isSiteCodeType(), contextRoot, rdfNamespaces);
 
         writeVocabularyFolderXml(folderContextRoot, contextRoot, vocabularyFolder, vocabularyConcepts);
 
@@ -113,29 +130,34 @@ public class VocabularyXmlWriter {
     /**
      * Writes start of XML.
      *
-     * @param siteCodeType
+     * @param siteCodeType if true it is a site code vocabulary
      * @param contextRoot IRI for context
-     * @throws XMLStreamException
+     * @param nameSpaces namespaces to be written to the header
+     * @throws XMLStreamException if writing does not succeed
      */
-    public void writeXmlStart(boolean siteCodeType, String contextRoot) throws XMLStreamException {
+    public void writeXmlStart(boolean siteCodeType, String contextRoot, List<RdfNamespace> nameSpaces) throws XMLStreamException {
         writer.writeStartDocument(ENCODING, "1.0");
         writer.writeCharacters("\n");
 
-        writer.setPrefix("rdf", RDF_NS);
-        writer.setPrefix("rdfs", RDFS_NS);
-        writer.setPrefix("skos", SKOS_NS);
-        writer.setPrefix("owl", OWL_NS);
+        //default namespaces
+        for (String prefix : DEFAULT_NAMESPACES.keySet()) {
+            writer.setPrefix(prefix, DEFAULT_NAMESPACES.get(prefix));
+        }
+
         if (siteCodeType) {
             writer.setPrefix("dd", DD_SCHEMA_NS);
         }
 
         writer.writeStartElement("rdf", "RDF", RDF_NS);
-        writer.writeNamespace("rdf", RDF_NS);
-        writer.writeNamespace("rdfs", RDFS_NS);
-        writer.writeNamespace("skos", SKOS_NS);
-        writer.writeNamespace("owl", OWL_NS);
-        writer.writeNamespace("dctype", DCTYPE_NS);
-        writer.writeNamespace("dcterms", DCTERMS_NS);
+        for (String prefix : DEFAULT_NAMESPACES.keySet()) {
+            writer.writeNamespace(prefix, DEFAULT_NAMESPACES.get(prefix));
+        }
+
+        for (RdfNamespace ns : nameSpaces) {
+            if (!DEFAULT_NAMESPACES.keySet().contains(ns.getPrefix())) {
+                writer.writeNamespace(ns.getPrefix(), ns.getUri());
+            }
+        }
 
         if (siteCodeType) {
             writer.writeNamespace("dd", DD_SCHEMA_NS);
@@ -245,6 +267,7 @@ public class VocabularyXmlWriter {
             if (vocabularyFolder.isSiteCodeType()) {
                 writeSiteCodeData((SiteCode) vc);
             } else {
+                writeBindedElements(vocabularyContextRoot, vc.getElementAttributes());
                 writeAdditionalAttributes(vocabularyContextRoot, vc.getAttributes());
             }
 
@@ -253,6 +276,31 @@ public class VocabularyXmlWriter {
         }
     }
 
+    /**
+     * Write binded elements to RDF.
+     * @param contextRoot contex root
+     * @param elements elements list
+     * @throws XMLStreamException if writing fails
+     */
+    private void writeBindedElements(String contextRoot, List<List<DataElement>> elements) throws XMLStreamException {
+        if (elements != null) {
+            for (List<DataElement> elems : elements) {
+                if (elems != null) {
+                    for (DataElement elem : elems) {
+                        //external elements: indentifier is a valid Xml tag, for example: geo:lat
+                        //for internal elements compose the Tag: dd[elemID]
+                        String elemXmlTag =
+                                (elem.isExternalSchema() ? elem.getIdentifier() : "dd" + elem.getId() + ":" + elem.getIdentifier());
+
+                        writer.writeCharacters("\n");
+                        writer.writeStartElement(elemXmlTag);
+                        writer.writeCharacters(elem.getAttributeValue());
+                        writer.writeEndElement();
+                    }
+                }
+            }
+        }
+    }
     /**
      * Writes additional attributes for vocabulary concepts.
      *
@@ -300,8 +348,8 @@ public class VocabularyXmlWriter {
     /**
      * Writes site code specific properties to RDF output.
      *
-     * @param sc
-     * @throws XMLStreamException
+     * @param sc sitecode
+     * @throws XMLStreamException if export fails
      */
     private void writeSiteCodeData(SiteCode sc) throws XMLStreamException {
         writer.writeCharacters("\n");

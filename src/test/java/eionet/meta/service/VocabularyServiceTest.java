@@ -29,6 +29,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,6 +42,7 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
 import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
@@ -481,5 +483,39 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept3 = vocabularyService.getVocabularyConcept(concId3, true);
         assertNotNull("Expected a concept", concept3);
         assertEquals("Expected equal notation and identifier", concept3.getNotation(), concept3.getIdentifier());
+    }
+
+    /**
+     * tests vocabularyHasDataElementBinding() method.
+     * @throws ServiceException if bad things happen
+     */
+    @Test
+    public void vocabularyBindingExistsTest() throws ServiceException {
+        assertTrue(vocabularyService.vocabularyHasDataElementBinding(1, 1));
+        assertTrue(!vocabularyService.vocabularyHasDataElementBinding(1, 2));
+    }
+
+    /**
+     * test on getConceptsWithElementValue method.
+     * @throws ServiceException if bad things happen
+     */
+    @Test
+    public void getValuedConceptsTest() throws ServiceException {
+        assertTrue(vocabularyService.getConceptsWithElementValue(1).size() == 1);
+        assertTrue(vocabularyService.getConceptsWithElementValue(2).size() == 0);
+    }
+
+    /**
+     * test if namespaces of elements are generated correctly.
+     * @throws ServiceException if error happens
+     */
+    @Test
+    public void getVocabularyNamespacesTest() throws ServiceException {
+        VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(1);
+        List<VocabularyFolder> vocabularyFolders = new ArrayList<VocabularyFolder>();
+        vocabularyFolders.add(vocabulary);
+
+        List<RdfNamespace> nss = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
+        assertTrue(nss.size() == 2);
     }
 }

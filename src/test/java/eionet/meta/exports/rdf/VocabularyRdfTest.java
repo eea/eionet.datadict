@@ -44,6 +44,13 @@ public class VocabularyRdfTest extends DDDatabaseTestCase   {
         Assert.assertTrue(StringUtils.contains(output, dcTypeCollection));
         Assert.assertTrue(StringUtils.contains(output, hasPart));
         Assert.assertTrue(StringUtils.contains(output, isPartOf));
+
+        String baseUri = Props.getRequiredProperty(PropsIF.DD_URL);
+        String dd2Schema = "xmlns:dd2=\"" + baseUri + "/dataelements/2\"";
+        String skosSchema = "xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"";
+
+        assertTrue(StringUtils.countMatches(output, dd2Schema) == 1);
+        assertTrue(StringUtils.countMatches(output, skosSchema) == 1);
     }
 
     @Override

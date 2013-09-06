@@ -36,6 +36,7 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
@@ -85,8 +86,8 @@ public class FolderActionBean extends AbstractActionBean {
 
                     String folderContextRoot =
                             Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + folder.getIdentifier() + "/";
-
-                    xmlWriter.writeXmlStart(true, folderContextRoot);
+                    List<RdfNamespace> nameSpaces = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
+                    xmlWriter.writeXmlStart(true, folderContextRoot, nameSpaces);
                     xmlWriter.writeFolderXml(folderContextRoot, folder, vocabularyFolders);
 
                     for (VocabularyFolder vocabularyFolder : vocabularyFolders) {
