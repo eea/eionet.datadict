@@ -318,7 +318,7 @@ public class VocabularyXmlWriter {
                     for (VocabularyConceptAttribute attr : attrs) {
                         if (StringUtils.isNotEmpty(attr.getValue()) && StringUtils.isNotEmpty(attr.getRdfPropertyName())) {
                             writer.writeCharacters("\n");
-                            if (attr.getDataType().equalsIgnoreCase("reference")) {
+                            if (StringUtils.isNotEmpty(attr.getDataType()) && attr.getDataType().equalsIgnoreCase("reference")) {
                                 writer.writeEmptyElement(attr.getRdfPropertyUri(), attr.getRdfPropertyName());
                                 writer.writeAttribute("rdf", RDF_NS, "resource", attr.getValue());
                             } else {
