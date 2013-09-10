@@ -194,7 +194,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
                         getUserName());
 
-        bindedElements = vocabularyService.getVocabularysDataElemets(vocabularyFolder.getId());
+        bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 
         return new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP);
     }
@@ -244,7 +244,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         folders = vocabularyService.getFolders(getUserName(), null);
         folderChoice = FOLDER_CHOICE_EXISTING;
 
-        bindedElements = vocabularyService.getVocabularysDataElemets(vocabularyFolder.getId());
+        bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 
         return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
     }
@@ -272,7 +272,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         elementsResult = dataService.searchDataElements(elementsFilter);
         editDivId = "addElementsDiv";
 
-        bindedElements = vocabularyService.getVocabularysDataElemets(vocabularyFolder.getId());
+        bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 
         return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
     }
@@ -577,7 +577,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             folders = vocabularyService.getFolders(getUserName(), null);
             folderChoice = FOLDER_CHOICE_EXISTING;
 
-            bindedElements = vocabularyService.getVocabularysDataElemets(vocabularyFolder.getId());
+            bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
             Resolution resolution = new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
             getContext().setSourcePageResolution(resolution);
         }
@@ -610,7 +610,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             folders = vocabularyService.getFolders(getUserName(), null);
             folderChoice = FOLDER_CHOICE_EXISTING;
 
-            bindedElements = vocabularyService.getVocabularysDataElemets(vocabularyFolder.getId());
+            bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
             Resolution resolution = new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
             getContext().setSourcePageResolution(resolution);
         }
@@ -822,7 +822,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getId());
             initFilter();
             vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
-            bindedElements = vocabularyService.getVocabularysDataElemets(vocabularyFolder.getId());
+            bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
         }
     }
 

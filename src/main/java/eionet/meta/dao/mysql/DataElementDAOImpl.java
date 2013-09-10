@@ -446,7 +446,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      * {@inheritDoc}
      */
     @Override
-    public List<DataElement> getVocabularysDataElemets(int vocabularyFolderId) {
+    public List<DataElement> getVocabularyDataElements(int vocabularyFolderId) {
         StringBuilder sb = new StringBuilder();
         sb.append("select ve.*, de.* from T_VOCABULARY_ELEMENT ve left join DATAELEM de on ve.DATAELEM_ID = de.DATAELEM_ID ");
         sb.append("where ve.VOCABULARY_FOLDER_ID = :vocabularyFolderId");
@@ -472,6 +472,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         });
 
+        for (DataElement elem : result) {
+            List<FixedValue> fxvs = getFixedValues(elem.getId());
+            elem.setFixedValues(fxvs);
+        }
         return result;
     }
 
@@ -584,6 +588,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setIdentifier(rs.getString("d.identifier"));
 
                 de.setAttributeValue(rs.getString("v.ELEMENT_VALUE"));
+                List<FixedValue> fxvs = getFixedValues(de.getId());
+
+                de.setFixedValues(fxvs);
+
 
                 if (previousDataElemId != rs.getInt("d.DATAELEM_ID")) {
                     result.add(values);

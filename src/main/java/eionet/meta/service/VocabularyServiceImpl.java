@@ -1052,9 +1052,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public List<DataElement> getVocabularysDataElemets(int vocabularyFolderId) throws ServiceException {
+    public List<DataElement> getVocabularyDataElements(int vocabularyFolderId) throws ServiceException {
         try {
-            return dataElementDAO.getVocabularysDataElemets(vocabularyFolderId);
+            return dataElementDAO.getVocabularyDataElements(vocabularyFolderId);
         } catch (Exception e) {
             throw new ServiceException("Failed to get data elements: " + e.getMessage(), e);
         }
@@ -1096,7 +1096,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
         try {
             for (VocabularyFolder vocabulary : vocabularyFolders) {
-                List<DataElement> elems = getVocabularysDataElemets(vocabulary.getId());
+                List<DataElement> elems = getVocabularyDataElements(vocabulary.getId());
                 for (DataElement elem : elems) {
                     RdfNamespace ns;
                     if (elem.isExternalSchema()) {

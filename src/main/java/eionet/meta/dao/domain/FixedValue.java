@@ -21,6 +21,8 @@
 
 package eionet.meta.dao.domain;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Fixed value of data element.
  *
@@ -129,5 +131,13 @@ public class FixedValue {
     public void setDefinition(String definition) {
         this.definition = definition;
     }
+    /**
+     * Label to display in the UI.
+     * @return code with Short definition. if short def is empty then definition is shown.
+     */
+    public String getLabel() {
+        String label = StringUtils.isNotEmpty(shortDescription) ? shortDescription : definition;
 
+        return value + " [" + label + "]";
+    }
 }

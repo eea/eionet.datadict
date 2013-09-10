@@ -214,10 +214,21 @@
                                             <dd:optionalIcon />
                                         </td>
                                         <td class="simple_attr_value">
-                                            <dd:elementMultiText dataElements="${elementValues}"
-                                                fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
-                                                uniqueId="conceptElement${outerLoop.index}"
-                                                elementId="${attrMeta.id}" />
+                                            <c:choose>
+                                              <c:when test="${attrMeta.fixedValuesElement}">
+                                                    <dd:elementMultiSelect
+                                                        dataElements="${elementValues}"
+                                                        elementId="${attrMeta.id}"
+                                                        fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
+                                                        uniqueId="conceptElement${outerLoop.index}" fixedValues="${attrMeta.fixedValues}"/>
+                                              </c:when>
+                                              <c:otherwise>
+                                                <dd:elementMultiText dataElements="${elementValues}"
+                                                    fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
+                                                    uniqueId="conceptElement${outerLoop.index}"
+                                                    elementId="${attrMeta.id}"/>
+                                              </c:otherwise>
+                                            </c:choose>
                                         </td>
                                     </tr>
                                 </c:forEach>

@@ -109,10 +109,10 @@ public interface IDataElementDAO {
     /**
      * Returns data elements binded with vocabulary folder.
      *
-     * @param vocabularyFolderId
-     * @return
+     * @param vocabularyFolderId folder ID
+     * @return list of data elements for the Vocabulary
      */
-    List<DataElement> getVocabularysDataElemets(int vocabularyFolderId);
+    List<DataElement> getVocabularyDataElements(int vocabularyFolderId);
 
     /**
      * Deletes all vocabulary's data element relations.

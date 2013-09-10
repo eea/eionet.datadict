@@ -457,7 +457,7 @@ public interface IVocabularyService {
      * @return
      * @throws ServiceException
      */
-    List<DataElement> getVocabularysDataElemets(int vocabularyFolderId) throws ServiceException;
+    List<DataElement> getVocabularyDataElements(int vocabularyFolderId) throws ServiceException;
 
     /**
      * Checks if vocabulary has binding for the data element.

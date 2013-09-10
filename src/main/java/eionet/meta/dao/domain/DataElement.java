@@ -22,6 +22,7 @@
 package eionet.meta.dao.domain;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -57,6 +58,9 @@ public class DataElement {
 
     /** Value from T_CONCEPT_ELEMENT_VALUE table. */
     private String attributeValue;
+
+    /** fixed values. */
+    private List<FixedValue> fixedValues;
 
     public String getStatusImage() {
         return Util.getStatusImage(status);
@@ -244,6 +248,18 @@ public class DataElement {
      */
     public String getNameSpacePrefix() {
         return (isExternalSchema() ? StringUtils.substringBefore(identifier, ":") : null);
+    }
+
+    public List<FixedValue> getFixedValues() {
+        return fixedValues;
+    }
+
+    public void setFixedValues(List<FixedValue> fixedValues) {
+        this.fixedValues = fixedValues;
+    }
+
+    public boolean isFixedValuesElement() {
+        return type.equalsIgnoreCase("CH1");
     }
 
 }
