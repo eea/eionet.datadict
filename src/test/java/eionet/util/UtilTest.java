@@ -65,4 +65,9 @@ public class UtilTest extends TestCase {
 
 
     }
+
+    public void testIrrelevantAttributes() {
+        assertTrue(Util.skipAttributeByDatatype("MinSize", "localref"));
+        assertTrue(!Util.skipAttributeByDatatype("Name", "string"));
+    }
 }
