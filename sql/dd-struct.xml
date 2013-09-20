@@ -1453,13 +1453,5 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropColumn tableName="DS_TABLE" columnName="RDF_TYPE_NAMESPACE_ID"/>
         <dropColumn tableName="DS_TABLE" columnName="RDF_TYPE_NAME"/>
     </changeSet>
-   <changeSet author="lainekai" id="rev-116">
-        <comment>Add reference and localref data types to elements.</comment>
-        <sql>
-            INSERT INTO FXV(OWNER_ID, OWNER_TYPE, VALUE, DEFINITION, SHORT_DESC)
-                VALUES ((SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE WHERE NAME = 'Datatype'), 'attr', 'reference', 'Represents reference to a Linked Data URI', '');
-            INSERT INTO FXV(OWNER_ID, OWNER_TYPE, VALUE, DEFINITION, SHORT_DESC)
-                VALUES ((SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE WHERE NAME = 'Datatype'), 'attr', 'localref', 'Represents reference to a Linked Data URI in the same vocabulary', '');
-        </sql>
-   </changeSet>
+
 </databaseChangeLog>
