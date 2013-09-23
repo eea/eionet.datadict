@@ -142,18 +142,18 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept.setIdentifier("test3");
         concept.setLabel("test3");
 
-        int id = vocabularyService.createVocabularyConcept(3, concept);
+        vocabularyService.createVocabularyConcept(3, concept);
 
-        VocabularyConcept result = vocabularyService.getVocabularyConcept(id, true);
+        VocabularyConcept result = vocabularyService.getVocabularyConcept(3, "test3", true);
         assertNotNull("Expected concept", result);
     }
 
     @Test
-    public void testUpdateVocabularyConcept() throws ServiceException {
-        VocabularyConcept result = vocabularyService.getVocabularyConcept(1, true);
+    public void testupdatevocabularyconcept() throws ServiceException {
+        VocabularyConcept result = vocabularyService.getVocabularyConcept(3, "concept1", true);
         result.setLabel("modified");
         vocabularyService.updateVocabularyConcept(result);
-        result = vocabularyService.getVocabularyConcept(1, true);
+        result = vocabularyService.getVocabularyConcept(3, "concept1", true);
         assertEquals("Modified label", "modified", result.getLabel());
     }
 
@@ -185,7 +185,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
         Exception exception = null;
         try {
-            vocabularyService.getVocabularyConcept(1, true);
+            vocabularyService.getVocabularyConcept(3, "concept1", true);
+
             fail("Expected concept not found exception");
         } catch (ServiceException e) {
             exception = e;
@@ -196,7 +197,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     @Test
     public void testMarkConceptsObsolete() throws ServiceException {
         vocabularyService.markConceptsObsolete(Collections.singletonList(1));
-        VocabularyConcept concept = vocabularyService.getVocabularyConcept(1, true);
+        VocabularyConcept concept = vocabularyService.getVocabularyConcept(3, "concept1", true);
         assertNotNull("Obsolete date", concept.getObsolete());
     }
 
@@ -204,7 +205,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     public void testUnMarkConceptsObsolete() throws ServiceException {
         vocabularyService.markConceptsObsolete(Collections.singletonList(1));
         vocabularyService.unMarkConceptsObsolete(Collections.singletonList(1));
-        VocabularyConcept concept = vocabularyService.getVocabularyConcept(1, true);
+        VocabularyConcept concept = vocabularyService.getVocabularyConcept(3, "concept1", true);
         assertNull("Obsolete date", concept.getObsolete());
     }
 
@@ -445,7 +446,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept1.setLabel("Concept 1");
         concept1.setNotation("Conc_1");
         int concId1 = vocabularyService.createVocabularyConcept(vocId, concept1);
-        concept1 = vocabularyService.getVocabularyConcept(concId1, true);
+        concept1 = vocabularyService.getVocabularyConcept(vocId, "conc1", true);
         assertNotNull("Expected a concept", concept1);
         assertNotEquals("Expected unequal notation and identifier", concept1.getNotation(), concept1.getIdentifier());
 
@@ -454,7 +455,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept2.setLabel("Concept 2");
         concept2.setNotation("Conc_2");
         int concId2 = vocabularyService.createVocabularyConcept(vocId, concept2);
-        concept2 = vocabularyService.getVocabularyConcept(concId2, true);
+        concept2 = vocabularyService.getVocabularyConcept(vocId, "conc2", true);
         assertNotNull("Expected a concept", concept2);
         assertNotEquals("Expected unequal notation and identifier", concept2.getNotation(), concept2.getIdentifier());
 
@@ -468,9 +469,9 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
         // Check that both concept notations have now been forcefully made equal to the identifiers.
 
-        concept1 = vocabularyService.getVocabularyConcept(concId1, true);
+        concept1 = vocabularyService.getVocabularyConcept(vocId, "conc1", true);
         assertEquals("Expected equal notation and identifier", concept1.getNotation(), concept1.getIdentifier());
-        concept2 = vocabularyService.getVocabularyConcept(concId2, true);
+        concept2 = vocabularyService.getVocabularyConcept(vocId, "conc2", true);
         assertEquals("Expected equal notation and identifier", concept2.getNotation(), concept2.getIdentifier());
 
         // Add one more concept, and check that its notation now gets forcefully overwritten with identifier.
@@ -480,7 +481,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept3.setLabel("Concept 3");
         concept3.setNotation("Conc_3");
         int concId3 = vocabularyService.createVocabularyConcept(vocId, concept3);
-        concept3 = vocabularyService.getVocabularyConcept(concId3, true);
+        concept3 = vocabularyService.getVocabularyConcept(vocId, "conc3", true);
         assertNotNull("Expected a concept", concept3);
         assertEquals("Expected equal notation and identifier", concept3.getNotation(), concept3.getIdentifier());
     }
@@ -516,6 +517,18 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         vocabularyFolders.add(vocabulary);
 
         List<RdfNamespace> nss = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
-        assertTrue(nss.size() == 2);
+        assertTrue(nss.size() == 3);
+    }
+
+    /**
+     * tsest on relational elements.
+     * @throws Exception if fail
+     */
+    @Test
+    public void testRelationalElement() throws Exception {
+
+        assertTrue(vocabularyService.isReferenceElement(6));
+        assertTrue(!vocabularyService.isReferenceElement(5));
+
     }
 }

@@ -1454,4 +1454,20 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropColumn tableName="DS_TABLE" columnName="RDF_TYPE_NAME"/>
     </changeSet>
 
+    <changeSet author="lainekai" id="rev-116">
+        <comment>Add language and related element to vocabulary element values</comment>
+        <addColumn tableName="T_CONCEPT_ELEMENT_VALUE">
+            <column name="LANGUAGE" type="VARCHAR(10)" defaultValue="en"/>
+        </addColumn>
+        <addColumn tableName="T_CONCEPT_ELEMENT_VALUE">
+            <column name="RELATED_CONCEPT_ID" type="INT UNSIGNED"/>
+        </addColumn>
+        <addColumn tableName="T_CONCEPT_ELEMENT_VALUE">
+            <column name="LINK_TEXT" type="VARCHAR(255)"/>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="RELATED_CONCEPT_ID" baseTableName="T_CONCEPT_ELEMENT_VALUE"
+            constraintName="FK_ELEM_RELATED_CONCEPT_ID" deferrable="false" initiallyDeferred="false"
+            onDelete="CASCADE" onUpdate="CASCADE"
+            referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
+     </changeSet>
 </databaseChangeLog>

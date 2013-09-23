@@ -179,5 +179,16 @@ public interface IDataElementDAO {
      */
     boolean vocabularyHasElemendBinding(int vocabularyFolderId, int elementId);
 
+    /**
+     * Updates the T_CONCEPT_ELEMENT_VALUE.RELATED_CONCEPT_ID to what the new checked out concept's id currently is.
+     *
+     * @param newVocabularyFolderId
+     */
+    void updateRelatedConceptIds(int newVocabularyFolderId);
 
+    /**
+     * Deletes related concept elements of this concept.
+     * @param vocabularyConceptId  concept Id
+     */
+    void deleteRelatedElements(int vocabularyConceptId);
 }

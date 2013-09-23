@@ -23,6 +23,7 @@ package eionet.meta.dao.domain;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -55,9 +56,25 @@ public class DataElement {
 
     private boolean workingCopy;
 
-
+    //TODO - make a new DAO entity for T_CONCEPT_ELEMENT_VALUE
     /** Value from T_CONCEPT_ELEMENT_VALUE table. */
     private String attributeValue;
+
+    /** Language from T_CONCEPT_ELEMENT_VALUE table. */
+    private String attributeLanguage;
+
+    /** related concept id. */
+    private Integer relatedConceptId;
+
+    /** related concept identifier. */
+    private String relatedConceptIdentifier;
+
+    /** related concept identifier. */
+    private String relatedConceptLabel;
+
+
+    /** attribute metadata in M_ATTRIBUTE. */
+    private Map<String, List<String>> elemAttributeValues;
 
     /** fixed values. */
     private List<FixedValue> fixedValues;
@@ -229,7 +246,8 @@ public class DataElement {
 
     /**
      *
-     * @param identifier attribute value to set
+     * @param identifier
+     *            attribute value to set
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -237,17 +255,20 @@ public class DataElement {
 
     /**
      * indicates if element is taken from an external schema.
+     *
      * @return true if identifier contains colon, for example geo:lat
      */
     public boolean isExternalSchema() {
         return StringUtils.contains(identifier, ":");
     }
+
     /**
      * returns external namespace prefix.
+     *
      * @return NS prefix. null if an internal namespace
      */
     public String getNameSpacePrefix() {
-        return (isExternalSchema() ? StringUtils.substringBefore(identifier, ":") : null);
+        return isExternalSchema() ? StringUtils.substringBefore(identifier, ":") : null;
     }
 
     public List<FixedValue> getFixedValues() {
@@ -259,7 +280,99 @@ public class DataElement {
     }
 
     public boolean isFixedValuesElement() {
-        return type.equalsIgnoreCase("CH1");
+        return type != null && type.equalsIgnoreCase("CH1");
     }
 
+    public Map<String, List<String>> getElemAttributeValues() {
+        return elemAttributeValues;
+    }
+
+    public void setElemAttributeValues(Map<String, List<String>> elemAttributeValues) {
+        this.elemAttributeValues = elemAttributeValues;
+    }
+
+    /**
+     * Returns Datatype.
+     *
+     * @return Datatype in M_ATTRIBUTES. If not specified, "string" is returned
+     */
+    public String getDatatype() {
+        String dataType = "string";
+        List<String> elemDatatypeAttr = elemAttributeValues != null ? elemAttributeValues.get("Datatype") : null;
+
+        return elemDatatypeAttr != null ? elemDatatypeAttr.get(0) : dataType;
+    }
+
+    public String getAttributeLanguage() {
+        return attributeLanguage;
+    }
+
+    public void setAttributeLanguage(String attributeLanguage) {
+        this.attributeLanguage = attributeLanguage;
+    }
+
+
+
+    /**
+     * Checks if given element is used for describing relations.
+     *
+     * @return true if an relation element
+     */
+    public boolean isRelationalElement() {
+        //this DAO class is used for metadata and data element with values
+        return (relatedConceptId != null && relatedConceptId != 0) || getDatatype().equals("localref");
+    }
+
+    public Integer getRelatedConceptId() {
+        return relatedConceptId;
+    }
+
+    public void setRelatedConceptId(Integer relatedConceptId) {
+        this.relatedConceptId = relatedConceptId;
+    }
+
+    public String getRelatedConceptIdentifier() {
+        return relatedConceptIdentifier;
+    }
+
+    public void setRelatedConceptIdentifier(String relatedConceptIdentifier) {
+        this.relatedConceptIdentifier = relatedConceptIdentifier;
+    }
+
+    public String getRelatedConceptLabel() {
+        return relatedConceptLabel;
+    }
+
+    public void setRelatedConceptLabel(String relatedConceptLabel) {
+        this.relatedConceptLabel = relatedConceptLabel;
+    }
+
+    /**
+     * returns Name attribute. Short name if data element does not have name.
+     * @return name in ATTRIBUTES table
+     */
+    public String getName() {
+        if (elemAttributeValues != null) {
+            if (elemAttributeValues.containsKey("Name")) {
+                return elemAttributeValues.get("Name").get(0);
+            }
+        }
+
+        return shortName;
+    }
+
+    /**
+     * Indicates if Element values can have values in several languages.
+     * false by defaule
+     * @return is Language used in ATTRIBUTES table
+     */
+    public boolean isLanguageUsed() {
+        if (elemAttributeValues != null) {
+            if (elemAttributeValues.containsKey("languageUsed")) {
+                return elemAttributeValues.get("languageUsed").get(0).equals("1");
+            }
+        }
+
+        return false;
+    }
 }

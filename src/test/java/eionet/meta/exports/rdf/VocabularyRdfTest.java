@@ -51,7 +51,26 @@ public class VocabularyRdfTest extends DDDatabaseTestCase   {
 
         assertTrue(StringUtils.countMatches(output, dd2Schema) == 1);
         assertTrue(StringUtils.countMatches(output, skosSchema) == 1);
+
+       // System.out.println(output);
     }
+
+    /**
+     * tests referencial element.
+     * @throws Exception if fail
+     */
+    @Test
+    public void testFolderRdfReference() throws Exception {
+
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, FolderActionBean.class);
+        trip.addParameter("folder.identifier", "wise");
+        trip.execute("rdf");
+
+        String output = trip.getOutputString();
+        assertTrue(StringUtils.contains(output, "<skos:relatedMatch rdf:resource=\"http://en.wikipedia.org/wiki/Semantic_Web\"/>"));
+    }
+
 
     @Override
     protected String getSeedFilename() {

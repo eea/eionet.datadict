@@ -28,7 +28,6 @@ import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
@@ -206,6 +205,7 @@ public interface IVocabularyService {
      * @return
      * @throws ServiceException
      */
+    @Deprecated
     VocabularyConcept getVocabularyConcept(int vocabularyConceptId, boolean emptyAttributes) throws ServiceException;
 
     /**
@@ -412,16 +412,6 @@ public interface IVocabularyService {
     List<SimpleAttribute> getVocabularyFolderAttributesMetadata() throws ServiceException;
 
     /**
-     * Returns vocabulary concept attributes metadata (without values).
-     *
-     * @return
-     * @throws ServiceException
-     */
-    // Old implementation that will be replaced by data element attributes. See #14721.
-    @Deprecated
-    List<VocabularyConceptAttribute> getVocabularyConceptAttributesMetadata() throws ServiceException;
-
-    /**
      * Get folder by folder identifier.
      *
      * @param folderIdentifier
@@ -486,4 +476,31 @@ public interface IVocabularyService {
      */
     List<RdfNamespace> getVocabularyNamespaces(List<VocabularyFolder> vocabularyFolders) throws ServiceException;
 
+    /**
+     * Some data element has special treatment.
+     * For example for handling relations between internal concepts we use skos:relation elements
+     * that are in this Enum
+     *
+     * @author Kaido Laine
+     */
+    public enum RelationalElement {
+        /** relation elements. */
+        BROADER_CONCEPT, NARROWER_CONCEPT, RELATED_CONCEPT;
+    }
+
+    /**
+     * Checks if given element has some special behaviour.
+     *
+     * @param relationalElement
+     *            special relational element
+     * @return String prefix in RDF
+     */
+    String getRelationalElementPrefix(RelationalElement relationalElement);
+
+    /**
+     * Checks if the given element represents relation to an external resource.
+     * @param id data element ID
+     * @return true if element is relational (type = reference)
+     */
+    boolean isReferenceElement(int id);
 }

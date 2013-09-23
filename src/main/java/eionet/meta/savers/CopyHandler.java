@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -143,6 +144,9 @@ public class CopyHandler extends OldCopyHandler {
             copyComplexAttributes();
             copyFixedValues();
             copyFkRelations();
+
+            //common elements may have bindings in Vocabularies
+            //copyElementBindings();
 
             // Element-to-table relations will also be copied if required by the method input.
             if (isCopyTbl2ElmRelations) {
@@ -523,6 +527,95 @@ public class CopyHandler extends OldCopyHandler {
             SQL.close(stmt);
         }
     }
+
+    /**
+    *
+    * @throws SQLException
+    */
+   private void copyElementBindings() throws SQLException {
+
+       LOGGER.debug("Copying element bindings ...");
+
+       if (oldNewElements.isEmpty()) {
+           return;
+       }
+
+       String selectSQL =
+           "SELECT * FROM datadict.T_VOCABULARY_ELEMENT ve LEFT JOIN T_CONCEPT_ELEMENT_VALUE ev ON ve.DATAELEM_ID = ev.DATAELEM_ID "
+               + "WHERE ve.DATAELEM_ID IN (" + Util.toCSV(oldNewElements.keySet()) + ") ORDER BY ve.DATAELEM_ID";
+
+       final String insertBindingSQL = "insert into T_VOCABULARY_ELEMENT (DATAELEM_ID, VOCABULARY_FOLDER_ID) values (?, ?) ";
+
+       final String insertValueSQL = "insert into T_CONCEPT_ELEMENT_VALUE "
+                  + "(DATAELEM_ID, VOCABULARY_CONCEPT_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID, LINK_TEXT) values "
+                  + "(?, ?, ?, ?, ?, ?) ";
+
+       int insertBindingSQLLengthBefore = insertBindingSQL.length();
+
+
+       ResultSet rs = null;
+       Statement stmt = null;
+
+       PreparedStatement stmtInsertBinding = conn.prepareStatement(insertBindingSQL);
+       PreparedStatement stmtInsertValue = conn.prepareStatement(insertValueSQL);
+
+       try {
+           stmt = conn.createStatement();
+           rs = stmt.executeQuery(selectSQL);
+           int prevElemId = 0;
+           int elementId = 0;
+           while (rs.next()) {
+
+               String oldElmId = rs.getString("DATAELEM_ID");
+               String newElmId = oldNewElements.get(oldElmId);
+               if (!Util.isEmpty(newElmId)) {
+
+                   int vocabularyFolderId = rs.getInt("VOCABULARY_FOLDER_ID");
+                   elementId = rs.getInt("ve.DATAELEM_ID");
+
+                   if (elementId != prevElemId) {
+                       stmtInsertBinding.setInt(1, Integer.valueOf(newElmId));
+                       stmtInsertBinding.setInt(2,vocabularyFolderId);
+                       stmtInsertBinding.execute();
+                   }
+                   Integer conceptId = rs.getInt("VOCABULARY_CONCEPT_ID");
+
+                   if (conceptId != null) {
+                       String value = rs.getString("ELEMENT_VALUE");
+                       String language = rs.getString("LANGUAGE");
+                       Integer relatedConceptId = (rs.getInt("RELATED_CONCEPT_ID") == 0 ? null : rs.getInt("RELATED_CONCEPT_ID")) ;
+                       String linkText = rs.getString("LINK_TEXT");
+
+                       stmtInsertValue.setInt(1, Integer.valueOf(newElmId));
+                       stmtInsertValue.setInt(2, conceptId);
+                       stmtInsertValue.setString(3, value);
+                       stmtInsertValue.setString(4, language);
+                       if (relatedConceptId != null) {
+                           stmtInsertValue.setInt(5, relatedConceptId);
+                       } else {
+                           stmtInsertValue.setNull(5, Types.INTEGER);
+                       }
+                       stmtInsertValue.setString(6, linkText);
+
+                       stmtInsertValue.execute();
+                   }
+
+               }
+
+               prevElemId = elementId;
+               }
+           SQL.close(rs);
+
+       } finally {
+           SQL.close(rs);
+           SQL.close(stmt);
+
+           SQL.close(stmtInsertBinding);
+           SQL.close(stmtInsertValue);
+
+       }
+   }
+
 
     /**
      *

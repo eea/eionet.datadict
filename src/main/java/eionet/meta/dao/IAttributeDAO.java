@@ -8,7 +8,6 @@ import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.ComplexAttribute;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
-import eionet.meta.dao.domain.VocabularyConceptAttribute;
 
 /**
  *
@@ -106,16 +105,6 @@ public interface IAttributeDAO {
     ComplexAttribute getComplexAttributeByName(String complexAttrName);
 
     /**
-     * Returns dynamic attributes for vocabulary concept.
-     *
-     * @param vocabularyConceptId
-     * @param emptyAttributes
-     *            when true, then attributes that are not valued are also included
-     * @return
-     */
-    List<List<VocabularyConceptAttribute>> getVocabularyConceptAttributes(int vocabularyConceptId, boolean emptyAttributes);
-
-    /**
      * Returns attributes.
      *
      * @param vocabularyFolderId
@@ -141,52 +130,4 @@ public interface IAttributeDAO {
      */
     List<SimpleAttribute> getAttributesMetadata(int typeWeight);
 
-    /**
-     * Returns the attribute metadata according.
-     *
-     * @return
-     */
-    // Old implementation that will be replaced by data element attributes. See #14721.
-    @Deprecated
-    List<VocabularyConceptAttribute> getVocabularyConceptAttributesMetadata();
-
-    /**
-     * Inserts the attributes.
-     *
-     * @param attributes
-     */
-    // Old implementation that will be replaced by data element attributes. See #14721.
-    @Deprecated
-    void createVocabularyConceptAttributes(List<VocabularyConceptAttribute> attributes);
-
-    /**
-     * Updates the attributes.
-     *
-     * @param attributes
-     */
-    // Old implementation that will be replaced by data element attributes. See #14721.
-    @Deprecated
-    void updateVocabularyConceptAttributes(List<VocabularyConceptAttribute> attributes);
-
-    /**
-     * Deletes the attributes except the excludedIds.
-     *
-     * @param excludedIds
-     * @param vocabularyConceptId
-     */
-    // Old implementation that will be replaced by data element attributes. See #14721.
-    @Deprecated
-    void deleteVocabularyConceptAttributes(List<Integer> excludedIds, int vocabularyConceptId);
-
-    // Old implementation that will be replaced by data element attributes. See #14721.
-    @Deprecated
-    List<VocabularyConceptAttribute> getDeletedConceptAttributes(List<Integer> excludedIds, int vocabularyConceptId);
-
-    // Old implementation that will be replaced by data element attributes. See #14721.
-    @Deprecated
-    void checkAndDeleteConceptAttribute(int conceptId, int relatedConceptId, String identifier);
-
-    // Old implementation that will be replaced by data element attributes. See #14721.
-    @Deprecated
-    void checkAndAddConceptAttribute(int conceptId, int relatedConceptId, String identifier);
 }

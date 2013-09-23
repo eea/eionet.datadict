@@ -79,7 +79,7 @@
                     <th scope="row" class="scope-row simple_attr_title" style="background-color: #FFFFFF;"><br/>Additional attributes</th>
                     <td></td>
                 </tr>
-                <c:forEach var="attributeValues" items="${actionBean.vocabularyConcept.attributes}">
+                <%-- c:forEach var="attributeValues" items="${actionBean.vocabularyConcept.attributes}">
                     <c:set var="attrMeta" value="${attributeValues[0]}"/>
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">${attrMeta.label}</th>
@@ -116,15 +116,35 @@
                             </c:forEach>
                         </td>
                     </tr>
-                </c:forEach>
+                </c:forEach --%>
                 <!-- Data element attributes -->
                 <c:forEach var="elementValues" items="${actionBean.vocabularyConcept.elementAttributes}">
                     <c:set var="elementMeta" value="${elementValues[0]}"/>
                     <tr>
-                        <th scope="row" class="scope-row simple_attr_title">${elementMeta.shortName}</th>
+                        <th scope="row" class="scope-row simple_attr_title">${elementMeta.name}</th>
                         <td class="simple_attr_value">
                             <c:forEach var="attr" items="${elementValues}" varStatus="innerLoop">
-                                <dd:linkify value="${attr.attributeValue}" />
+                                <c:choose>
+                                  <c:when test="${attr.relationalElement}">
+                                      <c:choose>
+                                       <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
+                                            <a href="${actionBean.uriPrefix}${attr.relatedConceptIdentifier}"><c:out value="${actionBean.uriPrefix}${attr.relatedConceptIdentifier}" /></a>
+                                       </c:when>
+                                       <c:otherwise>
+                                        <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean">
+                                            <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                            <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                            <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                                            <stripes:param name="vocabularyConcept.identifier" value="${attr.relatedConceptIdentifier}" />
+                                            <c:out value="${attr.relatedConceptLabel}" />
+                                         </stripes:link>
+                                       </c:otherwise>
+                                       </c:choose>
+                                  </c:when>
+                                  <c:otherwise>
+                                      <dd:linkify value="${attr.attributeValue}" /><c:if test="${not empty attr.attributeLanguage}"> [${attr.attributeLanguage}]</c:if>
+                                  </c:otherwise>
+                                </c:choose>
                                 <c:if test="${fn:length(elementValues) - innerLoop.index - 1 >= 1}">
                                     <hr />
                                 </c:if>

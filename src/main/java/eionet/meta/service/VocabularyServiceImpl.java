@@ -28,9 +28,12 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
@@ -40,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import eionet.meta.DElemAttribute;
+import eionet.meta.DElemAttribute.ParentType;
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IDataElementDAO;
@@ -54,7 +58,6 @@ import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
@@ -102,6 +105,18 @@ public class VocabularyServiceImpl implements IVocabularyService {
     /** namespace DAO. */
     @Autowired
     private IRdfNamespaceDAO namespaceDAO;
+
+    /** special elements . */
+    private static EnumMap<RelationalElement, String> relationalElements;
+
+    static {
+        if (relationalElements == null) {
+            relationalElements = new EnumMap<RelationalElement, String>(RelationalElement.class);
+            relationalElements.put(RelationalElement.BROADER_CONCEPT, "skos:broader");
+            relationalElements.put(RelationalElement.NARROWER_CONCEPT, "skos:narrower");
+            relationalElements.put(RelationalElement.RELATED_CONCEPT, "skos:related");
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -287,52 +302,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
 
             vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
-            updateVocabularyConceptAttributes(vocabularyConcept);
+            // updateVocabularyConceptAttributes(vocabularyConcept);
             updateVocabularyConceptDataElementValues(vocabularyConcept);
         } catch (Exception e) {
             throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
         }
 
-    }
-
-    // Old implementation that will be replaced by data element attributes. See #14721.
-    @Deprecated
-    private void updateVocabularyConceptAttributes(VocabularyConcept vocabularyConcept) {
-        // Update vocabulary concept attributes.
-        List<VocabularyConceptAttribute> toInsert = new ArrayList<VocabularyConceptAttribute>();
-        List<VocabularyConceptAttribute> toUpdate = new ArrayList<VocabularyConceptAttribute>();
-        List<Integer> excludedIds = new ArrayList<Integer>();
-
-        if (vocabularyConcept.getAttributes() != null) {
-            for (List<VocabularyConceptAttribute> attributes : vocabularyConcept.getAttributes()) {
-                if (attributes != null) {
-                    for (VocabularyConceptAttribute attr : attributes) {
-                        if (attr != null) {
-                            if (attr.getId() != 0) {
-                                if (StringUtils.isNotEmpty(attr.getValue()) || attr.getRelatedId() != null) {
-                                    excludedIds.add(attr.getId());
-                                    toUpdate.add(attr);
-                                }
-                            } else {
-                                if (StringUtils.isNotEmpty(attr.getValue()) || attr.getRelatedId() != null) {
-                                    attr.setVocabularyConceptId(vocabularyConcept.getId());
-                                    toInsert.add(attr);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        List<VocabularyConceptAttribute> deletedAttributes =
-                attributeDAO.getDeletedConceptAttributes(excludedIds, vocabularyConcept.getId());
-
-        attributeDAO.updateVocabularyConceptAttributes(toUpdate);
-        attributeDAO.deleteVocabularyConceptAttributes(excludedIds, vocabularyConcept.getId());
-        attributeDAO.createVocabularyConceptAttributes(toInsert);
-
-        fixRelatedConcepts(vocabularyConcept.getId(), deletedAttributes);
     }
 
     private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept) {
@@ -341,12 +316,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
             for (List<DataElement> values : vocabularyConcept.getElementAttributes()) {
                 if (values != null) {
                     for (DataElement value : values) {
-                        if (value != null && StringUtils.isNotEmpty(value.getAttributeValue())) {
+                        if (value != null
+                                && (StringUtils.isNotEmpty(value.getAttributeValue()) || value.getRelatedConceptId() != null)) {
                             dataElementValues.add(value);
                         }
                     }
                 }
-
             }
         }
 
@@ -354,59 +329,60 @@ public class VocabularyServiceImpl implements IVocabularyService {
         if (dataElementValues.size() > 0) {
             dataElementDAO.insertVocabularyConceptDataElementValues(vocabularyConcept.getId(), dataElementValues);
         }
+
+        fixRelatedElements(vocabularyConcept, dataElementValues);
     }
 
     /**
-     * As a last step when updating vocabulary concept, this method checks all the related attributes and makes sure that the
-     * concepts are related in both sides (A related with B -> B related with A). Also when relation gets deleted from one side,
-     * then we make sure to deleted it also from the other side of the relation.
+     * As a last step when updating vocabulary concept, this method checks all the binded elements that represent relations and
+     * makes sure that the concepts are related in both sides (A related with B -> B related with A). Also when relation gets
+     * deleted from one side, then we make sure to deleted it also from the other side of the relation.
      *
-     * @param vocabularyConceptId
-     * @param deletedAttributes
+     * @param vocabularyConcept
+     *            Concept to be updated
      */
-    // Old implementation that will be replaced by data element attributes. See #14721.
-    @Deprecated
-    private void fixRelatedConcepts(int vocabularyConceptId, List<VocabularyConceptAttribute> deletedAttributes) {
-        // Delete redundant related attributes
-        for (VocabularyConceptAttribute attribute : deletedAttributes) {
-            if (VocabularyConceptAttribute.BROADER_LOCAL_CONCEPT.equals(attribute.getIdentifier())) {
-                attributeDAO.checkAndDeleteConceptAttribute(attribute.getRelatedId(), attribute.getVocabularyConceptId(),
-                        VocabularyConceptAttribute.NARROWER_LOCAL_CONCEPT);
+    private void fixRelatedElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues) {
+        try {
+            // delete all existing relations:
+            dataElementDAO.deleteRelatedElements(vocabularyConcept.getId());
+
+            for (DataElement elem : dataElementValues) {
+                if (elem.isRelationalElement()) {
+                    int relatedConceptId = elem.getRelatedConceptId();
+                    VocabularyConcept relatedConcept = vocabularyConceptDAO.getVocabularyConcept(relatedConceptId);
+                    List<DataElement> relatedElementValues = new ArrayList<DataElement>();
+                    DataElement relationalElement = null;
+
+                    try {
+                        if (elem.getIdentifier().equals(getRelationalElementPrefix(RelationalElement.RELATED_CONCEPT))) {
+                            relationalElement =
+                                    dataElementDAO.getDataElement(getRelationalElementPrefix(RelationalElement.RELATED_CONCEPT));
+                        } else if (elem.getIdentifier().equals(getRelationalElementPrefix(RelationalElement.BROADER_CONCEPT))) {
+                            relationalElement =
+                                    dataElementDAO.getDataElement(getRelationalElementPrefix(RelationalElement.NARROWER_CONCEPT));
+
+                        } else if (elem.getIdentifier().equals(getRelationalElementPrefix(RelationalElement.NARROWER_CONCEPT))) {
+                            relationalElement =
+                                    dataElementDAO.getDataElement(getRelationalElementPrefix(RelationalElement.BROADER_CONCEPT));
+                        }
+                    } catch (Exception e) {
+                        LOGGER.warn("Relational skos element not defined " + e);
+                    }
+
+                    if (relationalElement != null) {
+                        relationalElement.setAttributeLanguage(elem.getAttributeLanguage());
+                        relationalElement.setAttributeValue(elem.getAttributeValue());
+                        relationalElement.setRelatedConceptId(vocabularyConcept.getId());
+                        relatedElementValues.add(relationalElement);
+                        dataElementDAO.insertVocabularyConceptDataElementValues(relatedConcept.getId(), relatedElementValues);
+                    }
+
+                }
             }
-            if (VocabularyConceptAttribute.NARROWER_LOCAL_CONCEPT.equals(attribute.getIdentifier())) {
-                attributeDAO.checkAndDeleteConceptAttribute(attribute.getRelatedId(), attribute.getVocabularyConceptId(),
-                        VocabularyConceptAttribute.BROADER_LOCAL_CONCEPT);
-            }
-            if (VocabularyConceptAttribute.RELATED_LOCAL_CONCEPT.equals(attribute.getIdentifier())) {
-                attributeDAO.checkAndDeleteConceptAttribute(attribute.getRelatedId(), attribute.getVocabularyConceptId(),
-                        VocabularyConceptAttribute.RELATED_LOCAL_CONCEPT);
-            }
+        } catch (Exception e) {
+            LOGGER.warn("Handling related element bindings failed " + e);
         }
 
-        // Add missing related attributes
-        List<List<VocabularyConceptAttribute>> attributes =
-                attributeDAO.getVocabularyConceptAttributes(vocabularyConceptId, false);
-
-        for (List<VocabularyConceptAttribute> attribute : attributes) {
-            if (VocabularyConceptAttribute.BROADER_LOCAL_CONCEPT.equals(attribute.get(0).getIdentifier())) {
-                for (VocabularyConceptAttribute attr : attribute) {
-                    attributeDAO.checkAndAddConceptAttribute(attr.getRelatedId(), attr.getVocabularyConceptId(),
-                            VocabularyConceptAttribute.NARROWER_LOCAL_CONCEPT);
-                }
-            }
-            if (VocabularyConceptAttribute.NARROWER_LOCAL_CONCEPT.equals(attribute.get(0).getIdentifier())) {
-                for (VocabularyConceptAttribute attr : attribute) {
-                    attributeDAO.checkAndAddConceptAttribute(attr.getRelatedId(), attr.getVocabularyConceptId(),
-                            VocabularyConceptAttribute.BROADER_LOCAL_CONCEPT);
-                }
-            }
-            if (VocabularyConceptAttribute.RELATED_LOCAL_CONCEPT.equals(attribute.get(0).getIdentifier())) {
-                for (VocabularyConceptAttribute attr : attribute) {
-                    attributeDAO.checkAndAddConceptAttribute(attr.getRelatedId(), attr.getVocabularyConceptId(),
-                            VocabularyConceptAttribute.RELATED_LOCAL_CONCEPT);
-                }
-            }
-        }
     }
 
     /**
@@ -562,9 +538,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
             // Copy the vocabulary concepts under new vocabulary folder (except of site code type)
             if (!vocabularyFolder.isSiteCodeType()) {
                 vocabularyConceptDAO.copyVocabularyConcepts(vocabularyFolderId, newVocabularyFolderId);
-                vocabularyConceptDAO.copyVocabularyConceptsAttributes(newVocabularyFolderId);
-                vocabularyConceptDAO.updateRelatedConceptIds(newVocabularyFolderId);
+
                 dataElementDAO.copyVocabularyConceptDataElementValues(newVocabularyFolderId);
+                dataElementDAO.updateRelatedConceptIds(newVocabularyFolderId);
             }
 
             // Copy data element relations
@@ -854,12 +830,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             VocabularyConcept result = vocabularyConceptDAO.getVocabularyConcept(vocabularyFolderId, conceptIdentifier);
 
-            List<List<VocabularyConceptAttribute>> attributes =
-                    attributeDAO.getVocabularyConceptAttributes(result.getId(), emptyAttributes);
-            result.setAttributes(attributes);
-
             List<List<DataElement>> elementAttributes =
                     dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId, result.getId(), emptyAttributes);
+
+            setElemAttributeValues(elementAttributes);
             result.setElementAttributes(elementAttributes);
 
             return result;
@@ -875,10 +849,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
     public VocabularyConcept getVocabularyConcept(int vocabularyConceptId, boolean emptyAttributes) throws ServiceException {
         try {
             VocabularyConcept result = vocabularyConceptDAO.getVocabularyConcept(vocabularyConceptId);
-            List<List<VocabularyConceptAttribute>> attributes =
-                    attributeDAO.getVocabularyConceptAttributes(result.getId(), emptyAttributes);
-
-            result.setAttributes(attributes);
 
             return result;
         } catch (Exception e) {
@@ -903,11 +873,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
             List<VocabularyConcept> result = vocabularyConceptDAO.searchVocabularyConcepts(filter).getList();
 
             for (VocabularyConcept vc : result) {
-                List<List<VocabularyConceptAttribute>> attributes = attributeDAO.getVocabularyConceptAttributes(vc.getId(), false);
-                vc.setAttributes(attributes);
 
                 List<List<DataElement>> elementAttributes =
                         dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId, vc.getId(), false);
+                setElemAttributeValues(elementAttributes);
                 vc.setElementAttributes(elementAttributes);
             }
 
@@ -985,18 +954,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
             return attributeDAO.getAttributesMetadata(DElemAttribute.typeWeights.get("VCF"));
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary folder attribute metadata: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<VocabularyConceptAttribute> getVocabularyConceptAttributesMetadata() throws ServiceException {
-        try {
-            return attributeDAO.getVocabularyConceptAttributesMetadata();
-        } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabulary concept attribute metadata: " + e.getMessage(), e);
         }
     }
 
@@ -1120,4 +1077,53 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
     }
 
+    /**
+     * all relational prefixes.
+     *
+     * @return collection of skos>relation prefixes
+     */
+    public static Collection<String> getRelationalPrefixes() {
+        return relationalElements.values();
+    }
+
+    /**
+     * Checks if given element has some special behaviour.
+     *
+     * @param specialElement
+     *            special element
+     * @return String prefix in RDF
+     */
+    @Override
+    public String getRelationalElementPrefix(RelationalElement specialElement) {
+        return relationalElements.get(specialElement);
+    }
+
+    @Override
+    public boolean isReferenceElement(int elementId) {
+
+        DataElement elem = dataElementDAO.getDataElement(elementId);
+        Map<String, List<String>> elemAttributeValues =
+                attributeDAO.getAttributeValues(elem.getId(), ParentType.ELEMENT.toString());
+
+        elem.setElemAttributeValues(elemAttributeValues);
+
+        return elem.getDatatype().equals("reference");
+    }
+
+    /**
+     * finds and assigns attribute values for data elements
+     *
+     * @param elementAttributes
+     *            data element list - outer list contains different data elements (meta), inner list contains element values
+     */
+    // TODO - this probably need some refactoring:
+    private void setElemAttributeValues(List<List<DataElement>> elementAttributes) {
+        for (List<DataElement> elemList : elementAttributes) {
+            for (DataElement elem : elemList) {
+                Map<String, List<String>> elemAttributeValues =
+                        attributeDAO.getAttributeValues(elem.getId(), ParentType.ELEMENT.toString());
+                elem.setElemAttributeValues(elemAttributeValues);
+            }
+        }
+    }
 }

@@ -1648,6 +1648,12 @@ public class DataElementHandler extends BaseHandler {
             gen.setField("DATAELEM_ID", lastInsertID);
             copyHandler.copy(gen, "DATAELEM_ID=" + copyElmID + " and PARENT_TYPE='E'");
 
+//            //copy element bindings T_VOCABULARY_ELEMENT
+//            gen.clear();
+//            gen.setTable("T_VOCABULARY_ELEMENT");
+//            gen.setField("DATAELEM_ID", lastInsertID);
+//            copyHandler.copy(gen, "DATAELEM_ID=" + copyElmID);
+
             // copy complex attributes
             copyHandler.copyComplexAttrs(lastInsertID, copyElmID, "E");
 
@@ -1802,6 +1808,20 @@ public class DataElementHandler extends BaseHandler {
             gen.setFieldExpr("DATAELEM_ID", newID);
             buf = new StringBuffer(gen.updateStatement());
             buf.append(" where PARENT_TYPE='E' and DATAELEM_ID=").append(oldID);
+            stmt.executeUpdate(buf.toString());
+
+            gen.clear();
+            gen.setTable("T_VOCABULARY_ELEMENT");
+            gen.setFieldExpr("DATAELEM_ID", newID);
+            buf = new StringBuffer(gen.updateStatement());
+            buf.append(" where DATAELEM_ID=").append(oldID);
+            stmt.executeUpdate(buf.toString());
+
+            gen.clear();
+            gen.setTable("T_CONCEPT_ELEMENT_VALUE");
+            gen.setFieldExpr("DATAELEM_ID", newID);
+            buf = new StringBuffer(gen.updateStatement());
+            buf.append(" where DATAELEM_ID=").append(oldID);
             stmt.executeUpdate(buf.toString());
 
             gen.clear();

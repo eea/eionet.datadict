@@ -365,6 +365,7 @@ public class VersionManager {
 
             // copy TBL2ELEM relations too, because common elements have links to tables
             newID = copyHandler.copyElm(elmID, true, strResetVersionAndStatus == null, strResetVersionAndStatus != null);
+//TODO VOC_ELEM
             if (newID != null) {
                 gen.clear();
                 gen.setTable("DATAELEM");
@@ -613,6 +614,18 @@ public class VersionManager {
         String checkedoutCopyID = servlRequestParams == null ? null : servlRequestParams.getParameter("checkedout_copy_id");
         if (checkedoutCopyID != null) {
             if (!versionUpdate) {
+
+                //backup vocabulary bindings before deleting the element to the new element
+                gen.clear();
+                gen.setTable("T_VOCABULARY_ELEMENT");
+                gen.setFieldExpr("DATAELEM_ID", elmID);
+                stmt.executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + checkedoutCopyID);
+
+                gen.clear();
+                gen.setTable("T_CONCEPT_ELEMENT_VALUE");
+                gen.setFieldExpr("DATAELEM_ID", elmID);
+                stmt.executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + checkedoutCopyID);
+
                 // delete the previous copy
                 Parameters params = new Parameters();
                 params.addParameterValue("mode", "delete");

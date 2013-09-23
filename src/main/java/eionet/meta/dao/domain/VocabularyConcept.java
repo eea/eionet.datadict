@@ -122,21 +122,6 @@ public class VocabularyConcept {
     }
 
     /**
-     * @return the attributes
-     */
-    public List<List<VocabularyConceptAttribute>> getAttributes() {
-        return attributes;
-    }
-
-    /**
-     * @param attributes
-     *            the attributes to set
-     */
-    public void setAttributes(List<List<VocabularyConceptAttribute>> attributes) {
-        this.attributes = attributes;
-    }
-
-    /**
      * @return the created
      */
     public Date getCreated() {

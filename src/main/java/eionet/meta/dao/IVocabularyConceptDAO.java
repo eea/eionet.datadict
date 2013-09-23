@@ -169,20 +169,6 @@ public interface IVocabularyConceptDAO {
     void copyVocabularyConcepts(int oldVocabularyFolderId, int newVocabularyFolderId);
 
     /**
-     * Copy existing VocabularyConceptAttributes from original concepts to newly copied concepts.
-     *
-     * @param newVocabularyFolderId
-     */
-    void copyVocabularyConceptsAttributes(int newVocabularyFolderId);
-
-    /**
-     * Updates the T_VOCABULARY_CONCEPT_ATTRITUBE.RELATED_CONCEPT_ID to what the new checked out concept's id currently is.
-     *
-     * @param newVocabularyFolderId
-     */
-    void updateRelatedConceptIds(int newVocabularyFolderId);
-
-    /**
      * Checks if any concept has values in the binded data element. Returns list of such elements.
      * @param elementId element id
      * @return list of data elements

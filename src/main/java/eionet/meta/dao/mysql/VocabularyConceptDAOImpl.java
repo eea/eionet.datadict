@@ -175,44 +175,6 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
      * {@inheritDoc}
      */
     @Override
-    public void copyVocabularyConceptsAttributes(int newVocabularyFolderId) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("insert into T_VOCABULARY_CONCEPT_ATTRIBUTE (M_ATTRIBUTE_ID, VOCABULARY_CONCEPT_ID, ATTR_VALUE, LANGUAGE, LINK_TEXT, RELATED_CONCEPT_ID) ");
-        sql.append("select attr.M_ATTRIBUTE_ID, con.VOCABULARY_CONCEPT_ID, attr.ATTR_VALUE, attr.LANGUAGE, attr.LINK_TEXT, attr.RELATED_CONCEPT_ID ");
-        sql.append("from T_VOCABULARY_CONCEPT_ATTRIBUTE attr ");
-        sql.append("left join T_VOCABULARY_CONCEPT con on attr.VOCABULARY_CONCEPT_ID = con.ORIGINAL_CONCEPT_ID  ");
-        sql.append("where con.VOCABULARY_FOLDER_ID = :newVocabularyFolderId");
-
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("newVocabularyFolderId", newVocabularyFolderId);
-
-        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateRelatedConceptIds(int newVocabularyFolderId) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE T_VOCABULARY_CONCEPT_ATTRIBUTE attr, T_VOCABULARY_CONCEPT con1, T_VOCABULARY_CONCEPT con2, M_ATTRIBUTE m ");
-        sql.append("set attr.RELATED_CONCEPT_ID = con2.VOCABULARY_CONCEPT_ID ");
-        sql.append("where attr.VOCABULARY_CONCEPT_ID = con1.VOCABULARY_CONCEPT_ID ");
-        sql.append("and attr.RELATED_CONCEPT_ID = con2.ORIGINAL_CONCEPT_ID ");
-        sql.append("and attr.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID ");
-        sql.append("and con1.VOCABULARY_FOLDER_ID = :newVocabularyFolderId ");
-        sql.append("and m.SHORT_NAME in ('broaderLocalConcept', 'narrowerLocalConcept', 'relatedLocalConcept')");
-
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("newVocabularyFolderId", newVocabularyFolderId);
-
-        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public int createVocabularyConcept(int vocabularyFolderId, VocabularyConcept vocabularyConcept) {
         StringBuilder sql = new StringBuilder();
         sql.append("insert into T_VOCABULARY_CONCEPT (VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION) ");

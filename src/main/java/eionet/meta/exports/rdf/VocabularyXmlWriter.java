@@ -91,6 +91,7 @@ public class VocabularyXmlWriter {
         DEFAULT_NAMESPACES.put("dctype", DCTYPE_NS);
         DEFAULT_NAMESPACES.put("dcterms", DCTERMS_NS);
     }
+
     /**
      * Escapes IRI's reserved characters in the given URL string.
      *
@@ -113,7 +114,8 @@ public class VocabularyXmlWriter {
      *            vocabulary
      * @param vocabularyConcepts
      *            concepts in the vocabulary
-     * @param rdfNamespaces Namespaces that are used in the RDF entities
+     * @param rdfNamespaces
+     *            Namespaces that are used in the RDF entities
      * @throws XMLStreamException
      *             if streaming fails
      */
@@ -130,16 +132,20 @@ public class VocabularyXmlWriter {
     /**
      * Writes start of XML.
      *
-     * @param siteCodeType if true it is a site code vocabulary
-     * @param contextRoot IRI for context
-     * @param nameSpaces namespaces to be written to the header
-     * @throws XMLStreamException if writing does not succeed
+     * @param siteCodeType
+     *            if true it is a site code vocabulary
+     * @param contextRoot
+     *            IRI for context
+     * @param nameSpaces
+     *            namespaces to be written to the header
+     * @throws XMLStreamException
+     *             if writing does not succeed
      */
     public void writeXmlStart(boolean siteCodeType, String contextRoot, List<RdfNamespace> nameSpaces) throws XMLStreamException {
         writer.writeStartDocument(ENCODING, "1.0");
         writer.writeCharacters("\n");
 
-        //default namespaces
+        // default namespaces
         for (String prefix : DEFAULT_NAMESPACES.keySet()) {
             writer.setPrefix(prefix, DEFAULT_NAMESPACES.get(prefix));
         }
@@ -169,10 +175,14 @@ public class VocabularyXmlWriter {
     /**
      * Writes dcterms:Collection resource of the folder.
      *
-     * @param folderContext Folder context IRI
-     * @param folder Folder for the vocabularies
-     * @param vocabularies concepts collection in the vocabulary
-     * @throws XMLStreamException if rdf output fails
+     * @param folderContext
+     *            Folder context IRI
+     * @param folder
+     *            Folder for the vocabularies
+     * @param vocabularies
+     *            concepts collection in the vocabulary
+     * @throws XMLStreamException
+     *             if rdf output fails
      */
     public void writeFolderXml(String folderContext, Folder folder, List<? extends VocabularyFolder> vocabularies)
             throws XMLStreamException {
@@ -268,7 +278,7 @@ public class VocabularyXmlWriter {
                 writeSiteCodeData((SiteCode) vc);
             } else {
                 writeBindedElements(vocabularyContextRoot, vc.getElementAttributes());
-                writeAdditionalAttributes(vocabularyContextRoot, vc.getAttributes());
+                //writeAdditionalAttributes(vocabularyContextRoot, vc.getAttributes());
             }
 
             writer.writeCharacters("\n");
@@ -278,29 +288,53 @@ public class VocabularyXmlWriter {
 
     /**
      * Write binded elements to RDF.
-     * @param contextRoot contex root
-     * @param elements elements list
-     * @throws XMLStreamException if writing fails
+     *
+     * @param contextRoot
+     *            contex root
+     * @param elements
+     *            elements list
+     * @throws XMLStreamException
+     *             if writing fails
      */
     private void writeBindedElements(String contextRoot, List<List<DataElement>> elements) throws XMLStreamException {
         if (elements != null) {
             for (List<DataElement> elems : elements) {
                 if (elems != null) {
                     for (DataElement elem : elems) {
-                        //external elements: indentifier is a valid Xml tag, for example: geo:lat
-                        //for internal elements compose the Tag: dd[elemID]
+                        // external elements: indentifier is a valid Xml tag, for example: geo:lat
+                        // for internal elements compose the Tag: dd[elemID]
                         String elemXmlTag =
                                 (elem.isExternalSchema() ? elem.getIdentifier() : "dd" + elem.getId() + ":" + elem.getIdentifier());
 
                         writer.writeCharacters("\n");
-                        writer.writeStartElement(elemXmlTag);
-                        writer.writeCharacters(elem.getAttributeValue());
-                        writer.writeEndElement();
+                        if (StringUtils.isNotEmpty(elem.getAttributeValue())) {
+                            if (StringUtils.isNotEmpty(elem.getDatatype()) && elem.getDatatype().equalsIgnoreCase("reference")) {
+                                writer.writeEmptyElement(elemXmlTag);
+                                writer.writeAttribute("rdf", RDF_NS, "resource", elem.getAttributeValue());
+                            } else {
+                                writer.writeStartElement(elemXmlTag);
+                                if (StringUtils.isNotEmpty(elem.getAttributeLanguage())) {
+                                    writer.writeAttribute("xml", XML_NS, "lang", elem.getAttributeLanguage());
+                                }
+                                if (StringUtils.isNotEmpty(elem.getDatatype()) && !(elem.getDatatype().equalsIgnoreCase("string"))) {
+                                    writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(elem.getDatatype()));
+                                }
+
+                                writer.writeCharacters(elem.getAttributeValue());
+                                writer.writeEndElement();
+                            }
+                        } else if (elem.isRelationalElement()) {
+                            writer.writeCharacters("\n");
+                            writer.writeEmptyElement(elemXmlTag);
+                            writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(contextRoot + elem.getRelatedConceptIdentifier()));
+
+                        }
                     }
                 }
             }
         }
     }
+
     /**
      * Writes additional attributes for vocabulary concepts.
      *
@@ -326,8 +360,7 @@ public class VocabularyXmlWriter {
                                 if (StringUtils.isNotEmpty(attr.getLanguage())) {
                                     writer.writeAttribute("xml", XML_NS, "lang", attr.getLanguage());
                                 }
-                                if (StringUtils.isNotEmpty(attr.getDataType())
-                                        && !(attr.getDataType().equalsIgnoreCase("string"))) {
+                                if (StringUtils.isNotEmpty(attr.getDataType()) && !(attr.getDataType().equalsIgnoreCase("string"))) {
                                     writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(attr.getDataType()));
                                 }
                                 writer.writeCharacters(attr.getValue());
@@ -348,8 +381,10 @@ public class VocabularyXmlWriter {
     /**
      * Writes site code specific properties to RDF output.
      *
-     * @param sc sitecode
-     * @throws XMLStreamException if export fails
+     * @param sc
+     *            sitecode
+     * @throws XMLStreamException
+     *             if export fails
      */
     private void writeSiteCodeData(SiteCode sc) throws XMLStreamException {
         writer.writeCharacters("\n");

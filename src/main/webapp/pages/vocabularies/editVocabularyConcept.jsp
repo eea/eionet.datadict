@@ -141,7 +141,7 @@
                                     <col style="width:4%"/>
                                     <col />
                                 </colgroup>
-                                <c:forEach var="attributeValues" items="${actionBean.vocabularyConcept.attributes}" varStatus="outerLoop">
+                                <%-- c:forEach var="attributeValues" items="${actionBean.vocabularyConcept.attributes}" varStatus="outerLoop">
                                 <c:set var="attrMeta" value="${attributeValues[0]}"/>
                                 <tr>
                                     <th scope="row" class="scope-row simple_attr_title">
@@ -201,14 +201,14 @@
                                         </c:if>
                                     </td>
                                 </tr>
-                                </c:forEach>
+                                </c:forEach --%>
 
                                 <!-- Data element attributes -->
                                 <c:forEach var="elementValues" items="${actionBean.vocabularyConcept.elementAttributes}" varStatus="outerLoop">
                                     <c:set var="attrMeta" value="${elementValues[0]}"/>
                                     <tr>
                                         <th scope="row" class="scope-row simple_attr_title">
-                                            ${attrMeta.shortName}
+                                            ${attrMeta.name}
                                         </th>
                                         <td class="simple_attr_help">
                                             <dd:optionalIcon />
@@ -221,6 +221,19 @@
                                                         elementId="${attrMeta.id}"
                                                         fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
                                                         uniqueId="conceptElement${outerLoop.index}" fixedValues="${attrMeta.fixedValues}"/>
+                                              </c:when>
+                                              <c:when test="${attrMeta.relationalElement}">
+                                                <dd:relatedElemConcepts  dataElements="${elementValues}"
+                                                    vocabularyConcepts="${actionBean.vocabularyConcepts}"
+                                                    elementId="${attrMeta.id}"
+                                                    fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
+                                                    uniqueId="conceptElement${outerLoop.index}" />
+                                              </c:when>
+                                              <c:when test="${!attrMeta.fixedValuesElement and attrMeta.languageUsed}">
+                                                <dd:elementMultiTextLang dataElements="${elementValues}"
+                                                    fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
+                                                    uniqueId="conceptElement${outerLoop.index}"
+                                                    elementId="${attrMeta.id}"/>
                                               </c:when>
                                               <c:otherwise>
                                                 <dd:elementMultiText dataElements="${elementValues}"
