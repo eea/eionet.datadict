@@ -136,6 +136,20 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         assertEquals("Result size", 2, result.getFullListSize());
     }
 
+    /**
+     * full text identifier must work in filter.
+     * @throws ServiceException if bad things happen
+     */
+    @Test
+    public void testSearchVocabularyConceptsByIdentifier() throws ServiceException {
+        VocabularyConceptFilter filter = new VocabularyConceptFilter();
+        filter.setText("1234");
+
+        VocabularyConceptResult result = vocabularyService.searchVocabularyConcepts(filter);
+        assertEquals("Result size", 1, result.getFullListSize());
+    }
+
+
     @Test
     public void testCreateVocabularyConcept() throws ServiceException {
         VocabularyConcept concept = new VocabularyConcept();

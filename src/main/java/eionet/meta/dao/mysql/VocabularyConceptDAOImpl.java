@@ -95,7 +95,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("text", "%" + filter.getText() + "%");
             sql.append("and (NOTATION like :text ");
             sql.append("or LABEL like :text ");
-            sql.append("or DEFINITION like :text) ");
+            sql.append("or DEFINITION like :text ");
+            sql.append("or IDENTIFIER like :text) ");
         }
         if (StringUtils.isNotEmpty(filter.getDefinition())) {
             params.put("definition", filter.getDefinition());
