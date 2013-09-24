@@ -307,7 +307,12 @@ public class VocabularyXmlWriter {
                                 (elem.isExternalSchema() ? elem.getIdentifier() : "dd" + elem.getId() + ":" + elem.getIdentifier());
 
                         writer.writeCharacters("\n");
-                        if (StringUtils.isNotEmpty(elem.getAttributeValue())) {
+                        if (elem.isRelationalElement()) {
+                            writer.writeCharacters("\n");
+                            writer.writeEmptyElement(elemXmlTag);
+                            writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(contextRoot + elem.getRelatedConceptIdentifier()));
+
+                        } else if (StringUtils.isNotEmpty(elem.getAttributeValue())) {
                             if (StringUtils.isNotEmpty(elem.getDatatype()) && elem.getDatatype().equalsIgnoreCase("reference")) {
                                 writer.writeEmptyElement(elemXmlTag);
                                 writer.writeAttribute("rdf", RDF_NS, "resource", elem.getAttributeValue());
@@ -323,13 +328,7 @@ public class VocabularyXmlWriter {
                                 writer.writeCharacters(elem.getAttributeValue());
                                 writer.writeEndElement();
                             }
-                        } else if (elem.isRelationalElement()) {
-                            writer.writeCharacters("\n");
-                            writer.writeEmptyElement(elemXmlTag);
-                            writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(contextRoot + elem.getRelatedConceptIdentifier()));
-
-                        }
-                    }
+                        }                     }
                 }
             }
         }
