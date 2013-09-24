@@ -129,6 +129,9 @@
                                       <c:choose>
                                        <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
                                             <a href="${actionBean.uriPrefix}${attr.relatedConceptIdentifier}"><c:out value="${actionBean.uriPrefix}${attr.relatedConceptIdentifier}" /></a>
+                                            <c:if test="${not empty attr.relatedConceptLabel}">
+                                                (<c:out value="${attr.relatedConceptLabel}" />)
+                                            </c:if>
                                        </c:when>
                                        <c:otherwise>
                                         <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean">
