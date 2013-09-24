@@ -262,7 +262,7 @@
         </div>
         </stripes:form>
 
-        <!-- Binded data elements -->
+        <!-- Bound data elements -->
         <jsp:include page="editBindedElementsInc.jsp" />
 
         <!-- New concept popup -->

@@ -204,8 +204,8 @@
             <jsp:include page="newConceptInc.jsp" />
         </c:if>
 
-        <!-- Binded data elements -->
-        <h2>Binded elements for concepts</h2>
+        <!-- Bound data elements -->
+        <h2>Bound elements for concepts</h2>
 
         <display:table name="actionBean.bindedElements" class="sortable" id="item"
             requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view">

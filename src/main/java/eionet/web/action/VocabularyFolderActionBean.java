@@ -162,7 +162,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /** Data elements search result object. */
     private DataElementsResult elementsResult;
 
-    /** Binded data elements. */
+    /** Bound data elements. */
     private List<DataElement> bindedElements;
 
     /** Data element id. */
