@@ -310,6 +310,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
     }
 
+    /**
+     * updates bound element values included related bound elements.
+     * @param vocabularyConcept concept
+     */
     private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept) {
         List<DataElement> dataElementValues = new ArrayList<DataElement>();
         if (vocabularyConcept.getElementAttributes() != null) {
@@ -340,6 +344,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      *
      * @param vocabularyConcept
      *            Concept to be updated
+     * @param dataElementValues bound data elements with values
      */
     private void fixRelatedElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues) {
         try {
@@ -1061,7 +1066,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                     } else {
                         ns = new RdfNamespace();
                         ns.setPrefix("dd" + elem.getId());
-                        ns.setUri(StringUtils.substringBeforeLast(MessageFormat.format(baseUri, elem.getId()), "/"));
+                        ns.setUri(StringUtils.substringBeforeLast(MessageFormat.format(baseUri, elem.getId()), "/") + "/");
                     }
                     if (!nameSpaces.contains(ns)) {
                         nameSpaces.add(ns);
@@ -1111,7 +1116,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     /**
-     * finds and assigns attribute values for data elements
+     * finds and assigns attribute values for data elements.
      *
      * @param elementAttributes
      *            data element list - outer list contains different data elements (meta), inner list contains element values
