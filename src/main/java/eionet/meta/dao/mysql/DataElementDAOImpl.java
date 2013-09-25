@@ -159,6 +159,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setType(rs.getString("de.TYPE"));
                 de.setModified(new Date(rs.getLong("de.DATE")));
                 de.setWorkingUser(rs.getString("de.WORKING_USER"));
+                de.setIdentifier(rs.getString("de.IDENTIFIER"));
 
                 dataElements.add(de);
             }
