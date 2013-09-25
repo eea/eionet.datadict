@@ -209,10 +209,10 @@
 
         <display:table name="actionBean.bindedElements" class="sortable" id="item"
             requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view">
-            <display:column title="Element" sortable="true" sortProperty="shortName">
+            <display:column title="Element" sortable="true" sortProperty="identifier">
                 <c:choose>
                     <c:when test="${item.released}">
-                        <stripes:link href="/dataelements/${item.id}">${item.shortName}</stripes:link>
+                        <stripes:link href="/dataelements/${item.id}">${item.identifier}</stripes:link>
                         <if test="${not empty actionBean.user}">
                             <c:if test="${not empty item.workingUser}">
                                 <span class="checkedout" title="${item.workingUser}">*</span>
@@ -220,7 +220,7 @@
                         </if>
                     </c:when>
                     <c:otherwise>
-                        ${item.shortName}
+                        ${item.identifier}
                     </c:otherwise>
                 </c:choose>
             </display:column>
