@@ -62,6 +62,7 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.util.Pair;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
@@ -1121,7 +1122,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * @param elementAttributes
      *            data element list - outer list contains different data elements (meta), inner list contains element values
      */
-    // TODO - this probably need some refactoring:
+    // TODO - this probably need some refactoring: for some reason element attribute values are stored in DataElement class and
+    // not handled by the most of queries in the API
     private void setElemAttributeValues(List<List<DataElement>> elementAttributes) {
         for (List<DataElement> elemList : elementAttributes) {
             for (DataElement elem : elemList) {
@@ -1130,5 +1132,22 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 elem.setElemAttributeValues(elemAttributeValues);
             }
         }
+    }
+
+    @Override
+    public List<String> getVocabularyBoundElementNames(VocabularyFolder vocabularyFolder) {
+        int vocabularyFolderId = vocabularyFolder.getId();
+        List<Pair<String, Integer>> elementsMeta = vocabularyFolderDAO.getVocabularyFolderBoundElementsMeta(vocabularyFolderId);
+
+        List<String> result = new ArrayList<String>();
+
+        //build list of Strings
+        for (Pair<String, Integer> elementCount : elementsMeta) {
+            for (int i = 0; i < elementCount.getRight(); i++) {
+                result.add(elementCount.getLeft());
+            }
+        }
+
+        return result;
     }
 }

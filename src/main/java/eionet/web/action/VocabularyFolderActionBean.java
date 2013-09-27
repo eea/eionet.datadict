@@ -559,7 +559,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Validation on adding a binded data element.
-     * @throws ServiceException if checking fails
+     *
+     * @throws ServiceException
+     *             if checking fails
      */
     @ValidationMethod(on = {"addDataElement"})
     public void validateAddDataElement() throws ServiceException {
@@ -584,22 +586,22 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * validates removing data elements.
-     * Elements which have values in any concepts cannot be removed.
-     * @throws ServiceException if checking fails
+     * validates removing data elements. Elements which have values in any concepts cannot be removed.
+     *
+     * @throws ServiceException
+     *             if checking fails
      */
     @ValidationMethod(on = {"removeDataElement"})
     public void validaRemoveDataElement() throws ServiceException {
 
-        //if this element binding has valued in any concept - do not remove it
+        // if this element binding has valued in any concept - do not remove it
         List<VocabularyConcept> conceptsWithValue = vocabularyService.getConceptsWithElementValue(elementId);
 
         if (!conceptsWithValue.isEmpty()) {
             String ids = StringUtils.join(conceptsWithValue, ",");
-            addGlobalValidationError("This element has valued in Concepts: " + ids
-                    + '\n' + "Please delete the values before removing the element binding.");
+            addGlobalValidationError("This element has valued in Concepts: " + ids + '\n'
+                    + "Please delete the values before removing the element binding.");
         }
-
 
         if (isValidationErrors()) {
             vocabularyFolder =
@@ -616,6 +618,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
 
     }
+
     /**
      * Validates save folder.
      *
@@ -817,7 +820,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             addGlobalValidationError("Vocabulary concept identifier is not unique");
         }
 
-
         if (isValidationErrors()) {
             vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getId());
             initFilter();
@@ -866,7 +868,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             vocabularyFolders.add(vocabularyFolder);
             final List<RdfNamespace> nameSpaces = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
 
-                    initFilter();
+            initFilter();
             filter.setUsePaging(false);
             filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
             List<? extends VocabularyConcept> concepts = null;
@@ -898,8 +900,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                             + "/"
                             + vocabularyFolder.getIdentifier() + "/";
 
-            final String folderContextRoot = Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/"
-                            + vocabularyFolder.getFolderName() + "/";
+            final String folderContextRoot =
+                    Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + vocabularyFolder.getFolderName() + "/";
 
             StreamingResolution result = new StreamingResolution("application/rdf+xml") {
                 @Override
@@ -929,14 +931,25 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                     vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                             vocabularyFolder.isWorkingCopy());
             validateView();
-            initFilter();
-            filter.setUsePaging(false);
-            vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+
+            final String folderContextRoot =
+                    StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
+                            .getRequiredProperty(PropsIF.DD_URL)
+                            + "/vocabulary/"
+                            + vocabularyFolder.getFolderName()
+                            + "/"
+                            + vocabularyFolder.getIdentifier() + "/";
+
+            final List<VocabularyConcept> concepts =
+                    vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
+                            vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
+            final List<String> fieldNames = vocabularyService.getVocabularyBoundElementNames(vocabularyFolder);
 
             StreamingResolution result = new StreamingResolution("text/csv") {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
-                    VocabularyCSVOutputHelper.writeCSV(response.getOutputStream(), getUriPrefix(), vocabularyConcepts.getList());
+                    VocabularyCSVOutputHelper.writeCSV(response.getOutputStream(), getUriPrefix(), folderContextRoot, concepts,
+                            fieldNames);
                 }
             };
             result.setFilename(vocabularyFolder.getIdentifier() + ".csv");

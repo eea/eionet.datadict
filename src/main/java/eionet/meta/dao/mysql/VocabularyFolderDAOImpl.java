@@ -37,6 +37,7 @@ import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
+import eionet.util.Pair;
 
 /**
  * Vocabualary folder DAO.
@@ -45,7 +46,6 @@ import eionet.meta.dao.domain.VocabularyType;
  */
 @Repository
 public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabularyFolderDAO {
-
 
     @Override
     public List<VocabularyFolder> getReleasedVocabularyFolders(int folderId) {
@@ -299,11 +299,12 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
     @Override
     public int createVocabularyFolder(VocabularyFolder vocabularyFolder) {
 
-        String sql = "insert into T_VOCABULARY_FOLDER (IDENTIFIER, LABEL, REG_STATUS, CONTINUITY_ID, VOCABULARY_TYPE," +
-        		" WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONCEPT_IDENTIFIER_NUMERIC," +
-        		" BASE_URI, FOLDER_ID, NOTATIONS_EQUAL_IDENTIFIERS)" +
-        		" values (:identifier,  :label, :regStatus, :continuityId, :vocabularyType, :workingCopy, :workingUser, now()," +
-        		" :userModified, :checkedOutCopyId, :numericConceptIdentifiers, :baseUri, :folderId, :enforceNotationToId)";
+        String sql =
+                "insert into T_VOCABULARY_FOLDER (IDENTIFIER, LABEL, REG_STATUS, CONTINUITY_ID, VOCABULARY_TYPE,"
+                        + " WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONCEPT_IDENTIFIER_NUMERIC,"
+                        + " BASE_URI, FOLDER_ID, NOTATIONS_EQUAL_IDENTIFIERS)"
+                        + " values (:identifier,  :label, :regStatus, :continuityId, :vocabularyType, :workingCopy, :workingUser, now(),"
+                        + " :userModified, :checkedOutCopyId, :numericConceptIdentifiers, :baseUri, :folderId, :enforceNotationToId)";
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("identifier", vocabularyFolder.getIdentifier());
@@ -377,12 +378,13 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
      */
     @Override
     public void updateVocabularyFolder(VocabularyFolder vocabularyFolder) {
-        String sql = "update T_VOCABULARY_FOLDER set" +
-        		" IDENTIFIER = :identifier,  LABEL = :label, REG_STATUS = :regStatus, CHECKEDOUT_COPY_ID = :checkedOutCopyId," +
-                " WORKING_COPY = :workingCopy, WORKING_USER = :workingUser, DATE_MODIFIED = :dateModified," +
-                " USER_MODIFIED = :userModified, CONCEPT_IDENTIFIER_NUMERIC = :numericConceptIdentifiers, BASE_URI = :baseUri," +
-                " FOLDER_ID = :folderId, NOTATIONS_EQUAL_IDENTIFIERS=:enforceNotationId" +
-                " where VOCABULARY_FOLDER_ID = :vocabularyFolderId";
+        String sql =
+                "update T_VOCABULARY_FOLDER set"
+                        + " IDENTIFIER = :identifier,  LABEL = :label, REG_STATUS = :regStatus, CHECKEDOUT_COPY_ID = :checkedOutCopyId,"
+                        + " WORKING_COPY = :workingCopy, WORKING_USER = :workingUser, DATE_MODIFIED = :dateModified,"
+                        + " USER_MODIFIED = :userModified, CONCEPT_IDENTIFIER_NUMERIC = :numericConceptIdentifiers, BASE_URI = :baseUri,"
+                        + " FOLDER_ID = :folderId, NOTATIONS_EQUAL_IDENTIFIERS=:enforceNotationId"
+                        + " where VOCABULARY_FOLDER_ID = :vocabularyFolderId";
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("vocabularyFolderId", vocabularyFolder.getId());
@@ -534,6 +536,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
     /*
      * (non-Javadoc)
+     *
      * @see eionet.meta.dao.IVocabularyFolderDAO#forceNotationsToIdentifiers(int)
      */
     @Override
@@ -545,6 +548,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
     /*
      * (non-Javadoc)
+     *
      * @see eionet.meta.dao.IVocabularyFolderDAO#getVocabularyFolderOfConcept(int)
      */
     @Override
@@ -588,5 +592,34 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                     }
                 });
 
-        return result;    }
+        return result;
+    }
+
+    @Override
+    public List<Pair<String, Integer>> getVocabularyFolderBoundElementsMeta(int vocabularyFolderId) {
+        StringBuilder sql = new StringBuilder();
+
+        sql.append("SELECT max(c) as ELEM_COUNT, IDENTIFIER FROM (SELECT DISTINCT count(DATAELEM_ID) AS C, DATAELEM.IDENTIFIER ")
+                .append("from T_VOCABULARY_CONCEPT  JOIN T_CONCEPT_ELEMENT_VALUE USING(VOCABULARY_CONCEPT_ID) ")
+                .append("JOIN DATAELEM USING(DATAELEM_ID) ").append("where VOCABULARY_FOLDER_ID=:folderId ")
+                .append("GROUP BY VOCABULARY_CONCEPT_ID, DATAELEM_ID  ORDER BY SHORT_NAME, C DESC) q group by IDENTIFIER");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("folderId", vocabularyFolderId);
+
+        List<Pair<String, Integer>> items =
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Pair<String, Integer>>() {
+                    @Override
+                    public Pair<String, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        String elementName = rs.getString("IDENTIFIER");
+                        Integer elementMaxCount = rs.getInt("ELEM_COUNT");
+                        Pair<String, Integer> pair = new Pair<String, Integer>(elementName, elementMaxCount);
+
+                        return pair;
+                    }
+                });
+
+        return items;
+    }
+
 }

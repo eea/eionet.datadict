@@ -45,7 +45,7 @@ public interface IVocabularyService {
      *
      * @param folderId
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     Folder getFolder(int folderId) throws ServiceException;
 
@@ -54,7 +54,7 @@ public interface IVocabularyService {
      *
      * @param folderId
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     boolean isFolderEmpty(int folderId) throws ServiceException;
 
@@ -62,7 +62,7 @@ public interface IVocabularyService {
      * Deletes folder.
      *
      * @param folderId
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     void deleteFolder(int folderId) throws ServiceException;
 
@@ -70,7 +70,7 @@ public interface IVocabularyService {
      * Updates folder.
      *
      * @param folder
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     void updateFolder(Folder folder) throws ServiceException;
 
@@ -80,7 +80,7 @@ public interface IVocabularyService {
      * @param userName
      * @param expandedFolders
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     List<Folder> getFolders(String userName, int... expandedFolders) throws ServiceException;
 
@@ -89,7 +89,7 @@ public interface IVocabularyService {
      *
      * @param folderId
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     List<VocabularyFolder> getReleasedVocabularyFolders(int folderId) throws ServiceException;
 
@@ -99,7 +99,7 @@ public interface IVocabularyService {
      * @param userName
      *
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     List<VocabularyFolder> getVocabularyFolders(String userName) throws ServiceException;
 
@@ -112,7 +112,7 @@ public interface IVocabularyService {
      * @param userName
      *
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     List<VocabularyFolder> getVocabularyFolderVersions(String continuityId, int vocabularyFolderId, String userName)
             throws ServiceException;
@@ -125,7 +125,7 @@ public interface IVocabularyService {
      *            optional
      * @param userName
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     int createVocabularyFolder(VocabularyFolder vocabularyFolder, Folder newFolder, String userName) throws ServiceException;
 
@@ -150,7 +150,7 @@ public interface IVocabularyService {
      * @param vocabularyFolder
      * @param newFolder
      *            optional
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     void updateVocabularyFolder(VocabularyFolder vocabularyFolder, Folder newFolder) throws ServiceException;
 
@@ -161,7 +161,7 @@ public interface IVocabularyService {
      * @param identifier
      * @param workingCopy
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy) throws ServiceException;
 
@@ -170,7 +170,7 @@ public interface IVocabularyService {
      *
      * @param checkedOutCopyId
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     VocabularyFolder getVocabularyWorkingCopy(int checkedOutCopyId) throws ServiceException;
 
@@ -179,7 +179,7 @@ public interface IVocabularyService {
      *
      * @param vocabularyFolderId
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     VocabularyFolder getVocabularyFolder(int vocabularyFolderId) throws ServiceException;
 
@@ -191,7 +191,7 @@ public interface IVocabularyService {
      * @param emptyAttributes
      *            when true, then attributes that are not valued are also included
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     VocabularyConcept getVocabularyConcept(int vocabularyFolderId, String conceptIdentifier, boolean emptyAttributes)
             throws ServiceException;
@@ -203,7 +203,7 @@ public interface IVocabularyService {
      * @param emptyAttributes
      *            when true, then attributes that are not valued are also included
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     @Deprecated
     VocabularyConcept getVocabularyConcept(int vocabularyConceptId, boolean emptyAttributes) throws ServiceException;
@@ -213,7 +213,7 @@ public interface IVocabularyService {
      *
      * @param filter
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     VocabularyConceptResult searchVocabularyConcepts(VocabularyConceptFilter filter) throws ServiceException;
 
@@ -224,7 +224,7 @@ public interface IVocabularyService {
      * @param numericConceptIdentifiers
      * @param obsoleteStatus
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers,
             ObsoleteStatus obsoleteStatus) throws ServiceException;
@@ -235,7 +235,7 @@ public interface IVocabularyService {
      * @param vocabularyFolderId
      * @param vocabularyConcept
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     int createVocabularyConcept(int vocabularyFolderId, VocabularyConcept vocabularyConcept) throws ServiceException;
 
@@ -243,7 +243,7 @@ public interface IVocabularyService {
      * Updates vocabulary concept.
      *
      * @param vocabularyConcept
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     void updateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException;
 
@@ -251,7 +251,7 @@ public interface IVocabularyService {
      * Updates vocabulary concept without updating attributes.
      *
      * @param vocabularyConcept
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     void quickUpdateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException;
 
@@ -259,7 +259,7 @@ public interface IVocabularyService {
      * Deletes vocabulary concepts.
      *
      * @param ids
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     void deleteVocabularyConcepts(List<Integer> ids) throws ServiceException;
 
@@ -267,7 +267,7 @@ public interface IVocabularyService {
      * Mark concepts obsolete.
      *
      * @param ids
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     void markConceptsObsolete(List<Integer> ids) throws ServiceException;
 
@@ -275,7 +275,7 @@ public interface IVocabularyService {
      * Remove obsolete date from concepts.
      *
      * @param ids
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     void unMarkConceptsObsolete(List<Integer> ids) throws ServiceException;
 
@@ -283,7 +283,7 @@ public interface IVocabularyService {
      * Deletes vocabulary folders.
      *
      * @param ids
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     void deleteVocabularyFolders(List<Integer> ids) throws ServiceException;
 
@@ -293,7 +293,7 @@ public interface IVocabularyService {
      * @param vocabularyFolderId
      * @param userName
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     int checkOutVocabularyFolder(int vocabularyFolderId, String userName) throws ServiceException;
 
@@ -304,7 +304,7 @@ public interface IVocabularyService {
      *            the id of the checked out object
      * @param userName
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     int checkInVocabularyFolder(int vocabularyFolderId, String userName) throws ServiceException;
 
@@ -315,7 +315,7 @@ public interface IVocabularyService {
      *            id of the checked out version
      * @param userName
      * @return original id
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     int undoCheckOut(int vocabularyFolderId, String userName) throws ServiceException;
 
@@ -326,7 +326,7 @@ public interface IVocabularyService {
      * @param identifier
      * @param excludedVocabularyFolderIds
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     boolean isUniqueVocabularyFolderIdentifier(int folderId, String identifier, int... excludedVocabularyFolderIds)
             throws ServiceException;
@@ -337,7 +337,7 @@ public interface IVocabularyService {
      * @param identifier
      * @param excludedId
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     boolean isUniqueFolderIdentifier(String identifier, int excludedId) throws ServiceException;
 
@@ -348,7 +348,7 @@ public interface IVocabularyService {
      * @param vocabularyFolderId
      * @param vocabularyConceptId
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     boolean isUniqueConceptIdentifier(String identifier, int vocabularyFolderId, int vocabularyConceptId) throws ServiceException;
 
@@ -359,7 +359,7 @@ public interface IVocabularyService {
      * @param amount
      * @param startIdentifier
      * @param userName
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     void reserveFreeSiteCodes(int vocabularyFolderId, int amount, int startIdentifier, String userName) throws ServiceException;
 
@@ -368,7 +368,7 @@ public interface IVocabularyService {
      *
      * @param vocabularyFolderId
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     int getNextIdentifierValue(int vocabularyFolderId) throws ServiceException;
 
@@ -379,7 +379,7 @@ public interface IVocabularyService {
      * @param amount
      * @param startingIdentifier
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     List<Integer> checkAvailableIdentifiers(int vocabularyFolderId, int amount, int startingIdentifier) throws ServiceException;
 
@@ -389,7 +389,7 @@ public interface IVocabularyService {
      *
      * @param vocabularyFolderId
      *            Vocabulary folder primary key.
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      *             System did not find the vocabulary folder from DB.
      */
     void pingCrToReharvestVocabulary(int vocabularyFolderId) throws ServiceException;
@@ -399,7 +399,7 @@ public interface IVocabularyService {
      *
      * @param userName
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     List<VocabularyFolder> getWorkingCopies(String userName) throws ServiceException;
 
@@ -407,7 +407,7 @@ public interface IVocabularyService {
      * Returns vocabulary folder attributes metadata (without values).
      *
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     List<SimpleAttribute> getVocabularyFolderAttributesMetadata() throws ServiceException;
 
@@ -416,7 +416,7 @@ public interface IVocabularyService {
      *
      * @param folderIdentifier
      *            Folder unique textual identifier.
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      *             Database error.
      * @return Folder object with metadata.
      */
@@ -427,7 +427,7 @@ public interface IVocabularyService {
      *
      * @param vocabularyFolderId
      * @param dataElementId
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     void addDataElement(int vocabularyFolderId, int dataElementId) throws ServiceException;
 
@@ -436,16 +436,16 @@ public interface IVocabularyService {
      *
      * @param vocabularyFolderId
      * @param dataElementId
-     * @throws ServiceException
+     * @throws ServiceException if operation fails
      */
     void removeDataElement(int vocabularyFolderId, int dataElementId) throws ServiceException;
 
     /**
-     * Returns data elements binded with vocabulary folder.
+     * Returns data elements bound to the vocabulary folder.
      *
-     * @param vocabularyFolderId
-     * @return
-     * @throws ServiceException
+     * @param vocabularyFolderId folder ID
+     * @return list of elements
+     * @throws ServiceException if call fails
      */
     List<DataElement> getVocabularyDataElements(int vocabularyFolderId) throws ServiceException;
 
@@ -503,4 +503,12 @@ public interface IVocabularyService {
      * @return true if element is relational (type = reference)
      */
     boolean isReferenceElement(int id);
+
+    /**
+     * Returns name list of bound elements. Each name is repeated as much times as is the max count of the element values in a
+     * concept in this folder.
+     * @param vocabularyFolder vocabulary folder
+     * @return slit of bound element names
+     */
+    List<String> getVocabularyBoundElementNames(VocabularyFolder vocabularyFolder);
 }

@@ -36,7 +36,6 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.SiteCode;
 import eionet.util.StringEncoder;
@@ -278,7 +277,6 @@ public class VocabularyXmlWriter {
                 writeSiteCodeData((SiteCode) vc);
             } else {
                 writeBindedElements(vocabularyContextRoot, vc.getElementAttributes());
-                //writeAdditionalAttributes(vocabularyContextRoot, vc.getAttributes());
             }
 
             writer.writeCharacters("\n");
@@ -301,16 +299,17 @@ public class VocabularyXmlWriter {
             for (List<DataElement> elems : elements) {
                 if (elems != null) {
                     for (DataElement elem : elems) {
-                        // external elements: indentifier is a valid Xml tag, for example: geo:lat
+                        // external elements: identifier is a valid Xml tag, for example: geo:lat
                         // for internal elements compose the Tag: dd[elemID]
                         String elemXmlTag =
-                                (elem.isExternalSchema() ? elem.getIdentifier() : "dd" + elem.getId() + ":" + elem.getIdentifier());
+                                elem.isExternalSchema() ? elem.getIdentifier() : "dd" + elem.getId() + ":" + elem.getIdentifier();
 
                         writer.writeCharacters("\n");
                         if (elem.isRelationalElement()) {
                             writer.writeCharacters("\n");
                             writer.writeEmptyElement(elemXmlTag);
-                            writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(contextRoot + elem.getRelatedConceptIdentifier()));
+                            writer.writeAttribute("rdf", RDF_NS, "resource",
+                                    escapeIRI(contextRoot + elem.getRelatedConceptIdentifier()));
 
                         } else if (StringUtils.isNotEmpty(elem.getAttributeValue())) {
                             if (StringUtils.isNotEmpty(elem.getDatatype()) && elem.getDatatype().equalsIgnoreCase("reference")) {
@@ -321,55 +320,14 @@ public class VocabularyXmlWriter {
                                 if (StringUtils.isNotEmpty(elem.getAttributeLanguage())) {
                                     writer.writeAttribute("xml", XML_NS, "lang", elem.getAttributeLanguage());
                                 }
-                                if (StringUtils.isNotEmpty(elem.getDatatype()) && !(elem.getDatatype().equalsIgnoreCase("string"))) {
+                                if (StringUtils.isNotEmpty(elem.getDatatype())
+                                        && !(elem.getDatatype().equalsIgnoreCase("string"))) {
                                     writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(elem.getDatatype()));
                                 }
 
                                 writer.writeCharacters(elem.getAttributeValue());
                                 writer.writeEndElement();
                             }
-                        }                     }
-                }
-            }
-        }
-    }
-
-    /**
-     * Writes additional attributes for vocabulary concepts.
-     *
-     * @param contextRoot
-     * @param attributes
-     * @throws XMLStreamException
-     */
-    // Old implementation that will be replaced by data element attributes. See #14721.
-    @Deprecated
-    private void writeAdditionalAttributes(String contextRoot, List<List<VocabularyConceptAttribute>> attributes)
-            throws XMLStreamException {
-        if (attributes != null) {
-            for (List<VocabularyConceptAttribute> attrs : attributes) {
-                if (attrs != null) {
-                    for (VocabularyConceptAttribute attr : attrs) {
-                        if (StringUtils.isNotEmpty(attr.getValue()) && StringUtils.isNotEmpty(attr.getRdfPropertyName())) {
-                            writer.writeCharacters("\n");
-                            if (StringUtils.isNotEmpty(attr.getDataType()) && attr.getDataType().equalsIgnoreCase("reference")) {
-                                writer.writeEmptyElement(attr.getRdfPropertyUri(), attr.getRdfPropertyName());
-                                writer.writeAttribute("rdf", RDF_NS, "resource", attr.getValue());
-                            } else {
-                                writer.writeStartElement(attr.getRdfPropertyUri(), attr.getRdfPropertyName());
-                                if (StringUtils.isNotEmpty(attr.getLanguage())) {
-                                    writer.writeAttribute("xml", XML_NS, "lang", attr.getLanguage());
-                                }
-                                if (StringUtils.isNotEmpty(attr.getDataType()) && !(attr.getDataType().equalsIgnoreCase("string"))) {
-                                    writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(attr.getDataType()));
-                                }
-                                writer.writeCharacters(attr.getValue());
-                                writer.writeEndElement();
-                            }
-                        } else if (StringUtils.isNotEmpty(attr.getRelatedIdentifier())
-                                && StringUtils.isNotEmpty(attr.getRdfPropertyName())) {
-                            writer.writeCharacters("\n");
-                            writer.writeEmptyElement(attr.getRdfPropertyUri(), attr.getRdfPropertyName());
-                            writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(contextRoot + attr.getRelatedIdentifier()));
                         }
                     }
                 }

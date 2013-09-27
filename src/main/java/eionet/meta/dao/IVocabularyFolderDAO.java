@@ -24,6 +24,7 @@ package eionet.meta.dao;
 import java.util.List;
 
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.util.Pair;
 
 /**
  * Vocabulary DAO interface.
@@ -124,17 +125,17 @@ public interface IVocabularyFolderDAO {
     /**
      * Deletes vocabulary folders.
      *
-     * @param ids
+     * @param ids IDs of folders to be deleted
      */
     void deleteVocabularyFolders(List<Integer> ids);
 
     /**
      * True, if identifier is unique.
      *
-     * @param folderId
-     * @param identifier
-     * @param excludedVocabularyFolderIds
-     * @return
+     * @param folderId folder id
+     * @param identifier new identifier to check
+     * @param excludedVocabularyFolderIds folder ids not to be checked
+     * @return true if folder is unique
      */
     boolean isUniqueVocabularyFolderIdentifier(int folderId, String identifier, int... excludedVocabularyFolderIds);
 
@@ -152,4 +153,10 @@ public interface IVocabularyFolderDAO {
      */
     VocabularyFolder getVocabularyFolderOfConcept(int conceptId);
 
+    /**
+     * returns list of bound element names used in CSV header.
+     * @param vocabularyFolderId vocabulary ID
+     * @return list of Pairs where Left = element name and Right=max count of elements in a concept in this vocabulary folder
+     */
+    List<Pair<String, Integer>> getVocabularyFolderBoundElementsMeta(int vocabularyFolderId);
 }

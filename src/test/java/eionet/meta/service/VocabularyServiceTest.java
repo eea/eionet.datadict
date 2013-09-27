@@ -545,4 +545,17 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         assertTrue(!vocabularyService.isReferenceElement(5));
 
     }
+
+    /**
+     * tests getvocabularyFolder meta.
+     * @throws Exception if fail
+     */
+    @Test
+    public void testFolderCSVInfo() throws Exception {
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(1);
+        List<String> attributeNames = vocabularyService.getVocabularyBoundElementNames(vocabularyFolder);
+
+        assertTrue(attributeNames.size() == 3);
+
+    }
 }
