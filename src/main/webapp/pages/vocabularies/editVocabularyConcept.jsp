@@ -141,67 +141,6 @@
                                     <col style="width:4%"/>
                                     <col />
                                 </colgroup>
-                                <%-- c:forEach var="attributeValues" items="${actionBean.vocabularyConcept.attributes}" varStatus="outerLoop">
-                                <c:set var="attrMeta" value="${attributeValues[0]}"/>
-                                <tr>
-                                    <th scope="row" class="scope-row simple_attr_title">
-                                        ${attrMeta.label}
-                                    </th>
-                                    <td class="simple_attr_help">
-                                        <dd:optionalIcon />
-                                    </td>
-                                    <td class="simple_attr_value">
-                                        <c:if test="${attrMeta.inputType eq 'textarea'}">
-                                            <c:choose>
-                                                <c:when test="${attrMeta.languageUsed}">
-                                                    <dd:multiTextAreaLang attributes="${attributeValues}"
-                                                        fieldName="vocabularyConcept.attributes[${outerLoop.index}]"
-                                                        uniqueId="conceptAttr${outerLoop.index}"
-                                                        attributeId="${attrMeta.attributeId}"
-                                                        fieldCols="${attrMeta.width}"
-                                                        fieldRows="${attrMeta.height}"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <dd:multiTextArea attributes="${attributeValues}"
-                                                        fieldName="vocabularyConcept.attributes[${outerLoop.index}]"
-                                                        uniqueId="conceptAttr${outerLoop.index}"
-                                                        attributeId="${attrMeta.attributeId}"
-                                                        fieldCols="${attrMeta.width}"
-                                                        fieldRows="${attrMeta.height}"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </c:if>
-                                        <c:if test="${attrMeta.inputType eq 'text'}">
-                                            <c:choose>
-                                                <c:when test="${attrMeta.languageUsed}">
-                                                    <dd:multiTextLang attributes="${attributeValues}"
-                                                        fieldName="vocabularyConcept.attributes[${outerLoop.index}]"
-                                                        uniqueId="conceptAttr${outerLoop.index}"
-                                                        attributeId="${attrMeta.attributeId}"
-                                                        fieldSize="${attrMeta.width}" />
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <dd:multiText attributes="${attributeValues}"
-                                                        fieldName="vocabularyConcept.attributes[${outerLoop.index}]"
-                                                        uniqueId="conceptAttr${outerLoop.index}"
-                                                        attributeId="${attrMeta.attributeId}"
-                                                        fieldSize="${attrMeta.width}" />
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </c:if>
-                                        <c:if test="${attrMeta.identifier eq 'relatedLocalConcept'
-                                                       || attrMeta.identifier eq 'broaderLocalConcept'
-                                                       || attrMeta.identifier eq 'narrowerLocalConcept'}">
-                                            <dd:relatedConcepts attributes="${attributeValues}"
-                                                vocabularyConcepts="${actionBean.vocabularyConcepts}"
-                                                attributeId="${attrMeta.attributeId}"
-                                                fieldName="vocabularyConcept.attributes[${outerLoop.index}]"
-                                                uniqueId="conceptAttr${outerLoop.index}"
-                                                fieldSize="${attrMeta.width}" />
-                                        </c:if>
-                                    </td>
-                                </tr>
-                                </c:forEach --%>
 
                                 <!-- Data element attributes -->
                                 <c:forEach var="elementValues" items="${actionBean.vocabularyConcept.elementAttributes}" varStatus="outerLoop">

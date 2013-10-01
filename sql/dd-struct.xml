@@ -1470,4 +1470,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             onDelete="CASCADE" onUpdate="CASCADE"
             referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
      </changeSet>
+    <changeSet author="lainekai" id="rev-117">
+        <comment>Remove the table for concept attribute values that became obsolete</comment>
+        <dropTable tableName="T_VOCABULARY_CONCEPT_ATTRIBUTE"/>
+    </changeSet>
 </databaseChangeLog>
