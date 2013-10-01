@@ -36,20 +36,30 @@ public class VocabularyRdfTest extends DDDatabaseTestCase   {
         String url = Props.getProperty(PropsIF.DD_URL);
         String dcTypeCollection = "<dctype:Collection rdf:about=\"" + url + "/vocabulary/wise/\">";
 
+        String skosNotation = "<skos:notation>wise</skos:notation>";
+
         String isPartOf = "<dcterms:isPartOf rdf:resource=\"" + url + "/vocabulary/wise/\"/>";
         String hasPart = "<dcterms:hasPart rdf:resource=\"" + url + "/vocabulary/wise/BWClosed/\"/>";
 
+        String conceptScheme = "<skos:ConceptScheme rdf:about=\"" + url +  "/vocabulary/wise/BWClosed/\">";
+        String conceptNotation = "<skos:notation>BWClosed</skos:notation>";
+
         String output = trip.getOutputString();
 
+        //System.out.println(output);
+
         Assert.assertTrue(StringUtils.contains(output, dcTypeCollection));
+        Assert.assertTrue(StringUtils.contains(output, conceptScheme));
         Assert.assertTrue(StringUtils.contains(output, hasPart));
         Assert.assertTrue(StringUtils.contains(output, isPartOf));
+
+        Assert.assertTrue(StringUtils.contains(output, skosNotation));
+        Assert.assertTrue(StringUtils.contains(output, conceptNotation));
 
         String baseUri = Props.getRequiredProperty(PropsIF.DD_URL);
         String dd2Schema = "xmlns:dd2=\"" + baseUri + "/dataelements/2/\"";
         String skosSchema = "xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"";
 
-        System.out.println(output);
 
         assertTrue(StringUtils.countMatches(output, dd2Schema) == 1);
         assertTrue(StringUtils.countMatches(output, skosSchema) == 1);
@@ -57,7 +67,7 @@ public class VocabularyRdfTest extends DDDatabaseTestCase   {
     }
 
     /**
-     * tests referencial element.
+     * tests referential element.
      * @throws Exception if fail
      */
     @Test

@@ -49,14 +49,29 @@ public class VocabularyXmlWriter {
 
     /** RDF write constants. */
     private static final String ENCODING = "UTF-8";
+
+    /** RDF namespace prefix. */
     private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+    /** RDFS namespace prefix. */
     private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
+
+    /** SKOS namespace prefix. */
     private static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
+
+    /** XML namespace prefix. */
     private static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
+
+    /** OWL namespace prefix. */
     private static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
+
+    /** DCTYPE namespace prefix. */
     private static final String DCTYPE_NS = "http://purl.org/dc/dcmitype";
+
+    /** DCTERMS namespace prefix. */
     private static final String DCTERMS_NS = "http://purl.org/dc/terms";
 
+    /** DD namespace prefix. */
     private static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
 
     /** default namespaces that are present in all vocabulary RDFs. */
@@ -70,10 +85,8 @@ public class VocabularyXmlWriter {
     /**
      * Class constructor.
      *
-     * @param out
-     * @param contextRoot
-     * @param vocabularyService
-     * @throws XMLStreamException
+     * @param out output stream
+     * @throws XMLStreamException if writing fails
      */
     public VocabularyXmlWriter(OutputStream out) throws XMLStreamException {
         writer = XMLOutputFactory.newInstance().createXMLStreamWriter(out, ENCODING);
@@ -195,6 +208,11 @@ public class VocabularyXmlWriter {
         writer.writeCharacters(folder.getLabel());
         writer.writeEndElement();
 
+        writer.writeCharacters("\n");
+        writer.writeStartElement(SKOS_NS, "notation");
+        writer.writeCharacters(folder.getIdentifier());
+        writer.writeEndElement();
+
         // hasPart relations of concepts:
         for (VocabularyFolder v : vocabularies) {
             writer.writeCharacters("\n");
@@ -209,7 +227,7 @@ public class VocabularyXmlWriter {
     /**
      * Writes closing tags of XML.
      *
-     * @throws XMLStreamException
+     * @throws XMLStreamException if writing fails
      */
     public void writeXmlEnd() throws XMLStreamException {
         writer.writeCharacters("\n");
@@ -238,7 +256,11 @@ public class VocabularyXmlWriter {
         writer.writeEndElement();
 
         writer.writeCharacters("\n");
+        writer.writeStartElement(SKOS_NS, "notation");
+        writer.writeCharacters(vocabularyFolder.getIdentifier());
+        writer.writeEndElement();
 
+        writer.writeCharacters("\n");
         writer.writeEmptyElement(DCTERMS_NS, "isPartOf");
         writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(folderContextRoot));
 
