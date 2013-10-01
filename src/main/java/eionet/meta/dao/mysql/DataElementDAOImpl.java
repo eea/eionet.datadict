@@ -562,7 +562,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         sql.append("LEFT JOIN T_VOCABULARY_ELEMENT ve on ve.DATAELEM_ID = d.DATAELEM_ID ");
         sql.append("LEFT JOIN T_VOCABULARY_CONCEPT rc on v.RELATED_CONCEPT_ID = rc.VOCABULARY_CONCEPT_ID ");
         sql.append("where ve.VOCABULARY_FOLDER_ID = :vocabularyFolderId ");
-        sql.append("order by ve.DATAELEM_ID");
+        sql.append("order by ve.DATAELEM_ID, v.ELEMENT_VALUE, rc.IDENTIFIER");
 
         final List<List<DataElement>> result = new ArrayList<List<DataElement>>();
 

@@ -47,9 +47,9 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         Assert.assertTrue("Output does not contain correct SKOSRelatedMatch",
                 StringUtils.contains(output, "\"http://url1.com\",\"http://url2.com\",\"\""));
         Assert.assertTrue("Output does not contain correct SKOSRelatedMatch",
-                StringUtils.contains(output, "\"http://url3.com\",\"http://url4.com\",\"http://url3.com\""));
+                StringUtils.contains(output, "\"http://url3.com\",\"http://url3.com\",\"http://url4.com\""));
 
-        Assert.assertTrue("Output does not contain correct geo:lat", StringUtils.contains(output, "\"2.2\",\"3\",\"4.5\",\"1\""));
+        Assert.assertTrue("Output does not contain correct geo:lat", StringUtils.contains(output, "\"1\",\"2.2\",\"3\",\"4.5\""));
         Assert.assertTrue("Incorrect size of binded elements",
                 StringUtils.contains(output, "\"geo:lat\",\"geo:lat\",\"geo:lat\",\"geo:lat\""));
 
