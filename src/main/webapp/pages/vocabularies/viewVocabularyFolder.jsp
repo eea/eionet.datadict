@@ -204,43 +204,6 @@
             <jsp:include page="newConceptInc.jsp" />
         </c:if>
 
-        <!-- Bound data elements -->
-        <h2>Bound elements for concepts</h2>
-
-        <display:table name="actionBean.bindedElements" class="sortable" id="item"
-            requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view">
-            <display:column title="Element" sortable="true" sortProperty="identifier">
-                <c:choose>
-                    <c:when test="${item.released}">
-                        <stripes:link href="/dataelements/${item.id}">${item.identifier}</stripes:link>
-                        <if test="${not empty actionBean.user}">
-                            <c:if test="${not empty item.workingUser}">
-                                <span class="checkedout" title="${item.workingUser}">*</span>
-                            </c:if>
-                        </if>
-                    </c:when>
-                    <c:otherwise>
-                        ${item.identifier}
-                    </c:otherwise>
-                </c:choose>
-            </display:column>
-            <display:column title="Type" sortable="true">
-                <c:if test="${item.type == 'CH1'}">Fixed values</c:if>
-                <c:if test="${item.type == 'CH2'}">Quantitative</c:if>
-            </display:column>
-            <display:column title="Status" sortable="true">
-                <c:url var="imgSrc" value="/images/${item.statusImage}" />
-                <img src="${imgSrc}" border="0" title="${item.status}" />
-
-                <c:if test="${item.released}">
-                    <fmt:setLocale value="en_GB" />
-                    <fmt:formatDate pattern="dd MMM yyyy" value="${item.modified}" var="dateFormatted"/>
-                    <sup class="commonelm">${dateFormatted}</sup>
-                </c:if>
-            </display:column>
-        </display:table>
-
-
         <!-- Vocabulary concepts search -->
         <h2>Vocabulary concepts</h2>
         <stripes:form method="get" id="searchForm" beanclass="${actionBean.class.name}">
