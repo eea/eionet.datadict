@@ -14,7 +14,9 @@
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="view">
                         <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                        <c:if test="${actionBean.vocabularyFolder.workingCopy}">
+                            <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                        </c:if>
                         Back to vocabulary
                     </stripes:link>
                 </li>

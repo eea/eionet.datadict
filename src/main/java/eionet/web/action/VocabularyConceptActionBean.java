@@ -90,11 +90,10 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
-        vocabularyConcept =
-                vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), false);
+        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), false);
         validateView();
 
-        //LOGGER.debug("Element attributes: " + vocabularyConcept.getElementAttributes().size());
+        // LOGGER.debug("Element attributes: " + vocabularyConcept.getElementAttributes().size());
 
         return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
     }
@@ -130,12 +129,11 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
-        vocabularyConcept =
-                vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
+        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
         validateView();
         initBeans();
 
-        //LOGGER.debug("Element attributes: " + vocabularyConcept.getElementAttributes().size());
+        // LOGGER.debug("Element attributes: " + vocabularyConcept.getElementAttributes().size());
 
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
     }
@@ -237,13 +235,16 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             addGlobalValidationError("Vocabulary concept identifier is not unique");
         }
 
-         for (List<DataElement> elems : vocabularyConcept.getElementAttributes()) {
-            if (elems != null) {
-                for (DataElement elem : elems) {
-                    if (elem != null) {
-                        if (vocabularyService.isReferenceElement(elem.getId())) {
-                            if (!Util.isURL(elem.getAttributeValue())) {
-                                addGlobalValidationError("Element value '" + elem.getAttributeValue() + "' must be in URL format");
+        if (vocabularyConcept.getElementAttributes() != null) {
+            for (List<DataElement> elems : vocabularyConcept.getElementAttributes()) {
+                if (elems != null) {
+                    for (DataElement elem : elems) {
+                        if (elem != null) {
+                            if (vocabularyService.isReferenceElement(elem.getId())) {
+                                if (!Util.isURL(elem.getAttributeValue())) {
+                                    addGlobalValidationError("Element value '" + elem.getAttributeValue()
+                                            + "' must be in URL format");
+                                }
                             }
                         }
                     }
@@ -253,8 +254,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
         if (isValidationErrors()) {
             initBeans();
-            vocabularyConcept =
-                    vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
+            vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
         }
     }
 
@@ -384,20 +384,22 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * Helper property for concept identifier to make it work properly with tricky charaters: '+' etc.
+     *
      * @return vocabularyConcept.identifier
      */
     public String getConceptIdentifier() {
-        //return vocabularyConcept.getIdentifier();
+        // return vocabularyConcept.getIdentifier();
         return conceptIdentifier;
     }
 
     /**
      * Sets concept identifier.
-     * @param identifier vocabulary concept identifier
+     *
+     * @param identifier
+     *            vocabulary concept identifier
      */
     public void setConceptIdentifier(String identifier) {
         conceptIdentifier = identifier;
     }
 
-
- }
+}

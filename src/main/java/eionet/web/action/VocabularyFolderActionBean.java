@@ -395,7 +395,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+        if (vocabularyFolder.isWorkingCopy()) {
+            resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+        }
         return resolution;
     }
 
@@ -441,7 +443,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        resolution.addParameter("vocabularyFolder.workingCopy", false);
+        //resolution.addParameter("vocabularyFolder.workingCopy", false);
         return resolution;
     }
 
@@ -474,7 +476,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        resolution.addParameter("vocabularyFolder.workingCopy", false);
+        //resolution.addParameter("vocabularyFolder.workingCopy", false);
         return resolution;
     }
 
@@ -980,7 +982,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 resolution.addParameter("vocabularyFolder.folderName", parameters[0]);
                 resolution.addParameter("vocabularyFolder.identifier", parameters[1]);
                 resolution.addParameter("vocabularyConcept.identifier", parameters[2]);
-                resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+                if (vocabularyFolder.isWorkingCopy()) {
+                    resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+                }
 
                 return resolution;
             }

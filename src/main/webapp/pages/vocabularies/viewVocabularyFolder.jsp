@@ -301,7 +301,9 @@
                         <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" class="link-folder">
                             <stripes:param name="vocabularyFolder.folderName" value="${item.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${item.identifier}" />
-                            <stripes:param name="vocabularyFolder.workingCopy" value="${item.workingCopy}" />
+                            <c:if test="${item.workingCopy}">
+                                <stripes:param name="vocabularyFolder.workingCopy" value="${item.workingCopy}" />
+                            </c:if>
                             <c:out value="${item.label}"/>
                         </stripes:link>
                     </c:otherwise>
