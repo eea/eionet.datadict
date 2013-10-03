@@ -105,6 +105,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             sql.append("and de.IDENTIFIER like :identifier ");
             params.put("identifier", "%" + filter.getIdentifier() + "%");
         }
+
+        if (filter.isIncludeOnlyInternal()) {
+            sql.append("and de.IDENTIFIER NOT like '%:%'");
+        }
         // attributes
         for (int i = 0; i < filter.getAttributes().size(); i++) {
             Attribute a = filter.getAttributes().get(i);

@@ -53,6 +53,11 @@ public class DataElementsFilter {
 
     private boolean includeHistoricVersions;
 
+    /**
+     * indicates if only internal elements are searched.
+     */
+    private boolean includeOnlyInternal;
+
     /** For searching user's working copy common elements. */
     private String userName;
 
@@ -225,5 +230,14 @@ public class DataElementsFilter {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+
+    public boolean isIncludeOnlyInternal() {
+        return includeOnlyInternal;
+    }
+
+    public void setIncludeOnlyInternal(boolean includeOnlyInternal) {
+        this.includeOnlyInternal = includeOnlyInternal;
+    }
+
 
 }

@@ -111,4 +111,11 @@ public interface IDataService {
      * @throws ServiceException if query fails
      */
     Map<String, List<String>> getDataElementSimpleAttributeValues(int dataElementId) throws ServiceException;
+
+    /**
+     * Returns list of common data elements that are released.
+     * @return list of data elements
+     * @throws ServiceException if query fails
+     */
+    List<DataElement> getReleasedCommonDataElements() throws ServiceException;
 }

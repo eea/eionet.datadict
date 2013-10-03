@@ -155,5 +155,17 @@ public class DataServiceImpl implements IDataService {
         }
     }
 
+    @Override
+    public List<DataElement> getReleasedCommonDataElements() throws ServiceException {
 
+        DataElementsFilter commonElementsFilter = new DataElementsFilter();
+        commonElementsFilter.setElementType(DataElementsFilter.COMMON_ELEMENT_TYPE);
+        commonElementsFilter.setRegStatus("Released");
+        commonElementsFilter.setIncludeOnlyInternal(true);
+
+        DataElementsResult result = dataElementDao.searchDataElements(commonElementsFilter);
+
+        return result.getDataElements();
+
+    }
 }
