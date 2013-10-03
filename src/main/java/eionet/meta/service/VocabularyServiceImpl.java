@@ -653,6 +653,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConceptDAO.createVocabularyConcept(newVocabularyFolderId, vc);
             }
 
+            dataElementDAO.copyVocabularyDataElements(vocabularyFolderId, newVocabularyFolderId);
+
             return newVocabularyFolderId;
         } catch (Exception e) {
             throw new ServiceException("Failed to create vocabulary folder copy: " + e.getMessage(), e);
