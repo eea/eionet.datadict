@@ -3513,7 +3513,7 @@ public class DDSearchEngine {
                 return true;
             }
 
-            sql = "select count(*) from T_VOCABULARY_FOLDER where WORKING_COPY=true and WORKING_USER=?";
+            sql = "select count(*) from VOCABULARY where WORKING_COPY=true and WORKING_USER=?";
             stmt = SQL.preparedStatement(sql, inParams, conn);
             rs = stmt.executeQuery();
             if (rs.next() && rs.getInt(1) > 0) {

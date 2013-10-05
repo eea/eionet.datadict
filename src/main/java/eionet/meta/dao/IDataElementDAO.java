@@ -180,7 +180,7 @@ public interface IDataElementDAO {
     boolean vocabularyHasElemendBinding(int vocabularyFolderId, int elementId);
 
     /**
-     * Updates the T_CONCEPT_ELEMENT_VALUE.RELATED_CONCEPT_ID to what the new checked out concept's id currently is.
+     * Updates the VOCABULARY_CONCEPT_ELEMENT.RELATED_CONCEPT_ID to what the new checked out concept's id currently is.
      *
      * @param newVocabularyFolderId
      */

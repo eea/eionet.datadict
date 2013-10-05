@@ -423,7 +423,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void addDataElement(int vocabularyFolderId, int dataElementId) {
         String sql =
-                "insert into T_VOCABULARY_ELEMENT (VOCABULARY_FOLDER_ID, DATAELEM_ID) values (:vocabularyFolderId, :dataElementId)";
+                "insert into VOCABULARY2ELEM (VOCABULARY_ID, DATAELEM_ID) values (:vocabularyFolderId, :dataElementId)";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyFolderId", vocabularyFolderId);
@@ -438,7 +438,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void removeDataElement(int vocabularyFolderId, int dataElementId) {
         String sql =
-                "delete from T_VOCABULARY_ELEMENT where VOCABULARY_FOLDER_ID = :vocabularyFolderId and DATAELEM_ID = :dataElementId";
+                "delete from VOCABULARY2ELEM where VOCABULARY_ID = :vocabularyFolderId and DATAELEM_ID = :dataElementId";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyFolderId", vocabularyFolderId);
@@ -453,8 +453,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public List<DataElement> getVocabularyDataElements(int vocabularyFolderId) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select ve.*, de.* from T_VOCABULARY_ELEMENT ve left join DATAELEM de on ve.DATAELEM_ID = de.DATAELEM_ID ");
-        sb.append("where ve.VOCABULARY_FOLDER_ID = :vocabularyFolderId");
+        sb.append("select ve.*, de.* from VOCABULARY2ELEM ve left join DATAELEM de on ve.DATAELEM_ID = de.DATAELEM_ID ");
+        sb.append("where ve.VOCABULARY_ID = :vocabularyFolderId");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyFolderId", vocabularyFolderId);
@@ -489,7 +489,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public void deleteVocabularyDataElements(int vocabularyFolderId) {
-        String sql = "delete from T_VOCABULARY_ELEMENT where VOCABULARY_FOLDER_ID = :vocabularyFolderId";
+        String sql = "delete from VOCABULARY2ELEM where VOCABULARY_ID = :vocabularyFolderId";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyFolderId", vocabularyFolderId);
@@ -503,7 +503,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public void deleteVocabularyConceptDataElementValues(int vocabularyConceptId) {
-        String sql = "delete from T_CONCEPT_ELEMENT_VALUE where VOCABULARY_CONCEPT_ID = :vocabularyConceptId";
+        String sql = "delete from VOCABULARY_CONCEPT_ELEMENT where VOCABULARY_CONCEPT_ID = :vocabularyConceptId";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyConceptId", vocabularyConceptId);
@@ -518,7 +518,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void moveVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId) {
         String sql =
-                "update T_VOCABULARY_ELEMENT set VOCABULARY_FOLDER_ID = :targetVocabularyFolderId where VOCABULARY_FOLDER_ID = :sourceVocabularyFolderId";
+                "update VOCABULARY2ELEM set VOCABULARY_ID = :targetVocabularyFolderId where VOCABULARY_ID = :sourceVocabularyFolderId";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("sourceVocabularyFolderId", sourceVocabularyFolderId);
@@ -533,10 +533,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void copyVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId) {
         StringBuilder sb = new StringBuilder();
-        sb.append("insert into T_VOCABULARY_ELEMENT (VOCABULARY_FOLDER_ID, DATAELEM_ID) ");
+        sb.append("insert into VOCABULARY2ELEM (VOCABULARY_ID, DATAELEM_ID) ");
         sb.append("select :targetVocabularyFolderId, DATAELEM_ID ");
-        sb.append("from T_VOCABULARY_ELEMENT ");
-        sb.append("where VOCABULARY_FOLDER_ID = :sourceVocabularyFolderId");
+        sb.append("from VOCABULARY2ELEM ");
+        sb.append("where VOCABULARY_ID = :sourceVocabularyFolderId");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("sourceVocabularyFolderId", sourceVocabularyFolderId);
@@ -556,16 +556,16 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         params.put("vocabularyConceptId", vocabularyConceptId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select * from T_CONCEPT_ELEMENT_VALUE v ");
+        sql.append("select * from VOCABULARY_CONCEPT_ELEMENT v ");
         if (emptyAttributes) {
             sql.append("RIGHT OUTER JOIN DATAELEM d ");
         } else {
             sql.append("LEFT JOIN DATAELEM d ");
         }
         sql.append("ON (v.DATAELEM_ID = d.DATAELEM_ID and v.VOCABULARY_CONCEPT_ID = :vocabularyConceptId) ");
-        sql.append("LEFT JOIN T_VOCABULARY_ELEMENT ve on ve.DATAELEM_ID = d.DATAELEM_ID ");
-        sql.append("LEFT JOIN T_VOCABULARY_CONCEPT rc on v.RELATED_CONCEPT_ID = rc.VOCABULARY_CONCEPT_ID ");
-        sql.append("where ve.VOCABULARY_FOLDER_ID = :vocabularyFolderId ");
+        sql.append("LEFT JOIN VOCABULARY2ELEM ve on ve.DATAELEM_ID = d.DATAELEM_ID ");
+        sql.append("LEFT JOIN VOCABULARY_CONCEPT rc on v.RELATED_CONCEPT_ID = rc.VOCABULARY_CONCEPT_ID ");
+        sql.append("where ve.VOCABULARY_ID = :vocabularyFolderId ");
         sql.append("order by ve.DATAELEM_ID, v.ELEMENT_VALUE, rc.IDENTIFIER");
 
         final List<List<DataElement>> result = new ArrayList<List<DataElement>>();
@@ -627,7 +627,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void insertVocabularyConceptDataElementValues(int vocabularyConceptId, List<DataElement> dataElementValues) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into T_CONCEPT_ELEMENT_VALUE (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
+        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
         sql.append("values (:vocabularyConceptId, :dataElementId, :elementValue, :language, :relatedConceptId)");
 
         @SuppressWarnings("unchecked")
@@ -652,11 +652,11 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void copyVocabularyConceptDataElementValues(int newVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into T_CONCEPT_ELEMENT_VALUE (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
+        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
         sql.append("select con.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID ");
-        sql.append("from T_CONCEPT_ELEMENT_VALUE v ");
-        sql.append("left join T_VOCABULARY_CONCEPT con on v.VOCABULARY_CONCEPT_ID = con.ORIGINAL_CONCEPT_ID  ");
-        sql.append("where con.VOCABULARY_FOLDER_ID = :newVocabularyFolderId");
+        sql.append("from VOCABULARY_CONCEPT_ELEMENT v ");
+        sql.append("left join VOCABULARY_CONCEPT con on v.VOCABULARY_CONCEPT_ID = con.ORIGINAL_CONCEPT_ID  ");
+        sql.append("where con.VOCABULARY_ID = :newVocabularyFolderId");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("newVocabularyFolderId", newVocabularyFolderId);
@@ -674,8 +674,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         parameters.put("elementId", elementId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select count(VOCABULARY_FOLDER_ID) from T_VOCABULARY_ELEMENT ");
-        sql.append("where DATAELEM_ID = :elementId and VOCABULARY_FOLDER_ID = :vocabularyId ");
+        sql.append("select count(VOCABULARY_ID) from VOCABULARY2ELEM ");
+        sql.append("where DATAELEM_ID = :elementId and VOCABULARY_ID = :vocabularyId ");
 
         int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
 
@@ -688,12 +688,12 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void updateRelatedConceptIds(int newVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE T_CONCEPT_ELEMENT_VALUE cev, T_VOCABULARY_CONCEPT con1, T_VOCABULARY_CONCEPT con2, DATAELEM e ");
+        sql.append("UPDATE VOCABULARY_CONCEPT_ELEMENT cev, VOCABULARY_CONCEPT con1, VOCABULARY_CONCEPT con2, DATAELEM e ");
         sql.append("set cev.RELATED_CONCEPT_ID = con2.VOCABULARY_CONCEPT_ID ");
         sql.append("where cev.VOCABULARY_CONCEPT_ID = con1.VOCABULARY_CONCEPT_ID ");
         sql.append("and cev.RELATED_CONCEPT_ID = con2.ORIGINAL_CONCEPT_ID ");
         sql.append("and cev.DATAELEM_ID = e.DATAELEM_ID ");
-        sql.append("and con1.VOCABULARY_FOLDER_ID = :newVocabularyFolderId ");
+        sql.append("and con1.VOCABULARY_ID = :newVocabularyFolderId ");
         //sql.append("and e.IDENTIFIER in (:relationalIdentifiers)");
         //sql.append("and e.IDENTIFIER in (" + DataElement.getCSRelationalPrefixes() + ")");
 
@@ -711,7 +711,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public void deleteRelatedElements(int vocabularyConceptId) {
-        String sql = "delete from T_CONCEPT_ELEMENT_VALUE where RELATED_CONCEPT_ID = :relatedConceptId";
+        String sql = "delete from VOCABULARY_CONCEPT_ELEMENT where RELATED_CONCEPT_ID = :relatedConceptId";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("relatedConceptId", vocabularyConceptId);

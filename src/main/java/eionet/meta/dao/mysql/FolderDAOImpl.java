@@ -50,7 +50,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
 
         StringBuilder sql = new StringBuilder();
         sql.append("select ID, IDENTIFIER, LABEL ");
-        sql.append("from T_FOLDER ");
+        sql.append("from VOCABULARY_SET ");
         sql.append("order by IDENTIFIER");
 
         List<Folder> items = getNamedParameterJdbcTemplate().query(sql.toString(), params, new FolderRowMapper());
@@ -64,7 +64,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
     @Override
     public int createFolder(Folder folder) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into T_FOLDER (IDENTIFIER, LABEL) ");
+        sql.append("insert into VOCABULARY_SET (IDENTIFIER, LABEL) ");
         sql.append("values (:identifier, :label)");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -85,7 +85,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
         parameters.put("excludedId", excludedId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select count(ID) from T_FOLDER ");
+        sql.append("select count(ID) from VOCABULARY_SET ");
         sql.append("where IDENTIFIER = :identifier and ID != :excludedId");
 
         int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
@@ -103,7 +103,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
 
         StringBuilder sql = new StringBuilder();
         sql.append("select ID, IDENTIFIER, LABEL ");
-        sql.append("from T_FOLDER ");
+        sql.append("from VOCABULARY_SET ");
         sql.append("where ID=:id");
 
         Folder result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new FolderRowMapper());
@@ -120,7 +120,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
         parameters.put("folderId", folderId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select count(VOCABULARY_FOLDER_ID) from T_VOCABULARY_FOLDER ");
+        sql.append("select count(VOCABULARY_ID) from VOCABULARY ");
         sql.append("where FOLDER_ID = :folderId ");
 
         int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
@@ -133,7 +133,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
      */
     @Override
     public void deleteFolder(int folderId) {
-        String sql = "delete from T_FOLDER where ID=:folderId";
+        String sql = "delete from VOCABULARY_SET where ID=:folderId";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("folderId", folderId);
 
@@ -146,7 +146,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
      */
     @Override
     public void updateFolder(Folder folder) {
-        String sql = "update T_FOLDER set IDENTIFIER = :identifier, LABEL = :label where ID = :folderId";
+        String sql = "update VOCABULARY_SET set IDENTIFIER = :identifier, LABEL = :label where ID = :folderId";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("folderId", folder.getId());
         parameters.put("identifier", folder.getIdentifier());
@@ -165,7 +165,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
 
         StringBuilder sql = new StringBuilder();
         sql.append("select ID, IDENTIFIER, LABEL ");
-        sql.append("from T_FOLDER ");
+        sql.append("from VOCABULARY_SET ");
         sql.append("where IDENTIFIER=:identifier");
 
         Folder result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new FolderRowMapper());
@@ -175,7 +175,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
 
     /**
      *
-     * Map T_FOLDER table fields to Folder object properties.
+     * Map VOCABULARY_SET table fields to Folder object properties.
      *
      * @author Enriko Käsper
      */

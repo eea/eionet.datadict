@@ -617,12 +617,12 @@ public class VersionManager {
 
                 //backup vocabulary bindings before deleting the element to the new element
                 gen.clear();
-                gen.setTable("T_VOCABULARY_ELEMENT");
+                gen.setTable("VOCABULARY2ELEM");
                 gen.setFieldExpr("DATAELEM_ID", elmID);
                 stmt.executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + checkedoutCopyID);
 
                 gen.clear();
-                gen.setTable("T_CONCEPT_ELEMENT_VALUE");
+                gen.setTable("VOCABULARY_CONCEPT_ELEMENT");
                 gen.setFieldExpr("DATAELEM_ID", elmID);
                 stmt.executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + checkedoutCopyID);
 

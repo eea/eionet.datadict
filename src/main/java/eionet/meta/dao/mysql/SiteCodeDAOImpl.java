@@ -103,7 +103,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 + "sc.DATE_CREATED, sc.USER_CREATED, vc.VOCABULARY_CONCEPT_ID, vc.IDENTIFIER, vc.LABEL, "
                 + "vc.DEFINITION, vc.NOTATION, sc.DATE_ALLOCATED, sc.USER_ALLOCATED, sc.INITIAL_SITE_NAME, "
                 + "sc.YEARS_DELETED, sc.YEARS_DISAPPEARED ");
-        sql.append("from T_SITE_CODE sc, T_VOCABULARY_CONCEPT vc where sc.VOCABULARY_CONCEPT_ID=vc.VOCABULARY_CONCEPT_ID ");
+        sql.append("from T_SITE_CODE sc, VOCABULARY_CONCEPT vc where sc.VOCABULARY_CONCEPT_ID=vc.VOCABULARY_CONCEPT_ID ");
 
         if (StringUtils.isNotEmpty(filter.getSiteName())) {
             params.put("text", "%" + filter.getSiteName() + "%");
@@ -214,7 +214,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         // update place-holder value in concept label to <allocated>
         StringBuilder sqlForConcepts = new StringBuilder();
-        sqlForConcepts.append("update T_VOCABULARY_CONCEPT set LABEL = :label where VOCABULARY_CONCEPT_ID IN "
+        sqlForConcepts.append("update VOCABULARY_CONCEPT set LABEL = :label where VOCABULARY_CONCEPT_ID IN "
                 + " (select VOCABULARY_CONCEPT_ID from T_SITE_CODE where STATUS = :status AND "
                 + "DATE_ALLOCATED = :dateAllocated AND USER_ALLOCATED = :userAllocated )");
 
@@ -234,7 +234,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     public int getSiteCodeVocabularyFolderId() {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select min(VOCABULARY_FOLDER_ID) from T_VOCABULARY_FOLDER where VOCABULARY_TYPE = :type");
+        sql.append("select min(VOCABULARY_ID) from VOCABULARY where VOCABULARY_TYPE = :type");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("type", VocabularyType.SITE_CODE.name());
@@ -298,7 +298,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     @Override
     public boolean siteCodeFolderExists() {
         StringBuilder sql = new StringBuilder();
-        sql.append("select count(VOCABULARY_FOLDER_ID) from T_VOCABULARY_FOLDER where VOCABULARY_TYPE = :type");
+        sql.append("select count(VOCABULARY_ID) from VOCABULARY where VOCABULARY_TYPE = :type");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("type", VocabularyType.SITE_CODE.name());

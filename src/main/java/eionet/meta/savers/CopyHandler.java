@@ -162,7 +162,7 @@ public class CopyHandler extends OldCopyHandler {
      * @param whereClause
      * @param autoIncColumn
      * @return
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     protected int copyAutoIncRow(String tableName, String whereClause, String autoIncColumn) throws SQLException {
 
@@ -176,7 +176,7 @@ public class CopyHandler extends OldCopyHandler {
      * @param autoIncColumn
      * @param newValuesMap
      * @return
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     protected int
     copyAutoIncRow(String tableName, String whereClause, String autoIncColumn, final Map<String, Object> newValuesMap)
@@ -308,7 +308,7 @@ public class CopyHandler extends OldCopyHandler {
     /**
      *
      * @param dstId
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     private void findDatasetTablesAndElementsToCopy(String dstId) throws SQLException {
 
@@ -359,7 +359,7 @@ public class CopyHandler extends OldCopyHandler {
      * @param dstId
      * @param makeItWorkingCopy
      * @param resetVersionAndStatus
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     private String createNewDataset(String dstId, boolean makeItWorkingCopy, boolean resetVersionAndStatus) throws SQLException {
 
@@ -393,7 +393,7 @@ public class CopyHandler extends OldCopyHandler {
     /**
      *
      * @param tblId
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     private String createNewTable(String tblId) throws SQLException {
 
@@ -421,7 +421,7 @@ public class CopyHandler extends OldCopyHandler {
      * @param makeItWorkingCopy
      * @param isCopyTbl2ElmRelations
      * @param resetVersionAndStatus
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     private String createNewElement(String elmId, boolean makeItWorkingCopy, boolean isCopyTbl2ElmRelations,
             boolean resetVersionAndStatus) throws SQLException {
@@ -455,7 +455,7 @@ public class CopyHandler extends OldCopyHandler {
 
     /**
      *
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     private void copySimpleAttributes() throws SQLException {
 
@@ -530,7 +530,7 @@ public class CopyHandler extends OldCopyHandler {
 
     /**
     *
-    * @throws SQLException
+    * @throws SQLException if database access fails
     */
    private void copyElementBindings() throws SQLException {
 
@@ -541,12 +541,12 @@ public class CopyHandler extends OldCopyHandler {
        }
 
        String selectSQL =
-           "SELECT * FROM datadict.T_VOCABULARY_ELEMENT ve LEFT JOIN T_CONCEPT_ELEMENT_VALUE ev ON ve.DATAELEM_ID = ev.DATAELEM_ID "
+           "SELECT * FROM VOCABULARY2ELEM ve LEFT JOIN VOCABULARY_CONCEPT_ELEMENT ev ON ve.DATAELEM_ID = ev.DATAELEM_ID "
                + "WHERE ve.DATAELEM_ID IN (" + Util.toCSV(oldNewElements.keySet()) + ") ORDER BY ve.DATAELEM_ID";
 
-       final String insertBindingSQL = "insert into T_VOCABULARY_ELEMENT (DATAELEM_ID, VOCABULARY_FOLDER_ID) values (?, ?) ";
+       final String insertBindingSQL = "insert into VOCABULARY2ELEM (DATAELEM_ID, VOCABULARY_ID) values (?, ?) ";
 
-       final String insertValueSQL = "insert into T_CONCEPT_ELEMENT_VALUE "
+       final String insertValueSQL = "insert into VOCABULARY_CONCEPT_ELEMENT "
                   + "(DATAELEM_ID, VOCABULARY_CONCEPT_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID, LINK_TEXT) values "
                   + "(?, ?, ?, ?, ?, ?) ";
 
@@ -570,7 +570,7 @@ public class CopyHandler extends OldCopyHandler {
                String newElmId = oldNewElements.get(oldElmId);
                if (!Util.isEmpty(newElmId)) {
 
-                   int vocabularyFolderId = rs.getInt("VOCABULARY_FOLDER_ID");
+                   int vocabularyFolderId = rs.getInt("VOCABULARY_ID");
                    elementId = rs.getInt("ve.DATAELEM_ID");
 
                    if (elementId != prevElemId) {
@@ -619,7 +619,7 @@ public class CopyHandler extends OldCopyHandler {
 
     /**
      *
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     private void copyComplexAttributes() throws SQLException {
 
@@ -732,7 +732,7 @@ public class CopyHandler extends OldCopyHandler {
 
     /**
      *
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     private void copyDocuments() throws SQLException {
 
@@ -802,7 +802,7 @@ public class CopyHandler extends OldCopyHandler {
 
     /**
      *
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     private void copyDstToRodRelations() throws SQLException {
 
@@ -848,7 +848,7 @@ public class CopyHandler extends OldCopyHandler {
 
     /**
      *
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     private void copyDstToTblRelations() throws SQLException {
 
@@ -898,7 +898,7 @@ public class CopyHandler extends OldCopyHandler {
     }
 
     /**
-     * @throws SQLException
+     * @throws SQLException if database access fails
      *
      */
     private void copyTblToElmRelations() throws SQLException {
@@ -961,7 +961,7 @@ public class CopyHandler extends OldCopyHandler {
 
     /**
      *
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     private void copyElmToTblRelations() throws SQLException {
 
@@ -1015,7 +1015,7 @@ public class CopyHandler extends OldCopyHandler {
 
     /**
      *
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     private void copyFixedValues() throws SQLException {
 
@@ -1067,7 +1067,7 @@ public class CopyHandler extends OldCopyHandler {
 
     /**
      *
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     private void copyFkRelations() throws SQLException {
 
@@ -1125,7 +1125,7 @@ public class CopyHandler extends OldCopyHandler {
      *
      * @param stmt
      * @return
-     * @throws SQLException
+     * @throws SQLException if database access fails
      */
     private String getLastInsertID(Statement stmt) throws SQLException {
 

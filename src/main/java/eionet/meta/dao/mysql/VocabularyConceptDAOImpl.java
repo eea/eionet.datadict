@@ -58,7 +58,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         StringBuilder sql = new StringBuilder();
         sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION ");
-        sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID=:vocabularyFolderId order by IDENTIFIER + 0");
+        sql.append("from VOCABULARY_CONCEPT where VOCABULARY_ID=:vocabularyFolderId order by IDENTIFIER + 0");
 
         List<VocabularyConcept> resultList =
                 getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyConcept>() {
@@ -86,10 +86,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         StringBuilder sql = new StringBuilder();
         sql.append("select SQL_CALC_FOUND_ROWS VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, OBSOLETE_DATE ");
-        sql.append("from T_VOCABULARY_CONCEPT where 1 = 1 ");
+        sql.append("from VOCABULARY_CONCEPT where 1 = 1 ");
         if (filter.getVocabularyFolderId() > 0) {
             params.put("vocabularyFolderId", filter.getVocabularyFolderId());
-            sql.append("and VOCABULARY_FOLDER_ID=:vocabularyFolderId ");
+            sql.append("and VOCABULARY_ID=:vocabularyFolderId ");
         }
         if (StringUtils.isNotEmpty(filter.getText())) {
             params.put("text", "%" + filter.getText() + "%");
@@ -161,9 +161,9 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void copyVocabularyConcepts(int oldVocabularyFolderId, int newVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into T_VOCABULARY_CONCEPT (VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ORIGINAL_CONCEPT_ID, OBSOLETE_DATE, CREATION_DATE) ");
+        sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ORIGINAL_CONCEPT_ID, OBSOLETE_DATE, CREATION_DATE) ");
         sql.append("select :newVocabularyFolderId, IDENTIFIER, LABEL, DEFINITION, NOTATION, VOCABULARY_CONCEPT_ID, OBSOLETE_DATE, CREATION_DATE ");
-        sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID = :oldVocabularyFolderId");
+        sql.append("from VOCABULARY_CONCEPT where VOCABULARY_ID = :oldVocabularyFolderId");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("newVocabularyFolderId", newVocabularyFolderId);
@@ -178,7 +178,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public int createVocabularyConcept(int vocabularyFolderId, VocabularyConcept vocabularyConcept) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into T_VOCABULARY_CONCEPT (VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION) ");
+        sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION) ");
         sql.append("values (:vocabularyFolderId, :identifier, :label, :definition, :notation)");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -202,7 +202,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     public void updateVocabularyConcept(VocabularyConcept vocabularyConcept) {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("update T_VOCABULARY_CONCEPT set IDENTIFIER = :identifier, LABEL = :label, DEFINITION = :definition, NOTATION = :notation ");
+        sql.append("update VOCABULARY_CONCEPT set IDENTIFIER = :identifier, LABEL = :label, DEFINITION = :definition, NOTATION = :notation ");
         sql.append("where VOCABULARY_CONCEPT_ID = :vocabularyConceptId");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -223,7 +223,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
      */
     @Override
     public void deleteVocabularyConcepts(List<Integer> ids) {
-        String sql = "delete from T_VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID in (:ids)";
+        String sql = "delete from VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID in (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
 
@@ -235,7 +235,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
      */
     @Override
     public void markConceptsObsolete(List<Integer> ids) {
-        String sql = "update T_VOCABULARY_CONCEPT set OBSOLETE_DATE = now() where VOCABULARY_CONCEPT_ID in (:ids)";
+        String sql = "update VOCABULARY_CONCEPT set OBSOLETE_DATE = now() where VOCABULARY_CONCEPT_ID in (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
 
@@ -247,7 +247,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
      */
     @Override
     public void unMarkConceptsObsolete(List<Integer> ids) {
-        String sql = "update T_VOCABULARY_CONCEPT set OBSOLETE_DATE = NULL where VOCABULARY_CONCEPT_ID in (:ids)";
+        String sql = "update VOCABULARY_CONCEPT set OBSOLETE_DATE = NULL where VOCABULARY_CONCEPT_ID in (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
 
@@ -260,7 +260,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
      */
     @Override
     public void deleteVocabularyConcepts(int vocabularyFolderId) {
-        String sql = "delete from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID = :vocabularyFolderId";
+        String sql = "delete from VOCABULARY_CONCEPT where VOCABULARY_ID = :vocabularyFolderId";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("vocabularyFolderId", vocabularyFolderId);
 
@@ -273,8 +273,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void moveVocabularyConcepts(int fromVocabularyFolderId, int toVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("update T_VOCABULARY_CONCEPT set VOCABULARY_FOLDER_ID = :toVocabularyFolderId, ORIGINAL_CONCEPT_ID = null ");
-        sql.append("where VOCABULARY_FOLDER_ID = :fromVocabularyFolderId");
+        sql.append("update VOCABULARY_CONCEPT set VOCABULARY_ID = :toVocabularyFolderId, ORIGINAL_CONCEPT_ID = null ");
+        sql.append("where VOCABULARY_ID = :fromVocabularyFolderId");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("fromVocabularyFolderId", fromVocabularyFolderId);
@@ -293,8 +293,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         parameters.put("vocabularyFolderId", vocabularyFolderId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select count(VOCABULARY_CONCEPT_ID) from T_VOCABULARY_CONCEPT ");
-        sql.append("where IDENTIFIER = :identifier and VOCABULARY_FOLDER_ID = :vocabularyFolderId ");
+        sql.append("select count(VOCABULARY_CONCEPT_ID) from VOCABULARY_CONCEPT ");
+        sql.append("where IDENTIFIER = :identifier and VOCABULARY_ID = :vocabularyFolderId ");
         if (vocabularyConceptId != 0) {
             sql.append("and VOCABULARY_CONCEPT_ID != :vocabularyConceptId");
             parameters.put("vocabularyConceptId", vocabularyConceptId);
@@ -311,7 +311,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public int getNextIdentifierValue(int vocabularyFolderId) {
         String sql =
-                "SELECT MAX(0 + IDENTIFIER) FROM T_VOCABULARY_CONCEPT GROUP BY VOCABULARY_FOLDER_ID HAVING VOCABULARY_FOLDER_ID = :vocabularyFolderId";
+                "SELECT MAX(0 + IDENTIFIER) FROM VOCABULARY_CONCEPT GROUP BY VOCABULARY_ID HAVING VOCABULARY_ID = :vocabularyFolderId";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("vocabularyFolderId", vocabularyFolderId);
 
@@ -329,7 +329,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void insertEmptyConcepts(int vocabularyFolderId, int amount, int identifier, String label, String definition) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into T_VOCABULARY_CONCEPT (VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION) ");
+        sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION) ");
         sql.append("values (:vocabularyFolderId, :identifier, :label, :definition, :notation)");
 
         @SuppressWarnings("unchecked")
@@ -355,7 +355,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public List<Integer> checkAvailableIdentifiers(int vocabularyFolderId, int amount, int startingIdentifier) {
         StringBuilder sql = new StringBuilder();
-        sql.append("select IDENTIFIER from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID = :vocabularyFolderId ");
+        sql.append("select IDENTIFIER from VOCABULARY_CONCEPT where VOCABULARY_ID = :vocabularyFolderId ");
         sql.append("and IDENTIFIER between :start and :end");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -384,7 +384,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         StringBuilder sql = new StringBuilder();
         sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, OBSOLETE_DATE ");
-        sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID=:vocabularyFolderId and IDENTIFIER=:identifier");
+        sql.append("from VOCABULARY_CONCEPT where VOCABULARY_ID=:vocabularyFolderId and IDENTIFIER=:identifier");
 
         VocabularyConcept result =
                 getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyConcept>() {
@@ -415,7 +415,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         StringBuilder sql = new StringBuilder();
         sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, OBSOLETE_DATE ");
-        sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID=:vocabularyConceptId");
+        sql.append("from VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID=:vocabularyConceptId");
 
         VocabularyConcept result =
                 getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyConcept>() {
@@ -442,7 +442,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         parameters.put("elementId", elementId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select DISTINCT cev.VOCABULARY_CONCEPT_ID from T_CONCEPT_ELEMENT_VALUE cev, T_VOCABULARY_CONCEPT c  ");
+        sql.append("select DISTINCT cev.VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT_ELEMENT cev, VOCABULARY_CONCEPT c  ");
         sql.append("where cev.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID AND c.ORIGINAL_CONCEPT_ID IS NOT NULL ");
         sql.append("AND cev.DATAELEM_ID = :elementId ");
 

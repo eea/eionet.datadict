@@ -1470,8 +1470,41 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             onDelete="CASCADE" onUpdate="CASCADE"
             referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
      </changeSet>
+
     <changeSet author="lainekai" id="rev-117">
         <comment>Remove the table for concept attribute values that became obsolete</comment>
         <dropTable tableName="T_VOCABULARY_CONCEPT_ATTRIBUTE"/>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-118">
+        <comment>Rename the vocabulary tables to more sane names.
+        Remove useless key column from M-M relation table. Remove unused tables.
+        Rename the VOCABULARY_FOLDER_ID to VOCABULARY_ID</comment>
+        <!-- MySQL won't let us change a column name that has constraints referencing it -->
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_CONCEPT" constraintName="FK_VOCABULARY_FOLDER_ID"/>
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_ELEMENT" constraintName="FK_ELEMENT_VOCABULARY_FOLDER_ID"/>
+        <renameTable oldTableName="T_FOLDER" newTableName="VOCABULARY_SET"/>
+        <renameTable oldTableName="T_VOCABULARY_FOLDER" newTableName="VOCABULARY"/>
+        <renameTable oldTableName="T_VOCABULARY_CONCEPT" newTableName="VOCABULARY_CONCEPT"/>
+        <renameTable oldTableName="T_VOCABULARY_ELEMENT" newTableName="VOCABULARY2ELEM"/>
+        <renameTable oldTableName="T_CONCEPT_ELEMENT_VALUE" newTableName="VOCABULARY_CONCEPT_ELEMENT"/>
+        <dropTable tableName="SCHEMA"/>
+        <dropTable tableName="SCHEMA_SET"/>
+        <dropColumn tableName="VOCABULARY2ELEM" columnName="ID"/>
+        <renameColumn tableName="VOCABULARY" columnDataType="INT UNSIGNED NOT NULL AUTO_INCREMENT"
+                oldColumnName="VOCABULARY_FOLDER_ID" newColumnName="VOCABULARY_ID"/>
+        <renameColumn tableName="VOCABULARY2ELEM" columnDataType="INT UNSIGNED"
+                oldColumnName="VOCABULARY_FOLDER_ID" newColumnName="VOCABULARY_ID"/>
+        <renameColumn tableName="VOCABULARY_CONCEPT" columnDataType="INT UNSIGNED"
+                oldColumnName="VOCABULARY_FOLDER_ID" newColumnName="VOCABULARY_ID"/>
+        <!-- Recreate the constraints -->
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_ID" baseTableName="VOCABULARY_CONCEPT"
+                constraintName="FK_VOCABULARY_ID"
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="VOCABULARY_ID" referencedTableName="VOCABULARY"/>
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_ID" baseTableName="VOCABULARY2ELEM"
+                constraintName="FK_ELEMENT_VOCABULARY_ID" 
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="VOCABULARY_ID" referencedTableName="VOCABULARY"/>
     </changeSet>
 </databaseChangeLog>

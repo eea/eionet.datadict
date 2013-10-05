@@ -34,11 +34,12 @@ public abstract class OldCopyHandler {
     protected DDSearchEngine searchEngine = null;
 
     /**
+     * Create a working copy of an object. Convenience method.
      *
      * @param dstGen
      * @param srcConstraint
      * @return
-     * @throws SQLException
+     * @throws SQLException if database access fails.
      */
     public String copy(SQLGenerator dstGen, String srcConstraint) throws SQLException {
 
@@ -55,7 +56,7 @@ public abstract class OldCopyHandler {
      * @param srcConstraint
      * @param includeDstGenFields
      * @return id of the working copy.
-     * @throws SQLException
+     * @throws SQLException if database access fails.
      */
     public String copy(SQLGenerator dstGen, String srcConstraint, boolean includeDstGenFields) throws SQLException {
 
@@ -127,7 +128,7 @@ public abstract class OldCopyHandler {
      *
      * @param tableName
      * @return
-     * @throws SQLException
+     * @throws SQLException if database access fails.
      */
     private Vector getTableColumnNames(String tableName) throws SQLException {
 
@@ -182,7 +183,7 @@ public abstract class OldCopyHandler {
      * @param newOwner
      * @param oldOwner
      * @param ownerType
-     * @throws SQLException
+     * @throws SQLException if database access fails.
      */
     public void copyFxv(String newOwner, String oldOwner, String ownerType) throws SQLException {
 
@@ -221,7 +222,7 @@ public abstract class OldCopyHandler {
      * @param newID
      * @param oldID
      * @param type
-     * @throws SQLException
+     * @throws SQLException if database access fails.
      */
     public void copyComplexAttrs(String newID, String oldID, String type) throws SQLException {
         copyComplexAttrs(newID, oldID, type, null, null);
@@ -234,7 +235,7 @@ public abstract class OldCopyHandler {
      * @param type
      * @param newType
      * @param mAttrID
-     * @throws SQLException
+     * @throws SQLException if database access fails.
      */
     public void copyComplexAttrs(String newID, String oldID, String type, String newType, String mAttrID) throws SQLException {
 
@@ -345,7 +346,7 @@ public abstract class OldCopyHandler {
      * @param newType
      * @param oldType
      * @param mAttrID
-     * @throws SQLException
+     * @throws SQLException if database access fails.
      */
     public void copyAttribute(String newID, String oldID, String newType, String oldType, String mAttrID) throws SQLException {
         SQLGenerator gen = new SQLGenerator();

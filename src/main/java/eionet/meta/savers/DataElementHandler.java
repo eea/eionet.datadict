@@ -1648,9 +1648,9 @@ public class DataElementHandler extends BaseHandler {
             gen.setField("DATAELEM_ID", lastInsertID);
             copyHandler.copy(gen, "DATAELEM_ID=" + copyElmID + " and PARENT_TYPE='E'");
 
-//            //copy element bindings T_VOCABULARY_ELEMENT
+//            //copy element bindings VOCABULARY2ELEM
 //            gen.clear();
-//            gen.setTable("T_VOCABULARY_ELEMENT");
+//            gen.setTable("VOCABULARY2ELEM");
 //            gen.setField("DATAELEM_ID", lastInsertID);
 //            copyHandler.copy(gen, "DATAELEM_ID=" + copyElmID);
 
@@ -1811,14 +1811,14 @@ public class DataElementHandler extends BaseHandler {
             stmt.executeUpdate(buf.toString());
 
             gen.clear();
-            gen.setTable("T_VOCABULARY_ELEMENT");
+            gen.setTable("VOCABULARY2ELEM");
             gen.setFieldExpr("DATAELEM_ID", newID);
             buf = new StringBuffer(gen.updateStatement());
             buf.append(" where DATAELEM_ID=").append(oldID);
             stmt.executeUpdate(buf.toString());
 
             gen.clear();
-            gen.setTable("T_CONCEPT_ELEMENT_VALUE");
+            gen.setTable("VOCABULARY_CONCEPT_ELEMENT");
             gen.setFieldExpr("DATAELEM_ID", newID);
             buf = new StringBuffer(gen.updateStatement());
             buf.append(" where DATAELEM_ID=").append(oldID);

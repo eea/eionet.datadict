@@ -56,11 +56,11 @@ public class DataElement {
 
     private boolean workingCopy;
 
-    //TODO - make a new DAO entity for T_CONCEPT_ELEMENT_VALUE
-    /** Value from T_CONCEPT_ELEMENT_VALUE table. */
+    //TODO - make a new DAO entity for VOCABULARY_CONCEPT_ELEMENT
+    /** Value from VOCABULARY_CONCEPT_ELEMENT table. */
     private String attributeValue;
 
-    /** Language from T_CONCEPT_ELEMENT_VALUE table. */
+    /** Language from VOCABULARY_CONCEPT_ELEMENT table. */
     private String attributeLanguage;
 
     /** related concept id. */

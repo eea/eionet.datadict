@@ -5,18 +5,18 @@
 
     <NAMESPACE NAMESPACE_ID="1" SHORT_NAME="datasets"/>
 
-    <T_FOLDER ID="10" IDENTIFIER="wise" LABEL="10, wise, WISE - Water Information System for Europe"/>
-    <T_VOCABULARY_FOLDER VOCABULARY_FOLDER_ID="1" CONTINUITY_ID="123" IDENTIFIER="BWaterCat" LABEL="Bathing Water Category" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser"  FOLDER_ID="10"/>
-    <T_VOCABULARY_FOLDER VOCABULARY_FOLDER_ID="2" CONTINUITY_ID="123" IDENTIFIER="BWClosed" LABEL="Bathing Water Closed status" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="10"/>
+    <VOCABULARY_SET ID="10" IDENTIFIER="wise" LABEL="10, wise, WISE - Water Information System for Europe"/>
+    <VOCABULARY VOCABULARY_ID="1" CONTINUITY_ID="123" IDENTIFIER="BWaterCat" LABEL="Bathing Water Category" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser"  FOLDER_ID="10"/>
+    <VOCABULARY VOCABULARY_ID="2" CONTINUITY_ID="123" IDENTIFIER="BWClosed" LABEL="Bathing Water Closed status" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="10"/>
 
-    <T_VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="1" VOCABULARY_FOLDER_ID="1" IDENTIFIER="C" LABEL="Coastal Water" DEFINITION="Coastal water = surface water on the landward side of a line, every point of which is at a distance of one nautical mile on the seaward side from the nearest point of the baseline from which the breadth of territorial waters is measured, extending where appropriate up to the outer limit of transitional waters"/>
-    <T_VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="2" VOCABULARY_FOLDER_ID="1" IDENTIFIER="L" LABEL="Lake" DEFINITION="Lake = body of standing inland surface water" />
-    <T_VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="3" VOCABULARY_FOLDER_ID="1" IDENTIFIER="R" LABEL="River" DEFINITION="River = body of inland water flowing for most part on the surface of the land but which may flow underground for part of its course"/>
-    <T_VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="4" VOCABULARY_FOLDER_ID="1" IDENTIFIER="T" LABEL="Transitional Water" DEFINITION="Transitional water = bodies of surface water in the vicinity of river mouths which are partly saline in character as a result of their proximity to coastal waters but which are substantially influenced by freshwater flows" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="1" VOCABULARY_ID="1" IDENTIFIER="C" LABEL="Coastal Water" DEFINITION="Coastal water = surface water on the landward side of a line, every point of which is at a distance of one nautical mile on the seaward side from the nearest point of the baseline from which the breadth of territorial waters is measured, extending where appropriate up to the outer limit of transitional waters"/>
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="2" VOCABULARY_ID="1" IDENTIFIER="L" LABEL="Lake" DEFINITION="Lake = body of standing inland surface water" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="3" VOCABULARY_ID="1" IDENTIFIER="R" LABEL="River" DEFINITION="River = body of inland water flowing for most part on the surface of the land but which may flow underground for part of its course"/>
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="4" VOCABULARY_ID="1" IDENTIFIER="T" LABEL="Transitional Water" DEFINITION="Transitional water = bodies of surface water in the vicinity of river mouths which are partly saline in character as a result of their proximity to coastal waters but which are substantially influenced by freshwater flows" />
 
-    <T_VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="5" VOCABULARY_FOLDER_ID="2" IDENTIFIER="N" LABEL="Not Closed" DEFINITION="Bathing water is not closed" />
-    <T_VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="6" VOCABULARY_FOLDER_ID="2" IDENTIFIER="YP" LABEL="Yes - permanently" DEFINITION="Bathing water is permanently closed if classified as “poor” for five consecutive years or Member State released permanent bathing prohibition or advice against bathing" />
-    <T_VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="7" VOCABULARY_FOLDER_ID="2" IDENTIFIER="YT" LABEL="Yes - temporarily" DEFINITION="Bathing water is temporarily closed for a part of one season or the entire season, but not yet permanently closed" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="5" VOCABULARY_ID="2" IDENTIFIER="N" LABEL="Not Closed" DEFINITION="Bathing water is not closed" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="6" VOCABULARY_ID="2" IDENTIFIER="YP" LABEL="Yes - permanently" DEFINITION="Bathing water is permanently closed if classified as “poor” for five consecutive years or Member State released permanent bathing prohibition or advice against bathing" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="7" VOCABULARY_ID="2" IDENTIFIER="YT" LABEL="Yes - temporarily" DEFINITION="Bathing water is temporarily closed for a part of one season or the entire season, but not yet permanently closed" />
 
     <M_ATTRIBUTE M_ATTRIBUTE_ID="1" NAME="Name" OBLIGATION="O" DEFINITION="Name" SHORT_NAME="Name" NAMESPACE_ID="2" DISP_TYPE="text" DISP_ORDER="1" DISP_WHEN="75" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="1"/>
     <M_ATTRIBUTE M_ATTRIBUTE_ID="2" NAME="Datatype" OBLIGATION="O" DEFINITION="Data type" SHORT_NAME="Datatype" NAMESPACE_ID="2" DISP_TYPE="select" DISP_ORDER="1" DISP_WHEN="75" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="1"/>
@@ -38,31 +38,31 @@
     <ATTRIBUTE M_ATTRIBUTE_ID="2" DATAELEM_ID="4" VALUE="decimal" PARENT_TYPE="E"/>
     <ATTRIBUTE M_ATTRIBUTE_ID="2" DATAELEM_ID="5" VALUE="decimal" PARENT_TYPE="E"/>
 
-    <T_VOCABULARY_ELEMENT ID="1" VOCABULARY_FOLDER_ID="2" DATAELEM_ID="1"/>
-    <T_VOCABULARY_ELEMENT ID="2" VOCABULARY_FOLDER_ID="2" DATAELEM_ID="2"/>
-    <T_VOCABULARY_ELEMENT ID="3" VOCABULARY_FOLDER_ID="2" DATAELEM_ID="3"/>
-    <T_VOCABULARY_ELEMENT ID="4" VOCABULARY_FOLDER_ID="2" DATAELEM_ID="4"/>
+    <VOCABULARY2ELEM VOCABULARY_ID="2" DATAELEM_ID="1"/>
+    <VOCABULARY2ELEM VOCABULARY_ID="2" DATAELEM_ID="2"/>
+    <VOCABULARY2ELEM VOCABULARY_ID="2" DATAELEM_ID="3"/>
+    <VOCABULARY2ELEM VOCABULARY_ID="2" DATAELEM_ID="4"/>
 
-    <T_VOCABULARY_ELEMENT ID="5" VOCABULARY_FOLDER_ID="2" DATAELEM_ID="5"/>
-    <T_VOCABULARY_ELEMENT ID="6" VOCABULARY_FOLDER_ID="2" DATAELEM_ID="6"/>
-    <T_VOCABULARY_ELEMENT ID="7" VOCABULARY_FOLDER_ID="2" DATAELEM_ID="7"/>
+    <VOCABULARY2ELEM VOCABULARY_ID="2" DATAELEM_ID="5"/>
+    <VOCABULARY2ELEM VOCABULARY_ID="2" DATAELEM_ID="6"/>
+    <VOCABULARY2ELEM VOCABULARY_ID="2" DATAELEM_ID="7"/>
 
-    <T_CONCEPT_ELEMENT_VALUE ID="5" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="4" ELEMENT_VALUE="1.1"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="5" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="4" ELEMENT_VALUE="1.1"/>
 
-    <T_CONCEPT_ELEMENT_VALUE ID="6" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="5" ELEMENT_VALUE="2.2"/>
-    <T_CONCEPT_ELEMENT_VALUE ID="7" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="5" ELEMENT_VALUE="3"/>
-    <T_CONCEPT_ELEMENT_VALUE ID="8" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="5" ELEMENT_VALUE="4.5"/>
-    <T_CONCEPT_ELEMENT_VALUE ID="9" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="5" ELEMENT_VALUE="1"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="6" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="5" ELEMENT_VALUE="2.2"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="7" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="5" ELEMENT_VALUE="3"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="8" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="5" ELEMENT_VALUE="4.5"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="9" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="5" ELEMENT_VALUE="1"/>
 
-    <T_CONCEPT_ELEMENT_VALUE ID="10" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="6" ELEMENT_VALUE="http://url1.com"/>
-    <T_CONCEPT_ELEMENT_VALUE ID="11" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="6" ELEMENT_VALUE="http://url2.com"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="10" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="6" ELEMENT_VALUE="http://url1.com"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="11" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="6" ELEMENT_VALUE="http://url2.com"/>
 
-    <T_CONCEPT_ELEMENT_VALUE ID="12" VOCABULARY_CONCEPT_ID="6" DATAELEM_ID="6" ELEMENT_VALUE="http://url3.com"/>
-    <T_CONCEPT_ELEMENT_VALUE ID="13" VOCABULARY_CONCEPT_ID="6" DATAELEM_ID="6" ELEMENT_VALUE="http://url4.com"/>
-    <T_CONCEPT_ELEMENT_VALUE ID="14" VOCABULARY_CONCEPT_ID="6" DATAELEM_ID="6" ELEMENT_VALUE="http://url3.com"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="12" VOCABULARY_CONCEPT_ID="6" DATAELEM_ID="6" ELEMENT_VALUE="http://url3.com"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="13" VOCABULARY_CONCEPT_ID="6" DATAELEM_ID="6" ELEMENT_VALUE="http://url4.com"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="14" VOCABULARY_CONCEPT_ID="6" DATAELEM_ID="6" ELEMENT_VALUE="http://url3.com"/>
 
-    <T_CONCEPT_ELEMENT_VALUE ID="15" VOCABULARY_CONCEPT_ID="7" DATAELEM_ID="4" ELEMENT_VALUE="72"/>
-    <T_CONCEPT_ELEMENT_VALUE ID="16" VOCABULARY_CONCEPT_ID="7" DATAELEM_ID="7" ELEMENT_VALUE="" RELATED_CONCEPT_ID="6"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="15" VOCABULARY_CONCEPT_ID="7" DATAELEM_ID="4" ELEMENT_VALUE="72"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="16" VOCABULARY_CONCEPT_ID="7" DATAELEM_ID="7" ELEMENT_VALUE="" RELATED_CONCEPT_ID="6"/>
 
 
 </dataset>
