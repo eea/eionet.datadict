@@ -1503,8 +1503,13 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
                 onDelete="CASCADE" onUpdate="CASCADE"
                 referencedColumnNames="VOCABULARY_ID" referencedTableName="VOCABULARY"/>
         <addForeignKeyConstraint baseColumnNames="VOCABULARY_ID" baseTableName="VOCABULARY2ELEM"
-                constraintName="FK_ELEMENT_VOCABULARY_ID" 
+                constraintName="FK_ELEMENT_VOCABULARY_ID"
                 onDelete="CASCADE" onUpdate="CASCADE"
                 referencedColumnNames="VOCABULARY_ID" referencedTableName="VOCABULARY"/>
+    </changeSet>
+    
+    <changeSet author="lainekai" id="rev-119">
+        <comment>Drop default language from the bound element value as it is conceptually wrong</comment>
+        <dropDefaultValue tableName="VOCABULARY_CONCEPT_ELEMENT" columnName="LANGUAGE"/>
     </changeSet>
 </databaseChangeLog>

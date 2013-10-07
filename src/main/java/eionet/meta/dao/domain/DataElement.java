@@ -363,13 +363,15 @@ public class DataElement {
 
     /**
      * Indicates if Element values can have values in several languages.
-     * false by defaule
+     * false by default
      * @return is Language used in ATTRIBUTES table
      */
     public boolean isLanguageUsed() {
         if (elemAttributeValues != null) {
             if (elemAttributeValues.containsKey("languageUsed")) {
-                return elemAttributeValues.get("languageUsed").get(0).equals("1");
+                String lang = elemAttributeValues.get("languageUsed").get(0);
+                //TODO - change to check only one value if some solution is made for boolean attributes, see #16975
+                return lang.equals("1") || lang.equalsIgnoreCase("Yes") || lang.equalsIgnoreCase("true");
             }
         }
 
