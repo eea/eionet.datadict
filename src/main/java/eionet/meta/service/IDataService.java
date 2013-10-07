@@ -118,4 +118,12 @@ public interface IDataService {
      * @throws ServiceException if query fails
      */
     List<DataElement> getReleasedCommonDataElements() throws ServiceException;
+
+    /**
+     * returns ID of a common data element in DATAELEM table.
+     * @param identifier common element identifier
+     * @return ID
+     * @throws ServiceException if query fails
+     */
+    int getCommonElementIdByIdentifier(String identifier) throws ServiceException;
 }

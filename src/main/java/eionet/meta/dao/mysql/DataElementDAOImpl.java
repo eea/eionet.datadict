@@ -376,16 +376,16 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public DataElement getDataElement(String identifier) {
-        return getDataElement(getDataElementId(identifier));
+        return getDataElement(getCommonDataElementId(identifier));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getDataElementId(String identifier) {
+    public int getCommonDataElementId(String identifier) {
         String sql =
-                "select max(de.DATAELEM_ID) from DATAELEM de where de.IDENTIFIER = :identifier and de.REG_STATUS = :regStatus";
+                "select max(de.DATAELEM_ID) from DATAELEM de where de.IDENTIFIER = :identifier and de.REG_STATUS = :regStatus and PARENT_NS IS NULL ";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("identifier", identifier);
         parameters.put("regStatus", RegStatus.RELEASED.toString());

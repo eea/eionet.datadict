@@ -35,7 +35,7 @@ public class ElementsRdfActionBeanTest  extends DDDatabaseTestCase {
         String baseUri = Props.getRequiredProperty(PropsIF.DD_URL);
 
         String expectedHeader = "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" "
-                + "xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\" xml:base=\"" + baseUri +  "/properties/\">";
+                + "xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\" xml:base=\"" + baseUri +  "/property/\">";
         String expectedProp1 = "<rdf:Property rdf:about=\"E1\">";
 
         assertTrue(StringUtils.contains(output, expectedHeader));

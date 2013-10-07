@@ -85,8 +85,10 @@ public class VocabularyXmlWriter {
     /**
      * Class constructor.
      *
-     * @param out output stream
-     * @throws XMLStreamException if writing fails
+     * @param out
+     *            output stream
+     * @throws XMLStreamException
+     *             if writing fails
      */
     public VocabularyXmlWriter(OutputStream out) throws XMLStreamException {
         writer = XMLOutputFactory.newInstance().createXMLStreamWriter(out, ENCODING);
@@ -118,6 +120,8 @@ public class VocabularyXmlWriter {
     /**
      * Writes rdf output to stream for one vocabulary folder.
      *
+     * @param commonElemsUri
+     *            uri for common elements
      * @param folderContextRoot
      *            IRI for folder
      * @param contextRoot
@@ -131,10 +135,11 @@ public class VocabularyXmlWriter {
      * @throws XMLStreamException
      *             if streaming fails
      */
-    public void writeRDFXml(String folderContextRoot, String contextRoot, VocabularyFolder vocabularyFolder,
-            List<? extends VocabularyConcept> vocabularyConcepts, List<RdfNamespace> rdfNamespaces) throws XMLStreamException {
+    public void writeRDFXml(String commonElemsUri, String folderContextRoot, String contextRoot,
+            VocabularyFolder vocabularyFolder, List<? extends VocabularyConcept> vocabularyConcepts,
+            List<RdfNamespace> rdfNamespaces) throws XMLStreamException {
 
-        writeXmlStart(vocabularyFolder.isSiteCodeType(), contextRoot, rdfNamespaces);
+        writeXmlStart(vocabularyFolder.isSiteCodeType(), commonElemsUri, contextRoot, rdfNamespaces);
 
         writeVocabularyFolderXml(folderContextRoot, contextRoot, vocabularyFolder, vocabularyConcepts);
 
@@ -146,6 +151,8 @@ public class VocabularyXmlWriter {
      *
      * @param siteCodeType
      *            if true it is a site code vocabulary
+     * @param commonElemsUri
+     *            uri for common elements
      * @param contextRoot
      *            IRI for context
      * @param nameSpaces
@@ -153,7 +160,8 @@ public class VocabularyXmlWriter {
      * @throws XMLStreamException
      *             if writing does not succeed
      */
-    public void writeXmlStart(boolean siteCodeType, String contextRoot, List<RdfNamespace> nameSpaces) throws XMLStreamException {
+    public void writeXmlStart(boolean siteCodeType, String commonElemsUri, String contextRoot, List<RdfNamespace> nameSpaces)
+            throws XMLStreamException {
         writer.writeStartDocument(ENCODING, "1.0");
         writer.writeCharacters("\n");
 
@@ -179,7 +187,9 @@ public class VocabularyXmlWriter {
 
         if (siteCodeType) {
             writer.writeNamespace("dd", DD_SCHEMA_NS);
+        } else {
         }
+        writer.writeDefaultNamespace(commonElemsUri);
         writer.writeAttribute("xml", XML_NS, "base", escapeIRI(contextRoot));
 
     }
@@ -227,7 +237,8 @@ public class VocabularyXmlWriter {
     /**
      * Writes closing tags of XML.
      *
-     * @throws XMLStreamException if writing fails
+     * @throws XMLStreamException
+     *             if writing fails
      */
     public void writeXmlEnd() throws XMLStreamException {
         writer.writeCharacters("\n");
@@ -298,7 +309,7 @@ public class VocabularyXmlWriter {
             if (vocabularyFolder.isSiteCodeType()) {
                 writeSiteCodeData((SiteCode) vc);
             } else {
-                writeBindedElements(vocabularyContextRoot, vc.getElementAttributes());
+                writeBoundElements(vocabularyContextRoot, vc.getElementAttributes());
             }
 
             writer.writeCharacters("\n");
@@ -316,34 +327,28 @@ public class VocabularyXmlWriter {
      * @throws XMLStreamException
      *             if writing fails
      */
-    private void writeBindedElements(String contextRoot, List<List<DataElement>> elements) throws XMLStreamException {
+    private void writeBoundElements(String contextRoot, List<List<DataElement>> elements) throws XMLStreamException {
         if (elements != null) {
             for (List<DataElement> elems : elements) {
                 if (elems != null) {
                     for (DataElement elem : elems) {
-                        // external elements: identifier is a valid Xml tag, for example: geo:lat
-                        // for internal elements compose the Tag: dd[elemID]
-                        String elemXmlTag =
-                                elem.isExternalSchema() ? elem.getIdentifier() : "dd" + elem.getId() + ":" + elem.getIdentifier();
-
                         writer.writeCharacters("\n");
                         if (elem.isRelationalElement()) {
                             writer.writeCharacters("\n");
-                            writer.writeEmptyElement(elemXmlTag);
+                            writer.writeEmptyElement(elem.getIdentifier());
                             writer.writeAttribute("rdf", RDF_NS, "resource",
                                     escapeIRI(contextRoot + elem.getRelatedConceptIdentifier()));
 
                         } else if (StringUtils.isNotEmpty(elem.getAttributeValue())) {
                             if (StringUtils.isNotEmpty(elem.getDatatype()) && elem.getDatatype().equalsIgnoreCase("reference")) {
-                                writer.writeEmptyElement(elemXmlTag);
+                                writer.writeEmptyElement(elem.getIdentifier());
                                 writer.writeAttribute("rdf", RDF_NS, "resource", elem.getAttributeValue());
                             } else {
-                                writer.writeStartElement(elemXmlTag);
+                                writer.writeStartElement(elem.getIdentifier());
                                 if (StringUtils.isNotEmpty(elem.getAttributeLanguage())) {
                                     writer.writeAttribute("xml", XML_NS, "lang", elem.getAttributeLanguage());
                                 }
-                                if (StringUtils.isNotEmpty(elem.getDatatype())
-                                        && !(elem.getDatatype().equalsIgnoreCase("string"))) {
+                                if (StringUtils.isNotEmpty(elem.getDatatype()) && !(elem.getDatatype().equalsIgnoreCase("string"))) {
                                     writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(elem.getDatatype()));
                                 }
 

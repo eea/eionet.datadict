@@ -278,6 +278,10 @@
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/properties/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/property/*</url-pattern>
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>env</servlet-name>

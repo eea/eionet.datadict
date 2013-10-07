@@ -168,4 +168,9 @@ public class DataServiceImpl implements IDataService {
         return result.getDataElements();
 
     }
+
+    @Override
+    public int getCommonElementIdByIdentifier(String identifier) throws ServiceException {
+        return dataElementDao.getCommonDataElementId(identifier);
+    }
 }

@@ -70,7 +70,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
     @Override
     public List<FixedValue> getAllCountries() throws ServiceException {
         try {
-            int countryElementId = dataElementDao.getDataElementId(SITE_CODE_IDENTIFIER);
+            int countryElementId = dataElementDao.getCommonDataElementId(SITE_CODE_IDENTIFIER);
             return dataElementDao.getFixedValues(countryElementId);
         } catch (Exception e) {
             throw new ServiceException("Failed to get countries: " + e.getMessage(), e);

@@ -26,7 +26,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1066,13 +1065,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
                     RdfNamespace ns;
                     if (elem.isExternalSchema()) {
                         ns = namespaceDAO.getNamespace(elem.getNameSpacePrefix());
-                    } else {
-                        ns = new RdfNamespace();
-                        ns.setPrefix("dd" + elem.getId());
-                        ns.setUri(StringUtils.substringBeforeLast(MessageFormat.format(baseUri, elem.getId()), "/") + "/");
-                    }
-                    if (!nameSpaces.contains(ns)) {
-                        nameSpaces.add(ns);
+                        if (!nameSpaces.contains(ns)) {
+                            nameSpaces.add(ns);
+                        }
                     }
                 }
 

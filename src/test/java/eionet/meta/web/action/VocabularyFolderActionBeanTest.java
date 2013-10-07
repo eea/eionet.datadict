@@ -42,7 +42,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         String expectedRelatedInternal = baseUri + "/vocabulary/wise/BWClosed/YP";
         // escapeIRI(contextRoot + elem.getRelatedConceptIdentifier()
 
-        Assert.assertTrue("Incorrect size of binded elements",
+        Assert.assertTrue("Incorrect size of bound elements",
                 StringUtils.contains(output, "\"skos:relatedMatch\",\"skos:relatedMatch\",\"skos:relatedMatch\""));
         Assert.assertTrue("Output does not contain correct SKOSRelatedMatch",
                 StringUtils.contains(output, "\"http://url1.com\",\"http://url2.com\",\"\""));

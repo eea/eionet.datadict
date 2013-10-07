@@ -531,7 +531,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         vocabularyFolders.add(vocabulary);
 
         List<RdfNamespace> nss = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
-        assertTrue(nss.size() == 3);
+        assertTrue(nss.size() == 2);
     }
 
     /**

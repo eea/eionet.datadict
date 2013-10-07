@@ -9,6 +9,7 @@ import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
@@ -47,11 +48,17 @@ public abstract class DDDatabaseTestCase extends DatabaseTestCase {
      * Load the data which will be inserted for the test
      * seed-attributes has some fixed values
      */
+    @Override
     protected IDataSet getDataSet() throws Exception {
         FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
         builder.setColumnSensing(true);
         FlatXmlDataSet loadedDataSet = builder.build(getClass().getClassLoader().getResourceAsStream(getSeedFilename()));
-        return loadedDataSet;
+
+        //this below is needed to input null values in seed files in format: [NULL]
+        ReplacementDataSet replDataSet = new ReplacementDataSet(loadedDataSet);
+        replDataSet.addReplacementObject("[NULL]", null);
+
+        return replDataSet;
     }
 
     protected String getSeedFilename() {

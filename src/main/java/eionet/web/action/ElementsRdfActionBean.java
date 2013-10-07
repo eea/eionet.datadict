@@ -60,7 +60,7 @@ public class ElementsRdfActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution getRdf() {
         try {
-            final String contextRoot = Props.getRequiredProperty(PropsIF.DD_URL) + "/properties/";
+            final String contextRoot = Props.getRequiredProperty(PropsIF.DD_URL) + "/property/";
             // final List<DataE>
             final List<DataElement> commonElements = dataService.getReleasedCommonDataElements();
             StreamingResolution result = new StreamingResolution("application/xml") {

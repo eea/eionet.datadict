@@ -31,6 +31,8 @@ import net.sourceforge.stripes.action.SimpleMessage;
 import net.sourceforge.stripes.controller.AnnotatedClassActionResolver;
 import net.sourceforge.stripes.controller.StripesConstants;
 import net.sourceforge.stripes.validation.SimpleError;
+import nl.bitwalker.useragentutils.Browser;
+import nl.bitwalker.useragentutils.BrowserType;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.Logger;
@@ -114,7 +116,7 @@ public abstract class AbstractActionBean implements ActionBean {
 
     /**
      *
-     * @param simpleErrorMessage
+     * @param simpleErrorMessage error msg
      */
     protected void addGlobalValidationError(String simpleErrorMessage) {
         context.getValidationErrors().addGlobalError(new SimpleError(simpleErrorMessage));
@@ -243,7 +245,7 @@ public abstract class AbstractActionBean implements ActionBean {
             pathInfo = request.getPathInfo();
         }
 
-        String finalPath = (servletPath != null ? servletPath : "") + (pathInfo != null ? pathInfo : "" );
+        String finalPath = (servletPath != null ? servletPath : "") + (pathInfo != null ? pathInfo : "");
         return finalPath;
     }
     /**
@@ -273,4 +275,31 @@ public abstract class AbstractActionBean implements ActionBean {
         // }
         // System.out.println("<<<<<<<<<< end request parameters dump");
     }
+
+    /**
+     * Checks is client request comes from web browser.
+     * @return true if request comes from web browser or Mobile browser
+     */
+    protected boolean isWebBrowser() {
+        boolean isWebBrowser = false;
+
+        String userAgentString = getContext().getRequest().getHeader("User-Agent");
+        if (userAgentString != null && userAgentString.trim().length() > 0) {
+
+            Browser browser = Browser.parseUserAgentString(userAgentString);
+            if (browser != null) {
+
+                BrowserType browserType = browser.getBrowserType();
+                if (browserType != null) {
+
+                    if (browserType.equals(BrowserType.WEB_BROWSER) || browserType.equals(BrowserType.MOBILE_BROWSER)) {
+                        isWebBrowser = true;
+                    }
+                }
+            }
+        }
+
+        return isWebBrowser;
+    }
+
 }

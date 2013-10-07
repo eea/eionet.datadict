@@ -76,12 +76,12 @@ public interface IDataElementDAO {
     DataElement getDataElement(String identifier);
 
     /**
-     * Returns latest version of the data element id.
+     * Returns latest version of the COMMON data element id.
      *
-     * @param identifier
-     * @return
+     * @param identifier common element identifier
+     * @return ID in DATAELEM table
      */
-    int getDataElementId(String identifier);
+    int getCommonDataElementId(String identifier);
 
     /**
      *

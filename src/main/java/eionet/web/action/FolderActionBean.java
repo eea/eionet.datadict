@@ -86,8 +86,9 @@ public class FolderActionBean extends AbstractActionBean {
 
                     String folderContextRoot =
                             Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + folder.getIdentifier() + "/";
+                    String commonElemsUri = Props.getRequiredProperty(PropsIF.DD_URL) + "/property/";
                     List<RdfNamespace> nameSpaces = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
-                    xmlWriter.writeXmlStart(true, folderContextRoot, nameSpaces);
+                    xmlWriter.writeXmlStart(true, commonElemsUri, folderContextRoot, nameSpaces);
                     xmlWriter.writeFolderXml(folderContextRoot, folder, vocabularyFolders);
 
                     for (VocabularyFolder vocabularyFolder : vocabularyFolders) {

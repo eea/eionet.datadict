@@ -905,11 +905,15 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             final String folderContextRoot =
                     Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + vocabularyFolder.getFolderName() + "/";
 
+            final String commonElemsUri =
+                    Props.getRequiredProperty(PropsIF.DD_URL) + "/property/";
+
+
             StreamingResolution result = new StreamingResolution("application/rdf+xml") {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
                     VocabularyXmlWriter xmlWriter = new VocabularyXmlWriter(response.getOutputStream());
-                    xmlWriter.writeRDFXml(folderContextRoot, contextRoot, vocabularyFolder, finalConcepts, nameSpaces);
+                    xmlWriter.writeRDFXml(commonElemsUri, folderContextRoot, contextRoot, vocabularyFolder, finalConcepts, nameSpaces);
                 }
             };
             result.setFilename(vocabularyFolder.getIdentifier() + ".rdf");
