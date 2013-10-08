@@ -839,8 +839,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             List<List<DataElement>> elementAttributes =
                     dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId, result.getId(), emptyAttributes);
-
-            setElemAttributeValues(elementAttributes);
             result.setElementAttributes(elementAttributes);
 
             return result;
@@ -883,7 +881,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
                 List<List<DataElement>> elementAttributes =
                         dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId, vc.getId(), false);
-                setElemAttributeValues(elementAttributes);
                 vc.setElementAttributes(elementAttributes);
             }
 
@@ -1111,24 +1108,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
         elem.setElemAttributeValues(elemAttributeValues);
 
         return elem.getDatatype().equals("reference");
-    }
-
-    /**
-     * finds and assigns attribute values for data elements.
-     *
-     * @param elementAttributes
-     *            data element list - outer list contains different data elements (meta), inner list contains element values
-     */
-    // TODO - this probably need some refactoring: for some reason element attribute values are stored in DataElement class and
-    // not handled by the most of queries in the API
-    private void setElemAttributeValues(List<List<DataElement>> elementAttributes) {
-        for (List<DataElement> elemList : elementAttributes) {
-            for (DataElement elem : elemList) {
-                Map<String, List<String>> elemAttributeValues =
-                        attributeDAO.getAttributeValues(elem.getId(), ParentType.ELEMENT.toString());
-                elem.setElemAttributeValues(elemAttributeValues);
-            }
-        }
     }
 
     @Override

@@ -16,19 +16,19 @@
     </c:if>
 
     <display:table name="actionBean.result.dataElements" class="sortable" id="item" requestURI="/searchelements/search/">
-        <display:column title="Element" sortable="true" sortProperty="shortName">
+        <display:column title="Element" sortable="true" sortProperty="identifier">
             <c:choose>
                 <c:when test="${item.released && empty actionBean.user}">
-                    <stripes:link href="/dataelements/${item.id}">${item.shortName}</stripes:link>
+                    <stripes:link href="/dataelements/${item.id}">${item.identifier}</stripes:link>
                 </c:when>
                 <c:when test="${not empty actionBean.user}">
-                    <stripes:link href="/dataelements/${item.id}">${item.shortName}</stripes:link>
+                    <stripes:link href="/dataelements/${item.id}">${item.identifier}</stripes:link>
                     <c:if test="${not empty item.workingUser}">
                         <span class="checkedout" title="${item.workingUser}">*</span>
                     </c:if>
                 </c:when>
                 <c:otherwise>
-                    ${item.shortName}
+                    ${item.identifier}
                 </c:otherwise>
             </c:choose>
         </display:column>
@@ -53,6 +53,9 @@
                 <fmt:formatDate pattern="dd MMM yyyy" value="${item.modified}" var="dateFormatted"/>
                 <sup class="commonelm">${dateFormatted}</sup>
             </c:if>
+        </display:column>
+         <display:column title="Name" sortable="true" sortProperty="name">
+            ${item.name}
         </display:column>
     </display:table>
 

@@ -78,12 +78,23 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         return result;
     }
 
+    /**
+     * finds Common elements.
+     *
+     * @param filter
+     *            search filter
+     * @return list of data elements
+     */
     private List<DataElement> executeCommonElementQuery(final DataElementsFilter filter) {
         Map<String, Object> params = new HashMap<String, Object>();
         StringBuilder sql = new StringBuilder();
 
-        sql.append("select de.DATAELEM_ID, de.IDENTIFIER, de.SHORT_NAME, de.REG_STATUS, de.DATE, de.TYPE, de.WORKING_USER ");
+        sql.append("select de.DATAELEM_ID, de.IDENTIFIER, de.SHORT_NAME, de.REG_STATUS, de.DATE, de.TYPE, de.WORKING_USER, ")
+            .append("a.VALUE as NAME ");
         sql.append("from DATAELEM de ");
+        sql.append("LEFT JOIN (ATTRIBUTE a, M_ATTRIBUTE ma) ")
+            .append("ON (de.DATAELEM_ID=a.DATAELEM_ID AND a.PARENT_TYPE='E' AND ma.M_ATTRIBUTE_ID=a.M_ATTRIBUTE_ID ")
+            .append("and ma.SHORT_NAME='Name') ");
         sql.append("where ");
         sql.append("de.PARENT_NS is null ");
         sql.append("and de.WORKING_COPY = 'N' ");
@@ -165,6 +176,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setWorkingUser(rs.getString("de.WORKING_USER"));
                 de.setIdentifier(rs.getString("de.IDENTIFIER"));
 
+                de.setName(rs.getString("NAME"));
                 dataElements.add(de);
             }
         });
@@ -172,14 +184,25 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         return dataElements;
     }
 
+    /**
+     * finds non-Common elements.
+     *
+     * @param filter
+     *            search filter
+     * @return list of data elements
+     */
     private List<DataElement> executeNonCommonElementQuery(final DataElementsFilter filter) {
         Map<String, Object> params = new HashMap<String, Object>();
         StringBuilder sql = new StringBuilder();
 
         sql.append("select de.DATAELEM_ID, de.IDENTIFIER, de.SHORT_NAME, ds.REG_STATUS, de.DATE, de.TYPE, ");
-        sql.append("t.SHORT_NAME as tableName, ds.IDENTIFIER as datasetName, ds.IDENTIFIER, ds.DATASET_ID, t.IDENTIFIER, t.TABLE_ID, de.WORKING_USER, de.WORKING_COPY ");
+        sql.append("t.SHORT_NAME as tableName, ds.IDENTIFIER as datasetName, ds.IDENTIFIER, ds.DATASET_ID, t.IDENTIFIER, ")
+                .append("t.TABLE_ID, de.WORKING_USER, de.WORKING_COPY, a.VALUE AS NAME ");
         sql.append("from DATAELEM de ");
         sql.append("left join TBL2ELEM t2e on (de.DATAELEM_ID = t2e.DATAELEM_ID) ");
+        sql.append("LEFT JOIN (ATTRIBUTE a, M_ATTRIBUTE ma) ")
+            .append("ON (de.DATAELEM_ID=a.DATAELEM_ID AND a.PARENT_TYPE='E' AND ma.M_ATTRIBUTE_ID=a.M_ATTRIBUTE_ID ")
+            .append("and ma.SHORT_NAME='Name') ");
         sql.append("left join DS_TABLE t on (t2e.TABLE_ID = t.TABLE_ID) ");
         sql.append("left join DST2TBL d2t on (t.TABLE_ID = d2t.TABLE_ID) ");
         sql.append("left join DATASET ds on (d2t.DATASET_ID = ds.DATASET_ID) ");
@@ -222,7 +245,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             params.put("parentType", DElemAttribute.ParentType.ELEMENT.toString());
         }
 
-        sql.append("order by ds.IDENTIFIER asc, ds.DATASET_ID desc, t.IDENTIFIER asc, t.TABLE_ID desc, de.IDENTIFIER asc, de.DATAELEM_ID desc");
+        sql.append("order by ds.IDENTIFIER asc, ds.DATASET_ID desc, t.IDENTIFIER asc, t.TABLE_ID desc, de.IDENTIFIER asc, ")
+                .append("de.DATAELEM_ID desc");
 
         // LOGGER.debug("SQL: " + sql.toString());
 
@@ -276,6 +300,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setDataSetName(rs.getString("datasetName"));
                 de.setWorkingUser(rs.getString("de.WORKING_USER"));
 
+                de.setIdentifier(rs.getString("de.IDENTIFIER"));
+                de.setName(rs.getString("NAME"));
                 dataElements.add(de);
             }
         });
@@ -349,8 +375,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public DataElement getDataElement(int id) {
-        String sql =
-                "select * from DATAELEM de where de.DATAELEM_ID = :id";
+        String sql = "select * from DATAELEM de where de.DATAELEM_ID = :id";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", id);
 
@@ -365,6 +390,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setType(rs.getString("de.TYPE"));
                 de.setModified(new Date(rs.getLong("de.DATE")));
                 de.setWorkingUser(rs.getString("de.WORKING_USER"));
+
                 return de;
             }
         });
@@ -385,7 +411,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public int getCommonDataElementId(String identifier) {
         String sql =
-                "select max(de.DATAELEM_ID) from DATAELEM de where de.IDENTIFIER = :identifier and de.REG_STATUS = :regStatus and PARENT_NS IS NULL ";
+                "select max(de.DATAELEM_ID) from DATAELEM de where de.IDENTIFIER = :identifier and de.REG_STATUS = :regStatus "
+                        + "and PARENT_NS IS NULL ";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("identifier", identifier);
         parameters.put("regStatus", RegStatus.RELEASED.toString());
@@ -422,8 +449,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public void addDataElement(int vocabularyFolderId, int dataElementId) {
-        String sql =
-                "insert into VOCABULARY2ELEM (VOCABULARY_ID, DATAELEM_ID) values (:vocabularyFolderId, :dataElementId)";
+        String sql = "insert into VOCABULARY2ELEM (VOCABULARY_ID, DATAELEM_ID) values (:vocabularyFolderId, :dataElementId)";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyFolderId", vocabularyFolderId);
@@ -437,8 +463,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public void removeDataElement(int vocabularyFolderId, int dataElementId) {
-        String sql =
-                "delete from VOCABULARY2ELEM where VOCABULARY_ID = :vocabularyFolderId and DATAELEM_ID = :dataElementId";
+        String sql = "delete from VOCABULARY2ELEM where VOCABULARY_ID = :vocabularyFolderId and DATAELEM_ID = :dataElementId";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyFolderId", vocabularyFolderId);
@@ -518,7 +543,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void moveVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId) {
         String sql =
-                "update VOCABULARY2ELEM set VOCABULARY_ID = :targetVocabularyFolderId where VOCABULARY_ID = :sourceVocabularyFolderId";
+                "update VOCABULARY2ELEM set VOCABULARY_ID = :targetVocabularyFolderId "
+                        + "where VOCABULARY_ID = :sourceVocabularyFolderId";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("sourceVocabularyFolderId", sourceVocabularyFolderId);
@@ -609,6 +635,9 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                     values = new ArrayList<DataElement>();
                 }
 
+
+                de.setElemAttributeValues(getDataElementAttributeValues(rs.getInt("d.DATAELEM_ID")));
+
                 values.add(de);
                 previousDataElemId = rs.getInt("d.DATAELEM_ID");
 
@@ -627,7 +656,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void insertVocabularyConceptDataElementValues(int vocabularyConceptId, List<DataElement> dataElementValues) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
+        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ")
+            .append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
         sql.append("values (:vocabularyConceptId, :dataElementId, :elementValue, :language, :relatedConceptId)");
 
         @SuppressWarnings("unchecked")
@@ -652,7 +682,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void copyVocabularyConceptDataElementValues(int newVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
+        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ")
+               .append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
         sql.append("select con.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID ");
         sql.append("from VOCABULARY_CONCEPT_ELEMENT v ");
         sql.append("left join VOCABULARY_CONCEPT con on v.VOCABULARY_CONCEPT_ID = con.ORIGINAL_CONCEPT_ID  ");
@@ -694,17 +725,15 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         sql.append("and cev.RELATED_CONCEPT_ID = con2.ORIGINAL_CONCEPT_ID ");
         sql.append("and cev.DATAELEM_ID = e.DATAELEM_ID ");
         sql.append("and con1.VOCABULARY_ID = :newVocabularyFolderId ");
-        //sql.append("and e.IDENTIFIER in (:relationalIdentifiers)");
-        //sql.append("and e.IDENTIFIER in (" + DataElement.getCSRelationalPrefixes() + ")");
+        // sql.append("and e.IDENTIFIER in (:relationalIdentifiers)");
+        // sql.append("and e.IDENTIFIER in (" + DataElement.getCSRelationalPrefixes() + ")");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("newVocabularyFolderId", newVocabularyFolderId);
-        //parameters.put("relationalIdentifiers", DataElement.getRelationalPrefixes());
-
+        // parameters.put("relationalIdentifiers", DataElement.getRelationalPrefixes());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
-
 
     /**
      * {@inheritDoc}
@@ -717,5 +746,39 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         params.put("relatedConceptId", vocabularyConceptId);
 
         getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+    /**
+     * Finds element attribute values for the data element.
+     *
+     * @param elementId
+     *            element ID
+     * @return Map where key is attribute name and value is list of element values
+     */
+    private Map<String, List<String>> getDataElementAttributeValues(int elementId) {
+        String sql =
+                "select SHORT_NAME, VALUE from ATTRIBUTE, M_ATTRIBUTE"
+                        + " where DATAELEM_ID=:parentId and PARENT_TYPE='E' and ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID"
+                        + " order by SHORT_NAME, VALUE";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("parentId", elementId);
+
+        final HashMap<String, List<String>> resultMap = new HashMap<String, List<String>>();
+        getNamedParameterJdbcTemplate().query(sql, params, new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                String shortName = rs.getString("SHORT_NAME");
+                String value = rs.getString("VALUE");
+                List<String> values = resultMap.get(shortName);
+                if (values == null) {
+                    values = new ArrayList<String>();
+                    resultMap.put(shortName, values);
+                }
+                values.add(value);
+            }
+        });
+
+        return resultMap;
     }
 }

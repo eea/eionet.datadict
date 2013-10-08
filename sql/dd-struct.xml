@@ -1507,9 +1507,18 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
                 onDelete="CASCADE" onUpdate="CASCADE"
                 referencedColumnNames="VOCABULARY_ID" referencedTableName="VOCABULARY"/>
     </changeSet>
-    
+
     <changeSet author="lainekai" id="rev-119">
         <comment>Drop default language from the bound element value as it is conceptually wrong</comment>
         <dropDefaultValue tableName="VOCABULARY_CONCEPT_ELEMENT" columnName="LANGUAGE"/>
     </changeSet>
+
+    <changeSet author="lainekai" id="rev-120">
+        <comment>index on PARENT TYPE and ELEMENT_ID</comment>
+        <createIndex indexName="IDX_PARENT_TYPE_ID" tableName="ATTRIBUTE">
+            <column name="PARENT_TYPE"/>
+            <column name="DATAELEM_ID"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

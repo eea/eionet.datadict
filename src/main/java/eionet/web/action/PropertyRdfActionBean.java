@@ -62,7 +62,6 @@ public class PropertyRdfActionBean extends AbstractActionBean {
     public Resolution view() throws ServiceException {
         Resolution r;
         if (isWebBrowser()) {
-            //TODO - search common elements only
             String elemId = String.valueOf(dataService.getCommonElementIdByIdentifier(identifier));
             if (!elemId.equals("0")) {
                 r = new RedirectResolution("/dataelements/" + elemId);

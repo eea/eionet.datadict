@@ -79,6 +79,11 @@ public class DataElement {
     /** fixed values. */
     private List<FixedValue> fixedValues;
 
+    /**
+     * Name attribute value is saved in this variable for better performance in search.
+     */
+    private String name;
+
     public String getStatusImage() {
         return Util.getStatusImage(status);
     }
@@ -349,16 +354,25 @@ public class DataElement {
 
     /**
      * returns Name attribute. Short name if data element does not have name.
-     * @return name in ATTRIBUTES table
+     * @return name in ATTRIBUTES table, default is empty string
      */
     public String getName() {
+
+        if (name != null) {
+            return name;
+        }
+
         if (elemAttributeValues != null) {
             if (elemAttributeValues.containsKey("Name")) {
                 return elemAttributeValues.get("Name").get(0);
             }
         }
 
-        return shortName;
+        return "";
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
