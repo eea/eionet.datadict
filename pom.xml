@@ -579,7 +579,7 @@
             <version>1.7.2</version>
         </dependency>
         <dependency>
-            <groupId>UserAgentUtils</groupId>
+            <groupId>nl.bitwalker</groupId>
             <artifactId>UserAgentUtils</artifactId>
             <version>1.2.4</version>
         </dependency>
