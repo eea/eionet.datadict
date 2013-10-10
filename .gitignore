@@ -5,3 +5,6 @@ target/*
 /.project
 *.cmd
 /.settings
+/rebuild.bat
+/deploy.bat
+/local.properties

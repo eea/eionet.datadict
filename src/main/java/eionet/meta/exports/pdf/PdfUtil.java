@@ -798,7 +798,7 @@ public class PdfUtil {
         PdfPTable table = new PdfPTable(1);
         int[] headerwidths = {100}; // percentage
         table.setWidths(headerwidths);
-        table.setWidthPercentage(100); // percentage
+        table.setWidthPercentage(85); // percentage
 
         PdfPCell cell = null;
 
