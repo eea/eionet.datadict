@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-    <DATAELEM TYPE="CH1" DATAELEM_ID="48922" NAMESPACE_ID="1" SHORT_NAME="RepresentativeStation" WORKING_COPY="N" REG_STATUS="Released" VERSION="1" USER="staromar" DATE="1193839341783" IDENTIFIER="RepresentativeStation" IS_ROD_PARAM="true"/>
+    <DATAELEM TYPE="CH1" DATAELEM_ID="48922" NAMESPACE_ID="1" SHORT_NAME="RepresentativeStation" WORKING_COPY="N" REG_STATUS="Released" VERSION="1" USER="staromar" DATE="1193839341783" IDENTIFIER="RepresentativeStation" />
     <M_ATTRIBUTE M_ATTRIBUTE_ID="1" NAME="Name" OBLIGATION="M" DEFINITION="Single or multi word designation assigned to a data element. Source: ISO 11179." SHORT_NAME="Name" NAMESPACE_ID="2" DISP_TYPE="text" DISP_ORDER="1" DISP_WHEN="75" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="1"/>
     <ATTRIBUTE M_ATTRIBUTE_ID="1" DATAELEM_ID="48922" VALUE="Representative Station" PARENT_TYPE="E"/>
  </dataset>
