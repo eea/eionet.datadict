@@ -1,0 +1,7 @@
+local.properties
+target/*
+/.checkstyle
+/.classpath
+/.project
+*.cmd
+/.settings
