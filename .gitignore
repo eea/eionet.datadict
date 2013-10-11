@@ -1,5 +1,6 @@
 local.properties
-target/*
+# target/ will match a directory target and paths underneath it, but not a regular file called target
+target/
 /.checkstyle
 /.classpath
 /.project
@@ -8,3 +9,4 @@ target/*
 /rebuild.bat
 /deploy.bat
 /local.properties
+Makefile
