@@ -15,45 +15,50 @@ import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 
 /**
- *
+ * This is a class that serves public methods to the XML-RPC interface of Data Dictionary.
+ * Every public method in this class should be callable by outer XML-RPC clients, but only
+ * if it's registered in the DataDictService.xml file located in webapp root.
  */
 public class OutService {
 
-    /** */
+    /** SQL connection to be used by this class. It is forwarded to method executors from other classes. */
     Connection conn = null;
 
     /**
-     *
+     * Default constructor.
      */
     public OutService() {
+        // Do nothing here.
     }
 
     /**
+     * Returns a vector of parameters by reporting obligation id (aka reporting activity id).
+     * This method is called by ROD (Reporting Obligations Database) when the ROD user wants to see all data elements in DD
+     * that have been associated with the particular reporting obligation.
      *
-     * @param raID
-     * @return
-     * @throws Exception
+     * NB! This method and the whole association of DD elements with ROD obligations is deprecated.
+     *
+     * @param activityId The reporting obligation id (aka reporting activity id).
+     * @return The vector of matching data elements in DD.
+     * @throws Exception When any sort of error happens.
      */
-    public Vector getParametersByActivityID(String raID) throws Exception {
+    @SuppressWarnings("rawtypes")
+    @Deprecated
+    public Vector getParametersByActivityID(String activityId) throws Exception {
 
-        try {
-            if (conn == null) {
-                getConnection();
-            }
-            DDSearchEngine searchEngine = new DDSearchEngine(conn);
-            return searchEngine.getParametersByActivityID(raID);
-        } finally {
-            closeConnection();
-        }
+        // The method is deprecated, so just send an empty vector.
+        return new Vector();
     }
 
     /**
-     * This method returns the IDs and titles of all ogligations that have
-     * a released dataset definition present in DD.
+     * This method returns the identifiers and titles of all obligations that have a released dataset definition present in DD.
+     * Returns vector of identifier-title pairs, given as hash maps where the key of identifier is
+     * "http://purl.org/dc/elements/1.1/identifier" and the key of title is "http://purl.org/dc/elements/1.1/title".
      *
-     * @return
-     * @throws Exception
+     * @return Vector of identifier-title pairs, given as hash maps.
+     * @throws Exception When any sort of error happens.
      */
+    @SuppressWarnings("rawtypes")
     public Vector getObligationsWithDatasets() throws Exception {
 
         try {
@@ -73,17 +78,18 @@ public class OutService {
      *
      * Returns all tables of all released datasets, including historic versions.
      * Return type is s a Vector of Hashtables where each Hashtable represents one table and has the following keys:
-     * - tblId          the table's numeric identifier
-     * - identifier     the table's alphanumeric (i.e. logical) identifier in DD database
-     * - shortName      the table's short name
-     * - dataSet        the short name of the dataset where this table belongs to
-     * - dateReleased   the release date of the dataset where this table belongs to
+     * - tblId the table's numeric identifier
+     * - identifier the table's alphanumeric (i.e. logical) identifier in DD database
+     * - shortName the table's short name
+     * - dataSet the short name of the dataset where this table belongs to
+     * - dateReleased the release date of the dataset where this table belongs to
      *
      * The caller should know that each of the above keys may be missing.
      *
      * @return Vector of Hashtables
-     * @throws Exception
+     * @throws Exception When any sort of error happens.
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public Vector getDSTables() throws Exception {
 
         try {
@@ -100,12 +106,6 @@ public class OutService {
             Vector ret = new Vector();
             for (int i = 0; i < result.size(); i++) {
                 DsTable table = (DsTable) result.get(i);
-
-                String table_id = table.getID();
-                String table_name = table.getShortName();
-                String ds_id = table.getDatasetID();
-                String ds_name = table.getDatasetName();
-                String dsNs = table.getParentNs();
 
                 Hashtable hash = new Hashtable();
                 hash.put("tblId", table.getID());
@@ -128,31 +128,38 @@ public class OutService {
 
     }
 
-
     /**
+     * Initiate the database connection.
      *
-     * @throws Exception
+     * @throws Exception When any sort of error happens.
      */
     private void getConnection() throws Exception {
         conn = ConnectionUtil.getConnection();
     }
 
     /**
-     *
+     * Close the database connection. Null-safe and throws no exceptions.
      */
     private void closeConnection() {
-        try { if (conn != null) {
-            conn.close();
-        } } catch (SQLException e) {}
+        try {
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (SQLException e) {
+            // Ignore deliberately.
+        }
     }
 
     /**
+     * Returns dataset release info for the given object id and object type. The latter may be one of "tbl" or "dst", representing
+     * tables or datasets respectively.
      *
-     * @param objType
-     * @param objId
-     * @return
-     * @throws Exception
+     * @param objType Object type.
+     * @param objId Object id.
+     * @return A hashtable with the dataset release info.
+     * @throws Exception When any sort of error happens
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public Hashtable getDatasetWithReleaseInfo(String objType, String objId) throws Exception {
 
         // validate objType
@@ -228,16 +235,4 @@ public class OutService {
 
         return reply.getHashTable();
     }
-
-    /**
-     *
-     * @param args
-     * @throws Exception
-     */
-    public static void main(String[] args) throws Exception {
-
-        OutService outService = new OutService();
-        System.out.println(outService.getDatasetWithReleaseInfo("dst", "2807"));
-    }
 }
-

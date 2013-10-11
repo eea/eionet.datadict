@@ -30,7 +30,6 @@ public class DataElement implements Comparable {
 
     private String gis = null;
     private String positionInTable = null;
-    private boolean isRodParam = true;
 
     private String workingUser = null;
     private String workingCopy = null;
@@ -319,14 +318,6 @@ public class DataElement implements Comparable {
 
     public String getGIS() {
         return this.gis;
-    }
-
-    public void setRodParam(boolean isRodParam) {
-        this.isRodParam = isRodParam;
-    }
-
-    public boolean isRodParameter() {
-        return isRodParam;
     }
 
     public void setFKRelations(Vector fks) {

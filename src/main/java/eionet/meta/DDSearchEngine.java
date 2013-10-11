@@ -192,7 +192,6 @@ public class DDSearchEngine {
                 elm.setWorkingUser(elemsRs.getString("DATAELEM.WORKING_USER"));
                 elm.setTopNs(elemsRs.getString("DATAELEM.TOP_NS"));
                 elm.setGIS(elemsRs.getString("DATAELEM.GIS"));
-                elm.setRodParam(elemsRs.getBoolean("DATAELEM.IS_ROD_PARAM"));
                 elm.setTableID(elemsRs.getString("TBL2ELEM.TABLE_ID"));
                 elm.setPositionInTable(elemsRs.getString("TBL2ELEM.POSITION"));
                 elm.setValueDelimiter(elemsRs.getString("TBL2ELEM.MULTIVAL_DELIM"));
@@ -354,7 +353,6 @@ public class DDSearchEngine {
                 elm.setWorkingUser(elemsRs.getString("DATAELEM.WORKING_USER"));
                 elm.setTopNs(elemsRs.getString("DATAELEM.TOP_NS"));
                 elm.setGIS(elemsRs.getString("DATAELEM.GIS"));
-                elm.setRodParam(elemsRs.getBoolean("DATAELEM.IS_ROD_PARAM"));
                 elm.setTableID(elemsRs.getString("TBL2ELEM.TABLE_ID"));
                 elm.setPositionInTable(elemsRs.getString("TBL2ELEM.POSITION"));
                 elm.setValueDelimiter(elemsRs.getString("TBL2ELEM.MULTIVAL_DELIM"));
@@ -706,7 +704,6 @@ public class DDSearchEngine {
                 elm.setWorkingUser(elemsRs.getString("DATAELEM.WORKING_USER"));
                 elm.setTopNs(elemsRs.getString("DATAELEM.TOP_NS"));
                 elm.setGIS(elemsRs.getString("DATAELEM.GIS"));
-                elm.setRodParam(elemsRs.getBoolean("DATAELEM.IS_ROD_PARAM"));
                 elm.setDate(elemsRs.getString("DATAELEM.DATE"));
                 elm.setTableID(elemsRs.getString("TBL2ELEM.TABLE_ID"));
                 elm.setPositionInTable(elemsRs.getString("TBL2ELEM.POSITION"));
@@ -1020,7 +1017,6 @@ public class DDSearchEngine {
                 elm.setWorkingCopy(elemsRs.getString("DATAELEM.WORKING_COPY"));
                 elm.setWorkingUser(elemsRs.getString("DATAELEM.WORKING_USER"));
                 elm.setGIS(elemsRs.getString("DATAELEM.GIS"));
-                elm.setRodParam(elemsRs.getBoolean("DATAELEM.IS_ROD_PARAM"));
                 elm.setDate(elemsRs.getString("DATAELEM.DATE"));
 
                 // fetch the element's dynamic attributes
@@ -1383,7 +1379,6 @@ public class DDSearchEngine {
                 elm.setStatus(rs.getString("DATAELEM.REG_STATUS"));
                 elm.setTopNs(rs.getString("DATAELEM.TOP_NS"));
                 elm.setGIS(rs.getString("DATAELEM.GIS"));
-                elm.setRodParam(rs.getBoolean("DATAELEM.IS_ROD_PARAM"));
                 elm.setWorkingCopy(rs.getString("DATAELEM.WORKING_COPY"));
                 elm.setWorkingUser(rs.getString("DATAELEM.WORKING_USER"));
                 elm.setUser(rs.getString("DATAELEM.USER"));
@@ -4605,99 +4600,6 @@ public class DDSearchEngine {
         }
 
         return v;
-    }
-
-    /**
-     *
-     * @param raID
-     * @return
-     * @throws Exception
-     */
-    public Vector getParametersByActivityID(String raID) throws Exception {
-
-        if (Util.isEmpty(raID)) {
-            throw new Exception("getParametersByActivityID(): activity ID missing!");
-        }
-
-        Vector result = new Vector();
-
-        INParameters inParams = new INParameters();
-        StringBuffer qryOfDatasets =
-                new StringBuffer().append("select distinct DATASET.DATASET_ID, DATASET.SHORT_NAME, DATASET.IDENTIFIER, ")
-                        .append("DATASET.VERSION from DST2ROD, DATASET where DST2ROD.ACTIVITY_ID=")
-                        .append(inParams.add(raID, Types.INTEGER))
-                        .append(" and DST2ROD.DATASET_ID=DATASET.DATASET_ID and DATASET.DELETED is null ")
-                        .append("order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc");
-
-        StringBuffer qryOfParameters =
-                new StringBuffer().append("select distinct DATAELEM.DATAELEM_ID, DATAELEM.TYPE, DATAELEM.SHORT_NAME, ")
-                        .append("DS_TABLE.SHORT_NAME from DST2TBL ")
-                        .append("left outer join DS_TABLE on DST2TBL.TABLE_ID=DS_TABLE.TABLE_ID ")
-                        .append("left outer join TBL2ELEM on DST2TBL.TABLE_ID=TBL2ELEM.TABLE_ID ")
-                        .append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID ")
-                        .append("where DST2TBL.DATASET_ID=? and DS_TABLE.TABLE_ID is not null and ")
-                        .append("DATAELEM.DATAELEM_ID is not null and DATAELEM.IS_ROD_PARAM='true' ")
-                        .append("order by DS_TABLE.SHORT_NAME, DATAELEM.SHORT_NAME");
-
-        ResultSet rsOfDatasets = null;
-        PreparedStatement stmtOfDatasets = null;
-        ResultSet rsOfParams = null;
-        PreparedStatement stmtOfParams = null;
-        try {
-            stmtOfParams = conn.prepareStatement(qryOfParameters.toString());
-            stmtOfDatasets = SQL.preparedStatement(qryOfDatasets.toString(), inParams, conn);
-            rsOfDatasets = stmtOfDatasets.executeQuery();
-            String curDstIdf = null;
-            while (rsOfDatasets.next()) {
-                String dstIdf = rsOfDatasets.getString("DATASET.IDENTIFIER");
-                if (curDstIdf != null && curDstIdf.equals(dstIdf)) {
-                    continue;
-                }
-                curDstIdf = dstIdf;
-
-                String dstName = rsOfDatasets.getString("DATASET.SHORT_NAME");
-                int dstID = rsOfDatasets.getInt("DATASET.DATASET_ID");
-                stmtOfParams.setInt(1, dstID);
-                rsOfParams = stmtOfParams.executeQuery();
-                while (rsOfParams.next()) {
-                    Hashtable hash = new Hashtable();
-                    hash.put("elm-name", rsOfParams.getString("DATAELEM.SHORT_NAME"));
-                    hash.put("tbl-name", rsOfParams.getString("DS_TABLE.SHORT_NAME"));
-                    hash.put("dst-name", dstName);
-
-                    String elmID = rsOfParams.getString("DATAELEM.DATAELEM_ID");
-                    String elmUrl = Props.getProperty(PropsIF.OUTSERV_ELM_URLPATTERN);
-                    int i = elmUrl.indexOf(PropsIF.OUTSERV_ELM_IDPATTERN);
-                    if (i == -1) {
-                        throw new Exception("Invalid property " + PropsIF.OUTSERV_ELM_URLPATTERN);
-                    }
-                    elmUrl = new StringBuffer(elmUrl).replace(i, i + PropsIF.OUTSERV_ELM_IDPATTERN.length(), elmID).toString();
-
-                    hash.put("elm-url", elmUrl);
-
-                    result.add(hash);
-                }
-            }
-        } finally {
-            try {
-                if (stmtOfDatasets != null) {
-                    stmtOfDatasets.close();
-                }
-                if (stmtOfParams != null) {
-                    stmtOfParams.close();
-                }
-                if (rsOfParams != null) {
-                    rsOfParams.close();
-                }
-                if (rsOfDatasets != null) {
-                    rsOfDatasets.close();
-                }
-
-            } catch (SQLException sqle) {
-            }
-        }
-
-        return result;
     }
 
     /**

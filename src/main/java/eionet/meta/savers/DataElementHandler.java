@@ -393,15 +393,6 @@ public class DataElementHandler extends BaseHandler {
             gen.setField("GIS", gisType);
         }
 
-        // set IS_ROD_PARAM
-        String isRodParam = req.getParameter("is_rod_param");
-        if (isRodParam != null) {
-            if (!isRodParam.equals("true") && !isRodParam.equals("false")) {
-                throw new Exception("Invalid value for is_rod_param!");
-            }
-            gen.setField("IS_ROD_PARAM", isRodParam);
-        }
-
         // if not in import mode, treat new common elements as working copies until checked in
         if (elmCommon && !isImportMode) {
             gen.setField("WORKING_COPY", "Y");
@@ -558,15 +549,6 @@ public class DataElementHandler extends BaseHandler {
             if (!Util.isEmpty(elmRegStatus)) {
                 gen.setField("REG_STATUS", elmRegStatus);
             }
-        }
-
-        // set IS_ROD_PARAM
-        String isRodParam = req.getParameter("is_rod_param");
-        if (isRodParam != null) {
-            if (!isRodParam.equals("true") && !isRodParam.equals("false")) {
-                throw new Exception("Invalid value for is_rod_param!");
-            }
-            gen.setField("IS_ROD_PARAM", isRodParam);
         }
 
         // set the gis type (relevant for common elements only)

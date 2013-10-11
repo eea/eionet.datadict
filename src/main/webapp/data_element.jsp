@@ -2160,55 +2160,6 @@
                                                 %>
                                             <!-- end dynamic attributes -->
 
-                                            <!-- IsRodParam -->
-                                            <%
-                                                boolean isRodParam = mode.equals("add") ? true : dataElement
-                                                            .isRodParameter();
-                                            %>
-                                            <tr class="zebra<%=isOdd%>">
-                                                <th scope="row" class="scope-row simple_attr_title">
-                                                    Is ROD parameter
-                                                </th>
-                                                <td class="simple_attr_help">
-                                                    <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=is_rod_param" onclick="pop(this.href);return false;">
-                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                    </a>
-                                                </td>
-                                                <%
-                                                    if (colspan == 4) {
-                                                %>
-                                                    <td class="simple_attr_help">
-                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt=""/>
-                                                    </td><%
-                                                        }
-                                                    %>
-                                                <td class="simple_attr_value">
-                                                    <%
-                                                        if (mode.equals("view")) {
-                                                    %>
-                                                        <%=isRodParam%><%
-                                                            } else {
-                                                                    boolean[] options = { true, false };
-                                                        %>
-                                                        <select name="is_rod_param" onchange="form_changed('form1')">
-                                                            <%
-                                                                for (int ii = 0; ii < options.length; ii++) {
-                                                                            String selected = isRodParam == options[ii] ? "selected=\"selected\""
-                                                                                    : "";
-                                                            %>
-                                                                <option <%=selected%> value="<%=options[ii]%>"><%=options[ii]%></option><%
-                                                                    }
-                                                                %>
-                                                        </select><%
-                                                            }
-                                                        %>
-                                                </td>
-
-                                                <%
-                                                    isOdd = Util.isOdd(++displayed);
-                                                %>
-                                            </tr>
-
                                             <!-- version (or the so-called CheckInNo), relevant for common elements only -->
                                             <%
                                                 if (verMan == null)
