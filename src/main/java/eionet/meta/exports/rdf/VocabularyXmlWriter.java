@@ -66,10 +66,10 @@ public class VocabularyXmlWriter {
     private static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
 
     /** DCTYPE namespace prefix. */
-    private static final String DCTYPE_NS = "http://purl.org/dc/dcmitype";
+    private static final String DCTYPE_NS = "http://purl.org/dc/dcmitype/";
 
     /** DCTERMS namespace prefix. */
-    private static final String DCTERMS_NS = "http://purl.org/dc/terms";
+    private static final String DCTERMS_NS = "http://purl.org/dc/terms/";
 
     /** DD namespace prefix. */
     private static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
