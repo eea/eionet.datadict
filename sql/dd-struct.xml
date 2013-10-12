@@ -1526,4 +1526,9 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropColumn tableName="DATAELEM" columnName="IS_ROD_PARAM"/>
     </changeSet>
 
+    <changeSet author="roug" id="rev-122">
+        <comment>Expand the label and notation for vocabulary concept to ensure the data will always fit</comment>
+        <sql>ALTER TABLE VOCABULARY_CONCEPT CHANGE LABEL LABEL TEXT NOT NULL, CHANGE NOTATION NOTATION VARCHAR(100) DEFAULT NULL</sql>
+    </changeSet>
+
 </databaseChangeLog>
