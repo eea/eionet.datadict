@@ -7,9 +7,12 @@ import org.apache.commons.lang.StringUtils;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
-/*
+/**
+ * The domain object for the record in DATAELEM table.
  *
+ * @author Jaanus
  */
+@SuppressWarnings("rawtypes")
 public class DataElement implements Comparable {
 
     private String id = null;
@@ -28,7 +31,6 @@ public class DataElement implements Comparable {
     private String dstWorkingUser = null;
     private String dstStatus = null;
 
-    private String gis = null;
     private String positionInTable = null;
 
     private String workingUser = null;
@@ -312,29 +314,12 @@ public class DataElement implements Comparable {
         return this.status;
     }
 
-    public void setGIS(String gis) {
-        this.gis = gis;
-    }
-
-    public String getGIS() {
-        return this.gis;
-    }
-
     public void setFKRelations(Vector fks) {
         this.fks = fks;
     }
 
     public Vector getFKRelations() {
         return this.fks;
-    }
-
-    public static Vector getGisTypes() {
-        Vector v = new Vector();
-        v.add("");
-        v.add("class");
-        v.add("subclass");
-        v.add("subtype");
-        return v;
     }
 
     public boolean hasImages() {

@@ -1531,4 +1531,9 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <sql>ALTER TABLE VOCABULARY_CONCEPT CHANGE LABEL LABEL TEXT NOT NULL, CHANGE NOTATION NOTATION VARCHAR(100) DEFAULT NULL</sql>
     </changeSet>
 
+    <changeSet author="heinlja" id="rev-123">
+        <comment>Remove GIS column from DATAELEM table, as it's no longer needed.</comment>
+        <dropColumn tableName="DATAELEM" columnName="GIS"/>
+    </changeSet>
+
 </databaseChangeLog>

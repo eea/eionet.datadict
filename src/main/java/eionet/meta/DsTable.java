@@ -6,6 +6,12 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
 
+/**
+ * Domain object for the records in DS_TABLE table.
+ *
+ * @author Jaanus
+ */
+@SuppressWarnings("rawtypes")
 public class DsTable implements Comparable {
 
     private String id = null;
@@ -22,7 +28,6 @@ public class DsTable implements Comparable {
     private String dstStatus = null;
     private String dstWorkingUser = null;
     private String dstDate = null;
-    private boolean gis = false;
 
     private String workingUser = null;
     private String workingCopy = null;
@@ -232,14 +237,6 @@ public class DsTable implements Comparable {
 
     public String getCompStr() {
         return compStr;
-    }
-
-    public void setGIS(boolean gis) {
-        this.gis = gis;
-    }
-
-    public boolean hasGIS() {
-        return gis;
     }
 
     public String getDstIdentifier() {

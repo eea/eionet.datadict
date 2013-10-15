@@ -197,16 +197,7 @@
         elems = searchEngine.getDataElements(null, null, null, null, tableID);
         mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
 
-        // analyze elements for GIS
-        boolean hasGIS = false;
-        for (int i=0; elems!=null && i<elems.size(); i++){
-            DataElement elm = (DataElement)elems.get(i);
-            if (elm.getGIS()!=null){
-                hasGIS = true;
-                break;
-            }
-        }
-        int colCount = hasGIS ? 5 : 4;
+        int colCount = 4;
 %>
 
 <%
@@ -529,18 +520,6 @@ if (messages.trim().length()>0){
                         <th align="right" style="padding-right:10px">&nbsp;</th> <!-- checkboxes column -->
 
                         <th scope="col" class="scope-col">Short name</th>
-
-                        <%
-                        if (hasGIS){ %>
-                            <th scope="col" class="scope-col">
-                                GIS
-                                <a href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href);return false;">
-                                    <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                                </a>
-                            </th><%
-                        }
-                        %>
-
                         <th scope="col" class="scope-col">Datatype</th>
                         <th scope="col" class="scope-col">Elem. type</th>
                         <th scope="col" class="scope-col">Mandatory</th>
@@ -593,7 +572,6 @@ if (messages.trim().length()>0){
                             strElemIDs.append(",");
                         strElemIDs.append(elem.getID());
 
-                        String gis = elem.getGIS()!=null ?  gis = elem.getGIS() : "no GIS";
                         String delem_name=elem.getShortName();
                         String elemType = (String)types.get(elem.getType());
                         String datatype = getAttributeValue(elem, "Datatype", mAttributes);
@@ -695,14 +673,6 @@ if (messages.trim().length()>0){
                                 }
                                 %>
                             </td>
-
-                            <%
-                            if (hasGIS){ %>
-                                <td style="text-align: left; padding-right:10px">
-                                    <%=Util.processForDisplay(gis)%>
-                                </td><%
-                            }
-                            %>
 
                             <td style="text-align: left; padding-right:10px">
                                 <%=Util.processForDisplay(datatype)%>
@@ -835,16 +805,6 @@ if (messages.trim().length()>0){
         </tr>
 
     </table>
-
-    <%
-    if (hasGIS){ %>
-        <p>
-        NB! Note that in table view this table is split into two:<br/>
-        one for GIS table elements (i.e. elements) and one for elements<br/>
-        describing the GIS file (i.e. Metadata elements).
-        </p><%
-    }
-    %>
 
     <div style="display:none">
         <input type="hidden" name="mode" value="delete"/>

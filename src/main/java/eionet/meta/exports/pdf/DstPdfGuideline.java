@@ -11,7 +11,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Vector;
@@ -37,47 +36,80 @@ import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
+/**
+ * PDF guidelines generator for a dataset.
+ */
 public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
     private static final String FILE_EXT = ".pdf";
 
     private int vsTableIndex = -1;
-    private int elmCount = 0;
 
     private String dsName = "";
     private String dsVersion = "";
+    @SuppressWarnings("rawtypes")
     private Hashtable tblElms = new Hashtable();
+    @SuppressWarnings("rawtypes")
     private Hashtable tblNames = new Hashtable();
+    @SuppressWarnings("rawtypes")
     private Hashtable submitOrg = new Hashtable();
+    @SuppressWarnings("rawtypes")
     private Hashtable respOrg = new Hashtable();
-    private boolean hasGisTables = false;
 
     private String cachePath = null;
     private String cacheFileName = null;
 
-    private Connection conn = null; // for storing cache entries
+    /** DB connection for storing cache entries. */
+    private Connection conn = null;
 
-    // private Chapter chapter = null;
-
+    /**
+     * Constructor.
+     *
+     * @param conn
+     */
     public DstPdfGuideline(Connection conn) {
         this.conn = conn;
         searchEngine = new DDSearchEngine(conn);
         setShowedAttributes();
     }
 
+    /**
+     * Constructor.
+     *
+     * @param conn
+     * @param os
+     */
     public DstPdfGuideline(Connection conn, OutputStream os) {
         this(conn);
         this.os = os;
     }
 
+    /**
+     *
+     * @param dsID
+     * @throws Exception
+     */
     private void cache(String dsID) throws Exception {
         write(dsID, true);
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see eionet.meta.exports.pdf.PdfHandout#write(java.lang.String)
+     */
+    @Override
     public void write(String dsID) throws Exception {
         write(dsID, false);
     }
 
+    /**
+     *
+     * @param dsID
+     * @param caching
+     * @throws Exception
+     */
+    @SuppressWarnings("rawtypes")
     private void write(String dsID, boolean caching) throws Exception {
 
         if (Util.isEmpty(dsID))
@@ -104,10 +136,6 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         DsTable tbl = null;
         for (int i = 0; v != null && i < v.size(); i++) {
             tbl = (DsTable) v.get(i);
-            if (searchEngine.hasGIS(tbl.getID())) {
-                tbl.setGIS(true);
-                this.hasGisTables = true;
-            }
             tbl.setSimpleAttributes(searchEngine.getSimpleAttributes(tbl.getID(), "T"));
         }
         ds.setTables(v);
@@ -117,6 +145,12 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         write(ds);
     }
 
+    /**
+     *
+     * @param ds
+     * @throws Exception
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void write(Dataset ds) throws Exception {
 
         if (ds == null)
@@ -136,15 +170,12 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         prg.add(new Chunk(dsName, Fonts.getUnicode(16, Font.BOLD)));
         prg.add(new Chunk(" dataset", Fonts.getUnicode(16)));
 
-        // chapter = new Chapter(prg, 1);
-
         // add the dataset chapter to the document
-        // elmCount = super.addElement(chapter);
-        elmCount = addElement(prg);
+        addElement(prg);
 
         addElement(new Paragraph("\n"));
 
-        // set up complex attributes to retreive SubmitOrg, RespOrg and Contact information
+        // set up complex attributes to retrieve SubmitOrg, RespOrg and Contact information
         Vector cattrs = ds.getComplexAttributes();
         if (cattrs != null && cattrs.size() > 0) {
             DElemAttribute attr = null;
@@ -184,11 +215,6 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
         addElement(PdfUtil.simpleAttributesTable(attrs, showedAttrs));
         addElement(new Phrase("\n"));
-
-        /*
-         * write image attributes Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath); if (imgAttrs != null) { addElement(new
-         * Phrase("\n")); addElement(imgAttrs); }
-         */
 
         // write tables list
         title = "Overview of " + dsName + " dataset tables";
@@ -243,44 +269,14 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             addElement(prg);
         }
 
-        Vector gisTables = new Vector();
-        if (this.hasGisTables) {
-            this.sect.setRefCodelists("5");
-            this.sect.setRefIllustrations("6");
-        }
-
         // add full guidlines of tables
         for (int i = 0; tables != null && i < tables.size(); i++) {
+
             DsTable dsTable = (DsTable) tables.get(i);
 
-            if (dsTable.hasGIS()) {
-                gisTables.add(dsTable);
-                continue;
-            }
-
             // the tables guidelines will be added to the current chapter
             addElement(new Paragraph("\n"));
-            TblPdfGuideline tblGuideln = new TblPdfGuideline(searchEngine, this);// , (Section) chapter);
-            tblGuideln.setVsPath(visualsPath);
-            tblGuideln.write(dsTable.getID(), ds.getID());
-            insertPageBreak();
-        }
-
-        if (gisTables.size() > 0) {
-            title = "GIS tables";
-            nr = sect.level(title, 1);
-            nr = nr == null ? "" : nr + " ";
-            prg = new Paragraph(nr + title, Fonts.get(Fonts.HEADING_1));
-            addElement(prg);
-        }
-
-        for (int i = 0; i < gisTables.size(); i++) {
-            DsTable dsTable = (DsTable) gisTables.get(i);
-            // the tables guidelines will be added to the current chapter
-            addElement(new Paragraph("\n"));
-            TblPdfGuideline tblGuideln = new TblPdfGuideline(searchEngine, this);// , (Section) chapter);
-            tblGuideln.setGIS(true);
-            tblGuideln.setVsPath(visualsPath);
+            TblPdfGuideline tblGuideln = new TblPdfGuideline(searchEngine, this);
             tblGuideln.write(dsTable.getID(), ds.getID());
             insertPageBreak();
         }
@@ -299,6 +295,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         setFooter();
     }
 
+    @SuppressWarnings("rawtypes")
     private void addCodelists(Vector tables) throws Exception {
 
         String nr = null;
@@ -369,6 +366,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private void addImgAttrs(Vector tables) throws Exception {
 
         String nr = null;
@@ -475,8 +473,6 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 for (int u = 0; u < elmImgVector.size(); u++) {
                     com.lowagie.text.Image img = (com.lowagie.text.Image) elmImgVector.get(u);
                     addElement(img);
-                    // addElement(imgTable);
-                    // addElement(new Paragraph("\n"));
                 }
             }
         }
@@ -487,6 +483,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
      *
      * @see eionet.meta.exports.pdf.PdfHandout#keepOnOnePage(int)
      */
+    @Override
     protected boolean keepOnOnePage(int index) {
         if (index == vsTableIndex)
             return true;
@@ -497,6 +494,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
     /**
      * Override of the method for adding a title page
      */
+    @Override
     protected void addTitlePage(Document doc) throws Exception {
 
         doc.add(new Paragraph("\n\n\n\n"));
@@ -538,11 +536,6 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             doc.add(prg);
         }
 
-        // date
-        // prg = new Paragraph(getTitlePageDate());
-        // prg.setAlignment(Element.ALIGN_CENTER);
-        // doc.add(prg);
-
         doc.add(new Paragraph("\n\n\n\n\n\n\n\n\n\n\n"));
 
         // European Environment Agency
@@ -560,26 +553,22 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         doc.add(prg);
     }
 
-    /**
-     * Override of the method indicating if title page needed
+    /*
+     * (non-Javadoc)
+     *
+     * @see eionet.meta.exports.pdf.PdfHandout#titlePageNeeded()
      */
+    @Override
     protected boolean titlePageNeeded() {
         return true;
     }
 
-    private String getTitlePageDate() {
-
-        String[] months =
-        {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November",
-        "December"};
-
-        Calendar cal = Calendar.getInstance();
-        int month = cal.get(Calendar.MONTH);
-        int year = cal.get(Calendar.YEAR);
-
-        return months[month] + " " + String.valueOf(year);
-    }
-
+    /*
+     * (non-Javadoc)
+     *
+     * @see eionet.meta.exports.pdf.PdfHandout#setHeader(java.lang.String)
+     */
+    @Override
     protected void setHeader(String title) throws Exception {
 
         Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
@@ -598,9 +587,13 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         header.setBorder(com.lowagie.text.Rectangle.BOTTOM);
     }
 
-    /**
-     * Default implementation for adding index based on sectioning
+    /*
+     * (non-Javadoc)
+     *
+     * @see eionet.meta.exports.pdf.PdfHandout#getIndexPage()
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Override
     public Vector getIndexPage() throws Exception {
 
         Vector elems = new Vector();
@@ -611,14 +604,14 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         elems.add(new Paragraph("\n"));
 
         String about =
-            "This document holds the technical specifications for a dataflow "
-            + "based on automatically generated output from the Data Dictionary "
-            + "application. The Data Dictionary is a central service for storing "
-            + "technical specifications for information requested in reporting "
-            + "obligations. The purpose of this document is to support countries "
-            + "in reporting good quality data. This document contains detailed "
-            + "specifications in a structured format for the data requested in a "
-            + "dataflow. Suggestions from users on how to improve the document " + "are welcome.";
+                "This document holds the technical specifications for a dataflow "
+                        + "based on automatically generated output from the Data Dictionary "
+                        + "application. The Data Dictionary is a central service for storing "
+                        + "technical specifications for information requested in reporting "
+                        + "obligations. The purpose of this document is to support countries "
+                        + "in reporting good quality data. This document contains detailed "
+                        + "specifications in a structured format for the data requested in a "
+                        + "dataflow. Suggestions from users on how to improve the document " + "are welcome.";
 
         font = FontFactory.getFont(FontFactory.HELVETICA, 10);
         prg = new Paragraph(about, font);
@@ -648,14 +641,22 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         return elems;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void addTblElms(String tblID, Vector elms) {
         tblElms.put(tblID, elms);
     }
 
+    @SuppressWarnings("unchecked")
     public void addTblNames(String tblID, String name) {
         tblNames.put(tblID, name);
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see eionet.meta.exports.pdf.PdfHandout#setFooter()
+     */
+    @Override
     protected void setFooter() throws Exception {
 
         Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
@@ -704,6 +705,13 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         footer.setBorder(com.lowagie.text.Rectangle.TOP);
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see eionet.meta.exports.pdf.PdfHandout#setShowedAttributes()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
     protected void setShowedAttributes() {
 
         showedAttrs.add("Short name");
@@ -715,42 +723,16 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         showedAttrs.add("Methodology");
     }
 
-    private String getContactInfo(Dataset dst) {
-
-        if (submitOrg == null)
-            return null;
-
-        DElemAttribute attr = dst.getAttributeByShortName("SubmitOrganisation");
-        if (attr == null)
-            return null;
-
-        Vector flds = attr.getFields();
-        if (flds == null || flds.size() == 0)
-            return getContactInfo();
-
-        StringBuffer buf = null;
-        for (int i = 0; i < flds.size(); i++) {
-            Hashtable fld = (Hashtable) flds.get(i);
-            String fldName = (String) fld.get("name");
-            if (fldName != null) {
-                String fldValue = (String) submitOrg.get(fldName);
-                if (!Util.isEmpty(fldValue)) {
-                    if (buf == null)
-                        buf = new StringBuffer();
-                    if (buf.length() > 0)
-                        buf.append("\n");
-                    buf.append(fldValue);
-                }
-            }
-        }
-
-        return buf == null ? null : buf.toString();
-    }
-
+    /**
+     *
+     * @return
+     */
+    @SuppressWarnings("rawtypes")
     private String getContactInfo() {
 
-        if (submitOrg == null)
+        if (submitOrg == null) {
             return null;
+        }
 
         Vector flds = (Vector) submitOrg.get("fields");
         if (flds == null || flds.size() == 0)
@@ -780,6 +762,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
      *
      * @see eionet.meta.exports.CachableIF#updateCache(java.lang.String)
      */
+    @Override
     public void updateCache(String id) throws Exception {
 
         cache(id);
@@ -809,6 +792,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
      *
      * @see eionet.meta.exports.CachableIF#clearCache(java.lang.String)
      */
+    @Override
     public void clearCache(String id) throws Exception {
 
         String fn = deleteCacheEntry(id, conn);
@@ -822,6 +806,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
      *
      * @see eionet.meta.exports.CachableIF#setCachePath(java.lang.String)
      */
+    @Override
     public void setCachePath(String path) throws Exception {
         cachePath = path;
         if (cachePath != null) {
@@ -836,6 +821,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
      *
      * @see eionet.meta.exports.CachableIF#isCached(java.lang.String)
      */
+    @Override
     public boolean isCached(String id) throws Exception {
         if (searchEngine == null)
             throw new Exception("DstPdfGuideline.isCached(): missing searchEngine!");
@@ -888,6 +874,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
     /*
      * Overriding flush() to check if content has been written from cache
      */
+    @Override
     public void flush() throws Exception {
         if (cacheFileName != null)
             os.flush();
@@ -901,6 +888,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
      * @param fn
      * @throws SQLException
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected static int storeCacheEntry(String id, String fn, Connection conn) throws SQLException {
 
         if (id == null || fn == null || conn == null)
@@ -912,8 +900,8 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         try {
             // first delete the old entry
             StringBuffer buf =
-                new StringBuffer().append("delete from CACHE where OBJ_TYPE='dst' and ARTICLE='pdf' and OBJ_ID=").append(
-                        inParams.add(id, Types.INTEGER));
+                    new StringBuffer().append("delete from CACHE where OBJ_TYPE='dst' and ARTICLE='pdf' and OBJ_ID=").append(
+                            inParams.add(id, Types.INTEGER));
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             stmt.executeUpdate();
             stmt.close();
@@ -951,8 +939,8 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
         INParameters inParams = new INParameters();
         StringBuffer buf =
-            new StringBuffer("select FILENAME from CACHE where ").append("OBJ_TYPE='dst' and ARTICLE='pdf' and OBJ_ID=")
-            .append(inParams.add(id, Types.INTEGER));
+                new StringBuffer("select FILENAME from CACHE where ").append("OBJ_TYPE='dst' and ARTICLE='pdf' and OBJ_ID=")
+                        .append(inParams.add(id, Types.INTEGER));
 
         String fn = null;
         PreparedStatement stmt = null;
@@ -964,8 +952,8 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 fn = rs.getString(1);
                 inParams = new INParameters();
                 buf =
-                    new StringBuffer("delete from CACHE where ").append("OBJ_TYPE='dst' and ARTICLE='pdf' and OBJ_ID=")
-                    .append(inParams.add(id, Types.INTEGER));
+                        new StringBuffer("delete from CACHE where ").append("OBJ_TYPE='dst' and ARTICLE='pdf' and OBJ_ID=")
+                                .append(inParams.add(id, Types.INTEGER));
                 stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
                 stmt.executeUpdate();
             }

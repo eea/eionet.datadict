@@ -731,6 +731,8 @@ public class DatasetImport {
         rowMap.add(getFieldMap("type", "type", false, "data element type in DATAELEM table"));
         rowMap.add(getFieldMap("short_name", "delem_name", false, "data element short name in DATAELEM table"));
         rowMap.add(getFieldMap("identifier", "idfier", false, "data element identifier in DATAELEM table"));
+        // The "GIS type" is a legacy attribute of data elements. It is backward-supported in dataset import, though ignored
+        // by the import handler.
         rowMap.add(getFieldMap("gistype", "gis", true, "GIS in DATAELEM table"));
 
         tblMap.put("DATAELEM", rowMap);

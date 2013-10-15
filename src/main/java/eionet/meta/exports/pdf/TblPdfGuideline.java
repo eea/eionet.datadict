@@ -1,4 +1,3 @@
-
 package eionet.meta.exports.pdf;
 
 import java.util.Hashtable;
@@ -17,42 +16,52 @@ import eionet.meta.DsTable;
 import eionet.meta.savers.Parameters;
 import eionet.util.Util;
 
+/**
+ * The generator of the PDF guidelines for a table.
+ */
 public class TblPdfGuideline {
 
+    /**  */
     private DDSearchEngine searchEngine = null;
-    //private Section parentSection = null;
-    //private Section section = null;
-
-    //private Vector docElements = new Vector();
-
-    private String vsPath = null;
+    /**  */
     private Parameters params = null;
+    /**  */
     private DstPdfGuideline owner = null;
-    private boolean hasGIS = false;
+    /**  */
+    @SuppressWarnings("rawtypes")
     protected Vector showedAttrs = new Vector();
 
-    // methods
-    /////////////
-
-    public TblPdfGuideline(DDSearchEngine searchEngine, DstPdfGuideline owner)//, Section parentSection)
-    throws Exception {
-
-        //if (parentSection == null) throw new Exception("parentSection cannot be null!");
+    /**
+     * Default constructor.
+     *
+     * @param searchEngine
+     * @param owner
+     */
+    public TblPdfGuideline(DDSearchEngine searchEngine, DstPdfGuideline owner) {
 
         if (searchEngine == null) {
-            throw new Exception("searchEngine cannot be null!");
+            throw new IllegalArgumentException("Search engine must not be null!");
         }
 
         this.searchEngine = searchEngine;
-        //this.parentSection = parentSection;
         this.owner = owner;
         setShowedAttributes();
     }
 
+    /**
+     * @param tblID
+     * @throws Exception
+     */
     public void write(String tblID) throws Exception {
         write(tblID, null);
     }
 
+    /**
+     * @param tblID
+     * @param dstID
+     * @throws Exception
+     */
+    @SuppressWarnings("rawtypes")
     protected void write(String tblID, String dstID) throws Exception {
 
         if (Util.isEmpty(tblID)) {
@@ -78,8 +87,12 @@ public class TblPdfGuideline {
     }
 
     /**
-     * Write a full guideline for a dataset table given by table object.
+     * Write a full PDF guideline for the given table.
+     *
+     * @param dsTable
+     * @throws Exception
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void write(DsTable dsTable) throws Exception {
 
         if (dsTable == null) {
@@ -89,7 +102,7 @@ public class TblPdfGuideline {
         String s = dsTable.getAttributeValueByShortName("Name");
         String tblName = Util.isEmpty(s) ? dsTable.getShortName() : s;
 
-        String titleTail = hasGIS ? "" : " table";
+        String titleTail = " table";
 
         String nr = "";
         if (owner != null) {
@@ -103,7 +116,7 @@ public class TblPdfGuideline {
             prg.add(new Chunk(titleTail, Fonts.getUnicode(14)));
         }
 
-        //section = parentSection.addSection(prg, 2);
+        // section = parentSection.addSection(prg, 2);
 
         addElement(prg);
 
@@ -130,24 +143,14 @@ public class TblPdfGuideline {
         addElement(PdfUtil.simpleAttributesTable(v, showedAttrs));
         addElement(new Phrase("\n"));
 
-        /* write image attributes
-        Element imgAttrs = PdfUtil.imgAttributes(v, vsPath);
-        if (imgAttrs != null) {
-            addElement(new Phrase("\n"));
-            addElement(imgAttrs);
-        }*/
-
-        // write table elements factlist,
-        // but first get fixed values & fk rels
-        // and split the elements vector into GIS and non-GIS
+        // Write table elements fact-list, but first get fixed values and foreign-key relations.
 
         v = dsTable.getElements();
         if (v == null || v.size() == 0) {
             return;
         }
 
-        Vector gisElms = new Vector();
-        Vector nonGisElms = new Vector();
+        Vector elms = new Vector();
 
         DataElement elem = null;
         String dstID = params == null ? null : params.getParameter("dstID");
@@ -160,12 +163,7 @@ public class TblPdfGuideline {
             Vector attrs = searchEngine.getSimpleAttributes(elem.getID(), "E");
             elem.setAttributes(attrs);
 
-            // split vector by GIS
-            if (elem.getGIS() != null) {
-                gisElms.add(elem);
-            } else {
-                nonGisElms.add(elem);
-            }
+            elms.add(elem);
         }
 
         if (owner != null) {
@@ -173,67 +171,37 @@ public class TblPdfGuideline {
             owner.addTblNames(dsTable.getID(), tblName);
         }
 
-        String nonGisTitle = " table:";
-        String gisTitle = " metadata table:";
-
-        // write non-GIS elements factlist
+        // Write the fact-list.
         prg = new Paragraph();
-        prg.add(new Chunk("Columns in ",
-                FontFactory.getFont(FontFactory.HELVETICA, 12)));
-        prg.add(new Chunk(tblName,
-                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
-        prg.add(new Chunk(nonGisTitle,
-                FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        prg.add(new Chunk("Columns in ", FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        prg.add(new Chunk(tblName, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+        prg.add(new Chunk(" table:", FontFactory.getFont(FontFactory.HELVETICA, 12)));
         addElement(prg);
 
-        addElement(
-                PdfUtil.tableElements(nonGisElms, null, owner.getSectioning()));
-
-        // write GIS elements factlist
-        if (gisElms.size() > 0) {
-            addElement(new Phrase("\n"));
-
-            prg = new Paragraph();
-            prg.add(new Chunk("Columns in ",
-                    FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            prg.add(new Chunk(tblName,
-                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
-            prg.add(new Chunk(gisTitle,
-                    FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            addElement(prg);
-
-            addElement(
-                    PdfUtil.tableElements(gisElms, null, owner.getSectioning()));
-        }
-
-        /* write data element full guidelines, each into a separate chapter
-        for (int i = 0; v != null && i < v.size(); i++) {
-            elem = (DataElement) v.get(i);
-            addElement(new Paragraph("\n"));
-            ElmPdfGuideline elmGuideln = new ElmPdfGuideline(searchEngine, this); //, section);
-            elmGuideln.setVsPath(this.vsPath);
-            elmGuideln.write(elem.getID(), dsTable.getID());
-        }*/
+        addElement(PdfUtil.tableElements(elms, null, owner.getSectioning()));
     }
 
+    /**
+     *
+     * @param elm
+     */
     protected void addElement(Element elm) {
 
         if (owner != null) {
             owner.addElement(elm);
         }
-
-        //if (elm != null) section.add(elm);
-        //return docElements.size();
     }
 
-    public void setVsPath(String vsPath) {
-        this.vsPath = vsPath;
-    }
-
+    /**
+     * @param params
+     */
     public void setParameters(Parameters params) {
         this.params = params;
     }
 
+    /**
+     * @return
+     */
     protected Sectioning getSectioning() {
         if (owner != null) {
             return owner.getSectioning();
@@ -242,10 +210,10 @@ public class TblPdfGuideline {
         }
     }
 
-    public void setGIS(boolean hasGIS) {
-        this.hasGIS = hasGIS;
-    }
-
+    /**
+     *
+     */
+    @SuppressWarnings("unchecked")
     protected void setShowedAttributes() {
 
         showedAttrs.add("Short name");

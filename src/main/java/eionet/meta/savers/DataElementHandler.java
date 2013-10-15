@@ -384,15 +384,6 @@ public class DataElementHandler extends BaseHandler {
             }
         }
 
-        // set gis type
-        String gisType = req.getParameter("gis");
-        if (gisType != null && gisType.length() == 0 && isImportMode) {
-            gisType = null;
-        }
-        if (gisType != null && !gisType.equals("nogis")) {
-            gen.setField("GIS", gisType);
-        }
-
         // if not in import mode, treat new common elements as working copies until checked in
         if (elmCommon && !isImportMode) {
             gen.setField("WORKING_COPY", "Y");
@@ -549,14 +540,6 @@ public class DataElementHandler extends BaseHandler {
             if (!Util.isEmpty(elmRegStatus)) {
                 gen.setField("REG_STATUS", elmRegStatus);
             }
-        }
-
-        // set the gis type (relevant for common elements only)
-        String gisType = req.getParameter("gis");
-        if (gisType == null || gisType.equals("nogis")) {
-            gen.setFieldExpr("GIS", "NULL");
-        } else {
-            gen.setField("GIS", gisType);
         }
 
         LOGGER.debug("sql: " + gen.updateStatement() + " where DATAELEM_ID=" + delem_id);

@@ -1729,64 +1729,6 @@
                                                     }
                                                 %>
 
-                                            <!-- GIS -->
-                                            <%
-                                                String gisType = dataElement != null ? dataElement.getGIS()
-                                                            : null;
-                                                    if (!mode.equals("view") || gisType != null) {
-                                            %>
-                                                <tr class="zebra<%=isOdd%>">
-                                                    <th scope="row" class="scope-row simple_attr_title">
-                                                        GIS type
-                                                    </th>
-                                                    <td class="simple_attr_help">
-                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href);return false;">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
-                                                    </td>
-                                                    <%
-                                                        if (colspan == 4) {
-                                                    %>
-                                                        <td class="simple_attr_help">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt=""/>
-                                                        </td><%
-                                                            }
-                                                        %>
-                                                    <td class="simple_attr_value">
-                                                        <%
-                                                            if (mode.equals("view")) {
-                                                                        gisType = (gisType == null || gisType.length() == 0) ? "&nbsp;"
-                                                                                : gisType;
-                                                        %>
-                                                            <%=Util.processForDisplay(gisType)%><%
-                                                                } else {
-                                                                            String selected = gisType == null ? "selected=\"selected\""
-                                                                                    : "";
-                                                            %>
-                                                            <select name="gis">
-                                                                <option value="nogis" <%=selected%>>-- no GIS element --</option><%
-                                                                    Vector gisTypes = DataElement.getGisTypes();
-                                                                                for (int i = 0; i < gisTypes.size(); i++) {
-                                                                                    String gist = (String) gisTypes.get(i);
-                                                                                    selected = gisType != null && gist.equals(gisType) ? "selected=\"selected\""
-                                                                                            : "";
-                                                                                    String gisDisp = gist.equals("") ? "[ ]" : gist;
-                                                                %>
-                                                                    <option <%=selected%> value="<%=Util.processForDisplay(gist)%>"><%=Util.processForDisplay(gisDisp)%></option><%
-                                                                        }
-                                                                    %>
-                                                            </select><%
-                                                                }
-                                                            %>
-                                                    </td>
-
-                                                    <%
-                                                        isOdd = Util.isOdd(++displayed);
-                                                    %>
-                                                </tr><%
-                                                    }
-                                                %>
-
                                             <!-- Reference URL -->
                                             <%
                                             String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);

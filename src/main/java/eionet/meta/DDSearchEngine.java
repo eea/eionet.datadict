@@ -191,7 +191,6 @@ public class DDSearchEngine {
                 elm.setWorkingCopy(elemsRs.getString("DATAELEM.WORKING_COPY"));
                 elm.setWorkingUser(elemsRs.getString("DATAELEM.WORKING_USER"));
                 elm.setTopNs(elemsRs.getString("DATAELEM.TOP_NS"));
-                elm.setGIS(elemsRs.getString("DATAELEM.GIS"));
                 elm.setTableID(elemsRs.getString("TBL2ELEM.TABLE_ID"));
                 elm.setPositionInTable(elemsRs.getString("TBL2ELEM.POSITION"));
                 elm.setValueDelimiter(elemsRs.getString("TBL2ELEM.MULTIVAL_DELIM"));
@@ -352,7 +351,6 @@ public class DDSearchEngine {
                 elm.setWorkingCopy(elemsRs.getString("DATAELEM.WORKING_COPY"));
                 elm.setWorkingUser(elemsRs.getString("DATAELEM.WORKING_USER"));
                 elm.setTopNs(elemsRs.getString("DATAELEM.TOP_NS"));
-                elm.setGIS(elemsRs.getString("DATAELEM.GIS"));
                 elm.setTableID(elemsRs.getString("TBL2ELEM.TABLE_ID"));
                 elm.setPositionInTable(elemsRs.getString("TBL2ELEM.POSITION"));
                 elm.setValueDelimiter(elemsRs.getString("TBL2ELEM.MULTIVAL_DELIM"));
@@ -703,7 +701,6 @@ public class DDSearchEngine {
                 elm.setWorkingCopy(elemsRs.getString("DATAELEM.WORKING_COPY"));
                 elm.setWorkingUser(elemsRs.getString("DATAELEM.WORKING_USER"));
                 elm.setTopNs(elemsRs.getString("DATAELEM.TOP_NS"));
-                elm.setGIS(elemsRs.getString("DATAELEM.GIS"));
                 elm.setDate(elemsRs.getString("DATAELEM.DATE"));
                 elm.setTableID(elemsRs.getString("TBL2ELEM.TABLE_ID"));
                 elm.setPositionInTable(elemsRs.getString("TBL2ELEM.POSITION"));
@@ -1016,7 +1013,6 @@ public class DDSearchEngine {
                 elm.setStatus(elemsRs.getString("DATAELEM.REG_STATUS"));
                 elm.setWorkingCopy(elemsRs.getString("DATAELEM.WORKING_COPY"));
                 elm.setWorkingUser(elemsRs.getString("DATAELEM.WORKING_USER"));
-                elm.setGIS(elemsRs.getString("DATAELEM.GIS"));
                 elm.setDate(elemsRs.getString("DATAELEM.DATE"));
 
                 // fetch the element's dynamic attributes
@@ -1378,7 +1374,6 @@ public class DDSearchEngine {
                 elm.setVersion(rs.getString("DATAELEM.VERSION"));
                 elm.setStatus(rs.getString("DATAELEM.REG_STATUS"));
                 elm.setTopNs(rs.getString("DATAELEM.TOP_NS"));
-                elm.setGIS(rs.getString("DATAELEM.GIS"));
                 elm.setWorkingCopy(rs.getString("DATAELEM.WORKING_COPY"));
                 elm.setWorkingUser(rs.getString("DATAELEM.WORKING_USER"));
                 elm.setUser(rs.getString("DATAELEM.USER"));
@@ -4180,49 +4175,6 @@ public class DDSearchEngine {
         }
 
         return hash;
-    }
-
-    /**
-     *
-     * @param tblID
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public boolean hasGIS(String tblID) throws SQLException {
-
-        if (tblID == null) {
-            return false;
-        }
-
-        INParameters inParams = new INParameters();
-        StringBuffer buf =
-                new StringBuffer("select count(*) ").append("from DATAELEM left outer join TBL2ELEM on ")
-                        .append("DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID ")
-                        .append("where DATAELEM.GIS is not null and TBL2ELEM.TABLE_ID=")
-                        .append(inParams.add(tblID, Types.INTEGER));
-
-        ResultSet rs = null;
-        PreparedStatement stmt = null;
-        try {
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            rs = stmt.executeQuery();
-            if (rs.next() && rs.getInt(1) > 0) {
-                return true;
-            } else {
-                return false;
-            }
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-            }
-        }
     }
 
     /**

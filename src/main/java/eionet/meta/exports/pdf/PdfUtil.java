@@ -462,7 +462,7 @@ public class PdfUtil {
                 table.addCell(cell);
             }
 
-            // add short name+full name+public or internal+foreign key+GIS
+            // add short name+full name+public or internal+foreign key
             String s = elem.getAttributeValueByShortName("Name");
             String name = Util.isEmpty(s) ? elem.getShortName() : s;
             String identifier = elem.getIdentifier();
@@ -483,10 +483,6 @@ public class PdfUtil {
             }
             if (fks != null && fks.size() > 0) {
                 phr.add(new Chunk("\nForeign key",
-                        FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
-            }
-            if (elem.getGIS() != null) {
-                phr.add(new Chunk("\n" + elem.getGIS(),
                         FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
             }
 

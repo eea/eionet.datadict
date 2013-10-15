@@ -1301,32 +1301,7 @@ else if (mode.equals("add"))
                                     if ((mode.equals("view") && elems!=null && elems.size()>0) || mode.equals("edit")){
 
 
-                                        colspan = user==null ? 1 : 2;
-
-                                        // check if has GIS elements
-                                        boolean hasGIS = false;
-                                        for (int i=0; elems!=null && i<elems.size(); i++){
-                                            DataElement elm = (DataElement)elems.get(i);
-                                            if (elm.getGIS()!=null){
-                                                hasGIS = true;
-                                                break;
-                                            }
-                                        }
-
-                                        // start the table elements loop
-                                        int loops = hasGIS ? 2 : 1;
-                                        for (int j=1; j<=loops; j++){
-
-                                            String curMode = hasGIS && j==2 ? "GIS" : "NOGIS";
-                                            String title = "";
-                                            if (!hasGIS)
-                                                title = "Elements";
-                                            else if (mode.equals("view")){
-                                                if (curMode.equals("NOGIS"))
-                                                    title = "Elements";
-                                                else
-                                                    title = "Metadata elements";
-                                            }
+                                            String title = "Elements";
 
                                             boolean hasMarkedElems = false;
                                             boolean hasForeignKeys = false;
@@ -1338,22 +1313,17 @@ else if (mode.equals("add"))
 
                                                 <h2><%=Util.processForDisplay(title)%></h2>
                                                 <p>
-                                                    <%
-                                                    if (j<=1){%>
-                                                        <a id="elements"></a><%
-                                                    }
-                                                    %>
+                                                    <a id="elements"></a>
                                                 </p>
 
                                                 <%
-                                                // elements (or GIS elements) table
+                                                // elements table
                                                 if (mode.equals("view") && elems!=null && elems.size()>0){
 
-                                                    // set colwidths depending on current mode (GIS or NOGIS)
-                                                    String widthShortName = curMode.equals("NOGIS") ? "50%" : "40%";
-                                                    String widthDatatype  = curMode.equals("NOGIS") ? "19%" : "15%";
-                                                    String widthElemtype  = curMode.equals("NOGIS") ? "31%" : "30%";
-                                                    String widthType      = "15%";
+                                                    // set colwidths
+                                                    String widthShortName = "50%";
+                                                    String widthDatatype  = "19%";
+                                                    String widthElemtype  = "31%";
 
                                                     Hashtable types = new Hashtable();
                                                     types.put("CH1", "Fixed values");
@@ -1361,18 +1331,10 @@ else if (mode.equals("add"))
                                                     %>
                                                               <table class="datatable subtable">
                                                                     <col style="width:<%=widthShortName%>"/>
-                                                                    <% if (curMode.equals("GIS")){ %>
-                                                                    <col style="width:<%=widthType%>"/>
-                                                                    <% } %>
                                                                     <col style="width:<%=widthDatatype%>"/>
                                                                     <col style="width:<%=widthElemtype%>"/>
                                                                 <tr>
                                                                     <th>Element name</th>
-                                                                    <%
-                                                                    if (curMode.equals("GIS")){ %>
-                                                                        <th>GIS type</th><%
-                                                                    }
-                                                                    %>
                                                                     <th>Datatype</th>
                                                                     <th>Element type</th>
                                                                 </tr>
@@ -1382,12 +1344,6 @@ else if (mode.equals("add"))
                                                                 for (int i=0; i<elems.size(); i++){
 
                                                                     DataElement elem = (DataElement)elems.get(i);
-                                                                    String gisType = elem.getGIS();
-
-                                                                    if (curMode.equals("GIS") && gisType==null)
-                                                                        continue;
-                                                                    if (curMode.equals("NOGIS") && gisType!=null)
-                                                                        continue;
 
                                                                     boolean elmCommon = elem.getNamespace()==null || elem.getNamespace().getID()==null;
                                                                     String elemLink = request.getContextPath() + "/dataelements/" + elem.getID();
@@ -1442,16 +1398,6 @@ else if (mode.equals("add"))
                                                                             }
                                                                             %>
                                                                         </td>
-                                                                        <!-- gis type -->
-                                                                        <%
-                                                                        if (curMode.equals("GIS")){
-                                                                            gisType = (gisType==null || gisType.length()==0) ? "&nbsp;" : gisType;
-                                                                            %>
-                                                                            <td>
-                                                                                <%=gisType%>
-                                                                            </td><%
-                                                                        }
-                                                                        %>
                                                                         <!-- datatype -->
                                                                         <td>
                                                                             <%=Util.processForDisplay(datatype)%>
@@ -1512,13 +1458,6 @@ else if (mode.equals("add"))
                                                         </div><%
                                                     }
                                                 }
-                                                else if (mode.equals("edit")){
-                                                    // in edit case we display only the link anyway and we don't
-                                                    // wont to display it twice (once for GIS elems and once for simply elems)
-                                                    // So we break the loop here.
-                                                    break;
-                                                }
-                                        }
                                     }
                                     %>
 

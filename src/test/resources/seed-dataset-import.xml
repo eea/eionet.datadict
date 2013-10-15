@@ -206,7 +206,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[93]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_NatStatCode]]></Identifier>
   <SHORT_NAME><![CDATA[NationalStationCode]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Nationl station code]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -240,7 +239,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_StationType]]></Identifier>
   <SHORT_NAME><![CDATA[StationType]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Station type]]></NAME>
   <TYPE><![CDATA[CH1]]></TYPE>
   <Definition><![CDATA[mandatory]]></Definition>
@@ -274,7 +272,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[95]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_NatStatName]]></Identifier>
   <SHORT_NAME><![CDATA[NationalStationName]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[National station name]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -308,7 +305,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[96]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_WatEntName]]></Identifier>
   <SHORT_NAME><![CDATA[WaterEntityName]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Name of a water entity]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -342,7 +338,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[97]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_NatStatCodeND]]></Identifier>
   <SHORT_NAME><![CDATA[NationalStationCodeND]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[National station code Nitrates Directive]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -376,7 +371,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[98]]></DATAELEM_ID>
   <Identifier><![CDATA[EU_CD]]></Identifier>
   <SHORT_NAME><![CDATA[EU_CD]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[WFD station code]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -410,7 +404,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[99]]></DATAELEM_ID>
   <Identifier><![CDATA[WaterbaseID]]></Identifier>
   <SHORT_NAME><![CDATA[WaterbaseID]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Waterbase station code]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -444,7 +437,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[100]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_Depth]]></Identifier>
   <SHORT_NAME><![CDATA[Depth]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Depth]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -478,7 +470,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[101]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_Drinking]]></Identifier>
   <SHORT_NAME><![CDATA[Drinking]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Drinking water station]]></NAME>
   <TYPE><![CDATA[CH1]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -512,7 +503,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[102]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_BeginDate]]></Identifier>
   <SHORT_NAME><![CDATA[BeginDate]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Beginning date]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -546,7 +536,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[103]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_EndDate]]></Identifier>
   <SHORT_NAME><![CDATA[EndDate]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[End date]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -580,7 +569,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_ParameterName]]></Identifier>
   <SHORT_NAME><![CDATA[ParameterName]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Name of parameter]]></NAME>
   <TYPE><![CDATA[CH1]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -614,7 +602,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[105]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_MeasUnit]]></Identifier>
   <SHORT_NAME><![CDATA[MeasurementUnit]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Unit of measurement]]></NAME>
   <TYPE><![CDATA[CH1]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -648,7 +635,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[108]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_NoOfSamples]]></Identifier>
   <SHORT_NAME><![CDATA[NumberOfSamples]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Number of samples]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -682,7 +668,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[109]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_AvgAnnValue]]></Identifier>
   <SHORT_NAME><![CDATA[AverageAnnualValue]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Average annual value]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -716,7 +701,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[112]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_AvgWintValue]]></Identifier>
   <SHORT_NAME><![CDATA[AverageWinterValue]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Average winter value]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -750,7 +734,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[113]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_TrendWintValue]]></Identifier>
   <SHORT_NAME><![CDATA[TrendWinterValue]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Trend winter value]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -784,7 +767,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[114]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_AvgValue]]></Identifier>
   <SHORT_NAME><![CDATA[AverageValue]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Average value]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -818,7 +800,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[115]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_TrophicState]]></Identifier>
   <SHORT_NAME><![CDATA[TrophicState]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Trophic state]]></NAME>
   <TYPE><![CDATA[CH1]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -852,7 +833,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[110]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_MaxValue]]></Identifier>
   <SHORT_NAME><![CDATA[MaximumValue]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Maximum value]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>
@@ -886,7 +866,6 @@ Please consider the following when compiling your data delivery:
   <DATAELEM_ID><![CDATA[111]]></DATAELEM_ID>
   <Identifier><![CDATA[ND_TrendAnnValue]]></Identifier>
   <SHORT_NAME><![CDATA[TrendAnnualValue]]></SHORT_NAME>
-  <GIStype><![CDATA[]]></GIStype>
   <NAME><![CDATA[Trend annual value]]></NAME>
   <TYPE><![CDATA[CH2]]></TYPE>
   <Definition><![CDATA[]]></Definition>

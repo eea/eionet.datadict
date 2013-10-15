@@ -24,29 +24,60 @@ import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
-public class TblXls extends Xls implements XlsIF, CachableIF{
+/**
+ * Excel template generator for a table.
+ */
+public class TblXls extends Xls implements XlsIF, CachableIF {
 
+    /**
+     * Class constructor.
+     */
     public TblXls() {
         fileName = "table.xls";
         wb = new HSSFWorkbook();
     }
 
+    /**
+     *
+     * Class constructor.
+     *
+     * @param conn
+     */
     public TblXls(Connection conn) {
         this();
         this.conn = conn;
         this.searchEngine = new DDSearchEngine(this.conn);
     }
 
+    /**
+     *
+     * Class constructor.
+     *
+     * @param searchEngine
+     * @param os
+     */
     public TblXls(DDSearchEngine searchEngine, OutputStream os) {
         this();
         this.searchEngine = searchEngine;
         this.os = os;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see eionet.meta.exports.xls.XlsIF#create(java.lang.String)
+     */
+    @Override
     public void create(String tblID) throws Exception {
         create(tblID, false);
     }
 
+    /**
+     *
+     * @param tblID
+     * @param caching
+     * @throws Exception
+     */
     private void create(String tblID, boolean caching) throws Exception {
 
         // don't create if its already in cache
@@ -59,10 +90,21 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
         setSchemaUrl("TBL" + tblID);
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see eionet.meta.exports.xls.XlsIF#write()
+     */
+    @Override
     public void write() throws Exception {
         write(false);
     }
 
+    /**
+     *
+     * @param caching
+     * @throws Exception
+     */
     private void write(boolean caching) throws Exception {
 
         // if available in cache, write from cache and return
@@ -74,55 +116,53 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
         wb.write(os);
     }
 
+    /**
+     *
+     * @param tblID
+     * @throws Exception
+     */
     private void addElements(String tblID) throws Exception {
 
         DsTable tbl = searchEngine.getDatasetTable(tblID);
-        if (tbl == null) throw new Exception("Table " + tblID + " not found!");
+        if (tbl == null)
+            throw new Exception("Table " + tblID + " not found!");
         // fileName = tbl.getDatasetName() + "_" + tbl.getShortName() + FILE_EXT;
         // for the fileName we now use Identifier, cause short name might contain characters
         // illegal for a filename
         fileName = tbl.getDstIdentifier() + "_" + tbl.getIdentifier() + FILE_EXT;
 
-        tbl.setGIS(searchEngine.hasGIS(tbl.getID()));
         sheet = wb.createSheet(tbl.getIdentifier());
         row = sheet.createRow(0);
 
         addElements(tbl);
     }
 
+    /**
+     *
+     * @param tbl
+     * @throws Exception
+     */
+    @SuppressWarnings("rawtypes")
     private void addElements(DsTable tbl) throws Exception {
 
         Vector elems = searchEngine.getDataElements(null, null, null, null, tbl.getID());
-        if (elems == null || elems.size() == 0) return;
+        if (elems == null || elems.size() == 0)
+            return;
 
         int done = 0;
         for (int i = 0; i < elems.size(); i++) {
-            if (tbl.hasGIS()) {
-                DataElement elm = (DataElement) elems.get(i);
-                if (elm.getGIS() == null) {
-                    addElement((DataElement) elems.get(i), (short) done);
-                    done++;
-                }
-            } else {
-                addElement((DataElement) elems.get(i), (short) done);
-                done++;
-            }
-        }
-
-        if (done<elems.size()) {
-            sheet = wb.createSheet(tbl.getIdentifier() + "-meta");
-            row = sheet.createRow(0);
-            done = 0;
-            for (int i = 0; i < elems.size(); i++) {
-                DataElement elm = (DataElement) elems.get(i);
-                if (elm.getGIS() != null) {
-                    addElement((DataElement) elems.get(i), (short) done);
-                    done++;
-                }
-            }
+            addElement((DataElement) elems.get(i), (short) done);
+            done++;
         }
     }
 
+    /**
+     *
+     * @param elm
+     * @param index
+     * @throws Exception
+     */
+    @SuppressWarnings("deprecation")
     private void addElement(DataElement elm, short index) throws Exception {
         HSSFCell cell = row.createCell(index);
         String title = elm.getIdentifier();
@@ -132,19 +172,33 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
         cell.setCellStyle(getStyle(ElmStyle.class));
     }
 
+    /**
+     *
+     * @param title
+     * @param index
+     */
+    @SuppressWarnings("deprecation")
     private void setColWidth(String title, short index) {
-        short width = (short)(title.length() * ElmStyle.FONT_HEIGHT * 50);
+        short width = (short) (title.length() * ElmStyle.FONT_HEIGHT * 50);
         sheet.setColumnWidth(index, width);
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see eionet.meta.exports.xls.XlsIF#getName()
+     */
+    @Override
     public String getName() {
         return fileName;
     }
 
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
+     *
      * @see eionet.meta.exports.CachableIF#updateCache(java.lang.String)
      */
+    @Override
     public void updateCache(String id) throws Exception {
 
         create(id, true);
@@ -158,18 +212,23 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
             } catch (Exception e) {
                 try {
                     File file = new File(fn);
-                    if (file.exists()) file.delete();
-                } catch (Exception ee) {}
+                    if (file.exists())
+                        file.delete();
+                } catch (Exception ee) {
+                }
             } finally {
-                if (os != null) os.close();
+                if (os != null)
+                    os.close();
             }
         }
     }
 
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
+     *
      * @see eionet.meta.exports.CachableIF#clearCache(java.lang.String)
      */
+    @Override
     public void clearCache(String id) throws Exception {
 
         String fn = deleteCacheEntry(id, conn);
@@ -179,9 +238,11 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
     }
 
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
+     *
      * @see eionet.meta.exports.CachableIF#setCachePath(java.lang.String)
      */
+    @Override
     public void setCachePath(String path) throws Exception {
         cachePath = path;
         if (cachePath != null) {
@@ -192,15 +253,18 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
     }
 
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
+     *
      * @see eionet.meta.exports.CachableIF#isCached(java.lang.String)
      */
+    @Override
     public boolean isCached(String id) throws Exception {
         if (searchEngine == null)
             throw new Exception("TblXls.isCached(): missing searchEngine!");
 
         cacheFileName = searchEngine.getCacheFileName(id, "tbl", "xls");
-        if (Util.isEmpty(cacheFileName)) return false;
+        if (Util.isEmpty(cacheFileName))
+            return false;
 
         // if the file is referenced in CACHE table, but does not actually exist, we say false
         File file = new File(cachePath + cacheFileName);
@@ -212,18 +276,21 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
         return true;
     }
 
-    /*
+    /**
      * Called when the output is present in cache.
      * Writes the cached document into the output stream.
      */
     public void writeFromCache() throws Exception {
 
-        if (Util.isEmpty(cachePath)) throw new Exception("Cache path is missing!");
-        if (Util.isEmpty(cacheFileName)) throw new Exception("Cache file name is missing!");
+        if (Util.isEmpty(cachePath))
+            throw new Exception("Cache path is missing!");
+        if (Util.isEmpty(cacheFileName))
+            throw new Exception("Cache file name is missing!");
 
         String fullName = cachePath + cacheFileName;
         File file = new File(fullName);
-        if (!file.exists()) throw new Exception("Cache file <" + fullName + "> does not exist!");
+        if (!file.exists())
+            throw new Exception("Cache file <" + fullName + "> does not exist!");
 
         int i = 0;
         byte[] buf = new byte[1024];
@@ -247,6 +314,7 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
      * @return
      * @throws SQLException
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected static int storeCacheEntry(String id, String fn, Connection conn) throws SQLException {
 
         if (id == null || fn == null || conn == null)
@@ -256,8 +324,9 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
         PreparedStatement stmt = null;
         try {
             // first delete the old entry
-            StringBuffer buf = new StringBuffer().
-            append("delete from CACHE where OBJ_TYPE='tbl' and ARTICLE='xls' and OBJ_ID=").append(inParams.add(id, Types.INTEGER));
+            StringBuffer buf =
+                    new StringBuffer().append("delete from CACHE where OBJ_TYPE='tbl' and ARTICLE='xls' and OBJ_ID=").append(
+                            inParams.add(id, Types.INTEGER));
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             stmt.executeUpdate();
             stmt.close();
@@ -275,8 +344,10 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
             return stmt.executeUpdate();
         } finally {
             try {
-                if (stmt != null) stmt.close();
-            } catch (SQLException e) {}
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException e) {
+            }
         }
     }
 
@@ -293,8 +364,9 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
             return null;
 
         INParameters inParams = new INParameters();
-        StringBuffer buf = new StringBuffer("select FILENAME from CACHE where ").
-        append("OBJ_TYPE='tbl' and ARTICLE='xls' and OBJ_ID=").append(inParams.add(id, Types.INTEGER));
+        StringBuffer buf =
+                new StringBuffer("select FILENAME from CACHE where ").append("OBJ_TYPE='tbl' and ARTICLE='xls' and OBJ_ID=")
+                        .append(inParams.add(id, Types.INTEGER));
 
         String fn = null;
         PreparedStatement stmt = null;
@@ -305,16 +377,20 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
             if (rs.next()) {
                 fn = rs.getString(1);
                 inParams = new INParameters();
-                buf = new StringBuffer("delete from CACHE where ").
-                append("OBJ_TYPE='tbl' and ARTICLE='xls' and OBJ_ID=").append(inParams.add(id, Types.INTEGER));
+                buf =
+                        new StringBuffer("delete from CACHE where ").append("OBJ_TYPE='tbl' and ARTICLE='xls' and OBJ_ID=")
+                                .append(inParams.add(id, Types.INTEGER));
                 stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
                 stmt.executeUpdate();
             }
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-            } catch (SQLException e) {}
+                if (rs != null)
+                    rs.close();
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException e) {
+            }
         }
 
         return fn;

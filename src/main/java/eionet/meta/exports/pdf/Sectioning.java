@@ -6,7 +6,6 @@ import java.util.Vector;
 public class Sectioning {
 
     public static final String MODE_ORD = "ord";
-    public static final String MODE_GIS = "gis";
 
     private static final String NR = "NR";
     private static final String LEVEL = "LEVEL";
@@ -139,6 +138,7 @@ public class Sectioning {
         return mode;
     }
 
+    @Override
     protected Object clone() throws CloneNotSupportedException {
         Sectioning sect = new Sectioning();
         sect.curLevel = curLevel;

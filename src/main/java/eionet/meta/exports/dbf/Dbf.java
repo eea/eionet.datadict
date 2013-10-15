@@ -15,9 +15,9 @@ import eionet.meta.DataElement;
 import eionet.meta.DsTable;
 
 /**
+ * DBase template creator for a table.
  *
- * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
- *
+ * @author Jaanus Heinlaid
  */
 public class Dbf {
 
@@ -78,10 +78,8 @@ public class Dbf {
         Vector elms = searchEngine.getDataElements(null, null, null, null, tbl.getID());
         for (int i = 0; elms != null && i < elms.size(); i++) {
 
-            // get data element, skip those where GIS type is not null
+            // get data element
             DataElement elm = (DataElement) elms.get(i);
-            if (elm.getGIS() != null)
-                continue;
 
             // construct a DBF field whose name is DD element's Identifier
             DBFField fld = new DBFField();

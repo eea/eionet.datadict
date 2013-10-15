@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
-
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
@@ -25,7 +23,6 @@ import eionet.meta.Dataset;
 import eionet.meta.DsTable;
 import eionet.util.Props;
 import eionet.util.PropsIF;
-import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.SQL;
 
@@ -35,18 +32,15 @@ import eionet.util.sql.SQL;
 public class MdbFile {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(MdbFile.class);
-
-    /** */
     public static final String PROP_TMP_FILE_PATH = "mdb.tmp-file-path";
     public static final String PROP_LOG_FILE = "mdb.log-file";
     public static final String PROP_SCHEMA_URL = "mdb.vmd-schema-url";
     public static final String NAMESPACE_PREFIX = "dd";
     public static final String DATASETS_NSID = "1";
 
-    public static final String   VMD_TABLENAME = "VALIDATION_METADATA_DO_NOT_MODIFY";
-    public static final String[] VMD_COLUMNS   =
-    {"TblIdf", "ElmIdf", "TblNr", "TblNsID", "TblNsURL", "TblSchemaURL", "DstIdf", "DstNr", "DstNsID", "DstNsURL", "DstSchemaURL", "DstSchemaLocation", "DstsNsID", "DstsNsURL"};
+    public static final String VMD_TABLENAME = "VALIDATION_METADATA_DO_NOT_MODIFY";
+    public static final String[] VMD_COLUMNS = {"TblIdf", "ElmIdf", "TblNr", "TblNsID", "TblNsURL", "TblSchemaURL", "DstIdf",
+            "DstNr", "DstNsID", "DstNsURL", "DstSchemaURL", "DstSchemaLocation", "DstsNsID", "DstsNsURL"};
 
     /** */
     private Connection conn = null;
@@ -62,10 +56,6 @@ public class MdbFile {
 
     private boolean vmdOnly = false;
 
-    //private static String dstSchemaURL = null;
-    //
-
-    private static String schemaURLBase = null;
     private static String namespaceURLPrefix = null;
     private static String dstSchemaLocationPrefix = null;
 
@@ -124,9 +114,14 @@ public class MdbFile {
         return file;
     }
 
-    /*
+    /**
      *
+     * @param dst
+     * @param file
+     * @return
+     * @throws Exception
      */
+    @SuppressWarnings("rawtypes")
     private Database createDatabase(Dataset dst, File file) throws Exception {
 
         Database db = null;
@@ -139,16 +134,22 @@ public class MdbFile {
             }
         } finally {
             if (db != null) {
-                try { db.close(); } catch (Throwable t) {}
+                try {
+                    db.close();
+                } catch (Throwable t) {
+                }
             }
         }
 
         return db;
     }
 
-    /*
-     *
+    /**
+     * @param tbl
+     * @param db
+     * @throws Exception
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void createTable(DsTable tbl, Database db) throws Exception {
 
         if (tbl == null) {
@@ -158,42 +159,32 @@ public class MdbFile {
             return;
         }
 
-        Vector gisColumns = new Vector();
-        Vector nonGisColumns = new Vector();
+        Vector columns = new Vector();
         Vector elems = searchEngine.getDataElements(null, null, null, null, tbl.getID());
         if (elems != null && elems.size() > 0) {
-            gisColumns = createGISColumns(elems);
-            nonGisColumns = createNONGISColumns(elems);
+            columns = createColumns(elems);
         }
 
-        boolean atLeastOneCreated = false;
+        boolean tableCreated = false;
         String tableName = tbl.getIdentifier();
-        //if (gisColumns != null && gisColumns.size() > 0) {
-        if (nonGisColumns != null && nonGisColumns.size() > 0) {
-            //db.createTable(tableName, gisColumns);
-            db.createTable(tableName, nonGisColumns);
-            atLeastOneCreated = true;
+        if (columns != null && columns.size() > 0) {
+            db.createTable(tableName, columns);
+            tableCreated = true;
         }
 
-        //if (nonGisColumns != null && nonGisColumns.size() > 0) {
-        if (gisColumns != null && gisColumns.size() > 0) {
-            if (atLeastOneCreated) {
-                tableName = tableName + "_meta";
-            }
-            //db.createTable(tableName, nonGisColumns);
-            db.createTable(tableName, gisColumns);
-            atLeastOneCreated = true;
-        }
-
-        if (!atLeastOneCreated) {
+        if (!tableCreated) {
             db.createTable(tableName, new Vector());
         }
     }
 
-    /*
+    /**
      *
+     * @param elems
+     * @return
+     * @throws Exception
      */
-    private Vector createGISColumns(Vector elems) throws Exception {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private Vector createColumns(Vector elems) throws Exception {
 
         Vector result = new Vector();
 
@@ -201,51 +192,23 @@ public class MdbFile {
             return result;
         }
 
-        int done = 0;
         for (int i = 0; i < elems.size(); i++) {
 
-            Column col = null;
             DataElement elm = (DataElement) elems.get(i);
-            if (elm.getGIS() != null) { // we want only GIS elements here!
-                col = createColumn((DataElement) elems.get(i));
-                if (col != null) {
-                    result.add(col);
-                }
+            Column col = createColumn(elm);
+            if (col != null) {
+                result.add(col);
             }
         }
 
         return result;
     }
 
-    /*
+    /**
      *
-     */
-    private Vector createNONGISColumns(Vector elems) throws Exception {
-
-        Vector result = new Vector();
-
-        if (elems == null || elems.size() == 0) {
-            return result;
-        }
-
-        int done = 0;
-        for (int i = 0; i < elems.size(); i++) {
-
-            Column col = null;
-            DataElement elm = (DataElement) elems.get(i);
-            if (elm.getGIS() == null) { // we want only NON-GIS elements here!
-                col = createColumn((DataElement) elems.get(i));
-                if (col != null) {
-                    result.add(col);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /*
-     *
+     * @param elm
+     * @return
+     * @throws SQLException
      */
     private Column createColumn(DataElement elm) throws SQLException {
 
@@ -267,9 +230,12 @@ public class MdbFile {
         return col;
     }
 
-    /*
+    /**
      *
+     * @return
+     * @throws Exception
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private File createVmdOnly() throws Exception {
 
         File file = new File(fullPath);
@@ -296,19 +262,28 @@ public class MdbFile {
             vmdTable.addRows(rows);
         } finally {
             if (db != null) {
-                try { db.close(); } catch (Throwable t) {}
+                try {
+                    db.close();
+                } catch (Throwable t) {
+                }
             }
         }
 
         return file;
     }
 
-    /*
+    /**
      *
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     * @throws MdbException
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private List createVmdRows() throws SQLException, IOException, MdbException {
 
-        //"TblIdf", "ElmIdf", "TblNr", "TblNsID", "TblNsURL", "TblSchemaURL", "DstIdf", "DstNr", "DstNsID", "DstNsURL", "DstSchemaURL", "DstSchemaLocation", "DstsNsID", "DstsNsURL"
+        // "TblIdf", "ElmIdf", "TblNr", "TblNsID", "TblNsURL", "TblSchemaURL", "DstIdf", "DstNr", "DstNsID", "DstNsURL",
+        // "DstSchemaURL", "DstSchemaLocation", "DstsNsID", "DstsNsURL"
 
         Vector ddTables = searchEngine.getDatasetTables(dstID, true);
         if (ddTables == null || ddTables.size() == 0) {
@@ -343,27 +318,30 @@ public class MdbFile {
 
         Object[] row = new Object[VMD_COLUMNS.length];
 
-        row[0]  = tbl.getIdentifier();                                  // TblIdf
-        row[1]  = elm.getIdentifier();                                  // ElmIdf
-        row[2]  = tbl.getID();                                          // TblNr
-        row[3]  = NAMESPACE_PREFIX + tbl.getNamespace();                    // TblNsID
-        row[4]  = getNamespaceURLPrefix() + tbl.getNamespace();         // TblNsURL
-        row[5]  = getSchemaURLBase() + "TBL" + tbl.getID();             // TblSchemaURL
-        row[6]  = dst.getIdentifier();                                  // DstIdf
-        row[7]  = dst.getID();                                          // DstNr
-        row[8]  = NAMESPACE_PREFIX + dst.getNamespaceID();              // DstNsID
-        row[9]  = getNamespaceURLPrefix() + dst.getNamespaceID();       // DstNsURL
-        row[10] = getSchemaURLBase() + "DST" + dst.getID();             // DstSchemaURL
+        row[0] = tbl.getIdentifier(); // TblIdf
+        row[1] = elm.getIdentifier(); // ElmIdf
+        row[2] = tbl.getID(); // TblNr
+        row[3] = NAMESPACE_PREFIX + tbl.getNamespace(); // TblNsID
+        row[4] = getNamespaceURLPrefix() + tbl.getNamespace(); // TblNsURL
+        row[5] = getSchemaURLBase() + "TBL" + tbl.getID(); // TblSchemaURL
+        row[6] = dst.getIdentifier(); // DstIdf
+        row[7] = dst.getID(); // DstNr
+        row[8] = NAMESPACE_PREFIX + dst.getNamespaceID(); // DstNsID
+        row[9] = getNamespaceURLPrefix() + dst.getNamespaceID(); // DstNsURL
+        row[10] = getSchemaURLBase() + "DST" + dst.getID(); // DstSchemaURL
         row[11] = getDstSchemaLocationPrefix() + row[8] + " " + row[10];// DstSchemaLocation
-        row[12] = NAMESPACE_PREFIX + DATASETS_NSID;                     // DstsNsID
-        row[13] = getNamespaceURLPrefix() + DATASETS_NSID;              // DstsNsURL
+        row[12] = NAMESPACE_PREFIX + DATASETS_NSID; // DstsNsID
+        row[13] = getNamespaceURLPrefix() + DATASETS_NSID; // DstsNsURL
 
         return row;
     }
 
-    /*
+    /**
      *
+     * @return
+     * @throws SQLException
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private static List getVmdColumns() throws SQLException {
         Vector cols = new Vector();
         for (int i = 0; i < VMD_COLUMNS.length; i++) {
@@ -377,9 +355,9 @@ public class MdbFile {
         return cols;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////
 
     /*
      *
@@ -392,8 +370,7 @@ public class MdbFile {
     /*
      *
      */
-    public static File create(Connection conn, String dstID, String fullPath, boolean vmdOnly)
-    throws Exception {
+    public static File create(Connection conn, String dstID, String fullPath, boolean vmdOnly) throws Exception {
         MdbFile mdbFile = new MdbFile(conn, dstID, fullPath);
         mdbFile.setVmdOnly(vmdOnly);
         return mdbFile.create();
@@ -422,7 +399,7 @@ public class MdbFile {
                 throw new MdbException("Missing command line argument for file full path");
             }
 
-            Properties props = MdbFile.getProperties();
+            MdbFile.getProperties();
             conn = ConnectionUtil.getConnection();
             if (vmdOnly == null) {
                 MdbFile.create(conn, dstID, fileFullPath);
@@ -444,9 +421,12 @@ public class MdbFile {
         System.exit(0);
     }
 
-    /*
+    /**
      *
+     * @return
+     * @throws Throwable
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private static Properties getProperties() throws Throwable {
 
         Vector v = new Vector();
@@ -458,7 +438,7 @@ public class MdbFile {
         Properties props = new Properties();
 
         for (int i = 0; i < v.size(); i++) {
-            String propName  = (String) v.get(i);
+            String propName = (String) v.get(i);
             String propValue = Props.getProperty(propName);
             if (propValue == null || propValue.length() == 0) {
                 throw new MdbException("Could not find property: " + propName);
@@ -471,46 +451,9 @@ public class MdbFile {
     }
 
     /*
-     *
-     */
-    private static void log(String msg) {
-
-        if (LOGGER != null) {
-            LOGGER.debug(msg);
-        } else {
-            System.out.println(msg);
-        }
-    }
-
-    /*
-     *
-     */
-    private static void log(String msg, Throwable t) {
-
-        if (LOGGER != null) {
-            LOGGER.debug(msg);
-            LOGGER.debug(Util.getStack(t));
-        } else {
-            System.out.println(msg);
-            System.out.println(Util.getStack(t));
-        }
-    }
-
-    /*
-     *
-     */
-    private static void log(Throwable t) {
-
-        if (LOGGER != null) {
-            LOGGER.debug(Util.getStack(t));
-        } else {
-            System.out.println(Util.getStack(t));
-        }
-    }
-
-    /*
      * FIXME: Move to unit test.
      */
+    @SuppressWarnings({"unused", "rawtypes", "unchecked"})
     private static void createTest() throws Exception {
 
         File file = null;
@@ -609,8 +552,7 @@ public class MdbFile {
                 jspURLPrefix = jspURLPrefix + "/";
             }
 
-            dstSchemaLocationPrefix =
-                new StringBuffer(jspURLPrefix).append("namespace.jsp?ns_id=").toString();
+            dstSchemaLocationPrefix = new StringBuffer(jspURLPrefix).append("namespace.jsp?ns_id=").toString();
         }
 
         return dstSchemaLocationPrefix;
@@ -633,18 +575,9 @@ public class MdbFile {
                 jspURLPrefix = jspURLPrefix + "/";
             }
 
-            namespaceURLPrefix =
-                new StringBuffer(jspURLPrefix).append("namespace.jsp?ns_id=").toString();
+            namespaceURLPrefix = new StringBuffer(jspURLPrefix).append("namespace.jsp?ns_id=").toString();
         }
 
         return namespaceURLPrefix;
-    }
-
-    /**
-     *
-     *
-     */
-    private static String getDatasetsNsID() {
-        return NAMESPACE_PREFIX + "1";
     }
 }
