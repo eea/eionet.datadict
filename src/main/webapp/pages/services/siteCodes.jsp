@@ -32,6 +32,8 @@
                 });
 
 
+
+
                 // Close allocate site codes dialog
                 $("#closeAllocateLink").click(function() {
                     $("#allocateSiteCodesDiv").dialog('close');
@@ -63,6 +65,27 @@
                         $("#labelsText").val("");
                     }
                 });
+                //show available codes only for all countries
+                $("#statusFilter").change(function() {
+                    var value = $(this).val();
+                    if (value == "AVAILABLE") {
+                        $("#countryFilter").val("");
+                        $("#countryFilter").prop('disabled', true);
+                    } else {
+                        $("#countryFilter").prop('disabled', false);
+                    }
+                });
+
+                //if country is selected hide status: available
+                $("#countryFilter").change(function() {
+                    var countryValue = $(this).val();
+                    if (countryValue != "") {
+                        $("#statusFilter option[value='AVAILABLE']").remove();
+                    } else {
+                        $('#statusFilter option:first').after($('<option />', { "value": 'AVAILABLE', text: 'Available'}));
+                    }
+                });
+
 
                 // Function for opening popups
                 openPopup = function(divId) {
@@ -124,26 +147,33 @@
 
         <%-- Info text --%>
         <c:if test="${actionBean.context.eventName == 'view'}">
-
+            <c:if test="${actionBean.userLoggedIn and not actionBean.allocateRight}">
+            <div class="note-msg">
+                <strong>Note</strong>
+                <p>
+                  You are not authorized to allocate site codes. Please contact responsible NRC or NFP if this is needed.
+                </p>
+            </div>
+            </c:if>
             <p>
             Site code is a unique identifier of site records in the
-            <a href=http://dd.eionet.europa.eu/datasets/latest/CDDA>Common database of designated areas</a>
+            <a href="http://dd.eionet.europa.eu/datasets/latest/CDDA">Common database of designated areas (CDDA)</a>
             which is annually updated in one of the EEA's priority dataflows.
             </p>
 
             <p>
-            CDDA, as the main European inventory of protected areas, provides the data for
+            CDDA is main European inventory of nationally designated protected areas and it provides data for
             <a href="http://www.wdpa.org/">World Database on Protected Areas (WDPA)</a>.
             In order to keep identification of the CDDA site records compatible with the WDPA,
-            the EEA agreed to use for the identification the code list maintained by the WDPA.
+            the EEA agreed to use the site identifier code list maintained by the WDPA.
             Whenever it is needed the WDPA provides free codes from the codelist to the EEA.
-            These free codes are then distributed on demand to the individual countries who assign
-            the codes to new national sites during the update of the CDDA data.
+            These free codes are then distributed to the individual countries on demand.
+            The countries then assign the codes to their new national sites during the update of the CDDA data.
             </p>
 
             <p>
-            In the past the distribution of the free codes as well as maintenance of the European codelists
-            has been performed manually by the ETC/BD. This service automatizes the process of the code distribution.
+            In the past the distribution of the free codes, as well as maintenance of the European codelist,
+            has been performed manually by the ETC/BD. This service automate the process of the code distribution.
             </p>
 
             <p>
@@ -224,16 +254,7 @@
                     <td class="simple_attr_value">
                         <stripes:select name="filter.status" id="statusFilter">
                             <stripes:option label="All" value="" />
-                            <c:choose>
-                                <c:when test="${not empty actionBean.user}">
-                                    <stripes:options-enumeration enum="eionet.meta.dao.domain.SiteCodeStatus" label="label" />
-                                </c:when>
-                                <c:otherwise>
-                                    <c:forEach items="${actionBean.publicStatuses}" var="status">
-                                        <stripes:option label="${status.label}" value="${status}"/>
-                                    </c:forEach>
-                                </c:otherwise>
-                            </c:choose>
+                            <stripes:options-enumeration enum="eionet.meta.dao.domain.SiteCodeStatus" label="label" />
                         </stripes:select>
                     </td>
                 </tr>
