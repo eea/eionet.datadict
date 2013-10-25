@@ -924,7 +924,6 @@ else
                         String schChecked = (!mode.equals("add") && attribute.displayFor(DElemAttribute.ParentType.SCHEMA.toString())) ? "checked=\"checked\"" : "";
                         String scsChecked = (!mode.equals("add") && attribute.displayFor(DElemAttribute.ParentType.SCHEMA_SET.toString())) ? "checked=\"checked\"" : "";
                         String vcfChecked = (!mode.equals("add") && attribute.displayFor(DElemAttribute.ParentType.VOCABULARY_FOLDER.toString())) ? "checked=\"checked\"" : "";
-                        String vcoChecked = (!mode.equals("add") && attribute.displayFor(DElemAttribute.ParentType.VOCABULARY_CONCEPT.toString())) ? "checked=\"checked\"" : "";
 
                         if (mode.equals("view")){
                             boolean hasOne = false;
@@ -952,9 +951,6 @@ else
                             if (vcfChecked.equals("checked=\"checked\"")) { hasOne = true; %>
                                 <br/>Vocabulary folders <%
                             }
-                            if (vcoChecked.equals("checked=\"checked\"")) { hasOne = true; %>
-                                <br/>Vocabulary concepts <%
-                            }
                             if (!hasOne){ %>
                                 Not specified<%
                             }
@@ -968,7 +964,6 @@ else
                             <input <%=disabled%> type="checkbox" <%=schChecked%> name="dispWhen" id="dispSCH" value="<%=DElemAttribute.ParentType.SCHEMA.toString()%>"/><label for="dispSCH">Schemas</label><br/>
                             <input <%=disabled%> type="checkbox" <%=scsChecked%> name="dispWhen" id="dispSCS" value="<%=DElemAttribute.ParentType.SCHEMA_SET.toString()%>"/><label for="dispSCS">Schema sets</label><br/>
                             <input <%=disabled%> type="checkbox" <%=vcfChecked%> name="dispWhen" id="dispVCF" value="<%=DElemAttribute.ParentType.VOCABULARY_FOLDER.toString()%>"/><label for="dispVCF">Vocabulary folders</label><br/>
-                            <input <%=disabled%> type="checkbox" <%=vcoChecked%> name="dispWhen" id="dispVCO" value="<%=DElemAttribute.ParentType.VOCABULARY_CONCEPT.toString()%>"/><label for="dispVCO">Vocabulary concepts</label><br/>
                             <%
                         }
                         %>

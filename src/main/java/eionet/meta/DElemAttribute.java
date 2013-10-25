@@ -282,7 +282,7 @@ public class DElemAttribute {
             return false;
         }
 
-        Integer weight = (Integer) typeWeights.get(type);
+        Integer weight = typeWeights.get(type);
         if (weight == null) {
             return false;
         }
@@ -400,6 +400,7 @@ public class DElemAttribute {
     /**
      * Overrides equals() in class Object.
      */
+    @Override
     public boolean equals(Object o) {
 
         if (!(o instanceof DElemAttribute)) {
@@ -648,7 +649,7 @@ public class DElemAttribute {
     public enum ParentType {
 
         /** */
-        ELEMENT("E"), TABLE("TBL"), DATASET("DS"), SCHEMA("SCH"), SCHEMA_SET("SCS"), VOCABULARY_FOLDER("VCF"), VOCABULARY_CONCEPT("VCO");
+        ELEMENT("E"), TABLE("TBL"), DATASET("DS"), SCHEMA("SCH"), SCHEMA_SET("SCS"), VOCABULARY_FOLDER("VCF");
 
         /** */
         String s;
@@ -666,6 +667,7 @@ public class DElemAttribute {
          *
          * @see java.lang.Enum#toString()
          */
+        @Override
         public String toString() {
             return s;
         }
