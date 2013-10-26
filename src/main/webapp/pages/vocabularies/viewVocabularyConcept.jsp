@@ -93,10 +93,10 @@
                                   <c:when test="${attr.relationalElement}">
                                       <c:choose>
                                        <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
-                                            <a href="${actionBean.uriPrefix}${attr.relatedConceptIdentifier}"><c:out value="${actionBean.uriPrefix}${attr.relatedConceptIdentifier}" /></a>
+                                            <a href="${actionBean.conceptViewPrefix}${attr.relatedConceptRelativePath}"><c:out value="${attr.relatedConceptIdentifier}" />
                                             <c:if test="${not empty attr.relatedConceptLabel}">
                                                 (<c:out value="${attr.relatedConceptLabel}" />)
-                                            </c:if>
+                                            </c:if></a>
                                        </c:when>
                                        <c:otherwise>
                                         <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean">

@@ -63,15 +63,23 @@ public class DataElement {
     /** Language from VOCABULARY_CONCEPT_ELEMENT table. */
     private String attributeLanguage;
 
-    /** related concept id. */
+    /** Related concept id. */
     private Integer relatedConceptId;
 
-    /** related concept identifier. */
+    /** Related concept identifier. */
     private String relatedConceptIdentifier;
 
-    /** related concept identifier. */
+    /** Related concept identifier. */
     private String relatedConceptLabel;
 
+    /** Related concept vocabulary identifier. */
+    private String relatedConceptVocabulary;
+
+    /** Related concept vocabulary set identifier. */
+    private String relatedConceptVocSet;
+
+    /** Related concept vocabulary base URI. */
+    private String relatedConceptBaseURI;
 
     /** attribute metadata in M_ATTRIBUTE. */
     private Map<String, List<String>> elemAttributeValues;
@@ -350,6 +358,40 @@ public class DataElement {
 
     public void setRelatedConceptLabel(String relatedConceptLabel) {
         this.relatedConceptLabel = relatedConceptLabel;
+    }
+
+    /**
+     * Generate the relative path to a concept in a different vocabulary in the same data dictionary.
+     * The path looks like "common/nuts/AT111".
+     *
+     * @return the path
+     */
+    public String getRelatedConceptRelativePath() {
+        return relatedConceptVocSet + "/" + relatedConceptVocabulary + "/" + relatedConceptIdentifier;
+    }
+
+    public String getRelatedConceptVocabulary() {
+        return relatedConceptVocabulary;
+    }
+
+    public void setRelatedConceptVocabulary(String relatedConceptVocabulary) {
+        this.relatedConceptVocabulary = relatedConceptVocabulary;
+    }
+
+    public String getRelatedConceptVocSet() {
+        return relatedConceptVocSet;
+    }
+
+    public void setRelatedConceptVocSet(String relatedConceptVocSet) {
+        this.relatedConceptVocSet = relatedConceptVocSet;
+    }
+
+    public String getRelatedConceptBaseURI() {
+        return relatedConceptBaseURI;
+    }
+
+    public void setRelatedConceptBaseURI(String relatedConceptBaseURI) {
+        this.relatedConceptBaseURI = relatedConceptBaseURI;
     }
 
     /**

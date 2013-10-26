@@ -327,6 +327,15 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     }
 
     /**
+     * Returns the prefix of the URL for a link to a <em>HTML view</em> of the concept.
+     *
+     * @return the unescaped URL.
+     */
+    public String getConceptViewPrefix() {
+        return Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabularyconcept/";
+    }
+
+    /**
      * Returns concept URI prefix.
      *
      * @return

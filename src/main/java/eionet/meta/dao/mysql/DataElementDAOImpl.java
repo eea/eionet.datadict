@@ -591,6 +591,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         sql.append("ON (v.DATAELEM_ID = d.DATAELEM_ID and v.VOCABULARY_CONCEPT_ID = :vocabularyConceptId) ");
         sql.append("LEFT JOIN VOCABULARY2ELEM ve on ve.DATAELEM_ID = d.DATAELEM_ID ");
         sql.append("LEFT JOIN VOCABULARY_CONCEPT rc on v.RELATED_CONCEPT_ID = rc.VOCABULARY_CONCEPT_ID ");
+        sql.append("LEFT JOIN VOCABULARY rcv ON rc.VOCABULARY_ID = rcv.VOCABULARY_ID ");
+        sql.append("LEFT JOIN VOCABULARY_SET rcvs ON rcv.FOLDER_ID = rcvs.ID ");
         sql.append("where ve.VOCABULARY_ID = :vocabularyFolderId ");
         sql.append("order by ve.DATAELEM_ID, v.ELEMENT_VALUE, rc.IDENTIFIER");
 
@@ -625,6 +627,9 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
                 de.setRelatedConceptIdentifier(rs.getString("rc.IDENTIFIER"));
                 de.setRelatedConceptLabel(rs.getString("rc.LABEL"));
+                de.setRelatedConceptVocabulary(rs.getString("rcv.IDENTIFIER"));
+                de.setRelatedConceptBaseURI(rs.getString("rcv.BASE_URI"));
+                de.setRelatedConceptVocSet(rs.getString("rcvs.IDENTIFIER"));
 
                 List<FixedValue> fxvs = getFixedValues(de.getId());
 
