@@ -20,6 +20,7 @@ import eionet.web.action.FolderActionBean;
  */
 public class VocabularyRdfTest extends DDDatabaseTestCase   {
 
+    private String url = Props.getProperty(PropsIF.DD_URL);
 
     /**
      * test if RDF output contains collection resource for a folder.
@@ -33,7 +34,6 @@ public class VocabularyRdfTest extends DDDatabaseTestCase   {
         trip.addParameter("folder.identifier", "wise");
         trip.execute("rdf");
 
-        String url = Props.getProperty(PropsIF.DD_URL);
         String dcTypeCollection = "<dctype:Collection rdf:about=\"" + url + "/vocabulary/wise/\">";
 
         String skosNotation = "<skos:notation>wise</skos:notation>";
@@ -78,7 +78,12 @@ public class VocabularyRdfTest extends DDDatabaseTestCase   {
         trip.execute("rdf");
 
         String output = trip.getOutputString();
-        assertTrue(StringUtils.contains(output, "<skos:relatedMatch rdf:resource=\"http://en.wikipedia.org/wiki/Semantic_Web\"/>"));
+        // Reference as plain string value
+        assertTrue(StringUtils.contains(output, "<skos:relatedMatch rdf:resource=\"http://en.wikipedia.org/wiki/Semantic%20Web\"/>"));
+        // Reference via RELATED_CONCEPT_ID
+        assertTrue(StringUtils.contains(output, "<skos:relatedMatch rdf:resource=\"" + url + "/vocabulary/wise/BWClosed/YP\"/>"));
+        // Localref via RELATED_CONCEPT_ID
+        assertTrue(StringUtils.contains(output, "<skos:related rdf:resource=\"" + url + "/vocabulary/wise/BWClosed/YT\"/>"));
     }
 
 

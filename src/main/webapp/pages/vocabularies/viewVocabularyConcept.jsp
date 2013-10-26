@@ -93,7 +93,7 @@
                                   <c:when test="${attr.relationalElement}">
                                       <c:choose>
                                        <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
-                                            <a href="${actionBean.conceptViewPrefix}${attr.relatedConceptRelativePath}"><c:out value="${attr.relatedConceptIdentifier}" />
+                                            <a href="${actionBean.conceptViewPrefix}${attr.relatedConceptRelativePath}/view"><c:out value="${attr.relatedConceptIdentifier}" />
                                             <c:if test="${not empty attr.relatedConceptLabel}">
                                                 (<c:out value="${attr.relatedConceptLabel}" />)
                                             </c:if></a>

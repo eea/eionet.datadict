@@ -328,6 +328,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * Returns the prefix of the URL for a link to a <em>HTML view</em> of the concept.
+     * This must match the @UrlBinding of this class.
      *
      * @return the unescaped URL.
      */

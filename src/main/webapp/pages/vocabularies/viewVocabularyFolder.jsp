@@ -262,12 +262,12 @@
             <display:column title="Preferred label" media="html">
                 <c:choose>
                     <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
-                        <stripes:link href="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}">
+                        <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view">
                             <c:out value="${concept.label}" />
                         </stripes:link>
                     </c:when>
                     <c:otherwise>
-                        <stripes:link href="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}">
+                        <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view">
                             <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                             <c:out value="${concept.label}" />
                         </stripes:link>

@@ -334,15 +334,12 @@ public class VocabularyXmlWriter {
                     for (DataElement elem : elems) {
                         writer.writeCharacters("\n");
                         if (elem.isRelationalElement()) {
-                            writer.writeCharacters("\n");
                             writer.writeEmptyElement(elem.getIdentifier());
-                            writer.writeAttribute("rdf", RDF_NS, "resource",
-                                    escapeIRI(contextRoot + elem.getRelatedConceptIdentifier()));
-
+                            writer.writeAttribute("rdf", RDF_NS, "resource", elem.getRelatedConceptUri());
                         } else if (StringUtils.isNotEmpty(elem.getAttributeValue())) {
                             if (StringUtils.isNotEmpty(elem.getDatatype()) && elem.getDatatype().equalsIgnoreCase("reference")) {
                                 writer.writeEmptyElement(elem.getIdentifier());
-                                writer.writeAttribute("rdf", RDF_NS, "resource", elem.getAttributeValue());
+                                writer.writeAttribute("rdf", RDF_NS, "resource", elem.getRelatedConceptUri());
                             } else {
                                 writer.writeStartElement(elem.getIdentifier());
                                 if (StringUtils.isNotEmpty(elem.getAttributeLanguage())) {

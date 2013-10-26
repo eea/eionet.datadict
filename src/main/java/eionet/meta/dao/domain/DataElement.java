@@ -27,6 +27,9 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.StringEncoder;
 import eionet.util.Util;
 
 /**
@@ -57,7 +60,7 @@ public class DataElement {
     private boolean workingCopy;
 
     //TODO - make a new DAO entity for VOCABULARY_CONCEPT_ELEMENT
-    /** Value from VOCABULARY_CONCEPT_ELEMENT table. */
+    /** Value from VOCABULARY_CONCEPT_ELEMENT table. Expected to be IRI encoded in DB. */
     private String attributeValue;
 
     /** Language from VOCABULARY_CONCEPT_ELEMENT table. */
@@ -100,168 +103,90 @@ public class DataElement {
         return StringUtils.equalsIgnoreCase("Released", status);
     }
 
-    /**
-     * @return the id
-     */
     public int getId() {
         return id;
     }
 
-    /**
-     * @param id
-     *            the id to set
-     */
     public void setId(int id) {
         this.id = id;
     }
 
-    /**
-     * @return the shortName
-     */
     public String getShortName() {
         return shortName;
     }
 
-    /**
-     * @param shortName
-     *            the shortName to set
-     */
     public void setShortName(String shortName) {
         this.shortName = shortName;
     }
 
-    /**
-     * @return the type
-     */
     public String getType() {
         return type;
     }
 
-    /**
-     * @param type
-     *            the type to set
-     */
     public void setType(String type) {
         this.type = type;
     }
 
-    /**
-     * @return the status
-     */
     public String getStatus() {
         return status;
     }
 
-    /**
-     * @param status
-     *            the status to set
-     */
     public void setStatus(String status) {
         this.status = status;
     }
 
-    /**
-     * @return the modified
-     */
     public Date getModified() {
         return modified;
     }
 
-    /**
-     * @param modified
-     *            the modified to set
-     */
     public void setModified(Date modified) {
         this.modified = modified;
     }
 
-    /**
-     * @return the tableName
-     */
     public String getTableName() {
         return tableName;
     }
 
-    /**
-     * @param tableName
-     *            the tableName to set
-     */
     public void setTableName(String tableName) {
         this.tableName = tableName;
     }
 
-    /**
-     * @return the dataSetName
-     */
     public String getDataSetName() {
         return dataSetName;
     }
 
-    /**
-     * @param dataSetName
-     *            the dataSetName to set
-     */
     public void setDataSetName(String dataSetName) {
         this.dataSetName = dataSetName;
     }
 
-    /**
-     * @return the workingUser
-     */
     public String getWorkingUser() {
         return workingUser;
     }
 
-    /**
-     * @param workingUser
-     *            the workingUser to set
-     */
     public void setWorkingUser(String workingUser) {
         this.workingUser = workingUser;
     }
 
-    /**
-     * @return the workingCopy
-     */
     public boolean isWorkingCopy() {
         return workingCopy;
     }
 
-    /**
-     * @param workingCopy
-     *            the workingCopy to set
-     */
     public void setWorkingCopy(boolean workingCopy) {
         this.workingCopy = workingCopy;
     }
 
-    /**
-     * @return the attributeValue
-     */
     public String getAttributeValue() {
         return attributeValue;
     }
 
-    /**
-     * @param attributeValue
-     *            the attributeValue to set
-     */
     public void setAttributeValue(String attributeValue) {
         this.attributeValue = attributeValue;
     }
 
-    /**
-     * @return identifier of the data element
-     */
     public String getIdentifier() {
         return identifier;
     }
 
-    /**
-     *
-     * @param identifier
-     *            attribute value to set
-     */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
@@ -366,8 +291,25 @@ public class DataElement {
      *
      * @return the path
      */
-    public String getRelatedConceptRelativePath() {
+    private String getRelatedConceptRelativePath() {
         return relatedConceptVocSet + "/" + relatedConceptVocabulary + "/" + relatedConceptIdentifier;
+    }
+
+    /**
+     * Generate the full URI to a related concept. The concept can be specified
+     * as a foreign key reference to another concept in the database or it
+     * can be specified as a text string.
+     *
+     * @return the url - IRI encoded.
+     */
+    public String getRelatedConceptUri() {
+        if (isRelationalElement()) {
+            return StringEncoder.encodeToIRI(Props.getRequiredProperty(PropsIF.DD_URL)
+                    + "/vocabulary/"
+                    + getRelatedConceptRelativePath());
+        } else {
+            return attributeValue;
+        }
     }
 
     public String getRelatedConceptVocabulary() {
