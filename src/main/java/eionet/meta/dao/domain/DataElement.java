@@ -291,7 +291,7 @@ public class DataElement {
      *
      * @return the path
      */
-    private String getRelatedConceptRelativePath() {
+    public String getRelatedConceptRelativePath() {
         return relatedConceptVocSet + "/" + relatedConceptVocabulary + "/" + relatedConceptIdentifier;
     }
 
