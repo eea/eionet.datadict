@@ -88,7 +88,9 @@
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">${elementMeta.name}</th>
                         <td class="simple_attr_value">
+                          <ul class="stripedmenu">
                             <c:forEach var="attr" items="${elementValues}" varStatus="innerLoop">
+                              <li>
                                 <c:choose>
                                   <c:when test="${attr.relationalElement}">
                                       <c:choose>
@@ -113,10 +115,9 @@
                                       <dd:linkify value="${attr.attributeValue}" /><c:if test="${not empty attr.attributeLanguage}"> [${attr.attributeLanguage}]</c:if>
                                   </c:otherwise>
                                 </c:choose>
-                                <c:if test="${fn:length(elementValues) - innerLoop.index - 1 >= 1}">
-                                    <hr />
-                                </c:if>
+                              </li>
                             </c:forEach>
+                            </ul>
                         </td>
                     </tr>
                 </c:forEach>

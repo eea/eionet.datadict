@@ -363,3 +363,13 @@ d.simple_attr_title{
 .tree-nav li a:hover {
     text-decoration: underline;
 }
+#workarea ul.stripedmenu {
+    list-style: none;
+    list-style-image: none;
+    padding:0;
+    margin:0;
+}
+#workarea ul.stripedmenu li+li {
+    border-top: 2px dotted #F0F0F0;
+}
+
