@@ -169,6 +169,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private int elementId;
 
     /**
+     * Identifier before the user started editing.
+     * Needed to make the URLs working correctly still if user deletes identifier in the UI
+     */
+    private String origIdentifier;
+
+
+    /**
      * Navigates to view vocabulary folder page.
      *
      * @return
@@ -240,6 +247,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
         initFilter();
+        origIdentifier = vocabularyFolder.getIdentifier();
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         folders = vocabularyService.getFolders(getUserName(), null);
         folderChoice = FOLDER_CHOICE_EXISTING;
@@ -391,6 +399,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 vocabularyFolder.setFolderName(folder.getIdentifier());
             }
         }
+        origIdentifier = vocabularyFolder.getIdentifier();
         addSystemMessage("Vocabulary saved successfully");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
@@ -718,6 +727,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             folders = vocabularyService.getFolders(getUserName(), null);
             initFilter();
             vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+            bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
         }
     }
 
@@ -1324,4 +1334,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         this.elementId = elementId;
     }
 
+    public String getOrigIdentifier() {
+        return origIdentifier;
+    }
+
+    public void setOrigIdentifier(String origIdentifier) {
+        this.origIdentifier = origIdentifier;
+    }
 }

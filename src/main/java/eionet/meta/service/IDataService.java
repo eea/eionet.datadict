@@ -126,4 +126,13 @@ public interface IDataService {
      * @throws ServiceException if query fails
      */
     int getCommonElementIdByIdentifier(String identifier) throws ServiceException;
+
+    /**
+     * finds and sets attributes of an element.
+     * Would be too resource consuming to set automatically in each elements query
+     * @param dataElement data element
+     * @throws ServiceException if query fails
+     */
+    void setDataElementAttributes(DataElement dataElement)  throws ServiceException;
+
 }

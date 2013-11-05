@@ -53,7 +53,7 @@
     <span id="newField${uniqueId}">
         <input type="hidden" name="" value="${attributeId}" />
         <input class="smalltext" size="${fieldSize}" type="text">
-        <dd:selectLang id="lang${fieldName}[${innerLoop.index}]" value="en" />
+        <dd:selectLang name="lang${uniqueId}]" value="en" />
         <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
         <br/>
     </span>

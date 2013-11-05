@@ -24,6 +24,8 @@ package eionet.meta.dao;
 import java.util.List;
 
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Pair;
 
 /**
@@ -159,4 +161,12 @@ public interface IVocabularyFolderDAO {
      * @return list of Pairs where Left = element name and Right=max count of elements in a concept in this vocabulary folder
      */
     List<Pair<String, Integer>> getVocabularyFolderBoundElementsMeta(int vocabularyFolderId);
+
+
+    /**
+     * Search vocabularies by the given parameters.
+     * @param filter container object for filtering parameters
+     * @return Result containing values for the paged request
+     */
+    VocabularyResult searchVocabularies(VocabularyFilter filter);
 }

@@ -2,6 +2,9 @@ package eionet.util;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.validator.routines.UrlValidator;
+import org.junit.Assert;
+
 /**
  *
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
@@ -70,4 +73,26 @@ public class UtilTest extends TestCase {
         assertTrue(Util.skipAttributeByDatatype("MinSize", "localref"));
         assertTrue(!Util.skipAttributeByDatatype("Name", "string"));
     }
+
+    public void testvalidUrl() {
+
+        Assert.assertTrue(Util.isValidUri("http://java.sun.com"));
+        Assert.assertTrue(!Util.isValidUri("http://www. spacein.there.dk"));
+
+        Assert.assertTrue(!Util.isValidUri("appi"));
+        Assert.assertTrue(!Util.isValidUri("http://"));
+        Assert.assertTrue(Util.isValidUri("ftp://someftp.outthere.org"));
+
+        Assert.assertTrue(Util.isValidUri("urn:aa:lv"));
+
+        Assert.assertTrue(Util.isValidUri("mailto:juhan@hot.ee"));
+
+    }
+
+    private static boolean isValid(String str, UrlValidator val) {
+        System.out.println(str + " " + val.isValid(str));
+            return Util.isURI(str);
+    }
+
+
 }

@@ -55,4 +55,29 @@ public class DataServiceTest extends UnitilsJUnit4  {
         Assert.assertTrue(elements.size() == 2);
 
     }
+
+    /**
+     * test set element attribute values.
+     * @throws Exception if fail
+     */
+    @Test
+    public void testSetElementAttributes() throws Exception {
+        DataElement elem1 = dataService.getDataElement(1);
+        dataService.setDataElementAttributes(elem1);
+
+        DataElement elem2 = dataService.getDataElement(2);
+        dataService.setDataElementAttributes(elem2);
+
+        DataElement elem3 = dataService.getDataElement(3);
+        dataService.setDataElementAttributes(elem3);
+
+        Assert.assertTrue(elem1.getElemAttributeValues().size() == 2);
+        Assert.assertEquals(elem1.getName(), "Common element");
+
+        Assert.assertTrue(elem2.getElemAttributeValues().size() == 0);
+        Assert.assertTrue(elem3.getElemAttributeValues().size() == 1);
+        Assert.assertEquals(elem3.getElemAttributeValues().get("Definition").get(0), "Third definition");
+
+
+    }
 }

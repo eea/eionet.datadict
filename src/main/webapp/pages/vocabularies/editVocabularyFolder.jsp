@@ -112,6 +112,9 @@
             <stripes:hidden name="vocabularyFolder.id" />
             <stripes:hidden name="vocabularyFolder.workingCopy" />
             <stripes:hidden name="vocabularyFolder.checkedOutCopyId" />
+            <stripes:hidden name="vocabularyFolder.folderName" />
+            <stripes:hidden name="origIdentifier" />
+
 
             <table class="datatable">
                 <colgroup>
@@ -274,7 +277,6 @@
         <stripes:form method="get" id="searchForm" beanclass="${actionBean.class.name}">
             <div id="searchframe">
                 <stripes:hidden name="vocabularyFolder.folderName" />
-                <stripes:hidden name="vocabularyFolder.identifier" />
                 <stripes:hidden name="vocabularyFolder.workingCopy" />
                 <table class="datatable">
                     <colgroup>
@@ -311,7 +313,7 @@
         <c:url var="editIcon" value="/images/edit.gif" />
         <stripes:form method="post" id="conceptsForm" beanclass="${actionBean.class.name}">
             <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="item" style="width:80%"
-                requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/edit">
+                requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/edit">
                 <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
                 <display:setProperty name="paging.banner.item_name" value="concept" />
                 <display:setProperty name="paging.banner.items_name" value="concepts" />
@@ -331,7 +333,7 @@
                 </display:column>
                 <display:column title="Label">
                     <!-- beanClass encodes incorrectly identifiers containing '+'. Can be replaced back after upgrading to Stripes 1.5.8 -->
-                    <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${item.identifier}/edit">
+                    <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/${item.identifier}/edit">
                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                         <c:out value="${item.label}" />
                     </stripes:link>
@@ -382,8 +384,7 @@
                     </c:if>
 
                     <div>
-                        <stripes:hidden name="vocabularyFolder.folderName" />
-                        <stripes:hidden name="vocabularyFolder.identifier" />
+
                         <stripes:hidden name="vocabularyFolder.workingCopy" />
                         <stripes:hidden name="vocabularyFolder.id" />
                         <stripes:hidden name="vocabularyFolder.numericConceptIdentifiers" />
@@ -439,13 +440,13 @@
                                 </td>
                                 <td class="simple_attr_value">
                                     <c:choose>
-		                                <c:when test="${actionBean.vocabularyFolder != null && actionBean.vocabularyFolder.notationsEqualIdentifiers}">
-		                                    <span title="Forcefully equal to identifier in this vocabulary."><c:out value="${item.notation}"/></span>
-		                                </c:when>
-		                                <c:otherwise>
-		                                    <stripes:text class="smalltext" size="30" name="vocabularyConcepts.list[${loop.index}].notation" />
-		                                </c:otherwise>
-		                            </c:choose>
+                                    <c:when test="${actionBean.vocabularyFolder != null && actionBean.vocabularyFolder.notationsEqualIdentifiers}">
+                                        <span title="Forcefully equal to identifier in this vocabulary."><c:out value="${item.notation}"/></span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <stripes:text class="smalltext" size="30" name="vocabularyConcepts.list[${loop.index}].notation" />
+                                    </c:otherwise>
+                                </c:choose>
                                 </td>
                             </tr>
                             <tr>

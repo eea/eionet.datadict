@@ -32,6 +32,8 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
 
 /**
  * Folder service.
@@ -200,13 +202,10 @@ public interface IVocabularyService {
      * Returns vocabulary concept.
      *
      * @param vocabularyConceptId
-     * @param emptyAttributes
-     *            when true, then attributes that are not valued are also included
      * @return
      * @throws ServiceException if operation fails
      */
-    @Deprecated
-    VocabularyConcept getVocabularyConcept(int vocabularyConceptId, boolean emptyAttributes) throws ServiceException;
+    VocabularyConcept getVocabularyConcept(int vocabularyConceptId) throws ServiceException;
 
     /**
      * Returns the vocabulary folder's concepts.
@@ -511,4 +510,15 @@ public interface IVocabularyService {
      * @return slit of bound element names
      */
     List<String> getVocabularyBoundElementNames(VocabularyFolder vocabularyFolder);
+
+    /**
+     * Searches vocabularies by the given filter.
+     *
+     * @param filter filtering parameters
+     * @return Result object containing found vocabularies
+     * @throws ServiceException if operation fails
+     */
+    VocabularyResult searchVocabularies(VocabularyFilter filter) throws ServiceException;
+
+
 }

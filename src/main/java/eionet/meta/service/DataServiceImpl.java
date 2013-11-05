@@ -173,4 +173,12 @@ public class DataServiceImpl implements IDataService {
     public int getCommonElementIdByIdentifier(String identifier) throws ServiceException {
         return dataElementDao.getCommonDataElementId(identifier);
     }
+
+    @Override
+    public void setDataElementAttributes(DataElement dataElement)  throws ServiceException {
+        Map<String, List<String>> attributeValues = dataElementDao.getDataElementAttributeValues(dataElement.getId());
+
+        dataElement.setElemAttributeValues(attributeValues);
+
+    }
 }

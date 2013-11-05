@@ -48,6 +48,8 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
 
 /**
  * JUnit integration test with Unitils for vocabulary service.
@@ -558,4 +560,32 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         assertTrue(attributeNames.size() == 3);
 
     }
+
+    /**
+     * test on search vocabularies.
+     * @throws Exception if fail
+     */
+    @Test
+    public void testSearchVocabularies() throws Exception {
+        VocabularyFilter filter = new VocabularyFilter();
+        //search in identifier
+        filter.setText("test_vocabulary");
+        VocabularyResult result = vocabularyService.searchVocabularies(filter);
+
+        assertTrue(result.getTotalItems() == 3);
+        filter.setText("nothinglikethis");
+
+        result = vocabularyService.searchVocabularies(filter);
+
+        assertTrue(result.getTotalItems() == 0);
+
+        //label
+        filter.setText("test2");
+
+        result = vocabularyService.searchVocabularies(filter);
+        assertTrue(result.getTotalItems() == 2);
+
+
+    }
+
 }

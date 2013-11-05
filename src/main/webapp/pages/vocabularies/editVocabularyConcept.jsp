@@ -13,6 +13,16 @@
                 $(".delLink").click(function() {
                     this.parentElement.remove();
                 });
+
+                openPopup = function(divId) {
+                    $(divId).dialog('open');
+                    return false;
+                }
+
+                closePopup = function(divId) {
+                    $(divId).dialog("close");
+                    return false;
+                }
             });
         } ) ( jQuery );
         // ]]>
@@ -51,6 +61,12 @@
                 <stripes:hidden name="vocabularyFolder.id" />
                 <stripes:hidden name="vocabularyFolder.numericConceptIdentifiers" />
                 <stripes:hidden name="vocabularyConcept.id" />
+                <stripes:hidden name="vocabularyConcept.identifier" />
+                <stripes:hidden name="vocabularyConcept.created" />
+                <stripes:hidden name="vocabularyConcept.obsolete" />
+                <stripes:hidden id="txtEditDivId" name="editDivId" />
+
+
 
                 <table class="datatable">
                     <colgroup>
@@ -161,13 +177,20 @@
                                                         fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
                                                         uniqueId="conceptElement${outerLoop.index}" fixedValues="${attrMeta.fixedValues}"/>
                                               </c:when>
-                                              <c:when test="${attrMeta.relationalElement}">
+                                              <c:when test="${attrMeta.datatype eq 'localref'}">
                                                 <dd:relatedElemConcepts  dataElements="${elementValues}"
                                                     vocabularyConcepts="${actionBean.vocabularyConcepts}"
                                                     elementId="${attrMeta.id}"
                                                     fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
                                                     uniqueId="conceptElement${outerLoop.index}" />
                                               </c:when>
+                                              <c:when test="${attrMeta.datatype eq 'reference'}">
+                                                <dd:relatedReferenceConcepts dataElements="${elementValues}"
+                                                    elementId="${attrMeta.id}"
+                                                    fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
+                                                    uniqueId="conceptElement${outerLoop.index}" />
+                                              </c:when>
+
                                               <c:when test="${!attrMeta.fixedValuesElement and attrMeta.languageUsed}">
                                                 <dd:elementMultiTextLang dataElements="${elementValues}"
                                                     fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
@@ -181,6 +204,8 @@
                                                     elementId="${attrMeta.id}"/>
                                               </c:otherwise>
                                             </c:choose>
+                                            <stripes:hidden name="vocabularyConcept.elementAttributes[${outerLoop.index}][0].id"/>
+                                            <stripes:hidden name="vocabularyConcept.elementAttributes[${outerLoop.index}][0].name"/>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -191,7 +216,7 @@
                     <tr>
                         <th>&nbsp;</th>
                         <td colspan="2">
-                            <stripes:submit name="saveConcept" value="Save" class="mediumbuttonb"/>
+                            <stripes:submit id="saveButton" name="saveConcept" value="Save" class="mediumbuttonb"/>
                             <c:choose>
                                 <c:when test="${actionBean.vocabularyConcept.obsolete != null}">
                                     <stripes:submit name="unMarkConceptObsolete" value="Remove obsolete status" class="mediumbuttonb"/>
@@ -205,6 +230,10 @@
                 </table>
             </div>
         </stripes:form>
+
+
+        <!-- search concepts popup -->
+        <jsp:include page="searchConceptsInc.jsp" />
 
     </stripes:layout-component>
 

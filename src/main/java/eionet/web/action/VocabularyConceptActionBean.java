@@ -37,12 +37,17 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.web.util.UriUtils;
 
 import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
+import eionet.meta.service.IDataService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
@@ -64,6 +69,10 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     @SpringBean
     private IVocabularyService vocabularyService;
 
+    /** data service. */
+    @SpringBean
+    private IDataService dataService;
+
     /** Vocabulary folder. */
     private VocabularyFolder vocabularyFolder;
 
@@ -75,6 +84,24 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /** private helper property for vocabulary concept identifier . */
     private String conceptIdentifier;
+
+    /** To be used in linking related concepts. */
+    private VocabularyConceptFilter relatedConceptsFilter;
+
+    /** search filter for vocabularies. */
+    private VocabularyFilter vocabularyFilter;
+
+    /** search filter for vocabularies that are browsed when adding a related concept. */
+    private VocabularyResult vocabularies;
+
+    /** Related Vocabulary concepts. */
+    private VocabularyConceptResult relatedVocabularyConcepts;
+
+    /** Popup div id to keep open, when validation error occur. */
+    private String editDivId;
+
+    /** Element Id that is currently active when manipulating with popups. */
+    private String elementId;
 
     /**
      * View action.
@@ -145,6 +172,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution saveConcept() throws ServiceException {
+
         vocabularyConcept.setIdentifier(getConceptIdentifier());
         vocabularyService.updateVocabularyConcept(vocabularyConcept);
 
@@ -155,6 +183,10 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
         resolution.addParameter("vocabularyConcept.identifier", Util.encodeURLPath(vocabularyConcept.getIdentifier()));
+
+        resolution.addParameter("editDivId", editDivId);
+        resolution.addParameter("elementId", elementId);
+
         return resolution;
     }
 
@@ -238,11 +270,12 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         if (vocabularyConcept.getElementAttributes() != null) {
             for (List<DataElement> elems : vocabularyConcept.getElementAttributes()) {
                 if (elems != null) {
+                    DataElement metaInfo = elems.get(0);
                     for (DataElement elem : elems) {
                         if (elem != null) {
-                            if (vocabularyService.isReferenceElement(elem.getId())) {
-                                if (!Util.isURL(elem.getAttributeValue())) {
-                                    addGlobalValidationError("Element value '" + elem.getAttributeValue()
+                            if (vocabularyService.isReferenceElement(elem.getId()) && elem.getRelatedConceptId() == null) {
+                                if (elem.getAttributeValue() != null && !Util.isValidUri(elem.getAttributeValue())) {
+                                    addGlobalValidationError("Element '" + metaInfo.getName() + "' value '" + elem.getAttributeValue()
                                             + "' must be in URL format");
                                 }
                             }
@@ -254,8 +287,118 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
         if (isValidationErrors()) {
             initBeans();
-            vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
+            addElementMetadata();
         }
+    }
+
+    /**
+     * search concepts to be added as reference element.
+     *
+     * @return stripes resolution
+     * @throws ServiceException
+     *             if search fails
+     */
+    public Resolution searchConcepts() throws ServiceException {
+        setConceptIdentifier(vocabularyConcept.getIdentifier());
+
+        vocabularyFolder =
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                        vocabularyFolder.isWorkingCopy());
+        if (relatedConceptsFilter == null) {
+            relatedConceptsFilter = new VocabularyConceptFilter();
+        }
+        relatedConceptsFilter.setExcludedIds(Collections.singletonList(vocabularyConcept.getId()));
+
+        // this is needed because of "limit " clause in the SQL. if this remains true, paging does not work in display:table
+        relatedConceptsFilter.setUsePaging(false);
+
+        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
+        validateView();
+        initBeans();
+
+        // relatedConceptsFilter.setVocabularyFolderId(vocabularyFolderId);
+        int folderId = Integer.valueOf(getContext().getRequestParameter("folderId"));
+
+        relatedConceptsFilter.setVocabularyFolderId(folderId);
+        relatedVocabularyConcepts = vocabularyService.searchVocabularyConcepts(relatedConceptsFilter);
+
+        elementId = getContext().getRequestParameter("elementId");
+        editDivId = "addConceptDiv";
+
+        return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
+    }
+
+    /**
+     * Adds internal reference concept chosen from popup to the ui.
+     * @return stripes resolution
+     * @throws ServiceException if error appears
+     */
+    public Resolution addRelatedConcept() throws ServiceException {
+        setConceptIdentifier(vocabularyConcept.getIdentifier());
+        vocabularyFolder =
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                        vocabularyFolder.isWorkingCopy());
+        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
+
+        int conceptId = Integer.valueOf(getContext().getRequestParameter("conceptId"));
+        int refElementId = Integer.valueOf(getContext().getRequestParameter("elementId"));
+
+        // vocabularyService.
+        List<List<DataElement>> allElements = vocabularyConcept.getElementAttributes();
+        List<DataElement> relatedElements = null;
+
+        for (List<DataElement> elems : allElements) {
+            DataElement elemMeta = elems.get(0);
+            if (elemMeta.getId() == refElementId) {
+                relatedElements = elems;
+                break;
+            }
+        }
+
+        if (relatedElements != null) {
+            DataElement referenceElement = dataService.getDataElement(refElementId);
+            referenceElement.setRelatedConceptId(conceptId);
+
+            setReferenceElementAttrs(referenceElement);
+
+            relatedElements.add(referenceElement);
+        }
+
+        // close all popups
+        editDivId = null;
+        initBeans();
+
+        return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
+    }
+
+    /**
+     * First dialog for searching vocabularies in the adding dialog.
+     *
+     * @return Resolution
+     * @throws ServiceException
+     *             if call fails
+     */
+    public Resolution searchVocabularies() throws ServiceException {
+        setConceptIdentifier(vocabularyConcept.getIdentifier());
+
+        elementId = getContext().getRequestParameter("elementId");
+        vocabularyFolder =
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                        vocabularyFolder.isWorkingCopy());
+        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
+
+        if (vocabularyFilter == null) {
+            vocabularyFilter = new VocabularyFilter();
+        }
+
+        validateView();
+        initBeans();
+
+        vocabularies = vocabularyService.searchVocabularies(vocabularyFilter);
+
+        editDivId = "findVocabularyDiv";
+
+        return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
     }
 
     /**
@@ -327,8 +470,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     }
 
     /**
-     * Returns the prefix of the URL for a link to a <em>HTML view</em> of the concept.
-     * This must match the @UrlBinding of this class.
+     * Returns the prefix of the URL for a link to a <em>HTML view</em> of the concept. This must match the @UrlBinding of this
+     * class.
      *
      * @return the unescaped URL.
      */
@@ -412,4 +555,81 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         conceptIdentifier = identifier;
     }
 
+    public VocabularyConceptFilter getRelatedConceptsFilter() {
+        return relatedConceptsFilter;
+    }
+
+    public VocabularyConceptResult getRelatedVocabularyConcepts() {
+        return relatedVocabularyConcepts;
+    }
+
+    public String getEditDivId() {
+        return editDivId;
+    }
+
+    public void setEditDivId(String editDivId) {
+        this.editDivId = editDivId;
+    }
+
+    public void setRelatedConceptsFilter(VocabularyConceptFilter relatedConceptsFilter) {
+        this.relatedConceptsFilter = relatedConceptsFilter;
+    }
+
+    public VocabularyFilter getVocabularyFilter() {
+        return vocabularyFilter;
+    }
+
+    public VocabularyResult getVocabularies() {
+        return vocabularies;
+    }
+
+    public void setVocabularyFilter(VocabularyFilter vocabularyFilter) {
+        this.vocabularyFilter = vocabularyFilter;
+    }
+
+    public String getElementId() {
+        return elementId;
+    }
+
+    public void setElementId(String elemId) {
+        elementId = elemId;
+    }
+
+
+    /**
+     * If validation fails metadata and related elements data has to be added to concept bound elements to make
+     * the UI look nice.
+     */
+    private void addElementMetadata() throws ServiceException {
+        for (List<DataElement> elems : vocabularyConcept.getElementAttributes()) {
+            if (elems != null) {
+                //only metainfo has to be added because it is used in the UI
+                DataElement metaInfo = elems.get(0);
+                dataService.setDataElementAttributes(metaInfo);
+                //set relational elements
+                for (DataElement elem : elems) {
+                    if (elem.getRelatedConceptId() != null ) {
+                        setReferenceElementAttrs(elem);
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * gets referenced concept meta from database.
+     * @param referenceElement reference elem of type localref or reference
+     * @throws ServiceException if error in querying
+     */
+    private void setReferenceElementAttrs(DataElement referenceElement) throws ServiceException {
+        int conceptId = referenceElement.getRelatedConceptId();
+        VocabularyConcept relatedConcept = vocabularyService.getVocabularyConcept(conceptId);
+        VocabularyFolder relatedFolder = vocabularyService.getVocabularyFolder(relatedConcept.getVocabularyId());
+        Folder relatedVocSet = vocabularyService.getFolder(relatedFolder.getFolderId());
+
+        referenceElement.setRelatedConceptId(conceptId);
+        referenceElement.setRelatedConceptIdentifier(relatedConcept.getIdentifier());
+        referenceElement.setRelatedConceptVocabulary(relatedFolder.getIdentifier());
+        referenceElement.setRelatedConceptVocSet(relatedVocSet.getIdentifier());
+        referenceElement.setRelatedConceptLabel(relatedConcept.getLabel());
+    }
 }
