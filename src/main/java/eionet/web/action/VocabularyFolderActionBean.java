@@ -239,8 +239,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * Navigates to edit vocabulary folder form.
      *
-     * @return
-     * @throws ServiceException
+     * @return Resolution
+     * @throws ServiceException if error in queries
      */
     public Resolution edit() throws ServiceException {
         vocabularyFolder =

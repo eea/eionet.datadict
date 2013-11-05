@@ -40,7 +40,7 @@ public class VocabularyConcept {
     private Date created;
     private Date obsolete;
 
-    /** parent vocabulary identifier */
+    /** parent vocabulary identifier. */
     private int vocabularyId;
 
     // Old implementation that will be replaced by data element attributes. See #14721.

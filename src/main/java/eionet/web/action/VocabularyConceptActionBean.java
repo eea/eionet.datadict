@@ -275,8 +275,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                         if (elem != null) {
                             if (vocabularyService.isReferenceElement(elem.getId()) && elem.getRelatedConceptId() == null) {
                                 if (elem.getAttributeValue() != null && !Util.isValidUri(elem.getAttributeValue())) {
-                                    addGlobalValidationError("Element '" + metaInfo.getName() + "' value '" + elem.getAttributeValue()
-                                            + "' must be in URL format");
+                                    addGlobalValidationError("Element '" + metaInfo.getName() + "' value '"
+                                            + elem.getAttributeValue() + "' must be in URL format");
                                 }
                             }
                         }
@@ -463,7 +463,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     /**
      * Returns concept URI.
      *
-     * @return
+     * @return concept uri
      */
     public String getConceptUri() {
         return VocabularyXmlWriter.escapeIRI(getUriPrefix() + getConceptIdentifier());
@@ -599,6 +599,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     /**
      * If validation fails metadata and related elements data has to be added to concept bound elements to make
      * the UI look nice.
+     * @throws ServiceException if database query fails
      */
     private void addElementMetadata() throws ServiceException {
         for (List<DataElement> elems : vocabularyConcept.getElementAttributes()) {
@@ -608,7 +609,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                 dataService.setDataElementAttributes(metaInfo);
                 //set relational elements
                 for (DataElement elem : elems) {
-                    if (elem.getRelatedConceptId() != null ) {
+                    if (elem.getRelatedConceptId() != null) {
                         setReferenceElementAttrs(elem);
                     }
                 }

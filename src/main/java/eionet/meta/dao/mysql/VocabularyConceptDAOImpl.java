@@ -85,7 +85,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         Map<String, Object> params = new HashMap<String, Object>();
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select SQL_CALC_FOUND_ROWS VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, OBSOLETE_DATE ");
+        sql.append("select SQL_CALC_FOUND_ROWS VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ")
+           .append("CREATION_DATE, OBSOLETE_DATE ");
         sql.append("from VOCABULARY_CONCEPT where 1 = 1 ");
         if (filter.getVocabularyFolderId() > 0) {
             params.put("vocabularyFolderId", filter.getVocabularyFolderId());
@@ -386,7 +387,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         params.put("identifier", conceptIdentifier);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, OBSOLETE_DATE ");
+        sql.append("select VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ")
+           .append("CREATION_DATE, OBSOLETE_DATE ");
         sql.append("from VOCABULARY_CONCEPT where VOCABULARY_ID=:vocabularyFolderId and IDENTIFIER=:identifier");
 
         VocabularyConcept result =
@@ -418,7 +420,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         params.put("vocabularyConceptId", vocabularyConceptId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, OBSOLETE_DATE ");
+        sql.append("select VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, ")
+           .append("OBSOLETE_DATE ");
         sql.append("from VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID=:vocabularyConceptId");
 
         VocabularyConcept result =

@@ -201,8 +201,8 @@ public interface IVocabularyService {
     /**
      * Returns vocabulary concept.
      *
-     * @param vocabularyConceptId
-     * @return
+     * @param vocabularyConceptId concept id
+     * @return Vocabulary concept
      * @throws ServiceException if operation fails
      */
     VocabularyConcept getVocabularyConcept(int vocabularyConceptId) throws ServiceException;
