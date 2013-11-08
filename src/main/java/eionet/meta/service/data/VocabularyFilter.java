@@ -32,7 +32,8 @@ public class VocabularyFilter extends PagedRequest {
     /** Text search value. */
     private String text;
 
-
+    /** filter by working copy status */
+    private Boolean workingCopy;
 
     public String getText() {
         return text;
@@ -42,5 +43,12 @@ public class VocabularyFilter extends PagedRequest {
         this.text = text;
     }
 
+    public Boolean isWorkingCopy() {
+        return workingCopy;
+    }
+
+    public void setWorkingCopy(Boolean workingCopy) {
+        this.workingCopy = workingCopy;
+    }
 
 }

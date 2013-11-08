@@ -458,13 +458,14 @@ public interface IVocabularyService {
     boolean vocabularyHasDataElementBinding(int vocabularyFolderId, int dataElementId) throws ServiceException;
 
     /**
-     * Returns list of other concepts that have this dataelement valued.
+     * Returns list of other concepts that have this dataelement valued in a vocabulary.
      * Checks only editable copy values
      * @param dataElementId element ID
+     * @param vocabularyId vocabulary ID
      * @return list of elements
      * @throws ServiceException if query fails
      */
-    List<VocabularyConcept> getConceptsWithElementValue(int dataElementId) throws ServiceException;
+    List<VocabularyConcept> getConceptsWithElementValue(int dataElementId, int vocabularyId) throws ServiceException;
 
     /**
      * Returns all namespaces that are used by the binded elements. Both external and internal.

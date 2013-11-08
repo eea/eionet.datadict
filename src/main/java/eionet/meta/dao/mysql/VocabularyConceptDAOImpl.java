@@ -445,14 +445,16 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     }
 
     @Override
-    public List<VocabularyConcept> getConceptsWithValuedElement(int elementId) {
+    public List<VocabularyConcept> getConceptsWithValuedElement(int elementId, int vocabularyId) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("elementId", elementId);
+        parameters.put("vocabularyId", vocabularyId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select DISTINCT cev.VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT_ELEMENT cev, VOCABULARY_CONCEPT c  ");
-        sql.append("where cev.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID AND c.ORIGINAL_CONCEPT_ID IS NOT NULL ");
-        sql.append("AND cev.DATAELEM_ID = :elementId ");
+        sql.append("select DISTINCT cev.VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT_ELEMENT cev, VOCABULARY_CONCEPT c ");
+
+        sql.append("where cev.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID ")
+            .append("AND c.ORIGINAL_CONCEPT_ID IS NOT NULL AND cev.DATAELEM_ID = :elementId AND c.VOCABULARY_ID = :vocabularyId");
 
         final List<VocabularyConcept> result = new ArrayList<VocabularyConcept>();
 
@@ -471,6 +473,21 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         });
 
         return result;
+    }
+
+    @Override
+    public void moveReferenceConcepts(int oldVocabularyId, int newVocabularyId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("update VOCABULARY_CONCEPT_ELEMENT vce, VOCABULARY_CONCEPT vco, VOCABULARY_CONCEPT vcn  "
+                + "SET vce.RELATED_CONCEPT_ID = vcn.VOCABULARY_CONCEPT_ID WHERE vcn.VOCABULARY_ID = :newVocabularyId "
+                + "AND vco.VOCABULARY_ID = :oldVocabularyId AND vco.IDENTIFIER=vcn.IDENTIFIER  "
+                + "AND vce.RELATED_CONCEPT_ID=vco.VOCABULARY_CONCEPT_ID");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("newVocabularyId", newVocabularyId);
+        parameters.put("oldVocabularyId", oldVocabularyId);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 
 }

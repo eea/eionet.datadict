@@ -587,6 +587,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
             int originalVocabularyFolderId = vocabularyFolder.getCheckedOutCopyId();
 
             if (!vocabularyFolder.isSiteCodeType()) {
+                //reference type relations in other vocabularies must get new id's
+                vocabularyConceptDAO.moveReferenceConcepts(originalVocabularyFolderId, vocabularyFolderId);
                 // Remove old vocabulary concepts
                 vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
                 // Remove old data element relations
@@ -1040,9 +1042,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public List<VocabularyConcept> getConceptsWithElementValue(int dataElementId) throws ServiceException {
+    public List<VocabularyConcept> getConceptsWithElementValue(int dataElementId, int vocabularyId) throws ServiceException {
         try {
-            return vocabularyConceptDAO.getConceptsWithValuedElement(dataElementId);
+            return vocabularyConceptDAO.getConceptsWithValuedElement(dataElementId, vocabularyId);
         } catch (Exception e) {
             throw new ServiceException("Failed to perform binded element values existence check: " + e.getMessage(), e);
         }

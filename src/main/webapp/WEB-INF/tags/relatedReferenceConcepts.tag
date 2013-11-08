@@ -46,20 +46,21 @@
             maxHeight: 300,
             modal: true,
             buttons: {
-                "Yes" : function() {
+                "Yes, find concept in DD" : function() {
 
                     var action = "saveConcept";
                     $('#txtEditDivId').attr('value', 'findVocabularyDiv');
                     //submit data to not loose changes
-                    $("#editForm").attr('action', action).ajaxSubmit({type: 'post'})
+                    $("#editForm").attr('action', action).ajaxSubmit({type: 'post'});
                     var elementId=${elementId};
-                    $("#txtElemName").attr("value",elementId);
+                    openVocabularySearch(elementId);
+                    //$("#txtElemName").attr("value",elementId);
                     //$("#findVocabularyDiv").data('elementId', elementId).dialog('open');
-                    $("#findVocabularyDiv").dialog('open');
+                    //$("#findVocabularyDiv").dialog('open');
                     $(this).dialog("close");
                   return false;
                 },
-                "No": function() {
+                "No, enter the URL": function() {
                   var currentSize = ${fn:length(dataElements)};
                   var newInput = $("#newField${uniqueId}").clone(true);
                   newInput.attr("id", "multySpan${uniqueId}-" + currentSize);
@@ -124,8 +125,8 @@
     </c:forEach>
 </div>
 
-<div id="add-value" title="Add internal concept?" style="display:none">
-    <p>Do you want to add an internal concept?</p>
+<div id="add-value" title="Add reference" style="display:none">
+    <p>Do you want to add a concept maintained in another Data Dictionary vocabulary?</p>
 </div>
 <a href="#" id="referenceAdd${uniqueId}">Add new</a>
 

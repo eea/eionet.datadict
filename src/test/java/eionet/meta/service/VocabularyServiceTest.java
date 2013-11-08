@@ -518,8 +518,10 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
      */
     @Test
     public void getValuedConceptsTest() throws ServiceException {
-        assertTrue(vocabularyService.getConceptsWithElementValue(1).size() == 1);
-        assertTrue(vocabularyService.getConceptsWithElementValue(2).size() == 0);
+        assertTrue(vocabularyService.getConceptsWithElementValue(1,1).size() == 1);
+        assertTrue(vocabularyService.getConceptsWithElementValue(5,1).size() == 1);
+        assertTrue(vocabularyService.getConceptsWithElementValue(1,2).size() == 0);
+        assertTrue(vocabularyService.getConceptsWithElementValue(2,1).size() == 0);
     }
 
     /**
@@ -584,6 +586,12 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
         result = vocabularyService.searchVocabularies(filter);
         assertTrue(result.getTotalItems() == 2);
+
+        filter.setWorkingCopy(true);
+        filter.setText(null);
+
+        result = vocabularyService.searchVocabularies(filter);
+        assertTrue(result.getTotalItems() == 1);
 
 
     }

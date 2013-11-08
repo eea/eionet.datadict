@@ -636,12 +636,17 @@ public VocabularyResult searchVocabularies(VocabularyFilter filter) {
     sql.append("f.ID, f.IDENTIFIER, f.LABEL ");
     sql.append("from VOCABULARY v ");
 
-    sql.append("left join VOCABULARY_SET f on f.ID=v.FOLDER_ID ");
+    sql.append("left join VOCABULARY_SET f on f.ID=v.FOLDER_ID where 1=1 ");
 
     if (StringUtils.isNotEmpty(filter.getText())) {
         params.put("text", "%" + filter.getText() + "%");
-        sql.append("WHERE (v.LABEL like :text ");
+        sql.append("AND (v.LABEL like :text ");
         sql.append("or v.IDENTIFIER like :text) ");
+    }
+
+    if (filter.isWorkingCopy() != null) {
+        params.put("workingCopy", filter.isWorkingCopy() ? 1 : 0);
+        sql.append("AND WORKING_COPY = :workingCopy");
     }
 
     sql.append(" ORDER BY v.IDENTIFIER");

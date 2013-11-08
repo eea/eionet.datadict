@@ -275,8 +275,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                         if (elem != null) {
                             if (vocabularyService.isReferenceElement(elem.getId()) && elem.getRelatedConceptId() == null) {
                                 if (elem.getAttributeValue() != null && !Util.isValidUri(elem.getAttributeValue())) {
-                                    addGlobalValidationError("Element '" + metaInfo.getName() + "' value '"
-                                            + elem.getAttributeValue() + "' must be in URL format");
+                                    addGlobalValidationError("Related match to an external vocabulary " + metaInfo.getName() + "' value '"
+                                            + elem.getAttributeValue() + "' is not a valid URI. The allowed schemes are: "
+                                            + "http, https, ftp, mailto, tel and urn");
                                 }
                             }
                         }
@@ -390,6 +391,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         if (vocabularyFilter == null) {
             vocabularyFilter = new VocabularyFilter();
         }
+        vocabularyFilter.setWorkingCopy(false);
 
         validateView();
         initBeans();
