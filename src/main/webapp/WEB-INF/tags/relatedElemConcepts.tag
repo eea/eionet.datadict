@@ -36,6 +36,7 @@
         var currentSize = ${fn:length(dataElements)};
 
         $("#multiAdd${uniqueId}").live("click", function(event){
+          clearSysMsg();
             var newInput = $("#newField${uniqueId}").clone(true);
             newInput.attr("id", "multySpan${uniqueId}-" + currentSize);
 

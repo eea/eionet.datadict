@@ -111,7 +111,7 @@
                     <!--  messages -->
                     <stripes:layout-component name="messages">
                         <c:if test="${not empty systemMessages}">
-                            <div class="system-msg">
+                            <div id="sysMsgDiv" class="system-msg">
                                 <stripes:messages key="systemMessages"/>
                             </div>
                         </c:if>

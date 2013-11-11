@@ -34,6 +34,7 @@
         var currentSize = ${fn:length(attributes)};
 
         $("#multiAdd${uniqueId}").live("click", function(event){
+          clearSysMsg();
             var newInput = $("#newField${uniqueId}").clone(true);
             newInput.attr("id", "multySpan${uniqueId}-" + currentSize);
             newInput.find("input[type='text']").attr("name", "${fieldName}[" + currentSize + "].value");

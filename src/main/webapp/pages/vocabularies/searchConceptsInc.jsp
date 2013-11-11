@@ -76,7 +76,7 @@ function openVocabularySearch(elementId) {
         <stripes:hidden name="vocabularyFolder.folderName" />
         <stripes:hidden name="vocabularyFolder.identifier" />
         <stripes:hidden name="vocabularyFolder.workingCopy" />
-
+        <stripes:hidden name="elementId" />
         <stripes:hidden name="folderId" />
 
         </div>
@@ -86,23 +86,35 @@ function openVocabularySearch(elementId) {
                 <col />
                 <col />
             </colgroup>
+
+             <c:if test="${not empty actionBean.relatedVocabulary}">
+                <tr>
+                <th scope="row" class="scope-row simple_attr_title" title="Vocabulary concept identifier or label ">
+                    <label for="selectedVocabulary"><span style="white-space:nowrap;">Selected Vocabulary</span></label>
+                </th>
+                <td class="simple_attr_value" colspan="2">
+                     ${actionBean.relatedVocabulary.label} [<a href="#" class="delLink" id="backToVoc">Find another vocabulary</a>]
+                </td>
+                </tr>
+
+            </c:if>
+
             <tr>
                 <th scope="row" class="scope-row simple_attr_title" title="Vocabulary concept identifier or label ">
                     <label for="filterText"><span style="white-space:nowrap;">Vocabulary Concept</span></label>
                 </th>
                 <td class="simple_attr_value">
-                    <input class="smalltext" size="30" name="relatedConceptsFilter.text" id="filterText" placeholder="Search by identifier or label"/>
+                    <input class="smalltext" size="25" name="relatedConceptsFilter.text" id="filterText"/>
                 </td>
                 <td>
                     <stripes:submit name="searchConcepts" value="Search" class="mediumbuttonb"/>
                     <stripes:button id="cancelConceptBtn" name="cancelConceptSearch" value="Cancel" class="mediumbuttonb"/>
                 </td>
             </tr>
+
         </table>
     <div>
     <c:if test="${not empty actionBean.relatedVocabularyConcepts}">
-        <p/><a href="#" id="backToVoc">Find another vocabulary</a></p>
-
         <display:table name="actionBean.relatedVocabularyConcepts.list" class="sortable" id="item" pagesize="20"
             requestURI="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/searchConcepts">
             <display:column title="Concept" sortable="true" sortProperty="identifier">
@@ -156,7 +168,7 @@ function openVocabularySearch(elementId) {
                     <label for="filterText"><span style="white-space:nowrap;">Vocabulary</span></label>
                 </th>
                 <td class="simple_attr_value">
-                    <input class="smalltext" size="30" name="vocabularyFilter.text" id="vocFilterText"  placeholder="Search by identifier or label"/>
+                    <input class="smalltext" size="30" name="vocabularyFilter.text" id="vocFilterText"/>
                 </td>
                 <td>
                     <stripes:submit name="searchVocabularies" value="Search" class="mediumbuttonb"/>

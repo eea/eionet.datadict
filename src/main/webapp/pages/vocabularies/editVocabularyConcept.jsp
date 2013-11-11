@@ -11,7 +11,8 @@
             $(document).ready(function() {
 
                 $(".delLink").click(function() {
-                    this.parentElement.remove();
+                  clearSysMsg();
+                  this.parentElement.remove();
                 });
 
                 openPopup = function(divId) {
@@ -22,6 +23,10 @@
                 closePopup = function(divId) {
                     $(divId).dialog("close");
                     return false;
+                }
+
+                clearSysMsg = function() {
+                  $("#sysMsgDiv").remove();
                 }
             });
         } ) ( jQuery );

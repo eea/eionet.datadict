@@ -97,6 +97,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     /** Related Vocabulary concepts. */
     private VocabularyConceptResult relatedVocabularyConcepts;
 
+    /** selected vocabulary for reference element */
+    private VocabularyFolder relatedVocabulary;
+
     /** Popup div id to keep open, when validation error occur. */
     private String editDivId;
 
@@ -275,8 +278,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                         if (elem != null) {
                             if (vocabularyService.isReferenceElement(elem.getId()) && elem.getRelatedConceptId() == null) {
                                 if (elem.getAttributeValue() != null && !Util.isValidUri(elem.getAttributeValue())) {
-                                    addGlobalValidationError("Related match to an external vocabulary " + metaInfo.getName() + "' value '"
-                                            + elem.getAttributeValue() + "' is not a valid URI. The allowed schemes are: "
+                                    addGlobalValidationError("Related match to an external vocabulary \"" + metaInfo.getName()
+                                            + "\" value \""
+                                            + elem.getAttributeValue() + "\" is not a valid URI. \n The allowed schemes are: "
                                             + "http, https, ftp, mailto, tel and urn");
                                 }
                             }
@@ -325,6 +329,10 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
         elementId = getContext().getRequestParameter("elementId");
         editDivId = "addConceptDiv";
+
+        if (folderId != 0) {
+            relatedVocabulary = vocabularyService.getVocabularyFolder(folderId);
+        }
 
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
     }
@@ -635,4 +643,10 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         referenceElement.setRelatedConceptVocSet(relatedVocSet.getIdentifier());
         referenceElement.setRelatedConceptLabel(relatedConcept.getLabel());
     }
+
+    public VocabularyFolder getRelatedVocabulary() {
+        return relatedVocabulary;
+    }
+
+
 }

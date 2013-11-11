@@ -34,6 +34,7 @@
         var currentSize = ${fn:length(dataElements)};
 
         $("#multiAdd${uniqueId}").live("click", function(event){
+            clearSysMsg();
             var newInput = $("#newField${uniqueId}").clone(true);
             newInput.find("input[type='text']").attr("name", "${fieldName}[" + currentSize + "].attributeValue");
             newInput.find("input[type='hidden']").attr("name", "${fieldName}[" + currentSize + "].id");

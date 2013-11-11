@@ -19,7 +19,7 @@
  --%>
 
 <c:if test="${empty fieldSize}">
-    <c:set var="fieldSize" value="100" />
+    <c:set var="fieldSize" value="68" />
 </c:if>
 <c:if test="${empty fieldClass}">
     <c:set var="fieldClass" value="smalltext" />
@@ -47,7 +47,7 @@
             modal: true,
             buttons: {
                 "Yes, find concept in DD" : function() {
-
+                    clearSysMsg();
                     var action = "saveConcept";
                     $('#txtEditDivId').attr('value', 'findVocabularyDiv');
                     //submit data to not loose changes
@@ -61,6 +61,7 @@
                   return false;
                 },
                 "No, enter the URL": function() {
+                  clearSysMsg();
                   var currentSize = ${fn:length(dataElements)};
                   var newInput = $("#newField${uniqueId}").clone(true);
                   newInput.attr("id", "multySpan${uniqueId}-" + currentSize);
@@ -128,5 +129,6 @@
 <div id="add-value" title="Add reference" style="display:none">
     <p>Do you want to add a concept maintained in another Data Dictionary vocabulary?</p>
 </div>
+<br/>
 <a href="#" id="referenceAdd${uniqueId}">Add new</a>
 
