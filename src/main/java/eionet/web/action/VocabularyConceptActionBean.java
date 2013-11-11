@@ -97,7 +97,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     /** Related Vocabulary concepts. */
     private VocabularyConceptResult relatedVocabularyConcepts;
 
-    /** selected vocabulary for reference element */
+    /** selected vocabulary for reference element. */
     private VocabularyFolder relatedVocabulary;
 
     /** Popup div id to keep open, when validation error occur. */

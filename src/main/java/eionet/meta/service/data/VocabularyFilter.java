@@ -32,7 +32,7 @@ public class VocabularyFilter extends PagedRequest {
     /** Text search value. */
     private String text;
 
-    /** filter by working copy status */
+    /** filter by working copy status. */
     private Boolean workingCopy;
 
     public String getText() {

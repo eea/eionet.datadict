@@ -177,7 +177,7 @@ public interface IVocabularyConceptDAO {
     List<VocabularyConcept> getConceptsWithValuedElement(int elementId, int vocabularyId);
 
     /**
-     * When vocabulary is checked in this vocabulary concepts get new IDs
+     * When vocabulary is checked in this vocabulary concepts get new IDs.
      * If they are used in foreign concepts as refence elements the relations have to be changed to the new ID
      * @param oldVocabularyId old vocabulary record ID
      * @param newVocabularyId new record ID

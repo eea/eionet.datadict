@@ -606,7 +606,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public void validaRemoveDataElement() throws ServiceException {
 
         // if this element binding has valued in any concept - do not remove it
-        List<VocabularyConcept> conceptsWithValue = vocabularyService.getConceptsWithElementValue(elementId, vocabularyFolder.getId());
+        List<VocabularyConcept> conceptsWithValue =
+                vocabularyService.getConceptsWithElementValue(elementId, vocabularyFolder.getId());
 
         if (!conceptsWithValue.isEmpty()) {
             String ids = StringUtils.join(conceptsWithValue, ",");
