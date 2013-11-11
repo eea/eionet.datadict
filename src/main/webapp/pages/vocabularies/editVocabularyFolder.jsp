@@ -66,7 +66,24 @@
             });
 
         } ) ( jQuery );
+
+        /**
+        * require user confirmation if noattions equal identifier is set to tru during this edit session
+        */
+        function doSaveFolder() {
+          var chkNotationEqualsIdentifiersValue = document.getElementById("chkNotationsEqualIdentifiers").checked;
+          var prevNotationsEqualIdentifiersValue = document.getElementById("prevNotationsEqualIdentifiers").value == 'true';
+            if (chkNotationEqualsIdentifiersValue && !prevNotationsEqualIdentifiersValue) {
+                return confirm("You have chosen notations to be equal with identifiers. This will overwrite the notations of all sub-ordinating concepts with their identifiers! Click OK if you are absolutely sure you want to continue, otherwise click Cancel.");
+            } else {
+                return true;
+            }
+        }
+
+
+
         // ]]>
+
         </script>
     </stripes:layout-component>
 
@@ -229,6 +246,7 @@
                     </td>
                     <td class="simple_attr_value">
                         <stripes:checkbox name="vocabularyFolder.notationsEqualIdentifiers" id="chkNotationsEqualIdentifiers"/>
+                        <stripes:hidden id="prevNotationsEqualIdentifiers" name="prevNotationsEqualIdentifiers" value="${actionBean.vocabularyFolder.notationsEqualIdentifiers}" />
                     </td>
                 </tr>
                 <!-- Simple attributes -->
@@ -257,7 +275,7 @@
                 <tr>
                     <th>&nbsp;</th>
                     <td colspan="2">
-                        <stripes:submit name="saveFolder" value="Save" class="mediumbuttonb" onclick="return document.getElementById('chkNotationsEqualIdentifiers').checked==false ? true : confirm('You have chosen notations to be equal with identifiers. This will overwrite the notations of all sub-ordinating concepts with their identifiers! Click OK if you are absolutely sure you want to continue, otherwise click Cancel.');"/>
+                        <stripes:submit name="saveFolder" value="Save" class="mediumbuttonb" onclick="doSaveFolder()"/>
                         <stripes:submit name="cancelSave" value="Cancel" class="mediumbuttonb"/>
                     </td>
                 </tr>
