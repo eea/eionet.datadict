@@ -36,16 +36,17 @@
         var currentSize = ${fn:length(dataElements)};
 
         $("#multiAdd${uniqueId}").live("click", function(event){
+          clearSysMsg();
             var newInput = $("#newField${uniqueId}").clone(true);
             newInput.attr("id", "multySpan${uniqueId}-" + currentSize);
 
             newInput.find("select").attr("name", "${fieldName}[" + currentSize + "].relatedConceptId");
-            newInput.find("select").attr("id", "elem${fieldName}[" + currentSize + "].relatedConceptId");
+            //newInput.find("select").attr("id", "elem${fieldName}[" + currentSize + "].relatedConceptId");
 
-            newInput.find("input[id='elem${fieldName}[${uniqueId}].id").attr("name", "${fieldName}[" + currentSize + "].id");
-            newInput.find("input[id='elem${fieldName}[${uniqueId}].id]").attr("value", "${elementId}");
+            newInput.find("input[id='elem-${uniqueId}.id']").attr("name", "${fieldName}[" + currentSize + "].id");
+            newInput.find("input[id='elem-${uniqueId}.id']").attr("value", "${elementId}");
 
-            newInput.find("input[id='identifier${fieldName}[${uniqueId}].identifier']").attr("name", "${fieldName}[" + currentSize + "].identifier");
+            newInput.find("input[id='identifier-${uniqueId}.identifier']").attr("name", "${fieldName}[" + currentSize + "].identifier");
             //newInput.find("input[id='identifier${uniqueId}].identifier']").attr("value", "${dataElements[0].identifier}");
 
 
@@ -61,15 +62,15 @@
 
 <div style="display:none">
     <div id="newField${uniqueId}">
-        <input type="hidden" id="elem${fieldName}[${uniqueId}].id" name="" value="${elementId}" />
-        <input type="hidden" id="identifier${fieldName}[${uniqueId}].identifier" name="" value="${dataElements[0].identifier}" />
+        <input type="hidden" id="elem-${uniqueId}.id" name="" value="${elementId}" />
+        <input type="hidden" id="identifier-${uniqueId}.identifier" name="" value="${dataElements[0].identifier}" />
         <select name="">
             <option value=""></option>
             <c:forEach var="concept" items="${vocabularyConcepts}">
                 <option value="${concept.id}"><c:out value="${concept.identifier}" /> (<c:out value="${concept.label}" />)</option>
             </c:forEach>
         </select>
-        <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
+        <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove'/></a>
     </div>
 </div>
 

@@ -34,12 +34,13 @@
         var currentSize = ${fn:length(dataElements)};
 
         $("#multiAdd${uniqueId}").live("click", function(event){
+            clearSysMsg();
             var newInput = $("#newField${uniqueId}").clone(true);
             newInput.find("input[type='text']").attr("name", "${fieldName}[" + currentSize + "].attributeValue");
             newInput.find("input[type='hidden']").attr("name", "${fieldName}[" + currentSize + "].id");
             newInput.find("input[type='hidden']").attr("value", "${elementId}");
 
-            newInput.find("select").attr("id", "lang${fieldName}[" + currentSize + "]");
+            //newInput.find("select").attr("id", "lang${fieldName}-" + currentSize);
             newInput.find("select").attr("name", "${fieldName}[" + currentSize + "].attributeLanguage");
             newInput.appendTo("#multiDiv${uniqueId}");
             currentSize++;
@@ -55,7 +56,7 @@
     <span id="newField${uniqueId}">
         <input type="hidden" name="" value="${elementId}" />
         <input class="smalltext" size="${fieldSize}" type="text" />
-        <dd:selectLang id="langX" value="en" name="" />
+        <dd:selectLang value="en" name="" />
         <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
         <br/>
     </span>
@@ -67,8 +68,8 @@
         <span id="multySpan${uniqueId}-${innerLoop.index}">
             <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
             <input value="${attr.attributeValue}" name="${fieldName}[${innerLoop.index}].attributeValue" class="${fieldClass}" size="${fieldSize}" type="text" />
-            <dd:selectLang id="lang${fieldName}[${innerLoop.index}]" value="${attr.attributeLanguage}" name="${fieldName}[${innerLoop.index}].attributeLanguage" />
-            <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a><br>
+            <dd:selectLang value="${attr.attributeLanguage}" name="${fieldName}[${innerLoop.index}].attributeLanguage" />
+            <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a><br/>
         </span>
         </c:if>
     </c:forEach>

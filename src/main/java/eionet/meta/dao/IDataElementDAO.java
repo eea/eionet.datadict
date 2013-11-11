@@ -23,6 +23,7 @@ package eionet.meta.dao;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
@@ -191,4 +192,13 @@ public interface IDataElementDAO {
      * @param vocabularyConceptId  concept Id
      */
     void deleteRelatedElements(int vocabularyConceptId);
+
+    /**
+     * Finds element attribute values for the data element.
+     *
+     * @param elementId
+     *            element ID
+     * @return Map where key is attribute name and value is list of element values
+     */
+    Map<String, List<String>> getDataElementAttributeValues(int elementId);
 }

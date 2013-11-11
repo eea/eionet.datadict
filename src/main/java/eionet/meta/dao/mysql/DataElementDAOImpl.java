@@ -753,14 +753,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         getNamedParameterJdbcTemplate().update(sql, params);
     }
 
-    /**
-     * Finds element attribute values for the data element.
-     *
-     * @param elementId
-     *            element ID
-     * @return Map where key is attribute name and value is list of element values
-     */
-    private Map<String, List<String>> getDataElementAttributeValues(int elementId) {
+    @Override
+    public Map<String, List<String>> getDataElementAttributeValues(int elementId) {
         String sql =
                 "select SHORT_NAME, VALUE from ATTRIBUTE, M_ATTRIBUTE"
                         + " where DATAELEM_ID=:parentId and PARENT_TYPE='E' and ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID"

@@ -169,6 +169,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private int elementId;
 
     /**
+     * Identifier before the user started editing.
+     * Needed to make the URLs working correctly still if user deletes identifier in the UI
+     */
+    private String origIdentifier;
+
+
+    /**
      * Navigates to view vocabulary folder page.
      *
      * @return
@@ -232,14 +239,15 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * Navigates to edit vocabulary folder form.
      *
-     * @return
-     * @throws ServiceException
+     * @return Resolution
+     * @throws ServiceException if error in queries
      */
     public Resolution edit() throws ServiceException {
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
         initFilter();
+        origIdentifier = vocabularyFolder.getIdentifier();
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         folders = vocabularyService.getFolders(getUserName(), null);
         folderChoice = FOLDER_CHOICE_EXISTING;
@@ -391,6 +399,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 vocabularyFolder.setFolderName(folder.getIdentifier());
             }
         }
+        origIdentifier = vocabularyFolder.getIdentifier();
         addSystemMessage("Vocabulary saved successfully");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
@@ -597,11 +606,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public void validaRemoveDataElement() throws ServiceException {
 
         // if this element binding has valued in any concept - do not remove it
-        List<VocabularyConcept> conceptsWithValue = vocabularyService.getConceptsWithElementValue(elementId);
+        List<VocabularyConcept> conceptsWithValue =
+                vocabularyService.getConceptsWithElementValue(elementId, vocabularyFolder.getId());
 
         if (!conceptsWithValue.isEmpty()) {
             String ids = StringUtils.join(conceptsWithValue, ",");
-            addGlobalValidationError("This element has valued in Concepts: " + ids + '\n'
+            addGlobalValidationError("This element has value in Concepts: " + ids + '\n'
                     + "Please delete the values before removing the element binding.");
         }
 
@@ -718,6 +728,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             folders = vocabularyService.getFolders(getUserName(), null);
             initFilter();
             vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+            bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
         }
     }
 
@@ -1324,4 +1335,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         this.elementId = elementId;
     }
 
+    public String getOrigIdentifier() {
+        return origIdentifier;
+    }
+
+    public void setOrigIdentifier(String origIdentifier) {
+        this.origIdentifier = origIdentifier;
+    }
 }

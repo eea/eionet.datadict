@@ -34,6 +34,7 @@
         var currentSize = ${fn:length(dataElements)};
 
         $("#multiAdd${uniqueId}").live("click", function(event){
+            clearSysMsg();
             var newInput = $("#newField${uniqueId}").clone(true);
             newInput.find("input[type='text']").attr("name", "${fieldName}[" + currentSize + "].attributeValue");
             newInput.find("input[type='hidden']").attr("name", "${fieldName}[" + currentSize + "].id");
@@ -51,7 +52,7 @@
 <div style="display:none">
     <span id="newField${uniqueId}">
         <input type="hidden" name="" value="${attributeId}" />
-        <input class="smalltext" size="${fieldSize}" type="text">
+        <input class="smalltext" size="${fieldSize}" type="text"/>
         <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
         <br/>
     </span>
@@ -62,8 +63,8 @@
         <c:if test="${!empty attr.attributeValue}">
         <span id="multySpan${uniqueId}-${innerLoop.index}">
             <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
-            <input value="${attr.attributeValue}" name="${fieldName}[${innerLoop.index}].attributeValue" class="${fieldClass}" size="${fieldSize}" type="text">
-            <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a><br>
+            <input value="${attr.attributeValue}" name="${fieldName}[${innerLoop.index}].attributeValue" class="${fieldClass}" size="${fieldSize}" type="text"/>
+            <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a><br/>
         </span>
         </c:if>
     </c:forEach>

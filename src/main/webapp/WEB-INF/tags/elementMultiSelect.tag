@@ -27,7 +27,7 @@
         var currentSize = ${fn:length(dataElements)};
 
         $("#multiAddFixed${uniqueId}").live("click", function(event){
-
+          clearSysMsg();
           var newSelect = $("#newFixedField${uniqueId}").clone(true);
 
           newSelect.find("select").attr("name", "${fieldName}[" + currentSize + "].attributeValue");

@@ -61,6 +61,8 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Pair;
 import eionet.util.Props;
 import eionet.util.PropsIF;
@@ -585,6 +587,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
             int originalVocabularyFolderId = vocabularyFolder.getCheckedOutCopyId();
 
             if (!vocabularyFolder.isSiteCodeType()) {
+                //reference type relations in other vocabularies must get new id's
+                vocabularyConceptDAO.moveReferenceConcepts(originalVocabularyFolderId, vocabularyFolderId);
                 // Remove old vocabulary concepts
                 vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
                 // Remove old data element relations
@@ -851,7 +855,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public VocabularyConcept getVocabularyConcept(int vocabularyConceptId, boolean emptyAttributes) throws ServiceException {
+    public VocabularyConcept getVocabularyConcept(int vocabularyConceptId) throws ServiceException {
         try {
             VocabularyConcept result = vocabularyConceptDAO.getVocabularyConcept(vocabularyConceptId);
 
@@ -1038,9 +1042,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public List<VocabularyConcept> getConceptsWithElementValue(int dataElementId) throws ServiceException {
+    public List<VocabularyConcept> getConceptsWithElementValue(int dataElementId, int vocabularyId) throws ServiceException {
         try {
-            return vocabularyConceptDAO.getConceptsWithValuedElement(dataElementId);
+            return vocabularyConceptDAO.getConceptsWithValuedElement(dataElementId, vocabularyId);
         } catch (Exception e) {
             throw new ServiceException("Failed to perform binded element values existence check: " + e.getMessage(), e);
         }
@@ -1125,5 +1129,14 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
 
         return result;
+    }
+
+    @Override
+    public VocabularyResult searchVocabularies(VocabularyFilter filter) throws ServiceException {
+        try {
+            return vocabularyFolderDAO.searchVocabularies(filter);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get vocabularies: " + e.getMessage(), e);
+        }
     }
 }

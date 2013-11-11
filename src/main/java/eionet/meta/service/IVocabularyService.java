@@ -32,6 +32,8 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
 
 /**
  * Folder service.
@@ -199,14 +201,11 @@ public interface IVocabularyService {
     /**
      * Returns vocabulary concept.
      *
-     * @param vocabularyConceptId
-     * @param emptyAttributes
-     *            when true, then attributes that are not valued are also included
-     * @return
+     * @param vocabularyConceptId concept id
+     * @return Vocabulary concept
      * @throws ServiceException if operation fails
      */
-    @Deprecated
-    VocabularyConcept getVocabularyConcept(int vocabularyConceptId, boolean emptyAttributes) throws ServiceException;
+    VocabularyConcept getVocabularyConcept(int vocabularyConceptId) throws ServiceException;
 
     /**
      * Returns the vocabulary folder's concepts.
@@ -459,13 +458,14 @@ public interface IVocabularyService {
     boolean vocabularyHasDataElementBinding(int vocabularyFolderId, int dataElementId) throws ServiceException;
 
     /**
-     * Returns list of other concepts that have this dataelement valued.
+     * Returns list of other concepts that have this dataelement valued in a vocabulary.
      * Checks only editable copy values
      * @param dataElementId element ID
+     * @param vocabularyId vocabulary ID
      * @return list of elements
      * @throws ServiceException if query fails
      */
-    List<VocabularyConcept> getConceptsWithElementValue(int dataElementId) throws ServiceException;
+    List<VocabularyConcept> getConceptsWithElementValue(int dataElementId, int vocabularyId) throws ServiceException;
 
     /**
      * Returns all namespaces that are used by the binded elements. Both external and internal.
@@ -511,4 +511,15 @@ public interface IVocabularyService {
      * @return slit of bound element names
      */
     List<String> getVocabularyBoundElementNames(VocabularyFolder vocabularyFolder);
+
+    /**
+     * Searches vocabularies by the given filter.
+     *
+     * @param filter filtering parameters
+     * @return Result object containing found vocabularies
+     * @throws ServiceException if operation fails
+     */
+    VocabularyResult searchVocabularies(VocabularyFilter filter) throws ServiceException;
+
+
 }

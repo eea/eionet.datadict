@@ -34,6 +34,7 @@
         var currentSize = ${fn:length(attributes)};
 
         $("#multiAdd${uniqueId}").live("click", function(event){
+          clearSysMsg();
             var newInput = $("#newField${uniqueId}").clone(true);
             newInput.attr("id", "multySpan${uniqueId}-" + currentSize);
             newInput.find("input[type='text']").attr("name", "${fieldName}[" + currentSize + "].value");
@@ -53,7 +54,7 @@
     <span id="newField${uniqueId}">
         <input type="hidden" name="" value="${attributeId}" />
         <input class="smalltext" size="${fieldSize}" type="text">
-        <dd:selectLang id="lang${fieldName}[${innerLoop.index}]" value="en" />
+        <dd:selectLang name="lang${uniqueId}]" value="en" />
         <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
         <br/>
     </span>

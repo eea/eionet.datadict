@@ -40,6 +40,9 @@ public class VocabularyConcept {
     private Date created;
     private Date obsolete;
 
+    /** parent vocabulary identifier. */
+    private int vocabularyId;
+
     // Old implementation that will be replaced by data element attributes. See #14721.
     @Deprecated
     private List<List<VocabularyConceptAttribute>> attributes;
@@ -169,6 +172,14 @@ public class VocabularyConcept {
     @Override
     public String toString() {
         return getIdentifier();
+    }
+
+    public int getVocabularyId() {
+        return vocabularyId;
+    }
+
+    public void setVocabularyId(int vocabularyId) {
+        this.vocabularyId = vocabularyId;
     }
 
 

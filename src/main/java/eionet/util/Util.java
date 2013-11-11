@@ -399,7 +399,7 @@ public class Util {
      *
      * @param src
      *            String to be digested.
-     * @param algosrithm
+     * @param algorithm
      *            Digesting algorithm (please see Java documentation for allowable values).
      * @return A unique String-typed digest of the input message.
      */
@@ -1398,6 +1398,60 @@ public class Util {
         }
 
         return retValue;
+    }
+
+    /**
+     * Checks if the given String corresponds to URI syntax.
+     * Is different from isURI() that supports all prefixes and requires double slash to be entered after the scheme.
+     * The allowed schemes are: http, https, ftp, mailto, tel and urn
+     * @param str string to be checked
+     * @return  true if matches URI requirements
+     */
+    public static boolean isValidUri(String str) {
+
+        if (str == null || str.indexOf(':') == -1) {
+            return false;
+        }
+        str = str.toLowerCase().trim();
+
+        if (!str.startsWith("http://") && !str.startsWith("https://") && !str.startsWith("ftp://") && !str.startsWith("mailto:")
+                && !str.startsWith("tel:") && !str.startsWith("urn:")) {
+            return false;
+        }
+
+        try {
+
+            URI uri = new URI(str);
+            String scheme = uri.getScheme();
+
+            if (scheme == null) {
+                return false;
+            }
+
+            if (scheme.equals("http") || scheme.equals("https") || scheme.equals("ftp")) {
+
+                if (uri.getHost() == null) {
+                    return false;
+                }
+
+                String path = uri.getPath();
+                if (path != null) {
+
+                    int len = path.length();
+                    for (int i = 0; i < len; i++) {
+
+                        if ("?<>:*|\"".indexOf(path.charAt(i)) > -1) {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        } catch (Exception ex) {
+
+            return false;
+        }
     }
 
 }

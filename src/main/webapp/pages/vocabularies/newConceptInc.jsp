@@ -18,7 +18,7 @@
         });
 
         // Close add concept dialog
-        $("#closeAddNewConeptButton").click(function() {
+        $("#closeAddNewConceptButton").click(function() {
             $("#addNewConceptDiv").dialog("close");
             return false;
         });
