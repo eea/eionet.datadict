@@ -181,6 +181,9 @@ function openVocabularySearch(elementId) {
 <c:if test="${not empty actionBean.vocabularies}">
         <display:table name="actionBean.vocabularies.list" class="sortable" id="item" pagesize="20"
             requestURI="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/searchVocabularies">
+            <display:column title="Vocabulary Set" sortable="true" sortProperty="folderName">
+                ${item.folderName}
+            </display:column>
             <display:column title="Vocabulary" sortable="true" sortProperty="identifier">
                     <stripes:link beanclass="${actionBean.class.name}" event="searchConcepts">
                            <c:if test="${not empty actionBean.elementId}">
