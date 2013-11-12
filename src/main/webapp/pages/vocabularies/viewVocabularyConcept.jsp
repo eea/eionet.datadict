@@ -55,7 +55,7 @@
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Definition</th>
-                     <td class="simple_attr_value"><span style="white-space:pre-wrap"><c:out value="${actionBean.vocabularyConcept.definition}" /></span><td>
+                     <td class="simple_attr_value"><span style="white-space:pre-wrap"><c:out value="${actionBean.vocabularyConcept.definition}" /></span></td>
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
