@@ -58,7 +58,7 @@
     </display:column>
     <display:column title="Status" sortable="true">
         <c:url var="imgSrc" value="/images/${item.statusImage}" />
-        <img src="${imgSrc}" border="0" title="${item.status}" />
+        <img src="${imgSrc}" title="${item.status}" alt="Status"/>
 
         <c:if test="${item.released}">
             <fmt:setLocale value="en_GB" />
@@ -98,10 +98,10 @@
             </colgroup>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title" title="Data element name">
-                    <label for="filterText"><span style="white-space:nowrap;">Data element</span></label>
+                    <label for="elemFilterText"><span style="white-space:nowrap;">Data element</span></label>
                 </th>
                 <td class="simple_attr_value">
-                    <stripes:text class="smalltext" size="30" name="elementsFilter.identifier" id="filterText"/>
+                    <stripes:text class="smalltext" size="30" name="elementsFilter.identifier" id="elemFilterText"/>
                 </td>
                 <td>
                     <stripes:submit name="searchDataElements" value="Search" class="mediumbuttonb"/>

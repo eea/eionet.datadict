@@ -158,7 +158,7 @@
                             <fieldset style="border: none">
                                 <label for="folderIdentifier" style="float: left; width: 6em;">Identifier:</label>
                                 <stripes:text id="folderIdentifier" class="smalltext" size="30" name="folder.identifier"/>
-                            </fieldset style="border: none">
+                            </fieldset>
                             <fieldset style="border: none">
                                 <label for="folderLabel" style="float: left; width: 6em;">Label:</label>
                                 <stripes:text id="folderLabel" class="smalltext" size="30" name="folder.label"/>

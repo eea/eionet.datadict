@@ -256,6 +256,7 @@
         </stripes:form>
 
         <%-- Vocabulary concepts --%>
+        <div>
         <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept"
             style="width:80%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view" >
             <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
@@ -299,7 +300,7 @@
             </c:if>
 
         </display:table>
-
+        </div>
     <%-- The section that displays versions of this vocabulary. --%>
 
     <c:if test="${not empty actionBean.vocabularyFolderVersions}">
