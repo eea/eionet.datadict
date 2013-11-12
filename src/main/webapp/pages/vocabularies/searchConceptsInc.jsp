@@ -104,7 +104,7 @@ function openVocabularySearch(elementId) {
                     <label for="filterText"><span style="white-space:nowrap;">Vocabulary Concept</span></label>
                 </th>
                 <td class="simple_attr_value">
-                    <input class="smalltext" size="25" name="relatedConceptsFilter.text" id="filterText"/>
+                    <input class="smalltext" size="25" name="relatedConceptsFilter.text" id="filterText" title="Search by concept identifier or label"/>
                 </td>
                 <td>
                     <stripes:submit name="searchConcepts" value="Search" class="mediumbuttonb"/>
@@ -168,7 +168,7 @@ function openVocabularySearch(elementId) {
                     <label for="filterText"><span style="white-space:nowrap;">Vocabulary</span></label>
                 </th>
                 <td class="simple_attr_value">
-                    <input class="smalltext" size="30" name="vocabularyFilter.text" id="vocFilterText"/>
+                    <input class="smalltext" size="30" name="vocabularyFilter.text" id="vocFilterText"  title="Search by vocabulary identifier or label"/>
                 </td>
                 <td>
                     <stripes:submit name="searchVocabularies" value="Search" class="mediumbuttonb"/>

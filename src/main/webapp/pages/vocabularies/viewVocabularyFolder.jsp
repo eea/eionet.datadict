@@ -152,14 +152,16 @@
                         <c:out value="${actionBean.vocabularyFolder.label}" />
                     </td>
                 </tr>
-                <tr>
-                    <th scope="row" class="scope-row simple_attr_title">
-                        Base URI
-                    </th>
-                    <td class="simple_attr_value">
-                        <c:out value="${actionBean.vocabularyFolder.baseUri}" />
-                    </td>
-                </tr>
+                <c:if test="${not empty actionBean.vocabularyFolder.baseUri}">
+                  <tr>
+                      <th scope="row" class="scope-row simple_attr_title">
+                          Base URI
+                      </th>
+                      <td class="simple_attr_value">
+                          <c:out value="${actionBean.vocabularyFolder.baseUri}" />
+                      </td>
+                  </tr>
+                </c:if>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Registration status
@@ -193,17 +195,20 @@
                 <!-- Simple attributes -->
                 <c:forEach var="attributeValues" items="${actionBean.vocabularyFolder.attributes}">
                     <c:set var="attrMeta" value="${attributeValues[0]}"/>
-                    <tr>
-                        <th scope="row" class="scope-row simple_attr_title">${attrMeta.label}</th>
-                        <td class="simple_attr_value">
-                            <c:forEach var="attr" items="${attributeValues}" varStatus="innerLoop">
-                                <c:out value="${attr.value}" />
-                                <c:if test="${fn:length(attributeValues) - innerLoop.index - 1 >= 1}">
-                                    <hr />
-                                </c:if>
-                            </c:forEach>
-                        </td>
-                    </tr>
+                    <c:if test="${not empty attrMeta.value}">
+                      <tr>
+                          <th scope="row" class="scope-row simple_attr_title">${attrMeta.label}</th>
+                          <td class="simple_attr_value">
+                              <ul class="stripedmenu">
+                                <c:forEach var="attr" items="${attributeValues}" varStatus="innerLoop">
+                                  <li>
+                                    <span style="white-space:pre-wrap"><c:out value="${attr.value}" /></span>
+                                  </li>
+                                </c:forEach>
+                              </ul>
+                          </td>
+                      </tr>
+                    </c:if>
                 </c:forEach>
             </table>
         </div>
@@ -257,7 +262,7 @@
             <display:setProperty name="paging.banner.item_name" value="concept" />
             <display:setProperty name="paging.banner.items_name" value="concepts" />
 
-            <display:column title="Id" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" media="html">
+            <display:column title="Id" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 5%" media="html">
                 <c:choose>
                     <c:when test="${concept.obsolete != null}">
                         <span style="text-decoration:line-through"><c:out value="${concept.identifier}" /></span>
@@ -267,23 +272,25 @@
                     </c:otherwise>
                 </c:choose>
             </display:column>
-            <display:column title="Preferred label" media="html">
+            <display:column title="Preferred label" media="html" style="width: 35%">
                 <c:choose>
                     <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
-                        <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view">
-                            <c:out value="${concept.label}" />
+                        <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view" title="${concept.label}">
+                            <dd:attributeValue attrValue="${concept.label}" attrLen="40"/>
                         </stripes:link>
                     </c:when>
                     <c:otherwise>
-                        <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view">
+                        <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view" title="${concept.label}">
                             <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                            <c:out value="${concept.label}" />
+                            <dd:attributeValue attrValue="${concept.label}" attrLen="40"/>
                         </stripes:link>
                     </c:otherwise>
                 </c:choose>
             </display:column>
-            <display:column title="Definition" escapeXml="true" property="definition" />
-            <display:column title="Notation" escapeXml="true" property="notation" />
+            <display:column title="Definition" escapeXml="false" style="width: 55%">
+                <dd:attributeValue attrValue="${concept.definition}"/>
+            </display:column>
+            <display:column title="Notation" escapeXml="true" property="notation" style="width: 5%"/>
 
             <c:if test="${actionBean.filter.obsoleteStatus != 'VALID_ONLY'}">
                 <display:column title="Obsolete from">

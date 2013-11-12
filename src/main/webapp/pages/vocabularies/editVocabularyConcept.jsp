@@ -156,7 +156,7 @@
                     <tr>
                         <td colspan="3">
                             <h2>Additional attributes:</h2>
-                            <table class="datatable" width="100%">
+                            <table class="datatable" style="width:100%">
                                 <colgroup>
                                     <col style="width:26%"/>
                                     <col style="width:4%"/>

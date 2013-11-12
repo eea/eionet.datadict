@@ -150,4 +150,34 @@ public class JstlFunctions {
     public static String linkify(String text) {
         return Util.processForLink(text, false, text.length());
     }
+
+    /**
+     * Cuts the given String if exceeds the length.
+     * Finds the first whitespace after the position to be cut.
+     * Adds an ellipsis in the end if the length is exceeded.
+     *
+     * @return
+     */
+    public static java.lang.String cutAtSpace(java.lang.String str, int cutAtLength) {
+
+        char c = (char) Integer.parseInt(String.valueOf(2026), 16);
+        final String ellipsis = String.valueOf(c);
+
+        if (str == null) {
+            return "";
+        }
+
+        if (str.length() <= cutAtLength) {
+            return str;
+        }
+
+        String stringStart = str.substring(0, cutAtLength);
+        int nextSpace = str.indexOf(" ", cutAtLength);
+
+        str = nextSpace != -1 ? str.substring(0, nextSpace + 1) : stringStart;
+
+        return str + ellipsis;
+
+    }
+
 }

@@ -94,4 +94,15 @@
         <example>
         </example>
     </function>
+
+        <function>
+        <description>Finds the first space in the given string after the length and cuts it.</description>
+        <name>cutAtSpace</name>
+        <function-class>eionet.web.util.JstlFunctions</function-class>
+        <function-signature>java.lang.String cutAtSpace(java.lang.String, int)</function-signature>
+        <example>
+            ${cutAtSpace(someString, 50)}
+        </example>
+    </function>
+
 </taglib>
