@@ -155,8 +155,10 @@ public class JstlFunctions {
      * Cuts the given String if exceeds the length.
      * Finds the first whitespace after the position to be cut.
      * Adds an ellipsis in the end if the length is exceeded.
+     * @param str given string value
+     * @param cutAtLength max len of string
      *
-     * @return
+     * @return cut string
      */
     public static java.lang.String cutAtSpace(java.lang.String str, int cutAtLength) {
 
@@ -172,9 +174,12 @@ public class JstlFunctions {
         }
 
         String stringStart = str.substring(0, cutAtLength);
-        int nextSpace = str.indexOf(" ", cutAtLength);
+        if (str.charAt(cutAtLength) == ' ') {
+            stringStart = stringStart + " " ;
+        }
+        int prevSpace = StringUtils.lastIndexOf(stringStart, " ");
 
-        str = nextSpace != -1 ? str.substring(0, nextSpace + 1) : stringStart;
+        str = prevSpace == -1 ? stringStart : str.substring(0, prevSpace + 1);
 
         return str + ellipsis;
 
