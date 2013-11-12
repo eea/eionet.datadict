@@ -30,17 +30,23 @@ import eionet.util.SecurityUtil;
 import eionet.util.Util;
 
 /**
- *
+ * JSTL functions to be used in JSP.
  * @author Risto Alt
  *
  */
-public class JstlFunctions {
+public final class JstlFunctions {
 
     /** */
     private static final String INPUT_CHECKED_STRING = "checked=\"checked\"";
     private static final String INPUT_SELECTED_STRING = "selected=\"selected\"";
     private static final String INPUT_DISABLED_STRING = "disabled=\"disabled\"";
 
+    /**
+     * Prevent initialization.
+     */
+    private JstlFunctions() {
+
+    }
     /**
      * Returns the value of {@link CRUser#hasPermission(HttpSession, String, String)}, using the given inputs.
      *
@@ -174,8 +180,9 @@ public class JstlFunctions {
         }
 
         String stringStart = str.substring(0, cutAtLength);
+        //if the Nth char is space ther is not need to split the string
         if (str.charAt(cutAtLength) == ' ') {
-            stringStart = stringStart + " " ;
+            stringStart = stringStart + " ";
         }
         int prevSpace = StringUtils.lastIndexOf(stringStart, " ");
 
