@@ -685,7 +685,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      * {@inheritDoc}
      */
     @Override
-    public void copyVocabularyConceptDataElementValues(int newVocabularyFolderId) {
+    public void checkoutVocabularyConceptDataElementValues(int newVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ")
                .append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
@@ -696,6 +696,57 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("newVocabularyFolderId", newVocabularyFolderId);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+
+        updateCheckedoutRelatedConceptIds(newVocabularyFolderId);
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void copyVocabularyConceptDataElementValues(int oldVocabularyId, int newVocabularyId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ")
+               .append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
+        sql.append("select newc.VOCABULARY_CONCEPT_ID, vce.DATAELEM_ID, vce.ELEMENT_VALUE, vce.LANGUAGE, vce.RELATED_CONCEPT_ID ");
+        sql.append("from VOCABULARY_CONCEPT_ELEMENT vce, ");
+        sql.append("VOCABULARY_CONCEPT oldc, VOCABULARY_CONCEPT newc ");
+        sql.append("where oldc.VOCABULARY_CONCEPT_ID=vce.VOCABULARY_CONCEPT_ID AND oldc.VOCABULARY_ID = :oldVocabularyFolderId ")
+            .append("AND newc.VOCABULARY_ID = :newVocabularyFolderId AND newc.IDENTIFIER = oldc.IDENTIFIER ");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("newVocabularyFolderId", newVocabularyId);
+        parameters.put("oldVocabularyFolderId", oldVocabularyId);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+
+        updateCopiedRelatedConceptIds(oldVocabularyId, newVocabularyId);
+    }
+
+
+    /**
+     * After copying localref type element IDs have to be changed.
+     * @param oldVocabularyId old vocabulary ID
+     * @param newVocabularyId new vocabulary ID
+     */
+    private void updateCopiedRelatedConceptIds(int oldVocabularyId, int newVocabularyId) {
+        StringBuilder sql = new StringBuilder();
+
+        sql.append("UPDATE VOCABULARY_CONCEPT_ELEMENT ocev, VOCABULARY_CONCEPT oldc, VOCABULARY_CONCEPT newc, ")
+            .append("VOCABULARY_CONCEPT relc ");
+        sql.append("SET ocev.RELATED_CONCEPT_ID = newc.VOCABULARY_CONCEPT_ID ");
+        sql.append("where ");
+        sql.append("ocev.RELATED_CONCEPT_ID = oldc.VOCABULARY_CONCEPT_ID ");
+        sql.append("and ocev.VOCABULARY_CONCEPT_ID = relc.VOCABULARY_CONCEPT_ID ");
+        sql.append("and relc.VOCABULARY_ID = :newVocabularyId ");
+        sql.append("and oldc.VOCABULARY_ID = :oldVocabularyId ");
+        sql.append("and newc.VOCABULARY_ID = :newVocabularyId ");
+        sql.append("and oldc.IDENTIFIER = newc.IDENTIFIER ");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("newVocabularyId", newVocabularyId);
+        parameters.put("oldVocabularyId", oldVocabularyId);
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
@@ -719,10 +770,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     }
 
     /**
-     * {@inheritDoc}
+     * updates localref IDs to the new concept ones.
+     * @param newVocabularyId new vocabulary ID
      */
-    @Override
-    public void updateRelatedConceptIds(int newVocabularyFolderId) {
+    private void updateCheckedoutRelatedConceptIds(int newVocabularyId) {
         StringBuilder sql = new StringBuilder();
         sql.append("UPDATE VOCABULARY_CONCEPT_ELEMENT cev, VOCABULARY_CONCEPT con1, VOCABULARY_CONCEPT con2, DATAELEM e ");
         sql.append("set cev.RELATED_CONCEPT_ID = con2.VOCABULARY_CONCEPT_ID ");
@@ -730,12 +781,9 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         sql.append("and cev.RELATED_CONCEPT_ID = con2.ORIGINAL_CONCEPT_ID ");
         sql.append("and cev.DATAELEM_ID = e.DATAELEM_ID ");
         sql.append("and con1.VOCABULARY_ID = :newVocabularyFolderId ");
-        // sql.append("and e.IDENTIFIER in (:relationalIdentifiers)");
-        // sql.append("and e.IDENTIFIER in (" + DataElement.getCSRelationalPrefixes() + ")");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("newVocabularyFolderId", newVocabularyFolderId);
-        // parameters.put("relationalIdentifiers", DataElement.getRelationalPrefixes());
+        parameters.put("newVocabularyFolderId", newVocabularyId);
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }

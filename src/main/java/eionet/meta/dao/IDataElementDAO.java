@@ -156,21 +156,29 @@ public interface IDataElementDAO {
     /**
      * Returns data element attributes for vocabulary concept.
      *
-     * @param vocabularyFolderId
-     * @param vocabularyConceptId
+     * @param vocabularyFolderId vocabularyID
+     * @param vocabularyConceptId concept ID
      * @param emptyAttributes
      *            when true, then attributes that are not valued are also included
-     * @return
+     * @return list of lists where each list contains element values of one bound element
      */
     List<List<DataElement>> getVocabularyConceptDataElementValues(int vocabularyFolderId, int vocabularyConceptId,
             boolean emptyAttributes);
 
     /**
      * Copies data element values from old concepts to new concepts.
+     * Can be used when checking out the vocabulary
      *
-     * @param newVocabularyFolderId
+     * @param newVocabularyFolderId new vocabulary Folder ID
      */
-    public void copyVocabularyConceptDataElementValues(int newVocabularyFolderId);
+    void checkoutVocabularyConceptDataElementValues(int newVocabularyFolderId);
+
+    /**
+     * Copies data element values from old vocabulary concepts to new vocabulary concepts.
+     * @param oldVocabularyFolderId old vocabulary Folder ID
+     * @param newVocabularyFolderId new vocabulary Folder ID
+     */
+    void copyVocabularyConceptDataElementValues(int oldVocabularyFolderId, int newVocabularyFolderId);
 
     /**
      * Checks if the vocabulary has binding of this element.
@@ -185,7 +193,7 @@ public interface IDataElementDAO {
      *
      * @param newVocabularyFolderId
      */
-    void updateRelatedConceptIds(int newVocabularyFolderId);
+    //void updateRelatedConceptIds(int newVocabularyFolderId);
 
     /**
      * Deletes related concept elements of this concept.

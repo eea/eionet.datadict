@@ -41,11 +41,13 @@ import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
+import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
+import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
@@ -281,7 +283,51 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         int id = vocabularyService.createVocabularyFolderCopy(vocabularyFolder, 1, "testUser", null);
         VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
         assertNotNull("Expected vocabulary folder", result);
+
+        List<VocabularyConcept> concepts = vocabularyService.getVocabularyConceptsWithAttributes(id, false, ObsoleteStatus.ALL);
+
+        assertEquals("Expected concepts size ", 4, concepts.size());
+        int expectedRelatedID = 0;
+        int actualRelatedId = 0;
+        //find concept5 and see if this has concept4 ID as related ID
+        for (VocabularyConcept c : concepts) {
+            //expect concept4 to appear before concept5 in the elem list
+            if (c.getIdentifier().equals("concept4")) {
+                expectedRelatedID = c.getId();
+            }
+            if (c.getIdentifier().equals("concept5")) {
+                List<List<DataElement>> elems = c.getElementAttributes();
+
+                for (List<DataElement> elem : elems) {
+                    if (elem.get(0).getIdentifier().equals("skos:broader")) {
+                        actualRelatedId = elem.get(0).getRelatedConceptId();
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        assertEquals("Related ID not copied ", actualRelatedId, expectedRelatedID);
+
     }
+
+    /**
+     * test if concept element values are copied.
+     * @throws ServiceException if fails
+     */
+    @Test
+    public void testCreateVocabularyFolderCopyElems() throws ServiceException {
+        VocabularyFolder vocabularyFolder = new VocabularyFolder();
+        vocabularyFolder.setType(VocabularyType.COMMON);
+        vocabularyFolder.setFolderId(1);
+        vocabularyFolder.setLabel("copy");
+        vocabularyFolder.setIdentifier("copy");
+        int id = vocabularyService.createVocabularyFolderCopy(vocabularyFolder, 1, "testUser", null);
+        VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
+        assertNotNull("Expected vocabulary folder", result);
+    }
+
 
     @Test
     public void testCreateVocabularyFolderCopy_withNewFolder() throws ServiceException {

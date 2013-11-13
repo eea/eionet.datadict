@@ -546,8 +546,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
             if (!vocabularyFolder.isSiteCodeType()) {
                 vocabularyConceptDAO.copyVocabularyConcepts(vocabularyFolderId, newVocabularyFolderId);
 
-                dataElementDAO.copyVocabularyConceptDataElementValues(newVocabularyFolderId);
-                dataElementDAO.updateRelatedConceptIds(newVocabularyFolderId);
+                dataElementDAO.checkoutVocabularyConceptDataElementValues(newVocabularyFolderId);
+                //dataElementDAO.updateRelatedConceptIds(newVocabularyFolderId);
             }
 
             // Copy data element relations
@@ -651,12 +651,18 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolder.setUserModified(userName);
             int newVocabularyFolderId = vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
 
+            // Copy simple attributes.
+            attributeDAO.copySimpleAttributes(vocabularyFolderId, DElemAttribute.ParentType.VOCABULARY_FOLDER.toString(),
+                    newVocabularyFolderId);
+
+            dataElementDAO.copyVocabularyDataElements(vocabularyFolderId, newVocabularyFolderId);
+
             List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyFolderId);
             for (VocabularyConcept vc : concepts) {
                 vocabularyConceptDAO.createVocabularyConcept(newVocabularyFolderId, vc);
             }
-
-            dataElementDAO.copyVocabularyDataElements(vocabularyFolderId, newVocabularyFolderId);
+            dataElementDAO.copyVocabularyConceptDataElementValues(vocabularyFolderId, newVocabularyFolderId);
+            //dataElementDAO.updateRelatedConceptIds(newVocabularyFolderId);
 
             return newVocabularyFolderId;
         } catch (Exception e) {
