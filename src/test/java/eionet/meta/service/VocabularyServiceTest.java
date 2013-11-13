@@ -312,23 +312,6 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     }
 
-    /**
-     * test if concept element values are copied.
-     * @throws ServiceException if fails
-     */
-    @Test
-    public void testCreateVocabularyFolderCopyElems() throws ServiceException {
-        VocabularyFolder vocabularyFolder = new VocabularyFolder();
-        vocabularyFolder.setType(VocabularyType.COMMON);
-        vocabularyFolder.setFolderId(1);
-        vocabularyFolder.setLabel("copy");
-        vocabularyFolder.setIdentifier("copy");
-        int id = vocabularyService.createVocabularyFolderCopy(vocabularyFolder, 1, "testUser", null);
-        VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
-        assertNotNull("Expected vocabulary folder", result);
-    }
-
-
     @Test
     public void testCreateVocabularyFolderCopy_withNewFolder() throws ServiceException {
         Folder newFolder = new Folder();
