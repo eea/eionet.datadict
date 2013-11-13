@@ -140,7 +140,8 @@ public interface IVocabularyService {
      * @param userName
      * @param newFolder
      *            optional
-     * @return
+     * @return created folder id
+     * @throws ServiceException if copy fails
      */
     int createVocabularyFolderCopy(VocabularyFolder vocabularyFolder, int vocabularyFolderId, String userName, Folder newFolder)
             throws ServiceException;
