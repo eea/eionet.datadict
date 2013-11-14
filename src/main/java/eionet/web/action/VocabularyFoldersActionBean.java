@@ -39,6 +39,8 @@ import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
 
 /**
  * Action bean for listing vocabulary folders.
@@ -50,6 +52,10 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
 
     /** Page path. */
     private static final String BROWSE_VOCABULARY_FOLDERS_JSP = "/pages/vocabularies/browseVocabularyFolders.jsp";
+
+    /** Search results page. */
+    private static final String VOCABULARY_SEARCH_RESULT_JSP = "/pages/vocabularies/vocabularyResult.jsp";
+
 
     /** Vocabulary service. */
     @SpringBean
@@ -78,6 +84,17 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
 
     /** Popup div id to keep open, when validation error occur. */
     private String editDivId;
+
+    /**
+     * Vocabularies search result.
+     */
+    private VocabularyResult vocabularyResult;
+
+    /**
+     * Vocabularies search filter.
+     */
+    private VocabularyFilter vocabularyFilter;
+
 
     /**
      * View vocabulary folders list action.
@@ -279,6 +296,24 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
+     * search vocabulary folders.
+     *
+     * @return Stripes resolution
+     * @throws ServiceException if search fails
+     */
+    public Resolution search() throws ServiceException {
+        if (vocabularyFilter == null) {
+            vocabularyFilter = new VocabularyFilter();
+        }
+        //vocabularyFilter.setWorkingCopy(false);
+
+        vocabularyResult = vocabularyService.searchVocabularies(vocabularyFilter);
+
+        return new ForwardResolution(VOCABULARY_SEARCH_RESULT_JSP);
+
+    }
+
+    /**
      * @param vocabularyService the vocabularyService to set
      */
     public void setVocabularyService(IVocabularyService vocabularyService) {
@@ -395,6 +430,18 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      */
     public void setIdentifier(String folderIdentifier) {
         this.identifier = folderIdentifier;
+    }
+
+    public VocabularyResult getVocabularyResult() {
+        return vocabularyResult;
+    }
+
+    public VocabularyFilter getVocabularyFilter() {
+        return vocabularyFilter;
+    }
+
+    public void setVocabularyFilter(VocabularyFilter vocabularyFilter) {
+        this.vocabularyFilter = vocabularyFilter;
     }
 
 }

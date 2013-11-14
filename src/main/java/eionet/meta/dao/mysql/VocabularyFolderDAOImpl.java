@@ -624,61 +624,65 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         return items;
     }
 
+    @Override
+    public VocabularyResult searchVocabularies(VocabularyFilter filter) {
+        Map<String, Object> params = new HashMap<String, Object>();
 
-@Override
-public VocabularyResult searchVocabularies(VocabularyFilter filter) {
-    Map<String, Object> params = new HashMap<String, Object>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("select v.VOCABULARY_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
+        sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, ").append(
+                "v.CONCEPT_IDENTIFIER_NUMERIC, ");
+        sql.append("f.ID, f.IDENTIFIER, f.LABEL ");
+        sql.append("from VOCABULARY v ");
 
-    StringBuilder sql = new StringBuilder();
-    sql.append("select v.VOCABULARY_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
-    sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, ")
-        .append("v.CONCEPT_IDENTIFIER_NUMERIC, ");
-    sql.append("f.ID, f.IDENTIFIER, f.LABEL ");
-    sql.append("from VOCABULARY v ");
+        sql.append("left join VOCABULARY_SET f on f.ID=v.FOLDER_ID where 1=1 ");
 
-    sql.append("left join VOCABULARY_SET f on f.ID=v.FOLDER_ID where 1=1 ");
+        if (StringUtils.isNotEmpty(filter.getText())) {
+            params.put("text", "%" + filter.getText() + "%");
+            sql.append("AND (v.LABEL like :text ");
+            sql.append("or v.IDENTIFIER like :text) ");
+        }
 
-    if (StringUtils.isNotEmpty(filter.getText())) {
-        params.put("text", "%" + filter.getText() + "%");
-        sql.append("AND (v.LABEL like :text ");
-        sql.append("or v.IDENTIFIER like :text) ");
-    }
+        if (filter.isWorkingCopy() != null) {
+            params.put("workingCopy", filter.isWorkingCopy() ? 1 : 0);
+            sql.append("AND WORKING_COPY = :workingCopy");
+        }
 
-    if (filter.isWorkingCopy() != null) {
-        params.put("workingCopy", filter.isWorkingCopy() ? 1 : 0);
-        sql.append("AND WORKING_COPY = :workingCopy");
-    }
+        // related concepts text:
+        if (StringUtils.isNotEmpty(filter.getConceptText())) {
+            params.put("conceptText", "%" + filter.getConceptText() + "%");
+            sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ").append(
+                    " AND (vc.LABEL like :conceptText OR vc.IDENTIFIER like :conceptText) ) ");
+        }
+        sql.append(" ORDER BY v.IDENTIFIER");
 
-    sql.append(" ORDER BY v.IDENTIFIER");
+        List<VocabularyFolder> items =
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyFolder>() {
+                    @Override
+                    public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyFolder vf = new VocabularyFolder();
+                        vf.setId(rs.getInt("v.VOCABULARY_ID"));
+                        vf.setIdentifier(rs.getString("v.IDENTIFIER"));
+                        vf.setLabel(rs.getString("v.LABEL"));
+                        vf.setRegStatus(RegStatus.fromString(rs.getString("v.REG_STATUS")));
+                        vf.setType(VocabularyType.valueOf(rs.getString("v.VOCABULARY_TYPE")));
+                        vf.setWorkingCopy(rs.getBoolean("v.WORKING_COPY"));
+                        vf.setWorkingUser(rs.getString("v.WORKING_USER"));
+                        vf.setDateModified(rs.getTimestamp("v.DATE_MODIFIED"));
+                        vf.setUserModified(rs.getString("v.USER_MODIFIED"));
+                        vf.setCheckedOutCopyId(rs.getInt("v.CHECKEDOUT_COPY_ID"));
+                        vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                        vf.setFolderId(rs.getInt("f.ID"));
+                        vf.setFolderLabel(rs.getString("f.LABEL"));
+                        return vf;
+                    }
+                });
 
+        String totalSql = "SELECT FOUND_ROWS()";
+        int totalItems = getJdbcTemplate().queryForInt(totalSql);
 
-    List<VocabularyFolder> items =
-            getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyFolder>() {
-                @Override
-                public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    VocabularyFolder vf = new VocabularyFolder();
-                    vf.setId(rs.getInt("v.VOCABULARY_ID"));
-                    vf.setIdentifier(rs.getString("v.IDENTIFIER"));
-                    vf.setLabel(rs.getString("v.LABEL"));
-                    vf.setRegStatus(RegStatus.fromString(rs.getString("v.REG_STATUS")));
-                    vf.setType(VocabularyType.valueOf(rs.getString("v.VOCABULARY_TYPE")));
-                    vf.setWorkingCopy(rs.getBoolean("v.WORKING_COPY"));
-                    vf.setWorkingUser(rs.getString("v.WORKING_USER"));
-                    vf.setDateModified(rs.getTimestamp("v.DATE_MODIFIED"));
-                    vf.setUserModified(rs.getString("v.USER_MODIFIED"));
-                    vf.setCheckedOutCopyId(rs.getInt("v.CHECKEDOUT_COPY_ID"));
-                    vf.setFolderName(rs.getString("f.IDENTIFIER"));
-                    vf.setFolderId(rs.getInt("f.ID"));
-                    vf.setFolderLabel(rs.getString("f.LABEL"));
-                    return vf;
-                }
-            });
+        VocabularyResult result = new VocabularyResult(items, totalItems, filter);
 
-    String totalSql = "SELECT FOUND_ROWS()";
-    int totalItems = getJdbcTemplate().queryForInt(totalSql);
-
-    VocabularyResult result = new VocabularyResult(items, totalItems, filter);
-
-    return result;
+        return result;
     }
 }

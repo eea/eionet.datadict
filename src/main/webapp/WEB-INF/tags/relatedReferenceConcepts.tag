@@ -44,6 +44,7 @@
           autoOpen: false,
             resizable: false,
             maxHeight: 300,
+            width: 500,
             modal: true,
             buttons: {
                 "Yes, find concept in DD" : function() {
@@ -54,9 +55,6 @@
                     $("#editForm").attr('action', action).ajaxSubmit({type: 'post'});
                     var elementId=${elementId};
                     openVocabularySearch(elementId);
-                    //$("#txtElemName").attr("value",elementId);
-                    //$("#findVocabularyDiv").data('elementId', elementId).dialog('open');
-                    //$("#findVocabularyDiv").dialog('open');
                     $(this).dialog("close");
                   return false;
                 },
@@ -126,7 +124,7 @@
     </c:forEach>
 </div>
 
-<div id="add-value" title="Add reference" style="display:none">
+<div id="add-value" title="Add reference to concept" style="display:none">
     <p>Do you want to add a concept maintained in another Data Dictionary vocabulary?</p>
 </div>
 <br/>

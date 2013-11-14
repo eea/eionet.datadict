@@ -11,6 +11,8 @@
         ( function($) {
             $(document).ready(function() {
 
+
+
                 $(".editFolderDiv").dialog({
                     autoOpen: false,
                     width: 800
@@ -40,14 +42,15 @@
 
     <stripes:layout-component name="contents">
 
-        <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
             <div id="drop-operations">
                 <h2>Operations:</h2>
                 <ul>
-                    <li><stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">Add vocabulary</stripes:link></li>
+                    <li><stripes:link id="searchLnk" href="#">Search</stripes:link></li>
+                    <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
+                        <li><stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">Add vocabulary</stripes:link></li>
+                    </c:if>
                 </ul>
             </div>
-        </c:if>
 
         <h1>Browse vocabularies</h1>
 
@@ -145,7 +148,7 @@
          </stripes:form>
 
 
-         <%-- Editable folder popups --%>
+        <%-- Editable folder popups --%>
         <c:forEach var="item" items="${actionBean.folders}" varStatus="loop">
           <c:if test="${item.expanded && not empty actionBean.user  && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'u')}">
             <div id="editFolderDiv${item.id}" title="Edit folder" class="editFolderDiv">
@@ -199,7 +202,6 @@
             </div>
           </c:if>
         </c:forEach>
-
+        <jsp:include page="searchVocabulariesInc.jsp" />
     </stripes:layout-component>
-
 </stripes:layout-render>

@@ -79,25 +79,25 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     }
 
     @Test
-    public void testGetVocabularyFolder_byId() throws ServiceException {
+    public void testGetVocabularyFolderById() throws ServiceException {
         VocabularyFolder result = vocabularyService.getVocabularyFolder(1);
         assertNotNull("Expected vocabulary folder", result);
     }
 
     @Test
-    public void testGetVocabularyFolder_byIdentifier() throws ServiceException {
+    public void testGetVocabularyFolderByIdentifier() throws ServiceException {
         VocabularyFolder result = vocabularyService.getVocabularyFolder("common", "test_vocabulary2", true);
         assertEquals("Expected id", 3, result.getId());
     }
 
     @Test
-    public void testGetVocabularyFolders_anonymous() throws ServiceException {
+    public void testGetVocabularyFoldersAnonymous() throws ServiceException {
         List<VocabularyFolder> result = vocabularyService.getVocabularyFolders(null);
         assertEquals("Result size", 2, result.size());
     }
 
     @Test
-    public void testGetVocabularyFolders_testUser() throws ServiceException {
+    public void testGetVocabularyFoldersTestUser() throws ServiceException {
         List<VocabularyFolder> result = vocabularyService.getVocabularyFolders("testUser");
         assertEquals("Result size", 3, result.size());
     }
@@ -116,7 +116,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     }
 
     @Test
-    public void testCreateVocabularyFolder_withNewFolder() throws ServiceException {
+    public void testCreateVocabularyFolderWithNewFolder() throws ServiceException {
         VocabularyFolder vocabularyFolder = new VocabularyFolder();
         vocabularyFolder.setLabel("test");
         vocabularyFolder.setIdentifier("test");
@@ -185,7 +185,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     }
 
     @Test
-    public void testUpdateVocabularyFolder_withNewFolder() throws ServiceException {
+    public void testUpdateVocabularyFolderWithNewFolder() throws ServiceException {
         Folder newFolder = new Folder();
         newFolder.setIdentifier("new");
         newFolder.setLabel("new");
@@ -313,7 +313,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     }
 
     @Test
-    public void testCreateVocabularyFolderCopy_withNewFolder() throws ServiceException {
+    public void testCreateVocabularyFolderCopyWithNewFolder() throws ServiceException {
         Folder newFolder = new Folder();
         newFolder.setIdentifier("new");
         newFolder.setLabel("new");
@@ -405,7 +405,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     }
 
     @Test
-    public void testDeleteFolder_notEmpty() throws ServiceException {
+    public void testDeleteFolderNotEmpty() throws ServiceException {
         Exception exception = null;
         try {
             vocabularyService.deleteFolder(1);
@@ -435,7 +435,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     }
 
     @Test
-    public void testGetFolders_sorting() throws ServiceException {
+    public void testGetFoldersSorting() throws ServiceException {
         List<Folder> result = vocabularyService.getFolders(null, null);
         assertEquals("The first folder", "xxx", result.get(0).getLabel());
     }
@@ -547,10 +547,10 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
      */
     @Test
     public void getValuedConceptsTest() throws ServiceException {
-        assertTrue(vocabularyService.getConceptsWithElementValue(1,1).size() == 1);
-        assertTrue(vocabularyService.getConceptsWithElementValue(5,1).size() == 1);
-        assertTrue(vocabularyService.getConceptsWithElementValue(1,2).size() == 0);
-        assertTrue(vocabularyService.getConceptsWithElementValue(2,1).size() == 0);
+        assertTrue(vocabularyService.getConceptsWithElementValue(1, 1).size() == 1);
+        assertTrue(vocabularyService.getConceptsWithElementValue(5, 1).size() == 1);
+        assertTrue(vocabularyService.getConceptsWithElementValue(1, 2).size() == 0);
+        assertTrue(vocabularyService.getConceptsWithElementValue(2, 1).size() == 0);
     }
 
     /**
@@ -622,6 +622,13 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         result = vocabularyService.searchVocabularies(filter);
         assertTrue(result.getTotalItems() == 1);
 
+        //related concepts search
+        filter.setWorkingCopy(false);
+        filter.setText(null);
+        filter.setConceptText("XYZ1234");
+
+        result = vocabularyService.searchVocabularies(filter);
+        assertTrue(result.getTotalItems() == 1);
 
     }
 

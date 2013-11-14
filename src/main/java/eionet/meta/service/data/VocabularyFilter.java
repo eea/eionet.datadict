@@ -35,6 +35,9 @@ public class VocabularyFilter extends PagedRequest {
     /** filter by working copy status. */
     private Boolean workingCopy;
 
+    /** text to be searched in the concepts of the vocabulary. */
+    private String conceptText;
+
     public String getText() {
         return text;
     }
@@ -49,6 +52,14 @@ public class VocabularyFilter extends PagedRequest {
 
     public void setWorkingCopy(Boolean workingCopy) {
         this.workingCopy = workingCopy;
+    }
+
+    public String getConceptText() {
+        return conceptText;
+    }
+
+    public void setConceptText(String conceptText) {
+        this.conceptText = conceptText;
     }
 
 }
