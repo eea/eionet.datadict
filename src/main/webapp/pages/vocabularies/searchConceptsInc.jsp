@@ -78,18 +78,17 @@ function openVocabularySearch(elementId) {
         <table class="datatable" style="width:100%">
             <colgroup>
                 <col style="width:10em;"/>
-                <col />
-                <col />
+                <col style="width:30em;"/>
             </colgroup>
 
              <c:if test="${not empty actionBean.relatedVocabulary}">
                 <tr>
-                <th scope="row" class="scope-row simple_attr_title" title="Vocabulary concept identifier or label ">
-                    <label for="selectedVocabulary"><span style="white-space:nowrap;">Selected Vocabulary</span></label>
-                </th>
-                <td class="simple_attr_value" colspan="2">
-                     ${actionBean.relatedVocabulary.label} [<a href="#" class="delLink" id="backToVoc">Find another vocabulary</a>]
-                </td>
+                  <th scope="row" class="scope-row simple_attr_title" title="Vocabulary concept identifier or label ">
+                      <label for="selectedVocabulary"><span style="white-space:nowrap;">Selected Vocabulary</span></label>
+                  </th>
+                  <td class="simple_attr_value" colspan="2">
+                       ${actionBean.relatedVocabulary.label} [<a href="#" class="delLink" id="backToVoc">Find another vocabulary</a>]
+                  </td>
                 </tr>
             </c:if>
 
@@ -108,7 +107,6 @@ function openVocabularySearch(elementId) {
                     <stripes:button id="cancelConceptBtn" name="cancelConceptSearch" value="Cancel" class="mediumbuttonb"/>
                 </td>
             </tr>
-
         </table>
     <div>
     <c:if test="${not empty actionBean.relatedVocabularyConcepts}">
@@ -127,10 +125,7 @@ function openVocabularySearch(elementId) {
                         <stripes:param name="vocabularyConcept.identifier" value="${actionBean.vocabularyConcept.identifier}" />
                         ${item.identifier}
                     </stripes:link>
-
-
             </display:column>
-
             <display:column title="Label" sortable="true" sortProperty="label">
                 ${item.label}
             </display:column>
@@ -139,8 +134,6 @@ function openVocabularySearch(elementId) {
     </div>
     </stripes:form>
 </div>
-
-
 
 <!--  Search concepts div -->
 <div id="findVocabularyDiv" title="Step 1/2: Find vocabulary">
@@ -157,8 +150,7 @@ function openVocabularySearch(elementId) {
         <table class="datatable" style="width:100%">
             <colgroup>
                 <col style="width:10em;"/>
-                <col />
-                <col />
+                <col style="width:30em;"/>
             </colgroup>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title" title="Vocabulary identifier or label ">

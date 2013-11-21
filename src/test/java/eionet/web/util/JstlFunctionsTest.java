@@ -24,4 +24,10 @@ public class JstlFunctionsTest {
          Assert.assertEquals("I am ", JstlFunctions.cutAtSpace("I am ", 5));
          Assert.assertEquals("I " + ellipsis, JstlFunctions.cutAtSpace("I ammm", 5));
     }
+
+    @Test
+    public void testUrlEncode() {
+        Assert.assertEquals("I%20like%20spaces", JstlFunctions.urlEncode("I like spaces"));
+        Assert.assertEquals("keepsame", JstlFunctions.urlEncode("keepsame"));
+    }
 }

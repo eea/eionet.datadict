@@ -34,8 +34,7 @@
         <table class="datatable" style="width:100%">
             <colgroup>
                 <col style="width:10em;"/>
-                <col />
-                <col />
+                <col style="width:30em;"/>
             </colgroup>
 
             <tr>
@@ -44,6 +43,7 @@
                 </th>
                 <td class="simple_attr_value">
                     <input class="smalltext" size="50" name="vocabularyFilter.text" id="filterText" placeholder="Search by Vocabulary identifier or label"/>
+                </td>
             </tr>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title" title="Vocabularies concept identifier or label ">

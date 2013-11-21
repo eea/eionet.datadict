@@ -95,7 +95,7 @@
         </example>
     </function>
 
-        <function>
+    <function>
         <description>Finds the first space in the given string after the length and cuts it.</description>
         <name>cutAtSpace</name>
         <function-class>eionet.web.util.JstlFunctions</function-class>
@@ -104,5 +104,15 @@
             ${cutAtSpace(someString, 50)}
         </example>
     </function>
+    <function>
+        <description>Replaces spaces with %20 etc in the given string.</description>
+        <name>urlEncode</name>
+        <function-class>eionet.web.util.JstlFunctions</function-class>
+        <function-signature>java.lang.String urlEncode(java.lang.String)</function-signature>
+        <example>
+            ${urlEncode(someString)}
+        </example>
+    </function>
+
 
 </taglib>

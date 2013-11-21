@@ -305,7 +305,10 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         if (vocabularyFilter == null) {
             vocabularyFilter = new VocabularyFilter();
         }
-        //vocabularyFilter.setWorkingCopy(false);
+        //do not show working copies for anonymous users
+        if (!isUserLoggedIn()) {
+            vocabularyFilter.setWorkingCopy(false);
+        }
 
         vocabularyResult = vocabularyService.searchVocabularies(vocabularyFilter);
 

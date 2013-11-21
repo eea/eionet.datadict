@@ -5,9 +5,8 @@
 <stripes:layout-definition>
     <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-
-    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
         <head>
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
             <meta name="viewport" content="initial-scale=1.0" />
@@ -176,7 +175,8 @@
                     --%>
                 </div>
                 <div id="pagefoot" style="max-width: none;">
-                    <p><a href="mailto:cr@eionet.europa.eu">E-mail</a> | <a href="mailto:helpdesk@eionet.europa.eu?subject=Feedback from the ${initParam.appDispName} website">Feedback</a></p>
+                    <c:set var="feedbackMail" value="mailto:helpdesk@eionet.europa.eu?subject=Feedback from the ${initParam.appDispName} website"/>
+                    <p><a href="mailto:cr@eionet.europa.eu">E-mail</a> | <a href="${ddfn:urlEncode(feedbackMail)}">Feedback</a></p>
                     <p><a href="http://www.eea.europa.eu/"><b>European Environment Agency</b></a>
                     <br/>Kgs. Nytorv 6, DK-1050 Copenhagen K, Denmark - Phone: +45 3336 7100</p>
                 </div>

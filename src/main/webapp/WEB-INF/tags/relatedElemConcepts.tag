@@ -65,7 +65,7 @@
         <input type="hidden" id="elem-${uniqueId}.id" name="" value="${elementId}" />
         <input type="hidden" id="identifier-${uniqueId}.identifier" name="" value="${dataElements[0].identifier}" />
         <select name="">
-            <option value=""></option>
+            <option value=""> </option>
             <c:forEach var="concept" items="${vocabularyConcepts}">
                 <option value="${concept.id}"><c:out value="${concept.identifier}" /> (<c:out value="${concept.label}" />)</option>
             </c:forEach>
@@ -82,7 +82,7 @@
             <input type="hidden" name="${fieldName}[${innerLoop.index}].relatedConceptId" value="${attr.relatedConceptId}" />
             <input type="hidden" name="${fieldName}[${innerLoop.index}].identifier" value="${attr.identifier}" />
             <select name="select-${fieldName}[${innerLoop.index}].relatedConceptId" disabled="disabled">
-                <option value=""></option>
+                <option value=""> </option>
                 <c:forEach var="concept" items="${vocabularyConcepts}">
                     <c:choose>
                         <c:when test="${concept.id eq attr.relatedConceptId}">

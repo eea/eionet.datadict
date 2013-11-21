@@ -20,6 +20,8 @@
  */
 package eionet.web.util;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 
 import javax.servlet.http.HttpSession;
@@ -190,6 +192,20 @@ public final class JstlFunctions {
 
         return str + ellipsis;
 
+    }
+
+    /**
+     * URLEncodes given String.
+     * @param str value to urlencode
+     * @return encoded value
+     */
+    public static java.lang.String urlEncode(String str) {
+        try {
+            URI uri = new URI(null, str, null);
+            return uri.toASCIIString();
+        } catch (URISyntaxException e) {
+            return str;
+        }
     }
 
 }

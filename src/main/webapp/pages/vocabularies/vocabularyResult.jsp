@@ -28,6 +28,21 @@
             </display:column>
             <display:column title="Vocabulary" sortable="true" sortProperty="label">
                 <c:choose>
+                    <c:when test="${item.workingCopy}">
+                        <c:choose>
+                            <c:when test="${actionBean.userName eq item.workingUser}">
+                                <stripes:link href="/vocabulary/${item.folderName}/${item.identifier}/view">
+                                    <c:out value="${item.label}"/>
+                                    <stripes:param name="vocabularyFolder.workingCopy" value="${item.workingCopy}" />
+                                </stripes:link>
+                                <span title="Your working copy" class="checkedout">*</span>
+                            </c:when>
+                            <c:otherwise>
+                                <c:out value="${item.label}" /> <span title="Checked out by ${item.workingUser}" class="checkedout">*</span>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:when>
+
                     <c:when test="${not item.draftStatus || actionBean.userLoggedIn}">
                         <stripes:link href="/vocabulary/${item.folderName}/${item.identifier}/view"><c:out value="${item.label}" /></stripes:link>
                     </c:when>
@@ -35,6 +50,9 @@
                         <c:out value="${item.label}" />
                     </c:otherwise>
                 </c:choose>
+            </display:column>
+            <display:column title="Status" sortable="true" sortProperty="regStatus">
+                ${item.regStatus.label}
             </display:column>
         </display:table>
     <jsp:include page="searchVocabulariesInc.jsp" />
