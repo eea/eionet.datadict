@@ -30,6 +30,7 @@ import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.ObsoleteStatus;
+import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
@@ -522,5 +523,12 @@ public interface IVocabularyService {
      */
     VocabularyResult searchVocabularies(VocabularyFilter filter) throws ServiceException;
 
+    /**
+     * Search form all vocabulary concepts.
+     * @param filter filter parameters
+     * @return list of vocabulary concepts and parent objects: vocabulary, vicabulary set
+     * @throws ServiceException if database call fails.
+     */
+    List<VocabularyConceptData> searchAllVocabularyConcept(VocabularyConceptFilter filter) throws ServiceException;
 
 }

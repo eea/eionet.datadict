@@ -1,5 +1,6 @@
 /*
  * The contents of this file are subject to the Mozilla Public
+
  * License Version 1.1 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of
  * the License at http://www.mozilla.org/MPL/
@@ -19,48 +20,30 @@
  *        Kaido Laine
  */
 
+
 package eionet.meta.service.data;
 
+import java.util.List;
+
+
 /**
- *
- * Filter for searching vocabularies.
+ * Result for saerching concepts in Vocabulary page.
  *
  * @author Kaido Laine
  */
-public class VocabularyFilter extends PagedRequest {
+public class ConceptSearchResult extends PagedResult<VocabularyConceptData> {
 
-
-    /** Text search value. */
-    private String text;
-
-    /** filter by working copy status. */
-    private Boolean workingCopy;
-
-    /** text to be searched in the concepts of the vocabulary. */
-    private String conceptText;
-
-    public String getText() {
-        return text;
+    /**
+     * Class constructor.
+     *
+     * @param items
+     *            found items array
+     * @param totalItems
+     *            count of found items
+     * @param pagedRequest
+     *            paged request the result is passed to
+     */
+    public ConceptSearchResult(List<VocabularyConceptData> items, int totalItems, PagedRequest pagedRequest) {
+        super(items, totalItems, pagedRequest);
     }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public Boolean isWorkingCopy() {
-        return workingCopy;
-    }
-
-    public void setWorkingCopy(Boolean workingCopy) {
-        this.workingCopy = workingCopy;
-    }
-
-    public String getConceptText() {
-        return conceptText;
-    }
-
-    public void setConceptText(String conceptText) {
-        this.conceptText = conceptText;
-    }
-
 }

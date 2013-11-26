@@ -59,6 +59,7 @@ import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.ObsoleteStatus;
+import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
@@ -1145,4 +1146,37 @@ public class VocabularyServiceImpl implements IVocabularyService {
             throw new ServiceException("Failed to get vocabularies: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    //public ConceptSearchResult searchAllVocabularyConcept(VocabularyFilter filter) throws ServiceException; searchAllVocabularyConcept(VocabularyFilter filter) throws ServiceException {
+    public List<VocabularyConceptData> searchAllVocabularyConcept(VocabularyConceptFilter filter) throws ServiceException {
+        try {
+            VocabularyConceptResult vocabularyConceptResult = vocabularyConceptDAO.searchVocabularyConcepts(filter);
+            List<VocabularyConceptData> result = new ArrayList<VocabularyConceptData>();
+
+            for (VocabularyConcept concept : vocabularyConceptResult.getList()) {
+                VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(concept.getVocabularyId());
+
+                VocabularyConceptData data = new VocabularyConceptData();
+                    data.setIdentifier(concept.getIdentifier());
+                    data.setLabel(concept.getLabel());
+                    data.setUserName(vocabulary.getWorkingUser());
+                    data.setVocabularyIdentifier(vocabulary.getIdentifier());
+                    data.setVocabularyLabel(vocabulary.getLabel());
+                    data.setVocabularySetIdentifier(vocabulary.getFolderName());
+                    data.setVocabularySetLabel(vocabulary.getFolderLabel());
+
+                    data.setVocabularyStatus(vocabulary.getRegStatus());
+                    data.setWorkingCopy(vocabulary.isWorkingCopy());
+
+                    result.add(data);
+                }
+
+            return result;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to perform concept search: " + e.getMessage(), e);
+        }
+    }
+
+
 }

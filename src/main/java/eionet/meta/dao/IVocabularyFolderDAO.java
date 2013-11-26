@@ -164,9 +164,10 @@ public interface IVocabularyFolderDAO {
 
 
     /**
-     * Search vocabularies by the given parameters.
+     * Search vocabularies by the given parameters. No concepts assigned to DAO objects.
      * @param filter container object for filtering parameters
      * @return Result containing values for the paged request
      */
     VocabularyResult searchVocabularies(VocabularyFilter filter);
+
 }

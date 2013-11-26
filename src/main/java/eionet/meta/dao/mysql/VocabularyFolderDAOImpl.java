@@ -685,4 +685,5 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
         return result;
     }
+
 }

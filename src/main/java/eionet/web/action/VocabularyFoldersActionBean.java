@@ -39,6 +39,8 @@ import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.VocabularyConceptData;
+import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 
@@ -53,9 +55,11 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /** Page path. */
     private static final String BROWSE_VOCABULARY_FOLDERS_JSP = "/pages/vocabularies/browseVocabularyFolders.jsp";
 
-    /** Search results page. */
+    /** Vocabulary search results page. */
     private static final String VOCABULARY_SEARCH_RESULT_JSP = "/pages/vocabularies/vocabularyResult.jsp";
 
+    /** Vocabulary concept search results page. */
+    private static final String CONCEPT_SEARCH_RESULT_JSP = "/pages/vocabularies/vocabularyConceptResult.jsp";
 
     /** Vocabulary service. */
     @SpringBean
@@ -91,9 +95,19 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     private VocabularyResult vocabularyResult;
 
     /**
+     * Vocabulary concepts search result.
+     */
+    private List<VocabularyConceptData> vocabularyConceptResult;
+
+    /**
      * Vocabularies search filter.
      */
     private VocabularyFilter vocabularyFilter;
+
+    /**
+     * Search concepts filter.
+     */
+    private VocabularyConceptFilter vocabularyConceptFilter;
 
 
     /**
@@ -147,6 +161,26 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         vocabularyService.deleteFolder(getSubmittedFolder().getId());
         addSystemMessage("Folder successfully deleted");
         return new RedirectResolution(VocabularyFoldersActionBean.class);
+    }
+
+
+    /**
+     * Validation on search concepts.
+     * Checks if text is entered
+     * @throws ServiceException if databaes call fails
+     */
+    @ValidationMethod(on = {"searchConcepts"})
+    public void validateSearchConcepts() throws ServiceException {
+        if (vocabularyConceptFilter == null || StringUtils.isEmpty(vocabularyConceptFilter.getText())) {
+            addGlobalValidationError("Search text cannot be empty.");
+        } else if (vocabularyConceptFilter != null && !StringUtils.isEmpty(vocabularyConceptFilter.getText())
+                   && vocabularyConceptFilter.getText().length() < 2) {
+            addGlobalValidationError("Search text must be at least two characters.");
+        }
+
+        if (isValidationErrors()) {
+            folders = vocabularyService.getFolders(getUserName(), null);
+        }
     }
 
     /**
@@ -317,6 +351,27 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
+     * search concepts folders.
+     *
+     * @return Stripes resolution
+     * @throws ServiceException if search fails
+     */
+    public Resolution searchConcepts() throws ServiceException {
+        if (vocabularyConceptFilter == null) {
+            vocabularyConceptFilter = new VocabularyConceptFilter();
+        }
+        // this is needed because of "limit " clause in the SQL. if this remains true, paging does not work in display:table
+        vocabularyConceptFilter.setUsePaging(false);
+
+        //do not show working copies for anonymous users
+        vocabularyConceptResult = vocabularyService.searchAllVocabularyConcept(vocabularyConceptFilter);
+
+        return new ForwardResolution(CONCEPT_SEARCH_RESULT_JSP);
+
+    }
+
+
+    /**
      * @param vocabularyService the vocabularyService to set
      */
     public void setVocabularyService(IVocabularyService vocabularyService) {
@@ -445,6 +500,18 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
 
     public void setVocabularyFilter(VocabularyFilter vocabularyFilter) {
         this.vocabularyFilter = vocabularyFilter;
+    }
+
+    public VocabularyConceptFilter getVocabularyConceptFilter() {
+        return vocabularyConceptFilter;
+    }
+
+    public void setVocabularyConceptFilter(VocabularyConceptFilter vocabularyConceptFilter) {
+        this.vocabularyConceptFilter = vocabularyConceptFilter;
+    }
+
+    public List<VocabularyConceptData>  getVocabularyConceptResult() {
+        return vocabularyConceptResult;
     }
 
 }

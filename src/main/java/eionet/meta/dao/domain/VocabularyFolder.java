@@ -54,6 +54,12 @@ public class VocabularyFolder {
 
     private List<List<SimpleAttribute>> attributes;
 
+
+    /**
+     * All vocabulary concepts.
+     */
+    private List<VocabularyConcept> concepts;
+
     /**
      * True, if status is "Draft".
      *
@@ -337,10 +343,6 @@ public class VocabularyFolder {
         return folderLabel;
     }
 
-    /**
-     * @param folderLabel
-     *            the folderLabel to set
-     */
     public void setFolderLabel(String folderLabel) {
         this.folderLabel = folderLabel;
     }
@@ -357,6 +359,14 @@ public class VocabularyFolder {
      */
     public void setNotationsEqualIdentifiers(boolean enforceNotationToId) {
         this.notationsEqualIdentifiers = enforceNotationToId;
+    }
+
+    public List<VocabularyConcept> getConcepts() {
+        return concepts;
+    }
+
+    public void setConcepts(List<VocabularyConcept> concepts) {
+        this.concepts = concepts;
     }
 
 }
