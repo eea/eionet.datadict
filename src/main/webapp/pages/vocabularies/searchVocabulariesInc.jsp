@@ -34,7 +34,7 @@
                     modal: true
                 });
 
-                $("#cancelConceptsBtn").click(function(){
+                $("#cancelConceptBtn").click(function(){
                     $("#searchConceptsDiv").dialog("close");
                     return false;
                 });
