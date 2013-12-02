@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -836,7 +837,10 @@ public class DDSearchEngine {
             if (constraints.length() > 0) {
                 constraints.append(" and ");
             }
-            constraints.append("DATAELEM.REG_STATUS=").append(inParams.add(regStatus));
+
+            List<String>regStatuses = buildListFromCsv(regStatus);
+
+            constraints.append("DATAELEM.REG_STATUS IN(").append(inParams.addArray(regStatuses)).append(")");
         }
 
         // set the element type (CH1 or CH2)
@@ -5149,5 +5153,18 @@ public class DDSearchEngine {
             initSpringContext();
         }
         return springContext;
+    }
+
+    private List<String> buildListFromCsv(String csvValues) throws SQLException {
+        StringTokenizer tokens = new StringTokenizer(csvValues, ",");
+
+        ArrayList<String> values = new ArrayList<String>();
+
+        while (tokens.hasMoreTokens()) {
+            values.add(tokens.nextToken());
+        }
+
+        return values;
+
     }
 }

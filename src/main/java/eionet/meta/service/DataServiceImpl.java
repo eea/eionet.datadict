@@ -181,4 +181,18 @@ public class DataServiceImpl implements IDataService {
         dataElement.setElemAttributeValues(attributeValues);
 
     }
+
+    @Override
+    public List<DataElement> getUnreleasedCommonElements(int datasetId) throws ServiceException {
+
+        List<DataElement> datasetElements = dataElementDao.getDataSetElements(datasetId);
+        List<DataElement> unreleasedElems = new ArrayList<DataElement>();
+        for (DataElement elem : datasetElements) {
+            if (!elem.getStatus().equalsIgnoreCase("Released") && elem.isCommonElement()) {
+                unreleasedElems.add(elem);
+            }
+        }
+
+        return unreleasedElems;
+    }
 }

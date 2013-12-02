@@ -209,4 +209,13 @@ public interface IDataElementDAO {
      * @return Map where key is attribute name and value is list of element values
      */
     Map<String, List<String>> getDataElementAttributeValues(int elementId);
+
+
+    /**
+     * Finds unique set of elements used in all dataset tables.
+     * @param datasetId dataset id
+     * @return distinct collection of data elements
+     */
+    List<DataElement> getDataSetElements(int datasetId);
+
 }

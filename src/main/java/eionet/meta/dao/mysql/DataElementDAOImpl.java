@@ -828,4 +828,43 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         return resultMap;
     }
+
+    @Override
+    public List<DataElement> getDataSetElements(int datasetId) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select distinct de.* from DST2TBL dt, TBL2ELEM te, DATAELEM de WHERE dt.TABLE_ID = te.TABLE_ID ")
+            .append("and te.DATAELEM_ID = de.DATAELEM_ID AND dt.DATASET_ID = :datasetId");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("datasetId", datasetId);
+
+        List<DataElement> result = getNamedParameterJdbcTemplate().query(sb.toString(), params, new RowMapper<DataElement>() {
+
+            @Override
+            public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DataElement de = new DataElement();
+                de.setId(rs.getInt("de.DATAELEM_ID"));
+                de.setShortName(rs.getString("de.SHORT_NAME"));
+                de.setStatus(rs.getString("de.REG_STATUS"));
+                de.setType(rs.getString("de.TYPE"));
+                de.setModified(new Date(rs.getLong("de.DATE")));
+                de.setWorkingUser(rs.getString("de.WORKING_USER"));
+                de.setIdentifier(rs.getString("de.IDENTIFIER"));
+
+                int parentNs = rs.getInt("de.PARENT_NS");
+                if (parentNs > 0) {
+                    de.setParentNamespace(parentNs);
+                }
+
+                return de;
+            }
+
+        });
+
+        for (DataElement elem : result) {
+            List<FixedValue> fxvs = getFixedValues(elem.getId());
+            elem.setFixedValues(fxvs);
+        }
+        return result;
+    }
 }

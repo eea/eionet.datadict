@@ -78,6 +78,18 @@ public class DataServiceTest extends UnitilsJUnit4  {
         Assert.assertTrue(elem3.getElemAttributeValues().size() == 1);
         Assert.assertEquals(elem3.getElemAttributeValues().get("Definition").get(0), "Third definition");
 
+    }
 
+    /**
+     * tests if datasets contain only released elements.
+     * @throws Exception if fail
+     */
+    @Test
+    public void testHasElementsReleased() throws Exception {
+        List<DataElement> elems1 = dataService.getUnreleasedCommonElements(1);
+        List<DataElement> elems2 = dataService.getUnreleasedCommonElements(2);
+
+        Assert.assertTrue("Dataset1 contains an unreleased element", elems1.size() == 1);
+        Assert.assertTrue("Dataset2 contains released elements", elems2.size() == 0);
     }
 }

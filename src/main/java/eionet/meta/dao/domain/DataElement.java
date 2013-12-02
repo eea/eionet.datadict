@@ -53,6 +53,12 @@ public class DataElement {
 
     private String tableName;
 
+    /**
+     * parent namespace ID.
+     * NULL if common element
+     */
+    private Integer parentNamespace;
+
     private String dataSetName;
 
     private String workingUser;
@@ -375,4 +381,22 @@ public class DataElement {
 
         return false;
     }
+
+    public Integer getParentNamespace() {
+        return parentNamespace;
+    }
+
+    public void setParentNamespace(Integer parentNamespace) {
+        this.parentNamespace = parentNamespace;
+    }
+
+    public boolean isCommonElement() {
+        return parentNamespace == null;
+    }
+
+    @Override
+    public String toString() {
+        return identifier;
+    }
+
 }

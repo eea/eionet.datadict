@@ -2,6 +2,7 @@ package eionet.util.sql;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -46,6 +47,27 @@ public class INParameters {
     }
 
     /**
+     * composes string for IN() clause.
+     * @param valuesArray array of the values
+     * @return SQL for in clause in the preparedstatement
+     */
+    public String addArray(List<String> valuesArray) {
+       StringBuilder valuesStr = new StringBuilder();
+       int c = 0;
+       for (String value : valuesArray) {
+           values.add(value);
+           sqlTypes.add(null);
+
+           c++;
+           valuesStr.append("?");
+           if (c < valuesArray.size()) {
+               valuesStr.append(",");
+           }
+       }
+       return valuesStr.toString();
+    }
+
+    /**
      *
      * @return
      */
@@ -75,6 +97,7 @@ public class INParameters {
      *  (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
 
         StringBuffer buf = new StringBuffer(size() == 0 ? "empty" : "");

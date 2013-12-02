@@ -13,7 +13,10 @@ import java.util.Vector;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import eionet.meta.notif.Subscriber;
 import eionet.meta.notif.UNSEventSender;
@@ -22,6 +25,7 @@ import eionet.meta.savers.DataElementHandler;
 import eionet.meta.savers.DatasetHandler;
 import eionet.meta.savers.DsTableHandler;
 import eionet.meta.savers.Parameters;
+import eionet.meta.service.IDataService;
 import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
@@ -50,6 +54,9 @@ public class VersionManager {
     /** servlet context object if instatiated from servlet environment */
     private ServletContext ctx = null;
     protected Parameters servlRequestParams = null;
+
+    /** local instance of data service. */
+    private IDataService dataService;
 
     /**
      *
@@ -837,6 +844,16 @@ public class VersionManager {
         if (submOrg == null) {
             throw new Exception("SubmitOrganisation complex attribute required!");
         }
+
+        //if dataset has non-released elements refuse check in
+        if ((status != null && status.equalsIgnoreCase("Released")) || dst.getStatus().equalsIgnoreCase("Released")) {
+            initDataService();
+            List<eionet.meta.dao.domain.DataElement> unreleasedElems = dataService.getUnreleasedCommonElements(Integer.valueOf(dst.getID()));
+            if (unreleasedElems.size() > 0) {
+                throw new Exception("Released dataset must not have unreleased common elements linked to the tables. Element(s) not released: " + StringUtils.join(unreleasedElems, ","));
+            }
+        }
+
     }
 
     /**
@@ -1216,5 +1233,13 @@ public class VersionManager {
      */
     public Parameters getServlRequestParams() {
         return this.servlRequestParams;
+    }
+
+    private void initDataService() {
+        if (dataService == null) {
+            ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-context.xml");
+            dataService = ctx.getBean(IDataService.class);
+        }
+
     }
 }

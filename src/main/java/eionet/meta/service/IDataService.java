@@ -135,4 +135,13 @@ public interface IDataService {
      */
     void setDataElementAttributes(DataElement dataElement)  throws ServiceException;
 
+
+    /**
+     * Checks if dataset has all linked common elements released and returns them.
+     * @param datasetId datased ID
+     * @return linked elements of non-released status
+     * @throws ServiceException if database query fails
+     */
+    List<DataElement> getUnreleasedCommonElements(int datasetId) throws ServiceException;
+
 }
