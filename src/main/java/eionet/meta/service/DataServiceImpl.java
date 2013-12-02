@@ -19,6 +19,11 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 
+/**
+ * Data Service implementation.
+ *
+ * @author Juhan Voolaid
+ */
 @Service
 @Transactional
 public class DataServiceImpl implements IDataService {

@@ -848,9 +848,11 @@ public class VersionManager {
         //if dataset has non-released elements refuse check in
         if ((status != null && status.equalsIgnoreCase("Released")) || dst.getStatus().equalsIgnoreCase("Released")) {
             initDataService();
-            List<eionet.meta.dao.domain.DataElement> unreleasedElems = dataService.getUnreleasedCommonElements(Integer.valueOf(dst.getID()));
+            List<eionet.meta.dao.domain.DataElement> unreleasedElems =
+                    dataService.getUnreleasedCommonElements(Integer.valueOf(dst.getID()));
             if (unreleasedElems.size() > 0) {
-                throw new Exception("Released dataset must not have unreleased common elements linked to the tables. Element(s) not released: " + StringUtils.join(unreleasedElems, ","));
+                throw new Exception("Released dataset cannot not be checked in if it has unreleased common elements "
+                        + "linked to the tables. Element(s) not released: " + StringUtils.join(unreleasedElems, ","));
             }
         }
 
@@ -1237,8 +1239,8 @@ public class VersionManager {
 
     private void initDataService() {
         if (dataService == null) {
-            ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-context.xml");
-            dataService = ctx.getBean(IDataService.class);
+            ApplicationContext appCtx = new ClassPathXmlApplicationContext("spring-context.xml");
+            dataService = appCtx.getBean(IDataService.class);
         }
 
     }
