@@ -296,6 +296,9 @@
             <div id="searchframe">
                 <stripes:hidden name="vocabularyFolder.folderName" />
                 <stripes:hidden name="vocabularyFolder.workingCopy" />
+                <stripes:hidden name="origIdentifer" />
+                <stripes:hidden name="vocabularyFolder.identifier" />
+
                 <table class="datatable">
                     <colgroup>
                         <col style="width:10em;"/>
@@ -320,7 +323,8 @@
                             </stripes:select>
                         </td>
                         <td>
-                            <stripes:submit name="edit" value="Search" class="mediumbuttonb"/>
+                            <c:set var="disableSearch" value="${(empty actionBean.vocabularyFolder.identifier) or not (actionBean.origIdentifier eq actionBean.vocabularyFolder.identifier)}"/>
+                            <stripes:submit name="edit" value="Search" class="mediumbuttonb" disabled="${disableSearch}"/>
                         </td>
                     </tr>
                 </table>
