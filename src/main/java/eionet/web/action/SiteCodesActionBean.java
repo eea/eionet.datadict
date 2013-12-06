@@ -52,12 +52,15 @@ import eionet.meta.service.data.CountryAllocations;
 import eionet.meta.service.data.PagedRequest;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 
 /**
  * Site codes controller.
  *
  * @author Juhan Voolaid
+ * @author Jaanus Heinlaid
  */
 @UrlBinding("/services/siteCodes/{$event}")
 public class SiteCodesActionBean extends AbstractActionBean {
@@ -73,16 +76,16 @@ public class SiteCodesActionBean extends AbstractActionBean {
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /** Maximum amount site codes to allocate without name (1st method). */
-    private static final int MAX_ALLOCATE_AMOUNT_WITHOUT_NAMES = 100;
+    private static final int MAX_ALLOCATE_AMOUNT_WITHOUT_NAMES = Props.getIntProperty(PropsIF.SITE_CODES_MAX_ALLOCATE_WITHOUT_NAMES);
 
     /** Maximum amount site codes to allocate. */
-    private static final int MAX_ALLOCATE_AMOUNT = 500;
+    private static final int MAX_ALLOCATE_AMOUNT = Props.getIntProperty(PropsIF.SITE_CODES_MAX_ALLOCATE);
 
     /** Maximum amount site codes to allocate by ETC or EEA users. */
-    private static final int MAX_ALLOCATE_AMOUNT_FOR_ETC = 1000;
+    private static final int MAX_ALLOCATE_AMOUNT_FOR_ETC = Props.getIntProperty(PropsIF.SITE_CODES_MAX_ALLOCATE_ETC_EEA);
 
     /** Maximum amount available site codes to reserve. */
-    private static final int MAX_RESERVE_AMOUNT = 10000;
+    private static final int MAX_RESERVE_AMOUNT = Props.getIntProperty(PropsIF.SITE_CODES_MAX_RESERVE_AMOUNT);
 
     /** Site code service. */
     @SpringBean

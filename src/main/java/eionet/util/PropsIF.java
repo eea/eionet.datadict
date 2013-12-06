@@ -25,7 +25,10 @@
 package eionet.util;
 
 /**
- * @author jaanus
+ * An interface container for the application's properties-related constants.
+ * TODO: Interfaces should not be used as mere constant containers, so it's better to mve them into {@link Props} for example.
+ *
+ * @author Jaanus Heinlaid
  */
 public interface PropsIF {
 
@@ -127,4 +130,16 @@ public interface PropsIF {
 
     /** The property that withholds the friendly URI template for DD namespaces. */
     public static final String NAMESPACE_FRIENDLY_URI_TEMPLATE = "dd.namespaces.friendlyUriTemplate";
+
+    /** Maximum amount site codes to allocate. */
+    public static final String SITE_CODES_MAX_ALLOCATE = "siteCode.allocate.maxAmount";
+
+    /** Maximum amount site codes to allocate without name. */
+    public static final String SITE_CODES_MAX_ALLOCATE_WITHOUT_NAMES = "siteCode.allocate.maxAmountWithoutName";
+
+    /** Maximum amount site codes to allocate by ETC or EEA users. */
+    public static final String SITE_CODES_MAX_ALLOCATE_ETC_EEA = "siteCode.allocate.maxAmountForEtcEeaUsers";
+
+    /** Maximum amount available site codes to reserve. */
+    public static final String SITE_CODES_MAX_RESERVE_AMOUNT = "siteCode.reserve.maxAmount";
 }
