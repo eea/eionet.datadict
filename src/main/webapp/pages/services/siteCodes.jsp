@@ -173,13 +173,17 @@
 
             <p>
             In the past the distribution of the free codes, as well as maintenance of the European codelist,
-            has been performed manually by the ETC/BD. This service automate the process of the code distribution.
+            has been performed manually by the ETC/BD. This service automates the process of the code distribution.
             </p>
 
             <p>
             Appointed Reportnet users, which are all Eionet <a href="http://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nfp">NFPs</a>
             and <a href="http://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nrc-nature">NRCs for Nature and Biodiversity</a>,
             can reserve a set of new site codes for their new sites after logging into the service. The process is called allocation of site codes.
+            </p>
+
+            <p>
+                Detailed instructions on how to use the site code allocation service can be found in this <a href="<%=request.getContextPath()%>/documentation/service_cdda_sitecode_guide.doc">User guide</a>.
             </p>
 
             <div class="advice-msg">
