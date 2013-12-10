@@ -96,6 +96,17 @@ public class DataElement {
     /** fixed values. */
     private List<FixedValue> fixedValues;
 
+    /** relation to a vocabulary if fixed values element are from a vocabulary. */
+    private Integer vocabularyId;
+
+    /**
+     * if element gets fxv from a vocabulary shows if all concepts are valid.
+     * if false only concepts released before releasing the element and not marked
+     * obsolete are valid.
+     */
+    private Boolean allConceptsValid;
+
+
     /**
      * Name attribute value is saved in this variable for better performance in search.
      */
@@ -398,5 +409,22 @@ public class DataElement {
     public String toString() {
         return identifier;
     }
+
+    public Integer getVocabularyId() {
+        return vocabularyId;
+    }
+
+    public void setVocabularyId(Integer vocabularyId) {
+        this.vocabularyId = vocabularyId;
+    }
+
+    public Boolean getAllConceptsValid() {
+        return allConceptsValid;
+    }
+
+    public void setAllConceptsValid(Boolean allConceptsValid) {
+        this.allConceptsValid = allConceptsValid;
+    }
+
 
 }

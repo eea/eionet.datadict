@@ -1178,5 +1178,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
     }
 
+    @Override
+    public void bindVocabulary(int elementId, int vocabularyId) {
+        dataElementDAO.bindVocabulary(elementId, vocabularyId);
+    }
+
 
 }

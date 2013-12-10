@@ -603,7 +603,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
         sql.append("SELECT max(c) as ELEM_COUNT, IDENTIFIER FROM (SELECT DISTINCT count(DATAELEM_ID) AS C, DATAELEM.IDENTIFIER ")
                 .append("from VOCABULARY_CONCEPT JOIN VOCABULARY_CONCEPT_ELEMENT USING(VOCABULARY_CONCEPT_ID) ")
-                .append("JOIN DATAELEM USING(DATAELEM_ID) ").append("where VOCABULARY_ID=:folderId ")
+                .append("JOIN DATAELEM USING(DATAELEM_ID) ").append("where VOCABULARY_CONCEPT.VOCABULARY_ID=:folderId ")
                 .append("GROUP BY VOCABULARY_CONCEPT_ID, DATAELEM_ID ORDER BY SHORT_NAME, C DESC) q group by IDENTIFIER");
 
         Map<String, Object> params = new HashMap<String, Object>();

@@ -71,8 +71,8 @@ public interface IDataElementDAO {
     /**
      * Returns latest version of the data element.
      *
-     * @param identifier
-     * @return
+     * @param identifier data element identifier
+     * @return element
      */
     DataElement getDataElement(String identifier);
 
@@ -217,5 +217,12 @@ public interface IDataElementDAO {
      * @return distinct collection of data elements
      */
     List<DataElement> getDataSetElements(int datasetId);
+
+    /**
+     * Sets relation to an external vocabulary.
+     * @param elementId data element id
+     * @param vocabularyId vocabulary Id
+     */
+    void bindVocabulary(int elementId, int vocabularyId);
 
 }

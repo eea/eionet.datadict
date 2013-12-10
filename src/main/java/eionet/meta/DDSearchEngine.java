@@ -24,6 +24,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IAttributeDAO;
+import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
@@ -1394,6 +1395,9 @@ public class DDSearchEngine {
                     elm.setTblIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
                     elm.setPositionInTable(rs.getString("TBL2ELEM.POSITION"));
                 }
+
+                elm.setVocabularyId(rs.getString("DATAELEM.VOCABULARY_ID"));
+                elm.setAllConceptsValid(rs.getBoolean("ALL_CONCEPTS_LEGAL"));
 
                 Vector attributes =
                         !elmCommon && inheritAttrs ? getSimpleAttributes(elmID, "E", elm.getTableID(), elm.getDatasetID())
@@ -5166,5 +5170,16 @@ public class DDSearchEngine {
 
         return values;
 
+    }
+
+    /**
+     * returns vocabulary.
+     * @param vocabularyId vocabulary id
+     * @return vocabulary
+     */
+    public VocabularyFolder getVocabulary(int vocabularyId) {
+        //to avoid seniding weeks for redesign use this legacy code to bind vocabulary to data elements
+        IVocabularyFolderDAO dao = springContext.getBean(IVocabularyFolderDAO.class);
+        return dao.getVocabularyFolder(vocabularyId);
     }
 }

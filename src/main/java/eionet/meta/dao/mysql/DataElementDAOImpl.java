@@ -867,4 +867,16 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         }
         return result;
     }
+
+    @Override
+    public void bindVocabulary(int dataElementId, int vocabularyId) {
+        String sql = "update DATAELEM set VOCABULARY_ID=:vocabularyId WHERE DATAELEM_ID=:dataElementId";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyId", vocabularyId);
+        params.put("dataElementId", dataElementId);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+
+    }
 }

@@ -1,5 +1,5 @@
 <%@page import="eionet.meta.notif.Subscriber"%>
-<%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil,java.io.*,javax.servlet.http.HttpUtils"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.dao.domain.VocabularyFolder,eionet.util.*,eionet.util.sql.ConnectionUtil,java.io.*,javax.servlet.http.HttpUtils"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
@@ -408,6 +408,7 @@
 
         Dataset dataset = null;
         DsTable dsTable = null;
+        VocabularyFolder vocabulary = null;
         String dstWorkingUser = null;
         String elmWorkingUser = null;
         String elmRegStatus = null;
@@ -415,6 +416,9 @@
         Vector refTables = null;
         Vector otherVersions = null;
         String latestID = null;
+        String vocabularyId = null;
+        //if true all concepts are valid, no release date is checked
+        boolean allowAllConcepts = true;
 
         // security flag for non-common elements only
         boolean editDstPrm = false;
@@ -483,6 +487,11 @@
                 type = dataElement.getType();
                 if (type != null && type.length() == 0)
                     type = null;
+
+                vocabularyId = dataElement.getVocabularyId();
+                allowAllConcepts = dataElement.isAllConceptsValid();
+
+
                 complexAttrs = searchEngine.getComplexAttributes(delem_id,
                         "E", null, tableID, dsID);
                 if (complexAttrs == null)
@@ -636,6 +645,10 @@
 
             // FOR COMMON ELEMENTS ONLY - security checks, checkin/checkout operations, dispatching of the GET request
             if (elmCommon) {
+
+                if (type != null && type.equals("CH3") && vocabularyId != null) {
+                    vocabulary = searchEngine.getVocabulary(Integer.valueOf(vocabularyId));
+                }
 
                 verMan = new VersionManager(conn, searchEngine, user);
                 if (mode.equals("edit")) {
@@ -851,7 +864,7 @@
                                         .append("'. DD will remove this element's ");
                                 text.append(
                                         dataElement.getType().equals("CH1") ? "fixed"
-                                                : "suggested").append(
+                                                : dataElement.getType().equals("CH2") ? "suggested" : "vocabulary").append(
                                         " values, ");
                                 text.append("because they are not compatible with the new Datatype! Are you sure you want to continue?");%>
                             if (mode=="edit" || mode=="editclose"){
@@ -983,10 +996,12 @@
                 return;
             }
 
+
             var requestQS = new Querystring();
             var arr = new Array();
             arr[0] = strType;
             requestQS.setValues_("type", arr);
+
 
             slctAllValues();
             var s = visibleInputsToQueryString("form1");
@@ -1343,7 +1358,8 @@
                     <%
                         if (!mode.equals("add")) {
                     %>
-                        <input type="hidden" name="delem_id" value="<%=delem_id%>"/><%
+                        <input id="txtElemId" type="hidden" name="delem_id" value="<%=delem_id%>"/>
+                        <input type="hiden" name="vocabulary_id" value="<%=vocabularyId%>"/><%
                             } else {
                         %>
                         <input type="hidden" name="dummy"/><%
@@ -1452,7 +1468,8 @@
                                             <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                         </a>
                                         <br/><input type="radio" name="type" value="CH2" onclick="javascript:fixType(this)" checked="checked">Data element with quantitative values (e.g. measurements)</input>
-                                        <br/><input type="radio" name="type" value="CH1" onclick="javascript:fixType(this)">Data element with fixed values (codes)</input><%
+                                        <br/><input type="radio" name="type" value="CH1" onclick="javascript:fixType(this)">Data element with fixed values (codes)</input>
+                                        <br/><input type="radio" name="type" value="CH3" onclick="javascript:fixType(this)">Data element with values from a vocabulary</input><%
                                     }
                                     else {
                                         if (type.equals("CH1")) {
@@ -1462,6 +1479,10 @@
                                         else if (type.equals("CH2")) {
                                             %>
                                             <b>DATA ELEMENT WITH QUANTITATIVE VALUES</b><%
+                                        }
+                                        else if (type.equals("CH3")) {
+                                            %>
+                                            <b>DATA ELEMENT RELATED TO A VOCABULARY</b><%
                                         }
                                         else {
                                             %>
@@ -1825,7 +1846,7 @@
                                                         if (attribute.getShortName().equalsIgnoreCase("MaxSize")
                                                                 || attribute.getShortName().equalsIgnoreCase(
                                                                         "MinSize"))
-                                                            if (type != null && type.equalsIgnoreCase("CH1"))
+                                                            if (type != null && (type.equalsIgnoreCase("CH1") || type.equalsIgnoreCase("CH3") ))
                                                                 continue;
 
                                                         if (mode.equals("view")
@@ -2187,15 +2208,24 @@
                                                         || (mode.equals("view") && fixedValues != null && fixedValues
                                                                 .size() > 0);
                                                 if (type != null && key) {
-
-                                                    String title = type.equals("CH1") ? "Allowable values"
+                                                    String title = "";
+                                                    if (type.equals("CH1")) {
+                                                      title =  "Allowable values";
+                                                    } else if (type.equals("CH2")) {
+                                                      title = "Suggested values";
+                                                    } else if (type.equals("CH3")) {
+                                                        title = "Vocabulary";
+                                                    }
+/*                                                     String title = (type.equals("CH1") || type.equals("CH3")) ? "Allowable values"
                                                             : "Suggested values";
-                                                    String helpAreaName = type.equals("CH1") ? "allowable_values_link"
+ */                                                    String helpAreaName = (type.equals("CH1") || type.equals("CH3")) ? "allowable_values_link"
                                                             : "suggested_values_link";
                                         %>
 
 
                                                 <!-- title & link part -->
+
+
                                                 <h2>
                                                         <%=title%><a id="values"></a>
 
@@ -2219,7 +2249,11 @@
                                                                     if (mode.equals("edit") && user != null) {
                                                         %>
                                                         <span class="barfont_bordered">
-                                                            <a href="<%=valuesLink%>">[Click to manage <%=Util.processForDisplay(title.toLowerCase())%> of this element]</a>
+                                                            <% if (type.equals("CH3")) { %>
+                                                                <a id="selectVocabularyLnk" href="#">[Click to select vocabulary for values of this element]</a>
+                                                            <%} else { %>
+                                                                <a href="<%=valuesLink%>">[Click to manage <%=Util.processForDisplay(title.toLowerCase())%> of this element]</a>
+                                                            <%} %>
                                                         </span><%
                                                             }
                                                         %>
@@ -2344,7 +2378,7 @@
                                                     if (mode.equals("view") && fKeys != null
                                                                     && fKeys.size() > 0) {
                                                 %>
-                                                            <table class="datatable subtable">
+                                                            <table class="datatable" style="width:68%">
                                                                 <tr>
                                                                     <th style="width:50%">Element</th>
                                                                     <th style="width:50%">Table</th>
@@ -2441,6 +2475,40 @@
                                             <%
                                                 }
                                             %>
+
+                                        <!--  vocabulary -->
+                                        <%
+                                        if ( ((mode.equals("edit") && user != null) || mode.equals("view")) && vocabulary != null) {%>
+
+                                                <h2>Allowed values<a id="vocabularyAnchor"></a></h2>
+
+
+                                                <table class="datatable" id="dataset-attributes">
+                                                                <col style="width: 19%"/>
+                                                                <col style="width: 20%"/>
+                                                                <col style="width: 61%"/>
+
+                                                    <tr class="zebra">
+                                                        <th>Vocabulary</th>
+                                                        <td style="vertical-align:top"><a href="<%=request.getContextPath() + "/vocabulary/" + vocabulary.getFolderName() + "/" + vocabulary.getIdentifier()%>"><%=vocabulary.getLabel()%></a></td>
+                                                        <td style="vertical-align:top">
+                                                            <% if (mode.equals("edit")) {%>
+                                                                <input type="radio" name="all_concepts_legal" value="1" <% if (allowAllConcepts) { %> checked="checked" <%}%>>All concepts are valid</input>
+                                                                <br/><input type="radio" name="all_concepts_legal" value="0" <% if (!allowAllConcepts) { %> checked="checked" <%}%>>Only concepts created before the release date of this element are valid</input>
+                                                            <% }else {%>
+                                                                <% if (allowAllConcepts) {%>
+                                                                    <div>All concepts are valid</div>
+                                                                <% } else {%>
+                                                                    <div>Only concepts created before and not terminated before the release date of this element are valid</div>
+                                                                <% } %>
+                                                            <% } %>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                            <%}
+                                        %>
+
 
 
                                         <!-- complex attributes -->
@@ -2700,6 +2768,7 @@
                         %>
                 </div>
             </form>
+            <%@ include file="bindVocabularyInc.jsp" %>
             </div> <!-- workarea -->
             <%
                 if (!popup) {
