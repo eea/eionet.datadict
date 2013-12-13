@@ -14,6 +14,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.xmlrpc.XmlRpcClient;
@@ -282,7 +283,7 @@ public class UNSEventSender {
      */
     protected void makeCall(Object rdfTriples) {
 
-        if (dontCallActually()) {
+        if (isSendingDisabled()) {
             return;
         }
 
@@ -314,8 +315,17 @@ public class UNSEventSender {
      *
      * @return
      */
-    protected boolean dontCallActually() {
-        return StringUtils.isNotBlank(Props.getProperty(Subscriber.PROP_UNS_DONTSENDEVENTS)) || File.separatorChar == '\\';
+    protected boolean isSendingDisabled() {
+
+        String isDisabledStr = Props.getProperty(Subscriber.PROP_UNS_DISABLED);
+        boolean isWindows = File.separatorChar == '\\';
+        if (isWindows) {
+            boolean isEnabled = StringUtils.isNotBlank(isDisabledStr) && isDisabledStr.trim().equals("false");
+            return !isEnabled;
+        } else {
+            boolean result = BooleanUtils.toBoolean(isDisabledStr);
+            return result;
+        }
     }
 
     /**

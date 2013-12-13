@@ -52,7 +52,7 @@ public class Subscriber extends HttpServlet {
     public static final String PROP_UNS_SUBSCRIPTIONS_URL = "uns.subscriptions.url";
     public static final String PROP_UNS_USERNAME = "uns.username";
     public static final String PROP_UNS_PASSWORD = "uns.password";
-    public static final String PROP_UNS_DONTSENDEVENTS = "uns.dont-send-events";
+    public static final String PROP_UNS_DISABLED = "uns.isDisabled";
     public static final String PROP_UNS_SUBSCRIBE_FUNC = "uns.make.subsription.function";
     public static final String PROP_UNS_SEND_NOTIFICATION_FUNC = "uns.send.notification.function";
 
@@ -85,6 +85,7 @@ public class Subscriber extends HttpServlet {
      *
      * @see javax.servlet.Servlet#init(javax.servlet.ServletConfig)
      */
+    @Override
     public void init() throws ServletException {
         try {
             if (initialized == false) {
@@ -101,6 +102,7 @@ public class Subscriber extends HttpServlet {
      *
      * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         try {

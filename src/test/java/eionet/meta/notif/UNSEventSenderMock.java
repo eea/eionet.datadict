@@ -40,7 +40,7 @@ public class UNSEventSenderMock extends UNSEventSender {
      * @see eionet.meta.notif.UNSEventSender#dontCallActually()
      */
     @Override
-    protected boolean dontCallActually() {
+    protected boolean isSendingDisabled() {
         return dontCallActually;
     }
 
