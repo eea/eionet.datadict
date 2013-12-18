@@ -855,6 +855,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 if (parentNs > 0) {
                     de.setParentNamespace(parentNs);
                 }
+                de.setWorkingCopy(rs.getString("de.WORKING_COPY").equalsIgnoreCase("Y"));
 
                 return de;
             }

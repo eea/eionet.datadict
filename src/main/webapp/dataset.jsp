@@ -152,6 +152,13 @@
                 String trace = bytesOut.toString(response.getCharacterEncoding());
                 request.setAttribute("DD_ERR_MSG", msg);
                 request.setAttribute("DD_ERR_TRC", trace);
+                if (e instanceof DDException) {
+                    HashMap<String, Object> errorParams = ((DDException)e).getErrorParameters();
+                    if (errorParams != null && errorParams.containsKey(DDException.ERR_ELEMS_KEY)) {
+                        request.setAttribute("DD_ERR_ELEMS", errorParams.get(DDException.ERR_ELEMS_KEY));
+                    }
+                }
+
                 String backLink = request.getParameter("submitter_url");
                 if (backLink == null || backLink.length() == 0)
                     backLink = history.getBackUrl();

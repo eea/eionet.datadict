@@ -13,7 +13,6 @@ import java.util.Vector;
 
 import javax.servlet.ServletContext;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -851,8 +850,10 @@ public class VersionManager {
             List<eionet.meta.dao.domain.DataElement> unreleasedElems =
                     dataService.getUnreleasedCommonElements(Integer.valueOf(dst.getID()));
             if (unreleasedElems.size() > 0) {
-                throw new Exception("Released dataset cannot not be checked in if it has unreleased common elements "
-                        + "linked to the tables. Element(s) not released: " + StringUtils.join(unreleasedElems, ","));
+                DDException e = new DDException("Released dataset cannot not be checked in if it has unreleased common elements "
+                        + "linked to the tables. Element(s) not released:");
+                e.setErrorParameter(DDException.ERR_ELEMS_KEY, unreleasedElems);
+                throw e;
             }
         }
 

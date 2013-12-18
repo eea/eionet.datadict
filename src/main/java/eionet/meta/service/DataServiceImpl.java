@@ -193,7 +193,7 @@ public class DataServiceImpl implements IDataService {
         List<DataElement> datasetElements = dataElementDao.getDataSetElements(datasetId);
         List<DataElement> unreleasedElems = new ArrayList<DataElement>();
         for (DataElement elem : datasetElements) {
-            if (!elem.getStatus().equalsIgnoreCase("Released") && elem.isCommonElement()) {
+            if (!elem.getStatus().equalsIgnoreCase("Released") && elem.isCommonElement() &&!elem.isWorkingCopy()) {
                 unreleasedElems.add(elem);
             }
         }

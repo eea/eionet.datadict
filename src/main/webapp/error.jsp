@@ -1,3 +1,6 @@
+<%@page import="eionet.meta.dao.domain.DataElement"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.HashMap"%>
 <%@page contentType="text/html;charset=UTF-8" import="eionet.meta.DDUser,eionet.util.Util,org.apache.commons.lang.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
@@ -50,6 +53,7 @@ else{
 
             <%
                 String msg   = (String)request.getAttribute("DD_ERR_MSG");
+                List<DataElement> elements = (List<DataElement>)request.getAttribute("DD_ERR_ELEMS");
                 msg = msg==null ? "no error message found in request" : msg;
 
                 String trc = (String)request.getAttribute("DD_ERR_TRC");
@@ -75,6 +79,11 @@ else{
 
             <h1>Error:</h1>
             <p><strong><%=StringEscapeUtils.escapeXml(msg)%></strong></p>
+            <% if (elements != null) {
+                    for (DataElement elem : elements) {  %>
+                        <a href="<%=request.getContextPath()%>/dataelements/<%=elem.getId()%>"><%=elem.getIdentifier()%></a><br/>
+             <%     }
+                } %>
             <input name="trc" type="hidden" value="<%=StringEscapeUtils.escapeXml(trc)%>"/>
         </form>
 </div> <!-- workarea -->
