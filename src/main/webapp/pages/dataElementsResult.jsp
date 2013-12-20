@@ -33,8 +33,9 @@
             </c:choose>
         </display:column>
         <display:column title="Type" sortable="true">
-            <c:if test="${item.type == 'CH1'}">Fixed values</c:if>
+            <c:if test="${item.type == 'CH1'}">Fixed values (code list)</c:if>
             <c:if test="${item.type == 'CH2'}">Quantitative</c:if>
+            <c:if test="${item.type == 'CH3'}">Fixed Values (vocabulary)</c:if>
         </display:column>
         <c:if test="${!actionBean.result.commonElements}">
             <c:set var="statusLabel" value="Dataset status" />

@@ -1,5 +1,6 @@
 package eionet.meta.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.AfterClass;
@@ -52,7 +53,7 @@ public class DataServiceTest extends UnitilsJUnit4  {
     public void testGetCommonElements() throws Exception {
         List<DataElement> elements = dataService.getReleasedCommonDataElements();
 
-        Assert.assertTrue(elements.size() == 2);
+        Assert.assertTrue(elements.size() == 5);
 
     }
 
@@ -91,5 +92,28 @@ public class DataServiceTest extends UnitilsJUnit4  {
 
         Assert.assertTrue("Dataset1 contains an unreleased element", elems1.size() == 1);
         Assert.assertTrue("Dataset2 contains released elements", elems2.size() == 0);
+    }
+
+    /**
+     * test method receiving elements having a vocabulary as source.
+     * @throws Exception if fail
+     */
+    @Test
+    public void testVocabularyElems() throws Exception {
+
+        List<Integer> p1 = new ArrayList<Integer>();
+        p1.add(1);
+
+        List<Integer> p2 = new ArrayList<Integer>();
+        p2.add(1);
+        p2.add(2);
+
+        List <DataElement> elems1 = dataService.getVocabularySourceElements(p1);
+        List <DataElement> elems2 = dataService.getVocabularySourceElements(p2);
+
+        Assert.assertTrue("Vocabulary1 is source for 2 elements ", elems1.size() == 2);
+        Assert.assertTrue("Vocabularies 1 and 2 are source for 3 elements ", elems2.size() == 3);
+
+
     }
 }

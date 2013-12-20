@@ -133,6 +133,7 @@
                         <stripes:option value="" label="All" />
                         <stripes:option value="CH1" label="Data element with fixed values (codes)" />
                         <stripes:option value="CH2" label="Data element with quantitative values (e.g. measurements)" />
+                        <stripes:option value="CH3" label="Data element with fixed values (vocabulary)" />
                     </stripes:select>
                 </td>
             </tr>

@@ -30,6 +30,7 @@ public class DElemAttribute {
     public static Hashtable<String, Integer> typeWeights = new Hashtable<String, Integer>();
     static {
         typeWeights.put("VCF", new Integer(1024)); // vocabulary folder
+        //TODO check if this is it used any more:
         typeWeights.put("VCO", new Integer(512)); // vocabulary concept
         typeWeights.put(ParentType.SCHEMA_SET.toString(), new Integer(256)); // schema set
         typeWeights.put(ParentType.SCHEMA.toString(), new Integer(128)); // schema
@@ -38,6 +39,7 @@ public class DElemAttribute {
         typeWeights.put("DCL", new Integer(16));
         typeWeights.put("DST", new Integer(8));
         typeWeights.put("AGG", new Integer(4));
+        typeWeights.put("CH3", new Integer(2)); // element vocabulary fixed values - same as for CH1
         typeWeights.put("CH1", new Integer(2));
         typeWeights.put("CH2", new Integer(1));
     }

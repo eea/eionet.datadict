@@ -883,11 +883,22 @@
             // if not delete mode, do validation of inputs
             if (mode != "delete"){
                 var isCommon = '<%=elmCommon%>';
+                var strVocabularyId = '<%=vocabularyId%>';
+                var strType = '<%=type%>';
+
                 forceAttrMaxLen();
                 if (!checkObligations()){
                     alert("You have not specified one of the mandatory atttributes!");
                     return false;
                 }
+
+                if (mode != "add") {
+                    if (strType == 'CH3' && strVocabularyId == 'null') {
+                      alert("Vocabulary is not selected.");
+                      return false;
+                    }
+                }
+
                 if (hasWhiteSpace("idfier")){
                     alert("Identifier cannot contain any white space!");
                     return false;
@@ -1299,7 +1310,9 @@
                                     if (!elmCommon && editDstPrm) {
                                 %>
                                     <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
-                                    <li><a href="javascript:switchType()">Switch type</a></li>
+                                    <% if (!type.equals("CH3")) { %>
+                                        <li><a href="javascript:switchType()">Switch type</a></li>
+                                    <% } %>
                                 <%
                                     }
                                     if (elmCommon && canCheckout) {
@@ -1321,7 +1334,9 @@
                                  // view case
                                 %>
                                     <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
-                                    <li><a href="javascript:switchType()">Switch type</a></li>
+                                    <% if (!type.equals("CH3")) { %>
+                                        <li><a href="javascript:switchType()">Switch type</a></li>
+                                    <% } %>
                                     <li><a href="javascript:checkIn()">Check in</a></li>
                                     <li><a href="javascript:submitForm('delete')">Undo checkout</a></li>
                                 <%
@@ -1359,7 +1374,7 @@
                         if (!mode.equals("add")) {
                     %>
                         <input id="txtElemId" type="hidden" name="delem_id" value="<%=delem_id%>"/>
-                        <input type="hiden" name="vocabulary_id" value="<%=vocabularyId%>"/><%
+                        <input id="txtVocabularyId" type="hidden" name="vocabulary_id" value="<%=vocabularyId%>"/><%
                             } else {
                         %>
                         <input type="hidden" name="dummy"/><%
@@ -2218,8 +2233,18 @@
                                                     }
 /*                                                     String title = (type.equals("CH1") || type.equals("CH3")) ? "Allowable values"
                                                             : "Suggested values";
- */                                                    String helpAreaName = (type.equals("CH1") || type.equals("CH3")) ? "allowable_values_link"
-                                                            : "suggested_values_link";
+
+*/
+
+String helpAreaName = "";
+                                              if (type.equals("CH1")) {
+                                                  helpAreaName =  "allowable_values_link";
+                                              } else if (type.equals("CH2")) {
+                                                  helpAreaName =  "suggested_values_link";
+                                              } else if (type.equals("CH3")) {
+                                                  helpAreaName =  "vocabulary_link";
+                                              }
+
                                         %>
 
 
@@ -2238,7 +2263,12 @@
                                                             </a>
                                                         </span>
                                                         <span class="simple_attr_help">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt="optional"/>
+                                                            <% if (type.equals("CH3")) { %>
+                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt="optional"/>
+                                                            <%} else { %>
+                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt="optional"/>
+                                                            <%} %>
+
                                                         </span><%
                                                             }
 
@@ -2480,8 +2510,6 @@
                                         <%
                                         if ( ((mode.equals("edit") && user != null) || mode.equals("view")) && vocabulary != null) {%>
 
-                                                <h2>Allowed values<a id="vocabularyAnchor"></a></h2>
-
 
                                                 <table class="datatable" id="dataset-attributes">
                                                                 <col style="width: 19%"/>
@@ -2489,9 +2517,11 @@
                                                                 <col style="width: 61%"/>
 
                                                     <tr class="zebra">
-                                                        <th>Vocabulary</th>
+                                                        <th class="scope-row simple_attr_title">Vocabulary</th>
                                                         <td style="vertical-align:top"><a href="<%=request.getContextPath() + "/vocabulary/" + vocabulary.getFolderName() + "/" + vocabulary.getIdentifier()%>"><%=vocabulary.getLabel()%></a></td>
-                                                        <td style="vertical-align:top">
+
+
+                                                        <td rowspan="2" style="vertical-align:top">
                                                             <% if (mode.equals("edit")) {%>
                                                                 <input type="radio" name="all_concepts_legal" value="1" <% if (allowAllConcepts) { %> checked="checked" <%}%>>All concepts are valid</input>
                                                                 <br/><input type="radio" name="all_concepts_legal" value="0" <% if (!allowAllConcepts) { %> checked="checked" <%}%>>Only concepts created before the release date of this element are valid</input>
@@ -2503,6 +2533,10 @@
                                                                 <% } %>
                                                             <% } %>
                                                         </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="scope-row simple_attr_title">Vocabulary Set</th>
+                                                        <td style="vertical-align:top"><%=vocabulary.getFolderName()%></td>
                                                     </tr>
                                                 </table>
 

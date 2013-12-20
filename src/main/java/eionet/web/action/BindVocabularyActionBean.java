@@ -5,6 +5,7 @@ import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
+import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.VocabularyFilter;
@@ -50,6 +51,8 @@ public class BindVocabularyActionBean extends AbstractActionBean {
         if (vocabularyFilter == null) {
             vocabularyFilter  = new VocabularyFilter();
         }
+        //search only released vocabularies
+        vocabularyFilter.setStatus(RegStatus.RELEASED);
 
         vocabularies = vocabularyService.searchVocabularies(vocabularyFilter);
 

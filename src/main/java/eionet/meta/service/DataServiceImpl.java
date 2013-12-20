@@ -200,4 +200,10 @@ public class DataServiceImpl implements IDataService {
 
         return unreleasedElems;
     }
+
+    @Override
+    public List<DataElement> getVocabularySourceElements(List<Integer> vocabularyIds) {
+        return dataElementDao.getVocabularySourceElements(vocabularyIds);
+    }
+
 }

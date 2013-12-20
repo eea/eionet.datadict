@@ -108,7 +108,7 @@ public interface IDataElementDAO {
     void removeDataElement(int vocabularyFolderId, int dataElementId);
 
     /**
-     * Returns data elements binded with vocabulary folder.
+     * Returns data elements bound with vocabulary folder.
      *
      * @param vocabularyFolderId folder ID
      * @return list of data elements for the Vocabulary
@@ -224,5 +224,13 @@ public interface IDataElementDAO {
      * @param vocabularyId vocabulary Id
      */
     void bindVocabulary(int elementId, int vocabularyId);
+
+    /**
+     * Finds list of elements where given vocabularies is used as source for values.
+     * @param vocabularyIds vocabulary ids
+     * @return collection of data elements
+     */
+    List<DataElement> getVocabularySourceElements(List<Integer>vocabularyIds);
+
 
 }

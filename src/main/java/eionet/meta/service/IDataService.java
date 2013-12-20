@@ -144,4 +144,10 @@ public interface IDataService {
      */
     List<DataElement> getUnreleasedCommonElements(int datasetId) throws ServiceException;
 
+    /**
+     * List of data elements (type  CH") where the vocabulary is used as a source for values.
+     * @param vocabularyIds vocabulary IDs
+     * @return list of elements
+     */
+    List<DataElement> getVocabularySourceElements(List<Integer> vocabularyIds);
 }

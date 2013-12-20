@@ -44,6 +44,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
+import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
@@ -629,6 +630,14 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
         result = vocabularyService.searchVocabularies(filter);
         assertTrue(result.getTotalItems() == 1);
+
+        filter.setWorkingCopy(null);
+        filter.setConceptText(null);
+        filter.setStatus(RegStatus.DRAFT);
+
+        result = vocabularyService.searchVocabularies(filter);
+        assertTrue(result.getTotalItems() == 1);
+
 
     }
 

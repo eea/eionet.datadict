@@ -553,8 +553,9 @@ if (messages.trim().length()>0){
                     <%
 
                     Hashtable types = new Hashtable();
-                    types.put("CH1", "Fixed values");
+                    types.put("CH1", "Fixed values - code list");
                     types.put("CH2", "Quantitative");
+                    types.put("CH3", "Fixed values - vocabulary");
 
                     int maxPos = 0;
 

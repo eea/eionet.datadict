@@ -364,9 +364,12 @@ else{ %>
 
                     String displayType = delem_type;
                     if (delem_type.equals("CH1"))
-                        displayType = "Fixed values";
+                        displayType = "Fixed values - code list";
                     else if (delem_type.equals("CH2"))
                         displayType = "Quantitative";
+                    if (delem_type.equals("CH3")) {
+                        displayType = "Fixed values - vocabulary";
+                    }
 
                     String workingUser = dataElement.getWorkingUser();
                     String status = dataElement.getStatus();
