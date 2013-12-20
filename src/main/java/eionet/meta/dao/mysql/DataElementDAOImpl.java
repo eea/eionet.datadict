@@ -914,4 +914,17 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         return result;
 
     }
+
+    @Override
+    public void moveVocabularySources(int originalVocabularyId, int vocabularyId) {
+
+        String sql = "update DATAELEM set VOCABULARY_ID = :originalVocabularyId WHERE VOCABULARY_ID = :vocabularyId";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyId", vocabularyId);
+        params.put("originalVocabularyId", originalVocabularyId);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+
+    }
 }

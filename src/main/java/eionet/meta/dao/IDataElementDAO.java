@@ -232,5 +232,11 @@ public interface IDataElementDAO {
      */
     List<DataElement> getVocabularySourceElements(List<Integer>vocabularyIds);
 
+    /**
+     * changes vocabulary reference in CH3 - fxv vocabulary elements.
+     * @param originalVocabularyId old vocabulary ID
+     * @param vocabularyId new vocabulary ID
+     */
+    void moveVocabularySources(int originalVocabularyId, int vocabularyId);
 
 }

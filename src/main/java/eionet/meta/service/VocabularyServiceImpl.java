@@ -594,6 +594,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
                 // Remove old data element relations
                 dataElementDAO.deleteVocabularyDataElements(originalVocabularyFolderId);
+                //update ch3 element reference
+                dataElementDAO.moveVocabularySources(originalVocabularyFolderId, vocabularyFolderId);
+
             }
 
             // Update original vocabulary folder
