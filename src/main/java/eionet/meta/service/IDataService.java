@@ -28,6 +28,7 @@ import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 
@@ -150,4 +151,13 @@ public interface IDataService {
      * @return list of elements
      */
     List<DataElement> getVocabularySourceElements(List<Integer> vocabularyIds);
+
+    /**
+     * ist of ficxed values for element type = CH3 from vocalbulary
+     * @param elementId element ID
+     * @param allValues true - all concepts - false only released and not marked obsolete before element
+     * releasing date
+     * @return list of VocabularyConcepts
+     */
+    List<VocabularyConcept> getElementVocabularyConcepts(int elementId, boolean allValues);
 }

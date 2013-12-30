@@ -1,6 +1,7 @@
 package eionet.meta.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -12,10 +13,13 @@ import eionet.meta.DElemAttribute.ParentType;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IDataSetDAO;
+import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 
@@ -39,6 +43,11 @@ public class DataServiceImpl implements IDataService {
     /** Data element DAO. */
     @Autowired
     private IDataElementDAO dataElementDao;
+
+    /** Vocabulary DAO. */
+    @Autowired
+    private IVocabularyFolderDAO vocabularyDao;
+
 
     /**
      * {@inheritDoc}
@@ -206,4 +215,36 @@ public class DataServiceImpl implements IDataService {
         return dataElementDao.getVocabularySourceElements(vocabularyIds);
     }
 
+    @Override
+    public List<VocabularyConcept> getElementVocabularyConcepts(int elementId, boolean allValues) {
+        DataElement elem = dataElementDao.getDataElement(elementId);
+        List<VocabularyConcept> result = new ArrayList<VocabularyConcept>();
+        Integer vocabularyId = elem.getVocabularyId();
+        if (vocabularyId != null) {
+
+            VocabularyFolder vocabulary = vocabularyDao.getVocabularyFolder(vocabularyId);
+            List<VocabularyConcept> concepts = vocabulary.getConcepts();
+
+            for (VocabularyConcept concept : concepts) {
+                boolean conceptDateValid = false;
+                if (!elem.getAllConceptsValid()) {
+                    //TODO - extra util method and unit tests
+                    Date conceptDate = concept.getCreated();
+                    Date conceptObsolete = concept.getObsolete();
+                    Date elemCreated = new Date(Long.valueOf(elem.getDate()));
+                    if (!(conceptDate.before(elemCreated) &&
+                            (conceptObsolete == null || conceptObsolete.after(elemCreated)))) {
+                        conceptDateValid = false;
+                    }
+
+                }
+                if (conceptDateValid) {
+                    result.add(concept);
+                }
+
+            }
+
+        }
+        return result;
+    }
 }

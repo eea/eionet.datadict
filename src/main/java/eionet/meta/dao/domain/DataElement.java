@@ -106,6 +106,9 @@ public class DataElement {
      */
     private Boolean allConceptsValid;
 
+    /** update date. */
+    String date;
+
 
     /**
      * Name attribute value is saved in this variable for better performance in search.
@@ -426,5 +429,12 @@ public class DataElement {
         this.allConceptsValid = allConceptsValid;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
 }

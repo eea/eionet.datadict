@@ -1582,6 +1582,7 @@ public class DDSearchEngine {
         return v;
     }
 
+
     /**
      *
      * @param attrId
@@ -1593,6 +1594,23 @@ public class DDSearchEngine {
         return getAttrFields(attrId, null);
     }
 
+    /**
+     * checks if CH3 element.
+     * @param elemenID
+     * @param type
+     * @return
+     */
+    private boolean isFixedValuesVocElement(String elemenID, String type) {
+        //if "elem" and type = CH3 return true;
+        return false;
+    }
+
+    private Vector getVocabularyFixedValues() {
+        //get concepts from the dataservice
+        //build FixedValue objects from them
+
+        return null;
+    }
     /**
      *
      * @param attrId
