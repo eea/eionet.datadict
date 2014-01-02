@@ -219,7 +219,7 @@ public interface IVocabularyService {
     VocabularyConceptResult searchVocabularyConcepts(VocabularyConceptFilter filter) throws ServiceException;
 
     /**
-     * Returns the vocabulary folder's concepts with additional attributes.
+     * Returns the vocabulary folder's concepts with additional attributes for RDF.
      *
      * @param vocabularyFolderId
      * @param numericConceptIdentifiers

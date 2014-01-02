@@ -169,7 +169,7 @@ public interface IVocabularyConceptDAO {
     void copyVocabularyConcepts(int oldVocabularyFolderId, int newVocabularyFolderId);
 
     /**
-     * Checks if any concept has values in the binded data element. Returns list of such elements.
+     * Checks if any concept has values in the bound data element. Returns list of such elements.
      * @param elementId element id
      * @param vocabularyId vocabulary ID
      * @return list of data elements
@@ -183,4 +183,14 @@ public interface IVocabularyConceptDAO {
      * @param newVocabularyId new record ID
      */
     void moveReferenceConcepts(int oldVocabularyId, int newVocabularyId);
+
+
+    /**
+     * finds vocabulary concepts of the vocabulary.
+     * Expects an element to have datatype attribute otherwise not included to the result
+     * @param vocabularyId vocabulary ID
+     * @return elements with valued bound elements
+     */
+    List<VocabularyConcept> getConceptsWithValuedElements(int vocabularyId);
+
 }

@@ -575,7 +575,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     public void testRelationalElement() throws Exception {
 
         assertTrue(vocabularyService.isReferenceElement(6));
-        assertTrue(!vocabularyService.isReferenceElement(5));
+        assertTrue(!vocabularyService.isReferenceElement(1));
 
     }
 

@@ -242,7 +242,8 @@ public class DataElement {
      */
     public String getDatatype() {
         String dataType = "string";
-        List<String> elemDatatypeAttr = elemAttributeValues != null ? elemAttributeValues.get("Datatype") : null;
+        List<String> elemDatatypeAttr = elemAttributeValues != null && elemAttributeValues.containsKey("Datatype")
+                ? elemAttributeValues.get("Datatype") : null;
 
         return elemDatatypeAttr != null ? elemDatatypeAttr.get(0) : dataType;
     }

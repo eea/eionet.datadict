@@ -35,6 +35,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import eionet.meta.dao.IVocabularyConceptDAO;
+import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
@@ -488,6 +489,104 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         parameters.put("oldVocabularyId", oldVocabularyId);
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
+
+    @Override
+    public List<VocabularyConcept> getConceptsWithValuedElements(int vocabularyId) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyId", vocabularyId);
+
+        StringBuilder sql = new StringBuilder();
+
+        sql.append("select distinct c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID, "
+                + "d.IDENTIFIER AS ELEMIDENTIFIER, a.VALUE as DATATYPE, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, "
+                + "c.DEFINITION, c.NOTATION, c.CREATION_DATE, "
+                + "c.OBSOLETE_DATE, rcvs.IDENTIFIER as RVOCSETIDENTIFIER, rcv.IDENTIFIER as RVOCIDENTIFIER, "
+                + "rc.IDENTIFIER AS RCONCEPTIDENTIFIER, rc.LABEL as RCONCEPTLABEL "
+                + "from  VOCABULARY_CONCEPT c "
+                + "left join VOCABULARY_CONCEPT_ELEMENT v on v.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID "
+                + "LEFT JOIN DATAELEM d ON (v.DATAELEM_ID = d.DATAELEM_ID) "
+                + "LEFT JOIN VOCABULARY_CONCEPT rc on v.RELATED_CONCEPT_ID = rc.VOCABULARY_CONCEPT_ID "
+                + "LEFT JOIN VOCABULARY rcv ON rc.VOCABULARY_ID = rcv.VOCABULARY_ID LEFT JOIN VOCABULARY_SET rcvs ON (rcv.FOLDER_ID = rcvs.ID ) "
+                + "left join (ATTRIBUTE a, M_ATTRIBUTE ma)  on (a.DATAELEM_ID = d.DATAELEM_ID "
+                + "and PARENT_TYPE = 'E' and a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME='Datatype') "
+                + "where c.VOCABULARY_ID = :vocabularyId "
+                + "ORDER by c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, rcv.IDENTIFIER ");
+
+        final List<VocabularyConcept> resultList = new ArrayList<VocabularyConcept>();
+
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
+
+            int previousConceptId = -1;
+            int previousElemId = -1;
+            VocabularyConcept vc;
+            List<DataElement> oneElementValues;
+            List<List<DataElement>> elementValues;
+
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                int conceptId = rs.getInt("VOCABULARY_CONCEPT_ID");
+
+                //concept changed:
+                if (conceptId != previousConceptId) {
+                    vc = new VocabularyConcept();
+                    vc.setId(conceptId);
+                    vc.setLabel(rs.getString("LABEL"));
+                    vc.setIdentifier(rs.getString("IDENTIFIER"));
+                    vc.setDefinition(rs.getString("DEFINITION"));
+                    vc.setNotation(rs.getString("NOTATION"));
+                    vc.setCreated(rs.getDate("CREATION_DATE"));
+                    vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
+
+                    elementValues = new ArrayList<List<DataElement>>();
+                    vc.setElementAttributes(elementValues);
+
+                    resultList.add(vc);
+                }
+
+                int elemId = rs.getInt("DATAELEM_ID");
+
+                if (elemId != previousElemId || conceptId != previousConceptId) {
+                    oneElementValues = new ArrayList<DataElement>();
+                    elementValues.add(oneElementValues);
+
+                }
+
+                if (elemId > 0) {
+                    DataElement elem = new DataElement();
+                    elem.setId(elemId);
+                    elem.setIdentifier(rs.getString("ELEMIDENTIFIER"));
+                    elem.setAttributeLanguage(rs.getString("LANGUAGE"));
+                    elem.setAttributeValue(rs.getString("ELEMENT_VALUE"));
+
+
+                    Integer relatedConceptId = rs.getInt("RELATED_CONCEPT_ID");
+
+                    if (relatedConceptId != 0) {
+                        elem.setRelatedConceptId(relatedConceptId);
+                        elem.setRelatedConceptVocSet(rs.getString("RVOCSETIDENTIFIER"));
+                        elem.setRelatedConceptVocabulary(rs.getString("RVOCIDENTIFIER"));
+                        elem.setRelatedConceptIdentifier(rs.getString("RCONCEPTIDENTIFIER"));
+                        elem.setRelatedConceptLabel(rs.getString("RCONCEPTLABEL"));
+                    }
+                    //add Datatype -  is used in RDF output
+                    String dataType = rs.getString("DATATYPE");
+                    if (dataType != null) {
+                        Map<String, List<String>> elemAttributeValues = new HashMap<String, List<String>>();
+                        List<String> elemDatatypeValues = new ArrayList<String>();
+                        elemDatatypeValues.add(dataType);
+                        elemAttributeValues.put("Datatype", elemDatatypeValues);
+                        elem.setElemAttributeValues(elemAttributeValues);
+                    }
+
+                    oneElementValues.add(elem);
+                    }
+                previousConceptId = conceptId;
+                previousElemId = elemId;
+            }
+        });
+
+        return resultList;
     }
 
 }

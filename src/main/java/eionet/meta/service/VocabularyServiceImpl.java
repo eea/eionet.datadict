@@ -886,15 +886,16 @@ public class VocabularyServiceImpl implements IVocabularyService {
             filter.setNumericIdentifierSorting(numericConceptIdentifiers);
             filter.setObsoleteStatus(obsoleteStatus);
 
-            List<VocabularyConcept> result = vocabularyConceptDAO.searchVocabularyConcepts(filter).getList();
+            //List<VocabularyConcept> result = vocabularyConceptDAO.searchVocabularyConcepts(filter).getList();
+            List<VocabularyConcept> result = vocabularyConceptDAO.getConceptsWithValuedElements(vocabularyFolderId);
 
-            for (VocabularyConcept vc : result) {
+/*                for (VocabularyConcept vc : result) {
 
-                List<List<DataElement>> elementAttributes =
-                        dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId, vc.getId(), false);
-                vc.setElementAttributes(elementAttributes);
-            }
-
+                    List<List<DataElement>> elementAttributes =
+                            dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId, vc.getId(), false);
+                    vc.setElementAttributes(elementAttributes);
+                }
+*/
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
