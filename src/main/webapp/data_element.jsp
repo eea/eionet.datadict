@@ -643,12 +643,12 @@
                 }
             }
 
-            // FOR COMMON ELEMENTS ONLY - security checks, checkin/checkout operations, dispatching of the GET request
-            if (elmCommon) {
-
                 if (type != null && type.equals("CH3") && vocabularyId != null) {
                     vocabulary = searchEngine.getVocabulary(Integer.valueOf(vocabularyId));
                 }
+            // FOR COMMON ELEMENTS ONLY - security checks, checkin/checkout operations, dispatching of the GET request
+            if (elmCommon) {
+
 
                 verMan = new VersionManager(conn, searchEngine, user);
                 if (mode.equals("edit")) {
@@ -2273,9 +2273,16 @@ String helpAreaName = "";
                                                             }
 
                                                                     // the link
-                                                                    String valuesLink = request.getContextPath() + "/fixed_values.jsp?delem_id=" + delem_id
+                                                                    String valuesLink;
+                                                                    if (!type.equals("CH3")) {
+                                                                        valuesLink = request.getContextPath() + "/fixed_values.jsp?delem_id=" + delem_id
                                                                             + "&amp;delem_name=" + delem_name
                                                                             + "&amp;parent_type=" + type;
+                                                                    } else {
+                                                                        valuesLink = request.getContextPath() + "/vocabulary/" + vocabulary.getFolderName()
+                                                                                + "/" + vocabulary.getIdentifier() + "/view";
+                                                                    }
+
                                                                     if (mode.equals("edit") && user != null) {
                                                         %>
                                                         <span class="barfont_bordered">
@@ -2327,11 +2334,18 @@ String helpAreaName = "";
                                                                                         fxvID = fxv.getID();
                                                                                         defin = fxv.getDefinition();
                                                                                         shortDesc = fxv.getShortDesc();
+                                                                                        if (!type.equals("CH3")) {
                                                                                         valueLink = request.getContextPath() + "/fixed_value.jsp?fxv_id=" + fxvID
                                                                                                 + "&amp;mode=" + mode
                                                                                                 + "&amp;delem_id=" + delem_id
                                                                                                 + "&amp;delem_name=" + delem_name
                                                                                                 + "&amp;parent_type=" + type;
+                                                                                        } else {
+                                                                                            //build concept link if CH3
+                                                                                            valueLink = request.getContextPath() + "/vocabularyconcept/"
+                                                                                                    + vocabulary.getFolderName() + "/" + vocabulary.getIdentifier()
+                                                                                                    + "/" + value + "/view";
+                                                                                        }
                                                                                     }
 
                                                                                     //if (shortDesc.length() == 0)

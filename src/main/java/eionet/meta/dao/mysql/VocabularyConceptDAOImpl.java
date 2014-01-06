@@ -57,7 +57,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         params.put("vocabularyFolderId", vocabularyFolderId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION ");
+        sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, OBSOLETE_DATE ");
         sql.append("from VOCABULARY_CONCEPT where VOCABULARY_ID=:vocabularyFolderId order by IDENTIFIER + 0");
 
         List<VocabularyConcept> resultList =
@@ -70,6 +70,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
+                        vc.setCreated(rs.getDate("CREATION_DATE"));
+                        vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
                         return vc;
                     }
                 });
@@ -165,8 +167,11 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void copyVocabularyConcepts(int oldVocabularyFolderId, int newVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ORIGINAL_CONCEPT_ID, OBSOLETE_DATE, CREATION_DATE) ");
-        sql.append("select :newVocabularyFolderId, IDENTIFIER, LABEL, DEFINITION, NOTATION, VOCABULARY_CONCEPT_ID, OBSOLETE_DATE, CREATION_DATE ");
+        sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ORIGINAL_CONCEPT_ID, ")
+              .append("OBSOLETE_DATE, CREATION_DATE) ");
+
+        sql.append("select :newVocabularyFolderId, IDENTIFIER, LABEL, DEFINITION, NOTATION, VOCABULARY_CONCEPT_ID, ")
+                .append("OBSOLETE_DATE, CREATION_DATE ");
         sql.append("from VOCABULARY_CONCEPT where VOCABULARY_ID = :oldVocabularyFolderId");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -206,7 +211,9 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     public void updateVocabularyConcept(VocabularyConcept vocabularyConcept) {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("update VOCABULARY_CONCEPT set IDENTIFIER = :identifier, LABEL = :label, DEFINITION = :definition, NOTATION = :notation ");
+        sql.append("update VOCABULARY_CONCEPT set IDENTIFIER = :identifier, LABEL = :label, ")
+            .append("DEFINITION = :definition, NOTATION = :notation ");
+
         sql.append("where VOCABULARY_CONCEPT_ID = :vocabularyConceptId");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -314,8 +321,9 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
      */
     @Override
     public int getNextIdentifierValue(int vocabularyFolderId) {
-        String sql =
-                "SELECT MAX(0 + IDENTIFIER) FROM VOCABULARY_CONCEPT GROUP BY VOCABULARY_ID HAVING VOCABULARY_ID = :vocabularyFolderId";
+        String sql = "SELECT MAX(0 + IDENTIFIER) FROM VOCABULARY_CONCEPT GROUP BY VOCABULARY_ID "
+                + "HAVING VOCABULARY_ID = :vocabularyFolderId";
+
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("vocabularyFolderId", vocabularyFolderId);
 

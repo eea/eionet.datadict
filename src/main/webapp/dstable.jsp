@@ -1,3 +1,4 @@
+<%@page import="eionet.meta.dao.domain.VocabularyFolder"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.meta.service.data.*,eionet.util.sql.ConnectionUtil"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -1328,6 +1329,7 @@ else if (mode.equals("add"))
                                                     Hashtable types = new Hashtable();
                                                     types.put("CH1", "Fixed values");
                                                     types.put("CH2", "Quantitative");
+                                                    types.put("CH3", "Vocabulary");
                                                     %>
                                                               <table class="datatable subtable">
                                                                     <col style="width:<%=widthShortName%>"/>
@@ -1410,7 +1412,19 @@ else if (mode.equals("add"))
                                                                                     <%=Util.processForDisplay(elemType)%>
                                                                                 </a> <%
                                                                             }
-                                                                            else{ %>
+                                                                            else if (elem.getType().equals("CH3")){
+                                                                                String vocabularyId = elem.getVocabularyId();
+                                                                                VocabularyFolder vocabulary = null;
+                                                                                if (vocabularyId != null) {
+                                                                                    vocabulary  = searchEngine.getVocabulary(Integer.valueOf(vocabularyId));
+                                                                                    %>
+                                                                                    <a href="<%=request.getContextPath()%>/vocabulary/<%=vocabulary.getFolderName()%>/<%=vocabulary.getIdentifier()%>/view">
+                                                                                        <%=Util.processForDisplay(elemType)%>
+                                                                                    </a> <% if (!elem.isAllConceptsValid()) {%><span title="Only concepts created and not become obsolete before releasing the element are valid" class="checkedout"><strong>*</strong></span><%}
+                                                                                } else {
+                                                                                    %><span><%=Util.processForDisplay(elemType)%></span><%
+                                                                                }
+                                                                            } else{ %>
                                                                                 <%=Util.processForDisplay(elemType)%><%
                                                                             }
 

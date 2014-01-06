@@ -57,7 +57,7 @@ public class DataElement implements Comparable {
     private boolean mandatoryFlag;
     private boolean primaryKey;
 
-    private String vocabularyId = null;
+    private String vocabularyId;
 
     private boolean allConceptsValid;
 

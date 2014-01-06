@@ -155,9 +155,8 @@ public interface IDataService {
     /**
      * ist of ficxed values for element type = CH3 from vocalbulary
      * @param elementId element ID
-     * @param allValues true - all concepts - false only released and not marked obsolete before element
      * releasing date
      * @return list of VocabularyConcepts
      */
-    List<VocabularyConcept> getElementVocabularyConcepts(int elementId, boolean allValues);
+    List<VocabularyConcept> getElementVocabularyConcepts(int elementId);
 }

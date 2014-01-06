@@ -379,6 +379,7 @@ if (isDisplayOperations){
                                 <option value="">All</option>
                                 <option value="CH1">Data element with fixed values (codes)</option>
                                 <option value="CH2">Data element with quantitative values (e.g. measurements)</option>
+                                <option value="CH3">Data element with fixed values (vocabulary)</option>
                             </select>
                         </td>
                     </tr>
@@ -539,7 +540,7 @@ if (isDisplayOperations){
                     // get attributes selected from picked list (get the ids from url)
                     if (attr_ids!=null){
                         for (int i=0; i < attr_ids.size(); i++){
-                            attrID = (String)attr_ids.get(i);
+                            attrID = (String)attr_ids.get(i);.
 
                             if (!inputAttributes.containsKey(attrID)) continue;
                             if (sel_type.equals("remove") && attrID.equals(sel_attr)) continue;
@@ -661,7 +662,7 @@ if (isDisplayOperations){
                         DElemAttribute attribute = (DElemAttribute)attrs.get(i);
 
                         if (type.equals("")){
-                            if (!attribute.displayFor("CH1") && !attribute.displayFor("CH2"))
+                            if (!attribute.displayFor("CH1") && !attribute.displayFor("CH2") && !attribute.displayFor("CH3"))
                                 continue;
                         }
                         else if (!attribute.displayFor(type))

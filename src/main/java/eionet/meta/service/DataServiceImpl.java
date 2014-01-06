@@ -13,13 +13,12 @@ import eionet.meta.DElemAttribute.ParentType;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IDataSetDAO;
-import eionet.meta.dao.IVocabularyFolderDAO;
+import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 
@@ -44,9 +43,10 @@ public class DataServiceImpl implements IDataService {
     @Autowired
     private IDataElementDAO dataElementDao;
 
-    /** Vocabulary DAO. */
+    /** Vocabulary concept DAO. */
     @Autowired
-    private IVocabularyFolderDAO vocabularyDao;
+    private IVocabularyConceptDAO vocabularyConceptDao;
+
 
 
     /**
@@ -216,17 +216,16 @@ public class DataServiceImpl implements IDataService {
     }
 
     @Override
-    public List<VocabularyConcept> getElementVocabularyConcepts(int elementId, boolean allValues) {
+    public List<VocabularyConcept> getElementVocabularyConcepts(int elementId) {
         DataElement elem = dataElementDao.getDataElement(elementId);
         List<VocabularyConcept> result = new ArrayList<VocabularyConcept>();
         Integer vocabularyId = elem.getVocabularyId();
         if (vocabularyId != null) {
 
-            VocabularyFolder vocabulary = vocabularyDao.getVocabularyFolder(vocabularyId);
-            List<VocabularyConcept> concepts = vocabulary.getConcepts();
+            List<VocabularyConcept> concepts = vocabularyConceptDao.getVocabularyConcepts(vocabularyId);
 
             for (VocabularyConcept concept : concepts) {
-                boolean conceptDateValid = false;
+                boolean conceptDateValid = true;
                 if (!elem.getAllConceptsValid()) {
                     //TODO - extra util method and unit tests
                     Date conceptDate = concept.getCreated();

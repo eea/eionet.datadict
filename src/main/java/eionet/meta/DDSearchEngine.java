@@ -28,7 +28,9 @@ import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.IDataService;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.IXmlConvService;
@@ -366,6 +368,9 @@ public class DDSearchEngine {
                 elm.setNamespace(new Namespace(elemsRs.getString("DATAELEM.PARENT_NS"), "", "", "", ""));
                 elm.setCheckedoutCopyID(elemsRs.getString("DATAELEM.CHECKEDOUT_COPY_ID"));
                 elm.setDate(elemsRs.getString("DATAELEM.DATE"));
+
+                elm.setVocabularyId(elemsRs.getString("DATAELEM.VOCABULARY_ID"));
+                elm.setAllConceptsValid(elemsRs.getBoolean("DATAELEM.ALL_CONCEPTS_LEGAL"));
 
                 // execute the statement prepared for dynamic attributes
                 attrsStmt.setInt(1, elmID);
@@ -715,6 +720,9 @@ public class DDSearchEngine {
                 elm.setCheckedoutCopyID(elemsRs.getString("DATAELEM.CHECKEDOUT_COPY_ID"));
                 elm.setDstWorkingUser(elemsRs.getString("DATASET.WORKING_USER"));
                 elm.setDstStatus(elemsRs.getString("DATASET.REG_STATUS"));
+                elm.setVocabularyId(elemsRs.getString("DATAELEM.VOCABULARY_ID"));
+                elm.setAllConceptsValid(elemsRs.getBoolean("DATAELEM.ALL_CONCEPTS_LEGAL"));
+
 
                 // if attributes should be fetched, execute the relevant statement
                 if (getAttributes) {
@@ -1526,7 +1534,7 @@ public class DDSearchEngine {
         return v;
     }
 
-    public Vector getFixedValues(String delem_id) throws SQLException {
+    public Vector getFixedValues(String delem_id) throws SQLException, ServiceException {
         return getFixedValues(delem_id, "elem");
     }
 
@@ -1538,8 +1546,11 @@ public class DDSearchEngine {
      * @throws SQLException
      *             if database query fails
      */
-    public Vector getFixedValues(String delem_id, String parent_type) throws SQLException {
+    public Vector getFixedValues(String delem_id, String parent_type) throws SQLException, ServiceException {
 
+        if (isFixedValuesVocElement(delem_id, parent_type)) {
+            return getVocabularyFixedValues(delem_id);
+        }
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer();
         buf.append("select * from FXV where OWNER_ID=").append(inParams.add(delem_id, Types.INTEGER)).append(" and OWNER_TYPE=")
@@ -1600,16 +1611,36 @@ public class DDSearchEngine {
      * @param type
      * @return
      */
-    private boolean isFixedValuesVocElement(String elemenID, String type) {
+    private boolean isFixedValuesVocElement(String elemenID, String type) throws ServiceException {
         //if "elem" and type = CH3 return true;
+        if (type.equals("elem")) {
+            IDataService dataService = springContext.getBean(IDataService.class);
+            return dataService.getDataElement(Integer.valueOf(elemenID)).getType().equals("CH3");
+        }
+
         return false;
     }
 
-    private Vector getVocabularyFixedValues() {
+    private Vector getVocabularyFixedValues(String elementId) throws ServiceException {
         //get concepts from the dataservice
         //build FixedValue objects from them
+        IDataService dataService = springContext.getBean(IDataService.class);
 
-        return null;
+        List<VocabularyConcept> concepts = dataService.getElementVocabularyConcepts(Integer.valueOf(elementId));
+        Vector<FixedValue> result = new Vector<FixedValue>();
+        for (VocabularyConcept concept : concepts) {
+            //simulate FXV id = concept.ID
+            FixedValue fxv = new FixedValue(String.valueOf(concept.getId()), elementId, concept.getIdentifier());
+
+            //TODO default?
+
+            fxv.setDefinition(concept.getDefinition());
+            fxv.setShortDesc(concept.getLabel());
+
+            result.add(fxv);
+        }
+
+        return result;
     }
     /**
      *

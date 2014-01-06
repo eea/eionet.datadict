@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
+import eionet.meta.DDException;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
 import eionet.meta.FixedValue;
@@ -817,7 +818,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @return the possibleAttributeValues
      * @throws DAOException
      */
-    public Map<String, Set<String>> getMultiValuedAttributeValues() throws DAOException {
+    public Map<String, Set<String>> getMultiValuedAttributeValues() throws DDException {
 
         if (multiValuedAttributeValues == null) {
             multiValuedAttributeValues = new HashMap<String, Set<String>>();
@@ -861,9 +862,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * @return the fixedValuedAttributeValues
-     * @throws DAOException
+     * @throws DDException if database query fails
      */
-    public Map<String, Set<String>> getFixedValuedAttributeValues() throws DAOException {
+    public Map<String, Set<String>> getFixedValuedAttributeValues() throws DDException {
 
         if (fixedValuedAttributeValues == null) {
             fixedValuedAttributeValues = new HashMap<String, Set<String>>();
