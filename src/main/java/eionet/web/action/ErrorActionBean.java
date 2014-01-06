@@ -21,7 +21,10 @@
 
 package eionet.web.action;
 
+import javax.servlet.http.HttpServletResponse;
+
 import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
@@ -29,18 +32,34 @@ import eionet.meta.service.ServiceException;
 
 /**
  * Error page action bean.
- *
+ * 
  * @author Juhan Voolaid
  */
 @UrlBinding("/error.action")
 public class ErrorActionBean extends AbstractActionBean {
 
+    /** Error type key identifier. */
+    public static final String ERROR_TYPE_KEY = "eionet.web.action.ErrorActionBean.ErrorType";
+
+    /** Possible Error Types. */
+    public static enum ErrorType {
+        UNKNOWN, NOT_FOUND_404
+    };
+
     /** Error message. */
     private String message;
+    /** Error type. */
+    private ErrorType type;
 
     @DefaultHandler
     public Resolution showError() throws ServiceException {
-        return new ForwardResolution("/pages/error.jsp");
+        switch (this.type) {
+            case NOT_FOUND_404:
+                return new ErrorResolution(HttpServletResponse.SC_NOT_FOUND, this.message);
+            case UNKNOWN:
+            default:
+                return new ForwardResolution("/pages/error.jsp");
+        }
     }
 
     /**
@@ -58,4 +77,21 @@ public class ErrorActionBean extends AbstractActionBean {
         this.message = message;
     }
 
+    public String getErrorTypeMsg() {
+        switch (this.type) {
+            case NOT_FOUND_404:
+                return "404 Not Found";
+            case UNKNOWN:
+            default:
+                return "An unexpected system error has occurred:";
+        }
+    }
+
+    public void setType(ErrorType type) {
+        if (type != null) {
+            this.type = type;
+        } else {
+            this.type = ErrorType.UNKNOWN;
+        }
+    }
 }

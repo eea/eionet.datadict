@@ -21,6 +21,8 @@
 
 package eionet.web.extension;
 
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,10 +34,11 @@ import org.apache.log4j.Logger;
 
 import eionet.meta.service.ServiceException;
 import eionet.web.action.ErrorActionBean;
+import eionet.web.action.ErrorActionBean.ErrorType;
 
 /**
  * Data Dictionary stripes exception handler.
- *
+ * 
  * @author Juhan Voolaid
  */
 public class DDExceptionHandler extends DefaultExceptionHandler {
@@ -45,7 +48,7 @@ public class DDExceptionHandler extends DefaultExceptionHandler {
 
     /**
      * Handles unexpected exception.
-     *
+     * 
      * @param exc
      * @param request
      * @param response
@@ -58,7 +61,7 @@ public class DDExceptionHandler extends DefaultExceptionHandler {
 
     /**
      * Handles service exception.
-     *
+     * 
      * @param exc
      * @param request
      * @param response
@@ -66,7 +69,14 @@ public class DDExceptionHandler extends DefaultExceptionHandler {
      */
     public Resolution handleServiceException(ServiceException exc, HttpServletRequest request, HttpServletResponse response) {
         LOGGER.error("Exception caught", exc);
-        return new RedirectResolution(ErrorActionBean.class).addParameter("message", exc.getMessage());
+        String message = exc.getMessage();
+        ErrorActionBean.ErrorType errorType = ErrorActionBean.ErrorType.UNKNOWN;
+
+        HashMap<String, Object> errorParameters = exc.getErrorParameters();
+        if (errorParameters != null && errorParameters.containsKey(ErrorActionBean.ERROR_TYPE_KEY)) {
+            errorType = (ErrorType) errorParameters.get(ErrorActionBean.ERROR_TYPE_KEY);
+        }
+        return new RedirectResolution(ErrorActionBean.class).addParameter("message", message).addParameter("type", errorType);
     }
 
 }

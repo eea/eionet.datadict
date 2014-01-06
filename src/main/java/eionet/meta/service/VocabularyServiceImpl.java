@@ -38,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,10 +69,11 @@ import eionet.util.Pair;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
+import eionet.web.action.ErrorActionBean;
 
 /**
  * Vocabulary service.
- *
+ * 
  * @author Juhan Voolaid
  */
 @Service
@@ -315,7 +317,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
     /**
      * updates bound element values included related bound elements.
-     * @param vocabularyConcept concept
+     * 
+     * @param vocabularyConcept
+     *            concept
      */
     private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept) {
         List<DataElement> dataElementValues = new ArrayList<DataElement>();
@@ -344,10 +348,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * As a last step when updating vocabulary concept, this method checks all the binded elements that represent relations and
      * makes sure that the concepts are related in both sides (A related with B -> B related with A). Also when relation gets
      * deleted from one side, then we make sure to deleted it also from the other side of the relation.
-     *
+     * 
      * @param vocabularyConcept
      *            Concept to be updated
-     * @param dataElementValues bound data elements with values
+     * @param dataElementValues
+     *            bound data elements with values
      */
     private void fixRelatedElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues) {
         try {
@@ -548,7 +553,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConceptDAO.copyVocabularyConcepts(vocabularyFolderId, newVocabularyFolderId);
 
                 dataElementDAO.checkoutVocabularyConceptDataElementValues(newVocabularyFolderId);
-                //dataElementDAO.updateRelatedConceptIds(newVocabularyFolderId);
+                // dataElementDAO.updateRelatedConceptIds(newVocabularyFolderId);
             }
 
             // Copy data element relations
@@ -588,7 +593,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             int originalVocabularyFolderId = vocabularyFolder.getCheckedOutCopyId();
 
             if (!vocabularyFolder.isSiteCodeType()) {
-                //reference type relations in other vocabularies must get new id's
+                // reference type relations in other vocabularies must get new id's
                 vocabularyConceptDAO.moveReferenceConcepts(originalVocabularyFolderId, vocabularyFolderId);
                 // Remove old vocabulary concepts
                 vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
@@ -663,7 +668,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConceptDAO.createVocabularyConcept(newVocabularyFolderId, vc);
             }
             dataElementDAO.copyVocabularyConceptDataElementValues(vocabularyFolderId, newVocabularyFolderId);
-            //dataElementDAO.updateRelatedConceptIds(newVocabularyFolderId);
+            // dataElementDAO.updateRelatedConceptIds(newVocabularyFolderId);
 
             return newVocabularyFolderId;
         } catch (Exception e) {
@@ -853,6 +858,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
             result.setElementAttributes(elementAttributes);
 
             return result;
+
+        } catch (IncorrectResultSizeDataAccessException e) {
+            ServiceException se = new ServiceException("Vocabulary concept \"" + conceptIdentifier + "\" not found!", e);
+            se.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.NOT_FOUND_404);
+            throw se;
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
         }
@@ -886,16 +896,15 @@ public class VocabularyServiceImpl implements IVocabularyService {
             filter.setNumericIdentifierSorting(numericConceptIdentifiers);
             filter.setObsoleteStatus(obsoleteStatus);
 
-            //List<VocabularyConcept> result = vocabularyConceptDAO.searchVocabularyConcepts(filter).getList();
+            // List<VocabularyConcept> result = vocabularyConceptDAO.searchVocabularyConcepts(filter).getList();
             List<VocabularyConcept> result = vocabularyConceptDAO.getConceptsWithValuedElements(vocabularyFolderId);
 
-/*                for (VocabularyConcept vc : result) {
-
-                    List<List<DataElement>> elementAttributes =
-                            dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId, vc.getId(), false);
-                    vc.setElementAttributes(elementAttributes);
-                }
-*/
+            /*
+             * for (VocabularyConcept vc : result) {
+             * 
+             * List<List<DataElement>> elementAttributes = dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId,
+             * vc.getId(), false); vc.setElementAttributes(elementAttributes); }
+             */
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
@@ -1091,7 +1100,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
     /**
      * all relational prefixes.
-     *
+     * 
      * @return collection of skos>relation prefixes
      */
     public static Collection<String> getRelationalPrefixes() {
@@ -1100,7 +1109,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
     /**
      * Checks if given element has some special behaviour.
-     *
+     * 
      * @param specialElement
      *            special element
      * @return String prefix in RDF
@@ -1129,7 +1138,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
         List<String> result = new ArrayList<String>();
 
-        //build list of Strings
+        // build list of Strings
         for (Pair<String, Integer> elementCount : elementsMeta) {
             for (int i = 0; i < elementCount.getRight(); i++) {
                 result.add(elementCount.getLeft());
@@ -1149,7 +1158,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     @Override
-    //public ConceptSearchResult searchAllVocabularyConcept(VocabularyFilter filter) throws ServiceException; searchAllVocabularyConcept(VocabularyFilter filter) throws ServiceException {
     public List<VocabularyConceptData> searchAllVocabularyConcept(VocabularyConceptFilter filter) throws ServiceException {
         try {
             VocabularyConceptResult vocabularyConceptResult = vocabularyConceptDAO.searchVocabularyConcepts(filter);
@@ -1159,25 +1167,24 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(concept.getVocabularyId());
 
                 VocabularyConceptData data = new VocabularyConceptData();
-                    data.setIdentifier(concept.getIdentifier());
-                    data.setLabel(concept.getLabel());
-                    data.setUserName(vocabulary.getWorkingUser());
-                    data.setVocabularyIdentifier(vocabulary.getIdentifier());
-                    data.setVocabularyLabel(vocabulary.getLabel());
-                    data.setVocabularySetIdentifier(vocabulary.getFolderName());
-                    data.setVocabularySetLabel(vocabulary.getFolderLabel());
+                data.setIdentifier(concept.getIdentifier());
+                data.setLabel(concept.getLabel());
+                data.setUserName(vocabulary.getWorkingUser());
+                data.setVocabularyIdentifier(vocabulary.getIdentifier());
+                data.setVocabularyLabel(vocabulary.getLabel());
+                data.setVocabularySetIdentifier(vocabulary.getFolderName());
+                data.setVocabularySetLabel(vocabulary.getFolderLabel());
 
-                    data.setVocabularyStatus(vocabulary.getRegStatus());
-                    data.setWorkingCopy(vocabulary.isWorkingCopy());
+                data.setVocabularyStatus(vocabulary.getRegStatus());
+                data.setWorkingCopy(vocabulary.isWorkingCopy());
 
-                    result.add(data);
-                }
+                result.add(data);
+            }
 
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to perform concept search: " + e.getMessage(), e);
         }
     }
-
 
 }

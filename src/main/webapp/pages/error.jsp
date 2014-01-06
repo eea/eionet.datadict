@@ -5,7 +5,7 @@
 
     <stripes:layout-component name="contents">
 
-        <h1>An unexpected system error has occurred:</h1>
+        <h1><c:out value="${actionBean.errorTypeMsg}" /></h1>
         <div class="error-msg">
             <c:choose>
                 <c:when test="${not empty actionBean.message}">
