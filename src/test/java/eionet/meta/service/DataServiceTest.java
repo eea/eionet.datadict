@@ -134,8 +134,8 @@ public class DataServiceTest extends UnitilsJUnit4  {
         //releasing of the element:
         List<VocabularyConcept> concepts2 = dataService.getElementVocabularyConcepts(302);
 
-        Assert.assertEquals("Element ID=301 has to have 5 concepts in fvs ", 5, concepts1.size());
-        Assert.assertEquals("Element ID=302 has to have 3 concepts in fvs ", 3, concepts2.size());
+        Assert.assertEquals("Element ID=301 has to have 5 concepts in fxvs ", 5, concepts1.size());
+        Assert.assertEquals("Element ID=302 has to have 3 concepts in fxvs ", 3, concepts2.size());
 
     }
 
