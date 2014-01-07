@@ -66,7 +66,7 @@ import eionet.util.VocabularyCSVOutputHelper;
 
 /**
  * Edit vocabulary folder action bean.
- *
+ * 
  * @author Juhan Voolaid
  */
 @UrlBinding("/vocabulary/{vocabularyFolder.folderName}/{vocabularyFolder.identifier}/{$event}")
@@ -169,15 +169,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private int elementId;
 
     /**
-     * Identifier before the user started editing.
-     * Needed to make the URLs working correctly still if user deletes identifier in the UI
+     * Identifier before the user started editing. Needed to make the URLs working correctly still if user deletes identifier in the
+     * UI
      */
     private String origIdentifier;
 
-
     /**
      * Navigates to view vocabulary folder page.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -212,7 +211,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Navigates to view vocabulary's working copy page.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -227,7 +226,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Navigates to add vocabulary folder form.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -238,9 +237,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Navigates to edit vocabulary folder form.
-     *
+     * 
      * @return Resolution
-     * @throws ServiceException if error in queries
+     * @throws ServiceException
+     *             if error in queries
      */
     public Resolution edit() throws ServiceException {
         vocabularyFolder =
@@ -259,7 +259,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Searches data elements.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -287,7 +287,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Adds data element relation.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -305,7 +305,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Removes data element relation.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -323,7 +323,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Returns true if the current user is allowed to add new site codes.
-     *
+     * 
      * @return
      */
     public boolean isCreateNewSiteCodeAllowed() {
@@ -340,7 +340,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * True, if user has update right.
-     *
+     * 
      * @return
      */
     public boolean isUpdateRight() {
@@ -352,7 +352,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * True, if user has create right.
-     *
+     * 
      * @return
      */
     public boolean isCreateRight() {
@@ -364,7 +364,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Save vocabulary folder action.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -412,7 +412,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Save vocabulary concept action.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -442,7 +442,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Action for checking in vocabulary folder.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -452,13 +452,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        //resolution.addParameter("vocabularyFolder.workingCopy", false);
+        // resolution.addParameter("vocabularyFolder.workingCopy", false);
         return resolution;
     }
 
     /**
      * Action for checking out vocabulary folder.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -474,7 +474,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Deletes the checked out version.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -485,13 +485,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        //resolution.addParameter("vocabularyFolder.workingCopy", false);
+        // resolution.addParameter("vocabularyFolder.workingCopy", false);
         return resolution;
     }
 
     /**
      * Deletes vocabulary concepts.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -507,7 +507,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Marks vocabulary concepts obsolete.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -523,7 +523,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Removes the obsolete status from concepts.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -539,7 +539,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Validates check out.
-     *
+     * 
      * @throws ServiceException
      */
     @ValidationMethod(on = {"checkOut"})
@@ -552,7 +552,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Validates view action.
-     *
+     * 
      * @throws ServiceException
      */
     private void validateView() throws ServiceException {
@@ -565,12 +565,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 }
             }
         }
-
     }
 
     /**
      * Validation on adding a binded data element.
-     *
+     * 
      * @throws ServiceException
      *             if checking fails
      */
@@ -598,7 +597,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * validates removing data elements. Elements which have values in any concepts cannot be removed.
-     *
+     * 
      * @throws ServiceException
      *             if checking fails
      */
@@ -633,7 +632,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Validates save folder.
-     *
+     * 
      * @throws ServiceException
      */
     @ValidationMethod(on = {"saveFolder"})
@@ -736,7 +735,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Because not all the properties of dynamic attributes get submitted by form (meta data), but only values, we don't have enough
      * data to do validation and re-displaying the attributes on the form when validation errors occour. This method loads the
      * attributes metadata from database and merges them with the submitted attributes.
-     *
+     * 
      * @throws ServiceException
      */
     private void mergeAttributes() throws ServiceException {
@@ -768,7 +767,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Returns new attribute object with merged data.
-     *
+     * 
      * @param metadata
      * @param attributeValue
      * @return
@@ -788,7 +787,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Validates save concept.
-     *
+     * 
      * @throws ServiceException
      */
     @ValidationMethod(on = {"saveConcept"})
@@ -843,7 +842,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Navigates to vocabulary folders list.
-     *
+     * 
      * @return
      */
     public Resolution cancelAdd() {
@@ -852,7 +851,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Navigates to edit vocabulary folder page.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -867,7 +866,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Action, that returns RDF output of the vocabulary.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -916,15 +915,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             final String folderContextRoot =
                     Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + vocabularyFolder.getFolderName() + "/";
 
-            final String commonElemsUri =
-                    Props.getRequiredProperty(PropsIF.DD_URL) + "/property/";
-
+            final String commonElemsUri = Props.getRequiredProperty(PropsIF.DD_URL) + "/property/";
 
             StreamingResolution result = new StreamingResolution("application/rdf+xml") {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
                     VocabularyXmlWriter xmlWriter = new VocabularyXmlWriter(response.getOutputStream());
-                    xmlWriter.writeRDFXml(commonElemsUri, folderContextRoot, contextRoot, vocabularyFolder, finalConcepts, nameSpaces);
+                    xmlWriter.writeRDFXml(commonElemsUri, folderContextRoot, contextRoot, vocabularyFolder, finalConcepts,
+                            nameSpaces);
                 }
             };
             result.setFilename(vocabularyFolder.getIdentifier() + ".rdf");
@@ -939,7 +937,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Returns vocabulary concepts CSV.
-     *
+     * 
      * @return
      */
     public Resolution csv() {
@@ -981,7 +979,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Forwards to vocabulary concept page, if the url patter is: /vocabylary/folderIdentifier/conceptIdentifier.
-     *
+     * 
      * @return
      */
     private Resolution getVocabularyConceptResolution() {
@@ -1000,17 +998,15 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 if (vocabularyFolder.isWorkingCopy()) {
                     resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
                 }
-
                 return resolution;
             }
         }
-
         return null;
     }
 
     /**
      * Returns concept URI prefix.
-     *
+     * 
      * @return
      */
     public String getUriPrefix() {
@@ -1041,7 +1037,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * True, if logged in user is the working user of the vocabulary.
-     *
+     * 
      * @return
      */
     public boolean isUserWorkingCopy() {
@@ -1059,7 +1055,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * True, if vocabulary is checked out by other user.
-     *
+     * 
      * @return
      */
     public boolean isCheckedOutByOther() {
@@ -1074,7 +1070,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * True, if vocabulary is checked out by user.
-     *
+     * 
      * @return
      */
     public boolean isCheckedOutByUser() {
@@ -1089,7 +1085,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Returns autogenerated identifier for new concept. Empty string if VocabularyFolder.numericConceptIdentifiers=false.
-     *
+     * 
      * @return
      */
     public String getNextIdentifier() {
@@ -1108,7 +1104,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * Returns the vocabulary concept that is submitted by form for update.
-     *
+     * 
      * @return
      */
     public VocabularyConcept getEditableConcept() {

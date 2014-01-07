@@ -34,7 +34,6 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.web.util.UriUtils;
 
 import eionet.meta.dao.domain.DataElement;
