@@ -560,7 +560,7 @@ public class PdfUtil {
             }
 
 
-            if (elemType.equals("CH1")) {
+            if (elemType.equals("CH1") || elemType.equals("CH3")) {
                 Vector fxvs = elem.getFixedValues();
                 if (fxvs == null || fxvs.size() == 0) {
                     if (dataspecs.length() > 0) {

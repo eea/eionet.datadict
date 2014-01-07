@@ -516,7 +516,7 @@ public class DataElementHandler extends BaseHandler {
             } else if (elmValuesType.equals("CH2")) {
                 newType = "CH1";
             } else {
-                //TODO analyze and implement
+                //TODO analyze and implement for CH3 if needed
                 throw new UnsupportedOperationException();
             }
 
@@ -556,10 +556,10 @@ public class DataElementHandler extends BaseHandler {
             if (!Util.isEmpty(elmRegStatus)) {
                 gen.setField("REG_STATUS", elmRegStatus);
             }
+        }
 
-            if (elmValuesType.equals("CH3")) {
-                gen.setFieldExpr("ALL_CONCEPTS_LEGAL", allConceptsLegal ? "1" : "0");
-            }
+        if (elmValuesType.equals("CH3")) {
+            gen.setFieldExpr("ALL_CONCEPTS_LEGAL", allConceptsLegal ? "1" : "0");
         }
 
         LOGGER.debug("sql: " + gen.updateStatement() + " where DATAELEM_ID=" + delem_id);

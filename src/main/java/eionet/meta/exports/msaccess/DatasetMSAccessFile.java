@@ -447,7 +447,7 @@ public class DatasetMSAccessFile {
             throw new IllegalArgumentException("Element type must not be null or null");
         }
 
-        if (type.equals("CH1")) {
+        if (type.equals("CH1") || type.equals("CH3")) {
             return Integer.valueOf(1);
         } else if (type.equals("CH2")) {
             return Integer.valueOf(2);

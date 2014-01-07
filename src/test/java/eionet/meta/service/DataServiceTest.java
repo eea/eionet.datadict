@@ -12,6 +12,7 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
 import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
 
 /**
  * DataService tests.
@@ -53,7 +54,7 @@ public class DataServiceTest extends UnitilsJUnit4  {
     public void testGetCommonElements() throws Exception {
         List<DataElement> elements = dataService.getReleasedCommonDataElements();
 
-        Assert.assertTrue(elements.size() == 5);
+        Assert.assertTrue(elements.size() == 7);
 
     }
 
@@ -116,4 +117,27 @@ public class DataServiceTest extends UnitilsJUnit4  {
 
 
     }
+
+
+    /**
+     * test if correct count of concepts are bound to element.
+     * Especially important is obsolete date check functionality if
+     * element type is not all concepts valid
+     * @throws Exception if error
+     */
+    @Test
+    public void testElementConcepts() throws Exception {
+
+        List<VocabularyConcept> concepts1 = dataService.getElementVocabularyConcepts(301);
+
+        //this element does not have 2 concepts one marked obsolete before releasing and the other created after
+        //releasing of the element:
+        List<VocabularyConcept> concepts2 = dataService.getElementVocabularyConcepts(302);
+
+        Assert.assertEquals("Element ID=301 has to have 5 concepts in fvs ", 5, concepts1.size());
+        Assert.assertEquals("Element ID=302 has to have 3 concepts in fvs ", 3, concepts2.size());
+
+    }
+
+
 }

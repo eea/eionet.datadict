@@ -70,8 +70,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
-                        vc.setCreated(rs.getDate("CREATION_DATE"));
-                        vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
+                        vc.setCreated(rs.getTimestamp("CREATION_DATE"));
+                        vc.setObsolete(rs.getTimestamp("OBSOLETE_DATE"));
                         return vc;
                     }
                 });

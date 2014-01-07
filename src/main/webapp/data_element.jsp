@@ -2273,14 +2273,16 @@ String helpAreaName = "";
                                                             }
 
                                                                     // the link
-                                                                    String valuesLink;
+                                                                    String valuesLink = "";
                                                                     if (!type.equals("CH3")) {
                                                                         valuesLink = request.getContextPath() + "/fixed_values.jsp?delem_id=" + delem_id
                                                                             + "&amp;delem_name=" + delem_name
                                                                             + "&amp;parent_type=" + type;
                                                                     } else {
-                                                                        valuesLink = request.getContextPath() + "/vocabulary/" + vocabulary.getFolderName()
+                                                                        if (vocabulary != null) {
+                                                                            valuesLink = request.getContextPath() + "/vocabulary/" + vocabulary.getFolderName()
                                                                                 + "/" + vocabulary.getIdentifier() + "/view";
+                                                                        }
                                                                     }
 
                                                                     if (mode.equals("edit") && user != null) {
