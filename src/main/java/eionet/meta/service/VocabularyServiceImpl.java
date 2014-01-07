@@ -897,7 +897,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             filter.setObsoleteStatus(obsoleteStatus);
 
             // List<VocabularyConcept> result = vocabularyConceptDAO.searchVocabularyConcepts(filter).getList();
-            List<VocabularyConcept> result = vocabularyConceptDAO.getConceptsWithValuedElements(vocabularyFolderId);
+            List<VocabularyConcept> result = vocabularyConceptDAO.getValidConceptsWithValuedElements(vocabularyFolderId);
 
             /*
              * for (VocabularyConcept vc : result) {

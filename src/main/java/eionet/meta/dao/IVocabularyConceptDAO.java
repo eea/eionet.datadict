@@ -186,11 +186,11 @@ public interface IVocabularyConceptDAO {
 
 
     /**
-     * finds vocabulary concepts of the vocabulary.
+     * finds vocabulary concepts of the vocabulary that are not obsolete.
      * Expects an element to have datatype attribute otherwise not included to the result
      * @param vocabularyId vocabulary ID
      * @return elements with valued bound elements
      */
-    List<VocabularyConcept> getConceptsWithValuedElements(int vocabularyId);
+    List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId);
 
 }

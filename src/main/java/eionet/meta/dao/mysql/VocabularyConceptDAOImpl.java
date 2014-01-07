@@ -492,7 +492,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     }
 
     @Override
-    public List<VocabularyConcept> getConceptsWithValuedElements(int vocabularyId) {
+    public List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyId", vocabularyId);
 
@@ -510,7 +510,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 + "LEFT JOIN VOCABULARY rcv ON rc.VOCABULARY_ID = rcv.VOCABULARY_ID LEFT JOIN VOCABULARY_SET rcvs ON (rcv.FOLDER_ID = rcvs.ID ) "
                 + "left join (ATTRIBUTE a, M_ATTRIBUTE ma)  on (a.DATAELEM_ID = d.DATAELEM_ID "
                 + "and PARENT_TYPE = 'E' and a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME='Datatype') "
-                + "where c.VOCABULARY_ID = :vocabularyId "
+                + "where c.VOCABULARY_ID = :vocabularyId AND c.OBSOLETE_DATE IS NULL "
                 + "ORDER by c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, rcv.IDENTIFIER ");
 
         final List<VocabularyConcept> resultList = new ArrayList<VocabularyConcept>();
