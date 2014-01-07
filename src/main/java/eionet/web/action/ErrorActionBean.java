@@ -54,6 +54,7 @@ public class ErrorActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution showError() throws ServiceException {
         switch (this.type) {
+            // not found 404 errors are handled in DDExceptionHandler, this line probably wont be reached
             case NOT_FOUND_404:
                 return new ErrorResolution(HttpServletResponse.SC_NOT_FOUND, this.message);
             case UNKNOWN:
@@ -79,6 +80,7 @@ public class ErrorActionBean extends AbstractActionBean {
 
     public String getErrorTypeMsg() {
         switch (this.type) {
+            // not found 404 errors are handled in DDExceptionHandler, this line probably wont be reached
             case NOT_FOUND_404:
                 return "404 Not Found";
             case UNKNOWN:

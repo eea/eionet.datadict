@@ -26,6 +26,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.exception.DefaultExceptionHandler;
@@ -65,7 +66,7 @@ public class DDExceptionHandler extends DefaultExceptionHandler {
      * @param exc
      * @param request
      * @param response
-     * @return
+     * @return ErrorResolution if it is a 404 error, otherwise RedirectResolution to forward to ErrorAction
      */
     public Resolution handleServiceException(ServiceException exc, HttpServletRequest request, HttpServletResponse response) {
         LOGGER.error("Exception caught", exc);
@@ -76,7 +77,12 @@ public class DDExceptionHandler extends DefaultExceptionHandler {
         if (errorParameters != null && errorParameters.containsKey(ErrorActionBean.ERROR_TYPE_KEY)) {
             errorType = (ErrorType) errorParameters.get(ErrorActionBean.ERROR_TYPE_KEY);
         }
-        return new RedirectResolution(ErrorActionBean.class).addParameter("message", message).addParameter("type", errorType);
+
+        if (errorType.equals(ErrorActionBean.ErrorType.NOT_FOUND_404)) {
+            return new ErrorResolution(HttpServletResponse.SC_NOT_FOUND, message);
+        } else {
+            return new RedirectResolution(ErrorActionBean.class).addParameter("message", message).addParameter("type", errorType);
+        }
     }
 
 }

@@ -257,6 +257,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
             result.setAttributes(attributes);
 
             return result;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            ServiceException se =
+                    new ServiceException("Vocabulary folder \"" + folderName + "\" or identifier \"" + identifier
+                            + "\" not found!", e);
+            se.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.NOT_FOUND_404);
+            throw se;
         } catch (Exception e) {
             String parameters =
                     "folderName=" + String.valueOf(folderName) + "; identifier=" + String.valueOf(identifier) + "; workingCopy="
