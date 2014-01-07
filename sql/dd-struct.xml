@@ -1536,4 +1536,17 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropColumn tableName="DATAELEM" columnName="GIS"/>
     </changeSet>
 
+	<changeSet author="enverveli" id="rev-124">
+		<comment>Change data type of DATE_DELETED to DATE</comment>
+		<addColumn tableName="T_SITE_CODE">
+			<column name="DATE_DELETED_TEMP" type="DATE" />
+		</addColumn>
+		<update tableName="T_SITE_CODE">
+			<column name="DATE_DELETED_TEMP" valueComputed="STR_TO_DATE(CONCAT(DATE_DELETED, '-01-01'), '%Y-%m-%d')" type="DATE"/>
+			<where>DATE_DELETED IS NOT NULL</where>
+		</update>
+		<dropColumn columnName="DATE_DELETED" tableName="T_SITE_CODE"/>
+		<renameColumn newColumnName="DATE_DELETED" oldColumnName="DATE_DELETED_TEMP" tableName="T_SITE_CODE" columnDataType="DATE"/>
+	</changeSet>
+
 </databaseChangeLog>
