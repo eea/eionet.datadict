@@ -888,8 +888,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // Advanced MS Access template generation link
-                                                    boolean displayAdvancedMDB = true;
-                                                    if (displayAdvancedMDB) {
+                                                    if (dispAll || editPrm) {
                                                         %>
                                                         <tr>
                                                             <td>
