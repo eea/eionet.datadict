@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.HashSet;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,16 +19,17 @@ import eionet.util.sql.ConnectionUtil;
 
 public class XlsServlet extends HttpServlet {
 
-    private HashSet validObjTypes = null;
+    private HashSet<String> validObjTypes = null;
 
+    @Override
     public void init() throws ServletException {
-        validObjTypes = new HashSet();
+        validObjTypes = new HashSet<String>();
         validObjTypes.add("dst");
         validObjTypes.add("tbl");
     }
 
-    protected void service(HttpServletRequest req, HttpServletResponse res)
-                                throws ServletException, IOException {
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         res.setContentType("application/vnd.ms-excel");
 
@@ -39,14 +39,16 @@ public class XlsServlet extends HttpServlet {
         try {
 
             String id = req.getParameter("obj_id");
-            if (Util.isEmpty(id))
+            if (Util.isEmpty(id)) {
                 throw new Exception("Missing object id!");
+            }
 
             String type = req.getParameter("obj_type");
-            if (Util.isEmpty(type) || !validObjTypes.contains(type))
+            if (Util.isEmpty(type) || !validObjTypes.contains(type)) {
                 throw new Exception("Missing object type or object type invalid!");
+            }
 
-            ServletContext ctx = getServletContext();
+            //ServletContext ctx = getServletContext();
             String cachePath = Props.getProperty(PropsIF.DOC_PATH);
 
             // get the DB connection
@@ -65,8 +67,7 @@ public class XlsServlet extends HttpServlet {
             }
 
             xls.create(id);
-            StringBuffer buf = new StringBuffer("attachment; filename=\"").
-            append(xls.getName()).append("\"");
+            StringBuffer buf = new StringBuffer("attachment; filename=\"").append(xls.getName()).append("\"");
             res.setHeader("Content-Disposition", buf.toString());
 
             xls.write();
@@ -74,12 +75,17 @@ public class XlsServlet extends HttpServlet {
             os.close();
         } catch (Exception e) {
             e.printStackTrace(System.out);
-            throw new ServletException(e.toString());
+            throw new ServletException(e.getMessage());
         } finally {
             try {
-                if (os != null) os.close();
-                if (conn != null) conn.close();
-            } catch (Exception ee) {}
+                if (os != null) {
+                    os.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ee) {
+            }
         }
     }
 }
