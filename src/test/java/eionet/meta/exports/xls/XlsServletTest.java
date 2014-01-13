@@ -96,7 +96,6 @@ public class XlsServletTest extends DDDatabaseTestCase {
      * method could be used instead of this
      */
     private void verifyAllMocks() {
-        // easyMockSupport.verifyAll();
         for (Object mock : allMocks) {
             EasyMock.verify(mock);
         }

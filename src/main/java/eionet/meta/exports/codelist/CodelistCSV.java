@@ -30,6 +30,7 @@ public class CodelistCSV extends Codelist {
      *  (non-Javadoc)
      * @see eionet.meta.exports.codelist.Codelist#write(java.lang.String, java.lang.String)
      */
+    @Override
     public void write(String objID, String objType) throws Exception {
 
         Vector elms = new Vector();
@@ -83,10 +84,10 @@ public class CodelistCSV extends Codelist {
                 }
             }
 
-            Vector fxvs = searchEngine.getFixedValues(elm.getID());
+            Vector<FixedValue> fxvs = searchEngine.getFixedValues(elm.getID());
             for (int j = 0; fxvs != null && j < fxvs.size(); j++) {
 
-                FixedValue fxv = (FixedValue) fxvs.get(j);
+                FixedValue fxv = fxvs.get(j);
                 String value = fxv.getValue();
                 if (value != null && value.trim().length()>0) {
 

@@ -122,7 +122,6 @@ public class TblXls extends Xls implements XlsIF, CachableIF {
      * @throws Exception
      */
     private void addElements(String tblID) throws Exception {
-
         DsTable tbl = searchEngine.getDatasetTable(tblID);
         if (tbl == null) {
             throw new Exception("Table " + tblID + " not found!");
@@ -134,8 +133,8 @@ public class TblXls extends Xls implements XlsIF, CachableIF {
 
         sheet = wb.createSheet(tbl.getIdentifier());
         row = sheet.createRow(0);
-
         addElements(tbl);
+        sheet.createFreezePane(0, 1);
     }
 
     /**
@@ -146,15 +145,13 @@ public class TblXls extends Xls implements XlsIF, CachableIF {
     @SuppressWarnings("rawtypes")
     private void addElements(DsTable tbl) throws Exception {
 
-        Vector elems = searchEngine.getDataElements(null, null, null, null, tbl.getID());
+        Vector<DataElement> elems = searchEngine.getDataElements(null, null, null, null, tbl.getID());
         if (elems == null || elems.size() == 0) {
             return;
         }
 
-        int done = 0;
         for (int i = 0; i < elems.size(); i++) {
-            addElement((DataElement) elems.get(i), (short) done);
-            done++;
+            addElement(elems.get(i), (short) i);
         }
     }
 
