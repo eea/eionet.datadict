@@ -39,8 +39,8 @@ import eionet.util.sql.SQL;
  */
 public class TblXls extends Xls implements CachableIF {
 
-    /** Default file name */
-    private static final String DEFAULT_FILE_NAME = "table.xls";    
+    /** Default file name. */
+    private static final String DEFAULT_FILE_NAME = "table.xls";
     /** Cell name suffix when creating formulas for drop-down items. */
     private static final String CELL_NAME_SUFFIX_FOR_DROP_DOWN_FORMULA = "hiddenfxv";
 
@@ -101,7 +101,6 @@ public class TblXls extends Xls implements CachableIF {
      * @throws Exception
      */
     protected void create(String tblID, boolean caching) throws Exception {
-
         // don't create if its already in cache
         if (!caching && isCached(tblID)) {
             fileName = cacheFileName;
@@ -129,7 +128,6 @@ public class TblXls extends Xls implements CachableIF {
      * @throws Exception
      */
     protected void write(boolean caching) throws Exception {
-
         // if available in cache, write from cache and return
         if (!caching && cacheFileName != null) {
             writeFromCache();
@@ -276,7 +274,6 @@ public class TblXls extends Xls implements CachableIF {
      */
     @Override
     public void updateCache(String id) throws Exception {
-
         create(id, true);
         if (cachePath != null && fileName != null) {
             String fn = cachePath + fileName;
@@ -308,7 +305,6 @@ public class TblXls extends Xls implements CachableIF {
      */
     @Override
     public void clearCache(String id) throws Exception {
-
         String fn = deleteCacheEntry(id, conn);
         File file = new File(cachePath + fn);
         if (file.exists() && file.isFile()) {
@@ -362,7 +358,6 @@ public class TblXls extends Xls implements CachableIF {
      * Called when the output is present in cache. Writes the cached document into the output stream.
      */
     public void writeFromCache() throws Exception {
-
         if (Util.isEmpty(cachePath)) {
             throw new Exception("Cache path is missing!");
         }
@@ -399,9 +394,7 @@ public class TblXls extends Xls implements CachableIF {
      * @return
      * @throws SQLException
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
     protected static int storeCacheEntry(String id, String fn, Connection conn) throws SQLException {
-
         if (id == null || fn == null || conn == null) {
             return -1;
         }
@@ -419,7 +412,7 @@ public class TblXls extends Xls implements CachableIF {
 
             // now create the new entry
             inParams = new INParameters();
-            LinkedHashMap map = new LinkedHashMap();
+            LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
             map.put("OBJ_ID", inParams.add(id, Types.INTEGER));
             map.put("OBJ_TYPE", SQL.surroundWithApostrophes("tbl"));
             map.put("ARTICLE", SQL.surroundWithApostrophes("xls"));
@@ -446,7 +439,6 @@ public class TblXls extends Xls implements CachableIF {
      * @throws SQLException
      */
     protected static String deleteCacheEntry(String id, Connection conn) throws SQLException {
-
         if (id == null || conn == null) {
             return null;
         }

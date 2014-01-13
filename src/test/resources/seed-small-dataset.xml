@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <DATASET DATASET_ID="4" IDENTIFIER="NiD_test" SHORT_NAME="NiD_water" VERSION="2007" REG_STATUS="Incomplete" />
+
+    <DS_TABLE TABLE_ID="6" IDENTIFIER="NiD_SW_Conc" SHORT_NAME="SW_NO3_concentrations" NAME="NO3 concentrations in surface water" />
+    <DS_TABLE TABLE_ID="7" IDENTIFIER="NiD_SW_EutroMeas" SHORT_NAME="SW_Eutrophication_measurements" NAME="Eutrophication parameters in surface water"/>
+    
+    <DST2TBL TABLE_ID="6" DATASET_ID="4" />
+    <DST2TBL TABLE_ID="7" DATASET_ID="4" />
+    
+    <TBL2ELEM TABLE_ID="6" DATAELEM_ID="111" />
+    <TBL2ELEM TABLE_ID="6" DATAELEM_ID="112" />        
+    <TBL2ELEM TABLE_ID="7" DATAELEM_ID="113" />
+    <TBL2ELEM TABLE_ID="7" DATAELEM_ID="114" />
+    <TBL2ELEM TABLE_ID="7" DATAELEM_ID="115" />
+    
+    <DATAELEM DATAELEM_ID="111" IDENTIFIER="ND_TrendAnnValue" SHORT_NAME="TrendAnnualValue" TYPE="CH1" />
+    <DATAELEM DATAELEM_ID="112" IDENTIFIER="ND_AvgWintValue" SHORT_NAME="AverageWinterValue" TYPE="CH2" />
+    <DATAELEM DATAELEM_ID="113" IDENTIFIER="ND_TrendWintValue" SHORT_NAME="TrendWinterValue" TYPE="CH2" />
+    <DATAELEM DATAELEM_ID="114" IDENTIFIER="ND_AvgValue" SHORT_NAME="AverageValue" TYPE="CH2" />
+    <DATAELEM DATAELEM_ID="115" IDENTIFIER="ND_TrophicState" SHORT_NAME="TrophicState" TYPE="CH1" />
+    
+    <FXV FXV_ID="8" OWNER_ID="111" VALUE="5" DEFINITION="Lake water" SHORT_DESC="" />
+    <FXV FXV_ID="9" OWNER_ID="111" VALUE="6" DEFINITION="Transitional water" SHORT_DESC="" />
+    <FXV FXV_ID="23" OWNER_ID="115" VALUE="Ultra-oligotrophic" DEFINITION="Ultra-oligotrophic" SHORT_DESC="" />
+    <FXV FXV_ID="24" OWNER_ID="115" VALUE="Oligotrophic" DEFINITION="Oligotrophic" SHORT_DESC="" />
+    <FXV FXV_ID="25" OWNER_ID="115" VALUE="Mesotrophic" DEFINITION="Mesotrophic" SHORT_DESC="" />
+    <FXV FXV_ID="26" OWNER_ID="115" VALUE="Eutrophic" DEFINITION="Eutrophic" SHORT_DESC="" />
+    <FXV FXV_ID="27" OWNER_ID="115" VALUE="Hypertrophic" DEFINITION="Hypertrophic" SHORT_DESC="" />
+    
+</dataset>

@@ -22,21 +22,21 @@ import eionet.util.sql.SQL;
  * 
  * @author Jaanus
  */
-public class DstXls extends TblXls{
+public class DstXls extends TblXls {
 
-    /** Default file name */
+    /** Default file name. */
     private static final String DEFAULT_FILE_NAME = "dataset.xls";
-    
+
     /** All tables in dataset. */
     private Vector<DsTable> tables = null;
-    
+
     /**
      * 
      * Class constructor.
      */
     public DstXls() {
         super();
-        this.fileName = DstXls.DEFAULT_FILE_NAME;        
+        this.fileName = DstXls.DEFAULT_FILE_NAME;
     }
 
     /**
@@ -63,7 +63,6 @@ public class DstXls extends TblXls{
         this.searchEngine = searchEngine;
         this.os = os;
     }
-    
 
     /**
      * 
@@ -97,7 +96,6 @@ public class DstXls extends TblXls{
         addElements(tbl);
         sheet.createFreezePane(0, 1);
     }
-    
 
     /*
      * (non-Javadoc)
@@ -125,7 +123,6 @@ public class DstXls extends TblXls{
         return true;
     }
 
-   
     /**
      * 
      * @param id
@@ -133,9 +130,7 @@ public class DstXls extends TblXls{
      * @param conn
      * @throws SQLException
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
     protected static int storeCacheEntry(String id, String fn, Connection conn) throws SQLException {
-
         if (id == null || fn == null || conn == null) {
             return -1;
         }
@@ -153,7 +148,7 @@ public class DstXls extends TblXls{
 
             // now create the new entry
             inParams = new INParameters();
-            LinkedHashMap map = new LinkedHashMap();
+            LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
             map.put("OBJ_ID", inParams.add(id, Types.INTEGER));
             map.put("OBJ_TYPE", SQL.surroundWithApostrophes("dst"));
             map.put("ARTICLE", SQL.surroundWithApostrophes("xls"));
@@ -180,7 +175,6 @@ public class DstXls extends TblXls{
      * @throws SQLException
      */
     protected static String deleteCacheEntry(String id, Connection conn) throws SQLException {
-
         if (id == null || conn == null) {
             return null;
         }
