@@ -175,12 +175,14 @@ public class XlsServletTest extends DDDatabaseTestCase {
     public void testIfExceptionThrownForMissingObjectId() throws Exception {
         // initialize for step
         initializeForStep();
+        String exceptionMessage = "Missing object id!";
 
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("");
 
         // record for response
-        responseMock.setContentType("application/vnd.ms-excel");
+        responseMock.setContentType(null);
+        responseMock.sendError(500, exceptionMessage);
 
         // replay all mocks
         replyAllMocks();
@@ -190,7 +192,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
             xlsServletUnderTest.service(requestMock, responseMock);
         } catch (ServletException e) {
             // perform exception check
-            Assert.assertEquals("Incorrect exception message", "Missing object id!", e.getMessage());
+            Assert.assertEquals("Incorrect exception message", exceptionMessage, e.getMessage());
         }
 
         // verify mocks
@@ -207,12 +209,14 @@ public class XlsServletTest extends DDDatabaseTestCase {
     public void testIfExceptionThrownForNullObjectId() throws Exception {
         // initialize for step
         initializeForStep();
+        String exceptionMessage = "Missing object id!";
 
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn(null);
 
         // record for response
-        responseMock.setContentType("application/vnd.ms-excel");
+        responseMock.setContentType(null);
+        responseMock.sendError(500, exceptionMessage);
 
         // replay all mocks
         replyAllMocks();
@@ -222,7 +226,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
             xlsServletUnderTest.service(requestMock, responseMock);
         } catch (ServletException e) {
             // perform exception check
-            Assert.assertEquals("Incorrect exception message", "Missing object id!", e.getMessage());
+            Assert.assertEquals("Incorrect exception message", exceptionMessage, e.getMessage());
         }
 
         // verify mocks
@@ -239,13 +243,15 @@ public class XlsServletTest extends DDDatabaseTestCase {
     public void testIfExceptionThrownForNullObjectType() throws Exception {
         // initialize for step
         initializeForStep();
+        String exceptionMessage = "Missing object type or object type invalid!";
 
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("4");
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn(null);
 
         // record for response
-        responseMock.setContentType("application/vnd.ms-excel");
+        responseMock.setContentType(null);
+        responseMock.sendError(500, exceptionMessage);
 
         // replay all mocks
         replyAllMocks();
@@ -255,7 +261,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
             xlsServletUnderTest.service(requestMock, responseMock);
         } catch (ServletException e) {
             // perform exception check
-            Assert.assertEquals("Incorrect exception message", "Missing object type or object type invalid!", e.getMessage());
+            Assert.assertEquals("Incorrect exception message", exceptionMessage, e.getMessage());
         }
 
         // verify mocks
@@ -272,13 +278,15 @@ public class XlsServletTest extends DDDatabaseTestCase {
     public void testIfExceptionThrownForMissingObjectType() throws Exception {
         // initialize for step
         initializeForStep();
+        String exceptionMessage = "Missing object type or object type invalid!";
 
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("4");
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("");
 
         // record for response
-        responseMock.setContentType("application/vnd.ms-excel");
+        responseMock.setContentType(null);
+        responseMock.sendError(500, exceptionMessage);
 
         // replay all mocks
         replyAllMocks();
@@ -288,7 +296,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
             xlsServletUnderTest.service(requestMock, responseMock);
         } catch (ServletException e) {
             // perform exception check
-            Assert.assertEquals("Incorrect exception message", "Missing object type or object type invalid!", e.getMessage());
+            Assert.assertEquals("Incorrect exception message", exceptionMessage, e.getMessage());
         }
 
         // verify mocks
@@ -305,15 +313,18 @@ public class XlsServletTest extends DDDatabaseTestCase {
     public void testIfExceptionThrownForInvalidDstId() throws Exception {
         // initialize for step
         initializeForStep();
+        String objId = "300";
+        String exceptionMessage = "Dataset " + objId + " not found!";
 
         // record for request
-        EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("300");
+        EasyMock.expect(requestMock.getParameter("obj_id")).andReturn(objId);
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("dst");
 
         // record for response
         EnvServletOutputStream os = new EnvServletOutputStream();
         EasyMock.expect(responseMock.getOutputStream()).andReturn(os);
-        responseMock.setContentType("application/vnd.ms-excel");
+        responseMock.setContentType(null);
+        responseMock.sendError(500, exceptionMessage);
 
         // replay all mocks
         replyAllMocks();
@@ -323,7 +334,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
             xlsServletUnderTest.service(requestMock, responseMock);
         } catch (ServletException e) {
             // perform exception check
-            Assert.assertEquals("Incorrect exception message", "Dataset " + "300" + " not found!", e.getMessage());
+            Assert.assertEquals("Incorrect exception message", exceptionMessage, e.getMessage());
         }
 
         // perform checks and verify mocks
@@ -341,15 +352,18 @@ public class XlsServletTest extends DDDatabaseTestCase {
     public void testIfExceptionThrownForInvalidTblId() throws Exception {
         // initialize for step
         initializeForStep();
+        String objId = "500";
+        String exceptionMessage = "Table " + objId + " not found!";
 
         // record for request
-        EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("500");
+        EasyMock.expect(requestMock.getParameter("obj_id")).andReturn(objId);
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("tbl");
 
         // record for response
         EnvServletOutputStream os = new EnvServletOutputStream();
         EasyMock.expect(responseMock.getOutputStream()).andReturn(os);
-        responseMock.setContentType("application/vnd.ms-excel");
+        responseMock.setContentType(null);
+        responseMock.sendError(500, exceptionMessage);
 
         // replay all mocks
         replyAllMocks();
@@ -377,13 +391,15 @@ public class XlsServletTest extends DDDatabaseTestCase {
     public void testIfExceptionThrownForInvalidObjectType() throws Exception {
         // initialize for step
         initializeForStep();
+        String exceptionMessage = "Missing object type or object type invalid!";
 
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("4");
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("invalid");
 
         // record for response
-        responseMock.setContentType("application/vnd.ms-excel");
+        responseMock.setContentType(null);
+        responseMock.sendError(500, exceptionMessage);
 
         // replay all mocks
         replyAllMocks();
@@ -393,12 +409,12 @@ public class XlsServletTest extends DDDatabaseTestCase {
             xlsServletUnderTest.service(requestMock, responseMock);
         } catch (ServletException e) {
             // perform exception check
-            Assert.assertEquals("Incorrect exception message", "Missing object type or object type invalid!", e.getMessage());
+            Assert.assertEquals("Incorrect exception message", exceptionMessage, e.getMessage());
         }
 
         // verify mocks
         verifyAllMocks();
-    }
+    }   
 
     @Override
     protected String getSeedFilename() {

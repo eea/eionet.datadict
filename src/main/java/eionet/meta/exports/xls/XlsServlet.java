@@ -31,11 +31,9 @@ public class XlsServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-        res.setContentType("application/vnd.ms-excel");
-
         OutputStream os = null;
         Connection conn = null;
-
+        
         try {
 
             String id = req.getParameter("obj_id");
@@ -67,23 +65,27 @@ public class XlsServlet extends HttpServlet {
             }
 
             xls.create(id);
+            res.setContentType("application/vnd.ms-excel");
             StringBuffer buf = new StringBuffer("attachment; filename=\"").append(xls.getName()).append("\"");
             res.setHeader("Content-Disposition", buf.toString());
-
             xls.write();
             os.flush();
             os.close();
         } catch (Exception e) {
             e.printStackTrace(System.out);
+            res.setContentType(null);    
+            res.sendError(500, e.getMessage());
+            //this exception is not caught by DDexceptinHandler hence this class is plain HttpServlet not a subclass of Stripes framework
+            //when content type is not set and error is sent, then browser is redirected to application server's error page
             throw new ServletException(e.getMessage());
         } finally {
             try {
                 if (os != null) {
-                    os.close();
+                    os.close();                    
                 }
                 if (conn != null) {
                     conn.close();
-                }
+                }      
             } catch (Exception ee) {
             }
         }

@@ -154,6 +154,7 @@ public class Props implements PropsIF {
         defaults.put(XFORM_TEMPLATE_URL, "http://cdr-ewn.eionet.europa.eu/webq/GetXFormTemplate");
         defaults.put(INSERV_ROD_RA_URLPATTERN, "http://rod.eionet.europa.eu/obligations/<RA_ID>");
         defaults.put(XLS_SCHEMA_URL_SHEET, "DO_NOT_DELETE_THIS_SHEET");
+        defaults.put(XLS_DROPDOWN_FXV_SHEET, "REFERENCES_FOR_DROPDOWN_ITEMS_DO_NOT_DELETE");
         defaults.put(DD_RDF_SCHEMA_URL, "http://dd.eionet.europa.eu/schema.rdf#");
         defaults.put(PREDICATE_RDF_TYPE, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
         defaults.put(PREDICATE_RDF_LABEL, "http://www.w3.org/2000/01/rdf-schema#label");

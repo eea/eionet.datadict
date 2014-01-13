@@ -2675,7 +2675,7 @@ public class DDSearchEngine {
      * @throws SQLException
      *             if database query fails
      */
-    public Vector getDatasetTables(String dstID, boolean isOrderByPositions) throws SQLException {
+    public Vector<DsTable> getDatasetTables(String dstID, boolean isOrderByPositions) throws SQLException {
 
         INParameters inParams = new INParameters();
 
@@ -2697,7 +2697,7 @@ public class DDSearchEngine {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        Vector v = new Vector();
+        Vector<DsTable> v = new Vector<DsTable>();
 
         try {
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);

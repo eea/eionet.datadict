@@ -45,8 +45,9 @@ public abstract class Xls implements XlsIF {
 
         // first make sure we have the schema url
         String schemaUrl = Props.getProperty(PropsIF.XLS_SCHEMA_URL);
-        if (Util.isEmpty(schemaUrl))
+        if (Util.isEmpty(schemaUrl)) {
             throw new Exception("Missing " + PropsIF.XLS_SCHEMA_URL + " property!");
+        }
 
         // create the sheet
         sheet = wb.createSheet(Props.getProperty(PropsIF.XLS_SCHEMA_URL_SHEET));
@@ -76,15 +77,17 @@ public abstract class Xls implements XlsIF {
     /*
      * creates the extra sheet where XML Schema urls of tables are written to, relevant on DST level only
      */
-    protected void setSchemaUrls(String dstID, Vector tables) throws Exception {
+    protected void setSchemaUrls(String dstID, Vector<DsTable>tables) throws Exception {
 
-        if (tables == null || tables.size() == 0)
+        if (tables == null || tables.size() == 0) {
             return;
+        }
 
         // first make sure we have the schema url base
         String schemaUrlBase = Props.getProperty(PropsIF.XLS_SCHEMA_URL);
-        if (Util.isEmpty(schemaUrlBase))
+        if (Util.isEmpty(schemaUrlBase)) {
             throw new Exception("Missing " + PropsIF.XLS_SCHEMA_URL + " property!");
+        }
 
         // create the sheet
         sheet = wb.createSheet(Props.getProperty(PropsIF.XLS_SCHEMA_URL_SHEET));
@@ -123,7 +126,7 @@ public abstract class Xls implements XlsIF {
         // rows from loop
         int rowIndex = 5;
         for (int i = 0; i < tables.size(); i++) {
-            DsTable tbl = (DsTable) tables.get(i);
+            DsTable tbl = tables.get(i);
             String id = tbl.getID();
             String idfier = tbl.getIdentifier();
 
