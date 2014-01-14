@@ -52,7 +52,7 @@ public class TblXlsTest extends DDDatabaseTestCase {
         sheetNames = new String[] {"NiD_SW_EutroMeas"};
         dataSheetValues = new String[][] {{"ND_TrophicState", "ND_AvgValue", "ND_TrendWintValue"}};
         fxvIdentifier = new String[] {"ND_TrophicState"};
-        fxvSheetValues = new String[][] {{"Eutrophic", "Hypertrophic", "Mesotrophic", "Oligotrophic", "Ultra-oligotrophic"}};
+        fxvSheetValues = new String[][] {{"Ultra-oligotrophic", "Oligotrophic", "Mesotrophic", "Eutrophic", "Hypertrophic"}};
         classInstanceUnderTest = new TblXls(searchEngine, baos);
         objId = "7";
     }
@@ -104,7 +104,7 @@ public class TblXlsTest extends DDDatabaseTestCase {
                 temp = new ArrayList<String>(Arrays.asList(dataSheetValues[i]));
                 for (int j = 0; j < dataSheetValues[i].length; j++) {
                     HSSFCell dataCell = dataRow.getCell(j);
-                    String cellValue = dataCell.toString();
+                    String cellValue = dataCell.toString().trim();
                     Assert.assertTrue("Cell with value '" + cellValue + "' cannot be found!", temp.remove(cellValue));
                 }
                 Assert.assertTrue("Some cells did not matched: " + temp.toString(), temp.size() == 0);
@@ -129,11 +129,14 @@ public class TblXlsTest extends DDDatabaseTestCase {
                 }
                 Assert.assertTrue("Identifier can not be found", found);
 
+                ArrayList<String> temp2 = new ArrayList<String>(Arrays.asList(fxvSheetValues[rowIndex]));
                 fxvRow = fxvSheet.getRow(rowIndex + 1); // first row is info, so start +1
                 for (int j = 0; j < fxvSheetValues[rowIndex].length; j++) {
                     fxvCell = fxvRow.getCell(j + 1);// first column is label, so start +1
-                    Assert.assertEquals("Incorrect cell value", fxvSheetValues[rowIndex][j], fxvCell.toString());
+                    String fixedCellValue = fxvCell.toString().trim();
+                    Assert.assertTrue("Fixed cell value '" + fixedCellValue + "' cannot be found!", temp2.remove(fixedCellValue));                    
                 }
+                Assert.assertTrue("Some fxvs did not matched: " + temp2.toString(), temp2.size() == 0);
             }
             Assert.assertTrue("Some fxvs did not matched: " + temp.toString(), temp.size() == 0);
 

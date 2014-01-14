@@ -11,12 +11,12 @@ public class DstXlsTest extends TblXlsTest {
 
     @Override
     protected void initVars() {
-        sheetNames = new String[] {"NiD_SW_EutroMeas", "NiD_SW_Conc"};
+        sheetNames = new String[] {"NiD_SW_Conc", "NiD_SW_EutroMeas"};
         dataSheetValues =
-                new String[][] { {"ND_TrophicState", "ND_AvgValue", "ND_TrendWintValue"}, {"ND_AvgWintValue", "ND_TrendAnnValue"}};
+                new String[][] { {"ND_AvgWintValue", "ND_TrendAnnValue"}, {"ND_TrophicState", "ND_AvgValue", "ND_TrendWintValue"}};
         fxvSheetValues =
-                new String[][] { {"Eutrophic", "Hypertrophic", "Mesotrophic", "Oligotrophic", "Ultra-oligotrophic"}, {"5", "6"}};
-        fxvIdentifier = new String[] {"ND_TrophicState", "ND_TrendAnnValue"};
+                new String[][] { {"5", "6"}, {"Ultra-oligotrophic", "Oligotrophic", "Mesotrophic", "Eutrophic", "Hypertrophic"}};
+        fxvIdentifier = new String[] {"ND_TrendAnnValue", "ND_TrophicState"};
         classInstanceUnderTest = new DstXls(searchEngine, baos);
         objId = "4";
     }
