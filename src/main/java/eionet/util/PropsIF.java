@@ -60,6 +60,7 @@ public interface PropsIF {
 
     public static final String XLS_SCHEMA_URL = "xls.schema-url";
     public static final String XLS_SCHEMA_URL_SHEET = "xls.schema-url-sheet";
+    public static final String XLS_DROPDOWN_FXV_SHEET = "xls.schema-dropdown-fxv-sheet";
 
     public static final String INSERV_PREFIX = "inserv.";
     public static final String INSERV_NAME = ".name";

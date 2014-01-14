@@ -228,11 +228,9 @@ public class DatasetMSAccessFile {
                     elmDefinitionsTable.addRow(elmDefinitionsTable.asRow(elmDefinitionRow(elm, tbl, elmIndex + 1)));
 
                     // write code lists rows for this DD element
-                    Vector fixedValues = getSearchEngine().getFixedValues(elm.getID());
+                    Vector<FixedValue> fixedValues = getSearchEngine().getFixedValues(elm.getID());
                     if (fixedValues != null && !fixedValues.isEmpty()) {
-                        for (Object o : fixedValues) {
-
-                            FixedValue fixedValue = (FixedValue) o;
+                        for (FixedValue fixedValue : fixedValues) {
                             if (!fixedValue.isEmpty()) {
 
                                 codeListsTable.addRow(codeListsTable.asRow(codeListsRow(tbl, elm, fixedValue)));

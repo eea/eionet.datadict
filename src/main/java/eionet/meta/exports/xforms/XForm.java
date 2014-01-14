@@ -213,17 +213,17 @@ public abstract class XForm implements XFormIF {
             }
 
             // write items if select
-            writeSelectItems((Vector) control.get(CTRL_FXVS), lead + "\t");
+            writeSelectItems((Vector<FixedValue>) control.get(CTRL_FXVS), lead + "\t");
 
             // end control
             writer.println(lead + "</f:" + type + ">");
         }
     }
 
-    private void writeSelectItems(Vector fxvs, String lead) throws Exception {
+    private void writeSelectItems(Vector<FixedValue> fxvs, String lead) throws Exception {
 
         for (int i = 0; fxvs != null && i < fxvs.size(); i++) {
-            writeSelectItem((FixedValue) fxvs.get(i), lead);
+            writeSelectItem(fxvs.get(i), lead);
         }
     }
 

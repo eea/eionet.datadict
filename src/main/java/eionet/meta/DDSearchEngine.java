@@ -42,9 +42,9 @@ import eionet.util.sql.SQL;
 
 /**
  * Search engine.
- *
+ * 
  * @author Jaanus Heinlaid
- *
+ * 
  */
 public class DDSearchEngine {
 
@@ -68,7 +68,7 @@ public class DDSearchEngine {
     private ApplicationContext springContext;
 
     /**
-     *
+     * 
      * @param conn
      */
     public DDSearchEngine(Connection conn) {
@@ -112,7 +112,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param datasetID
      * @return all dataset elements
      * @throws SQLException
@@ -250,30 +250,30 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @throws SQLException
      *             if database query fails
      */
-    public Vector getDataElements() throws SQLException {
+    public Vector<DataElement> getDataElements() throws SQLException {
         return getDataElements(null, null, null, null);
     }
 
     /**
-     *
+     * 
      * @throws SQLException
      *             if database query fails
      */
-    public Vector getDataElements(Vector params, String type, String datasetIdf, String shortName) throws SQLException {
+    public Vector<DataElement> getDataElements(Vector params, String type, String datasetIdf, String shortName) throws SQLException {
         return getDataElements(params, type, datasetIdf, shortName, null);
     }
 
     /**
      * Get data elements by table id. 5 inputs.
-     *
+     * 
      * @throws SQLException
      *             if database query fails
-     */
-    public Vector getDataElements(Vector unUsed1, String unUsed2, String unUsed3, String unUsed4, String tableID)
+     */    
+    public Vector<DataElement> getDataElements(Vector unUsed1, String unUsed2, String unUsed3, String unUsed4, String tableID)
             throws SQLException {
 
         // make sure we have the tableID
@@ -313,12 +313,10 @@ public class DDSearchEngine {
         attrsStmt = conn.prepareStatement(attrsQry.toString());
 
         // finally execute the monster query
-        Vector result = new Vector();
+        Vector<DataElement> result = new Vector<DataElement>();
         PreparedStatement elemsStmt = null;
         ResultSet elemsRs = null;
-
-        int counter = 0;
-
+        
         try {
             elemsStmt = SQL.preparedStatement(monsterQry.toString(), inPrms, conn);
             elemsRs = elemsStmt.executeQuery();
@@ -326,9 +324,6 @@ public class DDSearchEngine {
             // process ResultSet
             String curElmIdf = null;
             while (elemsRs.next()) {
-
-                counter++;
-
                 String elmIdf = elemsRs.getString("DATAELEM.IDENTIFIER");
                 if (elmIdf == null) {
                     continue;
@@ -411,7 +406,7 @@ public class DDSearchEngine {
 
     /**
      * Get data elements by table id and dataset id 6 inputs.
-     *
+     * 
      * @throws SQLException
      *             if database query fails
      */
@@ -424,7 +419,7 @@ public class DDSearchEngine {
 
     /**
      * Get data elements with control over working copies 7 inputs.
-     *
+     * 
      * @throws SQLException
      *             if database query fails
      */
@@ -436,7 +431,7 @@ public class DDSearchEngine {
 
     /**
      * Get data elements, control over working copies & params oper 8 inputs.
-     *
+     * 
      * @throws SQLException
      *             if database query fails
      */
@@ -447,7 +442,7 @@ public class DDSearchEngine {
 
     /**
      * Get data elements, control over working copies & params oper 9 inputs.
-     *
+     * 
      * @throws SQLException
      *             if database query fails
      */
@@ -459,7 +454,7 @@ public class DDSearchEngine {
 
     /**
      * Get data elements, control over working copies, historic versions & params oper 10 inputs.
-     *
+     * 
      * @throws SQLException
      *             if database query fails
      */
@@ -761,7 +756,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param params
      * @param type
      * @param shortName
@@ -778,7 +773,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param params
      * @param type
      * @param shortName
@@ -797,7 +792,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param params
      * @param type
      * @param shortName
@@ -838,7 +833,7 @@ public class DDSearchEngine {
                 constraints.append(" and ");
             }
 
-            List<String>regStatuses = buildListFromCsv(regStatus);
+            List<String> regStatuses = buildListFromCsv(regStatus);
 
             constraints.append("DATAELEM.REG_STATUS IN(").append(inParams.addArray(regStatuses)).append(")");
         }
@@ -1063,7 +1058,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param elmIdf
      * @param tblIdf
      * @param dstIdf
@@ -1139,7 +1134,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param elmIdf
      * @param tblIdf
      * @param dstIdf
@@ -1155,7 +1150,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param identifier
      * @param datasetIdentifier
      * @param statuses
@@ -1170,7 +1165,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param identifier
      * @param datasetIdentifier
      * @param statuses
@@ -1222,7 +1217,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param idf
      * @param statuses
      * @return
@@ -1273,7 +1268,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param idf
      * @param statuses
      * @return
@@ -1286,7 +1281,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param idf
      * @return
      * @throws SQLException
@@ -1311,7 +1306,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param elmID
      * @param tblID
      * @param inheritAttrs
@@ -1522,28 +1517,28 @@ public class DDSearchEngine {
         return v;
     }
 
-    public Vector getFixedValues(String delem_id) throws SQLException {
-        return getFixedValues(delem_id, "elem");
+    public Vector<FixedValue> getFixedValues(String delemId) throws SQLException {
+        return getFixedValues(delemId, "elem");
     }
 
     /**
-     *
-     * @param delem_id
-     * @param parent_type
+     * 
+     * @param delemId
+     * @param parentType
      * @return
      * @throws SQLException
      *             if database query fails
      */
-    public Vector getFixedValues(String delem_id, String parent_type) throws SQLException {
+    public Vector<FixedValue> getFixedValues(String delemId, String parentType) throws SQLException {
 
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer();
-        buf.append("select * from FXV where OWNER_ID=").append(inParams.add(delem_id, Types.INTEGER)).append(" and OWNER_TYPE=")
-                .append(inParams.add(parent_type)).append(" order by VALUE asc");
+        buf.append("select * from FXV where OWNER_ID=").append(inParams.add(delemId, Types.INTEGER)).append(" and OWNER_TYPE=")
+                .append(inParams.add(parentType)).append(" order by VALUE asc");
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        Vector v = new Vector();
+        Vector<FixedValue> v = new Vector<FixedValue>();
 
         try {
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
@@ -1579,7 +1574,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrId
      * @return
      * @throws SQLException
@@ -1590,7 +1585,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrId
      * @param priority
      * @return
@@ -1649,7 +1644,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param field_id
      * @return
      * @throws SQLException
@@ -1700,7 +1695,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrId
      * @param parentId
      * @param parent_type
@@ -1713,7 +1708,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param parentId
      * @param parent_type
      * @return
@@ -1725,7 +1720,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param parentId
      * @param parent_type
      * @param attrId
@@ -1738,7 +1733,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param parentId
      * @param parent_type
      * @param attr_id
@@ -1925,7 +1920,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attr
      * @param rowHash
      */
@@ -1962,7 +1957,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attr_id
      * @return
      * @throws SQLException
@@ -2060,7 +2055,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attr_id
      * @return
      * @throws SQLException
@@ -2114,7 +2109,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @return
      * @throws SQLException
      *             if database query fails
@@ -2124,7 +2119,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param id
      * @return
      * @throws SQLException
@@ -2139,7 +2134,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param id
      * @return
      * @throws SQLException
@@ -2203,7 +2198,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param datasetID
      * @return
      * @throws SQLException
@@ -2219,7 +2214,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param datasetID
      * @return
      * @throws SQLException
@@ -2236,7 +2231,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @return
      * @throws SQLException
      *             if database query fails
@@ -2246,7 +2241,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param wrkCopies
      * @return
      * @throws SQLException
@@ -2257,7 +2252,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @return
      * @throws SQLException
      *             if database query fails
@@ -2270,7 +2265,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param datasetID
      * @param wrkCopies
      * @param deleted
@@ -2372,7 +2367,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param params
      * @param shortName
      * @param version
@@ -2385,7 +2380,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param params
      * @param shortName
      * @param version
@@ -2399,7 +2394,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param params
      * @param shortName
      * @param version
@@ -2415,7 +2410,7 @@ public class DDSearchEngine {
 
     /**
      * get datasets by params, control oper & working copies.
-     *
+     * 
      * @throws SQLException
      *             if database query fails
      */
@@ -2427,7 +2422,7 @@ public class DDSearchEngine {
 
     /**
      * get datasets by params, control oper & working copies.
-     *
+     * 
      * @throws SQLException
      *             if database query fails
      */
@@ -2438,7 +2433,7 @@ public class DDSearchEngine {
 
     /**
      * Get datasets by params, control oper, working copies & historic versions.
-     *
+     * 
      * @throws SQLException
      *             if database query fails
      */
@@ -2655,7 +2650,7 @@ public class DDSearchEngine {
 
     /**
      * Returns true if this.user should not see definition in the given status.
-     *
+     * 
      * @param regStatus
      * @return
      */
@@ -2673,14 +2668,14 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param dstID
      * @param isOrderByPositions
      * @return
      * @throws SQLException
      *             if database query fails
      */
-    public Vector getDatasetTables(String dstID, boolean isOrderByPositions) throws SQLException {
+    public Vector<DsTable> getDatasetTables(String dstID, boolean isOrderByPositions) throws SQLException {
 
         INParameters inParams = new INParameters();
 
@@ -2702,7 +2697,7 @@ public class DDSearchEngine {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        Vector v = new Vector();
+        Vector<DsTable> v = new Vector<DsTable>();
 
         try {
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
@@ -2747,7 +2742,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param params
      * @param shortName
      * @param fullName
@@ -2761,7 +2756,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param params
      * @param shortName
      * @param fullName
@@ -2778,7 +2773,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param params
      * @param shortName
      * @param idfier
@@ -2797,7 +2792,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param params
      * @param shortName
      * @param idfier
@@ -3037,7 +3032,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param tableID
      * @return
      * @throws SQLException
@@ -3048,7 +3043,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param tableID
      * @param dstID
      * @return
@@ -3119,7 +3114,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param parentID
      * @param parentType
      * @param attrType
@@ -3132,7 +3127,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param parentID
      * @param parentType
      * @param attrType
@@ -3152,7 +3147,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param parentID
      * @param parentType
      * @return
@@ -3164,7 +3159,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param parentID
      * @param parentType
      * @param inheritTblID
@@ -3273,15 +3268,15 @@ public class DDSearchEngine {
     }
 
     /**
-     *
-     * @param fxv_id
+     * 
+     * @param fxvId
      * @return
      * @throws SQLException
      *             if database query fails
      */
-    public FixedValue getFixedValue(String fxv_id) throws SQLException {
+    public FixedValue getFixedValue(String fxvId) throws SQLException {
 
-        if (fxv_id == null || fxv_id.length() == 0) {
+        if (fxvId == null || fxvId.length() == 0) {
             FixedValue fxv = new FixedValue();
             Vector attributes = getDElemAttributes();
             for (int i = 0; i < attributes.size(); i++) {
@@ -3291,7 +3286,7 @@ public class DDSearchEngine {
         }
 
         INParameters inParams = new INParameters();
-        String qry = "select * from FXV where FXV_ID=" + inParams.add(fxv_id, Types.INTEGER);
+        String qry = "select * from FXV where FXV_ID=" + inParams.add(fxvId, Types.INTEGER);
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -3329,7 +3324,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param v
      * @param id
      * @return
@@ -3355,7 +3350,7 @@ public class DDSearchEngine {
 
     /**
      * Get the last insert ID from database.
-     *
+     * 
      * @return
      * @throws SQLException
      *             if database query fails
@@ -3377,7 +3372,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @return
      * @throws SQLException
      *             if database query fails
@@ -3395,7 +3390,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param idfier
      * @param ofID
      * @return
@@ -3415,7 +3410,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param id
      * @param type
      * @return
@@ -3469,7 +3464,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @return
      */
     public boolean hasUserWorkingCopies() {
@@ -3538,7 +3533,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrID
      *            - attribute ID
      * @param attrType
@@ -3584,9 +3579,9 @@ public class DDSearchEngine {
 
     /**
      * Return true if the given common element has newer Released version. Otherwise returns false.
-     *
+     * 
      * Note that this method does not check whether the given element is really a common one, so it's on caller's responsibility!
-     *
+     * 
      * @param elm
      * @return
      * @throws SQLException
@@ -3625,7 +3620,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param elmIdentifier
      * @param elmId
      * @return
@@ -3653,7 +3648,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param relID
      * @return
      * @throws SQLException
@@ -3717,7 +3712,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param elmID
      * @return
      * @throws SQLException
@@ -3728,7 +3723,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param elmID
      * @return
      * @throws SQLException
@@ -3831,7 +3826,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @return
      * @throws SQLException
      *             if database query fails
@@ -3865,7 +3860,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrID
      *            - attribute ID
      * @return
@@ -3877,7 +3872,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrID
      *            - attribute ID
      * @param all
@@ -3890,7 +3885,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrID
      *            - attribute ID
      * @param all
@@ -3993,7 +3988,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrID
      *            - attribute ID
      * @param parentID
@@ -4038,7 +4033,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrID
      *            - attribute ID
      * @throws SQLException
@@ -4160,7 +4155,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrID
      *            - attribute ID
      * @return
@@ -4182,7 +4177,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param ownerID
      * @return
      * @throws SQLException
@@ -4193,7 +4188,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param ownerID
      * @param ownerType
      * @return
@@ -4239,7 +4234,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param shortName
      * @param attrType
      * @return
@@ -4260,7 +4255,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrID
      *            - attribute ID
      * @param attrType
@@ -4282,7 +4277,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrID
      *            - attribute ID
      * @return
@@ -4292,7 +4287,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param shortName
      * @return
      */
@@ -4301,7 +4296,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param field
      * @param value
      * @return
@@ -4343,7 +4338,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrID
      *            - attribute ID
      * @return
@@ -4353,7 +4348,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param shortName
      * @return
      */
@@ -4362,7 +4357,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param field
      * @param value
      * @return
@@ -4403,7 +4398,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param objID
      * @param objType
      * @param article
@@ -4446,7 +4441,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param objID
      * @param objType
      * @return
@@ -4500,7 +4495,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param dstID
      * @return
      * @throws Exception
@@ -4560,7 +4555,7 @@ public class DDSearchEngine {
 
     /**
      * This one returns the IDs and titles of all ogligations that have a released dataset definition present in DD.
-     *
+     * 
      * @return
      * @throws Exception
      */
@@ -4636,7 +4631,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param attrShortName
      * @param parentID
      * @param parentType
@@ -4691,7 +4686,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param elmID
      * @return
      * @throws SQLException
@@ -4823,7 +4818,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param dstID
      * @return
      * @throws SQLException
@@ -4859,7 +4854,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param namespaceId
      * @return
      * @throws SQLException
@@ -4884,7 +4879,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param tableNamespaceID
      * @return
      * @throws SQLException
@@ -4922,7 +4917,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param elmID
      * @return
      * @throws SQLException
@@ -4958,7 +4953,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @return
      * @throws DAOException
      */
@@ -4980,7 +4975,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param searchEngine
      */
     public static void close(DDSearchEngine searchEngine) {
@@ -4990,7 +4985,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @param objectId
      * @param objectType
      * @param attributeType
@@ -5033,7 +5028,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -5048,7 +5043,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -5063,7 +5058,7 @@ public class DDSearchEngine {
     }
 
     /**
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -5130,7 +5125,7 @@ public class DDSearchEngine {
 
         /*
          * (non-Javadoc)
-         *
+         * 
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
         @Override
@@ -5146,6 +5141,7 @@ public class DDSearchEngine {
 
     /**
      * Spring context can be used in classes following the old design pattern: handlers etc.
+     * 
      * @return spring context object
      */
     public ApplicationContext getSpringContext() {

@@ -1,57 +1,40 @@
 package eionet.meta.exports.xls;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
-import junit.framework.TestCase;
-import eionet.util.sql.ConnectionUtil;
-
 /**
- *
- * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
- *
+ * 
+ * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus@tripledev.ee">jaanus@tripledev.ee</a>
+ * 
  */
-public class DstXlsTest extends TestCase{
+public class DstXlsTest extends TblXlsTest {
 
-
-    /** */
-    private Connection conn = null;
-
-    /*
-     *  (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-        conn = ConnectionUtil.getConnection();
+    @Override
+    protected void initVars() {
+        sheetNames = new String[] {"NiD_SW_Conc", "NiD_SW_EutroMeas"};
+        dataSheetValues =
+                new String[][] { {"ND_AvgWintValue", "ND_TrendAnnValue"}, {"ND_TrophicState", "ND_AvgValue", "ND_TrendWintValue"}};
+        fxvSheetValues =
+                new String[][] { {"5", "6"}, {"Ultra-oligotrophic", "Oligotrophic", "Mesotrophic", "Eutrophic", "Hypertrophic"}};
+        fxvIdentifier = new String[] {"ND_TrendAnnValue", "ND_TrophicState"};
+        classInstanceUnderTest = new DstXls(searchEngine, baos);
+        objId = "4";
     }
 
     /**
      * @throws SQLException
      */
+    @Override
     public void testStoreAndDelete() {
-        try{
+        try {
             String fileName = "test.txt";
             int i = DstXls.storeCacheEntry("999999", fileName, conn);
-            assertTrue(i>0);
+            assertTrue(i > 0);
             String s = DstXls.deleteCacheEntry("999999", conn);
             assertEquals(fileName, s);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail("Was not expecting any exceptions, but catched " + e.toString());
         }
     }
 
-    /*
-     *  (non-Javadoc)
-     * @see junit.framework.TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        try {
-            if (conn!=null) {
-                conn.close();
-            }
-        } catch (SQLException e) {}
-    }
 }

@@ -64,6 +64,7 @@ public class CodelistXML extends Codelist {
      *
      * @see eionet.meta.exports.codelist.Codelist#write(java.lang.String, java.lang.String)
      */
+    @Override
     public void write(String objID, String objType) throws Exception {
 
         Vector elms = new Vector();
@@ -169,11 +170,11 @@ public class CodelistXML extends Codelist {
             elmLines.add(line);
 
             int valuesAdded = 0;
-            Vector fxvs = searchEngine.getFixedValues(elm.getID());
+            Vector<FixedValue> fxvs = searchEngine.getFixedValues(elm.getID());
 
             for (int j = 0; fxvs != null && j < fxvs.size(); j++) {
 
-                FixedValue fxv = (FixedValue) fxvs.get(j);
+                FixedValue fxv = fxvs.get(j);
                 String value = fxv.getValue();
 
                 if (value != null && value.trim().length() > 0) {
@@ -247,10 +248,12 @@ public class CodelistXML extends Codelist {
         namespaces.add(ns);
 
         String jspURLPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-        if (jspURLPrefix == null || jspURLPrefix.length() == 0)
+        if (jspURLPrefix == null || jspURLPrefix.length() == 0) {
             throw new Exception("Missing " + PropsIF.JSP_URL_PREFIX + " property!");
-        if (jspURLPrefix.endsWith("/"))
+        }
+        if (jspURLPrefix.endsWith("/")) {
             jspURLPrefix = jspURLPrefix.substring(0, jspURLPrefix.length() - 1);
+        }
 
         ns = new Hashtable();
         ns.put(KEY_NS_ID, "dd");

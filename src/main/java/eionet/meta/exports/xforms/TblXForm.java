@@ -7,6 +7,7 @@ import java.util.Vector;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
 import eionet.meta.DsTable;
+import eionet.meta.FixedValue;
 import eionet.meta.Namespace;
 import eionet.util.Util;
 
@@ -26,13 +27,15 @@ public class TblXForm extends XForm {
     @Override
     public void write(String tblID) throws Exception {
 
-        if (Util.isEmpty(tblID))
+        if (Util.isEmpty(tblID)) {
             throw new Exception("Table ID not specified!");
+        }
 
         // Get the table object.
         DsTable tbl = searchEngine.getDatasetTable(tblID);
-        if (tbl == null)
+        if (tbl == null) {
             throw new Exception("Table not found!");
+        }
 
         // get simple attributes
         Vector v = searchEngine.getSimpleAttributes(tblID, "T", null, tbl.getDatasetID());
@@ -46,14 +49,16 @@ public class TblXForm extends XForm {
         String nsID = tbl.getParentNs();
         if (!Util.isEmpty(nsID)) {
             ns = searchEngine.getNamespace(nsID);
-            if (ns != null)
+            if (ns != null) {
                 dstNs = ns.getPrefix() + ":";
+            }
         }
         nsID = tbl.getNamespace();
         if (!Util.isEmpty(nsID)) {
             ns = searchEngine.getNamespace(nsID);
-            if (ns != null)
+            if (ns != null) {
                 tblNs = ns.getPrefix() + ":";
+            }
         }
 
         //
@@ -94,8 +99,9 @@ public class TblXForm extends XForm {
             DataElement elm = (DataElement) elements.get(i);
             bindID = elm.getIdentifier();
             String bindType = elm.getAttributeValueByShortName("Datatype");
-            if (bindType == null)
+            if (bindType == null) {
                 bindType = DEFAULT_DATATYPE;
+            }
 
             if (elm.isExternalSchema()) {
                 nodeset = elm.getIdentifier();
@@ -161,18 +167,21 @@ public class TblXForm extends XForm {
             String ctrlID = "ctrl_" + elm.getID();
             String ctrlLabel = elm.getAttributeValueByShortName("Name");
             if (ctrlLabel == null)
+             {
                 ctrlLabel = elm.getShortName(); // Short name is OK to use for label!
+            }
             String bind = elm.getIdentifier();
             String ctrlType = DEFAULT_CTRLTYPE;
             String ctrlHint = elm.getAttributeValueByShortName("Definition");
             String ctrlAlert = extractControlAlert(elm);
 
-            Vector fxvs = null;
+            Vector<FixedValue> fxvs = null;
             String elmType = elm.getType();
             if (elmType != null && elmType.equals("CH1")) {
                 fxvs = searchEngine.getFixedValues(elm.getID());
-                if (fxvs != null && fxvs.size() > 0)
+                if (fxvs != null && fxvs.size() > 0) {
                     ctrlType = "select1";
+                }
             }
 
             Hashtable control = new Hashtable();
@@ -180,12 +189,15 @@ public class TblXForm extends XForm {
             control.put(ATTR_BIND, bind);
             control.put(CTRL_LABEL, ctrlLabel);
             control.put(CTRL_TYPE, ctrlType);
-            if (ctrlAlert != null)
+            if (ctrlAlert != null) {
                 control.put(CTRL_ALERT, ctrlAlert);
-            if (ctrlHint != null)
+            }
+            if (ctrlHint != null) {
                 control.put(CTRL_HINT, ctrlHint);
-            if (fxvs != null)
+            }
+            if (fxvs != null) {
                 control.put(CTRL_FXVS, fxvs);
+            }
             addControl(control);
         }
     }
@@ -199,10 +211,12 @@ public class TblXForm extends XForm {
         String id = (String) tblBind.get(ATTR_ID);
         String nodeset = (String) tblBind.get(ATTR_NODESET);
         StringBuffer buf = new StringBuffer("<f:bind");
-        if (id != null)
+        if (id != null) {
             buf.append(" id=\"").append(id).append("\"");
-        if (nodeset != null)
+        }
+        if (nodeset != null) {
             buf.append(" nodeset=\"").append(nodeset).append("\"");
+        }
         buf.append(">");
 
         writer.println(lead + buf.toString());
@@ -218,8 +232,9 @@ public class TblXForm extends XForm {
     protected void writeRepeat(String line) throws Exception {
         line = setAttr(line, "id", REPEAT_ID);
         String tblBindID = (String) tblBind.get(ATTR_ID);
-        if (tblBindID != null)
+        if (tblBindID != null) {
             line = setAttr(line, "bind", tblBindID);
+        }
 
         writer.println(line);
     }
@@ -231,8 +246,9 @@ public class TblXForm extends XForm {
         if (tblBindNodeset != null) {
             line = setAttr(line, "at", "count(" + tblBindNodeset + ")");
             line = setAttr(line, "nodeset", tblBindNodeset);
-        } else
+        } else {
             line = setAttr(line, "at", "index('" + REPEAT_ID + "')");
+        }
 
         writer.println(line);
         writeInsertValues(tblBindNodeset, extractLead(line));
@@ -243,18 +259,21 @@ public class TblXForm extends XForm {
 
         line = setAttr(line, "at", "index('" + REPEAT_ID + "')");
         String tblBindNodeset = (String) tblBind.get(ATTR_NODESET);
-        if (tblBindNodeset != null)
+        if (tblBindNodeset != null) {
             line = setAttr(line, "nodeset", tblBindNodeset);
+        }
 
         writer.println(line);
     }
 
     protected void writeInsertValues(String tblBindNodeset, String lead) throws Exception {
 
-        if (tblBindNodeset == null || elements == null)
+        if (tblBindNodeset == null || elements == null) {
             return;
-        if (lead == null)
+        }
+        if (lead == null) {
             lead = "";
+        }
 
         for (int i = 0; i < elements.size(); i++) {
             DataElement elm = (DataElement) elements.get(i);
@@ -271,13 +290,15 @@ public class TblXForm extends XForm {
 
     protected String extractControlAlert(DataElement elm) {
 
-        if (elm == null || !elm.getType().equalsIgnoreCase("CH2"))
+        if (elm == null || !elm.getType().equalsIgnoreCase("CH2")) {
             return null;
+        }
 
         StringBuffer buf = new StringBuffer("Datatype=");
         String datatype = elm.getAttributeValueByShortName("Datatype");
-        if (datatype == null)
+        if (datatype == null) {
             datatype = DEFAULT_DATATYPE;
+        }
         buf.append(datatype);
 
         String[] attrs = { "MinSize", "MaxSize", "MinInclusiveValue", "MaxInclusiveValue", "MinExclusiveValue", "MaxExclusiveValue" };
@@ -293,8 +314,9 @@ public class TblXForm extends XForm {
 
             String value = elm.getAttributeValueByShortName(attrs[i]);
             if (value != null && value.trim().length() > 0) {
-                if (buf.length() > 0)
+                if (buf.length() > 0) {
                     buf.append(";");
+                }
                 buf.append(attrs[i]).append("=").append(value);
             }
         }
