@@ -85,6 +85,8 @@ public class DstXls extends TblXls {
         }
     }
 
+    
+
     /**
      * 
      * @param tbl
@@ -95,6 +97,15 @@ public class DstXls extends TblXls {
         row = sheet.createRow(0);
         addElements(tbl);
         sheet.createFreezePane(0, 1);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see eionet.meta.exports.xls.TblXls#setSchemaUrl()
+     */
+    @Override
+    protected void setSchemaUrl() throws Exception {
+        setSchemaUrls(this.xlsId, tables);
     }
 
     /*

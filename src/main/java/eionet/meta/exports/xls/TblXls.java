@@ -50,6 +50,8 @@ public class TblXls extends Xls implements CachableIF {
     private HSSFSheet dropDownReferencesHiddenSheet = null;
     /** Hidden sheet row index. */
     private int dropDownReferencesHiddenSheetNewIndex = 0;
+    /** ID for this Xls (it can be table id or dataset id) */
+    protected String xlsId = null;
 
     /**
      * Class constructor.
@@ -90,27 +92,28 @@ public class TblXls extends Xls implements CachableIF {
      * @see eionet.meta.exports.xls.XlsIF#create(java.lang.String)
      */
     @Override
-    public void create(String tblID) throws Exception {
-        create(tblID, false);
+    public void create(String xlsId) throws Exception {
+        create(xlsId, false);
     }
 
     /**
      * 
-     * @param tblID
+     * @param xlsId
      * @param caching
      * @throws Exception
      */
-    protected void create(String tblID, boolean caching) throws Exception {
+    protected void create(String xlsId, boolean caching) throws Exception {
         // don't create if its already in cache
-        if (!caching && isCached(tblID)) {
+        if (!caching && isCached(xlsId)) {
             fileName = cacheFileName;
             return;
         }
+        this.xlsId = xlsId;
 
         createHiddenSheetForDropdownMenuReferences();
-        generateContent(tblID);
-        setSchemaUrl("TBL" + tblID);
-    }
+        generateContent(xlsId);
+        setSchemaUrl();
+    }   
 
     /*
      * (non-Javadoc)
@@ -244,6 +247,14 @@ public class TblXls extends Xls implements CachableIF {
                 dropDownReferencesHiddenSheetNewIndex++;
             }
         }
+    }
+    
+    /**
+     * Set schema urls
+     * @throws Exception when an error occurs in super class method
+     */
+    protected void setSchemaUrl() throws Exception {
+        setSchemaUrl("TBL" + this.xlsId);
     }
 
     /**
