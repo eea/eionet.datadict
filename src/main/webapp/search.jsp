@@ -540,7 +540,7 @@ if (isDisplayOperations){
                     // get attributes selected from picked list (get the ids from url)
                     if (attr_ids!=null){
                         for (int i=0; i < attr_ids.size(); i++){
-                            attrID = (String)attr_ids.get(i);.
+                            attrID = (String)attr_ids.get(i);
 
                             if (!inputAttributes.containsKey(attrID)) continue;
                             if (sel_type.equals("remove") && attrID.equals(sel_attr)) continue;
