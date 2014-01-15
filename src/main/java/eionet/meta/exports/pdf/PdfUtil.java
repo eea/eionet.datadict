@@ -422,9 +422,9 @@ public class PdfUtil {
         table.addCell(cell);
 
         boolean wasFK = false;
-
+        
+        Font phraseFontForDataSpecs = Fonts.get(Fonts.CELL_VALUE);
         // add value rows
-
         for (int i = 0; i < tblElems.size(); i++) {
 
             DataElement elem = (DataElement) tblElems.get(i);
@@ -547,6 +547,7 @@ public class PdfUtil {
                 dataspecs.append(datatype);
             }
 
+            String localAddressToGo = null;
             if (elemType.equals("CH1")) {
                 Vector fxvs = elem.getFixedValues();
                 if (fxvs == null || fxvs.size() == 0) {
@@ -565,7 +566,7 @@ public class PdfUtil {
                     if (sect == null) {
                         dataspecs.append("below");
                     } else {
-                        dataspecs.append("section ").append(sect.getRefCodelists());
+                        localAddressToGo = PdfHandout.getLocalDestinationAddressFor(elem.getID());
                     }
                 }
             } else if (elemType.equals("CH2")) {
@@ -590,7 +591,13 @@ public class PdfUtil {
                 }
             }
 
-            cell = new PdfPCell(process(dataspecs.toString(), Fonts.get(Fonts.CELL_VALUE)));
+            
+            Phrase phrase = process(dataspecs.toString(), phraseFontForDataSpecs);
+            if (localAddressToGo != null) {
+                //dataspecs.append("section ").append(sect.getRefCodelists());
+                phrase.add(new Chunk("section " + sect.getRefCodelists(), phraseFontForDataSpecs).setLocalGoto(localAddressToGo));
+            }
+            cell = new PdfPCell(phrase);
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
 

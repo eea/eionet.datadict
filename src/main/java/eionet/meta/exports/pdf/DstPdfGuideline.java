@@ -300,7 +300,6 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         setFooter();
     }
 
-    // TODO here that i should check
     private void addCodelists(Vector<DsTable> tables) throws Exception {
         String localAddress = null;
         String nr = null;
@@ -386,8 +385,9 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 nr = sect.level(title, 4, false);
                 nr = nr == null ? "" : nr + " ";
 
+                localAddress = PdfHandout.getLocalDestinationAddressFor(elm.getID());
                 prg = new Paragraph();
-                prg.add(new Chunk(nr + elmName, Fonts.getUnicode(14, Font.BOLD)));
+                prg.add(new Chunk(nr + elmName, Fonts.getUnicode(14, Font.BOLD)).setLocalDestination(localAddress));
                 prg.add(new Chunk(" codelist", Fonts.getUnicode(14)));
 
                 addElement(prg);
@@ -431,8 +431,9 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 nr = sect.level(title, 3, false);
                 nr = nr == null ? "" : nr + " ";
 
+                localAddress = PdfHandout.getLocalDestinationAddressFor(elm.getID());
                 prg = new Paragraph();
-                prg.add(new Chunk(nr + elmName, Fonts.getUnicode(14, Font.BOLD)));
+                prg.add(new Chunk(nr + elmName, Fonts.getUnicode(14, Font.BOLD)).setLocalDestination(localAddress));
 
                 addElement(prg);
                 addElement(new Paragraph("\n"));
@@ -441,6 +442,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 title = "Codelist";
                 nr = sect.level(title, 4, false);
                 nr = nr == null ? "" : nr + " ";
+                
                 prg = new Paragraph();
                 prg.add(new Chunk(nr + title, Fonts.getUnicode(14)));
                 addElement(prg);
