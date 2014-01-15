@@ -36,41 +36,49 @@ public class GetPrintout extends HttpServlet {
 
     private static final String DEFAULT_HANDOUT_TYPE = PdfHandoutIF.GUIDELINE;
 
+    @Override
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         // get the servlet context
         ServletContext ctx = getServletContext();
 
         String userAgent = req.getHeader("User-Agent");
-        if (!Util.isEmpty(userAgent))
+        if (!Util.isEmpty(userAgent)) {
             ctx.log("User-Agent= " + userAgent);
+        }
 
         // get printout format
         String printoutFormat = req.getParameter("format");
-        if (Util.isEmpty(printoutFormat))
+        if (Util.isEmpty(printoutFormat)) {
             printoutFormat = "PDF";
+        }
 
-        if (!printoutFormat.equals("PDF") && !printoutFormat.equals("RTF"))
+        if (!printoutFormat.equals("PDF") && !printoutFormat.equals("RTF")) {
             throw new ServletException("Unknown format requested!");
+        }
 
         // currently RTF is not supported
-        if (printoutFormat.equals("RTF"))
+        if (printoutFormat.equals("RTF")) {
             throw new ServletException("RTF not supported right now!");
+        }
 
         // get object type
         String objType = req.getParameter("obj_type");
-        if (Util.isEmpty(objType))
+        if (Util.isEmpty(objType)) {
             throw new ServletException("Object type not specified!");
+        }
 
         // get handout type
         String outType = req.getParameter("out_type");
-        if (Util.isEmpty(outType))
+        if (Util.isEmpty(outType)) {
             outType = DEFAULT_HANDOUT_TYPE;
+        }
 
         // get object ID
         String objID = req.getParameter("obj_id");
-        if (Util.isEmpty(objID))
+        if (Util.isEmpty(objID)) {
             throw new ServletException("Object ID not specified!");
+        }
 
         // get the paths of images and cache
         String fileStorePath = Props.getRequiredProperty(PropsIF.FILESTORE_PATH);
@@ -84,25 +92,28 @@ public class GetPrintout extends HttpServlet {
             // set up the OutputStream to write to
             ByteArrayOutputStream barray = new ByteArrayOutputStream();
 
-            // construct the handout
+            // construct the handout //TODO search for FCTS
             PdfHandoutIF handout = null;
             if (outType.equals(PdfHandoutIF.FACTSHEET)) {
-                if (objType.equals(PdfHandoutIF.DATASET))
+                if (objType.equals(PdfHandoutIF.DATASET)) {
                     handout = new DstPdfAll(conn, barray);
-                else if (objType.equals(PdfHandoutIF.DSTABLE))
+                } else if (objType.equals(PdfHandoutIF.DSTABLE)) {
                     handout = new TblPdfFactsheet(conn, barray);
-                else if (objType.equals(PdfHandoutIF.DATAELEM))
+                } else if (objType.equals(PdfHandoutIF.DATAELEM)) {
                     handout = new ElmPdfFactsheet(conn, barray);
-                else
+                } else {
                     throw new Exception("Unknown object type- " + objType + "- for this handout type!");
+                }
             } else if (outType.equals(PdfHandoutIF.GUIDELINE)) {
                 if (objType.equals(PdfHandoutIF.DATASET)) {
                     handout = new DstPdfGuideline(conn, barray);
                     ((CachableIF) handout).setCachePath(cachePath);
-                } else
+                } else {
                     throw new Exception("Unknown object type- " + objType + "- for this handout type!");
-            } else
+                }
+            } else {
                 throw new Exception("Unknown handout type- " + outType);
+            }
 
             // set handout logo
             handout.setLogo(ctx.getRealPath(PDF_LOGO_PATH));
@@ -127,15 +138,17 @@ public class GetPrintout extends HttpServlet {
             barray.writeTo(out);
             out.flush();
 
-            if (conn != null)
+            if (conn != null) {
                 conn.close();
+            }
         } catch (Exception e) {
             e.printStackTrace(new PrintStream(res.getOutputStream()));
             // throw new ServletException(e.toString());
         } finally {
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception e) {
             }
         }
