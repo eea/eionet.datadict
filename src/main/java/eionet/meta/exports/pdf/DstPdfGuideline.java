@@ -170,8 +170,9 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         String nr = sect.level(title, 1);
         nr = nr == null ? "" : nr + " ";
 
+        String localAddress = PdfHandout.getLocalDestinationAddressFor(nr + title);
         Paragraph prg = new Paragraph();
-        prg.add(new Chunk(nr + "General information for ", Fonts.getUnicode(16)));
+        prg.add(new Chunk(nr + "General information for ", Fonts.getUnicode(16)).setLocalDestination(localAddress));
         prg.add(new Chunk(dsName, Fonts.getUnicode(16, Font.BOLD)));
         prg.add(new Chunk(" dataset", Fonts.getUnicode(16)));
 
@@ -225,8 +226,10 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         title = "Overview of " + dsName + " dataset tables";
         nr = sect.level(title, 1);
         nr = nr == null ? "" : nr + " ";
+
+        localAddress = PdfHandout.getLocalDestinationAddressFor(nr + title);
         prg = new Paragraph();
-        prg.add(new Chunk(nr, Fonts.getUnicode(16, Font.BOLD)));
+        prg.add(new Chunk(nr, Fonts.getUnicode(16, Font.BOLD)).setLocalDestination(localAddress));
         prg.add(new Chunk("Overview of ", Fonts.getUnicode(16)));
         prg.add(new Chunk(dsName, Fonts.getUnicode(16, Font.BOLD)));
         prg.add(new Chunk(" dataset tables", Fonts.getUnicode(16)));
@@ -250,16 +253,13 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                         vsTableIndex = size - 1;
                     }
                 } catch (IOException e) {
-
                     // If there was an IOException, it very probably means that
                     // the file was not an image. But we nevertheless tell the
                     // user where the file can be seen.
-
                     StringBuffer buf = new StringBuffer("\n\n");
                     buf.append("Visual structure of this dataset ");
                     buf.append("can be downloaded from its detailed view ");
                     buf.append("in the Data Dictionary website.");
-
                     addElement(new Phrase(buf.toString()));
                 }
             }
@@ -270,13 +270,13 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             title = "Tables";
             nr = sect.level(title, 1);
             nr = nr == null ? "" : nr + " ";
-            prg = new Paragraph(nr + title, Fonts.get(Fonts.HEADING_1));
+            localAddress = PdfHandout.getLocalDestinationAddressFor(nr + title);
+            prg = new Paragraph(new Chunk(nr + title, Fonts.get(Fonts.HEADING_1)).setLocalDestination(localAddress));
             addElement(prg);
         }
 
         // add full guidlines of tables
         for (int i = 0; tables != null && i < tables.size(); i++) {
-
             DsTable dsTable = (DsTable) tables.get(i);
 
             // the tables guidelines will be added to the current chapter
@@ -302,7 +302,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
     // TODO here that i should check
     private void addCodelists(Vector<DsTable> tables) throws Exception {
-
+        String localAddress = null;
         String nr = null;
         Paragraph prg = null;
         String title = null;
@@ -347,7 +347,8 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 if (!lv1added) {
                     nr = sect.level("Codelists", 1);
                     nr = nr == null ? "" : nr + " ";
-                    prg = new Paragraph(nr + "Codelists", Fonts.get(Fonts.HEADING_1));
+                    localAddress = PdfHandout.getLocalDestinationAddressFor(nr + "Codelists");
+                    prg = new Paragraph(new Chunk(nr + "Codelists", Fonts.get(Fonts.HEADING_1)).setLocalDestination(localAddress));
                     addElement(prg);
                     addElement(new Paragraph("\n"));
                     lv1added = true;
@@ -708,7 +709,6 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Vector getIndexPage() throws Exception {
-
         Vector elems = new Vector();
 
         Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);
@@ -750,7 +750,8 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         font = Fonts.getUnicode(10);
         for (int i = 0; i < toc.size(); i++) {
             String line = (String) toc.get(i);
-            elems.add(new Chunk(line + "\n", font));
+            String goToAddress = PdfHandout.getLocalDestinationAddressFor(line);
+            elems.add(new Chunk(line + "\n", font).setLocalGoto(goToAddress));
         }
 
         return elems;

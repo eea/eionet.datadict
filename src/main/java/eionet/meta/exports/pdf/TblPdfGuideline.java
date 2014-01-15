@@ -33,7 +33,7 @@ public class TblPdfGuideline {
 
     /**
      * Default constructor.
-     *
+     * 
      * @param searchEngine
      * @param owner
      */
@@ -88,7 +88,7 @@ public class TblPdfGuideline {
 
     /**
      * Write a full PDF guideline for the given table.
-     *
+     * 
      * @param dsTable
      * @throws Exception
      */
@@ -110,8 +110,9 @@ public class TblPdfGuideline {
         }
         nr = nr == null ? "" : nr + " ";
 
+        String localAddress = PdfHandout.getLocalDestinationAddressFor(nr + tblName + titleTail);
         Paragraph prg = new Paragraph();
-        prg.add(new Chunk(nr + tblName, Fonts.getUnicode(14, Font.BOLD)));
+        prg.add(new Chunk(nr + tblName, Fonts.getUnicode(14, Font.BOLD)).setLocalDestination(localAddress));
         if (titleTail.length() > 0) {
             prg.add(new Chunk(titleTail, Fonts.getUnicode(14)));
         }
@@ -182,7 +183,7 @@ public class TblPdfGuideline {
     }
 
     /**
-     *
+     * 
      * @param elm
      */
     protected void addElement(Element elm) {
