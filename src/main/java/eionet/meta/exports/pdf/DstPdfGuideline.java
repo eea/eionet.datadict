@@ -306,12 +306,14 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         String nr = null;
         Paragraph prg = null;
         String title = null;
-        String s = null;
+        String temp = null;
         boolean lv1added = false;
 
         HashMap<String, DataElement> commonElements = new HashMap<String, DataElement>();
         HashMap<String, ArrayList<String>> commonElementsToTables = new HashMap<String, ArrayList<String>>();
 
+        // iterate on all tables and all elements of tables
+        // add non-common code lists and find common code lists
         for (int i = 0; tables != null && i < tables.size(); i++) {
             boolean lv3added = false;
             DsTable tbl = tables.get(i);
@@ -359,8 +361,8 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
                 // add table title
                 if (!lv3added) {
-                    s = (String) tblNames.get(tbl.getID());
-                    String tblName = Util.isEmpty(s) ? tbl.getShortName() : s;
+                    temp = (String) tblNames.get(tbl.getID());
+                    String tblName = Util.isEmpty(temp) ? tbl.getShortName() : temp;
                     title = "Codelists for " + tblName + " table";
                     nr = sect.level(title, 3, false);
                     nr = nr == null ? "" : nr + " ";
@@ -377,8 +379,8 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 }
 
                 // add element title
-                s = elm.getAttributeValueByShortName("Name");
-                String elmName = Util.isEmpty(s) ? elm.getShortName() : s;
+                temp = elm.getAttributeValueByShortName("Name");
+                String elmName = Util.isEmpty(temp) ? elm.getShortName() : temp;
                 title = elmName + " codelist";
                 nr = sect.level(title, 4, false);
                 nr = nr == null ? "" : nr + " ";
@@ -396,8 +398,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             }// end of for iterating on table elements
         }// end of for iterating on tables
 
-        
-        //add common elements
+        // add common elements code lists
         if (commonElements.size() > 0) {
             // add 'Codelists' title
             if (!lv1added) {
@@ -423,16 +424,24 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 }
 
                 // add element title
-                s = elm.getAttributeValueByShortName("Name");
-                String elmName = Util.isEmpty(s) ? elm.getShortName() : s;
-                title = elmName + " codelist";
-                nr = sect.level(title, 4, false);
+                temp = elm.getAttributeValueByShortName("Name");
+                String elmName = Util.isEmpty(temp) ? elm.getShortName() : temp;
+                title = elmName;
+                nr = sect.level(title, 3, false);
                 nr = nr == null ? "" : nr + " ";
 
                 prg = new Paragraph();
                 prg.add(new Chunk(nr + elmName, Fonts.getUnicode(14, Font.BOLD)));
-                prg.add(new Chunk(" codelist", Fonts.getUnicode(14)));
 
+                addElement(prg);
+                addElement(new Paragraph("\n"));
+
+                // add Codelist title
+                title = "Codelist";
+                nr = sect.level(title, 4, false);
+                nr = nr == null ? "" : nr + " ";
+                prg = new Paragraph();
+                prg.add(new Chunk(nr + title, Fonts.getUnicode(14)));
                 addElement(prg);
                 addElement(new Paragraph("\n"));
 
@@ -440,20 +449,23 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 addElement(codelist);
                 addElement(new Paragraph("\n"));
 
-                // add tables here
+                // add reference tables title
+                title = "Referencing Tables";
+                nr = sect.level(title, 4, false);
+                nr = nr == null ? "" : nr + " ";
                 prg = new Paragraph();
-                prg.add(new Chunk(elmName, Fonts.getUnicode(14, Font.BOLD)));
-                prg.add(new Chunk(" referencing tables", Fonts.getUnicode(14)));
+                prg.add(new Chunk(nr + title, Fonts.getUnicode(14)));
                 addElement(prg);
                 addElement(new Paragraph("\n"));
 
-                ArrayList<ArrayList<String>> tableContent = new ArrayList<ArrayList<String>>();                
+                // add tables here
+                ArrayList<ArrayList<String>> tableContent = new ArrayList<ArrayList<String>>();
                 for (String name : commonElementsToTables.get(elementId)) {
                     ArrayList<String> row = new ArrayList<String>();
-                    row.add((String) tblNames.get(name));//there is only one column
+                    row.add((String) tblNames.get(name));// there is only one column
                     tableContent.add(row);
                 }
-                
+
                 ArrayList<String> header = new ArrayList<String>();
                 header.add("Table Name"); // also it is good idea to add column name
                 PdfPTable tableForTablesOfCommonElement = PdfUtil.giveMeTableOfThisContents(header, tableContent, null);
@@ -462,9 +474,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 addElement(tableForTablesOfCommonElement);
                 addElement(new Paragraph("\n"));
             }
-
-        }
-
+        }// end of block to add common elements
     }// end of method addCodelists
 
     @SuppressWarnings("rawtypes")
