@@ -381,13 +381,14 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 // add element title
                 temp = elm.getAttributeValueByShortName("Name");
                 String elmName = Util.isEmpty(temp) ? elm.getShortName() : temp;
-                title = elmName + " codelist";
+                String releasedDate = " (" + eionet.util.Util.releasedDateShort(Long.parseLong(elm.getDate())) + ")";
+                title = elmName + releasedDate + " codelist";
                 nr = sect.level(title, 4, false);
                 nr = nr == null ? "" : nr + " ";
 
                 localAddress = PdfHandout.getLocalDestinationAddressFor(elm.getID());
                 prg = new Paragraph();
-                prg.add(new Chunk(nr + elmName, Fonts.getUnicode(14, Font.BOLD)).setLocalDestination(localAddress));
+                prg.add(new Chunk(nr + elmName + releasedDate, Fonts.getUnicode(14, Font.BOLD)).setLocalDestination(localAddress));
                 prg.add(new Chunk(" codelist", Fonts.getUnicode(14)));
 
                 addElement(prg);
@@ -427,13 +428,13 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 // add element title
                 temp = elm.getAttributeValueByShortName("Name");
                 String elmName = Util.isEmpty(temp) ? elm.getShortName() : temp;
-                title = elmName;
+                title = elmName + " (" + eionet.util.Util.releasedDateShort(Long.parseLong(elm.getDate())) + ")";
                 nr = sect.level(title, 3, false);
                 nr = nr == null ? "" : nr + " ";
 
                 localAddress = PdfHandout.getLocalDestinationAddressFor(elm.getID());
                 prg = new Paragraph();
-                prg.add(new Chunk(nr + elmName, Fonts.getUnicode(14, Font.BOLD)).setLocalDestination(localAddress));
+                prg.add(new Chunk(nr + title, Fonts.getUnicode(14, Font.BOLD)).setLocalDestination(localAddress));
 
                 addElement(prg);
                 addElement(new Paragraph("\n"));
@@ -442,7 +443,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 title = "Codelist";
                 nr = sect.level(title, 4, false);
                 nr = nr == null ? "" : nr + " ";
-                
+
                 prg = new Paragraph();
                 prg.add(new Chunk(nr + title, Fonts.getUnicode(14)));
                 addElement(prg);
