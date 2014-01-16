@@ -381,7 +381,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 // add element title
                 temp = elm.getAttributeValueByShortName("Name");
                 String elmName = Util.isEmpty(temp) ? elm.getShortName() : temp;
-                String releasedDate = " (" + eionet.util.Util.releasedDateShort(Long.parseLong(elm.getDate())) + ")";
+                String releasedDate = " (Released at " + eionet.util.Util.releasedDateShort(Long.parseLong(elm.getDate())) + ")";
                 title = elmName + releasedDate + " codelist";
                 nr = sect.level(title, 4, false);
                 nr = nr == null ? "" : nr + " ";
@@ -428,7 +428,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 // add element title
                 temp = elm.getAttributeValueByShortName("Name");
                 String elmName = Util.isEmpty(temp) ? elm.getShortName() : temp;
-                title = elmName + " (" + eionet.util.Util.releasedDateShort(Long.parseLong(elm.getDate())) + ")";
+                title = elmName + " (Released at " + eionet.util.Util.releasedDateShort(Long.parseLong(elm.getDate())) + ")";
                 nr = sect.level(title, 3, false);
                 nr = nr == null ? "" : nr + " ";
 
