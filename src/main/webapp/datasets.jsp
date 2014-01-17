@@ -284,15 +284,91 @@
         }
 
         function deleteDataset(){
-
             // first confirm if the deletetion is about to take place at all
             var b = confirm("Selected datasets will be deleted! You will be given a chance to delete them permanently or save them for restoring later. Click OK, if you want to continue. Otherwise click Cancel.");
-            if (b==false)
+            if (b == false)
                 return;
+            
+            //get all checkboxes and control if there is any cannot delete or released dataset
+            var cannotDeletedDatasetIds = new Array();
+            var releasedDatasetIds = new Array();
+            var checkboxes = document.getElementsByName("ds_id");  
+            var found = false;
+            for (var i = 0; i < checkboxes.length; i++){
+            	if (checkboxes[i].checked){
+            		var datasetId = checkboxes[i].value;
+            		var canDeleteThisDataset = document.getElementById("can_delete_ds_idf_" + datasetId);
+            		if (!canDeleteThisDataset.value){
+            			checkboxes[i].checked = false;
+            			cannotDeletedDatasetIds.push(datasetId);
+            			continue;
+            		}
+            		
+            		if(document.getElementById("released_ds_idf_" + datasetId).value){
+            			releasedDatasetIds.push(datasetId);
+            		}
+            		
+            		found = true;
+            	}
+            }
+            
+            //if there is an attempt to delete unauthorized datasets, prompts user and uncheck them
+            if (cannotDeletedDatasetIds.length > 0){
+            	var promptMessage = "You don't have permission to delete following datasets: ";
+            	for (var i = 0; i < cannotDeletedDatasetIds.length; i++ ){
+            		promptMessage += "\n" + document.getElementById("ds_idf_" + cannotDeletedDatasetIds[i]).value;
+            	}
+                alert(promptMessage);
+            }
+            
+            //if nothing selected no need to continue
+            if (!found){
+            	alert("Select at least one Dataset to continue");
+            	return;
+            }
+            
+            //if there is an attempt to delete released datasets, ask user for confirmation
+            if (releasedDatasetIds.length > 0){
+            	var promptMessage = "Following datasets are released: ";
+            	for (var i = 0; i < releasedDatasetIds.length; i++ ){
+            		promptMessage += "\n" + document.getElementById("ds_idf_" + releasedDatasetIds[i]).value;
+            	}
+            	promptMessage += "\nAre you sure you want to delete?\nClick OK, if you want to continue. Otherwise click Cancel.";
+            	var b2 = confirm(promptMessage);
+            	if (b2 == false){
+                    return;
+            	}
+            }
 
             // now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
             openNoYes("yesno_dialog.html", "Do you want the selected datasets to be deleted permanently?\n(Note that working copies will always be permanently deleted)", delDialogReturn,100, 400);
-        }
+        }//end of function deleteDataset
+        
+        function generateCombinedPdf(){
+        	 var checkboxes = document.getElementsByName("ds_id");  
+        	 var checkedDatasets = new Array();             
+             for (var i = 0; i < checkboxes.length; i++){
+             	if (checkboxes[i].checked){             		
+             		checkedDatasets.push(checkboxes[i].value);
+             	}
+             }
+             
+             //if nothing selected no need to continue
+             if (checkedDatasets == 0){
+             	alert("Select at least one Dataset to continue");
+             	return;
+             }
+             
+             var objectIds = "obj_id=";
+             for (var i = 0; i < checkedDatasets.length; i++){
+            	 objectIds += checkedDatasets[i] + ":";
+             }
+             
+             var urlSuffix = "/GetPrintout?format=PDF&obj_type=DST&" + objectIds + "&out_type=GDLN";
+             var ctx = "${pageContext.request.contextPath}";
+             
+             window.location = (ctx + urlSuffix);
+        }//end of function generateCombinedPdf
 
         function delDialogReturn(){
             var v = dialogWin.returnValue;
@@ -361,6 +437,10 @@
                     <li><a href="javascript:deleteDataset()">Delete selected</a></li>
                     <%
                     }
+                    
+                    if (user.isAuthentic()){%>
+                    <li><a href="javascript:generateCombinedPdf()">Generate PDF of selected</a></li><%
+                }
                     %>
 
 
@@ -528,6 +608,7 @@
                     String statusTxt   = Util.getStatusRadics(regStatus);
                     String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
                     String alertReleased = regStatus.equals("Released") ? "onclick=\"alertReleased(this)\"" : "";
+                    boolean released = regStatus.equals("Released");
 
                     boolean canDelete = !dataset.isWorkingCopy() && workingUser==null && regStatus!=null && user!=null;
                     if (canDelete){
@@ -559,19 +640,17 @@
                         // the 1st column: checkbox, red asterisk or nbsp
                         if (isDisplayHelperColumn){ %>
                             <td align="right">
-                                <%
-                                if (canDelete){
-                                    %>
-                                    <input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>" <%=alertReleased%>/>
-                                    <input type="hidden" name="ds_idf_<%=dataset.getID()%>" value="<%=dataset.getIdentifier()%>"/>
-                                    <%
-                                    countCheckboxes++;
-                                }
-                                else if (workingUser!=null){ %>
+                                <%                                
+                                if (workingUser!=null){ %>
                                     <div title="<%=Util.processForDisplay(workingUser,true)%>" class="checkedout">*</div><%
                                 }
                                 else{ %>
-                                    &nbsp;<%
+                                <input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>" />
+                                <input type="hidden" name="ds_idf_<%=ds_id%>" id="ds_idf_<%=ds_id%>" value="<%=dataset.getIdentifier()%>"/>
+                                <input type="hidden" id="can_delete_ds_idf_<%=ds_id%>" value="<%=canDelete%>"/>
+                                <input type="hidden" id="released_ds_idf_<%=ds_id%>" value="<%=released%>"/>
+                                <%
+                                countCheckboxes++;
                                 }
                                 %>
                             </td><%
@@ -673,7 +752,8 @@
                         String statusImg = "images/" + Util.getStatusImage(oEntry.getRegStatus());
                         String statusTxt   = Util.getStatusRadics(oEntry.getRegStatus());
                                   String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
-                        String alertReleased = oEntry.getRegStatus().equals("Released") ? "onclick=\"alertReleased(this)\"" : "";
+                        String alertReleased = oEntry.getRegStatus().equals("Released") ? "onclick=\"alertReleased(this)\"" : "";                        
+                        boolean released = oEntry.getRegStatus().equals("Released");
                         %>
                         <tr valign="top" class="<%=zebraClass%>">
 
@@ -682,17 +762,16 @@
                             if (isDisplayHelperColumn){%>
                                 <td align="right">
                                     <%
-                                    if (oEntry.canDelete){%>
-                                        <input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>" <%=alertReleased%>/>
-                                        <input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.processForDisplay(oEntry.oIdentifier,true)%>"/>
-                                        <%
-                                        countCheckboxes++;
-                                    }
-                                    else if (oEntry.workingUser!=null){%>
+                                    if (oEntry.workingUser!=null){%>
                                         <div title="<%=Util.processForDisplay(oEntry.workingUser,true)%>" class="checkedout">*</div><%
                                     }
                                     else{ %>
-                                        &nbsp;<%
+                                        <input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>" />
+                                        <input type="hidden" name="ds_idf_<%=oEntry.oID%>" id="ds_idf_<%=oEntry.oID%>" value="<%=Util.processForDisplay(oEntry.oIdentifier,true)%>"/>                                        
+                                        <input type="hidden" id="can_delete_ds_idf_<%=oEntry.oID%>" value="<%=oEntry.canDelete%>"/>
+                                        <input type="hidden" id="released_ds_idf_<%=oEntry.oID%>" value="<%=released%>"/>
+                                        <%
+                                        countCheckboxes++;
                                     }
                                     %>
                                 </td><%

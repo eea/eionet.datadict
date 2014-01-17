@@ -79,6 +79,12 @@ public class GetPrintout extends HttpServlet {
         if (Util.isEmpty(objID)) {
             throw new ServletException("Object ID not specified!");
         }
+        
+        String[] objIDs = objID.split("[:]");
+        if (objIDs.length == 0 || Util.isEmpty(objIDs[0])) {//there should be at least one object id
+            throw new ServletException("Object ID not specified!");
+        }
+            
 
         // get the paths of images and cache
         String fileStorePath = Props.getRequiredProperty(PropsIF.FILESTORE_PATH);
@@ -125,7 +131,7 @@ public class GetPrintout extends HttpServlet {
             handout.setParameters(new Parameters(req));
 
             // write the handout
-            handout.write(objID);
+            handout.write(objIDs[0]); //temp
             handout.flush();
 
             // flush the handout to the servlet output stream
