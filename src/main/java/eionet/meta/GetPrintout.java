@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import eionet.meta.exports.CachableIF;
+import eionet.meta.exports.pdf.DstCombinedPdfGuideline;
 import eionet.meta.exports.pdf.DstPdfAll;
 import eionet.meta.exports.pdf.DstPdfGuideline;
 import eionet.meta.exports.pdf.ElmPdfFactsheet;
@@ -26,9 +27,9 @@ import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 
 /**
- *
+ * 
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
- *
+ * 
  */
 public class GetPrintout extends HttpServlet {
 
@@ -79,12 +80,11 @@ public class GetPrintout extends HttpServlet {
         if (Util.isEmpty(objID)) {
             throw new ServletException("Object ID not specified!");
         }
-        
+
         String[] objIDs = objID.split("[:]");
-        if (objIDs.length == 0 || Util.isEmpty(objIDs[0])) {//there should be at least one object id
+        if (objIDs.length == 0 || Util.isEmpty(objIDs[0])) {// there should be at least one object id
             throw new ServletException("Object ID not specified!");
         }
-            
 
         // get the paths of images and cache
         String fileStorePath = Props.getRequiredProperty(PropsIF.FILESTORE_PATH);
@@ -98,7 +98,9 @@ public class GetPrintout extends HttpServlet {
             // set up the OutputStream to write to
             ByteArrayOutputStream barray = new ByteArrayOutputStream();
 
-            // construct the handout //TODO search for FCTS
+            // construct the handout
+            // TODO search for FCTS
+            // TODO if object type is not Dataset then there should be only one element in objIDs
             PdfHandoutIF handout = null;
             if (outType.equals(PdfHandoutIF.FACTSHEET)) {
                 if (objType.equals(PdfHandoutIF.DATASET)) {
@@ -112,8 +114,13 @@ public class GetPrintout extends HttpServlet {
                 }
             } else if (outType.equals(PdfHandoutIF.GUIDELINE)) {
                 if (objType.equals(PdfHandoutIF.DATASET)) {
-                    handout = new DstPdfGuideline(conn, barray);
-                    ((CachableIF) handout).setCachePath(cachePath);
+                    if (objIDs.length == 1) {
+                        objID = objIDs[0];
+                        handout = new DstPdfGuideline(conn, barray);
+                        ((CachableIF) handout).setCachePath(cachePath);
+                    } else {
+                        handout = new DstCombinedPdfGuideline(conn, barray);
+                    }
                 } else {
                     throw new Exception("Unknown object type- " + objType + "- for this handout type!");
                 }
@@ -131,7 +138,7 @@ public class GetPrintout extends HttpServlet {
             handout.setParameters(new Parameters(req));
 
             // write the handout
-            handout.write(objIDs[0]); //temp
+            handout.write(objID);
             handout.flush();
 
             // flush the handout to the servlet output stream

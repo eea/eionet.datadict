@@ -220,18 +220,13 @@ public abstract class PdfHandout implements PdfHandoutIF {
         font.setColor(Color.lightGray);
         phr.add(new Chunk("http://www.eea.eu.int   ", font));
 
-        /*
-         * font = FontFactory.getFont(FontFactory.HELVETICA, 9); font.setColor(Color.white); phr.add(new
-         * Chunk("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", font));
-         */
-
         footer = new HeaderFooter(phr, true);
         // footer.setAlignment(Element.ALIGN_LEFT);
         footer.setAlignment(Element.ALIGN_RIGHT);
         footer.setBorder(com.lowagie.text.Rectangle.TOP);
     }
 
-    private String getCurrentDate() {
+    protected String getCurrentDate() {
 
         java.util.Date date = new java.util.Date();
         StringBuffer buf = new StringBuffer();

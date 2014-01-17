@@ -149,7 +149,7 @@ public class TblPdfAll {
 
         addElement(new Paragraph("Columns in the table:",
                 Fonts.get(Fonts.HEADING_0)));
-        addElement(PdfUtil.tableElements(v, null, null));
+        addElement(PdfUtil.tableElements(v, null, null, -1));
 
         // write data element full guidelines, each into a separate chapter
         for (int i = 0; v != null && i < v.size(); i++) {

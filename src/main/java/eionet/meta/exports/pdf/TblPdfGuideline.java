@@ -106,7 +106,7 @@ public class TblPdfGuideline {
 
         String nr = "";
         if (owner != null) {
-            nr = owner.getSectioning().level(tblName + titleTail, 2);
+            nr = owner.getSectioning().level(tblName + titleTail, owner.getLevelFor(2));
         }
         nr = nr == null ? "" : nr + " ";
 
@@ -179,7 +179,7 @@ public class TblPdfGuideline {
         prg.add(new Chunk(" table:", FontFactory.getFont(FontFactory.HELVETICA, 12)));
         addElement(prg);
 
-        addElement(PdfUtil.tableElements(elms, null, owner.getSectioning()));
+        addElement(PdfUtil.tableElements(elms, null, owner.getSectioning(), owner.getLevelFor(3)));
     }
 
     /**

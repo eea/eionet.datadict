@@ -329,10 +329,10 @@ public class PdfUtil {
     }
 
     public static PdfPTable tableElements(Vector tblElems, Vector captions) throws Exception {
-        return tableElements(tblElems, captions, null);
+        return tableElements(tblElems, captions, null, -1);
     }
 
-    public static PdfPTable tableElements(Vector tblElems, Vector captions, Sectioning sect) throws Exception {
+    public static PdfPTable tableElements(Vector tblElems, Vector captions, Sectioning sect, int level) throws Exception {
 
         if (tblElems == null || tblElems.size() == 0) {
             return null;
@@ -349,6 +349,7 @@ public class PdfUtil {
         if (sect != null) {
             table.setWidths(headerwidths1);
         } else {
+            level = 3;
             table.setWidths(headerwidths2);
         }
         table.setWidthPercentage(100); // percentage
@@ -433,7 +434,7 @@ public class PdfUtil {
             String nr = "";
             // sectioning
             if (sect != null) {
-                nr = sect == null ? null : sect.level(" ", 3, false);
+                nr = sect == null ? null : sect.level(" ", level, false);
                 nr = nr == null ? " " : nr;
 
                 cell = new PdfPCell(new Phrase(nr, Fonts.get(Fonts.CELL_VALUE)));

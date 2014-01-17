@@ -38,7 +38,7 @@
 
             oFullName = oFName;
 
-            if (oFName.length() > 60)
+            if (oFName.length() > 64)
                 oFName = oFName.substring(0,60) + " ...";
     };
 
@@ -298,6 +298,7 @@
             	if (checkboxes[i].checked){
             		var datasetId = checkboxes[i].value;
             		var canDeleteThisDataset = document.getElementById("can_delete_ds_idf_" + datasetId);
+            		//if there is an attempt to delete unauthorized datasets, uncheck them
             		if (!canDeleteThisDataset.value){
             			checkboxes[i].checked = false;
             			cannotDeletedDatasetIds.push(datasetId);
@@ -306,13 +307,12 @@
             		
             		if(document.getElementById("released_ds_idf_" + datasetId).value){
             			releasedDatasetIds.push(datasetId);
-            		}
-            		
+            		}            		
             		found = true;
             	}
             }
             
-            //if there is an attempt to delete unauthorized datasets, prompts user and uncheck them
+            //if there is an attempt to delete unauthorized datasets, notify user
             if (cannotDeletedDatasetIds.length > 0){
             	var promptMessage = "You don't have permission to delete following datasets: ";
             	for (var i = 0; i < cannotDeletedDatasetIds.length; i++ ){
@@ -329,7 +329,7 @@
             
             //if there is an attempt to delete released datasets, ask user for confirmation
             if (releasedDatasetIds.length > 0){
-            	var promptMessage = "Following datasets are released: ";
+            	var promptMessage = "Following datasets are RELEASED: ";
             	for (var i = 0; i < releasedDatasetIds.length; i++ ){
             		promptMessage += "\n" + document.getElementById("ds_idf_" + releasedDatasetIds[i]).value;
             	}
@@ -600,7 +600,7 @@
                     String ds_name = Util.processForDisplay(dataset.getShortName());
                     String dsLink = clickable ? request.getContextPath() + "/datasets/" + ds_id : "#";
                     String dsFullName=dataset.getName();
-                    if (dsFullName!=null && dsFullName.length()>60)
+                    if (dsFullName!=null && dsFullName.length()>64)
                         dsFullName = dsFullName.substring(0,60) + " ...";
                     String workingUser = dataset.getWorkingUser();
 
