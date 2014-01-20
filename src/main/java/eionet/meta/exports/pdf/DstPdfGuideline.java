@@ -732,7 +732,6 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
      */
     @Override
     protected void setHeader(String title) throws Exception {
-
         Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
         font.setColor(Color.gray);
 
@@ -747,7 +746,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
         this.header = new HeaderFooter(prg, false);
         header.setBorder(com.lowagie.text.Rectangle.BOTTOM);
-    }
+    }//end of method setHeader
 
     /*
      * (non-Javadoc)
@@ -872,6 +871,14 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         footer = new HeaderFooter(phr, true);
         footer.setAlignment(Element.ALIGN_RIGHT);
         footer.setBorder(com.lowagie.text.Rectangle.TOP);
+    }
+
+    public String getDsName() {
+        return dsName;
+    }
+
+    public String getDsVersion() {
+        return dsVersion;
     }
 
     /*
