@@ -126,19 +126,28 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             writeFromCache();
             return;
         }
-
-        Dataset datasetInstance = searchEngine.getDataset(dsID);
+        Dataset datasetInstance = initializeDataset(dsID);        
+        write(datasetInstance);
+    }
+    
+    /**
+     * Method to initialize dataset instance
+     * @param dstId
+     * @return
+     */
+    protected Dataset initializeDataset(String dstId) throws Exception {
+        Dataset datasetInstance = searchEngine.getDataset(dstId);
         if (datasetInstance == null) {
             throw new Exception("Dataset not found!");
         }
 
         fileName = datasetInstance.getIdentifier() + FILE_EXT;
 
-        Vector v = searchEngine.getSimpleAttributes(dsID, "DS");
+        Vector v = searchEngine.getSimpleAttributes(dstId, "DS");
         datasetInstance.setSimpleAttributes(v);
-        v = searchEngine.getComplexAttributes(dsID, "DS");
+        v = searchEngine.getComplexAttributes(dstId, "DS");
         datasetInstance.setComplexAttributes(v);
-        v = searchEngine.getDatasetTables(dsID, true);
+        v = searchEngine.getDatasetTables(dstId, true);
         DsTable tbl = null;
         for (int i = 0; v != null && i < v.size(); i++) {
             tbl = (DsTable) v.get(i);
@@ -146,10 +155,15 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         }
         datasetInstance.setTables(v);
 
-        addParameter("dstID", dsID);
+        addParameter("dstID", dstId);
+        
+        String s = datasetInstance.getAttributeValueByShortName("Name");
+        dsName = Util.isEmpty(s) ? datasetInstance.getShortName() : s;
 
-        write(datasetInstance);
-    }
+        dsVersion = datasetInstance.getAttributeValueByShortName("Version");
+        
+        return datasetInstance;
+    }//end of method initializeDataset
 
     /**
      * 
@@ -157,16 +171,12 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
      * @throws Exception
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void write(Dataset ds) throws Exception {
+    protected void write(Dataset ds) throws Exception {
 
+        //defensive check
         if (ds == null) {
             throw new Exception("Dataset object is null!");
         }
-
-        String s = ds.getAttributeValueByShortName("Name");
-        dsName = Util.isEmpty(s) ? ds.getShortName() : s;
-
-        dsVersion = ds.getAttributeValueByShortName("Version");
 
         String title = "General information for " + dsName + " dataset";
         String nr = sect.level(title, getLevelFor(1));
@@ -408,7 +418,8 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             if (!lv1added) {
                 nr = sect.level("Codelists", getLevelFor(1));
                 nr = nr == null ? "" : nr + " ";
-                prg = new Paragraph(nr + "Codelists", Fonts.get(Fonts.HEADING_1));
+                localAddress = PdfHandout.getLocalDestinationAddressFor(nr + "Codelists");
+                prg = new Paragraph(new Chunk(nr + "Codelists", Fonts.get(Fonts.HEADING_1)).setLocalDestination(localAddress));
                 addElement(prg);
                 addElement(new Paragraph("\n"));
             }
@@ -615,6 +626,36 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
      */
     @Override
     protected void addTitlePage(Document doc) throws Exception {
+        ArrayList<Paragraph> titlePageContents = getTitlePageContents();
+
+        for (Paragraph prg : titlePageContents) {
+            doc.add(prg);
+        }
+    }
+
+    protected void addTitlePageForCombined() throws Exception {
+        //String s = ds.getAttributeValueByShortName("Name");
+        //dsName = Util.isEmpty(s) ? ds.getShortName() : s;
+        
+        String nr = sect.level(dsName, 1);
+        nr = nr == null ? "" : nr + " ";
+        String localAddress = PdfHandout.getLocalDestinationAddressFor(nr + dsName);
+        Paragraph prg = new Paragraph();
+        prg.add(new Chunk(" ", Fonts.getUnicode(16, Font.BOLD)).setLocalDestination(localAddress));
+        addElement(prg);
+
+        ArrayList<Paragraph> titlePageContents = getTitlePageContents();
+        for (Paragraph content : titlePageContents) {
+            addElement(content);
+        }
+        insertPageBreak();
+        // prg = new Paragraph();
+        // prg.add(new Chunk(nr + dsName, Fonts.getUnicode(16, Font.BOLD)));
+        // addElement(prg);
+    }// end of method addTitlePageForCombined
+
+    private ArrayList<Paragraph> getTitlePageContents() throws Exception {
+        ArrayList<Paragraph> doc = new ArrayList<Paragraph>();
 
         doc.add(new Paragraph("\n\n\n\n"));
 
@@ -670,7 +711,9 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         }
 
         doc.add(prg);
-    }
+
+        return doc;
+    }// end of method titlePageContents
 
     /*
      * (non-Javadoc)

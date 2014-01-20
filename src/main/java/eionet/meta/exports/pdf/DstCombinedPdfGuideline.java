@@ -10,7 +10,6 @@ import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.HeaderFooter;
 import com.lowagie.text.Image;
-import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 
 import eionet.meta.Dataset;
@@ -23,7 +22,7 @@ import eionet.util.Util;
 // TODO there can be some refactorings for all pdf generation package, maybe more inheritance rather than owner or using owner more
 // genericly
 public class DstCombinedPdfGuideline extends DstPdfGuideline {
-   
+
     /**
      * Constructor.
      * 
@@ -50,17 +49,13 @@ public class DstCombinedPdfGuideline extends DstPdfGuideline {
         StringBuffer filenames = new StringBuffer();
         for (String dstId : datasetIds) {
             if (!Util.isEmpty(dstId)) {
-                //add a title
-                Dataset ds = searchEngine.getDataset(dstId);
-                String dsName = ds.getShortName();                
-                String nr = super.sect.level(dsName, 1);
-                nr = nr == null ? "" : nr + " ";
-                String localAddress = PdfHandout.getLocalDestinationAddressFor(nr + dsName);
-                Paragraph prg = new Paragraph();
-                prg.add(new Chunk(nr + dsName, Fonts.getUnicode(16, Font.BOLD)).setLocalDestination(localAddress));
-                addElement(prg);
+                // add a title
+                Dataset ds = super.initializeDataset(dstId);
+                addTitlePageForCombined();
 
-                super.write(dstId, false);
+                super.write(ds);
+                insertPageBreak();
+
                 filenames.append(ds.getIdentifier());
                 filenames.append("-");
             }
@@ -71,6 +66,7 @@ public class DstCombinedPdfGuideline extends DstPdfGuideline {
 
         setHeader("");
         setFooter();
+        //TODO does not go to code list when clicked
     }// end of method write
 
     @Override
@@ -94,7 +90,7 @@ public class DstCombinedPdfGuideline extends DstPdfGuideline {
     public String getFileName() {
         return this.fileName;
     }
-    
+
     @Override
     protected void setHeader(String title) throws Exception {
 
