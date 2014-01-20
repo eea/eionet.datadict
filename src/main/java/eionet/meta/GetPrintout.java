@@ -15,11 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import eionet.meta.exports.CachableIF;
 import eionet.meta.exports.pdf.DstCombinedPdfGuideline;
-import eionet.meta.exports.pdf.DstPdfAll;
 import eionet.meta.exports.pdf.DstPdfGuideline;
-import eionet.meta.exports.pdf.ElmPdfFactsheet;
 import eionet.meta.exports.pdf.PdfHandoutIF;
-import eionet.meta.exports.pdf.TblPdfFactsheet;
 import eionet.meta.savers.Parameters;
 import eionet.util.Props;
 import eionet.util.PropsIF;
@@ -98,21 +95,8 @@ public class GetPrintout extends HttpServlet {
             // set up the OutputStream to write to
             ByteArrayOutputStream barray = new ByteArrayOutputStream();
 
-            // construct the handout
-            // TODO search for FCTS
-            // TODO if object type is not Dataset then there should be only one element in objIDs
             PdfHandoutIF handout = null;
-            if (outType.equals(PdfHandoutIF.FACTSHEET)) {
-                if (objType.equals(PdfHandoutIF.DATASET)) {
-                    handout = new DstPdfAll(conn, barray);
-                } else if (objType.equals(PdfHandoutIF.DSTABLE)) {
-                    handout = new TblPdfFactsheet(conn, barray);
-                } else if (objType.equals(PdfHandoutIF.DATAELEM)) {
-                    handout = new ElmPdfFactsheet(conn, barray);
-                } else {
-                    throw new Exception("Unknown object type- " + objType + "- for this handout type!");
-                }
-            } else if (outType.equals(PdfHandoutIF.GUIDELINE)) {
+            if (outType.equals(PdfHandoutIF.GUIDELINE)) {
                 if (objType.equals(PdfHandoutIF.DATASET)) {
                     if (objIDs.length == 1) {
                         objID = objIDs[0];
