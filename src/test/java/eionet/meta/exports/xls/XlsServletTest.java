@@ -224,6 +224,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
         try {
             // call method to be tested
             xlsServletUnderTest.service(requestMock, responseMock);
+            Assert.fail("Exception is not received");
         } catch (ServletException e) {
             // perform exception check
             Assert.assertEquals("Incorrect exception message", exceptionMessage, e.getMessage());
@@ -259,6 +260,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
         try {
             // call method to be tested
             xlsServletUnderTest.service(requestMock, responseMock);
+            Assert.fail("Exception is not received");
         } catch (ServletException e) {
             // perform exception check
             Assert.assertEquals("Incorrect exception message", exceptionMessage, e.getMessage());
@@ -294,6 +296,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
         try {
             // call method to be tested
             xlsServletUnderTest.service(requestMock, responseMock);
+            Assert.fail("Exception is not received");
         } catch (ServletException e) {
             // perform exception check
             Assert.assertEquals("Incorrect exception message", exceptionMessage, e.getMessage());
@@ -332,6 +335,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
         try {
             // call method to be tested
             xlsServletUnderTest.service(requestMock, responseMock);
+            Assert.fail("Exception is not received");
         } catch (ServletException e) {
             // perform exception check
             Assert.assertEquals("Incorrect exception message", exceptionMessage, e.getMessage());
@@ -371,6 +375,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
         try {
             // call method to be tested
             xlsServletUnderTest.service(requestMock, responseMock);
+            Assert.fail("Exception is not received");
         } catch (ServletException e) {
             // perform exception check
             Assert.assertEquals("Incorrect exception message", "Table " + "500" + " not found!", e.getMessage());
@@ -407,6 +412,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
         try {
             // call method to be tested
             xlsServletUnderTest.service(requestMock, responseMock);
+            Assert.fail("Exception is not received");
         } catch (ServletException e) {
             // perform exception check
             Assert.assertEquals("Incorrect exception message", exceptionMessage, e.getMessage());
@@ -414,7 +420,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
 
         // verify mocks
         verifyAllMocks();
-    }   
+    }
 
     @Override
     protected String getSeedFilename() {

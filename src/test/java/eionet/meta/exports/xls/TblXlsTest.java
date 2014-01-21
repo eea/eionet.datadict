@@ -68,7 +68,7 @@ public class TblXlsTest extends DDDatabaseTestCase {
             String s = TblXls.deleteCacheEntry("999999", conn);
             Assert.assertEquals(fileName, s);
         } catch (Exception e) {
-            fail("Was not expecting any exceptions, but catched " + e.toString());
+            Assert.fail("Was not expecting any exceptions, but catched " + e.toString());
         }
     }
 
@@ -141,7 +141,7 @@ public class TblXlsTest extends DDDatabaseTestCase {
             Assert.assertTrue("Some fxvs did not matched: " + temp.toString(), temp.size() == 0);
 
         } catch (Exception e) {
-            fail("Was not expecting any exceptions, but catched " + e.toString());
+            Assert.fail("Was not expecting any exceptions, but catched " + e.toString());
         }
     }
 

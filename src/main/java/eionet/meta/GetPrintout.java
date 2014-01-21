@@ -25,7 +25,7 @@ import eionet.util.sql.ConnectionUtil;
 
 /**
  * 
- * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
+ * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tripledev.ee">jaanus.heinlaid@tripledev.ee</a>
  * 
  */
 public class GetPrintout extends HttpServlet {
@@ -37,58 +37,58 @@ public class GetPrintout extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-        // get the servlet context
-        ServletContext ctx = getServletContext();
-
-        String userAgent = req.getHeader("User-Agent");
-        if (!Util.isEmpty(userAgent)) {
-            ctx.log("User-Agent= " + userAgent);
-        }
-
-        // get printout format
-        String printoutFormat = req.getParameter("format");
-        if (Util.isEmpty(printoutFormat)) {
-            printoutFormat = "PDF";
-        }
-
-        if (!printoutFormat.equals("PDF") && !printoutFormat.equals("RTF")) {
-            throw new ServletException("Unknown format requested!");
-        }
-
-        // currently RTF is not supported
-        if (printoutFormat.equals("RTF")) {
-            throw new ServletException("RTF not supported right now!");
-        }
-
-        // get object type
-        String objType = req.getParameter("obj_type");
-        if (Util.isEmpty(objType)) {
-            throw new ServletException("Object type not specified!");
-        }
-
-        // get handout type
-        String outType = req.getParameter("out_type");
-        if (Util.isEmpty(outType)) {
-            outType = DEFAULT_HANDOUT_TYPE;
-        }
-
-        // get object ID
-        String objID = req.getParameter("obj_id");
-        if (Util.isEmpty(objID)) {
-            throw new ServletException("Object ID not specified!");
-        }
-
-        String[] objIDs = objID.split("[:]");
-        if (objIDs.length == 0 || Util.isEmpty(objIDs[0])) {// there should be at least one object id
-            throw new ServletException("Object ID not specified!");
-        }
-
-        // get the paths of images and cache
-        String fileStorePath = Props.getRequiredProperty(PropsIF.FILESTORE_PATH);
-        String cachePath = Props.getProperty(PropsIF.DOC_PATH);
-
         Connection conn = null;
         try {
+            // get the servlet context
+            ServletContext ctx = getServletContext();
+
+            String userAgent = req.getHeader("User-Agent");
+            if (!Util.isEmpty(userAgent)) {
+                ctx.log("User-Agent= " + userAgent);
+            }
+
+            // get printout format
+            String printoutFormat = req.getParameter("format");
+            if (Util.isEmpty(printoutFormat)) {
+                printoutFormat = "PDF";
+            }
+
+            if (!printoutFormat.equals("PDF") && !printoutFormat.equals("RTF")) {
+                throw new Exception("Unknown format requested!");
+            }
+
+            // currently RTF is not supported
+            if (printoutFormat.equals("RTF")) {
+                throw new Exception("RTF not supported right now!");
+            }
+
+            // get object type
+            String objType = req.getParameter("obj_type");
+            if (Util.isEmpty(objType)) {
+                throw new Exception("Object type not specified!");
+            }
+
+            // get handout type
+            String outType = req.getParameter("out_type");
+            if (Util.isEmpty(outType)) {
+                outType = DEFAULT_HANDOUT_TYPE;
+            }
+
+            // get object ID
+            String objID = req.getParameter("obj_id");
+            if (Util.isEmpty(objID)) {
+                throw new Exception("Object ID not specified!");
+            }
+
+            String[] objIDs = objID.split("[:]");
+            if (objIDs.length == 0 || Util.isEmpty(objIDs[0])) {// there should be at least one object id
+                throw new Exception("Object ID not specified!");
+            }
+
+            // get the paths of images and cache
+            String fileStorePath = Props.getRequiredProperty(PropsIF.FILESTORE_PATH);
+            String cachePath = Props.getProperty(PropsIF.DOC_PATH);
+
             // get the DB connection
             conn = ConnectionUtil.getConnection();
 
@@ -140,7 +140,9 @@ public class GetPrintout extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace(new PrintStream(res.getOutputStream()));
-            // throw new ServletException(e.toString());
+            res.setContentType(null);
+            res.sendError(500, e.getMessage());
+            throw new ServletException(e.getMessage());
         } finally {
             try {
                 if (conn != null) {
