@@ -821,6 +821,11 @@ public class VersionManager {
         if (submOrg == null) {
             throw new Exception("SubmitOrganisation complex attribute required!");
         }
+
+        //CH3 must have linked vocabulary
+        if (elm.getType().equals("CH3") && elm.getVocabularyId() == null) {
+            throw new Exception("Vocabulary as the source for element values is not speciefied!");
+        }
     }
 
     /**

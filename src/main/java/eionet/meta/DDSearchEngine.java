@@ -24,10 +24,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IAttributeDAO;
+import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.IDataService;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.IXmlConvService;
@@ -42,9 +45,9 @@ import eionet.util.sql.SQL;
 
 /**
  * Search engine.
- * 
+ *
  * @author Jaanus Heinlaid
- * 
+ *
  */
 public class DDSearchEngine {
 
@@ -68,7 +71,7 @@ public class DDSearchEngine {
     private ApplicationContext springContext;
 
     /**
-     * 
+     *
      * @param conn
      */
     public DDSearchEngine(Connection conn) {
@@ -112,7 +115,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param datasetID
      * @return all dataset elements
      * @throws SQLException
@@ -250,7 +253,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @throws SQLException
      *             if database query fails
      */
@@ -259,7 +262,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @throws SQLException
      *             if database query fails
      */
@@ -269,10 +272,10 @@ public class DDSearchEngine {
 
     /**
      * Get data elements by table id. 5 inputs.
-     * 
+     *
      * @throws SQLException
      *             if database query fails
-     */    
+     */
     public Vector<DataElement> getDataElements(Vector unUsed1, String unUsed2, String unUsed3, String unUsed4, String tableID)
             throws SQLException {
 
@@ -316,7 +319,7 @@ public class DDSearchEngine {
         Vector<DataElement> result = new Vector<DataElement>();
         PreparedStatement elemsStmt = null;
         ResultSet elemsRs = null;
-        
+
         try {
             elemsStmt = SQL.preparedStatement(monsterQry.toString(), inPrms, conn);
             elemsRs = elemsStmt.executeQuery();
@@ -360,6 +363,9 @@ public class DDSearchEngine {
                 elm.setNamespace(new Namespace(elemsRs.getString("DATAELEM.PARENT_NS"), "", "", "", ""));
                 elm.setCheckedoutCopyID(elemsRs.getString("DATAELEM.CHECKEDOUT_COPY_ID"));
                 elm.setDate(elemsRs.getString("DATAELEM.DATE"));
+
+                elm.setVocabularyId(elemsRs.getString("DATAELEM.VOCABULARY_ID"));
+                elm.setAllConceptsValid(elemsRs.getBoolean("DATAELEM.ALL_CONCEPTS_LEGAL"));
 
                 // execute the statement prepared for dynamic attributes
                 attrsStmt.setInt(1, elmID);
@@ -406,7 +412,7 @@ public class DDSearchEngine {
 
     /**
      * Get data elements by table id and dataset id 6 inputs.
-     * 
+     *
      * @throws SQLException
      *             if database query fails
      */
@@ -419,7 +425,7 @@ public class DDSearchEngine {
 
     /**
      * Get data elements with control over working copies 7 inputs.
-     * 
+     *
      * @throws SQLException
      *             if database query fails
      */
@@ -431,7 +437,7 @@ public class DDSearchEngine {
 
     /**
      * Get data elements, control over working copies & params oper 8 inputs.
-     * 
+     *
      * @throws SQLException
      *             if database query fails
      */
@@ -442,7 +448,7 @@ public class DDSearchEngine {
 
     /**
      * Get data elements, control over working copies & params oper 9 inputs.
-     * 
+     *
      * @throws SQLException
      *             if database query fails
      */
@@ -454,7 +460,7 @@ public class DDSearchEngine {
 
     /**
      * Get data elements, control over working copies, historic versions & params oper 10 inputs.
-     * 
+     *
      * @throws SQLException
      *             if database query fails
      */
@@ -709,6 +715,9 @@ public class DDSearchEngine {
                 elm.setCheckedoutCopyID(elemsRs.getString("DATAELEM.CHECKEDOUT_COPY_ID"));
                 elm.setDstWorkingUser(elemsRs.getString("DATASET.WORKING_USER"));
                 elm.setDstStatus(elemsRs.getString("DATASET.REG_STATUS"));
+                elm.setVocabularyId(elemsRs.getString("DATAELEM.VOCABULARY_ID"));
+                elm.setAllConceptsValid(elemsRs.getBoolean("DATAELEM.ALL_CONCEPTS_LEGAL"));
+
 
                 // if attributes should be fetched, execute the relevant statement
                 if (getAttributes) {
@@ -756,7 +765,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param type
      * @param shortName
@@ -773,7 +782,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param type
      * @param shortName
@@ -792,7 +801,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param type
      * @param shortName
@@ -1058,7 +1067,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmIdf
      * @param tblIdf
      * @param dstIdf
@@ -1134,7 +1143,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmIdf
      * @param tblIdf
      * @param dstIdf
@@ -1150,7 +1159,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param identifier
      * @param datasetIdentifier
      * @param statuses
@@ -1165,7 +1174,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param identifier
      * @param datasetIdentifier
      * @param statuses
@@ -1217,7 +1226,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param idf
      * @param statuses
      * @return
@@ -1268,7 +1277,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param idf
      * @param statuses
      * @return
@@ -1281,7 +1290,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param idf
      * @return
      * @throws SQLException
@@ -1306,7 +1315,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmID
      * @param tblID
      * @param inheritAttrs
@@ -1389,6 +1398,9 @@ public class DDSearchEngine {
                     elm.setTblIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
                     elm.setPositionInTable(rs.getString("TBL2ELEM.POSITION"));
                 }
+
+                elm.setVocabularyId(rs.getString("DATAELEM.VOCABULARY_ID"));
+                elm.setAllConceptsValid(rs.getBoolean("ALL_CONCEPTS_LEGAL"));
 
                 Vector attributes =
                         !elmCommon && inheritAttrs ? getSimpleAttributes(elmID, "E", elm.getTableID(), elm.getDatasetID())
@@ -1517,20 +1529,23 @@ public class DDSearchEngine {
         return v;
     }
 
-    public Vector<FixedValue> getFixedValues(String delemId) throws SQLException {
+    public Vector<FixedValue> getFixedValues(String delemId) throws SQLException, DDException {
         return getFixedValues(delemId, "elem");
     }
 
     /**
-     * 
+     *
      * @param delemId
      * @param parentType
      * @return
      * @throws SQLException
      *             if database query fails
      */
-    public Vector<FixedValue> getFixedValues(String delemId, String parentType) throws SQLException {
+    public Vector<FixedValue> getFixedValues(String delemId, String parentType) throws SQLException, DDException {
 
+        if (isFixedValuesVocElement(delemId, parentType)) {
+            return getVocabularyFixedValues(delemId);
+        }
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer();
         buf.append("select * from FXV where OWNER_ID=").append(inParams.add(delemId, Types.INTEGER)).append(" and OWNER_TYPE=")
@@ -1573,8 +1588,9 @@ public class DDSearchEngine {
         return v;
     }
 
+
     /**
-     * 
+     *
      * @param attrId
      * @return
      * @throws SQLException
@@ -1585,7 +1601,43 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     * checks if CH3 element.
+     * @param elemenID
+     * @param type
+     * @return
+     */
+    private boolean isFixedValuesVocElement(String elemenID, String type) throws ServiceException {
+        //if "elem" and type = CH3 return true;
+        if (type.equals("elem")) {
+            IDataService dataService = springContext.getBean(IDataService.class);
+            return dataService.getDataElement(Integer.valueOf(elemenID)).getType().equals("CH3");
+        }
+
+        return false;
+    }
+
+    private Vector getVocabularyFixedValues(String elementId) throws ServiceException {
+        //get concepts from the dataservice
+        //build FixedValue objects from them
+        IDataService dataService = springContext.getBean(IDataService.class);
+
+        List<VocabularyConcept> concepts = dataService.getElementVocabularyConcepts(Integer.valueOf(elementId));
+        Vector<FixedValue> result = new Vector<FixedValue>();
+        for (VocabularyConcept concept : concepts) {
+            //simulate FXV id = concept.ID
+            FixedValue fxv = new FixedValue(String.valueOf(concept.getId()), elementId, concept.getIdentifier());
+
+            //TODO default?
+            fxv.setDefinition(concept.getDefinition());
+            fxv.setShortDesc(concept.getLabel());
+
+            result.add(fxv);
+        }
+
+        return result;
+    }
+    /**
+     *
      * @param attrId
      * @param priority
      * @return
@@ -1644,7 +1696,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param field_id
      * @return
      * @throws SQLException
@@ -1695,7 +1747,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrId
      * @param parentId
      * @param parent_type
@@ -1708,7 +1760,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parentId
      * @param parent_type
      * @return
@@ -1720,7 +1772,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parentId
      * @param parent_type
      * @param attrId
@@ -1733,7 +1785,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parentId
      * @param parent_type
      * @param attr_id
@@ -1920,7 +1972,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attr
      * @param rowHash
      */
@@ -1957,7 +2009,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attr_id
      * @return
      * @throws SQLException
@@ -2055,7 +2107,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attr_id
      * @return
      * @throws SQLException
@@ -2109,7 +2161,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws SQLException
      *             if database query fails
@@ -2119,7 +2171,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param id
      * @return
      * @throws SQLException
@@ -2134,7 +2186,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param id
      * @return
      * @throws SQLException
@@ -2198,7 +2250,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param datasetID
      * @return
      * @throws SQLException
@@ -2214,7 +2266,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param datasetID
      * @return
      * @throws SQLException
@@ -2231,7 +2283,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws SQLException
      *             if database query fails
@@ -2241,7 +2293,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param wrkCopies
      * @return
      * @throws SQLException
@@ -2252,7 +2304,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws SQLException
      *             if database query fails
@@ -2265,7 +2317,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param datasetID
      * @param wrkCopies
      * @param deleted
@@ -2367,7 +2419,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param shortName
      * @param version
@@ -2380,7 +2432,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param shortName
      * @param version
@@ -2394,7 +2446,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param shortName
      * @param version
@@ -2410,7 +2462,7 @@ public class DDSearchEngine {
 
     /**
      * get datasets by params, control oper & working copies.
-     * 
+     *
      * @throws SQLException
      *             if database query fails
      */
@@ -2422,7 +2474,7 @@ public class DDSearchEngine {
 
     /**
      * get datasets by params, control oper & working copies.
-     * 
+     *
      * @throws SQLException
      *             if database query fails
      */
@@ -2433,7 +2485,7 @@ public class DDSearchEngine {
 
     /**
      * Get datasets by params, control oper, working copies & historic versions.
-     * 
+     *
      * @throws SQLException
      *             if database query fails
      */
@@ -2650,7 +2702,7 @@ public class DDSearchEngine {
 
     /**
      * Returns true if this.user should not see definition in the given status.
-     * 
+     *
      * @param regStatus
      * @return
      */
@@ -2668,7 +2720,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param dstID
      * @param isOrderByPositions
      * @return
@@ -2742,7 +2794,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param shortName
      * @param fullName
@@ -2756,7 +2808,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param shortName
      * @param fullName
@@ -2773,7 +2825,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param shortName
      * @param idfier
@@ -2792,7 +2844,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param shortName
      * @param idfier
@@ -3032,7 +3084,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param tableID
      * @return
      * @throws SQLException
@@ -3043,7 +3095,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param tableID
      * @param dstID
      * @return
@@ -3114,7 +3166,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parentID
      * @param parentType
      * @param attrType
@@ -3127,7 +3179,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parentID
      * @param parentType
      * @param attrType
@@ -3147,7 +3199,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parentID
      * @param parentType
      * @return
@@ -3159,7 +3211,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parentID
      * @param parentType
      * @param inheritTblID
@@ -3268,7 +3320,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param fxvId
      * @return
      * @throws SQLException
@@ -3324,7 +3376,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param v
      * @param id
      * @return
@@ -3350,7 +3402,7 @@ public class DDSearchEngine {
 
     /**
      * Get the last insert ID from database.
-     * 
+     *
      * @return
      * @throws SQLException
      *             if database query fails
@@ -3372,7 +3424,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws SQLException
      *             if database query fails
@@ -3390,7 +3442,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param idfier
      * @param ofID
      * @return
@@ -3410,7 +3462,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param id
      * @param type
      * @return
@@ -3464,7 +3516,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean hasUserWorkingCopies() {
@@ -3533,7 +3585,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      *            - attribute ID
      * @param attrType
@@ -3579,9 +3631,9 @@ public class DDSearchEngine {
 
     /**
      * Return true if the given common element has newer Released version. Otherwise returns false.
-     * 
+     *
      * Note that this method does not check whether the given element is really a common one, so it's on caller's responsibility!
-     * 
+     *
      * @param elm
      * @return
      * @throws SQLException
@@ -3620,7 +3672,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmIdentifier
      * @param elmId
      * @return
@@ -3648,7 +3700,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param relID
      * @return
      * @throws SQLException
@@ -3712,7 +3764,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmID
      * @return
      * @throws SQLException
@@ -3723,7 +3775,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmID
      * @return
      * @throws SQLException
@@ -3826,7 +3878,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws SQLException
      *             if database query fails
@@ -3860,7 +3912,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      *            - attribute ID
      * @return
@@ -3872,7 +3924,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      *            - attribute ID
      * @param all
@@ -3885,7 +3937,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      *            - attribute ID
      * @param all
@@ -3988,7 +4040,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      *            - attribute ID
      * @param parentID
@@ -4033,7 +4085,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      *            - attribute ID
      * @throws SQLException
@@ -4155,7 +4207,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      *            - attribute ID
      * @return
@@ -4177,7 +4229,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param ownerID
      * @return
      * @throws SQLException
@@ -4188,7 +4240,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param ownerID
      * @param ownerType
      * @return
@@ -4234,7 +4286,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param shortName
      * @param attrType
      * @return
@@ -4255,7 +4307,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      *            - attribute ID
      * @param attrType
@@ -4277,7 +4329,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      *            - attribute ID
      * @return
@@ -4287,7 +4339,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param shortName
      * @return
      */
@@ -4296,7 +4348,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param field
      * @param value
      * @return
@@ -4338,7 +4390,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      *            - attribute ID
      * @return
@@ -4348,7 +4400,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param shortName
      * @return
      */
@@ -4357,7 +4409,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param field
      * @param value
      * @return
@@ -4398,7 +4450,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param objID
      * @param objType
      * @param article
@@ -4441,7 +4493,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param objID
      * @param objType
      * @return
@@ -4495,7 +4547,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param dstID
      * @return
      * @throws Exception
@@ -4555,7 +4607,7 @@ public class DDSearchEngine {
 
     /**
      * This one returns the IDs and titles of all ogligations that have a released dataset definition present in DD.
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -4631,7 +4683,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrShortName
      * @param parentID
      * @param parentType
@@ -4686,7 +4738,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmID
      * @return
      * @throws SQLException
@@ -4818,7 +4870,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param dstID
      * @return
      * @throws SQLException
@@ -4854,7 +4906,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param namespaceId
      * @return
      * @throws SQLException
@@ -4879,7 +4931,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param tableNamespaceID
      * @return
      * @throws SQLException
@@ -4917,7 +4969,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmID
      * @return
      * @throws SQLException
@@ -4953,7 +5005,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      */
@@ -4975,7 +5027,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param searchEngine
      */
     public static void close(DDSearchEngine searchEngine) {
@@ -4985,7 +5037,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param objectId
      * @param objectType
      * @param attributeType
@@ -5028,7 +5080,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -5043,7 +5095,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -5058,7 +5110,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -5125,7 +5177,7 @@ public class DDSearchEngine {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
         @Override
@@ -5141,7 +5193,7 @@ public class DDSearchEngine {
 
     /**
      * Spring context can be used in classes following the old design pattern: handlers etc.
-     * 
+     *
      * @return spring context object
      */
     public ApplicationContext getSpringContext() {
@@ -5162,5 +5214,16 @@ public class DDSearchEngine {
 
         return values;
 
+    }
+
+    /**
+     * returns vocabulary.
+     * @param vocabularyId vocabulary id
+     * @return vocabulary
+     */
+    public VocabularyFolder getVocabulary(int vocabularyId) {
+        //to avoid seniding weeks for redesign use this legacy code to bind vocabulary to data elements
+        IVocabularyFolderDAO dao = springContext.getBean(IVocabularyFolderDAO.class);
+        return dao.getVocabularyFolder(vocabularyId);
     }
 }

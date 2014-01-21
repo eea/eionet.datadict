@@ -35,8 +35,10 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
+import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.IDataService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.VocabularyConceptData;
@@ -64,6 +66,10 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /** Vocabulary service. */
     @SpringBean
     private IVocabularyService vocabularyService;
+
+    /** data service. */
+    @SpringBean
+    private IDataService dataService;
 
     /** Folders. */
     private List<Folder> folders;
@@ -246,6 +252,13 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     public void validateDeleteVocabulary() throws ServiceException {
         if (!isDeleteRight()) {
             addGlobalValidationError("No permission to delete vocabulary!");
+        }
+
+        //if vocabulary is used in CH3 element - cannot delete
+        List <DataElement> elementsAsSoruce = dataService.getVocabularySourceElements(folderIds);
+        if (elementsAsSoruce.size() > 0) {
+            addGlobalValidationError("Deleted vocabularies are used as values source for data elements: "
+                    + StringUtils.join(elementsAsSoruce, ","));
         }
 
         if (isValidationErrors()) {

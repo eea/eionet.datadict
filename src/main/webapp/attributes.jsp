@@ -230,7 +230,8 @@
                         <% if (attribute.displayFor("TBL")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
                     </td>
                     <td class="center">
-                        <% if (attribute.displayFor("CH1")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                        <!--  CH1 and CH3 attributes are same -->
+                        <% if (attribute.displayFor("CH1") || attribute.displayFor("CH3")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
                     </td>
                     <td class="center">
                         <% if (attribute.displayFor("CH2")){ %><img src="images/ok.gif" alt="Yes"/><%}%>

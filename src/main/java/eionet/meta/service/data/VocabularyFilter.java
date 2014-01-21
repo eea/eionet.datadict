@@ -21,6 +21,8 @@
 
 package eionet.meta.service.data;
 
+import eionet.meta.dao.domain.RegStatus;
+
 /**
  *
  * Filter for searching vocabularies.
@@ -38,6 +40,9 @@ public class VocabularyFilter extends PagedRequest {
 
     /** text to be searched in the concepts of the vocabulary. */
     private String conceptText;
+
+    /** vocabulary status. */
+    private RegStatus status;
 
     public String getText() {
         return text;
@@ -61,6 +66,14 @@ public class VocabularyFilter extends PagedRequest {
 
     public void setConceptText(String conceptText) {
         this.conceptText = conceptText;
+    }
+
+    public void setStatus(RegStatus status) {
+        this.status = status;
+    }
+
+    public RegStatus getStatus() {
+        return status;
     }
 
 }

@@ -71,8 +71,8 @@ public interface IDataElementDAO {
     /**
      * Returns latest version of the data element.
      *
-     * @param identifier
-     * @return
+     * @param identifier data element identifier
+     * @return element
      */
     DataElement getDataElement(String identifier);
 
@@ -108,7 +108,7 @@ public interface IDataElementDAO {
     void removeDataElement(int vocabularyFolderId, int dataElementId);
 
     /**
-     * Returns data elements binded with vocabulary folder.
+     * Returns data elements bound with vocabulary folder.
      *
      * @param vocabularyFolderId folder ID
      * @return list of data elements for the Vocabulary
@@ -217,5 +217,26 @@ public interface IDataElementDAO {
      * @return distinct collection of data elements
      */
     List<DataElement> getDataSetElements(int datasetId);
+
+    /**
+     * Sets relation to an external vocabulary.
+     * @param elementId data element id
+     * @param vocabularyId vocabulary Id
+     */
+    void bindVocabulary(int elementId, int vocabularyId);
+
+    /**
+     * Finds list of elements where given vocabularies is used as source for values.
+     * @param vocabularyIds vocabulary ids
+     * @return collection of data elements
+     */
+    List<DataElement> getVocabularySourceElements(List<Integer>vocabularyIds);
+
+    /**
+     * changes vocabulary reference in CH3 - fxv vocabulary elements.
+     * @param originalVocabularyId old vocabulary ID
+     * @param vocabularyId new vocabulary ID
+     */
+    void moveVocabularySources(int originalVocabularyId, int vocabularyId);
 
 }

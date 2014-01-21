@@ -1,5 +1,6 @@
 package eionet.meta.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.AfterClass;
@@ -11,6 +12,7 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
 import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
 
 /**
  * DataService tests.
@@ -52,7 +54,7 @@ public class DataServiceTest extends UnitilsJUnit4  {
     public void testGetCommonElements() throws Exception {
         List<DataElement> elements = dataService.getReleasedCommonDataElements();
 
-        Assert.assertTrue(elements.size() == 2);
+        Assert.assertTrue(elements.size() == 7);
 
     }
 
@@ -92,4 +94,50 @@ public class DataServiceTest extends UnitilsJUnit4  {
         Assert.assertTrue("Dataset1 contains an unreleased element", elems1.size() == 1);
         Assert.assertTrue("Dataset2 contains released elements", elems2.size() == 0);
     }
+
+    /**
+     * test method receiving elements having a vocabulary as source.
+     * @throws Exception if fail
+     */
+    @Test
+    public void testVocabularyElems() throws Exception {
+
+        List<Integer> p1 = new ArrayList<Integer>();
+        p1.add(1);
+
+        List<Integer> p2 = new ArrayList<Integer>();
+        p2.add(1);
+        p2.add(2);
+
+        List <DataElement> elems1 = dataService.getVocabularySourceElements(p1);
+        List <DataElement> elems2 = dataService.getVocabularySourceElements(p2);
+
+        Assert.assertTrue("Vocabulary1 is source for 2 elements ", elems1.size() == 2);
+        Assert.assertTrue("Vocabularies 1 and 2 are source for 3 elements ", elems2.size() == 3);
+
+
+    }
+
+
+    /**
+     * test if correct count of concepts are bound to element.
+     * Especially important is obsolete date check functionality if
+     * element type is not all concepts valid
+     * @throws Exception if error
+     */
+    @Test
+    public void testElementConcepts() throws Exception {
+
+        List<VocabularyConcept> concepts1 = dataService.getElementVocabularyConcepts(301);
+
+        //this element does not have 2 concepts one marked obsolete before releasing and the other created after
+        //releasing of the element:
+        List<VocabularyConcept> concepts2 = dataService.getElementVocabularyConcepts(302);
+
+        Assert.assertEquals("Element ID=301 has to have 5 concepts in fxvs ", 5, concepts1.size());
+        Assert.assertEquals("Element ID=302 has to have 3 concepts in fxvs ", 3, concepts2.size());
+
+    }
+
+
 }

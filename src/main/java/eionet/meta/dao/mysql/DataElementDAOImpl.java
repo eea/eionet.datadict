@@ -390,6 +390,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setType(rs.getString("de.TYPE"));
                 de.setModified(new Date(rs.getLong("de.DATE")));
                 de.setWorkingUser(rs.getString("de.WORKING_USER"));
+                de.setDate(rs.getString("de.DATE"));
+
+                de.setAllConceptsValid(rs.getBoolean("de.ALL_CONCEPTS_LEGAL"));
+                de.setVocabularyId(rs.getInt("de.VOCABULARY_ID"));
 
                 return de;
             }
@@ -867,5 +871,65 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             elem.setFixedValues(fxvs);
         }
         return result;
+    }
+
+    @Override
+    public void bindVocabulary(int dataElementId, int vocabularyId) {
+        String sql = "update DATAELEM set VOCABULARY_ID=:vocabularyId WHERE DATAELEM_ID=:dataElementId";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyId", vocabularyId);
+        params.put("dataElementId", dataElementId);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+
+    }
+
+    @Override
+    public List<DataElement> getVocabularySourceElements(List<Integer> vocabularyIds) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select  de.* from DATAELEM de WHERE de.VOCABULARY_ID IN(:vocabularyIds)");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyIds", vocabularyIds);
+
+        List<DataElement> result = getNamedParameterJdbcTemplate().query(sb.toString(), params, new RowMapper<DataElement>() {
+
+            @Override
+            public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DataElement de = new DataElement();
+                de.setId(rs.getInt("de.DATAELEM_ID"));
+                de.setShortName(rs.getString("de.SHORT_NAME"));
+                de.setStatus(rs.getString("de.REG_STATUS"));
+                de.setType(rs.getString("de.TYPE"));
+                de.setModified(new Date(rs.getLong("de.DATE")));
+                de.setWorkingUser(rs.getString("de.WORKING_USER"));
+                de.setIdentifier(rs.getString("de.IDENTIFIER"));
+
+                int parentNs = rs.getInt("de.PARENT_NS");
+                if (parentNs > 0) {
+                    de.setParentNamespace(parentNs);
+                }
+
+                return de;
+            }
+
+        });
+
+        return result;
+
+    }
+
+    @Override
+    public void moveVocabularySources(int originalVocabularyId, int vocabularyId) {
+
+        String sql = "update DATAELEM set VOCABULARY_ID = :originalVocabularyId WHERE VOCABULARY_ID = :vocabularyId";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyId", vocabularyId);
+        params.put("originalVocabularyId", originalVocabularyId);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+
     }
 }

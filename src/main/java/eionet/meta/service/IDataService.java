@@ -28,6 +28,7 @@ import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 
@@ -144,4 +145,18 @@ public interface IDataService {
      */
     List<DataElement> getUnreleasedCommonElements(int datasetId) throws ServiceException;
 
+    /**
+     * List of data elements (type  CH") where the vocabulary is used as a source for values.
+     * @param vocabularyIds vocabulary IDs
+     * @return list of elements
+     */
+    List<DataElement> getVocabularySourceElements(List<Integer> vocabularyIds);
+
+    /**
+     * ist of ficxed values for element type = CH3 from vocalbulary
+     * @param elementId element ID
+     * releasing date
+     * @return list of VocabularyConcepts
+     */
+    List<VocabularyConcept> getElementVocabularyConcepts(int elementId);
 }

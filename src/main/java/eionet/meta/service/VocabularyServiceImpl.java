@@ -605,6 +605,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
                 // Remove old data element relations
                 dataElementDAO.deleteVocabularyDataElements(originalVocabularyFolderId);
+                //update ch3 element reference
+                dataElementDAO.moveVocabularySources(originalVocabularyFolderId, vocabularyFolderId);
+
             }
 
             // Update original vocabulary folder
@@ -1192,5 +1195,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
             throw new ServiceException("Failed to perform concept search: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public void bindVocabulary(int elementId, int vocabularyId) {
+        dataElementDAO.bindVocabulary(elementId, vocabularyId);
+    }
+
 
 }

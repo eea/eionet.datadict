@@ -531,4 +531,12 @@ public interface IVocabularyService {
      */
     List<VocabularyConceptData> searchAllVocabularyConcept(VocabularyConceptFilter filter) throws ServiceException;
 
+    /**
+     * Sets relation to an external vocabulary.
+     * @param elementId data element id
+     * @param vocabularyId vocabulary Id
+     */
+    void bindVocabulary(int elementId, int vocabularyId);
+
+
 }

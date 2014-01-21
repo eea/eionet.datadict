@@ -928,7 +928,7 @@ else
                         if (mode.equals("view")){
                             boolean hasOne = false;
                             if (ch1Checked.equals("checked=\"checked\"")) { hasOne = true; %>
-                                Data elements with fixed values <%
+                                Data elements with fixed values (code list and elements from a vocabulary) <%
                             }
                             if (ch2Checked.equals("checked=\"checked\"")) { hasOne = true; %>
                                 <br/>Data elements with quanitative values <%
@@ -940,7 +940,7 @@ else
                                 <br/>Dataset tables <%
                             }
                             if (fxvChecked.equals("checked=\"checked\"")) { hasOne = true; %>
-                                <br/>Fixed values <%
+                                <br/>Fixed values (code list and vocabulary)<%
                             }
                             if (schChecked.equals("checked=\"checked\"")) { hasOne = true; %>
                                 <br/>Schemas <%

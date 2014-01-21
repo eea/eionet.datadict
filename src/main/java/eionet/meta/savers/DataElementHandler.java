@@ -116,6 +116,9 @@ public class DataElementHandler extends BaseHandler {
     /** indicates if top namespace needs to be released after an exception. */
     private boolean doCleanup = false;
 
+    /** shows if all concepts ar elegal. */
+    private boolean allConceptsLegal = true;
+
     /**
      * for deletion - a HashSet for remembering namespace ids and short_names of all working copies, so later we can find originals
      * and deal with them.
@@ -171,6 +174,10 @@ public class DataElementHandler extends BaseHandler {
         // some code might still supply parent namespace id with "ns"
         if (this.tblNamespaceID == null || this.tblNamespaceID.length() == 0) {
             this.tblNamespaceID = req.getParameter("ns");
+        }
+
+        if (req.getParameter("all_concepts_legal") != null) {
+            allConceptsLegal = req.getParameter("all_concepts_legal").equals("1");
         }
 
         if (ctx != null) {
@@ -292,7 +299,8 @@ public class DataElementHandler extends BaseHandler {
         }
 
         if (mode.equalsIgnoreCase("add")) {
-            if (elmValuesType == null || (!elmValuesType.equalsIgnoreCase("CH1") && !elmValuesType.equalsIgnoreCase("CH2"))) {
+            if (elmValuesType == null || (!elmValuesType.equalsIgnoreCase("CH1") && !elmValuesType.equalsIgnoreCase("CH2")
+                    && !elmValuesType.equalsIgnoreCase("CH3"))) {
                 throw new Exception("Element type not specified!");
             }
             // check if namespace exists
@@ -502,7 +510,15 @@ public class DataElementHandler extends BaseHandler {
         }
         if (switchType != null && switchType.equalsIgnoreCase("true")) {
 
-            String newType = elmValuesType.equals("CH1") ? "CH2" : "CH1";
+            String newType = "";
+            if (elmValuesType.equals("CH1")) {
+                newType = "CH2";
+            } else if (elmValuesType.equals("CH2")) {
+                newType = "CH1";
+            } else {
+                //TODO analyze and implement for CH3 if needed
+                throw new UnsupportedOperationException();
+            }
 
             SQLGenerator gen = new SQLGenerator();
             gen.setTable("DATAELEM");
@@ -540,6 +556,10 @@ public class DataElementHandler extends BaseHandler {
             if (!Util.isEmpty(elmRegStatus)) {
                 gen.setField("REG_STATUS", elmRegStatus);
             }
+        }
+
+        if (elmValuesType.equals("CH3")) {
+            gen.setFieldExpr("ALL_CONCEPTS_LEGAL", allConceptsLegal ? "1" : "0");
         }
 
         LOGGER.debug("sql: " + gen.updateStatement() + " where DATAELEM_ID=" + delem_id);

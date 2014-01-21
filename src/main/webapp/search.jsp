@@ -379,6 +379,7 @@ if (isDisplayOperations){
                                 <option value="">All</option>
                                 <option value="CH1">Data element with fixed values (codes)</option>
                                 <option value="CH2">Data element with quantitative values (e.g. measurements)</option>
+                                <option value="CH3">Data element with fixed values (vocabulary)</option>
                             </select>
                         </td>
                     </tr>
@@ -661,7 +662,7 @@ if (isDisplayOperations){
                         DElemAttribute attribute = (DElemAttribute)attrs.get(i);
 
                         if (type.equals("")){
-                            if (!attribute.displayFor("CH1") && !attribute.displayFor("CH2"))
+                            if (!attribute.displayFor("CH1") && !attribute.displayFor("CH2") && !attribute.displayFor("CH3"))
                                 continue;
                         }
                         else if (!attribute.displayFor(type))

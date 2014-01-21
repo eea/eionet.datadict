@@ -648,6 +648,11 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
             sql.append("AND WORKING_COPY = :workingCopy");
         }
 
+        if (filter.getStatus() != null) {
+            params.put("regStatus", filter.getStatus().getLabel());
+            sql.append("AND REG_STATUS = :regStatus");
+        }
+
         // related concepts text:
         if (StringUtils.isNotEmpty(filter.getConceptText())) {
             params.put("conceptText", "%" + filter.getConceptText() + "%");

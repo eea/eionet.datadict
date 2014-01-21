@@ -57,6 +57,11 @@ public class DataElement implements Comparable {
     private boolean mandatoryFlag;
     private boolean primaryKey;
 
+    private String vocabularyId;
+
+    private boolean allConceptsValid;
+
+
     /*
      *
      */
@@ -537,5 +542,22 @@ public class DataElement implements Comparable {
     public String getNameSpacePrefix() {
         return (isExternalSchema() ? StringUtils.substringBefore(identifier, ":") : null);
     }
+
+    public String getVocabularyId() {
+        return vocabularyId;
+    }
+
+    public void setVocabularyId(String vocabularyId) {
+        this.vocabularyId = vocabularyId;
+    }
+
+    public boolean isAllConceptsValid() {
+        return allConceptsValid;
+    }
+
+    public void setAllConceptsValid(boolean allConceptsValid) {
+        this.allConceptsValid = allConceptsValid;
+    }
+
 
 }

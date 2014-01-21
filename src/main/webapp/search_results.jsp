@@ -450,9 +450,11 @@ else{ %>
                     String delem_type = dataElement.getType();
                     String displayType = "unknown";
                     if (delem_type.equals("CH1"))
-                        displayType = "Fixed values";
+                        displayType = "Fixed values - code list";
                     else if (delem_type.equals("CH2"))
                         displayType = "Quantitative";
+                    else if (delem_type.equals("CH3"))
+                        displayType = "Fixed values - vocabulary";
 
                     String dstID = dataElement.getDatasetID();
                     String dstWorkingUser = dataElement.getDstWorkingUser();

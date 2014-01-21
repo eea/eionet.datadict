@@ -1535,18 +1535,34 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <comment>Remove GIS column from DATAELEM table, as it's no longer needed.</comment>
         <dropColumn tableName="DATAELEM" columnName="GIS"/>
     </changeSet>
-
-	<changeSet author="enverveli" id="rev-124">
-		<comment>Change data type of DATE_DELETED to DATE</comment>
-		<addColumn tableName="T_SITE_CODE">
-			<column name="DATE_DELETED_TEMP" type="DATE" />
-		</addColumn>
-		<update tableName="T_SITE_CODE">
-			<column name="DATE_DELETED_TEMP" valueComputed="STR_TO_DATE(CONCAT(DATE_DELETED, '-01-01'), '%Y-%m-%d')" type="DATE"/>
-			<where>DATE_DELETED IS NOT NULL</where>
-		</update>
-		<dropColumn columnName="DATE_DELETED" tableName="T_SITE_CODE"/>
-		<renameColumn newColumnName="DATE_DELETED" oldColumnName="DATE_DELETED_TEMP" tableName="T_SITE_CODE" columnDataType="DATE"/>
-	</changeSet>
-
+  <changeSet author="enverveli" id="rev-124">
+    <comment>Change data type of DATE_DELETED to DATE</comment>
+    <addColumn tableName="T_SITE_CODE">
+      <column name="DATE_DELETED_TEMP" type="DATE" />
+    </addColumn>
+    <update tableName="T_SITE_CODE">
+      <column name="DATE_DELETED_TEMP" valueComputed="STR_TO_DATE(CONCAT(DATE_DELETED, '-01-01'), '%Y-%m-%d')" type="DATE"/>
+      <where>DATE_DELETED IS NOT NULL</where>
+    </update>
+    <dropColumn columnName="DATE_DELETED" tableName="T_SITE_CODE"/>
+    <renameColumn newColumnName="DATE_DELETED" oldColumnName="DATE_DELETED_TEMP" tableName="T_SITE_CODE" columnDataType="DATE"/>
+  </changeSet>
+    <changeSet author="lainekai" id="rev-125">
+        <comment>New type CH3 for fixed value elements related to a vocabulary.</comment>
+        <modifyDataType tableName="DATAELEM" columnName="TYPE" newDataType="enum('CH1','CH2','CH3') NOT NULL default 'CH2'"/>
+    </changeSet>
+    <changeSet author="lainekai" id="rev-126">
+        <comment>Add relation to vocabulary that can be used for Fixed values of the element. Boolean field to indicate if all concepts are legal or only
+             the ones created before the element</comment>
+        <addColumn tableName="DATAELEM">
+            <column name="VOCABULARY_ID" type="INT UNSIGNED"></column>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_ID" baseTableName="DATAELEM"
+            constraintName="FK_ELEM_VOCABULARY_ID" deferrable="false" initiallyDeferred="false"
+            onDelete="RESTRICT" onUpdate="CASCADE"
+            referencedColumnNames="VOCABULARY_ID" referencedTableName="VOCABULARY" referencesUniqueColumn="false"/>
+        <addColumn tableName="DATAELEM">
+            <column name="ALL_CONCEPTS_LEGAL" type="TINYINT(1)" defaultValue="1"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

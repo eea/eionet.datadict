@@ -182,6 +182,7 @@
                             <propertyFile>target/test-classes/liquibase.properties</propertyFile>
                         </configuration>
                         <goals>
+                            <goal>dropAll</goal>
                             <goal>update</goal>
                         </goals>
                     </execution>
