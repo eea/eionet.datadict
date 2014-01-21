@@ -11,6 +11,11 @@
             return false;
         });
 
+        $("#addNewConceptBtn").click(function() {
+            $("#addNewConceptDiv").dialog('open');
+            return false;
+        });
+
         // Add concept dialog setup
         $("#addNewConceptDiv").dialog({
             autoOpen: false,

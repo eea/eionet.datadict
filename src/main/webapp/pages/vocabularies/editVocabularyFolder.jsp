@@ -102,10 +102,10 @@
                     </stripes:link>
                 </li>
                 <c:if test="${actionBean.userWorkingCopy}">
-					<li>
-						<a href="#" id="addNewConceptLink">Add new concept</a>
-					</li>
-				</c:if>
+          <li>
+            <a href="#" id="addNewConceptLink">Add new concept</a>
+          </li>
+        </c:if>
                 <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="undoCheckOut">
                         <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
@@ -386,7 +386,7 @@
                     <stripes:submit name="unMarkConceptsObsolete" value="Remove obsolete status" />
 
                     <c:if test="${actionBean.vocabularyFolder.commonType}">
-                        <button id="addNewConceptLink">Add new concept</button>
+                        <button id="addNewConceptBtn">Add new concept</button>
                     </c:if>
                 </div>
             </c:if>
@@ -395,7 +395,7 @@
         <c:if test="${actionBean.vocabularyConcepts.fullListSize == 0}">
             <c:if test="${actionBean.vocabularyFolder.commonType}">
                 <br />
-                <button id="addNewConceptLink">Add new concept</button>
+                <button id="addNewConceptBtn">Add new concept</button>
             </c:if>
         </c:if>
 
