@@ -35,12 +35,12 @@
 
 
         $("#referenceAdd${uniqueId}").live("click", function(event){
-          $('#add-value').dialog('open');
+          $('#add-value${uniqueId}').dialog('open');
           return false;
        });
 
 
-        $("#add-value").dialog({
+        $("#add-value${uniqueId}").dialog({
           autoOpen: false,
             resizable: false,
             maxHeight: 300,
@@ -71,7 +71,7 @@
 
                   newInput.appendTo("#multiDiv${uniqueId}");
                   currentSize++;
-
+//event.preventDefault();
                   $(this).dialog("close");
                   newInput.find("input[type='text']").focus();
                 }
@@ -124,7 +124,7 @@
     </c:forEach>
 </div>
 
-<div id="add-value" title="Add reference to concept" style="display:none">
+<div id="add-value${uniqueId}" title="Add reference to concept" style="display:none">
     <p>Do you want to add a concept maintained in another Data Dictionary vocabulary?</p>
 </div>
 <br/>
