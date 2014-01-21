@@ -1535,11 +1535,11 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <comment>Remove GIS column from DATAELEM table, as it's no longer needed.</comment>
         <dropColumn tableName="DATAELEM" columnName="GIS"/>
     </changeSet>
-    <changeSet author="lainekai" id="rev-124">
+    <changeSet author="lainekai" id="rev-125">
         <comment>New type CH3 for fixed value elements related to a vocabulary.</comment>
         <modifyDataType tableName="DATAELEM" columnName="TYPE" newDataType="enum('CH1','CH2','CH3') NOT NULL default 'CH2'"/>
     </changeSet>
-    <changeSet author="lainekai" id="rev-125">
+    <changeSet author="lainekai" id="rev-126">
         <comment>Add relation to vocabulary that can be used for Fixed values of the element. Boolean field to indicate if all concepts are legal or only
              the ones created before the element</comment>
         <addColumn tableName="DATAELEM">
