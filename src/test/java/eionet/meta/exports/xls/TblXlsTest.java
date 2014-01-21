@@ -31,6 +31,7 @@ public class TblXlsTest extends DDDatabaseTestCase {
     protected String[] fxvIdentifier = null;
     protected String[][] fxvSheetValues = null;
     protected TblXls classInstanceUnderTest = null;
+    protected TblXls classInstanceUnderTestWithoutDD = null;
     protected ByteArrayOutputStream baos = null;
     protected String objId = null;
 
@@ -53,7 +54,8 @@ public class TblXlsTest extends DDDatabaseTestCase {
         dataSheetValues = new String[][] {{"ND_TrophicState", "ND_AvgValue", "ND_TrendWintValue"}};
         fxvIdentifier = new String[] {"ND_TrophicState"};
         fxvSheetValues = new String[][] {{"Ultra-oligotrophic", "Oligotrophic", "Mesotrophic", "Eutrophic", "Hypertrophic"}};
-        classInstanceUnderTest = new TblXls(searchEngine, baos);
+        classInstanceUnderTest = new TblXls(searchEngine, baos, true);
+        classInstanceUnderTestWithoutDD = new TblXls(searchEngine, baos, false);
         objId = "7";
     }
 
@@ -140,6 +142,48 @@ public class TblXlsTest extends DDDatabaseTestCase {
             }
             Assert.assertTrue("Some fxvs did not matched: " + temp.toString(), temp.size() == 0);
 
+        } catch (Exception e) {
+            Assert.fail("Was not expecting any exceptions, but catched " + e.toString());
+        }
+    }
+    
+    
+    /**
+     * order of values change, so instead of following strict order, all elements checked
+     * 
+     * @throws SQLException
+     */
+    public void testExcelOutputWithoutDD() {
+        try {
+            classInstanceUnderTestWithoutDD.create(objId);
+            classInstanceUnderTestWithoutDD.write();
+
+            HSSFWorkbook testWb = new HSSFWorkbook(new ByteArrayInputStream(baos.toByteArray()));
+
+            // check sheet names, order of elements change, so follow a more elastic way to control
+            ArrayList<String> temp = new ArrayList<String>(Arrays.asList(sheetNames));
+            for (int i = 0; i < sheetNames.length; i++) {
+                String sheetName = testWb.getSheetName(i);
+                Assert.assertTrue("Sheet '" + sheetName + "' cannot be found!", temp.remove(sheetName));
+            }
+            // last one is fixed
+            Assert.assertEquals("Incorrect sheet name", "DO_NOT_DELETE_THIS_SHEET", testWb.getSheetName(sheetNames.length));
+            Assert.assertEquals("Incorrect number of sheets", (1 + sheetNames.length), testWb.getNumberOfSheets());
+            Assert.assertTrue("Some sheets did not matched: " + temp.toString(), temp.size() == 0);
+
+            // check for columns in each sheet
+            for (int i = 0; i < dataSheetValues.length; i++) {
+                HSSFSheet dataSheet = testWb.getSheet(sheetNames[i]);
+                HSSFRow dataRow = dataSheet.getRow(0); // it is always first row
+                temp = new ArrayList<String>(Arrays.asList(dataSheetValues[i]));
+                for (int j = 0; j < dataSheetValues[i].length; j++) {
+                    HSSFCell dataCell = dataRow.getCell(j);
+                    String cellValue = dataCell.toString().trim();
+                    Assert.assertTrue("Cell with value '" + cellValue + "' cannot be found!", temp.remove(cellValue));
+                }
+                Assert.assertTrue("Some cells did not matched: " + temp.toString(), temp.size() == 0);
+            }
+            
         } catch (Exception e) {
             Assert.fail("Was not expecting any exceptions, but catched " + e.toString());
         }

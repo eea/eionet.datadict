@@ -33,7 +33,7 @@ public class XlsServlet extends HttpServlet {
 
         OutputStream os = null;
         Connection conn = null;
-        
+
         try {
 
             String id = req.getParameter("obj_id");
@@ -46,7 +46,11 @@ public class XlsServlet extends HttpServlet {
                 throw new Exception("Missing object type or object type invalid!");
             }
 
-            //ServletContext ctx = getServletContext();
+            String action = req.getParameter("obj_act");
+            boolean dropDownAction = !Util.isEmpty(action) && action.equals("dd"); // if no action sent or invalid action send
+                                                                                   // ignore it
+
+            // ServletContext ctx = getServletContext();
             String cachePath = Props.getProperty(PropsIF.DOC_PATH);
 
             // get the DB connection
@@ -57,10 +61,10 @@ public class XlsServlet extends HttpServlet {
 
             XlsIF xls = null;
             if (type.equals("dst")) {
-                xls = new DstXls(searchEngine, os);
+                xls = new DstXls(searchEngine, os, dropDownAction);
                 ((CachableIF) xls).setCachePath(cachePath);
             } else {
-                xls = new TblXls(searchEngine, os);
+                xls = new TblXls(searchEngine, os, dropDownAction);
                 ((CachableIF) xls).setCachePath(cachePath);
             }
 
@@ -73,19 +77,20 @@ public class XlsServlet extends HttpServlet {
             os.close();
         } catch (Exception e) {
             e.printStackTrace(System.out);
-            res.setContentType(null);    
+            res.setContentType(null);
             res.sendError(500, e.getMessage());
-            //this exception is not caught by DDexceptinHandler hence this class is plain HttpServlet not a subclass of Stripes framework
-            //when content type is not set and error is sent, then browser is redirected to application server's error page
+            // this exception is not caught by DDexceptinHandler hence this class is plain HttpServlet not a subclass of Stripes
+            // framework
+            // when content type is not set and error is sent, then browser is redirected to application server's error page
             throw new ServletException(e.getMessage());
         } finally {
             try {
                 if (os != null) {
-                    os.close();                    
+                    os.close();
                 }
                 if (conn != null) {
                     conn.close();
-                }      
+                }
             } catch (Exception ee) {
             }
         }

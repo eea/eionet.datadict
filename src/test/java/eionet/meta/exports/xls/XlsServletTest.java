@@ -115,6 +115,40 @@ public class XlsServletTest extends DDDatabaseTestCase {
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("dst");
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("4");
+        EasyMock.expect(requestMock.getParameter("obj_act")).andReturn(null);
+
+        // record for response
+        EnvServletOutputStream os = new EnvServletOutputStream();
+        EasyMock.expect(responseMock.getOutputStream()).andReturn(os);
+        responseMock.setContentType("application/vnd.ms-excel");
+        responseMock.setHeader("Content-Disposition", "attachment; filename=\"NiD_test.xls\"");
+
+        // replay all mocks
+        replyAllMocks();
+
+        // call method to be tested
+        xlsServletUnderTest.service(requestMock, responseMock);
+
+        // perform checks and verify mocks
+        Assert.assertTrue("Nothing is written to os", os.somethingWritten);
+        verifyAllMocks();
+    }
+    
+    /**
+     * test if Xls output is responded for a valid dataset with drop-down
+     * 
+     * @throws Exception
+     *             if test fails
+     */
+    // @Test
+    public void testIfXlsReturnedForDatasetWithDD() throws Exception {
+        // initialize for step
+        initializeForStep();
+
+        // record for request
+        EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("dst");
+        EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("4");
+        EasyMock.expect(requestMock.getParameter("obj_act")).andReturn("dd");
 
         // record for response
         EnvServletOutputStream os = new EnvServletOutputStream();
@@ -147,6 +181,40 @@ public class XlsServletTest extends DDDatabaseTestCase {
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("tbl");
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("5");
+        EasyMock.expect(requestMock.getParameter("obj_act")).andReturn("");
+
+        // record for response
+        EnvServletOutputStream os = new EnvServletOutputStream();
+        EasyMock.expect(responseMock.getOutputStream()).andReturn(os);
+        responseMock.setContentType("application/vnd.ms-excel");
+        responseMock.setHeader("Content-Disposition", "attachment; filename=\"NiD_test_NiD_SW_Stat.xls\"");
+
+        // replay all mocks
+        replyAllMocks();
+
+        // call method to be tested
+        xlsServletUnderTest.service(requestMock, responseMock);
+
+        // perform checks and verify mocks
+        Assert.assertTrue("Nothing is written to os", os.somethingWritten);
+        verifyAllMocks();
+    }
+    
+    /**
+     * test if Xls output is responded for a valid table with DD.
+     * 
+     * @throws Exception
+     *             if test fails
+     */
+    // @Test
+    public void testIfXlsReturnedForTableWithDD() throws Exception {
+        // initialize for step
+        initializeForStep();
+
+        // record for request
+        EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("tbl");
+        EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("5");
+        EasyMock.expect(requestMock.getParameter("obj_act")).andReturn("dd");
 
         // record for response
         EnvServletOutputStream os = new EnvServletOutputStream();
@@ -322,6 +390,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn(objId);
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("dst");
+        EasyMock.expect(requestMock.getParameter("obj_act")).andReturn("asdasdads");
 
         // record for response
         EnvServletOutputStream os = new EnvServletOutputStream();
@@ -362,6 +431,7 @@ public class XlsServletTest extends DDDatabaseTestCase {
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn(objId);
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("tbl");
+        EasyMock.expect(requestMock.getParameter("obj_act")).andReturn("");
 
         // record for response
         EnvServletOutputStream os = new EnvServletOutputStream();

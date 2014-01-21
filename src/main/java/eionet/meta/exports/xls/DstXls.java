@@ -29,6 +29,7 @@ public class DstXls extends TblXls {
 
     /** All tables in dataset. */
     private Vector<DsTable> tables = null;
+    
 
     /**
      * 
@@ -58,10 +59,11 @@ public class DstXls extends TblXls {
      * @param searchEngine
      * @param os
      */
-    public DstXls(DDSearchEngine searchEngine, OutputStream os) {
+    public DstXls(DDSearchEngine searchEngine, OutputStream os, boolean withDropDown) {
         this();
         this.searchEngine = searchEngine;
         this.os = os;
+        this.withDropDown = withDropDown;        
     }
 
     /**
