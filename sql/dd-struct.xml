@@ -1548,5 +1548,13 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
 		<dropColumn columnName="DATE_DELETED" tableName="T_SITE_CODE"/>
 		<renameColumn newColumnName="DATE_DELETED" oldColumnName="DATE_DELETED_TEMP" tableName="T_SITE_CODE" columnDataType="DATE"/>
 	</changeSet>
+	
+	<changeSet author="enverveli" id="rev-125">
+		<comment>Drop Column SITE_CODE_ID from T_SITE_CODE table since it's redundant</comment>
+		<sql>ALTER TABLE T_SITE_CODE MODIFY SITE_CODE_ID INT NOT NULL</sql>
+		<dropPrimaryKey tableName="T_SITE_CODE"/>
+		<dropColumn columnName="SITE_CODE_ID" tableName="T_SITE_CODE"/>		
+		<addPrimaryKey columnNames="VOCABULARY_CONCEPT_ID" tableName="T_SITE_CODE"/>
+	</changeSet>
 
 </databaseChangeLog>

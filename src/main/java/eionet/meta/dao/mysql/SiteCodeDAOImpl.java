@@ -67,8 +67,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 sc.setIdentifier(rs.getString("vc.IDENTIFIER"));
                 sc.setLabel(rs.getString("vc.LABEL"));
                 sc.setDefinition(rs.getString("vc.DEFINITION"));
-                sc.setNotation(rs.getString("vc.NOTATION"));
-                sc.setSiteCodeId(rs.getInt("sc.SITE_CODE_ID"));
+                sc.setNotation(rs.getString("vc.NOTATION"));                
                 sc.setStatus(SiteCodeStatus.valueOf(rs.getString("sc.STATUS")));
                 sc.setCountryCode(rs.getString("sc.CC_ISO2"));
                 sc.setDateCreated(rs.getTimestamp("sc.DATE_CREATED"));
@@ -99,7 +98,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     private String getSiteCodesSql(SiteCodeFilter filter, Map<String, Object> params) {
         StringBuilder sql = new StringBuilder();
-        sql.append("select SQL_CALC_FOUND_ROWS sc.SITE_CODE_ID, sc.VOCABULARY_CONCEPT_ID, sc.STATUS, sc.CC_ISO2, "
+        sql.append("select SQL_CALC_FOUND_ROWS sc.VOCABULARY_CONCEPT_ID, sc.STATUS, sc.CC_ISO2, "
                 + "sc.DATE_CREATED, sc.USER_CREATED, vc.VOCABULARY_CONCEPT_ID, vc.IDENTIFIER, vc.LABEL, "
                 + "vc.DEFINITION, vc.NOTATION, sc.DATE_ALLOCATED, sc.USER_ALLOCATED, sc.INITIAL_SITE_NAME, "
                 + "sc.YEARS_DELETED, sc.YEARS_DISAPPEARED ");
@@ -191,14 +190,14 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         StringBuilder sql = new StringBuilder();
         sql.append("update T_SITE_CODE set CC_ISO2 = :country, INITIAL_SITE_NAME = :siteName, STATUS = :status, "
                 + "DATE_ALLOCATED = :dateAllocated, USER_ALLOCATED = :userAllocated ");
-        sql.append("where SITE_CODE_ID = :siteCodeId");
+        sql.append("where VOCABULARY_CONCEPT_ID = :vocabularyConceptId");
 
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[siteNames.length];
 
         for (int i = 0; i < freeSiteCodes.size(); i++) {
             Map<String, Object> params = new HashMap<String, Object>();
-            params.put("siteCodeId", freeSiteCodes.get(i).getSiteCodeId());
+            params.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
             params.put("country", countryCode);
             params.put("status", SiteCodeStatus.ALLOCATED.name());
             params.put("dateAllocated", allocationTime);
@@ -212,6 +211,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         }
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
 
+        //TODO query below can be updated to use vocabulary_concept_id ?
         // update place-holder value in concept label to <allocated>
         StringBuilder sqlForConcepts = new StringBuilder();
         sqlForConcepts.append("update VOCABULARY_CONCEPT set LABEL = :label where VOCABULARY_CONCEPT_ID IN "
@@ -224,7 +224,6 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         parameters.put("userAllocated", userName);
         parameters.put("label", "<" + SiteCodeStatus.ALLOCATED.name().toLowerCase() + ">");
         getNamedParameterJdbcTemplate().update(sqlForConcepts.toString(), parameters);
-
     }
 
     /**
@@ -248,7 +247,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     @Override
     public int getFeeSiteCodeAmount() {
         StringBuilder sql = new StringBuilder();
-        sql.append("select count(SITE_CODE_ID) from T_SITE_CODE where STATUS = :status");
+        sql.append("select count(VOCABULARY_CONCEPT_ID) from T_SITE_CODE where STATUS = :status");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("status", SiteCodeStatus.AVAILABLE.name());
@@ -266,7 +265,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         params.put("status", SiteCodeStatus.ALLOCATED.name());
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select count(SITE_CODE_ID) from T_SITE_CODE where STATUS = :status ");
+        sql.append("select count(VOCABULARY_CONCEPT_ID) from T_SITE_CODE where STATUS = :status ");
         sql.append("and CC_ISO2 = :countryCode ");
         if (withoutInitialName) {
             sql.append("and (INITIAL_SITE_NAME is null or INITIAL_SITE_NAME = '') ");
@@ -286,7 +285,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         params.put("statuses", Arrays.asList(SiteCodeFilter.ALLOCATED_USED_STATUSES));
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select count(SITE_CODE_ID) from T_SITE_CODE where STATUS in (:statuses) ");
+        sql.append("select count(VOCABULARY_CONCEPT_ID) from T_SITE_CODE where STATUS in (:statuses) ");
         sql.append("and CC_ISO2 = :countryCode");
 
         return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);

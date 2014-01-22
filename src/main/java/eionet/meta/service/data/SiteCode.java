@@ -33,8 +33,7 @@ import eionet.meta.dao.domain.VocabularyConcept;
  */
 public class SiteCode extends VocabularyConcept {
 
-    /** Properties. */
-    private int siteCodeId;
+    /** Properties. */    
     private SiteCodeStatus status = SiteCodeStatus.AVAILABLE;
     private String countryCode;
     private Date dateCreated;
@@ -44,18 +43,7 @@ public class SiteCode extends VocabularyConcept {
     private String initialSiteName;
     private String yearsDeleted;
     private String yearsDisappeared;
-    /**
-     * @return the id
-     */
-    public int getSiteCodeId() {
-        return siteCodeId;
-    }
-    /**
-     * @param id the id to set
-     */
-    public void setSiteCodeId(int id) {
-        this.siteCodeId = id;
-    }
+    
     /**
      * @return the status
      */
