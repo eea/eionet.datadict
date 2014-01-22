@@ -764,7 +764,7 @@ else if (mode.equals("add"))
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            Create an MS Excel template for this table with drop-down boxes (BETA)&nbsp;<a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" /></a>
+                                                            Create an MS Excel template for this table with drop-down boxes (BETA)&nbsp;<a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel_dropdown"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" /></a>
                                                         </td>
                                                         <td>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=tbl&amp;obj_act=dd&amp;obj_id=<%=tableID%>"><img style="border:0" src="<%=request.getContextPath()%>/images/xls.png" width="16" height="16" alt=""/></a>

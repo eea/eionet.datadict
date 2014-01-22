@@ -864,7 +864,7 @@ else if (mode.equals("add"))
                                                         </tr>
                                                          <tr>
                                                             <td>
-                                                                Create an MS Excel template for this dataset with drop-down boxes (BETA)&nbsp;<a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel" onclick="pop(this.href);return false;"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/></a>
+                                                                Create an MS Excel template for this dataset with drop-down boxes (BETA)&nbsp;<a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel_dropdown" onclick="pop(this.href);return false;"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/></a>
                                                             </td>
                                                             <td>
                                                                 <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>"><img style="border:0" src="<%=request.getContextPath()%>/images/xls.png" width="16" height="16" alt="XLS icon"/></a>
