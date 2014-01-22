@@ -33,6 +33,7 @@
 ( function($) {
     $(document).ready(function() {
 
+       var currentSize = ${fn:length(dataElements)};
 
         $("#referenceAdd${uniqueId}").live("click", function(event){
           $('#add-value${uniqueId}').dialog('open');
@@ -60,18 +61,15 @@
                 },
                 "No, enter the URL": function() {
                   clearSysMsg();
-                  var currentSize = ${fn:length(dataElements)};
                   var newInput = $("#newField${uniqueId}").clone(true);
                   newInput.attr("id", "multySpan${uniqueId}-" + currentSize);
                   newInput.find("input[id='elem-${uniqueId}.id']").attr("name", "${fieldName}[" + currentSize + "].id");
                   newInput.find("input[id='elem-${uniqueId}.id']").attr("value", "${elementId}");
                   newInput.find("input[type='text']").attr("name", "${fieldName}[" + currentSize + "].attributeValue");
 
-                  //newInput.find("input[id='elem-${uniqueId}.id']").attr("id", "referenceValue${fieldName}-" + currentSize + ".id");
-
                   newInput.appendTo("#multiDiv${uniqueId}");
                   currentSize++;
-//event.preventDefault();
+
                   $(this).dialog("close");
                   newInput.find("input[type='text']").focus();
                 }
