@@ -397,7 +397,14 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 // add element title
                 temp = elm.getAttributeValueByShortName("Name");
                 String elmName = Util.isEmpty(temp) ? elm.getShortName() : temp;
-                String releasedDate = " (Released at " + eionet.util.Util.releasedDateShort(Long.parseLong(elm.getDate())) + ")";
+
+                String releasedDate = "";
+                if (!Util.isEmpty(elm.getDate())) {
+                    long parsed = Long.parseLong(elm.getDate());
+                    if (parsed > 0) {
+                        releasedDate = " (Released at " + eionet.util.Util.releasedDateShort(parsed) + ")";
+                    }
+                }
                 title = elmName + releasedDate + " codelist";
                 nr = sect.level(title, getLevelFor(4), false);
                 nr = nr == null ? "" : nr + " ";
@@ -448,7 +455,14 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 // add element title
                 temp = elm.getAttributeValueByShortName("Name");
                 String elmName = Util.isEmpty(temp) ? elm.getShortName() : temp;
-                title = elmName + " (Released at " + eionet.util.Util.releasedDateShort(Long.parseLong(elm.getDate())) + ")";
+                title = elmName;
+                if (!Util.isEmpty(elm.getDate())) {
+                    long parsed = Long.parseLong(elm.getDate());
+                    if (parsed > 0) {
+                        title += " (Released at " + eionet.util.Util.releasedDateShort(parsed) + ")";
+                    }
+                }
+
                 nr = sect.level(title, getLevelFor(3), false);
                 nr = nr == null ? "" : nr + " ";
 
