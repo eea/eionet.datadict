@@ -299,13 +299,13 @@
             		var datasetId = checkboxes[i].value;
             		var canDeleteThisDataset = document.getElementById("can_delete_ds_idf_" + datasetId);
             		//if there is an attempt to delete unauthorized datasets, uncheck them
-            		if (!canDeleteThisDataset.value){
+            		if (canDeleteThisDataset.value == 'false'){
             			checkboxes[i].checked = false;
             			cannotDeletedDatasetIds.push(datasetId);
             			continue;
             		}
             		
-            		if(document.getElementById("released_ds_idf_" + datasetId).value){
+            		if(document.getElementById("released_ds_idf_" + datasetId).value == 'true'){
             			releasedDatasetIds.push(datasetId);
             		}            		
             		found = true;
@@ -316,7 +316,7 @@
             if (cannotDeletedDatasetIds.length > 0){
             	var promptMessage = "You don't have permission to delete following datasets: ";
             	for (var i = 0; i < cannotDeletedDatasetIds.length; i++ ){
-            		promptMessage += "\n" + document.getElementById("ds_idf_" + cannotDeletedDatasetIds[i]).value;
+            		promptMessage += "\n  -  " + document.getElementById("ds_idf_" + cannotDeletedDatasetIds[i]).value;
             	}
                 alert(promptMessage);
             }
@@ -331,7 +331,7 @@
             if (releasedDatasetIds.length > 0){
             	var promptMessage = "Following datasets are RELEASED: ";
             	for (var i = 0; i < releasedDatasetIds.length; i++ ){
-            		promptMessage += "\n" + document.getElementById("ds_idf_" + releasedDatasetIds[i]).value;
+            		promptMessage += "\n  -  " + document.getElementById("ds_idf_" + releasedDatasetIds[i]).value;
             	}
             	promptMessage += "\nAre you sure you want to delete?\nClick OK, if you want to continue. Otherwise click Cancel.";
             	var b2 = confirm(promptMessage);
