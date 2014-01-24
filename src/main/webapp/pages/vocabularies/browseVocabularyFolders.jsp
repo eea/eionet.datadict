@@ -38,6 +38,8 @@
                 });
 
                 $("#deleteBtn").click(function() {
+
+
                     var deleteOk = confirm('Are you sure you want to delete the selected vocabularies?');
                     var vocabularyIdsBaseUri = [<c:forEach items='${actionBean.vocabulariesWithBaseUri}' var='id'>'${id}',</c:forEach>];
                     var keepRelations = false;
@@ -46,6 +48,8 @@
 
                         var vocabularyIds = document.getElementsByName("folderIds");
                         var containsVocabularyWithBaseUri = false;
+                        // loops checked vocabularies, if any of them has bas uri asks if relations in other vocabularies
+                        // should be replaced with uri values
 
                         for (var i = 0, ref =  vocabularyIds.length; i < ref; i++) {
                             if (vocabularyIds[i].checked == true && vocabularyIdsBaseUri.indexOf(vocabularyIds[i].value) != -1) {
@@ -93,34 +97,6 @@
 
         } ) ( jQuery );
 
-        // loops checked vocabularies, if any of them has bas uri asks if relations in other vocabularies
-        // should be replaced with uri values
-        function checkDelete() {
-            var deleteOk = confirm('Are you sure you want to delete the selected vocabularies?');
-            var vocabularyIdsBaseUri = [<c:forEach items='${actionBean.vocabulariesWithBaseUri}' var='id'>'${id}',</c:forEach>];
-
-          var keepRelations = false;
-          if (deleteOk==true) {
-
-            var vocabularyIds = document.getElementsByName("folderIds");
-            var containsVocabularyWithBaseUri = false;
-
-            for (var i = 0, ref =  vocabularyIds.length; i < ref; i++) {
-                if (vocabularyIds[i].checked == true && vocabularyIdsBaseUri.indexOf(vocabularyIds[i].value) != -1) {
-                  containsVocabularyWithBaseUri = true;
-                  break;
-                }
-            }
-
-            if (containsVocabularyWithBaseUri==true) {
-                      keepRelations = confirm('Do you want to replace relations in other vocabularies pointing to the deleteable vocabularies with concept URIs?');
-              document.getElementById("txtKeepRelations").value = keepRelations;
-            }
-
-          }
-
-          return deleteOk;
-       }
         // ]]>
         </script>
     </stripes:layout-component>
