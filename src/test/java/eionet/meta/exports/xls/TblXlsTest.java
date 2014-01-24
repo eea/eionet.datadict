@@ -87,17 +87,17 @@ public class TblXlsTest extends DDDatabaseTestCase {
             HSSFWorkbook testWb = new HSSFWorkbook(new ByteArrayInputStream(baos.toByteArray()));
 
             // check sheet names, order of elements change, so follow a more elastic way to control
-            // first one is fixed
-            Assert.assertEquals("Incorrect sheet name", "REFERENCES_FOR_DROPDOWN_ITEMS_DO_NOT_DELETE", testWb.getSheetName(0));
             ArrayList<String> temp = new ArrayList<String>(Arrays.asList(sheetNames));
             for (int i = 0; i < sheetNames.length; i++) {
-                String sheetName = testWb.getSheetName(i + 1);
+                String sheetName = testWb.getSheetName(i);
                 Assert.assertTrue("Sheet '" + sheetName + "' cannot be found!", temp.remove(sheetName));
             }
-            // last one is also fixed
-            Assert.assertEquals("Incorrect sheet name", "DO_NOT_DELETE_THIS_SHEET", testWb.getSheetName(1 + sheetNames.length));
-            Assert.assertEquals("Incorrect number of sheets", (2 + sheetNames.length), testWb.getNumberOfSheets());
             Assert.assertTrue("Some sheets did not matched: " + temp.toString(), temp.size() == 0);
+            // last two are also fixed
+            Assert.assertEquals("Incorrect sheet name", "DO_NOT_DELETE_THIS_SHEET", testWb.getSheetName(sheetNames.length));
+            // first one is fixed
+            Assert.assertEquals("Incorrect sheet name", "REFS_FOR_DD_ITEMS_DO_NOT_DEL", testWb.getSheetName(sheetNames.length + 1));
+            Assert.assertEquals("Incorrect number of sheets", (2 + sheetNames.length), testWb.getNumberOfSheets());
 
             // check for columns in each sheet
             for (int i = 0; i < dataSheetValues.length; i++) {
@@ -113,7 +113,7 @@ public class TblXlsTest extends DDDatabaseTestCase {
             }
 
             // check for fixed values stored for drop-down menu item, because it is not ordered, code below is a bit complicated
-            HSSFSheet fxvSheet = testWb.getSheetAt(0); // first sheet always
+            HSSFSheet fxvSheet = testWb.getSheetAt(testWb.getNumberOfSheets() - 1); // last sheet always
             temp = new ArrayList<String>(Arrays.asList(fxvIdentifier));
             for (int i = 0; i < fxvSheetValues.length; i++) {// Don't iterate more than number of drop-down item
                 HSSFRow fxvRow = null;
@@ -136,7 +136,7 @@ public class TblXlsTest extends DDDatabaseTestCase {
                 for (int j = 0; j < fxvSheetValues[rowIndex].length; j++) {
                     fxvCell = fxvRow.getCell(j + 1);// first column is label, so start +1
                     String fixedCellValue = fxvCell.toString().trim();
-                    Assert.assertTrue("Fixed cell value '" + fixedCellValue + "' cannot be found!", temp2.remove(fixedCellValue));                    
+                    Assert.assertTrue("Fixed cell value '" + fixedCellValue + "' cannot be found!", temp2.remove(fixedCellValue));
                 }
                 Assert.assertTrue("Some fxvs did not matched: " + temp2.toString(), temp2.size() == 0);
             }
@@ -145,9 +145,8 @@ public class TblXlsTest extends DDDatabaseTestCase {
         } catch (Exception e) {
             Assert.fail("Was not expecting any exceptions, but catched " + e.toString());
         }
-    }
-    
-    
+    }//end of test step testExcelOutput
+
     /**
      * order of values change, so instead of following strict order, all elements checked
      * 
@@ -183,7 +182,7 @@ public class TblXlsTest extends DDDatabaseTestCase {
                 }
                 Assert.assertTrue("Some cells did not matched: " + temp.toString(), temp.size() == 0);
             }
-            
+
         } catch (Exception e) {
             Assert.fail("Was not expecting any exceptions, but catched " + e.toString());
         }

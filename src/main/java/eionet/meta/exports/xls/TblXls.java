@@ -113,11 +113,12 @@ public class TblXls extends Xls implements CachableIF {
         }
         this.xlsId = xlsId;
 
+        createEmptySheets(xlsId);
+        setSchemaUrl();
         if (this.withDropDown) {
             createHiddenSheetForDropdownMenuReferences();
         }
         generateContent(xlsId);
-        setSchemaUrl();
     }
 
     /*
@@ -146,13 +147,26 @@ public class TblXls extends Xls implements CachableIF {
     }
 
     /**
+     * Create empty sheet for table
+     * @param tblID
+     * @throws Exception
+     */
+    protected void createEmptySheets(String tblID) throws Exception {
+        DsTable tbl = searchEngine.getDatasetTable(tblID);
+        if (tbl == null) {
+            throw new Exception("Table " + tblID + " not found!");
+        }
+        wb.createSheet(tbl.getIdentifier());
+    }
+
+    /**
      * Creates a hidden sheet to store drop-down menu items values.
      */
     private void createHiddenSheetForDropdownMenuReferences() {
         this.dropDownReferencesHiddenSheetName = Props.getProperty(PropsIF.XLS_DROPDOWN_FXV_SHEET);
         this.dropDownReferencesHiddenSheetNewIndex = 0;
         this.dropDownReferencesHiddenSheet = wb.createSheet(dropDownReferencesHiddenSheetName);
-        this.wb.setSheetHidden(0, true);// hide references sheet
+        this.wb.setSheetHidden(this.wb.getNumberOfSheets() - 1, true);// hide references sheet
         HSSFRow row = this.dropDownReferencesHiddenSheet.createRow(this.dropDownReferencesHiddenSheetNewIndex);
         HSSFCell cell = row.createCell(0);
         cell.setCellValue("Please do not delete or modify this sheet!!! It is used for drop-down items in this file for your convenience.");
@@ -174,7 +188,10 @@ public class TblXls extends Xls implements CachableIF {
         // illegal for a filename
         fileName = tbl.getDstIdentifier() + "_" + tbl.getIdentifier() + FILE_EXT;
 
-        sheet = wb.createSheet(tbl.getIdentifier());
+        sheet = wb.getSheet(tbl.getIdentifier());
+        if (sheet == null) {
+            sheet = wb.createSheet(tbl.getIdentifier());
+        }
         row = sheet.createRow(0);
         addElements(tbl);
         sheet.createFreezePane(0, 1);
