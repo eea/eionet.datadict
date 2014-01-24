@@ -76,11 +76,11 @@ public class DstCombinedPdfGuideline extends DstPdfGuideline {
                 filenames.append(ds.getIdentifier());
                 filenames.append("-");
                 this.headerTitle.append(ds.getIdentifier());
-                this.headerTitle.append("&");
+                this.headerTitle.append(", ");
             }
         }
         filenames.deleteCharAt(filenames.length() - 1);
-        this.headerTitle.deleteCharAt(this.headerTitle.length() - 1);
+        this.headerTitle.delete(this.headerTitle.length() - 2, this.headerTitle.length());
         filenames.append(DstPdfGuideline.FILE_EXT);
         this.fileName = filenames.toString();
 
@@ -121,7 +121,7 @@ public class DstCombinedPdfGuideline extends DstPdfGuideline {
         font.setColor(Color.gray);
 
         Paragraph prg = new Paragraph();
-        prg.add(new Chunk("Data Dictionary\n", font));
+        prg.add(new Chunk("Data Dictionary ", font));
         prg.setLeading(10 * 1.2f);
 
         int fontSize = 9 - this.dsNames.size() / 5;
@@ -131,12 +131,12 @@ public class DstCombinedPdfGuideline extends DstPdfGuideline {
 
         font = Fonts.getUnicode(fontSize);
         font.setColor(Color.lightGray);
-        prg.add(new Chunk("Dataset specifications for " + headerTitle, font));
+        prg.add(new Chunk("Dataset specifications for " + this.headerTitle, font));
         prg.add(new Chunk(" * created " + Util.pdfDate(System.currentTimeMillis()), font));
 
         this.header = new HeaderFooter(prg, false);
-        header.setBorder(com.lowagie.text.Rectangle.BOTTOM);
-    }
+        this.header.setBorder(com.lowagie.text.Rectangle.BOTTOM);
+    }// end of method setHeader
 
     /**
      * Override of the method for adding a title page

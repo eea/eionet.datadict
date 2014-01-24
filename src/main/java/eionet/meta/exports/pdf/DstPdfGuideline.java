@@ -766,7 +766,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         prg.add(new Chunk(" * created " + Util.pdfDate(System.currentTimeMillis()), font));
 
         this.header = new HeaderFooter(prg, false);
-        header.setBorder(com.lowagie.text.Rectangle.BOTTOM);
+        this.header.setBorder(com.lowagie.text.Rectangle.BOTTOM);
     }// end of method setHeader
 
     /*
