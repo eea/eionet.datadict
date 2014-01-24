@@ -686,7 +686,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         prg.setAlignment(Element.ALIGN_CENTER);
         doc.add(prg);
 
-        doc.add(new Paragraph("\n\n\n\n\n\n\n\n\n"));
+        doc.add(new Paragraph("\n\n\n\n\n\n\n\n"));
 
         // full definition
         font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
@@ -695,7 +695,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         doc.add(prg);
 
         // dataset name
-        font = Fonts.getUnicode(26, Font.BOLD);
+        font = Fonts.getUnicode(24, Font.BOLD);
         prg = new Paragraph(dsName, font);
         prg.setAlignment(Element.ALIGN_CENTER);
         doc.add(prg);
@@ -717,7 +717,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             doc.add(prg);
         }
 
-        doc.add(new Paragraph("\n\n\n\n\n\n\n\n\n\n\n"));
+        doc.add(new Paragraph("\n\n\n\n\n\n\n\n\n\n"));
 
         // European Environment Agency
         font = FontFactory.getFont(FontFactory.TIMES_BOLD, 12);
