@@ -423,7 +423,7 @@ public class PdfUtil {
         table.addCell(cell);
 
         boolean wasFK = false;
-        
+
         Font phraseFontForDataSpecs = Fonts.get(Fonts.CELL_VALUE);
         // add value rows
         for (int i = 0; i < tblElems.size(); i++) {
@@ -592,11 +592,11 @@ public class PdfUtil {
                 }
             }
 
-            
             Phrase phrase = process(dataspecs.toString(), phraseFontForDataSpecs);
             if (localAddressToGo != null) {
-                //dataspecs.append("section ").append(sect.getRefCodelists());
-                phrase.add(new Chunk("section " + sect.getRefCodelists(), phraseFontForDataSpecs).setLocalGoto(localAddressToGo));
+                // dataspecs.append("section ").append(sect.getRefCodelists());
+                phrase.add(new Chunk("section " + sect.getRefCodelists(), phraseFontForDataSpecs).setLocalGoto(localAddressToGo)
+                        .setUnderline(0.1f, -2f));
             }
             cell = new PdfPCell(phrase);
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);

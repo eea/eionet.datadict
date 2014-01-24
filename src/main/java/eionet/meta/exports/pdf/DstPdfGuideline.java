@@ -126,12 +126,13 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             writeFromCache();
             return;
         }
-        Dataset datasetInstance = initializeDataset(dsID);        
+        Dataset datasetInstance = initializeDataset(dsID);
         write(datasetInstance);
     }
-    
+
     /**
      * Method to initialize dataset instance
+     * 
      * @param dstId
      * @return
      */
@@ -156,14 +157,14 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         datasetInstance.setTables(v);
 
         addParameter("dstID", dstId);
-        
+
         String s = datasetInstance.getAttributeValueByShortName("Name");
         dsName = Util.isEmpty(s) ? datasetInstance.getShortName() : s;
 
         dsVersion = datasetInstance.getAttributeValueByShortName("Version");
-        
+
         return datasetInstance;
-    }//end of method initializeDataset
+    }// end of method initializeDataset
 
     /**
      * 
@@ -173,7 +174,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void write(Dataset ds) throws Exception {
 
-        //defensive check
+        // defensive check
         if (ds == null) {
             throw new Exception("Dataset object is null!");
         }
@@ -356,17 +357,20 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
                 // add 'Codelists' title
                 if (!lv1added) {
-                    nr = sect.level("Codelists", getLevelFor(1));
+                    temp = "Codelists";
+                    nr = sect.level(temp, getLevelFor(1));
                     nr = nr == null ? "" : nr + " ";
-                    localAddress = PdfHandout.getLocalDestinationAddressFor(nr + "Codelists");
-                    prg = new Paragraph(new Chunk(nr + "Codelists", Fonts.get(Fonts.HEADING_1)).setLocalDestination(localAddress));
+                    localAddress = PdfHandout.getLocalDestinationAddressFor(nr + temp);
+                    prg = new Paragraph(new Chunk(nr + temp, Fonts.get(Fonts.HEADING_1)).setLocalDestination(localAddress));
                     addElement(prg);
                     addElement(new Paragraph("\n"));
                     lv1added = true;
 
-                    nr = sect.level("Standard Elements Codelists", getLevelFor(2), false);
+                    temp = "Non-common Elements Codelists";
+                    nr = sect.level(temp, getLevelFor(2));
                     nr = nr == null ? "" : nr + " ";
-                    prg = new Paragraph(nr + "Standard Elements Codelists", Fonts.get(Fonts.HEADING_2));
+                    localAddress = PdfHandout.getLocalDestinationAddressFor(nr + temp);
+                    prg = new Paragraph(new Chunk(nr + temp, Fonts.get(Fonts.HEADING_2)).setLocalDestination(localAddress));
                     addElement(prg);
                     addElement(new Paragraph("\n"));
                 }
@@ -416,17 +420,20 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         if (commonElements.size() > 0) {
             // add 'Codelists' title
             if (!lv1added) {
-                nr = sect.level("Codelists", getLevelFor(1));
+                temp = "Codelists";
+                nr = sect.level(temp, getLevelFor(1));
                 nr = nr == null ? "" : nr + " ";
-                localAddress = PdfHandout.getLocalDestinationAddressFor(nr + "Codelists");
-                prg = new Paragraph(new Chunk(nr + "Codelists", Fonts.get(Fonts.HEADING_1)).setLocalDestination(localAddress));
+                localAddress = PdfHandout.getLocalDestinationAddressFor(nr + temp);
+                prg = new Paragraph(new Chunk(nr + temp, Fonts.get(Fonts.HEADING_1)).setLocalDestination(localAddress));
                 addElement(prg);
                 addElement(new Paragraph("\n"));
             }
 
-            nr = sect.level("Common Elements Codelists", getLevelFor(2), false);
+            temp = "Common Elements Codelists";
+            nr = sect.level(temp, getLevelFor(2));
             nr = nr == null ? "" : nr + " ";
-            prg = new Paragraph(nr + "Common Elements Codelists", Fonts.get(Fonts.HEADING_2));
+            localAddress = PdfHandout.getLocalDestinationAddressFor(nr + temp);
+            prg = new Paragraph(new Chunk(nr + temp, Fonts.get(Fonts.HEADING_2)).setLocalDestination(localAddress));
             addElement(prg);
             addElement(new Paragraph("\n"));
 
@@ -634,9 +641,9 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
     }
 
     protected void addTitlePageForCombined() throws Exception {
-        //String s = ds.getAttributeValueByShortName("Name");
-        //dsName = Util.isEmpty(s) ? ds.getShortName() : s;
-        
+        // String s = ds.getAttributeValueByShortName("Name");
+        // dsName = Util.isEmpty(s) ? ds.getShortName() : s;
+
         String nr = sect.level(dsName, 1);
         nr = nr == null ? "" : nr + " ";
         String localAddress = PdfHandout.getLocalDestinationAddressFor(nr + dsName);
@@ -746,7 +753,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
         this.header = new HeaderFooter(prg, false);
         header.setBorder(com.lowagie.text.Rectangle.BOTTOM);
-    }//end of method setHeader
+    }// end of method setHeader
 
     /*
      * (non-Javadoc)
