@@ -230,7 +230,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     @Test
     public void testDeleteVocabularyFolders() throws ServiceException {
-        vocabularyService.deleteVocabularyFolders(Collections.singletonList(1));
+        vocabularyService.deleteVocabularyFolders(Collections.singletonList(1), false);
 
         Exception exception = null;
         try {

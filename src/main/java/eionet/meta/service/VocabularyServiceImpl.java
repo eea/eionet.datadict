@@ -73,7 +73,7 @@ import eionet.web.action.ErrorActionBean;
 
 /**
  * Vocabulary service.
- * 
+ *
  * @author Juhan Voolaid
  */
 @Service
@@ -323,7 +323,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
     /**
      * updates bound element values included related bound elements.
-     * 
+     *
      * @param vocabularyConcept
      *            concept
      */
@@ -354,7 +354,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * As a last step when updating vocabulary concept, this method checks all the binded elements that represent relations and
      * makes sure that the concepts are related in both sides (A related with B -> B related with A). Also when relation gets
      * deleted from one side, then we make sure to deleted it also from the other side of the relation.
-     * 
+     *
      * @param vocabularyConcept
      *            Concept to be updated
      * @param dataElementValues
@@ -496,9 +496,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteVocabularyFolders(List<Integer> ids) throws ServiceException {
+    public void deleteVocabularyFolders(List<Integer> ids, boolean keepRelatedValues) throws ServiceException {
         try {
-            vocabularyFolderDAO.deleteVocabularyFolders(ids);
+
+            if (keepRelatedValues) {
+                vocabularyFolderDAO.updateRelatedConceptValueToUri(ids);
+            }
+            vocabularyFolderDAO.deleteVocabularyFolders(ids, keepRelatedValues);
             attributeDAO.deleteAttributes(ids, DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
         } catch (Exception e) {
             throw new ServiceException("Failed to delete vocabulary folders: " + e.getMessage(), e);
@@ -633,7 +637,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                     DElemAttribute.ParentType.VOCABULARY_FOLDER);
 
             // Delete checked out version
-            vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId));
+            vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId), false);
 
             timer.stop();
             LOGGER.debug("Check-in lasted: " + timer.toString());
@@ -726,7 +730,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolderDAO.updateVocabularyFolder(originalVocabularyFolder);
 
             // Delete checked out version
-            vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId));
+            vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId), false);
             attributeDAO.deleteAttributes(Collections.singletonList(vocabularyFolderId),
                     DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
 
@@ -910,7 +914,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             /*
              * for (VocabularyConcept vc : result) {
-             * 
+             *
              * List<List<DataElement>> elementAttributes = dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId,
              * vc.getId(), false); vc.setElementAttributes(elementAttributes); }
              */
@@ -1109,7 +1113,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
     /**
      * all relational prefixes.
-     * 
+     *
      * @return collection of skos>relation prefixes
      */
     public static Collection<String> getRelationalPrefixes() {
@@ -1118,7 +1122,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
     /**
      * Checks if given element has some special behaviour.
-     * 
+     *
      * @param specialElement
      *            special element
      * @return String prefix in RDF

@@ -283,10 +283,12 @@ public interface IVocabularyService {
     /**
      * Deletes vocabulary folders.
      *
-     * @param ids
+     * @param ids IDs of folderst to be deleted
+     * @param preserveRelations shows if to replace relation IDs with baseURi/concept in
+     * the related vocabularies
      * @throws ServiceException if operation fails
      */
-    void deleteVocabularyFolders(List<Integer> ids) throws ServiceException;
+    void deleteVocabularyFolders(List<Integer> ids, boolean preserveRelations) throws ServiceException;
 
     /**
      * Checks out vocabulary folder.
@@ -538,5 +540,11 @@ public interface IVocabularyService {
      */
     void bindVocabulary(int elementId, int vocabularyId);
 
+    /**
+     *
+     * @param vocabularyIds
+     * @return
+     */
+    //boolean vocabularyHasBaseUri(List<Integer> vocabularyIds);
 
 }

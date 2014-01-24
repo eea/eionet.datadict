@@ -11,7 +11,63 @@
         ( function($) {
             $(document).ready(function() {
 
+                      $("#keep-relations").dialog({
+                        autoOpen: false,
+                        resizable: false,
+                        maxHeight: 300,
+                        width: 500,
+                        modal: true,
+                    buttons: {
+                        "Yes, replace IDs with URI's" : function() {
+                            //clearSysMsg();
+                            document.getElementById("txtKeepRelations").value = true;
+                            $(this).dialog("close");
+                            $( "#vocabulariesForm" ).attr('action', 'vocabularies/delete').submit();
 
+                        },
+                        "No, delete the relations completely": function() {
+                          //clearSysMsg();
+                          document.getElementById("txtKeepRelations").value = false;
+                          //$(this).dialog("close");
+                          //$( "#vocabulariesForm" ).submit();
+                          $(this).dialog("close");
+                           $( "#vocabulariesForm" ).attr('action', 'vocabularies/delete').submit();
+                        }
+                    }
+
+                });
+
+                $("#deleteBtn").click(function() {
+                    var deleteOk = confirm('Are you sure you want to delete the selected vocabularies?');
+                    var vocabularyIdsBaseUri = [<c:forEach items='${actionBean.vocabulariesWithBaseUri}' var='id'>'${id}',</c:forEach>];
+                    var keepRelations = false;
+
+                    if (deleteOk==true) {
+
+                        var vocabularyIds = document.getElementsByName("folderIds");
+                        var containsVocabularyWithBaseUri = false;
+
+                        for (var i = 0, ref =  vocabularyIds.length; i < ref; i++) {
+                            if (vocabularyIds[i].checked == true && vocabularyIdsBaseUri.indexOf(vocabularyIds[i].value) != -1) {
+                                containsVocabularyWithBaseUri = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (containsVocabularyWithBaseUri==true) {
+                        //keepRelations = confirm('Do you want to replace relations in other vocabularies pointing to the deletable vocabularies with concept URIs?');
+
+                        $('#keep-relations').dialog('open');
+                        //document.getElementById("txtKeepRelations").value = keepRelations;
+                        return false;
+                    } else {
+                        if (deleteOk==true) {
+                            $( "#vocabulariesForm" ).attr('action', 'vocabularies/delete').submit();
+                        }
+                    }
+
+                    return false;
+                });
 
                 $(".editFolderDiv").dialog({
                     autoOpen: false,
@@ -36,6 +92,35 @@
             });
 
         } ) ( jQuery );
+
+        // loops checked vocabularies, if any of them has bas uri asks if relations in other vocabularies
+        // should be replaced with uri values
+        function checkDelete() {
+            var deleteOk = confirm('Are you sure you want to delete the selected vocabularies?');
+            var vocabularyIdsBaseUri = [<c:forEach items='${actionBean.vocabulariesWithBaseUri}' var='id'>'${id}',</c:forEach>];
+
+          var keepRelations = false;
+          if (deleteOk==true) {
+
+            var vocabularyIds = document.getElementsByName("folderIds");
+            var containsVocabularyWithBaseUri = false;
+
+            for (var i = 0, ref =  vocabularyIds.length; i < ref; i++) {
+                if (vocabularyIds[i].checked == true && vocabularyIdsBaseUri.indexOf(vocabularyIds[i].value) != -1) {
+                  containsVocabularyWithBaseUri = true;
+                  break;
+                }
+            }
+
+            if (containsVocabularyWithBaseUri==true) {
+                      keepRelations = confirm('Do you want to replace relations in other vocabularies pointing to the deleteable vocabularies with concept URIs?');
+              document.getElementById("txtKeepRelations").value = keepRelations;
+            }
+
+          }
+
+          return deleteOk;
+       }
         // ]]>
         </script>
     </stripes:layout-component>
@@ -141,8 +226,9 @@
                  </li>
                  </c:forEach>
              </ul>
+             <stripes:hidden id="txtKeepRelations" name="keepRelationsOnDelete" value="false"></stripes:hidden>
              <c:if test="${not empty actionBean.user && actionBean.visibleEditableVocabularies && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'd')}">
-                 <stripes:submit name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete the selected vocabularies?');"/>
+                 <stripes:button id="deleteBtn" name="delete" value="Delete" />
                  <input type="button" onclick="toggleSelectAll('vocabulariesForm');return false" value="Select all" name="selectAll" />
              </c:if>
              </div>
@@ -203,6 +289,10 @@
             </div>
           </c:if>
         </c:forEach>
+        <div id="keep-relations" title="Keep relations" style="display:none">
+            <p>Some of the selected vocabularies have base URI entered</p>
+            <p>Do you want to replace relations in other vocabularies that pointing to the deletable vocabulary with URI?</p>
+        </div>
         <jsp:include page="searchVocabulariesInc.jsp" />
     </stripes:layout-component>
 </stripes:layout-render>

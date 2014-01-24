@@ -115,6 +115,16 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      */
     private VocabularyConceptFilter vocabularyConceptFilter;
 
+    /**
+     * vocabulary IDs that have base uri specified.
+     */
+    private List<Integer> vocabulariesWithBaseUri;
+
+    /**
+     * if true and vocabularies are deleted then relation in another vocabulary is deleted
+     * but element value is replace by base url + identifier
+     */
+    private boolean keepRelationsOnDelete;
 
     /**
      * View vocabulary folders list action.
@@ -125,20 +135,35 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution viewList() throws ServiceException {
         folders = vocabularyService.getFolders(getUserName(), parseExpandedIds());
+        vocabulariesWithBaseUri = new ArrayList<Integer>();
 
         if (getUserName() != null && folders != null) {
             for (Folder folder : folders) {
                 if (folder.isExpanded() && folder.getItems() != null) {
                     for (Object vocabulary : folder.getItems()) {
+                        if (vocabulary instanceof VocabularyFolder && ((VocabularyFolder)vocabulary).getBaseUri() != null) {
+                            vocabulariesWithBaseUri.add(((VocabularyFolder)vocabulary).getId());
+                        }
                         if (vocabulary instanceof VocabularyFolder
                                 && !((VocabularyFolder) vocabulary).isWorkingCopy()
                                     && StringUtils.isEmpty(((VocabularyFolder) vocabulary).getWorkingUser())) {
                             setVisibleEditableVocabularies(true);
-                            break;
                         }
                     }
                 }
             }
+
+            //base URI:
+            for (Folder folder : folders) {
+                if (folder.isExpanded() && folder.getItems() != null) {
+                    for (Object vocabulary : folder.getItems()) {
+                        if (vocabulary instanceof VocabularyFolder && ((VocabularyFolder)vocabulary).getBaseUri() != null) {
+                            vocabulariesWithBaseUri.add(((VocabularyFolder)vocabulary).getId());
+                        }
+                    }
+                }
+            }
+
         }
         return new ForwardResolution(BROWSE_VOCABULARY_FOLDERS_JSP);
     }
@@ -336,7 +361,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution delete() throws ServiceException {
-        vocabularyService.deleteVocabularyFolders(folderIds);
+        vocabularyService.deleteVocabularyFolders(folderIds, keepRelationsOnDelete);
         addSystemMessage("Vocabularies deleted successfully");
         RedirectResolution resolution = new RedirectResolution(VocabularyFoldersActionBean.class);
         return resolution;
@@ -525,6 +550,18 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
 
     public List<VocabularyConceptData>  getVocabularyConceptResult() {
         return vocabularyConceptResult;
+    }
+
+    public List<Integer> getVocabulariesWithBaseUri() {
+        return vocabulariesWithBaseUri;
+    }
+
+    public boolean isKeepRelationsOnDelete() {
+        return keepRelationsOnDelete;
+    }
+
+    public void setKeepRelationsOnDelete(boolean keepRelationsOnDelete) {
+        this.keepRelationsOnDelete = keepRelationsOnDelete;
     }
 
 }

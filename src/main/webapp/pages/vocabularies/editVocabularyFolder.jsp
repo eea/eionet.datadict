@@ -401,7 +401,7 @@
 
         <!-- Vocabulary concept edit forms -->
         <c:forEach var="item" items="${actionBean.vocabularyConcepts.list}" varStatus="loop">
-            <div id="editConceptDiv${item.id}" title="Edit concept">
+            <div id="editConceptDiv${item.id}" title="Edit concept" style="display:none">
                 <stripes:form id="form${item.id}" method="post" beanclass="${actionBean.class.name}">
 
                     <c:set var="divId" value="editConceptDiv${item.id}" />
@@ -414,6 +414,8 @@
 
                         <stripes:hidden name="vocabularyFolder.workingCopy" />
                         <stripes:hidden name="vocabularyFolder.id" />
+                        <stripes:hidden name="vocabularyFolder.identifier" />
+                        <stripes:hidden name="vocabularyFolder.folderName" />
                         <stripes:hidden name="vocabularyFolder.numericConceptIdentifiers" />
                         <stripes:hidden name="page" />
                         <stripes:hidden name="filter.text" />

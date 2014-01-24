@@ -128,8 +128,9 @@ public interface IVocabularyFolderDAO {
      * Deletes vocabulary folders.
      *
      * @param ids IDs of folders to be deleted
+     * @keepRelatedValues if flagged relations are kept as uris in values instead of IDs
      */
-    void deleteVocabularyFolders(List<Integer> ids);
+    void deleteVocabularyFolders(List<Integer> ids, boolean keepRelatedValues);
 
     /**
      * True, if identifier is unique.
@@ -170,4 +171,17 @@ public interface IVocabularyFolderDAO {
      */
     VocabularyResult searchVocabularies(VocabularyFilter filter);
 
+    /**
+     * Updates concept element values where concepts of this vocabulary are marked as related concepts.
+     * element value is updated with base URI + concept identifier.
+     * @param vocabularyIds list of vocabulary IDs to be checked and handled
+     */
+    void updateRelatedConceptValueToUri(List<Integer> vocabularyIds);
+
+    /**
+     * checks if any of the folders have base uri entered.
+     * @param ids list of vocabularies
+     * @return true if at least one base uri exists in vocabulries of the given IDs
+     */
+    boolean vocabularyHasBaseUri(List<Integer> ids);
 }

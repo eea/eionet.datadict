@@ -411,7 +411,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
      * {@inheritDoc}
      */
     @Override
-    public void deleteVocabularyFolders(List<Integer> ids) {
+    public void deleteVocabularyFolders(List<Integer> ids, boolean keepRelatedValues) {
         String sql = "delete from VOCABULARY where VOCABULARY_ID in (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
@@ -691,4 +691,30 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         return result;
     }
 
+    @Override
+    public void updateRelatedConceptValueToUri(List<Integer> vocabularyIds) {
+            String sql = "UPDATE VOCABULARY_CONCEPT_ELEMENT ce, VOCABULARY v, VOCABULARY_CONCEPT c "
+                    + "SET ce.ELEMENT_VALUE = concat(v.BASE_URI, '/', c.IDENTIFIER), ce.RELATED_CONCEPT_ID = null "
+                    + "WHERE c.VOCABULARY_ID = v.VOCABULARY_ID AND v.VOCABULARY_ID IN (:vocabularyIds) "
+                    + "and ce.RELATED_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID";
+
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("vocabularyIds", vocabularyIds);
+
+            getNamedParameterJdbcTemplate().update(sql, parameters);
+
+    }
+    @Override
+    public boolean vocabularyHasBaseUri(List<Integer> ids) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("vocabularyIds", ids);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select count(1) from VOCABULARY ");
+        sql.append("where BASE_URI IS NOT NULL and VOCABULARY_ID IN (:vocabularyIds) ");
+
+        int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
+
+        return result > 0;
+    }
 }

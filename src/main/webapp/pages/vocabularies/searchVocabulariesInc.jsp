@@ -46,7 +46,7 @@
         </script>
 
 
-    <div id="searchVocabulariesDiv" title="Search vocabularies">
+    <div id="searchVocabulariesDiv" title="Search vocabularies" style="display:none">
         <stripes:form id="vocabularySearchForm" beanclass="${actionBean.class.name}" method="post" style="margin-top:1em">
         <table class="datatable" style="width:100%">
             <colgroup>
@@ -81,7 +81,7 @@
         </stripes:form>
     </div>
 
-     <div id="searchConceptsDiv" title="Search vocabulary concepts">
+     <div id="searchConceptsDiv" title="Search vocabulary concepts" style="display:none">
         <stripes:form id="conceptSearchForm" beanclass="${actionBean.class.name}" method="post" style="margin-top:1em">
         <table class="datatable" style="width:100%">
             <colgroup>
