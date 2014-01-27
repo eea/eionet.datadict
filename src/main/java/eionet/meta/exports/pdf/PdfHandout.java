@@ -29,6 +29,8 @@ import eionet.util.Util;
 
 public abstract class PdfHandout implements PdfHandoutIF {
 
+    private static final String GO_TO_SUFFIX = "_LocalDestination";
+
     public static final int PORTRAIT = 0;
     public static final int LANDSCAPE = 1;
 
@@ -64,8 +66,10 @@ public abstract class PdfHandout implements PdfHandoutIF {
     // / methods
     // //////////
 
+    @Override
     public abstract void write(String objID) throws Exception;
 
+    @Override
     public void flush() throws Exception {
 
         Document document = new Document();
@@ -75,10 +79,12 @@ public abstract class PdfHandout implements PdfHandoutIF {
         writer.setPageEvent(pageEvent);
 
         // header and footer
-        if (header != null)
+        if (header != null) {
             document.setHeader(header);
-        if (footer != null)
+        }
+        if (footer != null) {
             document.setFooter(footer);
+        }
 
         if (titlePageNeeded()) {
             // title page first, without header/footer
@@ -87,14 +93,16 @@ public abstract class PdfHandout implements PdfHandoutIF {
             document.newPage();
         }
 
-        if (!document.isOpen())
+        if (!document.isOpen()) {
             document.open();
+        }
 
         // process index page (if any)
         Vector idxPageElems = getIndexPage();
         if (idxPageElems != null && idxPageElems.size() > 0) {
-            for (int i = 0; i < idxPageElems.size(); i++)
+            for (int i = 0; i < idxPageElems.size(); i++) {
                 document.add((Element) idxPageElems.get(i));
+            }
             document.newPage();
         }
 
@@ -106,10 +114,11 @@ public abstract class PdfHandout implements PdfHandoutIF {
             Element elm = (Element) docElements.get(i);
 
             if (pageBreaks.contains(new Integer(i))) {
-                if (landscapes.contains(new Integer(i)))
+                if (landscapes.contains(new Integer(i))) {
                     document.setPageSize(PageSize.A4.rotate());
-                else if (portraits.contains(new Integer(i)))
+                } else if (portraits.contains(new Integer(i))) {
                     document.setPageSize(PageSize.A4);
+                }
                 document.newPage();
             }
 
@@ -118,9 +127,9 @@ public abstract class PdfHandout implements PdfHandoutIF {
                 ImgRaw img = (ImgRaw) elm;
                 float h = img.getScaledHeight();
                 if (yPos < h + IMG_FIT_RESERVE) {
-                    if (yPos < (h - h / IMG_FIT_RATIO) + IMG_FIT_RESERVE)
+                    if (yPos < (h - h / IMG_FIT_RATIO) + IMG_FIT_RESERVE) {
                         document.newPage();
-                    else {
+                    } else {
                         float w = img.getScaledWidth();
                         img.scaleToFit(w, h - h / IMG_FIT_RATIO);
                     }
@@ -136,14 +145,15 @@ public abstract class PdfHandout implements PdfHandoutIF {
     }
 
     /**
-     *
+     * 
      * @param elm
      * @return
      */
     protected int addElement(Element elm) {
 
-        if (elm != null)
+        if (elm != null) {
             docElements.add(elm);
+        }
 
         return docElements.size();
     }
@@ -210,18 +220,13 @@ public abstract class PdfHandout implements PdfHandoutIF {
         font.setColor(Color.lightGray);
         phr.add(new Chunk("http://www.eea.eu.int   ", font));
 
-        /*
-         * font = FontFactory.getFont(FontFactory.HELVETICA, 9); font.setColor(Color.white); phr.add(new
-         * Chunk("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", font));
-         */
-
         footer = new HeaderFooter(phr, true);
         // footer.setAlignment(Element.ALIGN_LEFT);
         footer.setAlignment(Element.ALIGN_RIGHT);
         footer.setBorder(com.lowagie.text.Rectangle.TOP);
     }
 
-    private String getCurrentDate() {
+    protected String getCurrentDate() {
 
         java.util.Date date = new java.util.Date();
         StringBuffer buf = new StringBuffer();
@@ -250,6 +255,7 @@ public abstract class PdfHandout implements PdfHandoutIF {
     /**
      * Sets the full path to the EEA logo image
      */
+    @Override
     public void setLogo(String logo) {
         this.logo = logo;
     }
@@ -257,6 +263,7 @@ public abstract class PdfHandout implements PdfHandoutIF {
     /**
      * Sets full path to datadict images directory
      */
+    @Override
     public void setVisualsPath(String visualsPath) {
 
         this.visualsPath = visualsPath;
@@ -273,6 +280,7 @@ public abstract class PdfHandout implements PdfHandoutIF {
     /**
      * Sets whatever additional parameters that the handouts might need
      */
+    @Override
     public void setParameters(Parameters params) {
         this.params = params;
     }
@@ -281,10 +289,11 @@ public abstract class PdfHandout implements PdfHandoutIF {
      *
      */
     protected String getParameter(String parName) {
-        if (params != null)
+        if (params != null) {
             return params.getParameter(parName);
-        else
+        } else {
             return null;
+        }
     }
 
     /**
@@ -292,8 +301,9 @@ public abstract class PdfHandout implements PdfHandoutIF {
      */
     protected void addParameter(String name, String value) {
 
-        if (params == null)
+        if (params == null) {
             params = new Parameters();
+        }
 
         params.addParameterValue(name, value);
     }
@@ -343,10 +353,23 @@ public abstract class PdfHandout implements PdfHandoutIF {
         return shn != null && showedAttrs.contains(shn);
     }
 
+    @Override
     public String getFileName() {
         return fileName;
     }
-}
+
+    /**
+     * utility method to produce address with a given string. address is generated removing whitespaces and adding suffix
+     * 
+     * @param address
+     *            input for address
+     * @return produced address
+     */
+    public static String getLocalDestinationAddressFor(String address) {
+        return (address.replaceAll("\\s+", "") + PdfHandout.GO_TO_SUFFIX);
+    }// end of static method getLocalDestinationAddressFor
+
+}// end of class PdfHandout
 
 class MyPageEvents extends PdfPageEventHelper {
 
@@ -363,6 +386,7 @@ class MyPageEvents extends PdfPageEventHelper {
     String act = "";
 
     // we override the onOpenDocument method
+    @Override
     public void onOpenDocument(PdfWriter writer, Document document) {
         try {
             bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
@@ -374,6 +398,7 @@ class MyPageEvents extends PdfPageEventHelper {
     }
 
     // we override the onEndPage method
+    @Override
     public void onEndPage(PdfWriter writer, Document document) {
         int pageN = writer.getPageNumber();
         String text = "Page " + pageN + " of ";
@@ -387,6 +412,7 @@ class MyPageEvents extends PdfPageEventHelper {
     }
 
     // we override the onCloseDocument method
+    @Override
     public void onCloseDocument(PdfWriter writer, Document document) {
         template.beginText();
         template.setFontAndSize(bf, 8);
@@ -401,6 +427,7 @@ class PageOutline extends PdfPageEventHelper {
     private float pos = 0;
 
     // we override only the onParagraph method
+    @Override
     public void onParagraphEnd(PdfWriter writer, Document document, float position) {
         pos = position;
     }

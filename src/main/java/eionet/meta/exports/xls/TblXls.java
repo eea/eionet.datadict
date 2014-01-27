@@ -52,6 +52,8 @@ public class TblXls extends Xls implements CachableIF {
     private int dropDownReferencesHiddenSheetNewIndex = 0;
     /** ID for this Xls (it can be table id or dataset id) */
     protected String xlsId = null;
+    /** If excel will have drop downs or not */
+    protected boolean withDropDown = false;
 
     /**
      * Class constructor.
@@ -80,10 +82,11 @@ public class TblXls extends Xls implements CachableIF {
      * @param searchEngine
      * @param os
      */
-    public TblXls(DDSearchEngine searchEngine, OutputStream os) {
+    public TblXls(DDSearchEngine searchEngine, OutputStream os, boolean withDropDown) {
         this();
         this.searchEngine = searchEngine;
         this.os = os;
+        this.withDropDown = withDropDown;
     }
 
     /*
@@ -110,10 +113,13 @@ public class TblXls extends Xls implements CachableIF {
         }
         this.xlsId = xlsId;
 
-        createHiddenSheetForDropdownMenuReferences();
-        generateContent(xlsId);
+        createEmptySheets(xlsId);
         setSchemaUrl();
-    }   
+        if (this.withDropDown) {
+            createHiddenSheetForDropdownMenuReferences();
+        }
+        generateContent(xlsId);
+    }
 
     /*
      * (non-Javadoc)
@@ -141,13 +147,26 @@ public class TblXls extends Xls implements CachableIF {
     }
 
     /**
+     * Create empty sheet for table
+     * @param tblID
+     * @throws Exception
+     */
+    protected void createEmptySheets(String tblID) throws Exception {
+        DsTable tbl = searchEngine.getDatasetTable(tblID);
+        if (tbl == null) {
+            throw new Exception("Table " + tblID + " not found!");
+        }
+        wb.createSheet(tbl.getIdentifier());
+    }
+
+    /**
      * Creates a hidden sheet to store drop-down menu items values.
      */
     private void createHiddenSheetForDropdownMenuReferences() {
         this.dropDownReferencesHiddenSheetName = Props.getProperty(PropsIF.XLS_DROPDOWN_FXV_SHEET);
         this.dropDownReferencesHiddenSheetNewIndex = 0;
         this.dropDownReferencesHiddenSheet = wb.createSheet(dropDownReferencesHiddenSheetName);
-        this.wb.setSheetHidden(0, true);// hide references sheet
+        this.wb.setSheetHidden(this.wb.getNumberOfSheets() - 1, true);// hide references sheet
         HSSFRow row = this.dropDownReferencesHiddenSheet.createRow(this.dropDownReferencesHiddenSheetNewIndex);
         HSSFCell cell = row.createCell(0);
         cell.setCellValue("Please do not delete or modify this sheet!!! It is used for drop-down items in this file for your convenience.");
@@ -169,7 +188,10 @@ public class TblXls extends Xls implements CachableIF {
         // illegal for a filename
         fileName = tbl.getDstIdentifier() + "_" + tbl.getIdentifier() + FILE_EXT;
 
-        sheet = wb.createSheet(tbl.getIdentifier());
+        sheet = wb.getSheet(tbl.getIdentifier());
+        if (sheet == null) {
+            sheet = wb.createSheet(tbl.getIdentifier());
+        }
         row = sheet.createRow(0);
         addElements(tbl);
         sheet.createFreezePane(0, 1);
@@ -206,8 +228,8 @@ public class TblXls extends Xls implements CachableIF {
         cell.setCellValue(title);
         cell.setCellStyle(getStyle(ElmStyle.class));
 
-        // if element has fixed values, add a drop-down and validation for the cell
-        if (elm.getType().equals("CH1")) {
+        // if element has fixed values and drop-down is active, add a drop-down and validation for the cell
+        if (this.withDropDown && elm.getType().equals("CH1")) {
             Vector<FixedValue> fxvs = searchEngine.getFixedValues(elm.getID());
             if (fxvs != null && fxvs.size() > 0) {
                 // create a row for fixed values
@@ -248,10 +270,12 @@ public class TblXls extends Xls implements CachableIF {
             }
         }
     }
-    
+
     /**
      * Set schema urls
-     * @throws Exception when an error occurs in super class method
+     * 
+     * @throws Exception
+     *             when an error occurs in super class method
      */
     protected void setSchemaUrl() throws Exception {
         setSchemaUrl("TBL" + this.xlsId);

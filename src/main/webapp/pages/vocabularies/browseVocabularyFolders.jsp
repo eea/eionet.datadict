@@ -178,7 +178,16 @@
                                                 </c:if>
                                                 <c:out value="${item.identifier}"/>
                                             </stripes:link>
-                                                (<c:out value="${item.label}"/>)
+                                            <c:if test="${item.draftStatus}">
+                                                <span class="link-folder" style="color:gray;">
+                                            </c:if>
+                                            (<c:out value="${item.label}"/>)
+                                            <c:if test="${not empty actionBean.user}">
+                                                <sup style="font-size:0.7em"><c:out value="${item.regStatus}" /></sup>
+                                            </c:if>
+                                            <c:if test="${item.draftStatus}">
+                                                </span>
+                                            </c:if>
                                         </c:otherwise>
                                     </c:choose>
                                     <c:if test="${item.workingCopy && actionBean.userName==item.workingUser}">

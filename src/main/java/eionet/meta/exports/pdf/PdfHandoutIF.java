@@ -4,11 +4,9 @@ import eionet.meta.savers.Parameters;
 
 public interface PdfHandoutIF {
 
+    /* PdfHandout Constants */
     public static final String DATASET = "DST";
-    public static final String DSTABLE = "TBL";
-    public static final String DATAELEM = "ELM";
-
-    public static final String FACTSHEET = "FCTS";
+    public static final String DSTABLE = "TBL";      
     public static final String GUIDELINE = "GDLN";
 
     /**

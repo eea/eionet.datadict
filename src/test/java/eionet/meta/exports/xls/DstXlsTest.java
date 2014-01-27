@@ -2,6 +2,8 @@ package eionet.meta.exports.xls;
 
 import java.sql.SQLException;
 
+import org.junit.Assert;
+
 /**
  * 
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus@tripledev.ee">jaanus@tripledev.ee</a>
@@ -17,7 +19,8 @@ public class DstXlsTest extends TblXlsTest {
         fxvSheetValues =
                 new String[][] { {"5", "6"}, {"Ultra-oligotrophic", "Oligotrophic", "Mesotrophic", "Eutrophic", "Hypertrophic"}};
         fxvIdentifier = new String[] {"ND_TrendAnnValue", "ND_TrophicState"};
-        classInstanceUnderTest = new DstXls(searchEngine, baos);
+        classInstanceUnderTest = new DstXls(searchEngine, baos, true);
+        classInstanceUnderTestWithoutDD = new DstXls(searchEngine, baos, false);
         objId = "4";
     }
 
@@ -29,11 +32,11 @@ public class DstXlsTest extends TblXlsTest {
         try {
             String fileName = "test.txt";
             int i = DstXls.storeCacheEntry("999999", fileName, conn);
-            assertTrue(i > 0);
+            Assert.assertTrue(i > 0);
             String s = DstXls.deleteCacheEntry("999999", conn);
-            assertEquals(fileName, s);
+            Assert.assertEquals(fileName, s);
         } catch (Exception e) {
-            fail("Was not expecting any exceptions, but catched " + e.toString());
+            Assert.fail("Was not expecting any exceptions, but catched " + e.toString());
         }
     }
 

@@ -58,10 +58,30 @@ public class DstXls extends TblXls {
      * @param searchEngine
      * @param os
      */
-    public DstXls(DDSearchEngine searchEngine, OutputStream os) {
+    public DstXls(DDSearchEngine searchEngine, OutputStream os, boolean withDropDown) {
         this();
         this.searchEngine = searchEngine;
         this.os = os;
+        this.withDropDown = withDropDown;
+    }
+
+    /**
+     * Create empty sheet for table
+     * 
+     * @param dstID
+     * @throws Exception
+     */
+    @Override
+    protected void createEmptySheets(String dstID) throws Exception {
+        Dataset dst = searchEngine.getDataset(dstID);
+        if (dst == null) {
+            throw new Exception("Dataset " + dstID + " not found!");
+        }
+
+        tables = searchEngine.getDatasetTables(dstID, true);
+        for (int i = 0; tables != null && i < tables.size(); i++) {
+            wb.createSheet(tables.get(i).getIdentifier());
+        }
     }
 
     /**
@@ -79,13 +99,10 @@ public class DstXls extends TblXls {
         // for the fileName we now use Identifier, cause short name might contain characters
         // illegal for a filename
         fileName = dst.getIdentifier() + FILE_EXT;
-        tables = searchEngine.getDatasetTables(dstID, true);
         for (int i = 0; tables != null && i < tables.size(); i++) {
             addTable(tables.get(i));
         }
     }
-
-    
 
     /**
      * 
@@ -93,14 +110,18 @@ public class DstXls extends TblXls {
      * @throws Exception
      */
     private void addTable(DsTable tbl) throws Exception {
-        sheet = wb.createSheet(tbl.getIdentifier());
+        sheet = wb.getSheet(tbl.getIdentifier());
+        if (sheet == null) {
+            sheet = wb.createSheet(tbl.getIdentifier());
+        }
         row = sheet.createRow(0);
         addElements(tbl);
         sheet.createFreezePane(0, 1);
     }
-    
+
     /*
      * (non-Javadoc)
+     * 
      * @see eionet.meta.exports.xls.TblXls#setSchemaUrl()
      */
     @Override
