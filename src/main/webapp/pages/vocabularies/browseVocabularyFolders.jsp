@@ -10,26 +10,21 @@
         // <![CDATA[
         ( function($) {
             $(document).ready(function() {
-
-                      $("#keep-relations").dialog({
+                $("#keep-relations").dialog({
                         autoOpen: false,
                         resizable: false,
                         maxHeight: 300,
                         width: 500,
                         modal: true,
                     buttons: {
-                        "Yes, replace IDs with URI's" : function() {
-                            //clearSysMsg();
+                        "Yes, replace the relations with URI's" : function() {
                             document.getElementById("txtKeepRelations").value = true;
                             $(this).dialog("close");
                             $( "#vocabulariesForm" ).attr('action', 'vocabularies/delete').submit();
 
                         },
                         "No, delete the relations completely": function() {
-                          //clearSysMsg();
                           document.getElementById("txtKeepRelations").value = false;
-                          //$(this).dialog("close");
-                          //$( "#vocabulariesForm" ).submit();
                           $(this).dialog("close");
                            $( "#vocabulariesForm" ).attr('action', 'vocabularies/delete').submit();
                         }
@@ -48,9 +43,9 @@
 
                         var vocabularyIds = document.getElementsByName("folderIds");
                         var containsVocabularyWithBaseUri = false;
+
                         // loops checked vocabularies, if any of them has bas uri asks if relations in other vocabularies
                         // should be replaced with uri values
-
                         for (var i = 0, ref =  vocabularyIds.length; i < ref; i++) {
                             if (vocabularyIds[i].checked == true && vocabularyIdsBaseUri.indexOf(vocabularyIds[i].value) != -1) {
                                 containsVocabularyWithBaseUri = true;
@@ -59,10 +54,7 @@
                         }
                     }
                     if (containsVocabularyWithBaseUri==true) {
-                        //keepRelations = confirm('Do you want to replace relations in other vocabularies pointing to the deletable vocabularies with concept URIs?');
-
                         $('#keep-relations').dialog('open');
-                        //document.getElementById("txtKeepRelations").value = keepRelations;
                         return false;
                     } else {
                         if (deleteOk==true) {
@@ -265,9 +257,10 @@
             </div>
           </c:if>
         </c:forEach>
-        <div id="keep-relations" title="Keep relations" style="display:none">
+        <div id="keep-relations" title="Handle relations" style="display:none">
             <p>Some of the selected vocabularies have base URI entered</p>
-            <p>Do you want to replace relations in other vocabularies that pointing to the deletable vocabulary with URI?</p>
+            <p>Do you want to replace relations in other vocabularies that are pointing to the deletable vocabulary with fully
+                qualified URI's?</p>
         </div>
         <jsp:include page="searchVocabulariesInc.jsp" />
     </stripes:layout-component>
