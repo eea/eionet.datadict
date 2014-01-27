@@ -1535,22 +1535,25 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <comment>Remove GIS column from DATAELEM table, as it's no longer needed.</comment>
         <dropColumn tableName="DATAELEM" columnName="GIS"/>
     </changeSet>
-  <changeSet author="enverveli" id="rev-124">
-    <comment>Change data type of DATE_DELETED to DATE</comment>
-    <addColumn tableName="T_SITE_CODE">
-      <column name="DATE_DELETED_TEMP" type="DATE" />
-    </addColumn>
-    <update tableName="T_SITE_CODE">
-      <column name="DATE_DELETED_TEMP" valueComputed="STR_TO_DATE(CONCAT(DATE_DELETED, '-01-01'), '%Y-%m-%d')" type="DATE"/>
-      <where>DATE_DELETED IS NOT NULL</where>
-    </update>
-    <dropColumn columnName="DATE_DELETED" tableName="T_SITE_CODE"/>
-    <renameColumn newColumnName="DATE_DELETED" oldColumnName="DATE_DELETED_TEMP" tableName="T_SITE_CODE" columnDataType="DATE"/>
-  </changeSet>
+    
+    <changeSet author="enverveli" id="rev-124">
+        <comment>Change data type of DATE_DELETED to DATE</comment>
+        <addColumn tableName="T_SITE_CODE">
+            <column name="DATE_DELETED_TEMP" type="DATE" />
+        </addColumn>
+        <update tableName="T_SITE_CODE">
+            <column name="DATE_DELETED_TEMP" valueComputed="STR_TO_DATE(CONCAT(DATE_DELETED, '-01-01'), '%Y-%m-%d')" type="DATE"/>
+            <where>DATE_DELETED IS NOT NULL</where>
+        </update>
+        <dropColumn columnName="DATE_DELETED" tableName="T_SITE_CODE"/>
+        <renameColumn newColumnName="DATE_DELETED" oldColumnName="DATE_DELETED_TEMP" tableName="T_SITE_CODE" columnDataType="DATE"/>
+    </changeSet>
+    
     <changeSet author="lainekai" id="rev-125">
         <comment>New type CH3 for fixed value elements related to a vocabulary.</comment>
         <modifyDataType tableName="DATAELEM" columnName="TYPE" newDataType="enum('CH1','CH2','CH3') NOT NULL default 'CH2'"/>
     </changeSet>
+    
     <changeSet author="lainekai" id="rev-126">
         <comment>Add relation to vocabulary that can be used for Fixed values of the element. Boolean field to indicate if all concepts are legal or only
              the ones created before the element</comment>
@@ -1566,11 +1569,11 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         </addColumn>
     </changeSet>
 
-<changeSet author="enverveli" id="rev-127">
-		<comment>Drop Column SITE_CODE_ID from T_SITE_CODE table since it's redundant</comment>
-		<sql>ALTER TABLE T_SITE_CODE MODIFY SITE_CODE_ID INT NOT NULL</sql>
-		<dropPrimaryKey tableName="T_SITE_CODE"/>
-		<dropColumn columnName="SITE_CODE_ID" tableName="T_SITE_CODE"/>		
-		<addPrimaryKey columnNames="VOCABULARY_CONCEPT_ID" tableName="T_SITE_CODE"/>
+    <changeSet author="enverveli" id="rev-127">
+        <comment>Drop Column SITE_CODE_ID from T_SITE_CODE table since it's redundant</comment>
+        <sql>ALTER TABLE T_SITE_CODE MODIFY SITE_CODE_ID INT NOT NULL</sql>
+        <dropPrimaryKey tableName="T_SITE_CODE"/>
+        <dropColumn columnName="SITE_CODE_ID" tableName="T_SITE_CODE"/>		
+        <addPrimaryKey columnNames="VOCABULARY_CONCEPT_ID" tableName="T_SITE_CODE"/>
 	</changeSet>
 </databaseChangeLog>
