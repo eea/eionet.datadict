@@ -138,8 +138,7 @@ public final class VocabularyCSVOutputHelper {
                 int maximumNumberOfElements = row.getRight();
                 // add missing columns
                 for (int j = sizeOfAttributeElems; j < maximumNumberOfElements; j++) {
-                    // value = "\"" + value + "\"";
-                    entries[CONCEPT_ENTRIES_COUNT + elemPos + j] = "";
+                    entries[CONCEPT_ENTRIES_COUNT + elemPos + j] = null;
                 }
 
                 elemPos += maximumNumberOfElements;
