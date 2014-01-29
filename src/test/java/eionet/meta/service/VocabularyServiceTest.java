@@ -53,6 +53,7 @@ import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
+import eionet.util.Triple;
 
 /**
  * JUnit integration test with Unitils for vocabulary service.
@@ -587,9 +588,9 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     @Test
     public void testFolderCSVInfo() throws Exception {
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(1);
-        List<String> attributeNames = vocabularyService.getVocabularyBoundElementNames(vocabularyFolder);
+        List<Triple<String, String, Integer>> attributeNames = vocabularyService.getVocabularyBoundElementNames(vocabularyFolder);
 
-        assertTrue(attributeNames.size() == 3);
+        assertTrue(attributeNames.size() == 2);
 
     }
 

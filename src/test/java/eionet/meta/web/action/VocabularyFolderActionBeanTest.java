@@ -26,7 +26,7 @@ import eionet.web.action.VocabularyFolderActionBean;
 public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
     /**
-     * test if RDF output contains collection resource for a folder.
+     * test if CSV output contains collection resource for a folder.
      * 
      * @throws Exception
      *             if test fails
@@ -52,11 +52,15 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         Assert.assertTrue("Output does not contain correct SKOSRelatedMatch",
                 StringUtils.contains(output, "\"http://url1.com\",\"http://url2.com\",\"\""));
         Assert.assertTrue("Output does not contain correct SKOSRelatedMatch",
-                StringUtils.contains(output, "\"http://url0.com\",\"http://url3.com\",\"http://url4.com\""));
+                StringUtils.contains(output, "\"http://url3.com\",\"http://url4.com\",\"http://url0.com\""));//ordered by concept id
 
-        Assert.assertTrue("Output does not contain correct geo:lat", StringUtils.contains(output, "\"1\",\"2.2\",\"3\",\"4.5\""));
+        Assert.assertTrue("Output does not contain correct geo:lat", StringUtils.contains(output, "\"2.2\",\"3\",\"4.5\",\"1\""));
         Assert.assertTrue("Incorrect size of binded elements",
                 StringUtils.contains(output, "\"geo:lat\",\"geo:lat\",\"geo:lat\",\"geo:lat\""));
+        
+        Assert.assertTrue("Output does not contain correct geo:long", StringUtils.contains(output, "\"1.1\""));
+        Assert.assertTrue("Incorrect size of binded elements",
+                StringUtils.contains(output, "\"geo:long\""));
 
         Assert.assertTrue("Incorrect related element url", StringUtils.contains(output, expectedRelatedInternal));
 
