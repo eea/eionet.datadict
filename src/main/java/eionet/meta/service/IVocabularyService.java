@@ -35,6 +35,7 @@ import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
+import eionet.util.Triple;
 
 /**
  * Folder service.
@@ -514,7 +515,7 @@ public interface IVocabularyService {
      * @param vocabularyFolder vocabulary folder
      * @return slit of bound element names
      */
-    List<String> getVocabularyBoundElementNames(VocabularyFolder vocabularyFolder);
+    List<Triple<String, String, Integer>> getVocabularyBoundElementNames(VocabularyFolder vocabularyFolder);
 
     /**
      * Searches vocabularies by the given filter.

@@ -26,7 +26,7 @@ import java.util.List;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
-import eionet.util.Pair;
+import eionet.util.Triple;
 
 /**
  * Vocabulary DAO interface.
@@ -161,7 +161,7 @@ public interface IVocabularyFolderDAO {
      * @param vocabularyFolderId vocabulary ID
      * @return list of Pairs where Left = element name and Right=max count of elements in a concept in this vocabulary folder
      */
-    List<Pair<String, Integer>> getVocabularyFolderBoundElementsMeta(int vocabularyFolderId);
+    List<Triple<String, String, Integer>> getVocabularyFolderBoundElementsMeta(int vocabularyFolderId);
 
 
     /**

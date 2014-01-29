@@ -39,11 +39,11 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
-import eionet.util.Pair;
+import eionet.util.Triple;
 
 /**
  * Vocabualary folder DAO.
- *
+ * 
  * @author Juhan Voolaid
  */
 @Repository
@@ -538,7 +538,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see eionet.meta.dao.IVocabularyFolderDAO#forceNotationsToIdentifiers(int)
      */
     @Override
@@ -550,7 +550,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see eionet.meta.dao.IVocabularyFolderDAO#getVocabularyFolderOfConcept(int)
      */
     @Override
@@ -598,25 +598,29 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
     }
 
     @Override
-    public List<Pair<String, Integer>> getVocabularyFolderBoundElementsMeta(int vocabularyFolderId) {
+    public List<Triple<String, String, Integer>> getVocabularyFolderBoundElementsMeta(int vocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
 
-        sql.append("SELECT max(c) as ELEM_COUNT, IDENTIFIER FROM (SELECT DISTINCT count(DATAELEM_ID) AS C, DATAELEM.IDENTIFIER ")
-                .append("from VOCABULARY_CONCEPT JOIN VOCABULARY_CONCEPT_ELEMENT USING(VOCABULARY_CONCEPT_ID) ")
+        sql.append("SELECT max(c) as ELEM_COUNT, IDENTIFIER, ELEM_LANG FROM (")
+                .append("SELECT DISTINCT count(DATAELEM_ID) AS C, VOCABULARY_CONCEPT_ID, DATAELEM.IDENTIFIER, vce.LANGUAGE AS ELEM_LANG ")
+                .append("from VOCABULARY_CONCEPT JOIN VOCABULARY_CONCEPT_ELEMENT vce USING(VOCABULARY_CONCEPT_ID) ")
                 .append("JOIN DATAELEM USING(DATAELEM_ID) ").append("where VOCABULARY_CONCEPT.VOCABULARY_ID=:folderId ")
-                .append("GROUP BY VOCABULARY_CONCEPT_ID, DATAELEM_ID ORDER BY SHORT_NAME, C DESC) q group by IDENTIFIER");
+                .append("GROUP BY VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEM_LANG ")
+                .append("ORDER BY VOCABULARY_CONCEPT_ID, DATAELEM.IDENTIFIER, ELEM_LANG")
+                .append(") q GROUP BY IDENTIFIER, ELEM_LANG");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("folderId", vocabularyFolderId);
 
-        List<Pair<String, Integer>> items =
-                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Pair<String, Integer>>() {
+        List<Triple<String, String, Integer>> items =
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Triple<String, String, Integer>>() {
                     @Override
-                    public Pair<String, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    public Triple<String, String, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
                         String elementName = rs.getString("IDENTIFIER");
+                        String elementLanguage = rs.getString("ELEM_LANG");
                         Integer elementMaxCount = rs.getInt("ELEM_COUNT");
-                        Pair<String, Integer> pair = new Pair<String, Integer>(elementName, elementMaxCount);
-
+                        Triple<String, String, Integer> pair =
+                                new Triple<String, String, Integer>(elementName, elementLanguage, elementMaxCount);
                         return pair;
                     }
                 });
@@ -693,17 +697,19 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
     @Override
     public void updateRelatedConceptValueToUri(List<Integer> vocabularyIds) {
-            String sql = "UPDATE VOCABULARY_CONCEPT_ELEMENT ce, VOCABULARY v, VOCABULARY_CONCEPT c "
-                    + "SET ce.ELEMENT_VALUE = concat(v.BASE_URI, '/', c.IDENTIFIER), ce.RELATED_CONCEPT_ID = null "
-                    + "WHERE c.VOCABULARY_ID = v.VOCABULARY_ID AND v.VOCABULARY_ID IN (:vocabularyIds) "
-                    + "and ce.RELATED_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID";
+        String sql =
+                "UPDATE VOCABULARY_CONCEPT_ELEMENT ce, VOCABULARY v, VOCABULARY_CONCEPT c "
+                        + "SET ce.ELEMENT_VALUE = concat(v.BASE_URI, '/', c.IDENTIFIER), ce.RELATED_CONCEPT_ID = null "
+                        + "WHERE c.VOCABULARY_ID = v.VOCABULARY_ID AND v.VOCABULARY_ID IN (:vocabularyIds) "
+                        + "and ce.RELATED_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID";
 
-            Map<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put("vocabularyIds", vocabularyIds);
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("vocabularyIds", vocabularyIds);
 
-            getNamedParameterJdbcTemplate().update(sql, parameters);
+        getNamedParameterJdbcTemplate().update(sql, parameters);
 
     }
+
     @Override
     public boolean vocabularyHasBaseUri(List<Integer> ids) {
         Map<String, Object> parameters = new HashMap<String, Object>();

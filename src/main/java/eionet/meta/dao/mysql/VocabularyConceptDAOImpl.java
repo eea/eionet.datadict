@@ -519,7 +519,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 + "left join (ATTRIBUTE a, M_ATTRIBUTE ma)  on (a.DATAELEM_ID = d.DATAELEM_ID "
                 + "and PARENT_TYPE = 'E' and a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME='Datatype') "
                 + "where c.VOCABULARY_ID = :vocabularyId AND c.OBSOLETE_DATE IS NULL "
-                + "ORDER by c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, rcv.IDENTIFIER ");
+                + "ORDER by c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, d.IDENTIFIER, v.LANGUAGE, rcv.IDENTIFIER ");
 
         final List<VocabularyConcept> resultList = new ArrayList<VocabularyConcept>();
 
@@ -557,7 +557,6 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 if (elemId != previousElemId || conceptId != previousConceptId) {
                     oneElementValues = new ArrayList<DataElement>();
                     elementValues.add(oneElementValues);
-
                 }
 
                 if (elemId > 0) {
@@ -566,7 +565,6 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                     elem.setIdentifier(rs.getString("ELEMIDENTIFIER"));
                     elem.setAttributeLanguage(rs.getString("LANGUAGE"));
                     elem.setAttributeValue(rs.getString("ELEMENT_VALUE"));
-
 
                     Integer relatedConceptId = rs.getInt("RELATED_CONCEPT_ID");
 

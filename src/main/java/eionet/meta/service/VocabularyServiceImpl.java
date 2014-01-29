@@ -65,9 +65,9 @@ import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
-import eionet.util.Pair;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.web.action.ErrorActionBean;
 
@@ -1145,20 +1145,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     @Override
-    public List<String> getVocabularyBoundElementNames(VocabularyFolder vocabularyFolder) {
+    public List<Triple<String, String, Integer>> getVocabularyBoundElementNames(VocabularyFolder vocabularyFolder) {
         int vocabularyFolderId = vocabularyFolder.getId();
-        List<Pair<String, Integer>> elementsMeta = vocabularyFolderDAO.getVocabularyFolderBoundElementsMeta(vocabularyFolderId);
-
-        List<String> result = new ArrayList<String>();
-
-        // build list of Strings
-        for (Pair<String, Integer> elementCount : elementsMeta) {
-            for (int i = 0; i < elementCount.getRight(); i++) {
-                result.add(elementCount.getLeft());
-            }
-        }
-
-        return result;
+        List<Triple<String, String, Integer>> elementsMeta = vocabularyFolderDAO.getVocabularyFolderBoundElementsMeta(vocabularyFolderId);
+        return elementsMeta;
     }
 
     @Override

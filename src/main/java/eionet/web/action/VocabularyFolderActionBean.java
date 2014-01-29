@@ -61,6 +61,7 @@ import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
+import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
 
@@ -957,14 +958,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             final List<VocabularyConcept> concepts =
                     vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
-                            vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
-            final List<String> fieldNames = vocabularyService.getVocabularyBoundElementNames(vocabularyFolder);
+                            vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);            
+            final List<Triple<String, String, Integer>> fieldNamesWithLanguage = vocabularyService.getVocabularyBoundElementNames(vocabularyFolder);
 
             StreamingResolution result = new StreamingResolution("text/csv") {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
                     VocabularyCSVOutputHelper.writeCSV(response.getOutputStream(), getUriPrefix(), folderContextRoot, concepts,
-                            fieldNames);
+                            fieldNamesWithLanguage);
                 }
             };
             result.setFilename(vocabularyFolder.getIdentifier() + ".csv");
