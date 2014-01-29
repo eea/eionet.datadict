@@ -606,8 +606,8 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                 .append("from VOCABULARY_CONCEPT JOIN VOCABULARY_CONCEPT_ELEMENT vce USING(VOCABULARY_CONCEPT_ID) ")
                 .append("JOIN DATAELEM USING(DATAELEM_ID) ").append("where VOCABULARY_CONCEPT.VOCABULARY_ID=:folderId ")
                 .append("GROUP BY VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEM_LANG ")
-                .append("ORDER BY VOCABULARY_CONCEPT_ID, DATAELEM.IDENTIFIER, ELEM_LANG")
-                .append(") q GROUP BY IDENTIFIER, ELEM_LANG");
+                .append("ORDER BY VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEM_LANG")
+                .append(") q GROUP BY IDENTIFIER, ELEM_LANG ORDER BY IDENTIFIER, ELEM_LANG ");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("folderId", vocabularyFolderId);

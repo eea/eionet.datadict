@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -57,7 +58,7 @@ import eionet.util.Triple;
 
 /**
  * JUnit integration test with Unitils for vocabulary service.
- *
+ * 
  * @author Juhan Voolaid
  */
 @SpringApplicationContext("spring-context.xml")
@@ -95,13 +96,13 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     @Test
     public void testGetVocabularyFoldersAnonymous() throws ServiceException {
         List<VocabularyFolder> result = vocabularyService.getVocabularyFolders(null);
-        assertEquals("Result size", 2, result.size());
+        assertEquals("Result size", 3, result.size());
     }
 
     @Test
     public void testGetVocabularyFoldersTestUser() throws ServiceException {
         List<VocabularyFolder> result = vocabularyService.getVocabularyFolders("testUser");
-        assertEquals("Result size", 3, result.size());
+        assertEquals("Result size", 4, result.size());
     }
 
     @Test
@@ -144,7 +145,9 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * full text identifier must work in filter.
-     * @throws ServiceException if bad things happen
+     * 
+     * @throws ServiceException
+     *             if bad things happen
      */
     @Test
     public void testSearchVocabularyConceptsByIdentifier() throws ServiceException {
@@ -154,7 +157,6 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         VocabularyConceptResult result = vocabularyService.searchVocabularyConcepts(filter);
         assertEquals("Result size", 1, result.getFullListSize());
     }
-
 
     @Test
     public void testCreateVocabularyConcept() throws ServiceException {
@@ -291,9 +293,9 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         assertEquals("Expected concepts size ", 4, concepts.size());
         int expectedRelatedID = 0;
         int actualRelatedId = 0;
-        //find concept5 and see if this has concept4 ID as related ID
+        // find concept5 and see if this has concept4 ID as related ID
         for (VocabularyConcept c : concepts) {
-            //expect concept4 to appear before concept5 in the elem list
+            // expect concept4 to appear before concept5 in the elem list
             if (c.getIdentifier().equals("concept4")) {
                 expectedRelatedID = c.getId();
             }
@@ -372,7 +374,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     @Test
     public void testGetFolders() throws ServiceException {
         List<Folder> result = vocabularyService.getFolders("testUser", 1);
-        assertEquals("Folders size", 4, result.size());
+        assertEquals("Folders size", 5, result.size());
         Folder folderCommon = null;
         for (Folder folder : result) {
             if ("common".equals(folder.getIdentifier())) {
@@ -444,11 +446,12 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * The purpose is to test the {@link IVocabularyService#getReleasedVocabularyFolders(int)} function.
-     * @throws ServiceException An error happens in the called service(s).
+     * 
+     * @throws ServiceException
+     *             An error happens in the called service(s).
      */
     @Test
     public void testReleasedVocabularyFolders() throws ServiceException {
-
         List<VocabularyFolder> releasedVocabularies = vocabularyService.getReleasedVocabularyFolders(1);
         int size = releasedVocabularies == null ? 0 : releasedVocabularies.size();
         assertEquals("Expected exactly 1 released vocabulary", 1, size);
@@ -457,12 +460,12 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * The purpose is to test the vocabularies' "enforce concept notation equals concept identifier" functionality.
-     *
-     * @throws ServiceException An error happens in the called services.
+     * 
+     * @throws ServiceException
+     *             An error happens in the called services.
      */
     @Test
     public void testNotationEqualsIdentifier() throws ServiceException {
-
         String userName = "testUser";
 
         // First lets create a vocabulary with no particular setting on the enforce-notation-equals-identifier policy.
@@ -492,7 +495,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept1.setIdentifier("conc1");
         concept1.setLabel("Concept 1");
         concept1.setNotation("Conc_1");
-        int concId1 = vocabularyService.createVocabularyConcept(vocId, concept1);
+        vocabularyService.createVocabularyConcept(vocId, concept1);
         concept1 = vocabularyService.getVocabularyConcept(vocId, "conc1", true);
         assertNotNull("Expected a concept", concept1);
         assertNotEquals("Expected unequal notation and identifier", concept1.getNotation(), concept1.getIdentifier());
@@ -501,7 +504,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept2.setIdentifier("conc2");
         concept2.setLabel("Concept 2");
         concept2.setNotation("Conc_2");
-        int concId2 = vocabularyService.createVocabularyConcept(vocId, concept2);
+        vocabularyService.createVocabularyConcept(vocId, concept2);
         concept2 = vocabularyService.getVocabularyConcept(vocId, "conc2", true);
         assertNotNull("Expected a concept", concept2);
         assertNotEquals("Expected unequal notation and identifier", concept2.getNotation(), concept2.getIdentifier());
@@ -527,7 +530,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept3.setIdentifier("conc3");
         concept3.setLabel("Concept 3");
         concept3.setNotation("Conc_3");
-        int concId3 = vocabularyService.createVocabularyConcept(vocId, concept3);
+        vocabularyService.createVocabularyConcept(vocId, concept3);
         concept3 = vocabularyService.getVocabularyConcept(vocId, "conc3", true);
         assertNotNull("Expected a concept", concept3);
         assertEquals("Expected equal notation and identifier", concept3.getNotation(), concept3.getIdentifier());
@@ -535,7 +538,9 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * tests vocabularyHasDataElementBinding() method.
-     * @throws ServiceException if bad things happen
+     * 
+     * @throws ServiceException
+     *             if bad things happen
      */
     @Test
     public void vocabularyBindingExistsTest() throws ServiceException {
@@ -545,7 +550,9 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * test on getConceptsWithElementValue method.
-     * @throws ServiceException if bad things happen
+     * 
+     * @throws ServiceException
+     *             if bad things happen
      */
     @Test
     public void getValuedConceptsTest() throws ServiceException {
@@ -557,7 +564,9 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * test if namespaces of elements are generated correctly.
-     * @throws ServiceException if error happens
+     * 
+     * @throws ServiceException
+     *             if error happens
      */
     @Test
     public void getVocabularyNamespacesTest() throws ServiceException {
@@ -571,19 +580,21 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * tsest on relational elements.
-     * @throws Exception if fail
+     * 
+     * @throws Exception
+     *             if fail
      */
     @Test
     public void testRelationalElement() throws Exception {
-
         assertTrue(vocabularyService.isReferenceElement(6));
         assertTrue(!vocabularyService.isReferenceElement(1));
-
     }
 
     /**
      * tests getvocabularyFolder meta.
-     * @throws Exception if fail
+     * 
+     * @throws Exception
+     *             if fail
      */
     @Test
     public void testFolderCSVInfo() throws Exception {
@@ -591,17 +602,58 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         List<Triple<String, String, Integer>> attributeNames = vocabularyService.getVocabularyBoundElementNames(vocabularyFolder);
 
         assertTrue(attributeNames.size() == 2);
+        Triple<String, String, Integer> dev = attributeNames.get(0);
+        assertTrue(dev.getLeft().equals("HCO1"));
+        assertTrue(dev.getRight() == 2);
+        dev = attributeNames.get(1);
+        assertTrue(dev.getLeft().equals("skos:broader"));
+        assertTrue(dev.getRight() == 1);
+    }// end of test step testFolderCSVInfo
 
-    }
+    /**
+     * tests getvocabularyFolder meta.
+     * 
+     * @throws Exception
+     *             if fail
+     */
+    @Test
+    public void testFolderCSVInfo2() throws Exception {
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(4);
+        List<Triple<String, String, Integer>> attributeNames = vocabularyService.getVocabularyBoundElementNames(vocabularyFolder);
+
+        int numberOfElements = 9;
+        assertTrue(attributeNames.size() == numberOfElements);
+        ArrayList<Triple<String, String, Integer>> manualAttributeNames = new ArrayList<Triple<String, String, Integer>>();
+        manualAttributeNames.add(new Triple<String, String, Integer>("HCO2", null, 2));
+        manualAttributeNames.add(new Triple<String, String, Integer>("HCO3", null, 1));
+        manualAttributeNames.add(new Triple<String, String, Integer>("skos:definition", "de", 2));
+        manualAttributeNames.add(new Triple<String, String, Integer>("skos:definition", "en", 1));
+        manualAttributeNames.add(new Triple<String, String, Integer>("skos:definition", "pl", 1));
+        manualAttributeNames.add(new Triple<String, String, Integer>("skos:prefLabel", "bg", 2));
+        manualAttributeNames.add(new Triple<String, String, Integer>("skos:prefLabel", "en", 1));
+        manualAttributeNames.add(new Triple<String, String, Integer>("skos:prefLabel", "et", 1));
+        manualAttributeNames.add(new Triple<String, String, Integer>("skos:prefLabel", "pl", 1));
+
+        for (int i = 0; i < numberOfElements; i++) {
+            Triple<String, String, Integer> attributeName = attributeNames.get(i);
+            Triple<String, String, Integer> manualAttributeName = manualAttributeNames.get(i);
+            assertTrue(StringUtils.equals(attributeName.getLeft(), manualAttributeName.getLeft()));
+            assertTrue(StringUtils.equals(attributeName.getCentral(), manualAttributeName.getCentral()));
+            assertTrue(attributeName.getRight() == manualAttributeName.getRight());
+        }
+
+    }// end of test step testFolderCSVInfo
 
     /**
      * test on search vocabularies.
-     * @throws Exception if fail
+     * 
+     * @throws Exception
+     *             if fail
      */
     @Test
     public void testSearchVocabularies() throws Exception {
         VocabularyFilter filter = new VocabularyFilter();
-        //search in identifier
+        // search in identifier
         filter.setText("test_vocabulary");
         VocabularyResult result = vocabularyService.searchVocabularies(filter);
 
@@ -612,7 +664,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
         assertTrue(result.getTotalItems() == 0);
 
-        //label
+        // label
         filter.setText("test2");
 
         result = vocabularyService.searchVocabularies(filter);
@@ -624,7 +676,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         result = vocabularyService.searchVocabularies(filter);
         assertTrue(result.getTotalItems() == 1);
 
-        //related concepts search
+        // related concepts search
         filter.setWorkingCopy(false);
         filter.setText(null);
         filter.setConceptText("XYZ1234");
@@ -638,8 +690,6 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
         result = vocabularyService.searchVocabularies(filter);
         assertTrue(result.getTotalItems() == 1);
-
-
     }
 
 }
