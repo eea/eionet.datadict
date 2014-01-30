@@ -876,6 +876,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             vocabularyFolder =
                     vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                             false);
+            
+            if (vocabularyFolder.isDraftStatus()) {
+                throw new RuntimeException("Vocabulary is not in released or public draft status.");
+            }
 
             List<VocabularyFolder> vocabularyFolders = new ArrayList<VocabularyFolder>();
             vocabularyFolders.add(vocabularyFolder);
@@ -900,10 +904,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
 
             final List<? extends VocabularyConcept> finalConcepts = concepts;
-
-            if (vocabularyFolder.isDraftStatus()) {
-                throw new RuntimeException("Vocabulary is not in released or public draft status.");
-            }
 
             final String contextRoot =
                     StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
@@ -934,7 +934,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             error.setErrorMessage(e.getMessage());
             return error;
         }
-    }
+    }// end of method rdf
 
     /**
      * Returns vocabulary concepts CSV.
@@ -947,6 +947,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                     vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                             vocabularyFolder.isWorkingCopy());
             validateView();
+            if (vocabularyFolder.isDraftStatus()) {
+                throw new RuntimeException("Vocabulary is not in released or public draft status.");
+            }
 
             final String folderContextRoot =
                     StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
@@ -958,8 +961,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             final List<VocabularyConcept> concepts =
                     vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
-                            vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);            
-            final List<Triple<String, String, Integer>> fieldNamesWithLanguage = vocabularyService.getVocabularyBoundElementNames(vocabularyFolder);
+                            vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
+            final List<Triple<String, String, Integer>> fieldNamesWithLanguage =
+                    vocabularyService.getVocabularyBoundElementNames(vocabularyFolder);
 
             StreamingResolution result = new StreamingResolution("text/csv") {
                 @Override
@@ -976,7 +980,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             error.setErrorMessage(e.getMessage());
             return error;
         }
-    }
+    }// end of method csv
 
     /**
      * Forwards to vocabulary concept page, if the url patter is: /vocabylary/folderIdentifier/conceptIdentifier.
