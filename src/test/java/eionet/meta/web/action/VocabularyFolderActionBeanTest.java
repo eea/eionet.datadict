@@ -70,7 +70,8 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     }
 
     /**
-     * test if CSV output contains attribute elements
+     * test if CSV output contains attribute elements Assumption: This test will work for only cases when content does not include
+     * comma (,). For simplicity of test case, this is preferred.
      * 
      * @throws Exception
      *             if test fails

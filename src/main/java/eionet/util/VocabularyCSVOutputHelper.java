@@ -177,9 +177,11 @@ public final class VocabularyCSVOutputHelper {
      */
     private static List<DataElement> getDataElementValuesByName(String elemName, List<List<DataElement>> elems) {
         for (List<DataElement> elem : elems) {
-            DataElement elemMeta = elem.get(0);
-            if (elemMeta != null && elemMeta.getIdentifier().equals(elemName)) {
-                return elem;
+            if (elem != null && elem.size() > 0) {
+                DataElement elemMeta = elem.get(0);
+                if (elemMeta != null && elemMeta.getIdentifier().equals(elemName)) {
+                    return elem;
+                }
             }
         }
         return null;
@@ -201,7 +203,7 @@ public final class VocabularyCSVOutputHelper {
         boolean isLangEmpty = StringUtils.isEmpty(lang);
         ArrayList<DataElement> elements = new ArrayList<DataElement>();
         for (List<DataElement> elem : elems) {
-            if (!elem.get(0).getIdentifier().equals(elemName)) {// check first one
+            if (elem == null || elem.size() < 1 || !elem.get(0).getIdentifier().equals(elemName)) {// check first one
                 continue;
             }
             for (DataElement elemMeta : elem) {
@@ -215,7 +217,7 @@ public final class VocabularyCSVOutputHelper {
             return elements;
         }
         return null;
-    }//end of method getDataElementValuesByNameAndLang
+    }// end of method getDataElementValuesByNameAndLang
 
     /**
      * Adds pre-defined entries to the array.

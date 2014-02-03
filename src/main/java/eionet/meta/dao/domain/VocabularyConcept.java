@@ -43,9 +43,6 @@ public class VocabularyConcept {
     /** parent vocabulary identifier. */
     private int vocabularyId;
 
-    // Old implementation that will be replaced by data element attributes. See #14721.
-    @Deprecated
-    private List<List<VocabularyConceptAttribute>> attributes;
     /** Attributes. */
     private List<List<DataElement>> elementAttributes;
 

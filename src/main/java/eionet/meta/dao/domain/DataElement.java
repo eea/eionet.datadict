@@ -107,7 +107,7 @@ public class DataElement {
     private Boolean allConceptsValid;
 
     /** update date. */
-    String date;
+    private String date;
 
 
     /**
