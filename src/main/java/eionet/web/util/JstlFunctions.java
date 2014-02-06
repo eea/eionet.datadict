@@ -22,6 +22,7 @@ package eionet.web.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.servlet.http.HttpSession;
@@ -33,6 +34,7 @@ import eionet.util.Util;
 
 /**
  * JSTL functions to be used in JSP.
+ *
  * @author Risto Alt
  *
  */
@@ -49,6 +51,7 @@ public final class JstlFunctions {
     private JstlFunctions() {
 
     }
+
     /**
      * Returns the value of {@link CRUser#hasPermission(HttpSession, String, String)}, using the given inputs.
      *
@@ -83,10 +86,11 @@ public final class JstlFunctions {
     }
 
     /**
+     * Returns true if provided array or collection contains the specified element.
      *
-     * @param arrayOrCollection
-     * @param object
-     * @return
+     * @param arrayOrCollection array or collection holding list of elements
+     * @param object element whose presence in this array is to be tested
+     * @return true if this array contains the specified element
      */
     public static boolean contains(Object arrayOrCollection, Object object) {
 
@@ -99,7 +103,7 @@ public final class JstlFunctions {
                     }
                 }
             } else if (arrayOrCollection instanceof Collection) {
-                for (Object o : ((Collection) arrayOrCollection)) {
+                for (Object o : ((Collection<?>) arrayOrCollection)) {
                     if (o.equals(object)) {
                         return true;
                     }
@@ -160,9 +164,9 @@ public final class JstlFunctions {
     }
 
     /**
-     * Cuts the given String if exceeds the length.
-     * Finds the first whitespace after the position to be cut.
-     * Adds an ellipsis in the end if the length is exceeded.
+     * Cuts the given String if exceeds the length. Finds the first whitespace after the position to be cut. Adds an ellipsis in the
+     * end if the length is exceeded.
+     *
      * @param str given string value
      * @param cutAtLength max len of string
      *
@@ -182,7 +186,7 @@ public final class JstlFunctions {
         }
 
         String stringStart = str.substring(0, cutAtLength);
-        //if the Nth char is space ther is not need to split the string
+        // if the Nth char is space ther is not need to split the string
         if (str.charAt(cutAtLength) == ' ') {
             stringStart = stringStart + " ";
         }
@@ -196,6 +200,7 @@ public final class JstlFunctions {
 
     /**
      * URLEncodes given String.
+     *
      * @param str value to urlencode
      * @return encoded value
      */
@@ -208,4 +213,14 @@ public final class JstlFunctions {
         }
     }
 
+    /**
+     * Returns true if provided array contains the specified element.
+     *
+     * @param array array holding list of elements
+     * @param o element whose presence in this array is to be tested
+     * @return true if this array contains the specified element
+     */
+    public static boolean arrayContains(Object[] array, Object o) {
+        return Arrays.asList(array).contains(o);
+    }
 }

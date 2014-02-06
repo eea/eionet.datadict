@@ -37,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.IVocabularyService;
@@ -121,10 +122,16 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     private List<Integer> vocabulariesWithBaseUri;
 
     /**
-     * if true and vocabularies are deleted then relation in another vocabulary is deleted
-     * but element value is replace by base url + identifier
+     * if true and vocabularies are deleted then relation in another vocabulary is deleted but element value is replace by base url
+     * + identifier.
      */
     private boolean keepRelationsOnDelete;
+
+    /**
+     * List of vocabulary status texts to be displayed in the list of vocabularies after vocabulary name. Released status is the
+     * normal, and show the status only when it is different from the normal.
+     */
+    private RegStatus[] statusTextsToDisplay = {RegStatus.DRAFT, RegStatus.PUBLIC_DRAFT};
 
     /**
      * View vocabulary folders list action.
@@ -141,8 +148,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
             for (Folder folder : folders) {
                 if (folder.isExpanded() && folder.getItems() != null) {
                     for (Object vocabulary : folder.getItems()) {
-                        if (vocabulary instanceof VocabularyFolder && ((VocabularyFolder)vocabulary).getBaseUri() != null) {
-                            vocabulariesWithBaseUri.add(((VocabularyFolder)vocabulary).getId());
+                        if (vocabulary instanceof VocabularyFolder && ((VocabularyFolder) vocabulary).getBaseUri() != null) {
+                            vocabulariesWithBaseUri.add(((VocabularyFolder) vocabulary).getId());
                         }
                         if (vocabulary instanceof VocabularyFolder
                                 && !((VocabularyFolder) vocabulary).isWorkingCopy()
@@ -153,12 +160,12 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
                 }
             }
 
-            //base URI:
+            // base URI:
             for (Folder folder : folders) {
                 if (folder.isExpanded() && folder.getItems() != null) {
                     for (Object vocabulary : folder.getItems()) {
-                        if (vocabulary instanceof VocabularyFolder && ((VocabularyFolder)vocabulary).getBaseUri() != null) {
-                            vocabulariesWithBaseUri.add(((VocabularyFolder)vocabulary).getId());
+                        if (vocabulary instanceof VocabularyFolder && ((VocabularyFolder) vocabulary).getBaseUri() != null) {
+                            vocabulariesWithBaseUri.add(((VocabularyFolder) vocabulary).getId());
                         }
                     }
                 }
@@ -194,10 +201,9 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         return new RedirectResolution(VocabularyFoldersActionBean.class);
     }
 
-
     /**
-     * Validation on search concepts.
-     * Checks if text is entered
+     * Validation on search concepts. Checks if text is entered
+     *
      * @throws ServiceException if databaes call fails
      */
     @ValidationMethod(on = {"searchConcepts"})
@@ -279,8 +285,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
             addGlobalValidationError("No permission to delete vocabulary!");
         }
 
-        //if vocabulary is used in CH3 element - cannot delete
-        List <DataElement> elementsAsSoruce = dataService.getVocabularySourceElements(folderIds);
+        // if vocabulary is used in CH3 element - cannot delete
+        List<DataElement> elementsAsSoruce = dataService.getVocabularySourceElements(folderIds);
         if (elementsAsSoruce.size() > 0) {
             addGlobalValidationError("Deleted vocabularies are used as values source for data elements: "
                     + StringUtils.join(elementsAsSoruce, ","));
@@ -377,7 +383,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         if (vocabularyFilter == null) {
             vocabularyFilter = new VocabularyFilter();
         }
-        //do not show working copies for anonymous users
+        // do not show working copies for anonymous users
         if (!isUserLoggedIn()) {
             vocabularyFilter.setWorkingCopy(false);
         }
@@ -401,13 +407,12 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         // this is needed because of "limit " clause in the SQL. if this remains true, paging does not work in display:table
         vocabularyConceptFilter.setUsePaging(false);
 
-        //do not show working copies for anonymous users
+        // do not show working copies for anonymous users
         vocabularyConceptResult = vocabularyService.searchAllVocabularyConcept(vocabularyConceptFilter);
 
         return new ForwardResolution(CONCEPT_SEARCH_RESULT_JSP);
 
     }
-
 
     /**
      * @param vocabularyService the vocabularyService to set
@@ -548,7 +553,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         this.vocabularyConceptFilter = vocabularyConceptFilter;
     }
 
-    public List<VocabularyConceptData>  getVocabularyConceptResult() {
+    public List<VocabularyConceptData> getVocabularyConceptResult() {
         return vocabularyConceptResult;
     }
 
@@ -562,6 +567,13 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
 
     public void setKeepRelationsOnDelete(boolean keepRelationsOnDelete) {
         this.keepRelationsOnDelete = keepRelationsOnDelete;
+    }
+
+    /**
+     * @return the statusTextsToDisplay
+     */
+    public RegStatus[] getStatusTextsToDisplay() {
+        return statusTextsToDisplay;
     }
 
 }

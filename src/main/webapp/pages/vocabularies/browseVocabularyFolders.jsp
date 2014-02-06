@@ -182,7 +182,7 @@
                                                 <span class="link-folder" style="color:gray;">
                                             </c:if>
                                             (<c:out value="${item.label}"/>)
-                                            <c:if test="${not empty actionBean.user}">
+                                            <c:if test="${ddfn:contains(actionBean.statusTextsToDisplay, item.regStatus)}">
                                                 <sup style="font-size:0.7em"><c:out value="${item.regStatus}" /></sup>
                                             </c:if>
                                             <c:if test="${item.draftStatus}">
