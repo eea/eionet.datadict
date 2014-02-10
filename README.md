@@ -16,20 +16,16 @@ Installation
 ------------
 
 ### Prerequisites
-
-DD runs on Java platform, and has been tested and run on Tomcat Java Servlet Container. 
-DD source code is built with Maven.
+DD runs on Java platform, and has been tested and run on Tomcat Java Servlet Container. DD source code is built with Maven.
 
 Please download all of these software and install them according to the instructions found at their websites:
-
 Java, Tomcat, Maven and GIT client.
 
 The necessary versions are as follows:
-
-Java 1.5 or higher
-Maven 2.0.4 or higher
-Tomcat 5.5 or higher
-GIT 1.8.4 or higher
+* Java 1.5 or higher
+* Maven 2.0.4 or higher
+* Tomcat 5.5 or higher
+* GIT 1.8.4 or higher
 
 #### Download DD source code
 
@@ -42,16 +38,16 @@ $ git clone https://github.com/eea/eionet.datadict.git
 NB! The resulting /var/local/build/eionet.datadict directory will be denoted  below as $CHECKOUT_HOME
 
 #### Adjust properties
-Create local.properties file by making a copy of default.properties.
+Create _local.properties_ file by making a copy of _default.properties_.
 ```sh
 $ cd $CHECKOUT_HOME
 $ cp default.properties local.properties
 ```
 
-In the freshly created local.properties file, change property values as  appropriate for your environment. You will find meanings of every property  from inside the file as comments.
+In the freshly created _local.properties_ file, change property values as  appropriate for your environment. You will find meanings of every property  from inside the file as comments.
 
 #### Database
-Create DD database and database user in MySql matching the db configuration values in local.properties
+Create DD database and database user in MySql matching the db configuration values in _local.properties_
 ```sh
 $ mysql -u root -p
 ```
