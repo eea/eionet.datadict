@@ -1,9 +1,9 @@
-EIONET Data Dictionary (DD).
-=================================================
+EIONET Data Dictionary
+======================
 
 Introduction
 ------------
-The Data Dictionary is used to support the delivery of environmental data by countries to Reportnet.
+The Data Dictionary (DD) is used to support the delivery of environmental data by countries to Reportnet.
 The contents in the data dictionary are used to generate pdfs of the technical specifications for dataflows as well as Excel templates.
 The Data Dictionary also introduces the possibility of simple automated validation of deliveries by countries and facilitates the development of data submission interfaces.
 
