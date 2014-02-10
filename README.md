@@ -94,7 +94,7 @@ $ mvn -Dliquibase.changeLogFile=sql/dd-seeddata.xml liquibase:update
 This step is required for making the EEA's Central Authentication Service (CAS) work with your DD. You need to register Eionet certificates in the JVM that runs the Tomcat where you deploy the DD. A small Java executable that does it, and a README on how to use it can be found here: https://svn.eionet.europa.eu/repositories/Reportnet/CASServer/contrib/installcert
 
 
-#### Installing
+#### Deployment
 Place the resulting $CHECKOUT_HOME/target/datadict.war into Tomcat's webapps directory, and start Tomcat.
 
 
