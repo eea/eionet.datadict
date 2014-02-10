@@ -1,4 +1,4 @@
-This is the EIONET Data Dictionary (DD) software.
+EIONET Data Dictionary (DD).
 =================================================
 
 Introduction
@@ -17,7 +17,6 @@ Installation
 
 ### Prerequisites
 
-
 DD runs on Java platform, and has been tested and run on Tomcat Java Servlet Container. 
 DD source code is built with Maven.
 
@@ -32,9 +31,9 @@ Maven 2.0.4 or higher
 Tomcat 5.5 or higher
 GIT 1.8.4 or higher
 
-### Download DD source code
+#### Download DD source code
 
-## Create build directory for source code
+Create build directory for source code and get code from GitHub
 ```sh
 $ cd /var/local/build
 $ git clone https://github.com/eea/eionet.datadict.git
@@ -42,18 +41,17 @@ $ git clone https://github.com/eea/eionet.datadict.git
 
 NB! The resulting /var/local/build/eionet.datadict directory will be denoted  below as $CHECKOUT_HOME
 
-## Create local.properties file by making a copy of default.properties.
+#### Adjust properties
+Create local.properties file by making a copy of default.properties.
 ```sh
 $ cd $CHECKOUT_HOME
 $ cp default.properties local.properties
 ```
 
-## Adjust properties
 In the freshly created local.properties file, change property values as  appropriate for your environment. You will find meanings of every property  from inside the file as comments.
 
-## Create DD database and database user in MySql matching the db configuration values in local.properties
-
-Created DD database and database user in MySql have to matcg the db configuration values in local.properties
+#### Database
+Create DD database and database user in MySql matching the db configuration values in local.properties
 ```sh
 $ mysql -u root -p
 ```
@@ -64,54 +62,50 @@ CREATE USER 'dduser'@'localhost' IDENTIFIED BY 'password-here';
 GRANT ALL PRIVILEGES ON DataDict.* TO 'dduser'@'localhost';
 ```
 
-## Unit testing
+#### Unit testing
 
- unit test mechanism will install its own embedded  database and create the tables when you execute them. Note that the MySQL database will keep running afterwards. You can run individual tests with: -Dtest=DatasetImportHandlerTest
-
+The unit test mechanism will install its own embedded  database and create the tables when you execute them. Note that the MySQL database will keep running afterwards. You can run individual tests with: -Dtest=DatasetImportHandlerTest
 ```sh
 $ cd $CHECKOUT_HOME
 $ mvn -Denv=unittest -Dmaven.test.skip=false test
 ```
 
-## Custom headers and footers configuration (OPTIONAL)
+#### Custom headers and footers configuration (OPTIONAL)
 Revise $CHECKOUT_HOME/custom/*.txt files for modifying the content of headers and footers in DD web pages texts and links.  You will find guidelines from inside $CHECKOUT_HOME/custom/README.txt.
 
-## Build the DD web application
+#### Build the DD web application
 
 The application install package is built with maven
-
 ```sh
 $ cd $CHECKOUT_HOME
 $ mvn -Dmaven.test.skip=true clean install
 ```
 
-## Import initial Seed data
+#### Import initial Seed data
 
-# Create  initial database structure
-
+Create  initial database structure
 ```sh
 $ cd $CHECKOUT_HOME
 $ mvn liquibase:update
 ```
-# import seed data required for DD to operate
+Import seed data required for DD to operate
 ```sh
 $ mvn -Dliquibase.changeLogFile=sql/dd-seeddata.xml liquibase:update
 ```
 
-## Register Eionet's GlobalSign CA certificates in your JVM. (OPTIONAL)
+#### Register Eionet's GlobalSign CA certificates in your JVM. (OPTIONAL)
 
 This step is required for making the EEA's Central Authentication Service (CAS) work with your DD. You need to register Eionet certificates in the JVM that runs the Tomcat where you deploy the DD. A small Java executable that does it, and a README on how to use it can be found here: https://svn.eionet.europa.eu/repositories/Reportnet/CASServer/contrib/installcert
 
 
-## Place the resulting $CHECKOUT_HOME/target/datadict.war into Tomcat's webapps directory, and start Tomcat.
+#### Installing
+Place the resulting $CHECKOUT_HOME/target/datadict.war into Tomcat's webapps directory, and start Tomcat.
 
 
 ### Additional applications for modifying DD access permissions and help texts
 
 Additional web applications are available for modifying user privileges and help texts in DD:
-
 AclAdmin tool: https://svn.eionet.europa.eu/repositories/Reportnet/acladmin/trunk
-
 HelpAdmin tool: https://svn.eionet.europa.eu/repositories/Reportnet/helpadmin/trunk
 
 Installing these applications is done by similar steps:
