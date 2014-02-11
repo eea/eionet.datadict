@@ -41,11 +41,13 @@ import eionet.meta.dao.domain.VocabularyConcept;
  * @author Juhan Voolaid
  */
 public final class VocabularyCSVOutputHelper {
-
+    
     /**
      * how many values are takend from vocabulary concept.
      */
-    private static final int CONCEPT_ENTRIES_COUNT = 6;
+    public static final int CONCEPT_ENTRIES_COUNT = 6;
+    
+    public static final byte[] BOM_BYTE_ARRAY = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
 
     /**
      * Prevent public initialization.
@@ -158,9 +160,8 @@ public final class VocabularyCSVOutputHelper {
      *             if connection fails
      */
     private static void addBOM(OutputStream out) throws IOException {
-        byte[] bom = new byte[] {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-
-        for (byte b : bom) {
+        
+        for (byte b : BOM_BYTE_ARRAY) {
             out.write(b);
         }
 
@@ -175,11 +176,11 @@ public final class VocabularyCSVOutputHelper {
      *            list containing element definitions with values
      * @return list of dataelement objects containing values
      */
-    private static List<DataElement> getDataElementValuesByName(String elemName, List<List<DataElement>> elems) {
+    public static List<DataElement> getDataElementValuesByName(String elemName, List<List<DataElement>> elems) {
         for (List<DataElement> elem : elems) {
             if (elem != null && elem.size() > 0) {
                 DataElement elemMeta = elem.get(0);
-                if (elemMeta != null && elemMeta.getIdentifier().equals(elemName)) {
+                if (elemMeta != null && StringUtils.equals(elemMeta.getIdentifier(),elemName)) {
                     return elem;
                 }
             }
@@ -198,12 +199,12 @@ public final class VocabularyCSVOutputHelper {
      *            list containing element definitions with values
      * @return list of dataelement objects containing values
      */
-    private static List<DataElement>
+    public static List<DataElement>
             getDataElementValuesByNameAndLang(String elemName, String lang, List<List<DataElement>> elems) {
         boolean isLangEmpty = StringUtils.isEmpty(lang);
         ArrayList<DataElement> elements = new ArrayList<DataElement>();
         for (List<DataElement> elem : elems) {
-            if (elem == null || elem.size() < 1 || !elem.get(0).getIdentifier().equals(elemName)) {// check first one
+            if (elem == null || elem.size() < 1 || !StringUtils.equals(elem.get(0).getIdentifier(), elemName)) {// check first one
                 continue;
             }
             for (DataElement elemMeta : elem) {
@@ -214,18 +215,19 @@ public final class VocabularyCSVOutputHelper {
                     break;
                 }
             }
-            return elements;
+           // return elements;
         }
-        return null;
+        return elements;
     }// end of method getDataElementValuesByNameAndLang
 
     /**
      * Adds pre-defined entries to the array.
+     * If updated 
      * 
      * @param entries
      *            array for CSV output
      */
-    private static void addFixedEntryHeaders(String[] entries) {
+    public static void addFixedEntryHeaders(String[] entries) {
         entries[0] = "URI";
         entries[1] = "Label";
         entries[2] = "Definition";

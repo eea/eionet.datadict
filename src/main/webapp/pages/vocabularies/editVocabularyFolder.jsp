@@ -12,6 +12,21 @@
         // <![CDATA[
         ( function($) {
             $(document).ready(function() {
+            	
+            	$("#uploadCSVLink").click(function() {
+                    $('#uploadCSVDialog').dialog('open');
+                    return false;
+                });                
+
+                $('#uploadCSVDialog').dialog({
+                    autoOpen: false,
+                    width: 500
+                });
+
+                $("#closeUploadCSVDialog").click(function() {
+                    $('#uploadCSVDialog').dialog("close");
+                    return true;
+                });
 
                 $(".folderChoice").click(function() {
                     handleFolderChoice();
@@ -33,7 +48,7 @@
                 }
 
                 handleFolderChoice();
-
+                
 
                 $(".delLink").click(function() {
                     this.parentElement.remove();
@@ -103,7 +118,10 @@
                 </li>
                 <c:if test="${actionBean.userWorkingCopy}">
           <li>
-            <a href="#" id="addNewConceptLink">Add new concept</a>
+              <a href="#" id="addNewConceptLink">Add new concept</a>
+          </li>
+          <li>
+              <a href="#" id="uploadCSVLink">Upload CSV</a>
           </li>
         </c:if>
                 <li>
@@ -490,6 +508,32 @@
                 </stripes:form>
             </div>
         </c:forEach>
+        
+	    <%-- The upload dialog. Hidden unless activated. --%>
+	
+	    <div id="uploadCSVDialog" title="Upload CSV">
+	        <stripes:form beanclass="${actionBean.class.name}" method="post">
+	        	<stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+	
+	            <div class="note-msg">
+	                <strong>Note</strong>
+	                <p>
+	                    Existing values will be overwritten with values in CSV. Not existing values will be added. If you select purge option. All data will be deleted and values will be added.
+	                </p>
+	            </div>
+	
+				<div>
+					<stripes:checkbox name="purgeVocabularyData"/><label for="purgeVocabularyData" class="question">Purge Vocabulary Data</label>
+				</div>				
+	            <stripes:file name="uploadedCsvFile" id="fileToUpload" size="40" accept="text/csv" title="Select a .csv file to import"/>
+	            <stripes:submit name="uploadCsv" value="Upload"/>
+	            <input type="button" id="closeUploadCSVDialog" value="Cancel"/>
+	
+	        </stripes:form>
+	    </div>
 
     </stripes:layout-component>
 
