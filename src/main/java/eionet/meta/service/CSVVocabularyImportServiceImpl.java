@@ -23,6 +23,7 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 import eionet.meta.service.data.ObsoleteStatus;
+import eionet.util.Pair;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.VocabularyCSVOutputHelper;
@@ -71,13 +72,10 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                         + "/"
                         + vocabularyFolder.getIdentifier() + "/";
 
-        List<DataElement> newBindedElement = new ArrayList<DataElement>();
+        Pair<List<VocabularyConcept>, List<DataElement>> willBeUpdatedObjects =
+                generateUpdatedBeans(content, folderContextRoot, concepts, elementToId);
 
-        // TODO if headers includes elements other than associated dataelements then there will be a problem!!!
-        List<VocabularyConcept> foundConcepts =
-                generateUpdatedBeans(content, folderContextRoot, concepts, elementToId, newBindedElement);
-
-        boolean result = importIntoDb(foundConcepts, vocabularyFolder.getId(), newBindedElement);
+        boolean result = importIntoDb(vocabularyFolder.getId(), willBeUpdatedObjects.getLeft(), willBeUpdatedObjects.getRight());
 
         if (result == false) {
             throw new ServiceException("Import operation failed");
@@ -114,10 +112,13 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
      * @return
      * @throws ServiceException
      */
-    private List<VocabularyConcept> generateUpdatedBeans(Reader content, String folderContextRoot,
-            List<VocabularyConcept> concepts, Map<String, Integer> bindedElementsToFolder, List<DataElement> newBindedElement)
-            throws ServiceException {
-        List<VocabularyConcept> foundConcepts = new ArrayList<VocabularyConcept>();
+    private Pair<List<VocabularyConcept>, List<DataElement>> generateUpdatedBeans(Reader content, String folderContextRoot,
+            List<VocabularyConcept> concepts, Map<String, Integer> bindedElementsToFolder) throws ServiceException {
+
+        List<VocabularyConcept> toBeUpdatedConcepts = new ArrayList<VocabularyConcept>();
+        List<DataElement> newBindedElement = new ArrayList<DataElement>();
+        Pair<List<VocabularyConcept>, List<DataElement>> returnPair =
+                new Pair<List<VocabularyConcept>, List<DataElement>>(toBeUpdatedConcepts, newBindedElement);
 
         // content.
         CSVReader reader = new CSVReader(content);
@@ -145,18 +146,21 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                 if (tempStrArray.length == 2) {
                     elementHeader = tempStrArray[0];
                 }
+                // if already binded elements does not contain header, add it (if possible)
                 if (!bindedElementsToFolder.containsKey(elementHeader)) {
+                    // search for data element
                     DataElementsFilter elementsFilter = new DataElementsFilter();
                     elementsFilter.setRegStatus("Released");
                     elementsFilter.setElementType(DataElementsFilter.COMMON_ELEMENT_TYPE);
                     elementsFilter.setIdentifier(elementHeader);
                     DataElementsResult elementsResult = dataService.searchDataElements(elementsFilter);
+                    // if there is one and only one element check if header and identifer exactly matches!
                     if (elementsResult.getTotalResults() != 1) {
                         throw new ServiceException("Cannot find single data element for column: " + elementHeader);
                     } else {
-                        // this.vocabularyService.addDataElement(vocabularyFolder.getId(), elementId);
                         DataElement elem = elementsResult.getDataElements().get(0);
                         if (StringUtils.equals(elementHeader, elem.getIdentifier())) {
+                            // found it, add to list and map
                             bindedElementsToFolder.put(elementHeader, elementsResult.getDataElements().get(0).getId());
                             newBindedElement.add(elem);
                         } else {
@@ -167,7 +171,6 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                 }
             }
 
-            // TODO relational and purge
             String[] lineParams;
             i = 2;
             while ((lineParams = reader.readNext()) != null) {
@@ -196,13 +199,13 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                         if (j < concepts.size()) {// concept found
                             found = concepts.remove(j);
                         } else {
-                            for (j = 0; j < foundConcepts.size(); j++) {
-                                VocabularyConcept vc = foundConcepts.get(j);
+                            for (j = 0; j < toBeUpdatedConcepts.size(); j++) {
+                                VocabularyConcept vc = toBeUpdatedConcepts.get(j);
                                 if (StringUtils.equals(identifier, vc.getIdentifier())) {
                                     break;
                                 }
                             }
-                            if (j == foundConcepts.size()) {
+                            if (j == toBeUpdatedConcepts.size()) {
                                 // if there is already such a concept, ignore that line. if not, add a new concept with params.
                                 found = new VocabularyConcept();
 
@@ -214,7 +217,7 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                         }
 
                         if (found != null) {
-                            foundConcepts.add(found);
+                            toBeUpdatedConcepts.add(found);
 
                             found.setLabel(lineParams[1]);
                             found.setDefinition(lineParams[2]);
@@ -280,7 +283,7 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                                     }
 
                                     // TODO what if it is a relational element, it makes things more complicated
-                                    // TODO what if user wanted to deleted a relatinal concept
+                                    // TODO what if user wanted to deleted a relational concept
                                     if (StringUtils.contains(lineParams[k], folderContextRoot)) { // it is a relational element
                                         String relatedConceptIdentifier = lineParams[k].replace(folderContextRoot, "");
                                         // identifier should not contain extra slashes, if it does, then it is not valid!
@@ -330,7 +333,7 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
             }
         }
 
-        return foundConcepts;
+        return returnPair;
     }// end of method generatedUpdatedBeans
 
     /**
@@ -340,7 +343,7 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
      * @return
      * @throws ServiceException
      */
-    private boolean importIntoDb(List<VocabularyConcept> vocabularyConcepts, int vocabularyId, List<DataElement> newBindedElement)
+    private boolean importIntoDb(int vocabularyId, List<VocabularyConcept> vocabularyConcepts, List<DataElement> newBindedElement)
             throws ServiceException {
         // first of all insert new binded element
         for (DataElement elem : newBindedElement) {
