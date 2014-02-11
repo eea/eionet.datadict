@@ -20,6 +20,8 @@ import au.com.bytecode.opencsv.CSVReader;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.DataElementsFilter;
+import eionet.meta.service.data.DataElementsResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.VocabularyCSVOutputHelper;
@@ -30,6 +32,10 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
     /** Vocabulary service. */
     @Autowired
     private IVocabularyService vocabularyService;
+
+    /** Data elements service. */
+    @Autowired
+    private IDataService dataService;
 
     @Override
     @Transactional
@@ -53,10 +59,13 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
             }
         }
 
-        // TODO if headers includes elements other than associated dataelements then there will be a problem!!!
-        List<VocabularyConcept> foundConcepts = generatedUpdatedBeans(content, folderContextRoot, concepts, elementToId);
+        List<DataElement> newBindedElement = new ArrayList<DataElement>();
 
-        boolean result = importIntoDb(foundConcepts, vocabularyFolder.getId());
+        // TODO if headers includes elements other than associated dataelements then there will be a problem!!!
+        List<VocabularyConcept> foundConcepts =
+                generateUpdatedBeans(content, folderContextRoot, concepts, elementToId, newBindedElement);
+
+        boolean result = importIntoDb(foundConcepts, vocabularyFolder.getId(), newBindedElement);
 
         if (result == false) {
             throw new ServiceException("Import operation failed");
@@ -71,8 +80,9 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
      * @return
      * @throws ServiceException
      */
-    private List<VocabularyConcept> generatedUpdatedBeans(Reader content, String folderContextRoot,
-            List<VocabularyConcept> concepts, Map<String, Integer> bindedElementsToFolder) throws ServiceException {
+    private List<VocabularyConcept> generateUpdatedBeans(Reader content, String folderContextRoot,
+            List<VocabularyConcept> concepts, Map<String, Integer> bindedElementsToFolder, List<DataElement> newBindedElement)
+            throws ServiceException {
         List<VocabularyConcept> foundConcepts = new ArrayList<VocabularyConcept>();
 
         // content.
@@ -102,7 +112,24 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                     elementHeader = tempStrArray[0];
                 }
                 if (!bindedElementsToFolder.containsKey(elementHeader)) {
-                    throw new ServiceException("CSV file contains unbinded elements for this folder!");
+                    DataElementsFilter elementsFilter = new DataElementsFilter();
+                    elementsFilter.setRegStatus("Released");
+                    elementsFilter.setElementType(DataElementsFilter.COMMON_ELEMENT_TYPE);
+                    elementsFilter.setIdentifier(elementHeader);
+                    DataElementsResult elementsResult = dataService.searchDataElements(elementsFilter);
+                    if (elementsResult.getTotalResults() != 1) {
+                        throw new ServiceException("Cannot find single data element for column: " + elementHeader);
+                    } else {
+                        // this.vocabularyService.addDataElement(vocabularyFolder.getId(), elementId);
+                        DataElement elem = elementsResult.getDataElements().get(0);
+                        if (StringUtils.equals(elementHeader, elem.getIdentifier())) {
+                            bindedElementsToFolder.put(elementHeader, elementsResult.getDataElements().get(0).getId());
+                            newBindedElement.add(elem);
+                        } else {
+                            throw new ServiceException("Found data element does not EXACTLY match with column: " + elementHeader
+                                    + ", found: " + elem.getIdentifier());
+                        }
+                    }
                 }
             }
 
@@ -114,6 +141,12 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                 if (lineParams.length == header.length) {
                     // do line processing
                     String uri = lineParams[0];
+
+                    if (StringUtils.isEmpty(uri) || StringUtils.startsWith(uri, "//")
+                            || !StringUtils.startsWith(uri, folderContextRoot)) {
+                        continue;
+                    }
+
                     String identifier = uri.replace(folderContextRoot, "");
                     if (!StringUtils.contains(identifier, "/")) {
                         // now we have a valid row
@@ -198,7 +231,6 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                                 }
                                 int index = attributePosition.get(header[k]);
 
-
                                 // if lineParams[k] is empty, user wants to delete
                                 if (StringUtils.isNotEmpty(lineParams[k])) {
                                     DataElement elem = null;
@@ -274,7 +306,13 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
      * @return
      * @throws ServiceException
      */
-    private boolean importIntoDb(List<VocabularyConcept> vocabularyConcepts, int vocabularyId) throws ServiceException {
+    private boolean importIntoDb(List<VocabularyConcept> vocabularyConcepts, int vocabularyId, List<DataElement> newBindedElement)
+            throws ServiceException {
+        // first of all insert new binded element
+        for (DataElement elem : newBindedElement) {
+            this.vocabularyService.addDataElement(vocabularyId, elem.getId());
+        }
+
         for (VocabularyConcept vc : vocabularyConcepts) {
             // STEP 1., UPDATE OR INSERT VOCABULARY CONCEPT
             if (vc.getId() <= 0) {
