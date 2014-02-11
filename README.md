@@ -97,6 +97,7 @@ This step is required for making the EEA's Central Authentication Service (CAS) 
 #### Deployment
 Place the resulting $CHECKOUT_HOME/target/datadict.war into Tomcat's webapps directory, and start Tomcat.
 
+For more detailed instructions see "docs/DD Installation Manual.odt"
 
 ### Additional applications for modifying DD access permissions and help texts
 
