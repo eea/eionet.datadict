@@ -31,20 +31,6 @@
             <fileset dir="msaccess"/>
         </copy>
 
-    	<!-- Copy the root directory's makemdb.sh into app-home, unless it already exists in the latter. -->
-        <copy todir="${app.home}">
-        	<fileset dir="." includes="makemdb.sh">
-        		<present present="srconly" targetdir="${app.home}"/>
-        	</fileset>
-            <filterchain>
-                <replacetokens>
-                    <token key="WEBAPP.HOME" value="${webapp.home}"/>
-                    <token key="APP.HOME" value="${app.home}"/>
-                    <token key="MYSQL.JAR" value="${lib-mysql-connector-jar}"/>
-                </replacetokens>
-            </filterchain>
-        </copy>
-
         <!-- Always overwrite VERSION.txt. -->
         <copy file="VERSION.txt" todir="${app.home}" overwrite="true"/>
 
