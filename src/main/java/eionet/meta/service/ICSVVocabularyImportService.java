@@ -1,9 +1,7 @@
 package eionet.meta.service;
 
 import java.io.Reader;
-import java.util.List;
 
-import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 
 /**
@@ -12,7 +10,7 @@ import eionet.meta.dao.domain.VocabularyFolder;
  */
 public interface ICSVVocabularyImportService {
 
-    //TODO i will update this part, it should work line by line basis
+
     /**
      *
      * @param contents
@@ -20,6 +18,6 @@ public interface ICSVVocabularyImportService {
      * @param concepts
      * @throws ServiceException
      */
-    void importCsvIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder, List<VocabularyConcept> concepts) throws ServiceException;
+    void importCsvIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder,  boolean purgeVocabularyData) throws ServiceException;
 
 }// end of interface ICSVVocabularyImport

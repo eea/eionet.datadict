@@ -22,6 +22,7 @@ import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
+import eionet.meta.service.data.ObsoleteStatus;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.VocabularyCSVOutputHelper;
@@ -39,8 +40,28 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
 
     @Override
     @Transactional
-    public void importCsvIntoVocabulary(Reader content, VocabularyFolder vocabularyFolder, List<VocabularyConcept> concepts)
+    public void importCsvIntoVocabulary(Reader content, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData)
             throws ServiceException {
+
+        List<VocabularyConcept> concepts =
+                vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
+                        vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
+
+        List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+
+        if (purgeVocabularyData) {
+            purgeConceptsAndBindedElements(vocabularyFolder.getId(), concepts, bindedElements);
+            concepts = new ArrayList<VocabularyConcept>();
+            bindedElements = new ArrayList<DataElement>();
+        }
+
+        Map<String, Integer> elementToId = new HashMap<String, Integer>();
+        for (DataElement elem : bindedElements) {
+            String identifier = elem.getIdentifier();
+            if (StringUtils.isNotEmpty(identifier)) {
+                elementToId.put(identifier, elem.getId());
+            }
+        }
 
         final String folderContextRoot =
                 StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
@@ -49,15 +70,6 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                         + vocabularyFolder.getFolderName()
                         + "/"
                         + vocabularyFolder.getIdentifier() + "/";
-
-        List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-        Map<String, Integer> elementToId = new HashMap<String, Integer>();
-        for (DataElement elem : bindedElements) {
-            String identifier = elem.getIdentifier();
-            if (StringUtils.isNotEmpty(identifier)) {
-                elementToId.put(identifier, elem.getId());
-            }
-        }
 
         List<DataElement> newBindedElement = new ArrayList<DataElement>();
 
@@ -71,6 +83,28 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
             throw new ServiceException("Import operation failed");
         }
     }// end of method importCsvIntoVocabulary
+
+    /**
+     *
+     * @param vocabularyFolderId
+     * @param concepts
+     * @param bindedElements
+     * @throws ServiceException
+     */
+    private void purgeConceptsAndBindedElements(int vocabularyFolderId, List<VocabularyConcept> concepts,
+            List<DataElement> bindedElements) throws ServiceException {
+        List<Integer> conceptIds = new ArrayList<Integer>();
+
+        for (VocabularyConcept vc : concepts) {
+            conceptIds.add(vc.getId());
+        }
+        this.vocabularyService.deleteVocabularyConcepts(conceptIds);
+
+        for (DataElement elem : bindedElements) {
+            this.vocabularyService.removeDataElement(vocabularyFolderId, elem.getId());
+        }
+
+    }// end of method purgeConceptsAndBindedElements
 
     /**
      *

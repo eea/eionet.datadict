@@ -1036,9 +1036,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
 
 
-            List<VocabularyConcept> concepts =
-                    vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
-                            vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
+
 
             // this.purge;
             // consume stupid bom first!! if it exists!
@@ -1055,7 +1053,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             // concepts = new ArrayList<VocabularyConcept>();
             // final List<VocabularyConcept> foundConcepts =
-            this.vocabularyCsvImportService.importCsvIntoVocabulary(csvFileReader, vocabularyFolder, concepts);
+            this.vocabularyCsvImportService.importCsvIntoVocabulary(csvFileReader, vocabularyFolder, purgeVocabularyData);
 
             // TODO dont just return edit, update this with some system messages!
             return edit();
