@@ -39,11 +39,14 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
     @Autowired
     private IDataService dataService;
 
+    private List<String> logMessages = null;
+
     @Override
     @Transactional
-    public void importCsvIntoVocabulary(Reader content, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData)
+    public List<String> importCsvIntoVocabulary(Reader content, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData)
             throws ServiceException {
 
+        this.logMessages = new ArrayList<String>();
         List<VocabularyConcept> concepts =
                 vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
                         vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
@@ -54,6 +57,7 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
             purgeConceptsAndBindedElements(vocabularyFolder.getId(), concepts, bindedElements);
             concepts = new ArrayList<VocabularyConcept>();
             bindedElements = new ArrayList<DataElement>();
+            this.logMessages.add("All concepts and bounded elemets are deleted (with purge operation).");
         }
 
         Map<String, Integer> elementToId = new HashMap<String, Integer>();
@@ -75,11 +79,10 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
         Pair<List<VocabularyConcept>, List<DataElement>> willBeUpdatedObjects =
                 generateUpdatedBeans(content, folderContextRoot, concepts, elementToId);
 
-        boolean result = importIntoDb(vocabularyFolder.getId(), willBeUpdatedObjects.getLeft(), willBeUpdatedObjects.getRight());
+        importIntoDb(vocabularyFolder.getId(), willBeUpdatedObjects.getLeft(), willBeUpdatedObjects.getRight());
+        this.logMessages.add("CSV imported into Database.");
 
-        if (result == false) {
-            throw new ServiceException("Import operation failed");
-        }
+        return this.logMessages;
     }// end of method importCsvIntoVocabulary
 
     /**
@@ -101,7 +104,6 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
         for (DataElement elem : bindedElements) {
             this.vocabularyService.removeDataElement(vocabularyFolderId, elem.getId());
         }
-
     }// end of method purgeConceptsAndBindedElements
 
     /**
@@ -139,13 +141,19 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                 throw new ServiceException("Missing headers!");
             }
 
-            int i = 0;
-            for (i = VocabularyCSVOutputHelper.CONCEPT_ENTRIES_COUNT; i < header.length; i++) {
+            for (int i = VocabularyCSVOutputHelper.CONCEPT_ENTRIES_COUNT; i < header.length; i++) {
+
                 String elementHeader = header[i];
+                if (StringUtils.isEmpty(elementHeader)) {
+                    throw new ServiceException("Header for column (" + (i + 1) + ") is empty!");
+                }
+
+                // if there is language appended, split it
                 String[] tempStrArray = elementHeader.split("[@]");
                 if (tempStrArray.length == 2) {
                     elementHeader = tempStrArray[0];
                 }
+
                 // if already binded elements does not contain header, add it (if possible)
                 if (!bindedElementsToFolder.containsKey(elementHeader)) {
                     // search for data element
@@ -169,157 +177,165 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                         }
                     }
                 }
-            }
+            }// end of for loop iterating on headers
 
             String[] lineParams;
-            i = 2;
-            while ((lineParams = reader.readNext()) != null) {
+            for (int rowNumber = 2; (lineParams = reader.readNext()) != null; rowNumber++) {// first row is header so start from 2
+                if (lineParams.length != header.length) {
+                    StringBuilder message = new StringBuilder();
+                    message.append("Row (").append(rowNumber).append(") ");
+                    message.append("does not have same number of columns with header, it is skipped.");
+                    message.append(" It should have have same number of columns (empty or filled).");
+                    this.logMessages.add(message.toString());
+                    continue;
+                }
 
-                if (lineParams.length == header.length) {
-                    // do line processing
-                    String uri = lineParams[0];
+                // do line processing
+                String uri = lineParams[0];
 
-                    if (StringUtils.isEmpty(uri) || StringUtils.startsWith(uri, "//")
-                            || !StringUtils.startsWith(uri, folderContextRoot)) {
-                        continue;
+                if (StringUtils.isEmpty(uri) || StringUtils.startsWith(uri, "//")
+                        || !StringUtils.startsWith(uri, folderContextRoot)) {
+                    this.logMessages.add("Row (" + rowNumber + ") is skipped.\n");
+                    continue;
+                }
+
+                String identifier = uri.replace(folderContextRoot, "");
+                if (StringUtils.contains(identifier, "/")) {
+                    this.logMessages.add("Row (" + rowNumber + ") does not contain a valid concept identifier.");
+                    continue;
+                }// end of if identifier matches
+
+                // now we have a valid row
+                int j = 0;
+                for (j = 0; j < concepts.size(); j++) {
+                    VocabularyConcept vc = concepts.get(j);
+                    if (StringUtils.equals(identifier, vc.getIdentifier())) {
+                        break;
+                    }
+                }
+
+                VocabularyConcept found = null;
+                if (j < concepts.size()) {// concept found
+                    found = concepts.remove(j);
+                } else {
+                    for (j = 0; j < toBeUpdatedConcepts.size(); j++) {
+                        VocabularyConcept vc = toBeUpdatedConcepts.get(j);
+                        if (StringUtils.equals(identifier, vc.getIdentifier())) {
+                            break;
+                        }
+                    }
+                    if (j == toBeUpdatedConcepts.size()) {
+                        // if there is already such a concept, ignore that line. if not, add a new concept with params.
+                        found = new VocabularyConcept();
+
+                        found.setIdentifier(identifier);
+                        // TODO set other properties
+                        List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
+                        found.setElementAttributes(newConceptElementAttributes);
+                    }
+                }
+
+                // if vocabulary concept duplicated with another row, importer will ignore it not to repeat
+                if (found == null) {
+                    this.logMessages.add("Row (" + rowNumber + ") duplicates with a previous concept, it is skipped.");
+                    continue;
+                }
+
+                // vocabulary concept found or created
+                toBeUpdatedConcepts.add(found);
+
+                found.setLabel(lineParams[1]);
+                found.setDefinition(lineParams[2]);
+                found.setNotation(lineParams[3]);
+                // TODO if it is not a valid date, then it can be skippped actually
+                if (StringUtils.isNotEmpty(lineParams[4])) {
+                    found.setCreated(dateFormatter.parse(lineParams[4]));
+                }
+                if (StringUtils.isNotEmpty(lineParams[5])) {
+                    found.setObsolete(dateFormatter.parse(lineParams[5]));
+                }
+
+                // now it is time iterate on rest of the columns, here is the tricky part
+                HashMap<String, Integer> attributePosition = new HashMap<String, Integer>();
+                List<DataElement> elementsOfConcept = null;
+                List<DataElement> elementsOfConceptByLang = null;
+                String prevHeader = null;
+                String prevLang = null;
+                for (int k = VocabularyCSVOutputHelper.CONCEPT_ENTRIES_COUNT; k < lineParams.length; k++) {
+                    String elementHeader = header[k];
+
+                    String lang = null;
+                    String[] tempStrArray = elementHeader.split("[@]");
+                    if (tempStrArray.length == 2) {
+                        elementHeader = tempStrArray[0];
+                        lang = tempStrArray[1];
                     }
 
-                    String identifier = uri.replace(folderContextRoot, "");
-                    if (!StringUtils.contains(identifier, "/")) {
-                        // now we have a valid row
-                        int j = 0;
-                        for (j = 0; j < concepts.size(); j++) {
-                            VocabularyConcept vc = concepts.get(j);
-                            if (StringUtils.equals(identifier, vc.getIdentifier())) {
-                                break;
-                            }
-                        }
+                    if (!StringUtils.equals(elementHeader, prevHeader)) {
+                        elementsOfConcept =
+                                VocabularyCSVOutputHelper.getDataElementValuesByName(elementHeader, found.getElementAttributes());
 
-                        VocabularyConcept found = null;
-                        if (j < concepts.size()) {// concept found
-                            found = concepts.remove(j);
+                        if (elementsOfConcept == null) {
+                            elementsOfConcept = new ArrayList<DataElement>();
+                            found.getElementAttributes().add(elementsOfConcept);
+                        }
+                    }
+
+                    if (!StringUtils.equals(elementHeader, prevHeader) || !StringUtils.equals(lang, prevLang)) {
+                        elementsOfConceptByLang =
+                                VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang(elementHeader, lang,
+                                        found.getElementAttributes());
+                    }
+
+                    if (!attributePosition.containsKey(header[k])) {
+                        attributePosition.put(header[k], 0);
+                    }
+                    int index = attributePosition.get(header[k]);
+
+                    // if lineParams[k] is empty, user wants to delete
+                    if (StringUtils.isNotEmpty(lineParams[k])) {
+                        DataElement elem = null;
+                        if (index < elementsOfConceptByLang.size()) {
+                            elem = elementsOfConceptByLang.get(index);
                         } else {
-                            for (j = 0; j < toBeUpdatedConcepts.size(); j++) {
-                                VocabularyConcept vc = toBeUpdatedConcepts.get(j);
-                                if (StringUtils.equals(identifier, vc.getIdentifier())) {
-                                    break;
-                                }
-                            }
-                            if (j == toBeUpdatedConcepts.size()) {
-                                // if there is already such a concept, ignore that line. if not, add a new concept with params.
-                                found = new VocabularyConcept();
-
-                                found.setIdentifier(identifier);
-                                // TODO set other properties
-                                List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
-                                found.setElementAttributes(newConceptElementAttributes);
-                            }
+                            elem = new DataElement();
+                            elementsOfConcept.add(elem);
+                            elem.setAttributeLanguage(lang);
+                            elem.setIdentifier(elementHeader);
+                            elem.setId(bindedElementsToFolder.get(elementHeader));
+                            // TODO set some properties here
                         }
 
-                        if (found != null) {
-                            toBeUpdatedConcepts.add(found);
-
-                            found.setLabel(lineParams[1]);
-                            found.setDefinition(lineParams[2]);
-                            found.setNotation(lineParams[3]);
-                            // TODO if it is not a valid date, then it can be skippped actually
-                            if (StringUtils.isNotEmpty(lineParams[4])) {
-                                found.setCreated(dateFormatter.parse(lineParams[4]));
+                        // TODO what if it is a relational element, it makes things more complicated
+                        // TODO what if user wanted to deleted a relational concept
+                        if (StringUtils.contains(lineParams[k], folderContextRoot)) { // it is a relational element
+                            String relatedConceptIdentifier = lineParams[k].replace(folderContextRoot, "");
+                            // identifier should not contain extra slashes, if it does, then it is not valid!
+                            if (!StringUtils.contains(relatedConceptIdentifier, "/")) {
+                                if (!elem.isRelationalElement()
+                                        || !StringUtils.equals(elem.getRelatedConceptIdentifier(), relatedConceptIdentifier)) {
+                                    elem.setRelatedConceptIdentifier(relatedConceptIdentifier);
+                                    elem.setRelatedConceptId(-1);
+                                }
                             }
-                            if (StringUtils.isNotEmpty(lineParams[5])) {
-                                found.setObsolete(dateFormatter.parse(lineParams[5]));
-                            }
+                        } else {
+                            elem.setAttributeValue(lineParams[k]);
+                        }
+                    } else {// if it is empty and if there is such a value then delete it, if there is no value just
+                            // ignore it
+                        if (index < elementsOfConceptByLang.size()) {
+                            DataElement elem = elementsOfConceptByLang.get(index);
+                            elem.setAttributeValue(lineParams[k]); // so if it is empty, it means delete it right ?
+                        }
+                    }
+                    attributePosition.put(header[k], ++index);
 
-                            // now it is time iterate on rest of the columns, here is the tricky part
-                            HashMap<String, Integer> attributePosition = new HashMap<String, Integer>();
-                            List<DataElement> elementsOfConcept = null;
-                            List<DataElement> elementsOfConceptByLang = null;
-                            String prevHeader = null;
-                            String prevLang = null;
-                            for (int k = VocabularyCSVOutputHelper.CONCEPT_ENTRIES_COUNT; k < lineParams.length; k++) {
-                                String elementHeader = header[k];
+                    prevLang = lang;
+                    prevHeader = elementHeader;
+                }// end of for loop iterating on rest of the columns (for data elements)
 
-                                String lang = null;
-                                String[] tempStrArray = elementHeader.split("[@]");
-                                if (tempStrArray.length == 2) {
-                                    elementHeader = tempStrArray[0];
-                                    lang = tempStrArray[1];
-                                }
-
-                                if (!StringUtils.equals(elementHeader, prevHeader)) {
-                                    elementsOfConcept =
-                                            VocabularyCSVOutputHelper.getDataElementValuesByName(elementHeader,
-                                                    found.getElementAttributes());
-
-                                    if (elementsOfConcept == null) {
-                                        elementsOfConcept = new ArrayList<DataElement>();
-                                        found.getElementAttributes().add(elementsOfConcept);
-                                    }
-                                }
-
-                                if (!StringUtils.equals(elementHeader, prevHeader) || !StringUtils.equals(lang, prevLang)) {
-                                    elementsOfConceptByLang =
-                                            VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang(elementHeader, lang,
-                                                    found.getElementAttributes());
-                                }
-
-                                if (!attributePosition.containsKey(header[k])) {
-                                    attributePosition.put(header[k], 0);
-                                }
-                                int index = attributePosition.get(header[k]);
-
-                                // if lineParams[k] is empty, user wants to delete
-                                if (StringUtils.isNotEmpty(lineParams[k])) {
-                                    DataElement elem = null;
-                                    if (index < elementsOfConceptByLang.size()) {
-                                        elem = elementsOfConceptByLang.get(index);
-                                    } else {
-                                        elem = new DataElement();
-                                        elementsOfConcept.add(elem);
-                                        elem.setAttributeLanguage(lang);
-                                        elem.setIdentifier(elementHeader);
-                                        elem.setId(bindedElementsToFolder.get(elementHeader));
-                                        // TODO set some properties here
-                                    }
-
-                                    // TODO what if it is a relational element, it makes things more complicated
-                                    // TODO what if user wanted to deleted a relational concept
-                                    if (StringUtils.contains(lineParams[k], folderContextRoot)) { // it is a relational element
-                                        String relatedConceptIdentifier = lineParams[k].replace(folderContextRoot, "");
-                                        // identifier should not contain extra slashes, if it does, then it is not valid!
-                                        if (!StringUtils.contains(relatedConceptIdentifier, "/")) {
-                                            if (!elem.isRelationalElement()
-                                                    || !StringUtils.equals(elem.getRelatedConceptIdentifier(),
-                                                            relatedConceptIdentifier)) {
-                                                elem.setRelatedConceptIdentifier(relatedConceptIdentifier);
-                                                elem.setRelatedConceptId(-1);
-                                            }
-                                        }
-                                    } else {
-                                        elem.setAttributeValue(lineParams[k]);
-                                    }
-                                } else {// if it is empty and if there is such a value then delete it, if there is no value just
-                                        // ignore it
-                                    if (index < elementsOfConceptByLang.size()) {
-                                        DataElement elem = elementsOfConceptByLang.get(index);
-                                        elem.setAttributeValue(lineParams[k]); // so if it is empty, it means delete it right ?
-                                    }
-                                }
-                                attributePosition.put(header[k], ++index);
-
-                                prevLang = lang;
-                                prevHeader = elementHeader;
-                            }// end of for loop iterating on rest of the columns (for data elements)
-
-                        }// end of block when vocabulary concept found or created (if it is duplicated with another row, importer
-                         // will ignore repeating rows)
-
-                    }// end of if identifier matches
-                }// end of if line has same number of columns with header
-
-                i++;
             }// end of row iterator (while loop on rows)
-            i--;
+
         } catch (IOException e) {
             e.printStackTrace();
             throw new ServiceException(e.getMessage());
@@ -343,7 +359,7 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
      * @return
      * @throws ServiceException
      */
-    private boolean importIntoDb(int vocabularyId, List<VocabularyConcept> vocabularyConcepts, List<DataElement> newBindedElement)
+    private void importIntoDb(int vocabularyId, List<VocabularyConcept> vocabularyConcepts, List<DataElement> newBindedElement)
             throws ServiceException {
         // first of all insert new binded element
         for (DataElement elem : newBindedElement) {
@@ -362,7 +378,6 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
             // UPDATE VOCABULARY CONCEPT
             this.vocabularyService.updateVocabularyConcept(vc);
         }
-        return true;
     }// end of method importIntoDb
 
 }// end of class CSVVocabularyImport

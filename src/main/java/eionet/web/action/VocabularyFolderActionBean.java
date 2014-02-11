@@ -1023,7 +1023,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 throw new RuntimeException("You should upload a file");
             }
 
-            // TODO there should be more control file!!!
             String fileName = this.uploadedCsvFile.getFileName();
             if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.CSV_FILE_EXTENSION)) {
                 throw new RuntimeException("File should be a CSV file");
@@ -1031,14 +1030,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             String contentType = this.uploadedCsvFile.getContentType();
             if (!StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_PLAIN)
-                    && !StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_PLAIN)) {
+                    && !StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_CSV)) {
                 throw new RuntimeException("You should upload a valid CSV file (plain/text or csv/text)");
             }
 
-
-
-
-            // this.purge;
             // consume stupid bom first!! if it exists!
             InputStream is = this.uploadedCsvFile.getInputStream();
             byte[] firstThreeBytes = new byte[3];
@@ -1050,13 +1045,17 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
 
             Reader csvFileReader = new InputStreamReader(is, CharEncoding.UTF_8);
-
-            // concepts = new ArrayList<VocabularyConcept>();
-            // final List<VocabularyConcept> foundConcepts =
-            this.vocabularyCsvImportService.importCsvIntoVocabulary(csvFileReader, vocabularyFolder, purgeVocabularyData);
-
-            // TODO dont just return edit, update this with some system messages!
-            return edit();
+            List<String> systemMessages =
+                    this.vocabularyCsvImportService.importCsvIntoVocabulary(csvFileReader, vocabularyFolder, purgeVocabularyData);
+            for (String systemMessage : systemMessages) {
+                addSystemMessage(systemMessage);
+            }
+            RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
+            resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
+            resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+            resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+            // navigate back to edit
+            return resolution;
         } catch (Exception e) {
             LOGGER.error("Failed to output vocabulary CSV data", e);
             ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
