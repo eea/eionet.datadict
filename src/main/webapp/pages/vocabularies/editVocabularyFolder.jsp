@@ -12,11 +12,19 @@
         // <![CDATA[
         ( function($) {
             $(document).ready(function() {
-            	
+
             	$("#uploadCSVLink").click(function() {
                     $('#uploadCSVDialog').dialog('open');
                     return false;
-                });                
+                });
+
+            	$("#purgeVocabularyData").click(function() {
+            		if ($('input#purgeVocabularyData').is(':checked')) {
+	                   alert("If you check this option all data will be deleted! If you are not sure about this, please uncheck it!");
+            		}
+                    return true;
+                });
+
 
                 $('#uploadCSVDialog').dialog({
                     autoOpen: false,
@@ -48,7 +56,7 @@
                 }
 
                 handleFolderChoice();
-                
+
 
                 $(".delLink").click(function() {
                     this.parentElement.remove();
@@ -94,8 +102,6 @@
                 return true;
             }
         }
-
-
 
         // ]]>
 
@@ -508,30 +514,37 @@
                 </stripes:form>
             </div>
         </c:forEach>
-        
+
 	    <%-- The upload dialog. Hidden unless activated. --%>
-	
+
 	    <div id="uploadCSVDialog" title="Upload CSV">
 	        <stripes:form beanclass="${actionBean.class.name}" method="post">
 	        	<stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                 <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
                 <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                 <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-	
+
 	            <div class="note-msg">
 	                <strong>Note</strong>
-	                <p>
-	                    Existing values will be overwritten with values in CSV. Not existing values will be added. If you select purge option. All data will be deleted and values will be added.
-	                </p>
+		                <ul>
+			                <li>With this operation, contents of CSV file will be imported into vocabulary folder. File should contains valid headers and rows.</li>
+			                <li>If there are invalid elements for headers, system will generate an error and will not import.</li>
+			                <li>If there is an error with a row (with a concept), then concept will be ignored and won't be imported. If you prepend // to an URI, then no update will be performed for that concept.</li>
+			                <li>If user select "Purge" option. All concepts and bounded elements will be removed from vocabulary and vocabulary will be populated with the contents of CSV file.</li>
+			                <li>Once import is successful, operation cannot be undone. If an error occurs during import, then all data will be roll-backed.</li>
+			                <li>It is strongly recommended to use an exported CSV file. You can add new columns, new rows, remove some columns, remove some rows or update contents/values for bulk edit purposes.</li>
+			                <li>Existing values will be overwritten with values in CSV. Not existing values will be added.</li>
+			                <li>Only a working copy can be updated with a CSV file upload.</li>
+		                </ul>
 	            </div>
-	
+
 				<div>
-					<stripes:checkbox name="purgeVocabularyData"/><label for="purgeVocabularyData" class="question">Purge Vocabulary Data</label>
-				</div>				
+					<stripes:checkbox id="purgeVocabularyData" name="purgeVocabularyData"/><label for="purgeVocabularyData" class="question">Purge Vocabulary Data</label>
+				</div>
 	            <stripes:file name="uploadedCsvFile" id="fileToUpload" size="40" accept="text/csv" title="Select a .csv file to import"/>
 	            <stripes:submit name="uploadCsv" value="Upload"/>
 	            <input type="button" id="closeUploadCSVDialog" value="Cancel"/>
-	
+
 	        </stripes:form>
 	    </div>
 

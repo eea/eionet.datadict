@@ -1,9 +1,7 @@
 package eionet.meta.service;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +40,7 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
     private List<String> logMessages = null;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = ServiceException.class)
     public List<String> importCsvIntoVocabulary(Reader content, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData)
             throws ServiceException {
 
@@ -96,13 +94,17 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
             List<DataElement> bindedElements) throws ServiceException {
         List<Integer> conceptIds = new ArrayList<Integer>();
 
-        for (VocabularyConcept vc : concepts) {
-            conceptIds.add(vc.getId());
+        if (concepts != null && concepts.size() > 0) {
+            for (VocabularyConcept vc : concepts) {
+                conceptIds.add(vc.getId());
+            }
+            this.vocabularyService.deleteVocabularyConcepts(conceptIds);
         }
-        this.vocabularyService.deleteVocabularyConcepts(conceptIds);
 
-        for (DataElement elem : bindedElements) {
-            this.vocabularyService.removeDataElement(vocabularyFolderId, elem.getId());
+        if (bindedElements != null && bindedElements.size() > 0) {
+            for (DataElement elem : bindedElements) {
+                this.vocabularyService.removeDataElement(vocabularyFolderId, elem.getId());
+            }
         }
     }// end of method purgeConceptsAndBindedElements
 
@@ -336,10 +338,7 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
 
             }// end of row iterator (while loop on rows)
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage());
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new ServiceException(e.getMessage());
         } finally {
