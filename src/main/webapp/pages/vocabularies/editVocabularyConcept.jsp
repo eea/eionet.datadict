@@ -153,73 +153,59 @@
                     </tr>
 
                     <%-- Additional attributes --%>
+                    <!-- Data element attributes -->
+                    <c:forEach var="elementValues" items="${actionBean.vocabularyConcept.elementAttributes}" varStatus="outerLoop">
+                        <c:set var="attrMeta" value="${elementValues[0]}"/>
+                        <tr>
+                            <th scope="row" class="scope-row simple_attr_title">
+                                ${attrMeta.name}
+                            </th>
+                            <td class="simple_attr_help">
+                                <dd:optionalIcon />
+                            </td>
+                            <td class="simple_attr_value">
+                                <c:choose>
+                                  <c:when test="${attrMeta.fixedValuesElement}">
+                                        <dd:elementMultiSelect
+                                            dataElements="${elementValues}"
+                                            elementId="${attrMeta.id}"
+                                            fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
+                                            uniqueId="conceptElement${outerLoop.index}" fixedValues="${attrMeta.fixedValues}"/>
+                                  </c:when>
+                                  <c:when test="${attrMeta.datatype eq 'localref'}">
+                                    <dd:relatedElemConcepts  dataElements="${elementValues}"
+                                        vocabularyConcepts="${actionBean.vocabularyConcepts}"
+                                        elementId="${attrMeta.id}"
+                                        fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
+                                        uniqueId="conceptElement${outerLoop.index}" />
+                                  </c:when>
+                                  <c:when test="${attrMeta.datatype eq 'reference'}">
+                                    <dd:relatedReferenceConcepts dataElements="${elementValues}"
+                                        elementId="${attrMeta.id}"
+                                        fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
+                                        uniqueId="conceptElement${outerLoop.index}" />
+                                  </c:when>
+
+                                  <c:when test="${!attrMeta.fixedValuesElement and attrMeta.languageUsed}">
+                                    <dd:elementMultiTextLang dataElements="${elementValues}"
+                                        fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
+                                        uniqueId="conceptElement${outerLoop.index}"
+                                        elementId="${attrMeta.id}"/>
+                                  </c:when>
+                                  <c:otherwise>
+                                    <dd:elementMultiText dataElements="${elementValues}"
+                                        fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
+                                        uniqueId="conceptElement${outerLoop.index}"
+                                        elementId="${attrMeta.id}"/>
+                                  </c:otherwise>
+                                </c:choose>
+                                <stripes:hidden name="vocabularyConcept.elementAttributes[${outerLoop.index}][0].id"/>
+                                <stripes:hidden name="vocabularyConcept.elementAttributes[${outerLoop.index}][0].name"/>
+                            </td>
+                        </tr>
+                    </c:forEach>
                     <tr>
-                        <td colspan="3">
-                            <h2>Additional attributes:</h2>
-                            <table class="datatable" style="width:100%">
-                                <colgroup>
-                                    <col style="width:26%"/>
-                                    <col style="width:4%"/>
-                                    <col />
-                                </colgroup>
-
-                                <!-- Data element attributes -->
-                                <c:forEach var="elementValues" items="${actionBean.vocabularyConcept.elementAttributes}" varStatus="outerLoop">
-                                    <c:set var="attrMeta" value="${elementValues[0]}"/>
-                                    <tr>
-                                        <th scope="row" class="scope-row simple_attr_title">
-                                            ${attrMeta.name}
-                                        </th>
-                                        <td class="simple_attr_help">
-                                            <dd:optionalIcon />
-                                        </td>
-                                        <td class="simple_attr_value">
-                                            <c:choose>
-                                              <c:when test="${attrMeta.fixedValuesElement}">
-                                                    <dd:elementMultiSelect
-                                                        dataElements="${elementValues}"
-                                                        elementId="${attrMeta.id}"
-                                                        fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
-                                                        uniqueId="conceptElement${outerLoop.index}" fixedValues="${attrMeta.fixedValues}"/>
-                                              </c:when>
-                                              <c:when test="${attrMeta.datatype eq 'localref'}">
-                                                <dd:relatedElemConcepts  dataElements="${elementValues}"
-                                                    vocabularyConcepts="${actionBean.vocabularyConcepts}"
-                                                    elementId="${attrMeta.id}"
-                                                    fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
-                                                    uniqueId="conceptElement${outerLoop.index}" />
-                                              </c:when>
-                                              <c:when test="${attrMeta.datatype eq 'reference'}">
-                                                <dd:relatedReferenceConcepts dataElements="${elementValues}"
-                                                    elementId="${attrMeta.id}"
-                                                    fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
-                                                    uniqueId="conceptElement${outerLoop.index}" />
-                                              </c:when>
-
-                                              <c:when test="${!attrMeta.fixedValuesElement and attrMeta.languageUsed}">
-                                                <dd:elementMultiTextLang dataElements="${elementValues}"
-                                                    fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
-                                                    uniqueId="conceptElement${outerLoop.index}"
-                                                    elementId="${attrMeta.id}"/>
-                                              </c:when>
-                                              <c:otherwise>
-                                                <dd:elementMultiText dataElements="${elementValues}"
-                                                    fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
-                                                    uniqueId="conceptElement${outerLoop.index}"
-                                                    elementId="${attrMeta.id}"/>
-                                              </c:otherwise>
-                                            </c:choose>
-                                            <stripes:hidden name="vocabularyConcept.elementAttributes[${outerLoop.index}][0].id"/>
-                                            <stripes:hidden name="vocabularyConcept.elementAttributes[${outerLoop.index}][0].name"/>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </table>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th>&nbsp;</th>
+                        <td>&nbsp;</td>
                         <td colspan="2">
                             <stripes:submit id="saveButton" name="saveConcept" value="Save" class="mediumbuttonb"/>
                             <c:choose>

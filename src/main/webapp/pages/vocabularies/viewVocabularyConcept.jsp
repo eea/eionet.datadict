@@ -76,11 +76,6 @@
                     <td class="simple_attr_value"><fmt:formatDate pattern="dd.MM.yyyy" value="${actionBean.vocabularyConcept.obsolete}" />
                     </td>
                 </tr>
-                <tr>
-                    <th scope="row" class="scope-row simple_attr_title" style="background-color: #FFFFFF;"><br/>Additional attributes</th>
-                    <td></td>
-                </tr>
-
                 <!-- Data element attributes -->
                 <c:forEach var="elementValues" items="${actionBean.vocabularyConcept.elementAttributes}">
                     <c:set var="elementMeta" value="${elementValues[0]}"/>
