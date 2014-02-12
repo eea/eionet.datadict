@@ -22,7 +22,6 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <comment>Initial dynamic attributes, only ran once when DD is installed</comment>
         <sql>
             <![CDATA[
-
                 INSERT INTO `NAMESPACE` (`SHORT_NAME`,`FULL_NAME`,`DEFINITION`,`PARENT_NS`,`WORKING_USER`) VALUES ('datasets','Datasets namespace','The parent namespace for all DD datasets and attributes',NULL,NULL);
                 INSERT INTO `NAMESPACE` (`SHORT_NAME`,`FULL_NAME`,`DEFINITION`,`PARENT_NS`,`WORKING_USER`) VALUES ('iso_attrs','ISO11179 attributes namespace','The parent namespace for attributes originating from ISO11179',1,NULL);
                 INSERT INTO `NAMESPACE` (`SHORT_NAME`,`FULL_NAME`,`DEFINITION`,`PARENT_NS`,`WORKING_USER`) VALUES ('dd_attrs','DD attributes namespace','The parent namespace for DD-specific attributes',1,NULL);
@@ -106,7 +105,6 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
                     ((SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE WHERE SHORT_NAME = 'EEAissue'),'attr','Hazards','N','',''),
                     ((SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE WHERE SHORT_NAME = 'EEAissue'),'attr','Economic development','N','',''),
                     ((SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE WHERE SHORT_NAME = 'Datatype'),'attr','double','N','Represents floating-point numbers with dble precision. Examples would be 3.14159265358979, 1.00000000002301, etc.','');
-
             ]]>
         </sql>
     </changeSet>
@@ -214,7 +212,68 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
                     ('pagehelp','common_element_search_results','pagehelp','','<h2>Common element search results</h2>\r\n<p>\r\nThis page lists the common elements matching the search criteria\r\nyou provided in the data element search page.\r\n</p>\r\n<p>\r\n<strong>Common elements NOT in Recorded or Released status are inaccessible\r\nfor un-authenticated users!</strong>\r\n</p>\r\n<p>\r\nAll users can see at least 3 columns here:\r\n<ul>\r\n<li>\r\n<strong>Element</strong> indicating the element\'s short name.\r\n</li>\r\n<li>\r\n<strong>Type</strong> indicating the element\'s type. It can be one of two: <em>Fixed values</em>\r\nor <em>Quantitative</em>. The first means an element where predefined values are the only allowed values.\r\nThe second means an element that can have any values within the element\'s data type.\r\n</li>\r\n<li>\r\n<strong>Status</strong> indicating the element\'s Registration status. The different statuses are marked\r\nby certain icons. The status names are dispalyed when placing the mouse over those icons.\r\n</li>\r\n</ul>\r\n<br/>\r\nIf you chose to search for historic versions too, then you can also see a 4th column:<br/>\r\n<strong>Version</strong> indicating the version identifier of the particular element version.\r\n<strong>Note that version identifier 2405 does not mean that this is the 2405th version of the element.\r\nIt is simply the unique identifier of the particular element version and it simply happens to be numeric.\r\n</strong>\r\n</p>\r\n<p>\r\nIf you place the mouse over column header and the latter activates, it means the list\r\nis <strong>sortable</strong> by that column. Click the column header to perform the sorting.\r\n</p>\r\n<p>\r\nAs mentioned above, statuses are marked by certain icons and you can see the status name\r\nby placing the mouse over the icon. Here\'s what different status names mean:\r\n<ul>\r\n<li>\r\n<strong>Released</strong> (5 ticks) means the definition is accepted by ETCs\r\nand EEA and is released for countries to use for download of technical guidelines\r\nand templates. Definitions in this status can be accessed by countries.\r\n</li>\r\n<li>\r\n<strong>Qualified</strong> (4 ticks) level is for closing discussions between ETCs\r\nand EEA. Definitions in this status <em>cannot be accessed by countries.</em>\r\n</li>\r\n<li>\r\n<strong>Recorded</strong> (3 ticks) level is for discussions between ETCs and countries\r\nif applicable. Otherwise the definition will skip this status and move directly to the\r\nQualified status. Definitions in Recorded status can be accessed by countries.\r\n</li>\r\n<li>\r\n<strong>Candidate</strong> (2 ticks) means definitions that are included in the Data\r\nDictionary by the EEA or ETC data  managers. This level is for opening discussions between\r\nETCs and EEA. Definitions in this status <em>cannot be accessed by countries</em>.\r\n</li>\r\n<li>\r\n<strong>Incomplete</strong> (1 tick) means either existing definitions under consideration\r\nto include them into Data Dictionary or new definitions under development where the Data Dictionary\r\nis used  as a structuring tool or to test dataflows. Definitions in this status\r\n<em>cannot be accessed by countries</em>.\r\n</li>\r\n</ul>\r\n</p>','','400','400'),
                     ('dataset','search_element','The dataset selection box','','<h2>Dataset</h2>\r\n<p>\r\nIndicates the dataset to look from.\r\n</p>','','400','400');
             ]]>
-
         </sql>
      </changeSet>
+	 <changeSet author="lainekai" id="seed-3">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0"><![CDATA[SELECT count(1) FROM DATAELEM]]></sqlCheck>
+        </preConditions>
+        <comment>Common elements</comment>
+        <sql>
+            <![CDATA[
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:altLabel',NULL,'N','Released',1,NULL,1379995792000,NULL,NULL,'skos:altLabel',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:broader',NULL,'N','Released',1,'roug',1380531312598,NULL,NULL,'skos:broader',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:broadMatch',NULL,'N','Released',1,'roug',1380531529449,NULL,NULL,'skos:broadMatch',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:closeMatch',NULL,'N','Released',1,'roug',1380530772485,NULL,NULL,'skos:closeMatch',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:definition',NULL,'N','Released',1,NULL,1379995792000,NULL,NULL,'skos:definition',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:editorialNote',NULL,'N','Released',1,NULL,1379995792000,NULL,NULL,'skos:editorialNote',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:exactMatch',NULL,'N','Released',1,'roug',1380529416914,NULL,NULL,'skos:exactMatch',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:example',NULL,'N','Released',1,NULL,1379995792000,NULL,NULL,'skos:example',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:hiddenLabel',NULL,'N','Released',1,NULL,1379995792000,NULL,NULL,'skos:hiddenLabel',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:narrower',NULL,'N','Released',1,'roug',1380531282502,NULL,NULL,'skos:narrower',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:narrowMatch',NULL,'N','Released',1,'roug',1380531636592,NULL,NULL,'skos:narrowMatch',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:notation',NULL,'N','Released',1,'roug',1380531023196,NULL,NULL,'skos:notation',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:prefLabel',NULL,'N','Released',1,NULL,1379995792000,NULL,NULL,'skos:prefLabel',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:related',NULL,'N','Released',1,'roug',1380531392924,NULL,NULL,'skos:related',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:relatedMatch',NULL,'N','Released',1,NULL,1379995792000,NULL,NULL,'skos:relatedMatch',NULL);
+				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:scopeNote',NULL,'N','Released',1,NULL,1379995792000,NULL,NULL,'skos:scopeNote',NULL);
+				
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:altLabel','/elements','admin','skos:altLabel');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:broader','/elements','admin','skos:braoder');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:broadMatch','/elements','admin','skos:broadMatch');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:closeMatch','/elements','admin','skos:closeMatch');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:definition','/elements','admin', 'skos:definition');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:editorialNote','/elements','admin','skos:editorialNote');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:exactMatch','/elements','admin','skos:exactMatch');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:example','/elements','admin','skos:example');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:hiddenLabel','/elements','admin','skos:hiddenLabel');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:narrower','/elements','admin','skos:narrower');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:narrowMatch','/elements','admin','skos:narrowMatch');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:notation','/elements','admin','skos:notation');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:prefLabel','/elements','admin','skos:prefLabel');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:related','/elements','admin','skos:related');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:relatedMatch','/elements','admin','skos:relatedMatch');
+				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:scopeNote','/elements','admin','skos:scopeNote');
+				
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:altLabel' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:broader' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:broadMatch' AND PARENT_NAME='/elements'), 'object','owner','','d,c,w,u');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:closeMatch' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:definition' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:editorialNote' AND PARENT_NAME='/elements'), 'object','owner','','d,c,w,u');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:exactMatch' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:example' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:hiddenLabel' AND PARENT_NAME='/elements'), 'object','owner','','d,c,w,u');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:narrower' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:narrowMatch' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:notation' AND PARENT_NAME='/elements'), 'object','owner','','d,c,w,u');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:prefLabel' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:related' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:relatedMatch' AND PARENT_NAME='/elements'), 'object','owner','','d,c,w,u');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:scopeNote' AND PARENT_NAME='/elements'), 'object','owner','','d,c,w,u');				
+			]]>
+		</sql>
+     </changeSet>
     </databaseChangeLog>
+	
+	
