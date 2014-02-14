@@ -20,6 +20,6 @@ public interface ICSVVocabularyImportService {
      * @return
      * @throws ServiceException
      */
-    List<String> importCsvIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder,  boolean purgeVocabularyData) throws ServiceException;
+    List<String> importCsvIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder,  boolean purgeVocabularyData, boolean purgeBoundedElements) throws ServiceException;
 
 }// end of interface ICSVVocabularyImport

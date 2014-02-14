@@ -191,6 +191,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /** before import, if user requested purging data */
     private boolean purgeVocabularyData = false;
 
+    /** before import, if user requested purging bounded elements */
+    private boolean purgeBoundedElements = false;
+
     /**
      * Identifier before the user started editing. Needed to make the URLs working correctly still if user deletes identifier in the
      * UI
@@ -1009,29 +1012,29 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *
      * @return
      */
-    public Resolution uploadCsv() {
+    public Resolution uploadCsv() throws ServiceException {
         try {
             vocabularyFolder =
                     vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                             vocabularyFolder.isWorkingCopy());
             validateView();
             if (!vocabularyFolder.isWorkingCopy()) {
-                throw new RuntimeException("Vocabulary should be in working copy status");
+                throw new ServiceException("Vocabulary should be in working copy status");
             }
 
             if (this.uploadedCsvFile == null) {
-                throw new RuntimeException("You should upload a file");
+                throw new ServiceException("You should upload a file");
             }
 
             String fileName = this.uploadedCsvFile.getFileName();
             if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.CSV_FILE_EXTENSION)) {
-                throw new RuntimeException("File should be a CSV file");
+                throw new ServiceException("File should be a CSV file");
             }
 
             String contentType = this.uploadedCsvFile.getContentType();
             if (!StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_PLAIN)
                     && !StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_CSV)) {
-                throw new RuntimeException("You should upload a valid CSV file (plain/text or csv/text)");
+                throw new ServiceException("You should upload a valid CSV file (plain/text or csv/text)");
             }
 
             // consume stupid bom first!! if it exists!
@@ -1046,7 +1049,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             Reader csvFileReader = new InputStreamReader(is, CharEncoding.UTF_8);
             List<String> systemMessages =
-                    this.vocabularyCsvImportService.importCsvIntoVocabulary(csvFileReader, vocabularyFolder, purgeVocabularyData);
+                    this.vocabularyCsvImportService.importCsvIntoVocabulary(csvFileReader, vocabularyFolder, purgeVocabularyData,
+                            purgeBoundedElements);
             for (String systemMessage : systemMessages) {
                 addSystemMessage(systemMessage);
             }
@@ -1056,13 +1060,17 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
             // navigate back to edit
             return resolution;
+        } catch (ServiceException e) {
+            LOGGER.error("Failed to import vocabulary CSV into db", e);
+            e.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.INVALID_INPUT);
+            throw e;
         } catch (Exception e) {
-            LOGGER.error("Failed to output vocabulary CSV data", e);
+            LOGGER.error("Failed to import vocabulary CSV into db, unexpected exception: ", e);
             ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
             error.setErrorMessage(e.getMessage());
             return error;
         }
-    }// end of method csv
+    }// end of method uploadCsv
 
     /**
      * Forwards to vocabulary concept page, if the url patter is: /vocabylary/folderIdentifier/conceptIdentifier.
@@ -1441,4 +1449,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public void setPurgeVocabularyData(boolean purgeVocabularyData) {
         this.purgeVocabularyData = purgeVocabularyData;
     }
+
+    /**
+     * @param purgeBoundedElements
+     *            purge before importing csv
+     */
+    public void setPurgeBoundedElements(boolean purgeBoundedElements) {
+        this.purgeBoundedElements = purgeBoundedElements;
+    }
+
 }

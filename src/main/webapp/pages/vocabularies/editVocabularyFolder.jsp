@@ -21,6 +21,11 @@
             	$("#purgeVocabularyData").click(function() {
             		if ($('input#purgeVocabularyData').is(':checked')) {
 	                   alert("If you check this option all data will be deleted! If you are not sure about this, please uncheck it!");
+	                   $('input#purgeBoundedElements').removeAttr("disabled");
+            		}
+            		else{
+            		   $('input#purgeBoundedElements').attr("disabled", true);
+            		   $('input#purgeBoundedElements').attr("checked", false);
             		}
                     return true;
                 });
@@ -540,6 +545,9 @@
 
 				<div>
 					<stripes:checkbox id="purgeVocabularyData" name="purgeVocabularyData"/><label for="purgeVocabularyData" class="question">Purge Vocabulary Data</label>
+				</div>
+				<div>
+					<stripes:checkbox id="purgeBoundedElements" name="purgeBoundedElements" disabled="true"/><label for="purgeBoundedElements" class="question">Purge Bounded Elements</label>
 				</div>
 	            <stripes:file name="uploadedCsvFile" id="fileToUpload" size="40" accept="text/csv" title="Select a .csv file to import"/>
 	            <stripes:submit name="uploadCsv" value="Upload"/>

@@ -41,8 +41,8 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
 
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public List<String> importCsvIntoVocabulary(Reader content, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData)
-            throws ServiceException {
+    public List<String> importCsvIntoVocabulary(Reader content, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData,
+            boolean purgeBoundedElements) throws ServiceException {
 
         this.logMessages = new ArrayList<String>();
         List<VocabularyConcept> concepts =
@@ -52,10 +52,16 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
         List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 
         if (purgeVocabularyData) {
-            purgeConceptsAndBindedElements(vocabularyFolder.getId(), concepts, bindedElements);
+            String message = "All concepts ";
+            purgeConcepts(concepts);
             concepts = new ArrayList<VocabularyConcept>();
-            bindedElements = new ArrayList<DataElement>();
-            this.logMessages.add("All concepts and bounded elemets are deleted (with purge operation).");
+            if (purgeBoundedElements) {
+                purgeBindedElements(vocabularyFolder.getFolderId(), bindedElements);
+                bindedElements = new ArrayList<DataElement>();
+                message += "and bounded elements ";
+            }
+            message += "are deleted (with purge operation).";
+            this.logMessages.add(message);
         }
 
         Map<String, Integer> elementToId = new HashMap<String, Integer>();
@@ -83,15 +89,12 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
         return this.logMessages;
     }// end of method importCsvIntoVocabulary
 
-    /**
-     *
-     * @param vocabularyFolderId
-     * @param concepts
-     * @param bindedElements
-     * @throws ServiceException
-     */
-    private void purgeConceptsAndBindedElements(int vocabularyFolderId, List<VocabularyConcept> concepts,
-            List<DataElement> bindedElements) throws ServiceException {
+   /**
+    *
+    * @param concepts
+    * @throws ServiceException
+    */
+    private void purgeConcepts(List<VocabularyConcept> concepts) throws ServiceException {
         List<Integer> conceptIds = new ArrayList<Integer>();
 
         if (concepts != null && concepts.size() > 0) {
@@ -100,13 +103,21 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
             }
             this.vocabularyService.deleteVocabularyConcepts(conceptIds);
         }
+    }// end of method purgeConcepts
 
+    /**
+     *
+     * @param vocabularyFolderId
+     * @param bindedElements
+     * @throws ServiceException
+     */
+    private void purgeBindedElements(int vocabularyFolderId, List<DataElement> bindedElements) throws ServiceException {
         if (bindedElements != null && bindedElements.size() > 0) {
             for (DataElement elem : bindedElements) {
                 this.vocabularyService.removeDataElement(vocabularyFolderId, elem.getId());
             }
         }
-    }// end of method purgeConceptsAndBindedElements
+    }// end of method purgeBindedElements
 
     /**
      *
@@ -140,7 +151,8 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
 
             if (!isEqual) {
                 reader.close();
-                throw new ServiceException("Missing headers!");
+                throw new ServiceException("Missing headers! CSV file should contain following headers: "
+                        + Arrays.toString(fixedHeaders));
             }
 
             for (int i = VocabularyCSVOutputHelper.CONCEPT_ENTRIES_COUNT; i < header.length; i++) {
@@ -165,8 +177,13 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                     elementsFilter.setIdentifier(elementHeader);
                     DataElementsResult elementsResult = dataService.searchDataElements(elementsFilter);
                     // if there is one and only one element check if header and identifer exactly matches!
-                    if (elementsResult.getTotalResults() != 1) {
-                        throw new ServiceException("Cannot find single data element for column: " + elementHeader);
+                    if (elementsResult.getTotalResults() < 1) {
+                        throw new ServiceException("Cannot find any data element for column: " + elementHeader
+                                + ". Please bind element manually then upload CSV.");
+                    } else if (elementsResult.getTotalResults() > 1) {
+                        throw new ServiceException("Cannot find single data element for column: " + elementHeader
+                                + ". Search returns: " + elementsResult.getTotalResults()
+                                + " elements. Please bind element manually then upload CSV.");
                     } else {
                         DataElement elem = elementsResult.getDataElements().get(0);
                         if (StringUtils.equals(elementHeader, elem.getIdentifier())) {
@@ -195,9 +212,15 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                 // do line processing
                 String uri = lineParams[0];
 
-                if (StringUtils.isEmpty(uri) || StringUtils.startsWith(uri, "//")
-                        || !StringUtils.startsWith(uri, folderContextRoot)) {
-                    this.logMessages.add("Row (" + rowNumber + ") is skipped.\n");
+                if (StringUtils.isEmpty(uri)) {
+                    this.logMessages.add("Row (" + rowNumber + ") is skipped (Base URI is empty).\n");
+                    continue;
+                } else if (StringUtils.startsWith(uri, "//")) {
+                    this.logMessages.add("Row (" + rowNumber
+                            + ") is skipped (Concept is excluded by user from update operation).\n");
+                    continue;
+                } else if (!StringUtils.startsWith(uri, folderContextRoot)) {
+                    this.logMessages.add("Row (" + rowNumber + ") is skipped (Base URI does not match with Vocabulary).\n");
                     continue;
                 }
 
