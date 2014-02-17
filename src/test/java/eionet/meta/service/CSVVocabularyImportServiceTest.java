@@ -24,9 +24,11 @@ package eionet.meta.service;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -34,11 +36,14 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.unitils.UnitilsJUnit4;
 import org.unitils.reflectionassert.ReflectionAssert;
+import org.unitils.reflectionassert.ReflectionComparatorMode;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
+import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.ObsoleteStatus;
 import eionet.util.VocabularyCSVOutputHelper;
 
 /**
@@ -46,14 +51,11 @@ import eionet.util.VocabularyCSVOutputHelper;
  *
  * @author
  */
-// @DataSet(value = {"seed-vocabularycsv-import.xml"}) //TODO why does not this work!!!
-//also spring does not commit when it is working in test context so we cant utilize Dbunit compare dataset!! :(
+
 @SpringApplicationContext("spring-context.xml")
-// @TransactionConfiguration(defaultRollback = false)
 public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
     private static final int TEST_VALID_VOCAB_FOLDER_ID = 4;
-    private static final int[] VOCAB_CONCEPT_IDS = new int[]{8, 9, 10};
 
     /** Logger. */
     protected static final Logger LOGGER = Logger.getLogger(CSVVocabularyImportServiceTest.class);
@@ -74,17 +76,26 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         DBUnitHelper.deleteData("csv_import/seed-vocabularycsv-import.xml");
     }
 
+    /**
+     * In this test, three line csv is imported.
+     * Row 1 includes updated values for concept and datelements (no insertion, only update)
+     * Row 2 is a commented out line, it has updated values but importer should ignore this line.
+     * Row 3 is not updated (it has same values in database, there should be no update for this vocabulary concept)
+     *
+     * @throws Exception
+     */
     @Test
     @Rollback
-    //expected : seed-vocabularycsv-import-step-1-expected
     public void testIfConceptAndElementsUpdated() throws Exception {
-        //initialize values:
-        Map<Integer, VocabularyConcept> plainVocabularyConcepts = new HashMap<Integer,VocabularyConcept>();
-        for (int vocabId : VOCAB_CONCEPT_IDS ){
-            plainVocabularyConcepts.put(vocabId, vocabularyService.getVocabularyConcept(vocabId));
-        }
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
 
-        //get file and create a reader for file
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts =
+                vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
+                        vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
+
+        // get file and create a reader for file
         InputStream is = getClass().getClassLoader().getResourceAsStream("csv_import/csv_import_test_1.csv");
         byte[] firstThreeBytes = new byte[3];
         is.read(firstThreeBytes);
@@ -95,23 +106,72 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         }
         InputStreamReader reader = new InputStreamReader(is);
 
-        //get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
-
-        //import CSV into database
+        // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
 
-        Map<Integer, VocabularyConcept> updatedPlainVocabularyConcepts = new HashMap<Integer, VocabularyConcept>();
-        for (int vocabId : VOCAB_CONCEPT_IDS ){
-            updatedPlainVocabularyConcepts.put(vocabId, vocabularyService.getVocabularyConcept(vocabId));
+        // manually update initial values of concepts for comparison
+        VocabularyConcept vc8 = (VocabularyConcept) CollectionUtils.find(concepts, new VocabularyConceptEvaluateOnIdPredicate(8));
+        vc8.setLabel("csv_test_concept_label_1_updated");
+
+        List<List<DataElement>> dataElements = vc8.getElementAttributes();
+        List<DataElement> elems =
+                VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
+        DataElement element =
+                (DataElement) CollectionUtils.find(elems,
+                        new DataElementEvaluateOnAttributeValuePredicate("bg_csv_test_concept_1"));
+        element.setAttributeValue("bg_csv_test_concept_1_updated");
+
+        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "et", dataElements);
+        element =
+                (DataElement) CollectionUtils.find(elems,
+                        new DataElementEvaluateOnAttributeValuePredicate("et_csv_test_concept_1"));
+        element.setAttributeValue("et_csv_test_concept_1_updated");
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts =
+                vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
+                        vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
+
+        // compare manually updated objects with queried ones (after import operation)
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
+                ReflectionComparatorMode.LENIENT_ORDER);
+    }// end of test step testIfConceptAndElementsUpdated
+
+    /**
+     *
+     * Inner class used to search for a VocabularyConcept in a Collection using it's id
+     *
+     */
+    public static class VocabularyConceptEvaluateOnIdPredicate implements Predicate {
+        private int id = -1;
+
+        public VocabularyConceptEvaluateOnIdPredicate(int id) {
+            this.id = id;
         }
 
-        //do updates of objects here
-        VocabularyConcept updated = plainVocabularyConcepts.get(8);
-        updated.setLabel("csv_test_concept_label_1_updated");
+        @Override
+        public boolean evaluate(Object object) {
+            VocabularyConcept vc = (VocabularyConcept) object;
+            return this.id == vc.getId();
+        }
+    }// end of inner class VocabularyConceptEvaluateOnIdPredicate
 
-        ReflectionAssert.assertLenientEquals(plainVocabularyConcepts, updatedPlainVocabularyConcepts);
+    /**
+     *
+     * Inner class used to search for a DataElement using it's attribute value in a Collection
+     *
+     */
+    public static class DataElementEvaluateOnAttributeValuePredicate implements Predicate {
+        private String value = null;
 
+        public DataElementEvaluateOnAttributeValuePredicate(String value) {
+            this.value = value;
+        }
 
-    }// end of test step testStep1
+        @Override
+        public boolean evaluate(Object object) {
+            DataElement elem = (DataElement) object;
+            return StringUtils.equals(value, elem.getAttributeValue());
+        }
+    }// end of inner class DataElementEvaluateOnAttributeValuePredicate
 }// end of test case CSVVocabularyImportServiceTest

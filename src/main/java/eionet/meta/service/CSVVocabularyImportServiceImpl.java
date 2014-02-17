@@ -269,9 +269,9 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                 // vocabulary concept found or created
                 toBeUpdatedConcepts.add(found);
 
-                found.setLabel(lineParams[1]);
-                found.setDefinition(lineParams[2]);
-                found.setNotation(lineParams[3]);
+                found.setLabel(StringUtils.trimToNull(lineParams[1]));
+                found.setDefinition(StringUtils.trimToNull(lineParams[2]));
+                found.setNotation(StringUtils.trimToNull(lineParams[3]));
                 // TODO if it is not a valid date, then it can be skippped actually
                 if (StringUtils.isNotEmpty(lineParams[4])) {
                     found.setCreated(dateFormatter.parse(lineParams[4]));
