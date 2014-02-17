@@ -21,10 +21,13 @@
 
 package eionet.meta.service;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -150,7 +153,11 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
                         vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
+
+        assertEquals("Expected equal list size", concepts.size(), updatedConcepts.size());
+        for (int i = 0; i < concepts.size(); i++) {
+            assertEquals("Expected equals concepts", concepts.get(i), updatedConcepts.get(i));
+        }
     }// end of test step testIfConceptAndElementsUpdated
 
     /**
@@ -218,7 +225,11 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
                         vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
+
+        assertEquals("Expected equal list size", concepts.size(), updatedConcepts.size());
+        for (int i = 0; i < concepts.size(); i++) {
+            assertEquals("Expected equals concepts", concepts.get(i), updatedConcepts.get(i));
+        }
     }// end of test step testIfConceptsAndElementsUpdated
 
     /**
