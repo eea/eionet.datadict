@@ -21,9 +21,13 @@
 
 package eionet.meta.service;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -77,6 +81,30 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
     }
 
     /**
+     * Get a reader from given CSV file location. If there is a BOM character, skip it.
+     *
+     * @param resourceLoc
+     *            CSV file location
+     * @return Reader object (BOM skipped)
+     * @throws Exception
+     *             if an error occurs
+     */
+    private Reader getReaderFromCsvResource(String resourceLoc) throws Exception {
+
+        InputStream is = getClass().getClassLoader().getResourceAsStream(resourceLoc);
+        byte[] firstThreeBytes = new byte[3];
+        is.read(firstThreeBytes);
+
+        if (!Arrays.equals(firstThreeBytes, VocabularyCSVOutputHelper.BOM_BYTE_ARRAY)) {
+            is.close();
+            is = getClass().getClassLoader().getResourceAsStream(resourceLoc);
+        }
+        InputStreamReader reader = new InputStreamReader(is);
+
+        return reader;
+    }// end of method getReaderFromCsvResource
+
+    /**
      * In this test, three line csv is imported.
      * Row 1 includes updated values for concept and datelements (no insertion, only update)
      * Row 2 is a commented out line, it has updated values but importer should ignore this line.
@@ -95,16 +123,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
                 vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
                         vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
 
-        // get file and create a reader for file
-        InputStream is = getClass().getClassLoader().getResourceAsStream("csv_import/csv_import_test_1.csv");
-        byte[] firstThreeBytes = new byte[3];
-        is.read(firstThreeBytes);
-
-        if (!Arrays.equals(firstThreeBytes, VocabularyCSVOutputHelper.BOM_BYTE_ARRAY)) {
-            is.close();
-            is = getClass().getClassLoader().getResourceAsStream("csv_import/csv_import_test_1.csv");
-        }
-        InputStreamReader reader = new InputStreamReader(is);
+        // get reader for CSV file
+        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_1.csv");
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
@@ -133,9 +153,82 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
                         vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        assertEquals("Expected equal list size", concepts.size(), updatedConcepts.size());
+        for (int i = 0; i < concepts.size(); i++) {
+            assertEquals("Expected equal concepts", concepts.get(i), updatedConcepts.get(i));
+        }
     }// end of test step testIfConceptAndElementsUpdated
+
+    /**
+     * In this test, two line csv is imported.
+     * Row 1 includes updated values for concept and datelements (no insertion, only update)
+     * Row 2 includes updated values for concept and datelements (no insertion, only update)
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptsAndElementsUpdated() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts =
+                vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
+                        vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
+
+        // get reader for CSV file
+        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_2.csv");
+
+        // import CSV into database
+        vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
+
+        // manually update initial values of concepts for comparison
+        VocabularyConcept vc8 = (VocabularyConcept) CollectionUtils.find(concepts, new VocabularyConceptEvaluateOnIdPredicate(8));
+        vc8.setDefinition("csv_test_concept_def_1_updated");
+
+        List<List<DataElement>> dataElements = vc8.getElementAttributes();
+        List<DataElement> elems =
+                VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
+        DataElement element =
+                (DataElement) CollectionUtils.find(elems, new DataElementEvaluateOnAttributeValuePredicate(
+                        "bg2_csv_test_concept_1"));
+        element.setAttributeValue("bg2_csv_test_concept_1_updated");
+
+        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "en", dataElements);
+        element =
+                (DataElement) CollectionUtils.find(elems,
+                        new DataElementEvaluateOnAttributeValuePredicate("en_csv_test_concept_1"));
+        element.setAttributeValue("en_csv_test_concept_1_updated");
+
+        VocabularyConcept vc10 =
+                (VocabularyConcept) CollectionUtils.find(concepts, new VocabularyConceptEvaluateOnIdPredicate(10));
+        vc10.setLabel("csv_test_concept_label_3_updated");
+
+        dataElements = vc10.getElementAttributes();
+        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
+        element =
+                (DataElement) CollectionUtils.find(elems,
+                        new DataElementEvaluateOnAttributeValuePredicate("bg_csv_test_concept_3"));
+        element.setAttributeValue("bg_csv_test_concept_3_updated");
+
+        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:definition", "pl", dataElements);
+        element =
+                (DataElement) CollectionUtils.find(elems,
+                        new DataElementEvaluateOnAttributeValuePredicate("pl_csv_test_concept_3"));
+        element.setAttributeValue("pl_csv_test_concept_3_updated");
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts =
+                vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
+                        vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
+
+        // compare manually updated objects with queried ones (after import operation)
+        assertEquals("Expected equal list size", concepts.size(), updatedConcepts.size());
+        for (int i = 0; i < concepts.size(); i++) {
+            assertEquals("Expected equals concept", concepts.get(i), updatedConcepts.get(i));
+        }
+    }// end of test step testIfConceptsAndElementsUpdated
 
     /**
      *
