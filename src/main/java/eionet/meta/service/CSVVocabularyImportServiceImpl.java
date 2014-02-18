@@ -234,14 +234,14 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                 String uri = lineParams[0];
 
                 if (StringUtils.isEmpty(uri)) {
-                    this.logMessages.add("Row (" + rowNumber + ") is skipped (Base URI is empty).\n");
+                    this.logMessages.add("Row (" + rowNumber + ") is skipped (Base URI is empty).");
                     continue;
                 } else if (StringUtils.startsWith(uri, "//")) {
                     this.logMessages.add("Row (" + rowNumber
-                            + ") is skipped (Concept is excluded by user from update operation).\n");
+                            + ") is skipped (Concept is excluded by user from update operation).");
                     continue;
                 } else if (!StringUtils.startsWith(uri, folderContextRoot)) {
-                    this.logMessages.add("Row (" + rowNumber + ") is skipped (Base URI does not match with Vocabulary).\n");
+                    this.logMessages.add("Row (" + rowNumber + ") is skipped (Base URI does not match with Vocabulary).");
                     continue;
                 }
 
