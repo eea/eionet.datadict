@@ -121,6 +121,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private static final String CSV_FILE_CONTENT_TYPE_PLAIN = "text/plain";
     private static final String CSV_FILE_CONTENT_TYPE_CSV = "text/csv";
 
+    /**
+     * on Win64 CSV files have got this content type.
+     */
+    private static final String CSV_FILE_CONTENT_TYPE_XLS = "application/vnd.ms-excel";
+
     /** Vocabulary service. */
     @SpringBean
     private IVocabularyService vocabularyService;
@@ -1033,7 +1038,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             String contentType = this.uploadedCsvFile.getContentType();
             if (!StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_PLAIN)
-                    && !StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_CSV)) {
+                    && !StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_CSV)
+                    && !StringUtils.equals(contentType,  VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_XLS)) {
                 throw new ServiceException("You should upload a valid CSV file (plain/text or csv/text)");
             }
 
