@@ -65,7 +65,7 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
             purgeConcepts(concepts);
             concepts = new ArrayList<VocabularyConcept>();
             if (purgeBoundedElements) {
-                purgeBindedElements(vocabularyFolder.getFolderId(), bindedElements);
+                purgeBindedElements(vocabularyFolder.getId(), bindedElements);
                 bindedElements = new ArrayList<DataElement>();
                 message += "and bounded elements ";
             }

@@ -336,7 +336,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        Assert.assertEquals("Updated Concepts does not include 4 vocabulary concept", updatedConcepts.size(), 4);
+        Assert.assertEquals("Updated Concepts does not include 4 vocabulary concepts", updatedConcepts.size(), 4);
 
         //last object should be the inserted one, so use it is id to set (all other fields are updated manually)
         vc11.setId(updatedConcepts.get(3).getId());
@@ -345,6 +345,86 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
                 ReflectionComparatorMode.LENIENT_ORDER);
     }// end of test step testIfNewConceptAdded
+
+    /**
+     * In this test, two line CSV is imported.
+     * Rows are derived from base CSV. Just identifiers are updated. Purge operation is tested.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptsAddedAfterPurge() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // get reader for CSV file
+        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_4.csv");
+
+        // import CSV into database
+        vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
+
+        // manually create values of new concept for comparison
+        concepts.remove(2);//remove last object
+        // there is not much object just update, no need to iterate
+        concepts.get(0).setIdentifier("csv_test_concept_1_after_purge");
+        concepts.get(1).setIdentifier("csv_test_concept_2_after_purge");
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
+
+        //concepts should be inserted in the same order as they are in csv file, get ids from updated beans
+        concepts.get(0).setId(updatedConcepts.get(0).getId());
+        concepts.get(1).setId(updatedConcepts.get(1).getId());
+
+        // compare manually updated objects with queried ones (after import operation)
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
+                ReflectionComparatorMode.LENIENT_ORDER);
+    }// end of test step testIfConceptsAddedAfterPurge
+
+    /**
+     * In this test, two line CSV is imported.
+     * Rows are derived from base CSV. Just identifiers are updated. Both purge operations are tested.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptsAddedAfterAllPurge() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // get reader for CSV file
+        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_4.csv");
+
+        // import CSV into database
+        vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
+
+        // manually create values of new concept for comparison
+        concepts.remove(2);//remove last object
+        // there is not much object just update, no need to iterate
+        concepts.get(0).setIdentifier("csv_test_concept_1_after_purge");
+        concepts.get(1).setIdentifier("csv_test_concept_2_after_purge");
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
+
+        //concepts should be inserted in the same order as they are in csv file, get ids from updated beans
+        concepts.get(0).setId(updatedConcepts.get(0).getId());
+        concepts.get(1).setId(updatedConcepts.get(1).getId());
+
+        // compare manually updated objects with queried ones (after import operation)
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
+                ReflectionComparatorMode.LENIENT_ORDER);
+    }// end of test step testIfConceptsAddedAfterAllPurge
 
     /**
      *
