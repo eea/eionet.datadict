@@ -8,8 +8,8 @@
 
     <VOCABULARY_SET ID="5" IDENTIFIER="csv_header_vs" LABEL="csv_header_vs_test" />
 
-    <VOCABULARY VOCABULARY_ID="3" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="5"/>
-    <VOCABULARY VOCABULARY_ID="4" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="3" FOLDER_ID="5"/>
+    <VOCABULARY VOCABULARY_ID="3" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab/" FOLDER_ID="5"/>
+    <VOCABULARY VOCABULARY_ID="4" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="3" BASE_URI="http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab/" FOLDER_ID="5"/>
 
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="8" VOCABULARY_ID="4" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="csv_test_concept_1" LABEL="csv_test_concept_label_1_lets_get_sure" DEFINITION="[NULL]"/>
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="9" VOCABULARY_ID="4" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="csv_test_concept_2" LABEL="csv_test_concept_label_2"  DEFINITION="[NULL]"/>
@@ -36,6 +36,7 @@
     <DATAELEM DATAELEM_ID="10" NAMESPACE_ID="1" SHORT_NAME="EnvPrefLabel" REG_STATUS="Released" IDENTIFIER="env:prefLabel" />
     <DATAELEM DATAELEM_ID="11" NAMESPACE_ID="1" SHORT_NAME="EnvDefinition" REG_STATUS="Released" IDENTIFIER="env:definition" />
     <DATAELEM DATAELEM_ID="12" NAMESPACE_ID="1" SHORT_NAME="EnvDefinition2" REG_STATUS="Incomplete" IDENTIFIER="env:definition2" />
+    <DATAELEM DATAELEM_ID="13" NAMESPACE_ID="1" SHORT_NAME="EnvDeclaration" REG_STATUS="Released" IDENTIFIER="env:declaration" />
 
     <VOCABULARY2ELEM VOCABULARY_ID="4" DATAELEM_ID="8" />
     <VOCABULARY2ELEM VOCABULARY_ID="4" DATAELEM_ID="9" />
