@@ -279,7 +279,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // manually create values of new concept for comparison
         VocabularyConcept vc11 = new VocabularyConcept();
-        vc11.setId(20);
+        vc11.setId(11);
         vc11.setIdentifier("csv_test_concept_4");
         vc11.setLabel("csv_test_concept_label_4");
         vc11.setDefinition("csv_test_concept_def_4");
