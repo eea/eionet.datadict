@@ -178,6 +178,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
+        //transactionManager.getTransaction(null).flush();
+        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
@@ -224,6 +226,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
+        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
@@ -279,6 +282,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
+        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually create values of new concept for comparison
         VocabularyConcept vc11 = new VocabularyConcept();
@@ -340,7 +344,6 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
                 ReflectionComparatorMode.LENIENT_ORDER);
     }// end of test step testIfNewConceptAdded
 
-
     /**
      * In this test, one line CSV is imported.
      * Row 1 includes a non existing concept to be imported with data elements after purge
@@ -361,6 +364,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
+        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually create values of new concept for comparison
         VocabularyConcept vc11 = new VocabularyConcept();
@@ -444,6 +448,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
+        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
@@ -505,6 +510,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
+        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually create values of new concept for comparison
         concepts.remove(2);// remove last object
@@ -545,6 +551,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
+        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually create values of new concept for comparison
         concepts.remove(2);// remove last object
@@ -585,6 +592,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
+        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually create values for data elements
         String[] boundElementIdentifiers =
@@ -829,6 +837,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // import CSV into database
         List<String> logMessages = vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, true);
+        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
         // only vocabulary concept 1 should change
@@ -882,11 +891,6 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
 
-        // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        // get initial values of data elements of this vocabulary folder
-        List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-
         // get reader for CSV file
         Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_7.csv");
 
@@ -899,21 +903,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
                     "Exception Message is not correct",
                     "Missing headers! CSV file should contain following headers: [URI, Label, Definition, Notation, StartDate, EndDate]",
                     e.getMessage());
-            Assert.assertTrue(transactionManager.getTransaction(null).isRollbackOnly());
+            Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
         }
-
-        // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-
-        // compare initial objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
-
-        // get updated values of data elements of this vocabulary folder (there shouldn't be any difference)
-        List<DataElement> bindedElementsUpdated = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-        // compare
-        ReflectionAssert.assertReflectionEquals(bindedElements, bindedElementsUpdated, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
     }// end of test step testExceptionAndRollbackWhenFixedHeadersAreMissing
 
     /**
@@ -928,11 +919,6 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
 
-        // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        // get initial values of data elements of this vocabulary folder
-        List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-
         // get reader for CSV file
         Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_8.csv");
 
@@ -942,20 +928,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
             Assert.fail("Exception is not received");
         } catch (ServiceException e) {
             Assert.assertEquals("Exception Message is not correct", "Header for column (8) is empty!", e.getMessage());
+            Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
         }
-
-        // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-
-        // compare initial objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
-
-        // get updated values of data elements of this vocabulary folder (there shouldn't be any difference)
-        List<DataElement> bindedElementsUpdated = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-        // compare
-        ReflectionAssert.assertReflectionEquals(bindedElements, bindedElementsUpdated, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
     }// end of test step testExceptionAndRollbackWhenAHeaderColumnIsEmpty
 
     /**
@@ -970,11 +944,6 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
 
-        // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        // get initial values of data elements of this vocabulary folder
-        List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-
         // get reader for CSV file
         Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_9.csv");
 
@@ -987,20 +956,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
                     "Exception Message is not correct",
                     "Cannot find any data element for column: skos:prefLabelllllllll. Please bind element manually then upload CSV.",
                     e.getMessage());
+            Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
         }
-
-        // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-
-        // compare initial objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
-
-        // get updated values of data elements of this vocabulary folder (there shouldn't be any difference)
-        List<DataElement> bindedElementsUpdated = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-        // compare
-        ReflectionAssert.assertReflectionEquals(bindedElements, bindedElementsUpdated, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
     }// end of test step testExceptionAndRollbackWhenAHeaderColumnIsNotFoundElement
 
     /**
@@ -1015,11 +972,6 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
 
-        // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        // get initial values of data elements of this vocabulary folder
-        List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-
         // get reader for CSV file
         Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_10.csv");
 
@@ -1032,20 +984,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
                     "Exception Message is not correct",
                     "Cannot find single data element for column: env:de. Search returns: 2 elements. Please bind element manually then upload CSV.",
                     e.getMessage());
+            Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
         }
-
-        // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-
-        // compare initial objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
-
-        // get updated values of data elements of this vocabulary folder (there shouldn't be any difference)
-        List<DataElement> bindedElementsUpdated = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-        // compare
-        ReflectionAssert.assertReflectionEquals(bindedElements, bindedElementsUpdated, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
     }// end of test step testExceptionAndRollbackWhenAHeaderColumnIsFoundMoreThanOne
 
     /**
@@ -1060,11 +1000,6 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
 
-        // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        // get initial values of data elements of this vocabulary folder
-        List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-
         // get reader for CSV file
         Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_11.csv");
 
@@ -1075,20 +1010,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         } catch (ServiceException e) {
             Assert.assertEquals("Exception Message is not correct",
                     "Found data element does not EXACTLY match with column: env:dec, found: env:declaration", e.getMessage());
+            Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
         }
-
-        // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-
-        // compare initial objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
-
-        // get updated values of data elements of this vocabulary folder (there shouldn't be any difference)
-        List<DataElement> bindedElementsUpdated = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-        // compare
-        ReflectionAssert.assertReflectionEquals(bindedElements, bindedElementsUpdated, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
     }// end of test step testExceptionAndRollbackWhenAHeaderColumnDoesNotExactlyMatch
 
     /**
