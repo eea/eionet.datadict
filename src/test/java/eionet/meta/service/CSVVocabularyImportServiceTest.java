@@ -35,6 +35,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
@@ -279,7 +280,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // manually create values of new concept for comparison
         VocabularyConcept vc11 = new VocabularyConcept();
-        vc11.setId(11);
+        //vc11.setId(11); //this field will be updated after re-querying
         vc11.setIdentifier("csv_test_concept_4");
         vc11.setLabel("csv_test_concept_label_4");
         vc11.setDefinition("csv_test_concept_def_4");
@@ -335,6 +336,10 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Updated Concepts does not include 4 vocabulary concept", updatedConcepts.size(), 4);
+
+        //last object should be the inserted one, so use it is id to set (all other fields are updated manually)
+        vc11.setId(updatedConcepts.get(3).getId());
 
         // compare manually updated objects with queried ones (after import operation)
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
