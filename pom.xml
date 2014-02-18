@@ -59,7 +59,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>2.3.2</version>
                 <inherited>true</inherited>
                 <configuration>
                     <verbose>false</verbose>
@@ -98,7 +98,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>2.1.1</version>
                 <configuration>
                     <filters>
                         <filter>${basedir}/${env}.properties</filter>
@@ -587,7 +587,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.0.1</version>
                 <configuration>
                     <linkXref>false</linkXref>
                     <sourceEncoding>utf-8</sourceEncoding>
