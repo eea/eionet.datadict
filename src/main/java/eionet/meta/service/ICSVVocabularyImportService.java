@@ -11,15 +11,23 @@ import eionet.meta.dao.domain.VocabularyFolder;
  */
 public interface ICSVVocabularyImportService {
 
-
     /**
+     * A Transactional method to import CSV file contents into a vocabulary folder. User can request purging data first and then
+     * inserting from scracth.
      *
      * @param contents
+     *            Reader object to read file content
      * @param vocabularyFolder
+     *            Vocabulary folder under bulk edit mode
      * @param purgeVocabularyData
-     * @return
+     *            Purge all vocabulary concepts of folder
+     * @param purgeBoundedElements
+     *            Purge all bounded elements of folder
+     * @return List of log messages
      * @throws ServiceException
+     *             Error if input is not valid
      */
-    List<String> importCsvIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder,  boolean purgeVocabularyData, boolean purgeBoundedElements) throws ServiceException;
+    List<String> importCsvIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData,
+            boolean purgeBoundedElements) throws ServiceException;
 
 }// end of interface ICSVVocabularyImport

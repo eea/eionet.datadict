@@ -26,6 +26,12 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.VocabularyCSVOutputHelper;
 
+/**
+ *
+ * Service implementation to import CSV into a Vocabulary Folder.
+ *
+ * @author enver
+ */
 @Service
 public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportService {
 
@@ -39,6 +45,9 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
 
     private List<String> logMessages = null;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public List<String> importCsvIntoVocabulary(Reader content, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData,
@@ -89,11 +98,14 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
         return this.logMessages;
     }// end of method importCsvIntoVocabulary
 
-   /**
-    *
-    * @param concepts
-    * @throws ServiceException
-    */
+    /**
+     * Purge/delete concepts from database
+     *
+     * @param concepts
+     *            to be deleted
+     * @throws ServiceException
+     *             if an error occurs during operation
+     */
     private void purgeConcepts(List<VocabularyConcept> concepts) throws ServiceException {
         List<Integer> conceptIds = new ArrayList<Integer>();
 
@@ -106,10 +118,14 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
     }// end of method purgeConcepts
 
     /**
+     * Purge/delete binded elements from vocabulary folder
      *
      * @param vocabularyFolderId
+     *            id of vocabulary folder
      * @param bindedElements
+     *            binded elements
      * @throws ServiceException
+     *             if an error occurs during operation
      */
     private void purgeBindedElements(int vocabularyFolderId, List<DataElement> bindedElements) throws ServiceException {
         if (bindedElements != null && bindedElements.size() > 0) {
@@ -120,12 +136,17 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
     }// end of method purgeBindedElements
 
     /**
+     * In this method, beans are generated (either created or updated) according to values in CSV file.
      *
      * @param content
+     *            reader to read file contents
      * @param vocabularyFolder
+     *            folder under bulk edit
      * @param concepts
-     * @return
+     *            founded concepts before import operation
+     * @return generated beans(concepts and dataelements) for update operation
      * @throws ServiceException
+     *             if there is the input is invalid
      */
     private Pair<List<VocabularyConcept>, List<DataElement>> generateUpdatedBeans(Reader content, String folderContextRoot,
             List<VocabularyConcept> concepts, Map<String, Integer> bindedElementsToFolder) throws ServiceException {
@@ -375,6 +396,8 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
     }// end of method generatedUpdatedBeans
 
     /**
+     * This method import objects into DB. It creates not-existing objects and then updates values.
+     * All operation is done Spring Service Layer
      *
      * @param vocabularyConcepts
      * @param vocabularyId
