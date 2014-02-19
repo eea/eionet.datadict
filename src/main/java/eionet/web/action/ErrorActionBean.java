@@ -32,7 +32,7 @@ import eionet.meta.service.ServiceException;
 
 /**
  * Error page action bean.
- * 
+ *
  * @author Juhan Voolaid
  */
 @UrlBinding("/error.action")
@@ -49,7 +49,7 @@ public class ErrorActionBean extends AbstractActionBean {
     /** Error message. */
     private String message;
     /** Error type. */
-    private ErrorType type;
+    private ErrorType type = ErrorType.UNKNOWN;
 
     @DefaultHandler
     public Resolution showError() throws ServiceException {

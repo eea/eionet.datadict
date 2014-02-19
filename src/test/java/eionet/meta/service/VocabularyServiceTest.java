@@ -58,7 +58,7 @@ import eionet.util.Triple;
 
 /**
  * JUnit integration test with Unitils for vocabulary service.
- * 
+ *
  * @author Juhan Voolaid
  */
 @SpringApplicationContext("spring-context.xml")
@@ -145,7 +145,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * full text identifier must work in filter.
-     * 
+     *
      * @throws ServiceException
      *             if bad things happen
      */
@@ -446,7 +446,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * The purpose is to test the {@link IVocabularyService#getReleasedVocabularyFolders(int)} function.
-     * 
+     *
      * @throws ServiceException
      *             An error happens in the called service(s).
      */
@@ -460,7 +460,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * The purpose is to test the vocabularies' "enforce concept notation equals concept identifier" functionality.
-     * 
+     *
      * @throws ServiceException
      *             An error happens in the called services.
      */
@@ -538,7 +538,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * tests vocabularyHasDataElementBinding() method.
-     * 
+     *
      * @throws ServiceException
      *             if bad things happen
      */
@@ -550,7 +550,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * test on getConceptsWithElementValue method.
-     * 
+     *
      * @throws ServiceException
      *             if bad things happen
      */
@@ -564,7 +564,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * test if namespaces of elements are generated correctly.
-     * 
+     *
      * @throws ServiceException
      *             if error happens
      */
@@ -580,7 +580,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * tsest on relational elements.
-     * 
+     *
      * @throws Exception
      *             if fail
      */
@@ -592,7 +592,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * tests getvocabularyFolder meta.
-     * 
+     *
      * @throws Exception
      *             if fail
      */
@@ -612,7 +612,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * tests getvocabularyFolder meta.
-     * 
+     *
      * @throws Exception
      *             if fail
      */
@@ -646,7 +646,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
      * test on search vocabularies.
-     * 
+     *
      * @throws Exception
      *             if fail
      */
@@ -690,6 +690,33 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
         result = vocabularyService.searchVocabularies(filter);
         assertTrue(result.getTotalItems() == 1);
+    }
+
+    @Test
+    public void testSearchVocabularyConceptsExact() throws ServiceException {
+        VocabularyConceptFilter filter = new VocabularyConceptFilter();
+        filter.setText("cept4");
+        filter.setExactMatch(true);
+
+        VocabularyConceptResult result = vocabularyService.searchVocabularyConcepts(filter);
+        assertEquals("Result size", 0, result.getFullListSize());
+
+        filter.setExactMatch(false);
+
+        result = vocabularyService.searchVocabularyConcepts(filter);
+        assertEquals("Result size", 1, result.getFullListSize());
+
+        filter.setText(null);
+        filter.setVocabularyText("vocabulary1");
+
+        result = vocabularyService.searchVocabularyConcepts(filter);
+        //has 4 concepts in seed
+        assertEquals("Result size", 4, result.getFullListSize());
+
+        filter.setExactMatch(true);
+        result = vocabularyService.searchVocabularyConcepts(filter);
+        assertEquals("Result size", 0, result.getFullListSize());
+
     }
 
 }

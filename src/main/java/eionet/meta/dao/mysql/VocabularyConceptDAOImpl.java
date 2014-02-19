@@ -88,49 +88,72 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         Map<String, Object> params = new HashMap<String, Object>();
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select SQL_CALC_FOUND_ROWS VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ")
-           .append("CREATION_DATE, OBSOLETE_DATE ");
-        sql.append("from VOCABULARY_CONCEPT where 1 = 1 ");
+        sql.append("select SQL_CALC_FOUND_ROWS c.VOCABULARY_CONCEPT_ID, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, c.DEFINITION, c.NOTATION, ")
+           .append("c.CREATION_DATE, c.OBSOLETE_DATE, v.LABEL AS VOCABULARY_LABEL, v.IDENTIFIER as VOCABULARY_IDENTIFIER, s.LABEL as VOCSET_LABEL ");
+        sql.append("from VOCABULARY_CONCEPT c, VOCABULARY v, VOCABULARY_SET s where v.VOCABULARY_ID = c.VOCABULARY_ID AND v.FOLDER_ID = s.ID ");
         if (filter.getVocabularyFolderId() > 0) {
             params.put("vocabularyFolderId", filter.getVocabularyFolderId());
-            sql.append("and VOCABULARY_ID=:vocabularyFolderId ");
+            sql.append("and c.VOCABULARY_ID=:vocabularyFolderId ");
         }
         if (StringUtils.isNotEmpty(filter.getText())) {
-            params.put("text", "%" + filter.getText() + "%");
-            sql.append("and (NOTATION like :text ");
-            sql.append("or LABEL like :text ");
-            sql.append("or DEFINITION like :text ");
-            sql.append("or IDENTIFIER like :text) ");
+            if (filter.isExactMatch()) {
+                params.put("text", filter.getText());
+                sql.append("and (c.NOTATION = :text ");
+                sql.append("or c.LABEL = :text ");
+                sql.append("or c.DEFINITION = :text ");
+                sql.append("or c.IDENTIFIER = :text) ");
+
+            } else {
+                params.put("text", "%" + filter.getText() + "%");
+                sql.append("and (c.NOTATION like :text ");
+                sql.append("or c.LABEL like :text ");
+                sql.append("or c.DEFINITION like :text ");
+                sql.append("or c.IDENTIFIER like :text) ");
+            }
         }
         if (StringUtils.isNotEmpty(filter.getDefinition())) {
             params.put("definition", filter.getDefinition());
-            sql.append("and DEFINITION = :definition ");
+            sql.append("and c.DEFINITION = :definition ");
         }
         if (StringUtils.isNotEmpty(filter.getLabel())) {
             params.put("label", filter.getLabel());
-            sql.append("and LABEL = :label ");
+            sql.append("and c.LABEL = :label ");
         }
         if (filter.getExcludedIds() != null && !filter.getExcludedIds().isEmpty()) {
             params.put("excludedIds", filter.getExcludedIds());
-            sql.append("and VOCABULARY_CONCEPT_ID not in (:excludedIds) ");
+            sql.append("and c.VOCABULARY_CONCEPT_ID not in (:excludedIds) ");
         }
         if (filter.getIncludedIds() != null && !filter.getIncludedIds().isEmpty()) {
             params.put("includedIds", filter.getIncludedIds());
-            sql.append("and VOCABULARY_CONCEPT_ID in (:includedIds) ");
+            sql.append("and c.VOCABULARY_CONCEPT_ID in (:includedIds) ");
         }
         if (filter.getObsoleteStatus() != null) {
             if (ObsoleteStatus.VALID_ONLY.equals(filter.getObsoleteStatus())) {
-                sql.append("and OBSOLETE_DATE IS NULL ");
+                sql.append("and c.OBSOLETE_DATE IS NULL ");
             }
             if (ObsoleteStatus.OBSOLETE_ONLY.equals(filter.getObsoleteStatus())) {
-                sql.append("and OBSOLETE_DATE IS NOT NULL ");
+                sql.append("and c.OBSOLETE_DATE IS NOT NULL ");
             }
         }
 
+        if (StringUtils.isNotEmpty(filter.getVocabularyText())) {
+            if (filter.isExactMatch()) {
+                params.put("vocabularyText", filter.getVocabularyText());
+                sql.append("and (v.IDENTIFIER = :vocabularyText ");
+                sql.append("or v.LABEL = :vocabularyText) ");
+
+            } else {
+                params.put("vocabularyText", "%" + filter.getVocabularyText() + "%");
+                sql.append("and (v.IDENTIFIER like :vocabularyText ");
+                sql.append("or v.LABEL like :vocabularyText) ");
+            }
+        }
+
+
         if (filter.isNumericIdentifierSorting()) {
-            sql.append("order by IDENTIFIER + 0 ");
+            sql.append("order by c.IDENTIFIER + 0 ");
         } else {
-            sql.append("order by IDENTIFIER ");
+            sql.append("order by c.IDENTIFIER ");
         }
 
         if (filter.isUsePaging()) {
@@ -150,6 +173,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setNotation(rs.getString("NOTATION"));
                         vc.setCreated(rs.getDate("CREATION_DATE"));
                         vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
+                        vc.setVocabularyLabel(rs.getString("VOCABULARY_LABEL"));
+                        vc.setVocabularySetLabel(rs.getString("VOCSET_LABEL"));
                         return vc;
                     }
                 });

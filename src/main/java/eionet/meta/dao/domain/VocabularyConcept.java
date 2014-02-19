@@ -46,6 +46,13 @@ public class VocabularyConcept {
     /** Attributes. */
     private List<List<DataElement>> elementAttributes;
 
+
+    /** vocabulary Label. */
+    private String vocabularyLabel;
+
+    /** vocabulary Set label. */
+    private String vocabularySetLabel;
+
     /**
      * @return the id
      */
@@ -179,6 +186,20 @@ public class VocabularyConcept {
         this.vocabularyId = vocabularyId;
     }
 
+    public String getVocabularyLabel() {
+        return vocabularyLabel;
+    }
 
+    public void setVocabularyLabel(String vocabularyLabel) {
+        this.vocabularyLabel = vocabularyLabel;
+    }
+
+    public String getVocabularySetLabel() {
+        return vocabularySetLabel;
+    }
+
+    public void setVocabularySetLabel(String vocabularySetLabel) {
+        this.vocabularySetLabel = vocabularySetLabel;
+    }
 
 }

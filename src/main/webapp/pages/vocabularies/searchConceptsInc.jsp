@@ -13,6 +13,15 @@
               return false;
             });
 
+           $("#backToSearch").click(function(){
+               var elementId="${actionBean.elementId}";
+
+               $("#addConceptDiv").dialog("close");
+               openVocabularySearch(elementId);
+               return false;
+             });
+
+
         $("#cancelVocBtn").click(function(){
               $("#findVocabularyDiv").dialog("close");
                 return false;
@@ -44,12 +53,17 @@
             return false;
         });
 
+        $("#conceptFilterText").change(function() {
+            if ($("#conceptFilterText").val().length == 1) {
+                alert ("Search Text is too short");
+                $("#conceptFilterText").attr("value", "");
+                $("#conceptFilterText").focus();
+            }
+        });
 
       <c:if test="${not empty actionBean.editDivId}">
         openPopup("#${actionBean.editDivId}");
-        <c:if test="${not empty actionBean.elementId}">
-            $("#txtElemName").attr("value","${actionBean.elementId}");
-        </c:if>
+        $("#txtElemName").attr("value","${actionBean.elementId}");
       </c:if>
     });
 } ) ( jQuery );
@@ -83,7 +97,7 @@ function openVocabularySearch(elementId) {
 
              <c:if test="${not empty actionBean.relatedVocabulary}">
                 <tr>
-                  <th scope="row" class="scope-row simple_attr_title" title="Vocabulary concept identifier or label ">
+                  <th scope="row" class="scope-row simple_attr_title">
                       <label for="selectedVocabulary"><span style="white-space:nowrap;">Selected Vocabulary</span></label>
                   </th>
                   <td class="simple_attr_value" colspan="2">
@@ -91,13 +105,20 @@ function openVocabularySearch(elementId) {
                   </td>
                 </tr>
             </c:if>
-
+            <c:if test="${empty actionBean.relatedVocabulary}">
+                <tr>
+                  <th></th>
+                  <td class="simple_attr_value" colspan="2">
+                       [<a href="#" class="delLink" id="backToSearch">Back to search</a>]
+                  </td>
+                </tr>
+            </c:if>
             <tr>
-                <th scope="row" class="scope-row simple_attr_title" title="Vocabulary concept identifier or label ">
+                <th scope="row" class="scope-row simple_attr_title">
                     <label for="filterText"><span style="white-space:nowrap;">Vocabulary Concept</span></label>
                 </th>
                 <td class="simple_attr_value">
-                    <input class="smalltext" size="50" name="relatedConceptsFilter.text" id="filterText" placeholder="Search by concept identifier or label"/>
+                    <input class="smalltext" size="50" name="relatedConceptsFilter.text" id="filterText" placeholder="Search by concept identifier, label or definition"/>
                 </td>
             </tr>
             <tr>
@@ -111,9 +132,17 @@ function openVocabularySearch(elementId) {
     <div>
     <c:if test="${not empty actionBean.relatedVocabularyConcepts}">
         <display:table name="actionBean.relatedVocabularyConcepts.list" class="sortable" id="item" pagesize="20"
-            requestURI="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/searchConcepts">
+            requestURI="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/${actionBean.searchEventName}">
+            <c:if test="${empty actionBean.relatedVocabulary}">
+                <display:column title="Vocabulary Set" sortable="true" sortProperty="vocabularySetLabel">
+                    ${item.vocabularySetLabel}
+                </display:column>
+                <display:column title="Vocabulary" sortable="true" sortProperty="vocabularyLabel">
+                    ${item.vocabularyLabel}
+                </display:column>
+            </c:if>
             <display:column title="Concept" sortable="true" sortProperty="identifier">
-                    <stripes:link beanclass="${actionBean.class.name}" event="addRelatedConcept">
+                    <stripes:link beanclass="${actionBean.class.name}" event="addRelatedConcept" title="Select the concept">
                         <stripes:param name="conceptId" value="${item.id}" />
                         <c:if test="${not empty actionBean.elementId}">
                             <stripes:param name="elementId" value="${actionBean.elementId}" />
@@ -136,7 +165,7 @@ function openVocabularySearch(elementId) {
 </div>
 
 <!--  Search concepts div -->
-<div id="findVocabularyDiv" title="Step 1/2: Find vocabulary">
+<div id="findVocabularyDiv" title="Step 1/2: Find vocabulary or concept">
         <stripes:form method="post" beanclass="${actionBean.class.name}">
         <div>
           <stripes:hidden name="vocabularyFolder.folderName" />
@@ -144,7 +173,7 @@ function openVocabularySearch(elementId) {
           <stripes:hidden name="vocabularyFolder.workingCopy" />
           <stripes:hidden name="vocabularyConcept.identifier" />
           <stripes:hidden id="txtElemName" name="elementId" />
-          <stripes:hidden id="txtFolderId" name="folderId" />
+          <!--  stripes:text id="txtFolderId" name="folderId" / -->
 
         </div>
         <table class="datatable" style="width:100%">
@@ -153,19 +182,19 @@ function openVocabularySearch(elementId) {
                 <col style="width:30em;"/>
             </colgroup>
             <tr>
-                <th scope="row" class="scope-row simple_attr_title" title="Vocabulary identifier or label ">
-                    <label for="filterText"><span style="white-space:nowrap;">Vocabulary</span></label>
+                <th scope="row" class="scope-row simple_attr_title">
+                    <label for="vocFilterText"><span style="white-space:nowrap;">Vocabulary</span></label>
                 </th>
                 <td class="simple_attr_value">
                     <input class="smalltext" size="50" name="vocabularyFilter.text" id="vocFilterText"  placeholder="Search by vocabulary identifier or label"/>
                 </td>
             </tr>
             <tr>
-                <th scope="row" class="scope-row simple_attr_title" title="Vocabulary concept identifier or label ">
-                    <label for="filterText"><span style="white-space:nowrap;">Concept</span></label>
+                <th scope="row" class="scope-row simple_attr_title">
+                    <label for="conceptFilterText"><span style="white-space:nowrap;">Concept</span></label>
                 </th>
                 <td class="simple_attr_value">
-                    <input class="smalltext" size="50" name="vocabularyFilter.conceptText" id="conceptFilterText"  placeholder="Search by vocabulary concept identifier or label"/>
+                    <input class="smalltext" size="50" name="vocabularyFilter.conceptText" id="conceptFilterText"  placeholder="Search by concept identifier, label or definition"/>
                 </td>
             </tr>
             <tr>
@@ -186,7 +215,7 @@ function openVocabularySearch(elementId) {
                   ${item.folderName}
               </display:column>
               <display:column title="Vocabulary" sortable="true" sortProperty="identifier">
-                      <stripes:link beanclass="${actionBean.class.name}" event="searchConcepts">
+                      <stripes:link beanclass="${actionBean.class.name}" event="searchConcepts" title="Show concepts">
                              <c:if test="${not empty actionBean.elementId}">
                               <stripes:param name="elementId" value="${actionBean.elementId}" />
                           </c:if>

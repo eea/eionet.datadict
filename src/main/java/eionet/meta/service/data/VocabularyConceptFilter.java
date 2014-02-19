@@ -60,6 +60,16 @@ public class VocabularyConceptFilter extends PagedRequest {
     private String obsoleteDate;
 
     /**
+     * if true only exact match is searched in textual fields.
+     */
+    private boolean exactMatch = false;
+
+    /**
+     * search from vocabulary label or identifier.
+     */
+    private String vocabularyText;
+
+    /**
      * @return the vocabularyFolderId
      */
     public int getVocabularyFolderId() {
@@ -208,5 +218,22 @@ public class VocabularyConceptFilter extends PagedRequest {
     public void setObsoleteDate(String obsoleteDate) {
         this.obsoleteDate = obsoleteDate;
     }
+
+    public boolean isExactMatch() {
+        return exactMatch;
+    }
+
+    public String getVocabularyText() {
+        return vocabularyText;
+    }
+
+    public void setExactMatch(boolean exactMatch) {
+        this.exactMatch = exactMatch;
+    }
+
+    public void setVocabularyText(String vocabularyText) {
+        this.vocabularyText = vocabularyText;
+    }
+
 
 }
