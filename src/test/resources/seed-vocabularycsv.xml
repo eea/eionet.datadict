@@ -11,6 +11,7 @@
     <VOCABULARY VOCABULARY_ID="1" CONTINUITY_ID="123" IDENTIFIER="BWaterCat" LABEL="Bathing Water Category" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser"  FOLDER_ID="10"/>
     <VOCABULARY VOCABULARY_ID="2" CONTINUITY_ID="123" IDENTIFIER="BWClosed" LABEL="Bathing Water Closed status" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="10"/>
     <VOCABULARY VOCABULARY_ID="4" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="5"/>
+    <VOCABULARY VOCABULARY_ID="5" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" FOLDER_ID="5"/>
 
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="1" VOCABULARY_ID="1" IDENTIFIER="C" LABEL="Coastal Water" DEFINITION="Coastal water = surface water on the landward side of a line, every point of which is at a distance of one nautical mile on the seaward side from the nearest point of the baseline from which the breadth of territorial waters is measured, extending where appropriate up to the outer limit of transitional waters"/>
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="2" VOCABULARY_ID="1" IDENTIFIER="L" LABEL="Lake" DEFINITION="Lake = body of standing inland surface water" />
