@@ -122,6 +122,14 @@ function openVocabularySearch(elementId) {
                 </td>
             </tr>
             <tr>
+                <th scope="row" class="scope-row simple_attr_title">
+                    <label for="filterExactMatch"><span style="white-space:nowrap;">Exact Match</span></label>
+                </th>
+                <td class="simple_attr_value">
+                    <input type="checkbox" name="relatedConceptsFilter.exactMatch" id="filterExactMatch"/>
+                </td>
+            </tr>
+            <tr>
                 <td></td>
                 <td>
                     <stripes:submit name="searchConcepts" value="Search" class="mediumbuttonb"/>
@@ -156,7 +164,7 @@ function openVocabularySearch(elementId) {
                     </stripes:link>
             </display:column>
             <display:column title="Label" sortable="true" sortProperty="label">
-                ${item.label}
+                <span title="${item.definition}">${item.label}</span>
             </display:column>
         </display:table>
         </c:if>
@@ -197,6 +205,15 @@ function openVocabularySearch(elementId) {
                     <input class="smalltext" size="50" name="vocabularyFilter.conceptText" id="conceptFilterText"  placeholder="Search by concept identifier, label or definition"/>
                 </td>
             </tr>
+            <tr>
+                <th scope="row" class="scope-row simple_attr_title">
+                    <label for="vocFilterExactMatch"><span style="white-space:nowrap;">Exact Match</span></label>
+                </th>
+                <td class="simple_attr_value">
+                    <input type="checkbox" name="vocabularyFilter.exactMatch" id="vocFilterExactMatch"/>
+                </td>
+            </tr>
+
             <tr>
                 <td>
                 </td>

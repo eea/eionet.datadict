@@ -43,7 +43,7 @@ import eionet.util.Triple;
 
 /**
  * Vocabualary folder DAO.
- * 
+ *
  * @author Juhan Voolaid
  */
 @Repository
@@ -538,7 +538,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.dao.IVocabularyFolderDAO#forceNotationsToIdentifiers(int)
      */
     @Override
@@ -550,7 +550,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.dao.IVocabularyFolderDAO#getVocabularyFolderOfConcept(int)
      */
     @Override
@@ -642,9 +642,16 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         sql.append("left join VOCABULARY_SET f on f.ID=v.FOLDER_ID where 1=1 ");
 
         if (StringUtils.isNotEmpty(filter.getText())) {
-            params.put("text", "%" + filter.getText() + "%");
-            sql.append("AND (v.LABEL like :text ");
-            sql.append("or v.IDENTIFIER like :text) ");
+            if (filter.isExactMatch()) {
+                params.put("text", filter.getText());
+                sql.append("AND (v.LABEL = :text ");
+                sql.append("or v.IDENTIFIER = :text) ");
+
+            } else {
+                params.put("text", "%" + filter.getText() + "%");
+                sql.append("AND (v.LABEL like :text ");
+                sql.append("or v.IDENTIFIER like :text) ");
+            }
         }
 
         if (filter.isWorkingCopy() != null) {
@@ -659,9 +666,17 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
         // related concepts text:
         if (StringUtils.isNotEmpty(filter.getConceptText())) {
-            params.put("conceptText", "%" + filter.getConceptText() + "%");
-            sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ").append(
-                    " AND (vc.LABEL like :conceptText OR vc.IDENTIFIER like :conceptText) ) ");
+
+            if (filter.isExactMatch()) {
+                params.put("conceptText", filter.getConceptText());
+                sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ").append(
+                        " AND (vc.LABEL = :conceptText OR vc.IDENTIFIER = :conceptText OR vc.DEFINITION = :conceptText)) ");
+            } else {
+
+                params.put("conceptText", "%" + filter.getConceptText() + "%");
+                sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ").append(
+                        " AND (vc.LABEL like :conceptText OR vc.IDENTIFIER like :conceptText OR vc.DEFINITION like :conceptText) ) ");
+            }
         }
         sql.append(" ORDER BY v.IDENTIFIER");
 

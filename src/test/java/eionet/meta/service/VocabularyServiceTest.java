@@ -719,4 +719,20 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     }
 
+    @Test
+    public void testSearchVocabulariesExactMatch() throws Exception {
+        VocabularyFilter filter = new VocabularyFilter();
+        // search in identifier
+        filter.setText("est1");
+        filter.setExactMatch(true);
+        VocabularyResult result = vocabularyService.searchVocabularies(filter);
+
+        assertTrue(result.getTotalItems() == 0);
+
+        // full text search
+        filter.setExactMatch(false);
+        result = vocabularyService.searchVocabularies(filter);
+
+        assertTrue(result.getTotalItems() == 1);
+    }
 }

@@ -44,6 +44,9 @@ public class VocabularyFilter extends PagedRequest {
     /** vocabulary status. */
     private RegStatus status;
 
+    /** if false perform full text search otherwise exact match .*/
+    private boolean exactMatch = false;
+
     public String getText() {
         return text;
     }
@@ -74,6 +77,14 @@ public class VocabularyFilter extends PagedRequest {
 
     public RegStatus getStatus() {
         return status;
+    }
+
+    public boolean isExactMatch() {
+        return exactMatch;
+    }
+
+    public void setExactMatch(boolean exactMatch) {
+        this.exactMatch = exactMatch;
     }
 
 }
