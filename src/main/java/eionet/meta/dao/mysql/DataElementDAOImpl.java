@@ -538,7 +538,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         params.put("vocabularyConceptId", vocabularyConceptId);
 
         getNamedParameterJdbcTemplate().update(sql, params);
-
     }
 
     /**
