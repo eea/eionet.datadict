@@ -45,7 +45,7 @@ public class VocabularyConceptFilter extends PagedRequest {
     /** Label exact search value. */
     private String label;
 
-    /** If ture, the identifier sorting is numeric. */
+    /** If true, the identifier sorting is numeric. */
     private boolean numericIdentifierSorting;
 
     /** Concept id's that don't get returned. */
@@ -57,12 +57,19 @@ public class VocabularyConceptFilter extends PagedRequest {
     /** Obsolete status. */
     private ObsoleteStatus obsoleteStatus = ObsoleteStatus.VALID_ONLY;
 
+    /** Obsolete Date. */
     private String obsoleteDate;
 
     /**
      * if true only exact match is searched in textual fields.
      */
     private boolean exactMatch = false;
+
+    /**
+     * if true results are search where one or more fields contain the text as a separate word.
+     */
+    private boolean wordMatch = false;
+
 
     /**
      * search from vocabulary label or identifier.
@@ -235,5 +242,12 @@ public class VocabularyConceptFilter extends PagedRequest {
         this.vocabularyText = vocabularyText;
     }
 
+    public boolean isWordMatch() {
+        return wordMatch;
+    }
+
+    public void setWordMatch(boolean wordMatch) {
+        this.wordMatch = wordMatch;
+    }
 
 }

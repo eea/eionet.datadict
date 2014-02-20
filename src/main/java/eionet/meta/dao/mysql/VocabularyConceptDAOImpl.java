@@ -96,7 +96,15 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             sql.append("and c.VOCABULARY_ID=:vocabularyFolderId ");
         }
         if (StringUtils.isNotEmpty(filter.getText())) {
-            if (filter.isExactMatch()) {
+
+            if (filter.isWordMatch()) {
+                params.put("text", "[[:<:]]" + filter.getText() + "[[:>:]]");
+                sql.append("and (c.NOTATION REGEXP :text ");
+                sql.append("or c.LABEL REGEXP :text ");
+                sql.append("or c.DEFINITION REGEXP :text ");
+                sql.append("or c.IDENTIFIER REGEXP :text) ");
+            //word match overrides exactmatch as it contains also exact matches
+            } else if (filter.isExactMatch()) {
                 params.put("text", filter.getText());
                 sql.append("and (c.NOTATION = :text ");
                 sql.append("or c.LABEL = :text ");

@@ -408,12 +408,13 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             if (relatedConceptsFilter == null) {
                 relatedConceptsFilter = new VocabularyConceptFilter();
             }
-            // this is needed because of "limit " clause in the SQL. if this remains true, paging does not work in display:table
+
             // something is also entered into vocabulary field
-            //TODO make a general FreeTextSearhFilter?
+            //TODO make a general FreeTextSearhFilter instead of assigning properties like this
             relatedConceptsFilter.setVocabularyText(vocabularyFilter.getText());
             relatedConceptsFilter.setText(vocabularyFilter.getConceptText());
             relatedConceptsFilter.setExactMatch(vocabularyFilter.isExactMatch());
+            relatedConceptsFilter.setWordMatch(vocabularyFilter.isWordMatch());
 
             //Redirect to search concepts - sorting on table has to use the searchVocabularies
             searchEventName = "searchVocabularies";

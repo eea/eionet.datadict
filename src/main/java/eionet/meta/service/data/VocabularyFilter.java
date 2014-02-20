@@ -47,6 +47,11 @@ public class VocabularyFilter extends PagedRequest {
     /** if false perform full text search otherwise exact match .*/
     private boolean exactMatch = false;
 
+    /**
+     * if true results are search where one or more fields contain the text as a separate word.
+     */
+    private boolean wordMatch = false;
+
     public String getText() {
         return text;
     }
@@ -85,6 +90,14 @@ public class VocabularyFilter extends PagedRequest {
 
     public void setExactMatch(boolean exactMatch) {
         this.exactMatch = exactMatch;
+    }
+
+    public boolean isWordMatch() {
+        return wordMatch;
+    }
+
+    public void setWordMatch(boolean wordMatch) {
+        this.wordMatch = wordMatch;
     }
 
 }

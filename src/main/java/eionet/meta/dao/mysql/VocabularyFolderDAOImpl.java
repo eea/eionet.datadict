@@ -642,7 +642,12 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         sql.append("left join VOCABULARY_SET f on f.ID=v.FOLDER_ID where 1=1 ");
 
         if (StringUtils.isNotEmpty(filter.getText())) {
-            if (filter.isExactMatch()) {
+            if (filter.isWordMatch()) {
+                params.put("text", "[[:<:]]" + filter.getText() + "[[:>:]]");
+                sql.append("AND (v.LABEL REGEXP :text ");
+                sql.append("or v.IDENTIFIER REGEXP :text) ");
+
+            } else if (filter.isExactMatch()) {
                 params.put("text", filter.getText());
                 sql.append("AND (v.LABEL = :text ");
                 sql.append("or v.IDENTIFIER = :text) ");
@@ -667,7 +672,12 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         // related concepts text:
         if (StringUtils.isNotEmpty(filter.getConceptText())) {
 
-            if (filter.isExactMatch()) {
+            if (filter.isWordMatch()) {
+                params.put("text", "[[:<:]]" + filter.getConceptText() + "[[:>:]]");
+                sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ").append(
+                        " AND (vc.LABEL REGEXP :conceptText OR vc.IDENTIFIER REGEXP :conceptText OR vc.DEFINITION REGEXP :conceptText)) ");
+
+            } else if (filter.isExactMatch()) {
                 params.put("conceptText", filter.getConceptText());
                 sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ").append(
                         " AND (vc.LABEL = :conceptText OR vc.IDENTIFIER = :conceptText OR vc.DEFINITION = :conceptText)) ");

@@ -61,6 +61,35 @@
             }
         });
 
+       $("#filterText").change(function() {
+            if ($("#filterText").val().length == 1) {
+                alert ("Search Text is too short");
+                $("#filterText").attr("value", "");
+                $("#filterText").focus();
+            }
+        });
+
+       $("#vocFilterWordMatch").change(function() {
+        if (this.checked) {
+          $("#vocFilterExactMatch").attr("checked", true);
+          $("#vocFilterExactMatch").attr("disabled", true);
+        } else {
+          $("#vocFilterExactMatch").removeAttr("disabled");
+          $("#vocFilterExactMatch").attr("checked", false);
+        }
+       });
+
+        $("#filterWordMatch").change(function() {
+        if (this.checked) {
+          $("#filterExactMatch").attr("checked", true);
+          $("#filterExactMatch").attr("disabled", true);
+        } else {
+          $("#filterExactMatch").removeAttr("disabled");
+          $("#filterExactMatch").attr("checked", false);
+        }
+       });
+
+
       <c:if test="${not empty actionBean.editDivId}">
         openPopup("#${actionBean.editDivId}");
         $("#txtElemName").attr("value","${actionBean.elementId}");
@@ -126,7 +155,15 @@ function openVocabularySearch(elementId) {
                     <label for="filterExactMatch"><span style="white-space:nowrap;">Exact Match</span></label>
                 </th>
                 <td class="simple_attr_value">
-                    <input type="checkbox" name="relatedConceptsFilter.exactMatch" id="filterExactMatch"/>
+                    <stripes:checkbox name="relatedConceptsFilter.exactMatch" id="filterExactMatch" title="If checked only exact matches are searched"></stripes:checkbox>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row" class="scope-row simple_attr_title">
+                    <label for="filterWordMatch"><span style="white-space:nowrap;">Word Match</span></label>
+                </th>
+                <td class="simple_attr_value">
+                    <stripes:checkbox name="relatedConceptsFilter.wordMatch" id="filterWordMatch"  title="If checked only results containing the searchable text as a separate word are displayed"/>
                 </td>
             </tr>
             <tr>
@@ -210,7 +247,15 @@ function openVocabularySearch(elementId) {
                     <label for="vocFilterExactMatch"><span style="white-space:nowrap;">Exact Match</span></label>
                 </th>
                 <td class="simple_attr_value">
-                    <input type="checkbox" name="vocabularyFilter.exactMatch" id="vocFilterExactMatch"/>
+                    <stripes:checkbox name="vocabularyFilter.exactMatch" id="vocFilterExactMatch" title="If checked only exact matches are searched"/>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row" class="scope-row simple_attr_title">
+                    <label for="vocFilterWordMatch"><span style="white-space:nowrap;">Word Match</span></label>
+                </th>
+                <td class="simple_attr_value">
+                    <stripes:checkbox name="vocabularyFilter.wordMatch" id="vocFilterWordMatch" title="If checked only results containing the searchable text as a separate word are displayed"/>
                 </td>
             </tr>
 
