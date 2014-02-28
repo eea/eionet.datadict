@@ -26,6 +26,7 @@ The necessary versions are as follows:
 * Maven 2.0.4 or higher
 * Tomcat 5.5 or higher
 * GIT 1.8.4 or higher
+* MySql 5.0.77 or higher
 
 #### Download DD source code
 
