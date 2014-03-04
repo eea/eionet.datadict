@@ -22,8 +22,10 @@
 package eionet.web.action;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -109,6 +111,21 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     /** which event the sorting in the table has to submit. */
     private String searchEventName = "searchConcepts";
 
+    /** vocabulary set IDs to be excluded from search in CSV format. */
+    private String excludedVocSetIds = "";
+
+    /** */
+    // private String thisTimeExcludedVocSetIds = "";
+
+    /**
+     * vocabulary sets excluded manually from the search.
+     */
+    private List<String> excludedVocSetLabels;
+
+    /**
+     * distinct list of found vocabulary sets.
+     */
+    private List<Folder> vocabularySets;
 
     /**
      * View action.
@@ -308,11 +325,18 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      *             if search fails
      */
     public Resolution searchConcepts() throws ServiceException {
+
+        // TODO refactor
         setConceptIdentifier(vocabularyConcept.getIdentifier());
 
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
+        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
+        validateView();
+        initBeans();
+
+        // related concepts
         if (relatedConceptsFilter == null) {
             relatedConceptsFilter = new VocabularyConceptFilter();
         }
@@ -321,18 +345,35 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         // this is needed because of "limit " clause in the SQL. if this remains true, paging does not work in display:table
         relatedConceptsFilter.setUsePaging(false);
 
-        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
-        validateView();
-        initBeans();
-
-        // relatedConceptsFilter.setVocabularyFolderId(vocabularyFolderId);
+        // vocabulary is selected in step 1
         String vocabularyId = getContext().getRequestParameter("folderId");
-
         if (!StringUtils.isBlank(vocabularyId)) {
             int folderId = Integer.valueOf(vocabularyId);
             relatedConceptsFilter.setVocabularyFolderId(folderId);
         }
+
+        // add comma to begin and end
+        String excludeVocSetId = getContext().getRequestParameter("excludeVocSetId");
+        if (!StringUtils.isBlank(excludeVocSetId) && !StringUtils.contains(excludedVocSetIds, "," + excludeVocSetId + ",")) {
+            if (excludedVocSetIds == null) {
+                excludedVocSetIds = "";
+            }
+
+            excludedVocSetIds = excludedVocSetIds + excludeVocSetId + ",";
+
+            if (excludedVocSetLabels == null) {
+                excludedVocSetLabels = new ArrayList<String>();
+            }
+
+            excludedVocSetLabels.add(getVocSetLabel(Integer.valueOf(excludeVocSetId)));
+        }
+
+        if (StringUtils.isNotBlank(excludedVocSetIds)) {
+            relatedConceptsFilter.setExcludedVocabularySetIds(extractExcludedIds());
+        }
+
         relatedVocabularyConcepts = vocabularyService.searchVocabularyConcepts(relatedConceptsFilter);
+        vocabularySets = relatedVocabularyConcepts.getVocabularySets();
 
         elementId = getContext().getRequestParameter("elementId");
         editDivId = "addConceptDiv";
@@ -389,7 +430,6 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
     }
 
-
     /**
      * First dialog for searching vocabularies in the adding dialog. - If concept field is filled in the search form display
      * concepts, - if only vocabulary is searched show vocabularies.
@@ -402,7 +442,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         setConceptIdentifier(vocabularyConcept.getIdentifier());
 
         // determine if concept is searched if it is redirect to search vocabularies:
-        boolean conceptSearched = vocabularyFilter != null &&  !StringUtils.isBlank(vocabularyFilter.getConceptText());
+        boolean conceptSearched = vocabularyFilter != null && !StringUtils.isBlank(vocabularyFilter.getConceptText());
         // redirect to step 2 immediately if concept is entered in search dialogue
         if (conceptSearched) {
             if (relatedConceptsFilter == null) {
@@ -410,19 +450,19 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             }
 
             // something is also entered into vocabulary field
-            //TODO make a general FreeTextSearhFilter instead of assigning properties like this
+            // TODO make a general FreeTextSearhFilter instead of assigning properties like this
             relatedConceptsFilter.setVocabularyText(vocabularyFilter.getText());
             relatedConceptsFilter.setText(vocabularyFilter.getConceptText());
             relatedConceptsFilter.setExactMatch(vocabularyFilter.isExactMatch());
             relatedConceptsFilter.setWordMatch(vocabularyFilter.isWordMatch());
 
-            //Redirect to search concepts - sorting on table has to use the searchVocabularies
+            // Redirect to search concepts - sorting on table has to use the searchVocabularies
             searchEventName = "searchVocabularies";
             return searchConcepts();
 
         }
 
-        //concept text is not entered, search vocabularies:
+        // concept text is not entered, search vocabularies:
         elementId = getContext().getRequestParameter("elementId");
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
@@ -685,5 +725,62 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     public String getSearchEventName() {
         return searchEventName;
+    }
+
+    public String getExcludedVocSetIds() {
+        return excludedVocSetIds == null ? "" : excludedVocSetIds;
+    }
+
+    public void setExcludedVocSetIds(String excludedVocSetIds) {
+        this.excludedVocSetIds = excludedVocSetIds;
+    }
+
+    public List<Folder> getVocabularySets() {
+        return vocabularySets;
+    }
+
+    /**
+     * helper method to convert CSV to List
+     *
+     * @return list of excluded voc set ids
+     */
+    private List<Integer> extractExcludedIds() {
+        List<Integer> vocSetIds = new ArrayList<Integer>();
+        StringTokenizer tokens = new StringTokenizer(excludedVocSetIds, ",");
+        while (tokens.hasMoreElements()) {
+            String token = tokens.nextToken();
+            if (!StringUtils.isBlank(token)) {
+                vocSetIds.add(Integer.valueOf(token));
+            }
+
+        }
+        return vocSetIds;
+    }
+
+    public List<String> getExcludedVocSetLabels() {
+        return excludedVocSetLabels;
+    }
+
+    public void setExcludedVocSetLabels(List<String> excludedVocSetLabels) {
+        this.excludedVocSetLabels = excludedVocSetLabels;
+    }
+
+    /**
+     * finds a set in the list and returns label.
+     *
+     * @param id
+     *            voc set id
+     * @return vocabulary set label
+     */
+    private String getVocSetLabel(int id) {
+        if (vocabularySets != null) {
+            for (Folder f : vocabularySets) {
+                if (f.getId() == id) {
+                    return f.getLabel();
+                }
+            }
+        }
+
+        return null;
     }
 }

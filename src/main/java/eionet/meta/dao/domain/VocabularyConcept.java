@@ -50,6 +50,9 @@ public class VocabularyConcept {
     /** vocabulary Label. */
     private String vocabularyLabel;
 
+    /** vocabulary Set id. */
+    private int vocabularySetId;
+
     /** vocabulary Set label. */
     private String vocabularySetLabel;
 
@@ -200,6 +203,14 @@ public class VocabularyConcept {
 
     public void setVocabularySetLabel(String vocabularySetLabel) {
         this.vocabularySetLabel = vocabularySetLabel;
+    }
+
+    public int getVocabularySetId() {
+        return vocabularySetId;
+    }
+
+    public void setVocabularySetId(int vocabularySetId) {
+        this.vocabularySetId = vocabularySetId;
     }
 
 }

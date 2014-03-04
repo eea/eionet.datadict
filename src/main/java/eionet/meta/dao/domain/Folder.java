@@ -24,7 +24,7 @@ package eionet.meta.dao.domain;
 import java.util.List;
 
 /**
- * Folder.
+ * Vocabulary Set.
  *
  * @author Juhan Voolaid
  */
@@ -46,9 +46,9 @@ public class Folder {
     private List<? extends Object> items;
 
     /**
-     * Returns "identifier (label)".
+     * Returns textual label of vocabulary set.
      *
-     * @return
+     * @return "identifier (label)"
      */
     public String getIdentifierLabel() {
         return identifier + " (" + label + ")";

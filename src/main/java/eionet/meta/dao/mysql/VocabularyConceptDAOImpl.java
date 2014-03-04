@@ -89,7 +89,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         StringBuilder sql = new StringBuilder();
         sql.append("select SQL_CALC_FOUND_ROWS c.VOCABULARY_CONCEPT_ID, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, c.DEFINITION, c.NOTATION, ")
-           .append("c.CREATION_DATE, c.OBSOLETE_DATE, v.LABEL AS VOCABULARY_LABEL, v.IDENTIFIER as VOCABULARY_IDENTIFIER, s.LABEL as VOCSET_LABEL ");
+           .append("c.CREATION_DATE, c.OBSOLETE_DATE, v.LABEL AS VOCABULARY_LABEL, v.IDENTIFIER as VOCABULARY_IDENTIFIER, ")
+           .append("s.ID AS VOCSET_ID, s.LABEL as VOCSET_LABEL ");
         sql.append("from VOCABULARY_CONCEPT c, VOCABULARY v, VOCABULARY_SET s where v.VOCABULARY_ID = c.VOCABULARY_ID AND v.FOLDER_ID = s.ID ");
         if (filter.getVocabularyFolderId() > 0) {
             params.put("vocabularyFolderId", filter.getVocabularyFolderId());
@@ -157,6 +158,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             }
         }
 
+        if (filter.getExcludedVocabularySetIds() != null && filter.getExcludedVocabularySetIds().size() > 0) {
+            params.put("excludedVocSetIds",  filter.getExcludedVocabularySetIds());
+            sql.append("AND s.ID NOT IN (:excludedVocSetIds) ");
+        }
 
         if (filter.isNumericIdentifierSorting()) {
             sql.append("order by c.IDENTIFIER + 0 ");
@@ -183,6 +188,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
                         vc.setVocabularyLabel(rs.getString("VOCABULARY_LABEL"));
                         vc.setVocabularySetLabel(rs.getString("VOCSET_LABEL"));
+                        vc.setVocabularySetId(rs.getInt("VOCSET_ID"));
                         return vc;
                     }
                 });

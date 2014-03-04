@@ -1,5 +1,5 @@
 <%@ include file="/pages/common/taglibs.jsp"%>
-
+<c:url var="delIcon" value="/images/button_remove.gif" />
 <script type="text/javascript">
 <!--
 ( function($) {
@@ -69,26 +69,6 @@
             }
         });
 
-       $("#vocFilterWordMatch").change(function() {
-        if (this.checked) {
-          $("#vocFilterExactMatch").attr("checked", true);
-          $("#vocFilterExactMatch").attr("disabled", true);
-        } else {
-          $("#vocFilterExactMatch").removeAttr("disabled");
-          $("#vocFilterExactMatch").attr("checked", false);
-        }
-       });
-
-        $("#filterWordMatch").change(function() {
-        if (this.checked) {
-          $("#filterExactMatch").attr("checked", true);
-          $("#filterExactMatch").attr("disabled", true);
-        } else {
-          $("#filterExactMatch").removeAttr("disabled");
-          $("#filterExactMatch").attr("checked", false);
-        }
-       });
-
 
       <c:if test="${not empty actionBean.editDivId}">
         openPopup("#${actionBean.editDivId}");
@@ -103,19 +83,29 @@ function openVocabularySearch(elementId) {
     document.getElementById('txtElemName').value=elementId;
     openPopup("#findVocabularyDiv");
 };
+
+function doExcludeVocSet(vocSetId) {
+  var strFrmAction = "/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/searchConcepts";
+  document.getElementById('txtExcludeVocSetId').value = vocSetId;
+
+  document.getElementById('frmSearchConcept').action = strFrmAction;
+  //alert(strFrmAction);
+  document.getElementById('frmSearchConcept').submit();
+};
 </script>
 
 
 <!--  Search concepts div -->
 <div id="addConceptDiv" title="Step 2/2: Find concept">
-        <stripes:form method="post" beanclass="${actionBean.class.name}">
+        <stripes:form method="post" beanclass="${actionBean.class.name}" id="frmSearchConcept">
         <div>
-        <stripes:hidden name="vocabularyConcept.identifier" />
-        <stripes:hidden name="vocabularyFolder.folderName" />
-        <stripes:hidden name="vocabularyFolder.identifier" />
-        <stripes:hidden name="vocabularyFolder.workingCopy" />
-        <stripes:hidden name="elementId" />
-        <stripes:hidden name="folderId" />
+          <stripes:hidden name="vocabularyConcept.identifier" />
+          <stripes:hidden name="vocabularyFolder.folderName" />
+          <stripes:hidden name="vocabularyFolder.identifier" />
+          <stripes:hidden name="vocabularyFolder.workingCopy" />
+          <stripes:hidden name="elementId" />
+          <stripes:hidden name="folderId" />
+
 
         </div>
         <table class="datatable" style="width:100%">
@@ -141,29 +131,60 @@ function openVocabularySearch(elementId) {
                        [<a href="#" class="delLink" id="backToSearch">Back to search</a>]
                   </td>
                 </tr>
+
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Found Vocabulary Sets
+                    </th>
+                    <td class="simple_attr_value" colspan="2">
+                        <c:forEach var="vocabularySet" items="${actionBean.vocabularySets}">
+                            <stripes:link beanclass="${actionBean.class.name}" event="searchConcepts" title="Exclude the vocabulary set from search">
+                              <c:if test="${not empty actionBean.elementId}">
+                                <stripes:param name="elementId" value="${actionBean.elementId}" />
+                              </c:if>
+                              <stripes:param name="vocabularyFolder.identifier"  value="${actionBean.vocabularyFolder.identifier}"/>
+                              <stripes:param name="vocabularyFolder.folderName"  value="${actionBean.vocabularyFolder.folderName}"/>
+                              <stripes:param name="vocabularyConcept.identifier"  value="${actionBean.vocabularyConcept.identifier}"/>
+                              <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                              <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+
+                              <stripes:param name="excludeVocSetId" value="${vocabularySet.id}" />
+                              <stripes:param name="excludedVocSetIds" value="${actionBean.excludedVocSetIds}" />
+
+                              <stripes:param name="relatedConceptsFilter.text" value="${actionBean.relatedConceptsFilter.text}" />
+
+                              <img style='border:0' src='${delIcon}'/>
+                            </stripes:link>
+                            <c:out value="${vocabularySet.label}"/>
+                        <br/>
+
+                        </c:forEach>
+                    </td>
+                </tr>
+
+
+                <c:if test="${not empty actionBean.excludedVocSetLabels}">
+                    <tr>
+                      <th scope="row" class="scope-row simple_attr_title">
+                          Excluded Vocabulary Sets
+                      </th>
+                      <td class="simple_attr_value" colspan="2">
+                        <c:forEach var="item" items="${actionBean.excludedVocSetLabels}">
+                            <c:out value="{item.label}"/>
+                        </c:forEach>
+                      </td>
+                    </tr>
+                </c:if>
+
+
+
             </c:if>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title">
                     <label for="filterText"><span style="white-space:nowrap;">Vocabulary Concept</span></label>
                 </th>
                 <td class="simple_attr_value">
-                    <input class="smalltext" size="50" name="relatedConceptsFilter.text" id="filterText" placeholder="Search by concept identifier, label or definition"/>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row" class="scope-row simple_attr_title">
-                    <label for="filterExactMatch"><span style="white-space:nowrap;">Exact Match</span></label>
-                </th>
-                <td class="simple_attr_value">
-                    <stripes:checkbox name="relatedConceptsFilter.exactMatch" id="filterExactMatch" title="If checked only exact matches are searched"></stripes:checkbox>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row" class="scope-row simple_attr_title">
-                    <label for="filterWordMatch"><span style="white-space:nowrap;">Word Match</span></label>
-                </th>
-                <td class="simple_attr_value">
-                    <stripes:checkbox name="relatedConceptsFilter.wordMatch" id="filterWordMatch"  title="If checked only results containing the searchable text as a separate word are displayed"/>
+                    <input class="smalltext" size="50" name="relatedConceptsFilter.text" id="filterText" value="${actionBean.relatedConceptsFilter.text}" placeholder="Search by concept identifier, label or definition"/>
                 </td>
             </tr>
             <tr>
@@ -209,7 +230,7 @@ function openVocabularySearch(elementId) {
     </stripes:form>
 </div>
 
-<!--  Search concepts div -->
+<!--  Search vocabularies div -->
 <div id="findVocabularyDiv" title="Step 1/2: Find vocabulary or concept">
         <stripes:form method="post" beanclass="${actionBean.class.name}">
         <div>
@@ -242,23 +263,6 @@ function openVocabularySearch(elementId) {
                     <input class="smalltext" size="50" name="vocabularyFilter.conceptText" id="conceptFilterText"  placeholder="Search by concept identifier, label or definition"/>
                 </td>
             </tr>
-            <tr>
-                <th scope="row" class="scope-row simple_attr_title">
-                    <label for="vocFilterExactMatch"><span style="white-space:nowrap;">Exact Match</span></label>
-                </th>
-                <td class="simple_attr_value">
-                    <stripes:checkbox name="vocabularyFilter.exactMatch" id="vocFilterExactMatch" title="If checked only exact matches are searched"/>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row" class="scope-row simple_attr_title">
-                    <label for="vocFilterWordMatch"><span style="white-space:nowrap;">Word Match</span></label>
-                </th>
-                <td class="simple_attr_value">
-                    <stripes:checkbox name="vocabularyFilter.wordMatch" id="vocFilterWordMatch" title="If checked only results containing the searchable text as a separate word are displayed"/>
-                </td>
-            </tr>
-
             <tr>
                 <td>
                 </td>

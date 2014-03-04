@@ -21,9 +21,14 @@
 
 package eionet.meta.service.data;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularySetSearchItem;
 
 /**
  * Vocabulary concept search result.
@@ -31,6 +36,11 @@ import eionet.meta.dao.domain.VocabularyConcept;
  * @author Juhan Voolaid
  */
 public class VocabularyConceptResult extends PagedResult<VocabularyConcept> {
+
+    /** distinct list of vocabulary sets. */
+    private List<Folder> vocabularySets;
+
+    private static VocabularySetComparator comparator = new VocabularySetComparator();
 
     /**
      * Class constructor.
@@ -47,6 +57,36 @@ public class VocabularyConceptResult extends PagedResult<VocabularyConcept> {
      */
     public VocabularyConceptResult(List<VocabularyConcept> items, int totalItems, PagedRequest pagedRequest) {
         super(items, totalItems, pagedRequest);
+
+        vocabularySets = new ArrayList<Folder>();
+        for (VocabularyConcept concept : items) {
+            Folder vocSet = new VocabularySetSearchItem();
+            vocSet.setId(concept.getVocabularySetId());
+            vocSet.setLabel(concept.getVocabularySetLabel());
+
+            //FIXME - contains is wrong
+            if (!vocabularySets.contains(vocSet)) {
+                vocabularySets.add(vocSet);
+            }
+        }
+        Collections.sort(vocabularySets, comparator);
+
     }
 
+    public List<Folder> getVocabularySets() {
+        return vocabularySets;
+    }
+
+
+    /**
+     * helper class for sorting vocabulary sets.
+     */
+    public static class VocabularySetComparator implements Comparator<Folder> {
+
+        @Override
+        public int compare(Folder f1, Folder f2) {
+            return f1.getLabel().compareTo(f2.getLabel());
+        }
+
+    }
 }

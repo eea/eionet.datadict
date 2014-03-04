@@ -76,6 +76,10 @@ public class VocabularyConceptFilter extends PagedRequest {
      */
     private String vocabularyText;
 
+
+    /** vocabulary sets to not search from. */
+    private List<Integer> excludedVocabularySetIds;
+
     /**
      * @return the vocabularyFolderId
      */
@@ -248,6 +252,14 @@ public class VocabularyConceptFilter extends PagedRequest {
 
     public void setWordMatch(boolean wordMatch) {
         this.wordMatch = wordMatch;
+    }
+
+    public void setExcludedVocabularySetIds(List<Integer> excludedVocabularySetIds) {
+        this.excludedVocabularySetIds = excludedVocabularySetIds;
+    }
+
+    public List<Integer> getExcludedVocabularySetIds() {
+        return excludedVocabularySetIds;
     }
 
 }
