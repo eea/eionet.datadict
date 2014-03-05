@@ -25,7 +25,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -111,11 +110,11 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     /** which event the sorting in the table has to submit. */
     private String searchEventName = "searchConcepts";
 
-    /** vocabulary set IDs to be excluded from search in CSV format. */
-    private String excludedVocSetIds = "";
+    /** vocabulary set IDs to be excluded from search. */
+    private List<Integer> excludedVocSetIds;
 
     /**
-     * vocabulary sets excluded manually from the search.
+     * vocabulary set labels excluded manually from the search.
      */
     private List<String> excludedVocSetLabels;
 
@@ -353,14 +352,12 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         String excludeVocSetLabel = getContext().getRequestParameter("excludeVocSetLabel");
 
         if (!StringUtils.isBlank(excludeVocSetId)) {
-
-            // format: pipe separated voc set IDs
-            excludedVocSetIds = excludedVocSetIds + excludeVocSetId + "|";
+            excludedVocSetIds.add(Integer.valueOf(excludeVocSetId));
             excludedVocSetLabels.add(excludeVocSetLabel);
         }
 
-        if (StringUtils.isNotBlank(excludedVocSetIds)) {
-            relatedConceptsFilter.setExcludedVocabularySetIds(extractExcludedIds());
+        if (excludedVocSetIds.size() > 0) {
+            relatedConceptsFilter.setExcludedVocabularySetIds(excludedVocSetIds);
         }
 
         relatedVocabularyConcepts = vocabularyService.searchVocabularyConcepts(relatedConceptsFilter);
@@ -714,34 +711,17 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         return searchEventName;
     }
 
-    public String getExcludedVocSetIds() {
-        return excludedVocSetIds == null ? "" : excludedVocSetIds;
+    public List<Integer> getExcludedVocSetIds() {
+        //return excludedVocSetIds == null ? "" : excludedVocSetIds;
+        return excludedVocSetIds;
     }
 
-    public void setExcludedVocSetIds(String excludedVocSetIds) {
+    public void setExcludedVocSetIds(List<Integer> excludedVocSetIds) {
         this.excludedVocSetIds = excludedVocSetIds;
     }
 
     public List<Folder> getVocabularySets() {
         return vocabularySets;
-    }
-
-    /**
-     * helper method to convert CSV to List
-     *
-     * @return list of excluded voc set ids
-     */
-    private List<Integer> extractExcludedIds() {
-        List<Integer> vocSetIds = new ArrayList<Integer>();
-        StringTokenizer tokens = new StringTokenizer(excludedVocSetIds, "|");
-        while (tokens.hasMoreElements()) {
-            String token = tokens.nextToken();
-            if (!StringUtils.isBlank(token)) {
-                vocSetIds.add(Integer.valueOf(token));
-            }
-
-        }
-        return vocSetIds;
     }
 
     public List<String> getExcludedVocSetLabels() {
@@ -753,26 +733,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     }
 
     /**
-     * finds a set in the list and returns label.
-     *
-     * @param id
-     *            voc set id
-     * @return vocabulary set label
-     */
-    private String getVocSetLabel(int id) {
-        if (vocabularySets != null) {
-            for (Folder f : vocabularySets) {
-                if (f.getId() == id) {
-                    return f.getLabel();
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * inits filters and other helper variables.
+     * initializes filters and other helper variables.
      */
     private void initSeachFilters() {
         // related concepts
@@ -781,7 +742,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         }
 
         if (excludedVocSetIds == null) {
-            excludedVocSetIds = "";
+            excludedVocSetIds = new ArrayList<Integer>();
         }
 
         if (excludedVocSetLabels == null) {

@@ -130,6 +130,7 @@ function openVocabularySearch(elementId) {
                     </th>
                     <td class="simple_attr_value" colspan="2">
                         <c:forEach var="vocabularySet" items="${actionBean.relatedVocabularyConcepts.vocabularySets}">
+                            <c:out value="${vocabularySet.label} "/>
                             <stripes:link beanclass="${actionBean.class.name}" event="searchConcepts" title="Exclude the vocabulary set from search">
                               <c:if test="${not empty actionBean.elementId}">
                                 <stripes:param name="elementId" value="${actionBean.elementId}" />
@@ -150,8 +151,7 @@ function openVocabularySearch(elementId) {
 
                               <img style='border:0' src='${delIcon}'/>
                             </stripes:link>
-                            <c:out value="${vocabularySet.label}"/>
-                        <br/>
+                            <br/>
 
                         </c:forEach>
                     </td>
@@ -168,14 +168,11 @@ function openVocabularySearch(elementId) {
                             <c:out value="${item}"/>
                         </c:forEach>
                         <div class="advice-msg" style="margin-top:1em;font-size:0.7em">
-                            Clicking Search will reset excluded vocabulary sets
+                            Searching again will reset excluded vocabulary sets
                         </div>
                       </td>
                     </tr>
                 </c:if>
-
-
-
             </c:if>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title">
