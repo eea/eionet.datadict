@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.tee.uit.security.AccessControlListIF;
 import com.tee.uit.security.AccessController;
@@ -50,7 +51,7 @@ import eionet.meta.filters.CASFilterConfig;
  *
  * @author Jaanus Heinlaid
  */
-public class SecurityUtil {
+public final class SecurityUtil {
 
     /** */
     public static final String REMOTEUSER = "eionet.util.SecurityUtil.user";
@@ -58,6 +59,18 @@ public class SecurityUtil {
     /** */
     private static String casLoginUrl;
     private static String casServerName;
+
+
+    /** logger. */
+    private static final Logger LOGGER = Logger.getLogger(SecurityUtil.class);
+
+    /**
+     *
+     * prevent util class initialization.
+     */
+    private SecurityUtil() {
+        throw new IllegalStateException("cannot initialize util class");
+    }
 
     /**
      * Returns current user, or null, if the current session does not have user attached to it.
@@ -107,13 +120,15 @@ public class SecurityUtil {
         return SecurityUtil.hasPerm(user == null ? null : user.getUserName(), aclPath, prm);
     }
 
+
     /**
-     *
-     * @param usr
-     * @param aclPath
-     * @param prm
-     * @return
-     * @throws Exception
+     * Checks if the user has permission for the ACl.
+     * NB If user has permission to the parent ACL no children ACL is checked!
+     * @param usr user name
+     * @param aclPath full acl path
+     * @param prm permission
+     * @return true if user has permission
+     * @throws Exception if check fails
      */
     public static boolean hasPerm(String usr, String aclPath, String prm) throws Exception {
         if (!aclPath.startsWith("/")) {

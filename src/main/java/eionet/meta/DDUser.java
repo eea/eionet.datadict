@@ -59,6 +59,12 @@ public class DDUser {
     public static final String ACL_UPDATE_PRM = "u";
     public static final String ACL_SERVICE_NAME = "/";
 
+
+    /**
+     * permission to view MS Access template.
+     */
+    public static final String MSACCESS_ADVANCED_PRM = "amsa";
+
     /** */
     protected boolean authented = false;
     protected String username = null;

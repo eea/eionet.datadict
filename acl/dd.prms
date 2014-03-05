@@ -11,4 +11,5 @@
         <permission id="xmli" description="Get XML Instance"/>
         <permission id="xfrm" description="Get XForm"/>
         <permission id="er" description="Edit released"/>
+        <permission id="amsa" description="Advanced MS Access template"/>
 </permissions>

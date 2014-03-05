@@ -239,6 +239,7 @@
         boolean imgVisual = false;
         boolean editPrm = false;
         boolean editReleasedPrm = false;
+        boolean advancedAccess = false;
         boolean canCheckout = false;
         boolean canNewVersion = false;
 
@@ -275,6 +276,7 @@
                 workingUser = dataset.getWorkingUser();
                 editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
                 editReleasedPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "er");
+                advancedAccess = SecurityUtil.hasPerm(user != null ? user.getUserName() : null, "/datasets/" + dataset.getIdentifier(), DDUser.MSACCESS_ADVANCED_PRM);
 
                 Vector v = null;
                 if (user == null) {
@@ -852,7 +854,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // MS Excel link
-                                                    if (dispAll || dispXLS) { 
+                                                    if (dispAll || dispXLS) {
                                                     %>
                                                         <tr>
                                                             <td>
@@ -898,7 +900,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // Advanced MS Access template generation link
-                                                    if (dispAll || editPrm) {
+                                                    if (dispAll || advancedAccess) {
                                                         %>
                                                         <tr>
                                                             <td>
