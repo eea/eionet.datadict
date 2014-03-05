@@ -119,11 +119,6 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     private List<String> excludedVocSetLabels;
 
     /**
-     * distinct list of found vocabulary sets.
-     */
-    private List<Folder> vocabularySets;
-
-    /**
      * View action.
      *
      * @return
@@ -361,7 +356,6 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         }
 
         relatedVocabularyConcepts = vocabularyService.searchVocabularyConcepts(relatedConceptsFilter);
-        vocabularySets = relatedVocabularyConcepts.getVocabularySets();
 
         elementId = getContext().getRequestParameter("elementId");
         editDivId = "addConceptDiv";
@@ -720,9 +714,6 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         this.excludedVocSetIds = excludedVocSetIds;
     }
 
-    public List<Folder> getVocabularySets() {
-        return vocabularySets;
-    }
 
     public List<String> getExcludedVocSetLabels() {
         return excludedVocSetLabels;
