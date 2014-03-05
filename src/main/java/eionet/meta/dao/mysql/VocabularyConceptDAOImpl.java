@@ -89,7 +89,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         StringBuilder sql = new StringBuilder();
         sql.append("select SQL_CALC_FOUND_ROWS VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ")
-           .append("CREATION_DATE, OBSOLETE_DATE ");
+                .append("CREATION_DATE, OBSOLETE_DATE ");
         sql.append("from VOCABULARY_CONCEPT where 1 = 1 ");
         if (filter.getVocabularyFolderId() > 0) {
             params.put("vocabularyFolderId", filter.getVocabularyFolderId());
@@ -101,6 +101,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             sql.append("or LABEL like :text ");
             sql.append("or DEFINITION like :text ");
             sql.append("or IDENTIFIER like :text) ");
+        }
+        if (StringUtils.isNotEmpty(filter.getIdentifier())) {
+            params.put("identifier", filter.getIdentifier());
+            sql.append("and IDENTIFIER = :identifier ");
         }
         if (StringUtils.isNotEmpty(filter.getDefinition())) {
             params.put("definition", filter.getDefinition());
@@ -169,7 +173,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     public void copyVocabularyConcepts(int oldVocabularyFolderId, int newVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ORIGINAL_CONCEPT_ID, ")
-              .append("OBSOLETE_DATE, CREATION_DATE) ");
+                .append("OBSOLETE_DATE, CREATION_DATE) ");
 
         sql.append("select :newVocabularyFolderId, IDENTIFIER, LABEL, DEFINITION, NOTATION, VOCABULARY_CONCEPT_ID, ")
                 .append("OBSOLETE_DATE, CREATION_DATE ");
@@ -213,7 +217,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         StringBuilder sql = new StringBuilder();
         sql.append("update VOCABULARY_CONCEPT set IDENTIFIER = :identifier, LABEL = :label, ")
-            .append("DEFINITION = :definition, NOTATION = :notation ");
+                .append("DEFINITION = :definition, NOTATION = :notation ");
 
         sql.append("where VOCABULARY_CONCEPT_ID = :vocabularyConceptId");
 
@@ -397,7 +401,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         StringBuilder sql = new StringBuilder();
         sql.append("select VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ")
-           .append("CREATION_DATE, OBSOLETE_DATE ");
+                .append("CREATION_DATE, OBSOLETE_DATE ");
         sql.append("from VOCABULARY_CONCEPT where VOCABULARY_ID=:vocabularyFolderId and IDENTIFIER=:identifier");
 
         VocabularyConcept result =
@@ -430,7 +434,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         StringBuilder sql = new StringBuilder();
         sql.append("select VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, ")
-           .append("OBSOLETE_DATE ");
+                .append("OBSOLETE_DATE ");
         sql.append("from VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID=:vocabularyConceptId");
 
         VocabularyConcept result =
@@ -463,7 +467,9 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("select DISTINCT cev.VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT_ELEMENT cev, VOCABULARY_CONCEPT c ");
 
         sql.append("where cev.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID ")
-            .append("AND c.ORIGINAL_CONCEPT_ID IS NOT NULL AND cev.DATAELEM_ID = :elementId AND c.VOCABULARY_ID = :vocabularyId");
+                .append("AND c.ORIGINAL_CONCEPT_ID IS NOT NULL ")
+                .append("AND cev.DATAELEM_ID = :elementId ")
+                .append("AND c.VOCABULARY_ID = :vocabularyId");
 
         final List<VocabularyConcept> result = new ArrayList<VocabularyConcept>();
 
@@ -515,7 +521,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 + "left join VOCABULARY_CONCEPT_ELEMENT v on v.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID "
                 + "LEFT JOIN DATAELEM d ON (v.DATAELEM_ID = d.DATAELEM_ID) "
                 + "LEFT JOIN VOCABULARY_CONCEPT rc on v.RELATED_CONCEPT_ID = rc.VOCABULARY_CONCEPT_ID "
-                + "LEFT JOIN VOCABULARY rcv ON rc.VOCABULARY_ID = rcv.VOCABULARY_ID LEFT JOIN VOCABULARY_SET rcvs ON (rcv.FOLDER_ID = rcvs.ID ) "
+                + "LEFT JOIN VOCABULARY rcv ON rc.VOCABULARY_ID = rcv.VOCABULARY_ID "
+                + "LEFT JOIN VOCABULARY_SET rcvs ON (rcv.FOLDER_ID = rcvs.ID ) "
                 + "left join (ATTRIBUTE a, M_ATTRIBUTE ma)  on (a.DATAELEM_ID = d.DATAELEM_ID "
                 + "and PARENT_TYPE = 'E' and a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME='Datatype') "
                 + "where c.VOCABULARY_ID = :vocabularyId AND c.OBSOLETE_DATE IS NULL "
@@ -586,7 +593,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                     }
 
                     oneElementValues.add(elem);
-                    }
+                }
                 previousConceptId = conceptId;
                 previousElemId = elemId;
             }

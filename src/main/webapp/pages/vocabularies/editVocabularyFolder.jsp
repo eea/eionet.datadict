@@ -41,6 +41,21 @@
                     return true;
                 });
 
+                $("#uploadRDFLink").click(function() {
+                    $('#uploadRDFDialog').dialog('open');
+                    return false;
+                });
+
+                $('#uploadRDFDialog').dialog({
+                    autoOpen: false,
+                    width: 500
+                });
+
+                $("#closeUploadRDFDialog").click(function() {
+                    $('#uploadRDFDialog').dialog("close");
+                    return true;
+                });
+
                 $(".folderChoice").click(function() {
                     handleFolderChoice();
                 });
@@ -133,6 +148,9 @@
           </li>
           <li>
               <a href="#" id="uploadCSVLink">Upload CSV</a>
+          </li>
+          <li>
+              <a href="#" id="uploadRDFLink">Upload RDF</a>
           </li>
         </c:if>
                 <li>
@@ -520,8 +538,7 @@
             </div>
         </c:forEach>
 
-	    <%-- The upload dialog. Hidden unless activated. --%>
-
+	    <%-- The upload CSV dialog. Hidden unless activated. --%>
 	    <div id="uploadCSVDialog" title="Upload CSV">
 	        <stripes:form beanclass="${actionBean.class.name}" method="post">
 	        	<stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
@@ -549,9 +566,31 @@
 				<div>
 					<stripes:checkbox id="purgeBoundedElements" name="purgeBoundedElements" disabled="true"/><label for="purgeBoundedElements" class="question">Purge Bounded Elements</label>
 				</div>
-	            <stripes:file name="uploadedCsvFile" id="fileToUpload" size="40" accept="text/csv" title="Select a .csv file to import"/>
+	            <stripes:file name="uploadedFileToImport" id="fileToUpload" size="40" accept="text/csv" title="Select a .csv file to import"/>
 	            <stripes:submit name="uploadCsv" value="Upload"/>
 	            <input type="button" id="closeUploadCSVDialog" value="Cancel"/>
+
+	        </stripes:form>
+	    </div>
+
+	    <%-- The upload RDF dialog. Hidden unless activated. --%>
+	    <div id="uploadRDFDialog" title="Upload RDF">
+	        <stripes:form beanclass="${actionBean.class.name}" method="post">
+	        	<stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                <div class="note-msg">
+				    <strong>Note</strong>
+				       <ul>
+				          <li>With this operation, contents of RDF file will be imported into vocabulary folder.</li>
+				          <li>Only a working copy can be updated with a RDF file upload.</li>
+				       </ul>
+				</div>
+
+	            <stripes:file name="uploadedFileToImport" id="fileToUpload" size="40"  title="Select a .rdf file to import"/>
+	            <stripes:submit name="uploadRdf" value="Upload"/>
+	            <input type="button" id="closeUploadRDFDialog" value="Cancel"/>
 
 	        </stripes:form>
 	    </div>

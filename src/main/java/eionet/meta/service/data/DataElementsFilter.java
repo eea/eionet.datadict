@@ -21,10 +21,10 @@
 
 package eionet.meta.service.data;
 
+import eionet.meta.dao.domain.Attribute;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import eionet.meta.dao.domain.Attribute;
 
 /**
  * Data elements search filter.
@@ -51,14 +51,18 @@ public class DataElementsFilter {
 
     private String elementType;
 
-    private boolean includeHistoricVersions;
+    private boolean includeHistoricVersions = false;
+
+    private boolean isExactIdentifierMatch = false;
 
     /**
      * indicates if only internal elements are searched.
      */
-    private boolean includeOnlyInternal;
+    private boolean includeOnlyInternal = false;
 
-    /** For searching user's working copy common elements. */
+    /**
+     * For searching user's working copy common elements.
+     */
     private String userName;
 
     private List<Attribute> attributes = new ArrayList<Attribute>();
@@ -89,8 +93,7 @@ public class DataElementsFilter {
     }
 
     /**
-     * @param regStatus
-     *            the regStatus to set
+     * @param regStatus the regStatus to set
      */
     public void setRegStatus(String regStatus) {
         this.regStatus = regStatus;
@@ -104,8 +107,7 @@ public class DataElementsFilter {
     }
 
     /**
-     * @param dataSet
-     *            the dataSet to set
+     * @param dataSet the dataSet to set
      */
     public void setDataSet(String dataSet) {
         this.dataSet = dataSet;
@@ -119,8 +121,7 @@ public class DataElementsFilter {
     }
 
     /**
-     * @param type
-     *            the type to set
+     * @param type the type to set
      */
     public void setType(String type) {
         this.type = type;
@@ -134,8 +135,7 @@ public class DataElementsFilter {
     }
 
     /**
-     * @param shortName
-     *            the shortName to set
+     * @param shortName the shortName to set
      */
     public void setShortName(String shortName) {
         this.shortName = shortName;
@@ -149,8 +149,7 @@ public class DataElementsFilter {
     }
 
     /**
-     * @param identifier
-     *            the identifier to set
+     * @param identifier the identifier to set
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -164,8 +163,7 @@ public class DataElementsFilter {
     }
 
     /**
-     * @param keyword
-     *            the keyword to set
+     * @param keyword the keyword to set
      */
     public void setKeyword(String keyword) {
         this.keyword = keyword;
@@ -179,8 +177,7 @@ public class DataElementsFilter {
     }
 
     /**
-     * @param attributes
-     *            the attributes to set
+     * @param attributes the attributes to set
      */
     public void setAttributes(List<Attribute> attributes) {
         this.attributes = attributes;
@@ -194,8 +191,7 @@ public class DataElementsFilter {
     }
 
     /**
-     * @param elementType
-     *            the elementType to set
+     * @param elementType the elementType to set
      */
     public void setElementType(String elementType) {
         this.elementType = elementType;
@@ -209,8 +205,7 @@ public class DataElementsFilter {
     }
 
     /**
-     * @param includeHistoricVersions
-     *            the includeHistoricVersions to set
+     * @param includeHistoricVersions the includeHistoricVersions to set
      */
     public void setIncludeHistoricVersions(boolean includeHistoricVersions) {
         this.includeHistoricVersions = includeHistoricVersions;
@@ -224,8 +219,7 @@ public class DataElementsFilter {
     }
 
     /**
-     * @param userName
-     *            the userName to set
+     * @param userName the userName to set
      */
     public void setUserName(String userName) {
         this.userName = userName;
@@ -239,5 +233,12 @@ public class DataElementsFilter {
         this.includeOnlyInternal = includeOnlyInternal;
     }
 
+    public boolean isExactIdentifierMatch() {
+        return isExactIdentifierMatch;
+    }
+
+    public void setExactIdentifierMatch(boolean isExactIdentifierMatch) {
+        this.isExactIdentifierMatch = isExactIdentifierMatch;
+    }
 
 }

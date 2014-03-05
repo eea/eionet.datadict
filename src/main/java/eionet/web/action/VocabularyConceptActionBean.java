@@ -21,21 +21,6 @@
 
 package eionet.web.action;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Collections;
-import java.util.List;
-
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-import net.sourceforge.stripes.validation.ValidationMethod;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.web.util.UriUtils;
-
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -51,64 +36,107 @@ import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
+import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
+import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.util.UriUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Vocabulary concept action bean.
- * 
+ *
  * @author Juhan Voolaid
  */
 @UrlBinding("/vocabularyconcept/{vocabularyFolder.folderName}/{vocabularyFolder.identifier}/{vocabularyConcept.identifier}/{$event}")
 public class VocabularyConceptActionBean extends AbstractActionBean {
 
-    /** JSP pages. */
+    /**
+     * JSP pages.
+     */
     private static final String VIEW_VOCABULARY_CONCEPT_JSP = "/pages/vocabularies/viewVocabularyConcept.jsp";
-    /** JSP page for edit screen. */
+    /**
+     * JSP page for edit screen.
+     */
     private static final String EDIT_VOCABULARY_CONCEPT_JSP = "/pages/vocabularies/editVocabularyConcept.jsp";
 
-    /** Vocabulary service. */
+    /**
+     * Vocabulary service.
+     */
     @SpringBean
     private IVocabularyService vocabularyService;
 
-    /** data service. */
+    /**
+     * data service.
+     */
     @SpringBean
     private IDataService dataService;
 
-    /** Vocabulary folder. */
+    /**
+     * Vocabulary folder.
+     */
     private VocabularyFolder vocabularyFolder;
 
-    /** Vocabulary concept to add/edit. */
+    /**
+     * Vocabulary concept to add/edit.
+     */
     private VocabularyConcept vocabularyConcept;
 
-    /** Other vocabulary concepts in the vocabulary folder. */
+    /**
+     * Other vocabulary concepts in the vocabulary folder.
+     */
     private List<VocabularyConcept> vocabularyConcepts;
 
-    /** private helper property for vocabulary concept identifier . */
+    /**
+     * private helper property for vocabulary concept identifier .
+     */
     private String conceptIdentifier;
 
-    /** To be used in linking related concepts. */
+    /**
+     * To be used in linking related concepts.
+     */
     private VocabularyConceptFilter relatedConceptsFilter;
 
-    /** search filter for vocabularies. */
+    /**
+     * search filter for vocabularies.
+     */
     private VocabularyFilter vocabularyFilter;
 
-    /** search filter for vocabularies that are browsed when adding a related concept. */
+    /**
+     * search filter for vocabularies that are browsed when adding a related concept.
+     */
     private VocabularyResult vocabularies;
 
-    /** Related Vocabulary concepts. */
+    /**
+     * Related Vocabulary concepts.
+     */
     private VocabularyConceptResult relatedVocabularyConcepts;
 
-    /** selected vocabulary for reference element. */
+    /**
+     * selected vocabulary for reference element.
+     */
     private VocabularyFolder relatedVocabulary;
 
-    /** Popup div id to keep open, when validation error occur. */
+    /**
+     * Popup div id to keep open, when validation error occur.
+     */
     private String editDivId;
 
-    /** Element Id that is currently active when manipulating with popups. */
+    /**
+     * Element Id that is currently active when manipulating with popups.
+     */
     private String elementId;
 
     /**
      * View action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -148,7 +176,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * Display edit form action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -170,7 +198,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * Action for saving concept.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -195,7 +223,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * Marks vocabulary concept obsolete.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -215,7 +243,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * Removes the obsolete status from concept.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -235,7 +263,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * Validates save concept.
-     * 
+     *
      * @throws ServiceException
      */
     @ValidationMethod(on = {"saveConcept"})
@@ -298,10 +326,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * search concepts to be added as reference element.
-     * 
+     *
      * @return stripes resolution
-     * @throws ServiceException
-     *             if search fails
+     * @throws ServiceException if search fails
      */
     public Resolution searchConcepts() throws ServiceException {
         setConceptIdentifier(vocabularyConcept.getIdentifier());
@@ -339,10 +366,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * Adds internal reference concept chosen from popup to the ui.
-     * 
+     *
      * @return stripes resolution
-     * @throws ServiceException
-     *             if error appears
+     * @throws ServiceException if error appears
      */
     public Resolution addRelatedConcept() throws ServiceException {
         setConceptIdentifier(vocabularyConcept.getIdentifier());
@@ -384,10 +410,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * First dialog for searching vocabularies in the adding dialog.
-     * 
+     *
      * @return Resolution
-     * @throws ServiceException
-     *             if call fails
+     * @throws ServiceException if call fails
      */
     public Resolution searchVocabularies() throws ServiceException {
         setConceptIdentifier(vocabularyConcept.getIdentifier());
@@ -426,7 +451,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * Validates view action.
-     * 
+     *
      * @throws ServiceException
      */
     private void validateView() throws ServiceException {
@@ -444,7 +469,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * True, if logged in user is the working user of the vocabulary.
-     * 
+     *
      * @return
      */
     private boolean isUserWorkingCopy() {
@@ -462,7 +487,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * True, if user has update right.
-     * 
+     *
      * @return
      */
     private boolean isUpdateRight() {
@@ -474,7 +499,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * Returns concept URI.
-     * 
+     *
      * @return concept uri
      */
     public String getConceptUri() {
@@ -484,7 +509,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     /**
      * Returns the prefix of the URL for a link to a <em>HTML view</em> of the concept. This must match the @UrlBinding of this
      * class.
-     * 
+     *
      * @return the unescaped URL.
      */
     public String getConceptViewPrefix() {
@@ -493,16 +518,11 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * Returns concept URI prefix.
-     * 
+     *
      * @return
      */
     public String getUriPrefix() {
-        String baseUri = vocabularyFolder.getBaseUri();
-        if (StringUtils.isEmpty(baseUri)) {
-            baseUri =
-                    Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + vocabularyFolder.getFolderName() + "/"
-                            + vocabularyFolder.getIdentifier();
-        }
+        String baseUri = VocabularyFolder.getBaseUri(vocabularyFolder);
         if (!baseUri.endsWith("/")) {
             baseUri += "/";
         }
@@ -518,8 +538,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyFolder
-     *            the vocabularyFolder to set
+     * @param vocabularyFolder the vocabularyFolder to set
      */
     public void setVocabularyFolder(VocabularyFolder vocabularyFolder) {
         this.vocabularyFolder = vocabularyFolder;
@@ -533,8 +552,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcept
-     *            the vocabularyConcept to set
+     * @param vocabularyConcept the vocabularyConcept to set
      */
     public void setVocabularyConcept(VocabularyConcept vocabularyConcept) {
         this.vocabularyConcept = vocabularyConcept;
@@ -549,7 +567,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * Helper property for concept identifier to make it work properly with tricky charaters: '+' etc.
-     * 
+     *
      * @return vocabularyConcept.identifier
      */
     public String getConceptIdentifier() {
@@ -559,9 +577,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * Sets concept identifier.
-     * 
-     * @param identifier
-     *            vocabulary concept identifier
+     *
+     * @param identifier vocabulary concept identifier
      */
     public void setConceptIdentifier(String identifier) {
         conceptIdentifier = identifier;
@@ -609,9 +626,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * If validation fails metadata and related elements data has to be added to concept bound elements to make the UI look nice.
-     * 
-     * @throws ServiceException
-     *             if database query fails
+     *
+     * @throws ServiceException if database query fails
      */
     private void addElementMetadata() throws ServiceException {
         for (List<DataElement> elems : vocabularyConcept.getElementAttributes()) {
@@ -631,11 +647,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /**
      * gets referenced concept meta from database.
-     * 
-     * @param referenceElement
-     *            reference elem of type localref or reference
-     * @throws ServiceException
-     *             if error in querying
+     *
+     * @param referenceElement reference elem of type localref or reference
+     * @throws ServiceException if error in querying
      */
     private void setReferenceElementAttrs(DataElement referenceElement) throws ServiceException {
         int conceptId = referenceElement.getRelatedConceptId();

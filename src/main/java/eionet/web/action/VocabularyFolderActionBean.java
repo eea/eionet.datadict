@@ -21,32 +21,6 @@
 
 package eionet.web.action;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ErrorResolution;
-import net.sourceforge.stripes.action.FileBean;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-import net.sourceforge.stripes.validation.ValidationMethod;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.StringUtils;
-
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
@@ -56,6 +30,7 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.ICSVVocabularyImportService;
 import eionet.meta.service.IDataService;
+import eionet.meta.service.IRDFVocabularyImportService;
 import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
@@ -71,6 +46,29 @@ import eionet.util.SecurityUtil;
 import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
+import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ErrorResolution;
+import net.sourceforge.stripes.action.FileBean;
+import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
+import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.StreamingResolution;
+import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Edit vocabulary folder action bean.
@@ -80,20 +78,30 @@ import eionet.util.VocabularyCSVOutputHelper;
 @UrlBinding("/vocabulary/{vocabularyFolder.folderName}/{vocabularyFolder.identifier}/{$event}")
 public class VocabularyFolderActionBean extends AbstractActionBean {
 
-    /** JSP pages. */
+    /**
+     * JSP pages.
+     */
     private static final String ADD_VOCABULARY_FOLDER_JSP = "/pages/vocabularies/addVocabularyFolder.jsp";
     private static final String EDIT_VOCABULARY_FOLDER_JSP = "/pages/vocabularies/editVocabularyFolder.jsp";
     private static final String VIEW_VOCABULARY_FOLDER_JSP = "/pages/vocabularies/viewVocabularyFolder.jsp";
 
-    /** Popup div's id prefix on jsp page. */
+    /**
+     * Popup div's id prefix on jsp page.
+     */
     private static final String EDIT_DIV_ID_PREFIX = "editConceptDiv";
-    /** Pop div's id for new concept form. */
+    /**
+     * Pop div's id for new concept form.
+     */
     private static final String NEW_CONCEPT_DIV_ID = "addNewConceptDiv";
 
-    /** Reserved event names, that cannot be vocabulary concept identifiers. */
+    /**
+     * Reserved event names, that cannot be vocabulary concept identifiers.
+     */
     public static List<String> RESERVED_VOCABULARY_EVENTS;
 
-    /** Folder choice values. */
+    /**
+     * Folder choice values.
+     */
     private static final String FOLDER_CHOICE_EXISTING = "existing";
     private static final String FOLDER_CHOICE_NEW = "new";
 
@@ -115,88 +123,155 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         RESERVED_VOCABULARY_EVENTS.add("rdf");
         RESERVED_VOCABULARY_EVENTS.add("csv");
         RESERVED_VOCABULARY_EVENTS.add("uploadCsv");
+        RESERVED_VOCABULARY_EVENTS.add("uploadRdf");
     }
 
+    /**
+     * Extension for CSV files.
+     */
     private static final String CSV_FILE_EXTENSION = ".csv";
+    /**
+     * text/plain CSV content type.
+     */
     private static final String CSV_FILE_CONTENT_TYPE_PLAIN = "text/plain";
+    /**
+     * text/csv CSV content type;
+     */
     private static final String CSV_FILE_CONTENT_TYPE_CSV = "text/csv";
-
     /**
      * on Win64 CSV files have got this content type.
      */
     private static final String CSV_FILE_CONTENT_TYPE_XLS = "application/vnd.ms-excel";
+    /**
+     * Extension for RDF files.
+     */
+    private static final String RDF_FILE_EXTENSION = ".rdf";
 
-    /** Vocabulary service. */
+
+
+    /**
+     * Vocabulary service.
+     */
     @SpringBean
     private IVocabularyService vocabularyService;
 
-    /** Site code service. */
+    /**
+     * Site code service.
+     */
     @SpringBean
     private ISiteCodeService siteCodeService;
 
-    /** Data elements service. */
+    /**
+     * Data elements service.
+     */
     @SpringBean
     private IDataService dataService;
 
-    /** Vocabulary folder. */
+    /**
+     * Vocabulary folder.
+     */
     private VocabularyFolder vocabularyFolder;
 
-    /** CSV Import Service */
+    /**
+     * CSV Import Service.
+     */
     @SpringBean
     private ICSVVocabularyImportService vocabularyCsvImportService;
 
-    /** Other versions of the same vocabulary folder. */
+    /**
+     * RDF Import Service.
+     */
+    @SpringBean
+    private IRDFVocabularyImportService vocabularyRdfImportService;
+
+    /**
+     * Other versions of the same vocabulary folder.
+     */
     private List<VocabularyFolder> vocabularyFolderVersions;
 
-    /** Vocabulary concepts. */
+    /**
+     * Vocabulary concepts.
+     */
     private VocabularyConceptResult vocabularyConcepts;
 
-    /** Vocabulary concept to add/edit. */
+    /**
+     * Vocabulary concept to add/edit.
+     */
     private VocabularyConcept vocabularyConcept;
 
-    /** Selected vocabulary concept ids. */
+    /**
+     * Selected vocabulary concept ids.
+     */
     private List<Integer> conceptIds;
 
-    /** Vocabulary folder id, from which the copy is made of. */
+    /**
+     * Vocabulary folder id, from which the copy is made of.
+     */
     private int copyId;
 
-    /** Popup div id to keep open, when validation error occur. */
+    /**
+     * Popup div id to keep open, when validation error occur.
+     */
     private String editDivId;
 
-    /** Vocabulary concept filter. */
+    /**
+     * Vocabulary concept filter.
+     */
     private VocabularyConceptFilter filter;
 
-    /** Concepts table page number. */
+    /**
+     * Concepts table page number.
+     */
     private int page = 1;
 
-    /** Folders. */
+    /**
+     * Folders.
+     */
     private List<Folder> folders;
 
-    /** New folder to be created. */
+    /**
+     * New folder to be created.
+     */
     private Folder folder;
 
-    /** Checkbox value for folder, when creating vocabulary folder. */
+    /**
+     * Checkbox value for folder, when creating vocabulary folder.
+     */
     private String folderChoice;
 
-    /** Data elements search filter. */
+    /**
+     * Data elements search filter.
+     */
     private DataElementsFilter elementsFilter;
 
-    /** Data elements search result object. */
+    /**
+     * Data elements search result object.
+     */
     private DataElementsResult elementsResult;
 
-    /** Bound data elements. */
+    /**
+     * Bound data elements.
+     */
     private List<DataElement> bindedElements;
 
-    /** Data element id. */
+    /**
+     * Data element id.
+     */
     private int elementId;
 
-    /** uploaded csv file to import into vocabulary */
-    private FileBean uploadedCsvFile;
+    /**
+     * Uploaded csv/rdf file to import into vocabulary.
+     */
+    private FileBean uploadedFileToImport;
 
-    /** before import, if user requested purging data */
+    /**
+     * Before import, if user requested purging data.
+     */
     private boolean purgeVocabularyData = false;
 
-    /** before import, if user requested purging bounded elements */
+    /**
+     * Before import, if user requested purging bounded elements.
+     */
     private boolean purgeBoundedElements = false;
 
     /**
@@ -270,8 +345,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Navigates to edit vocabulary folder form.
      *
      * @return Resolution
-     * @throws ServiceException
-     *             if error in queries
+     * @throws ServiceException if error in queries
      */
     public Resolution edit() throws ServiceException {
         vocabularyFolder =
@@ -601,8 +675,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * Validation on adding a binded data element.
      *
-     * @throws ServiceException
-     *             if checking fails
+     * @throws ServiceException if checking fails
      */
     @ValidationMethod(on = {"addDataElement"})
     public void validateAddDataElement() throws ServiceException {
@@ -629,8 +702,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * validates removing data elements. Elements which have values in any concepts cannot be removed.
      *
-     * @throws ServiceException
-     *             if checking fails
+     * @throws ServiceException if checking fails
      */
     @ValidationMethod(on = {"removeDataElement"})
     public void validaRemoveDataElement() throws ServiceException {
@@ -884,7 +956,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Navigates to edit vocabulary folder page.
      *
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if an error occurs
      */
     public Resolution cancelSave() throws ServiceException {
         vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getId());
@@ -918,7 +990,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             initFilter();
             filter.setUsePaging(false);
             filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
-            List<? extends VocabularyConcept> concepts = null;
+            final List<? extends VocabularyConcept> concepts;
             if (vocabularyFolder.isSiteCodeType()) {
                 String countryCode = getContext().getRequestParameter("countryCode");
                 String identifier = getContext().getRequestParameter("identifier");
@@ -933,15 +1005,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                                 vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
             }
 
-            final List<? extends VocabularyConcept> finalConcepts = concepts;
-
-            final String contextRoot =
-                    StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
-                            .getRequiredProperty(PropsIF.DD_URL)
-                            + "/vocabulary/"
-                            + vocabularyFolder.getFolderName()
-                            + "/"
-                            + vocabularyFolder.getIdentifier() + "/";
+            final String contextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
             final String folderContextRoot =
                     Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + vocabularyFolder.getFolderName() + "/";
@@ -952,8 +1016,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
                     VocabularyXmlWriter xmlWriter = new VocabularyXmlWriter(response.getOutputStream());
-                    xmlWriter.writeRDFXml(commonElemsUri, folderContextRoot, contextRoot, vocabularyFolder, finalConcepts,
-                            nameSpaces);
+                    xmlWriter.writeRDFXml(commonElemsUri, folderContextRoot, contextRoot, vocabularyFolder, concepts, nameSpaces);
                 }
             };
             result.setFilename(vocabularyFolder.getIdentifier() + ".rdf");
@@ -964,7 +1027,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             error.setErrorMessage(e.getMessage());
             return error;
         }
-    }// end of method rdf
+    } // end of method rdf
 
     /**
      * Returns vocabulary concepts CSV.
@@ -981,13 +1044,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 throw new RuntimeException("Vocabulary is not in released or public draft status.");
             }
 
-            final String folderContextRoot =
-                    StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
-                            .getRequiredProperty(PropsIF.DD_URL)
-                            + "/vocabulary/"
-                            + vocabularyFolder.getFolderName()
-                            + "/"
-                            + vocabularyFolder.getIdentifier() + "/";
+            final String folderContextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
             final List<VocabularyConcept> concepts =
                     vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
@@ -1010,12 +1067,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             error.setErrorMessage(e.getMessage());
             return error;
         }
-    }// end of method csv
+    } // end of method csv
 
     /**
-     * Returns vocabulary concepts CSV.
+     * Imports CSV contents into vocabulary.
      *
      * @return
+     * @throws ServiceException when an error occurs
      */
     public Resolution uploadCsv() throws ServiceException {
         try {
@@ -1027,30 +1085,30 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 throw new ServiceException("Vocabulary should be in working copy status");
             }
 
-            if (this.uploadedCsvFile == null) {
+            if (this.uploadedFileToImport == null) {
                 throw new ServiceException("You should upload a file");
             }
 
-            String fileName = this.uploadedCsvFile.getFileName();
+            String fileName = this.uploadedFileToImport.getFileName();
             if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.CSV_FILE_EXTENSION)) {
                 throw new ServiceException("File should be a CSV file");
             }
 
-            String contentType = this.uploadedCsvFile.getContentType();
+            String contentType = this.uploadedFileToImport.getContentType();
             if (!StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_PLAIN)
                     && !StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_CSV)
-                    && !StringUtils.equals(contentType,  VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_XLS)) {
+                    && !StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_XLS)) {
                 throw new ServiceException("You should upload a valid CSV file (plain/text or csv/text)");
             }
 
             // consume stupid bom first!! if it exists!
-            InputStream is = this.uploadedCsvFile.getInputStream();
+            InputStream is = this.uploadedFileToImport.getInputStream();
             byte[] firstThreeBytes = new byte[3];
             is.read(firstThreeBytes);
 
             if (!Arrays.equals(firstThreeBytes, VocabularyCSVOutputHelper.BOM_BYTE_ARRAY)) {
                 is.close();
-                is = this.uploadedCsvFile.getInputStream();
+                is = this.uploadedFileToImport.getInputStream();
             }
 
             Reader csvFileReader = new InputStreamReader(is, CharEncoding.UTF_8);
@@ -1076,7 +1134,57 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             error.setErrorMessage(e.getMessage());
             return error;
         }
-    }// end of method uploadCsv
+    } // end of method uploadCsv
+
+    /**
+     * Imports RDF contents into vocabulary.
+     *
+     * @return
+     * @throws ServiceException when an error occurs
+     */
+    public Resolution uploadRdf() throws ServiceException {
+        try {
+            vocabularyFolder =
+                    vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                            vocabularyFolder.isWorkingCopy());
+            validateView();
+            if (!vocabularyFolder.isWorkingCopy()) {
+                throw new ServiceException("Vocabulary should be in working copy status");
+            }
+
+            if (this.uploadedFileToImport == null) {
+                throw new ServiceException("You should upload a file");
+            }
+
+            String fileName = this.uploadedFileToImport.getFileName();
+            if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.RDF_FILE_EXTENSION)) {
+                throw new ServiceException("File should be a RDF file");
+            }
+
+            Reader rdfFileReader = new InputStreamReader(this.uploadedFileToImport.getInputStream(), CharEncoding.UTF_8);
+            List<String> systemMessages =
+                    this.vocabularyRdfImportService.importRdfIntoVocabulary(rdfFileReader, vocabularyFolder, false, false);
+            for (String systemMessage : systemMessages) {
+                addSystemMessage(systemMessage);
+            }
+
+            RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
+            resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
+            resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+            resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+            // navigate back to edit
+            return resolution;
+        } catch (ServiceException e) {
+            LOGGER.error("Failed to import vocabulary RDF into db", e);
+            e.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.INVALID_INPUT);
+            throw e;
+        } catch (Exception e) {
+            LOGGER.error("Failed to import vocabulary RDF into db, unexpected exception: ", e);
+            ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            error.setErrorMessage(e.getMessage());
+            return error;
+        }
+    } // end of method uploadRDF
 
     /**
      * Forwards to vocabulary concept page, if the url patter is: /vocabylary/folderIdentifier/conceptIdentifier.
@@ -1225,8 +1333,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyFolder
-     *            the vocabularyFolder to set
+     * @param vocabularyFolder the vocabularyFolder to set
      */
     public void setVocabularyFolder(VocabularyFolder vocabularyFolder) {
         this.vocabularyFolder = vocabularyFolder;
@@ -1240,16 +1347,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcepts
-     *            the vocabularyConcepts to set
+     * @param vocabularyConcepts the vocabularyConcepts to set
      */
     public void setVocabularyConcepts(VocabularyConceptResult vocabularyConcepts) {
         this.vocabularyConcepts = vocabularyConcepts;
     }
 
     /**
-     * @param vocabularyService
-     *            the vocabularyService to set
+     * @param vocabularyService the vocabularyService to set
      */
     public void setVocabularyService(IVocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
@@ -1263,8 +1368,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcept
-     *            the vocabularyConcept to set
+     * @param vocabularyConcept the vocabularyConcept to set
      */
     public void setVocabularyConcept(VocabularyConcept vocabularyConcept) {
         this.vocabularyConcept = vocabularyConcept;
@@ -1278,8 +1382,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param conceptIds
-     *            the conceptIds to set
+     * @param conceptIds the conceptIds to set
      */
     public void setConceptIds(List<Integer> conceptIds) {
         this.conceptIds = conceptIds;
@@ -1293,8 +1396,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param copyId
-     *            the copyId to set
+     * @param copyId the copyId to set
      */
     public void setCopyId(int copyId) {
         this.copyId = copyId;
@@ -1322,8 +1424,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param filter
-     *            the filter to set
+     * @param filter the filter to set
      */
     public void setFilter(VocabularyConceptFilter filter) {
         this.filter = filter;
@@ -1337,8 +1438,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param page
-     *            the page to set
+     * @param page the page to set
      */
     public void setPage(int page) {
         this.page = page;
@@ -1359,8 +1459,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folder
-     *            the folder to set
+     * @param folder the folder to set
      */
     public void setFolder(Folder folder) {
         this.folder = folder;
@@ -1374,8 +1473,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folderChoice
-     *            the folderChoice to set
+     * @param folderChoice the folderChoice to set
      */
     public void setFolderChoice(String folderChoice) {
         this.folderChoice = folderChoice;
@@ -1396,8 +1494,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param elementsFilter
-     *            the elementsFilter to set
+     * @param elementsFilter the elementsFilter to set
      */
     public void setElementsFilter(DataElementsFilter elementsFilter) {
         this.elementsFilter = elementsFilter;
@@ -1414,6 +1511,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @return the bindedElements
      */
     public List<DataElement> getBindedElements() {
+
         return bindedElements;
     }
 
@@ -1425,8 +1523,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param elementId
-     *            the elementId to set
+     * @param elementId the elementId to set
      */
     public void setElementId(int elementId) {
         this.elementId = elementId;
@@ -1441,24 +1538,21 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param uploadedFile
-     *            the uploadedFile to set
+     * @param uploadedFileToImport the uploadedFile to set
      */
-    public void setUploadedCsvFile(FileBean uploadedCsvFile) {
-        this.uploadedCsvFile = uploadedCsvFile;
+    public void setUploadedFileToImport(FileBean uploadedFileToImport) {
+        this.uploadedFileToImport = uploadedFileToImport;
     }
 
     /**
-     * @param purgeVocabularyData
-     *            purge before importing csv
+     * @param purgeVocabularyData purge before importing csv
      */
     public void setPurgeVocabularyData(boolean purgeVocabularyData) {
         this.purgeVocabularyData = purgeVocabularyData;
     }
 
     /**
-     * @param purgeBoundedElements
-     *            purge before importing csv
+     * @param purgeBoundedElements purge before importing csv
      */
     public void setPurgeBoundedElements(boolean purgeBoundedElements) {
         this.purgeBoundedElements = purgeBoundedElements;

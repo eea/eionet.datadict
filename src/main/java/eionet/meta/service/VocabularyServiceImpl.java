@@ -1087,7 +1087,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public List<RdfNamespace> getVocabularyNamespaces(List<VocabularyFolder> vocabularyFolders) throws ServiceException {
         List<RdfNamespace> nameSpaces = new ArrayList<RdfNamespace>();
-        String baseUri = Props.getRequiredProperty(PropsIF.RDF_DATAELEMENTS_BASE_URI);
+        //String baseUri = Props.getRequiredProperty(PropsIF.RDF_DATAELEMENTS_BASE_URI);
 
         try {
             for (VocabularyFolder vocabulary : vocabularyFolders) {
@@ -1146,8 +1146,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
     @Override
     public List<Triple<String, String, Integer>> getVocabularyBoundElementNames(VocabularyFolder vocabularyFolder) {
-        int vocabularyFolderId = vocabularyFolder.getId();
-        List<Triple<String, String, Integer>> elementsMeta = vocabularyFolderDAO.getVocabularyFolderBoundElementsMeta(vocabularyFolderId);
+        int vocabFolder = vocabularyFolder.getId();
+        List<Triple<String, String, Integer>> elementsMeta = vocabularyFolderDAO.getVocabularyFolderBoundElementsMeta(vocabFolder);
         return elementsMeta;
     }
 
@@ -1170,6 +1170,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(concept.getVocabularyId());
 
                 VocabularyConceptData data = new VocabularyConceptData();
+                data.setId(concept.getId());
                 data.setIdentifier(concept.getIdentifier());
                 data.setLabel(concept.getLabel());
                 data.setUserName(vocabulary.getWorkingUser());

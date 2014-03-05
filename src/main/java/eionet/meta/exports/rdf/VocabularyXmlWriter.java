@@ -51,28 +51,28 @@ public class VocabularyXmlWriter {
     private static final String ENCODING = "UTF-8";
 
     /** RDF namespace prefix. */
-    private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    public static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
     /** RDFS namespace prefix. */
-    private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
+    public static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 
     /** SKOS namespace prefix. */
-    private static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
+    public static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
 
     /** XML namespace prefix. */
-    private static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
+    public static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
 
     /** OWL namespace prefix. */
-    private static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
+    public static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
 
     /** DCTYPE namespace prefix. */
-    private static final String DCTYPE_NS = "http://purl.org/dc/dcmitype/";
+    public static final String DCTYPE_NS = "http://purl.org/dc/dcmitype/";
 
     /** DCTERMS namespace prefix. */
-    private static final String DCTERMS_NS = "http://purl.org/dc/terms/";
+    public static final String DCTERMS_NS = "http://purl.org/dc/terms/";
 
     /** DD namespace prefix. */
-    private static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
+    public static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
 
     /** default namespaces that are present in all vocabulary RDFs. */
     private static final HashMap<String, String> DEFAULT_NAMESPACES = new HashMap<String, String>();
