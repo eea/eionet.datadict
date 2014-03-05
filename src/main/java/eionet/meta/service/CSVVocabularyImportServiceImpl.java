@@ -1,5 +1,19 @@
 package eionet.meta.service;
 
+import au.com.bytecode.opencsv.CSVReader;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.DataElementsFilter;
+import eionet.meta.service.data.DataElementsResult;
+import eionet.meta.service.data.ObsoleteStatus;
+import eionet.util.Pair;
+import eionet.util.VocabularyCSVOutputHelper;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.Reader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -9,25 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import au.com.bytecode.opencsv.CSVReader;
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.data.DataElementsFilter;
-import eionet.meta.service.data.DataElementsResult;
-import eionet.meta.service.data.ObsoleteStatus;
-import eionet.util.Pair;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.util.VocabularyCSVOutputHelper;
-
 /**
- *
  * Service implementation to import CSV into a Vocabulary Folder.
  *
  * @author enver
@@ -35,14 +31,21 @@ import eionet.util.VocabularyCSVOutputHelper;
 @Service
 public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportService {
 
-    /** Vocabulary service. */
+    /**
+     * Vocabulary service.
+     */
     @Autowired
     private IVocabularyService vocabularyService;
 
-    /** Data elements service. */
+    /**
+     * Data elements service.
+     */
     @Autowired
     private IDataService dataService;
 
+    /**
+     * Log message list.
+     */
     private List<String> logMessages = null;
 
     /**
@@ -81,13 +84,7 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
             }
         }
 
-        final String folderContextRoot =
-                StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
-                        .getRequiredProperty(PropsIF.DD_URL)
-                        + "/vocabulary/"
-                        + vocabularyFolder.getFolderName()
-                        + "/"
-                        + vocabularyFolder.getIdentifier() + "/";
+        final String folderContextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
         Pair<List<VocabularyConcept>, List<DataElement>> willBeUpdatedObjects =
                 generateUpdatedBeans(content, folderContextRoot, concepts, elementToId);
@@ -96,15 +93,13 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
         this.logMessages.add("CSV imported into Database.");
 
         return this.logMessages;
-    }// end of method importCsvIntoVocabulary
+    } // end of method importCsvIntoVocabulary
 
     /**
-     * Purge/delete concepts from database
+     * Purge/delete concepts from database.
      *
-     * @param concepts
-     *            to be deleted
-     * @throws ServiceException
-     *             if an error occurs during operation
+     * @param concepts to be deleted
+     * @throws ServiceException if an error occurs during operation
      */
     private void purgeConcepts(List<VocabularyConcept> concepts) throws ServiceException {
         List<Integer> conceptIds = new ArrayList<Integer>();
@@ -115,17 +110,14 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
             }
             this.vocabularyService.deleteVocabularyConcepts(conceptIds);
         }
-    }// end of method purgeConcepts
+    } // end of method purgeConcepts
 
     /**
-     * Purge/delete binded elements from vocabulary folder
+     * Purge/delete binded elements from vocabulary folder.
      *
-     * @param vocabularyFolderId
-     *            id of vocabulary folder
-     * @param bindedElements
-     *            binded elements
-     * @throws ServiceException
-     *             if an error occurs during operation
+     * @param vocabularyFolderId id of vocabulary folder
+     * @param bindedElements     binded elements
+     * @throws ServiceException if an error occurs during operation
      */
     private void purgeBindedElements(int vocabularyFolderId, List<DataElement> bindedElements) throws ServiceException {
         if (bindedElements != null && bindedElements.size() > 0) {
@@ -133,20 +125,17 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                 this.vocabularyService.removeDataElement(vocabularyFolderId, elem.getId());
             }
         }
-    }// end of method purgeBindedElements
+    } // end of method purgeBindedElements
 
     /**
      * In this method, beans are generated (either created or updated) according to values in CSV file.
      *
-     * @param content
-     *            reader to read file contents
-     * @param vocabularyFolder
-     *            folder under bulk edit
-     * @param concepts
-     *            founded concepts before import operation
+     * @param content                reader to read file contents
+     * @param folderContextRoot      context root of folder under bulk edit
+     * @param concepts               founded concepts before import operation
+     * @param bindedElementsToFolder already binded elements to vocabulary
      * @return generated beans(concepts and dataelements) for update operation
-     * @throws ServiceException
-     *             if there is the input is invalid
+     * @throws ServiceException if there is the input is invalid
      */
     private Pair<List<VocabularyConcept>, List<DataElement>> generateUpdatedBeans(Reader content, String folderContextRoot,
             List<VocabularyConcept> concepts, Map<String, Integer> bindedElementsToFolder) throws ServiceException {
@@ -196,6 +185,8 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                     elementsFilter.setRegStatus("Released");
                     elementsFilter.setElementType(DataElementsFilter.COMMON_ELEMENT_TYPE);
                     elementsFilter.setIdentifier(elementHeader);
+                    elementsFilter.setIncludeHistoricVersions(false);
+                    elementsFilter.setExactIdentifierMatch(true);
                     DataElementsResult elementsResult = dataService.searchDataElements(elementsFilter);
                     // if there is one and only one element check if header and identifer exactly matches!
                     if (elementsResult.getTotalResults() < 1) {
@@ -217,10 +208,11 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                         }
                     }
                 }
-            }// end of for loop iterating on headers
+            } // end of for loop iterating on headers
 
             String[] lineParams;
-            for (int rowNumber = 2; (lineParams = reader.readNext()) != null; rowNumber++) {// first row is header so start from 2
+            // first row is header so start from 2
+            for (int rowNumber = 2; (lineParams = reader.readNext()) != null; rowNumber++) {
                 if (lineParams.length != header.length) {
                     StringBuilder message = new StringBuilder();
                     message.append("Row (").append(rowNumber).append(") ");
@@ -249,7 +241,7 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                 if (StringUtils.contains(identifier, "/")) {
                     this.logMessages.add("Row (" + rowNumber + ") does not contain a valid concept identifier.");
                     continue;
-                }// end of if identifier matches
+                } // end of if identifier matches
 
                 // now we have a valid row
                 int j = 0;
@@ -261,7 +253,8 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                 }
 
                 VocabularyConcept found = null;
-                if (j < concepts.size()) {// concept found
+                // concept found
+                if (j < concepts.size()) {
                     found = concepts.remove(j);
                 } else {
                     for (j = 0; j < toBeUpdatedConcepts.size(); j++) {
@@ -302,7 +295,7 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                 }
 
                 // now it is time iterate on rest of the columns, here is the tricky part
-                HashMap<String, Integer> attributePosition = new HashMap<String, Integer>();
+                Map<String, Integer> attributePosition = new HashMap<String, Integer>();
                 List<DataElement> elementsOfConcept = null;
                 List<DataElement> elementsOfConceptByLang = null;
                 String prevHeader = null;
@@ -367,8 +360,8 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
                         } else {
                             elem.setAttributeValue(lineParams[k]);
                         }
-                    } else {// if it is empty and if there is such a value then delete it, if there is no value just
-                            // ignore it
+                    } else {
+                        // if it is empty and if there is such a value then delete it, if there is no value just ignore it
                         if (index < elementsOfConceptByLang.size()) {
                             DataElement elem = elementsOfConceptByLang.get(index);
                             elem.setAttributeValue(lineParams[k]); // so if it is empty, it means delete it right ?
@@ -378,9 +371,9 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
 
                     prevLang = lang;
                     prevHeader = elementHeader;
-                }// end of for loop iterating on rest of the columns (for data elements)
+                } // end of for loop iterating on rest of the columns (for data elements)
 
-            }// end of row iterator (while loop on rows)
+            } // end of row iterator (while loop on rows)
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -389,20 +382,22 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
             try {
                 reader.close();
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
         return returnPair;
-    }// end of method generatedUpdatedBeans
+    } // end of method generatedUpdatedBeans
 
     /**
      * This method import objects into DB. It creates not-existing objects and then updates values.
      * All operation is done Spring Service Layer
      *
-     * @param vocabularyConcepts
-     * @param vocabularyId
+     * @param vocabularyId       Vocabulary ID where concepts and elements will be updated
+     * @param vocabularyConcepts vocabulary concepts to be updated
+     * @param newBindedElement   newly binded elements
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if an error occurs
      */
     private void importIntoDb(int vocabularyId, List<VocabularyConcept> vocabularyConcepts, List<DataElement> newBindedElement)
             throws ServiceException {
@@ -423,6 +418,6 @@ public class CSVVocabularyImportServiceImpl implements ICSVVocabularyImportServi
             // UPDATE VOCABULARY CONCEPT
             this.vocabularyService.updateVocabularyConcept(vc);
         }
-    }// end of method importIntoDb
+    } // end of method importIntoDb
 
-}// end of class CSVVocabularyImport
+} // end of class CSVVocabularyImport
