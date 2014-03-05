@@ -84,14 +84,6 @@ function openVocabularySearch(elementId) {
     openPopup("#findVocabularyDiv");
 };
 
-function doExcludeVocSet(vocSetId) {
-  var strFrmAction = "/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/searchConcepts";
-  document.getElementById('txtExcludeVocSetId').value = vocSetId;
-
-  document.getElementById('frmSearchConcept').action = strFrmAction;
-  //alert(strFrmAction);
-  document.getElementById('frmSearchConcept').submit();
-};
 </script>
 
 
@@ -110,8 +102,8 @@ function doExcludeVocSet(vocSetId) {
         </div>
         <table class="datatable" style="width:100%">
             <colgroup>
-                <col style="width:10em;"/>
-                <col style="width:30em;"/>
+                <col style="width:20em;"/>
+                <col style="width:40em;"/>
             </colgroup>
 
              <c:if test="${not empty actionBean.relatedVocabulary}">
@@ -137,7 +129,7 @@ function doExcludeVocSet(vocSetId) {
                         Found Vocabulary Sets
                     </th>
                     <td class="simple_attr_value" colspan="2">
-                        <c:forEach var="vocabularySet" items="${actionBean.vocabularySets}">
+                        <c:forEach var="vocabularySet" items="${actionBean.relatedVocabularyConcepts.vocabularySets}">
                             <stripes:link beanclass="${actionBean.class.name}" event="searchConcepts" title="Exclude the vocabulary set from search">
                               <c:if test="${not empty actionBean.elementId}">
                                 <stripes:param name="elementId" value="${actionBean.elementId}" />
@@ -149,7 +141,10 @@ function doExcludeVocSet(vocSetId) {
                               <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
 
                               <stripes:param name="excludeVocSetId" value="${vocabularySet.id}" />
+                              <stripes:param name="excludeVocSetLabel" value="${vocabularySet.label}" />
                               <stripes:param name="excludedVocSetIds" value="${actionBean.excludedVocSetIds}" />
+                              <stripes:param name="excludedVocSetLabels" value="${actionBean.excludedVocSetLabels}" />
+
 
                               <stripes:param name="relatedConceptsFilter.text" value="${actionBean.relatedConceptsFilter.text}" />
 
@@ -170,8 +165,11 @@ function doExcludeVocSet(vocSetId) {
                       </th>
                       <td class="simple_attr_value" colspan="2">
                         <c:forEach var="item" items="${actionBean.excludedVocSetLabels}">
-                            <c:out value="{item.label}"/>
+                            <c:out value="${item}"/>
                         </c:forEach>
+                        <div class="advice-msg" style="margin-top:1em;font-size:0.7em">
+                            Clicking Search will reset excluded vocabulary sets
+                        </div>
                       </td>
                     </tr>
                 </c:if>

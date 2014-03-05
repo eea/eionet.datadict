@@ -114,9 +114,6 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     /** vocabulary set IDs to be excluded from search in CSV format. */
     private String excludedVocSetIds = "";
 
-    /** */
-    // private String thisTimeExcludedVocSetIds = "";
-
     /**
      * vocabulary sets excluded manually from the search.
      */
@@ -326,20 +323,18 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     public Resolution searchConcepts() throws ServiceException {
 
-        // TODO refactor
         setConceptIdentifier(vocabularyConcept.getIdentifier());
 
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
+
+        // current editable concept:
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
         validateView();
         initBeans();
+        initSeachFilters();
 
-        // related concepts
-        if (relatedConceptsFilter == null) {
-            relatedConceptsFilter = new VocabularyConceptFilter();
-        }
         relatedConceptsFilter.setExcludedIds(Collections.singletonList(vocabularyConcept.getId()));
 
         // this is needed because of "limit " clause in the SQL. if this remains true, paging does not work in display:table
@@ -350,22 +345,18 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         if (!StringUtils.isBlank(vocabularyId)) {
             int folderId = Integer.valueOf(vocabularyId);
             relatedConceptsFilter.setVocabularyFolderId(folderId);
+            relatedVocabulary = vocabularyService.getVocabularyFolder(Integer.valueOf(vocabularyId));
         }
 
-        // add comma to begin and end
+        // In case exclude voc set is clicked exclude another vocabulary set
         String excludeVocSetId = getContext().getRequestParameter("excludeVocSetId");
-        if (!StringUtils.isBlank(excludeVocSetId) && !StringUtils.contains(excludedVocSetIds, "," + excludeVocSetId + ",")) {
-            if (excludedVocSetIds == null) {
-                excludedVocSetIds = "";
-            }
+        String excludeVocSetLabel = getContext().getRequestParameter("excludeVocSetLabel");
 
-            excludedVocSetIds = excludedVocSetIds + excludeVocSetId + ",";
+        if (!StringUtils.isBlank(excludeVocSetId)) {
 
-            if (excludedVocSetLabels == null) {
-                excludedVocSetLabels = new ArrayList<String>();
-            }
-
-            excludedVocSetLabels.add(getVocSetLabel(Integer.valueOf(excludeVocSetId)));
+            // format: pipe separated voc set IDs
+            excludedVocSetIds = excludedVocSetIds + excludeVocSetId + "|";
+            excludedVocSetLabels.add(excludeVocSetLabel);
         }
 
         if (StringUtils.isNotBlank(excludedVocSetIds)) {
@@ -377,10 +368,6 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
         elementId = getContext().getRequestParameter("elementId");
         editDivId = "addConceptDiv";
-
-        if (!StringUtils.isBlank(vocabularyId)) {
-            relatedVocabulary = vocabularyService.getVocabularyFolder(Integer.valueOf(vocabularyId));
-        }
 
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
     }
@@ -746,7 +733,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     private List<Integer> extractExcludedIds() {
         List<Integer> vocSetIds = new ArrayList<Integer>();
-        StringTokenizer tokens = new StringTokenizer(excludedVocSetIds, ",");
+        StringTokenizer tokens = new StringTokenizer(excludedVocSetIds, "|");
         while (tokens.hasMoreElements()) {
             String token = tokens.nextToken();
             if (!StringUtils.isBlank(token)) {
@@ -782,5 +769,24 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         }
 
         return null;
+    }
+
+    /**
+     * inits filters and other helper variables.
+     */
+    private void initSeachFilters() {
+        // related concepts
+        if (relatedConceptsFilter == null) {
+            relatedConceptsFilter = new VocabularyConceptFilter();
+        }
+
+        if (excludedVocSetIds == null) {
+            excludedVocSetIds = "";
+        }
+
+        if (excludedVocSetLabels == null) {
+            excludedVocSetLabels = new ArrayList<String>();
+        }
+
     }
 }
