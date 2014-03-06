@@ -89,5 +89,11 @@
 <permission id="er"/>
 </permissions>
 </entry>
+<entry type="doc">
+<principal id="anonymous" type="user"/>
+<permissions>
+<permission id="amsa"/>
+</permissions>
+</entry>
 </entries>
 </acl>

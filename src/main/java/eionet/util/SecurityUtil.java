@@ -123,7 +123,7 @@ public final class SecurityUtil {
 
     /**
      * Checks if the user has permission for the ACl.
-     * NB If user has permission to the parent ACL no children ACL is checked!
+     * NB If user has permission to the parent ACL *and parent ACL is not root ACL* - no children ACL is checked!
      * @param usr user name
      * @param aclPath full acl path
      * @param prm permission

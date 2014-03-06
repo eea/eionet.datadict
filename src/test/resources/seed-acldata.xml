@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <ACLS ACL_ID="1" ACL_NAME="first" PARENT_NAME="/testacl" OWNER="heinlja" DESCRIPTION = "First ACL"/>
+    <ACLS ACL_ID="2" ACL_NAME="second" PARENT_NAME="/testacl" OWNER="karuka" DESCRIPTION = "Second ACL"/>
+    <ACLS ACL_ID="3" ACL_NAME="third" PARENT_NAME="/testacl" OWNER="karuka" DESCRIPTION = "Third ACL"/>
+
+    <ACL_ROWS ACL_ID="1" TYPE="object" ENTRY_TYPE="localgroup" PRINCIPAL="dd_admin" PERMISSIONS="i,u"/>
+    <ACL_ROWS ACL_ID="1" TYPE="object" ENTRY_TYPE="user" PRINCIPAL="heinlja" PERMISSIONS="i,u,c,amsa"/>
+    <ACL_ROWS ACL_ID="1" TYPE="object" ENTRY_TYPE="user" PRINCIPAL="anonymous" PERMISSIONS="amsa"/>
+    <ACL_ROWS ACL_ID="1" TYPE="object" ENTRY_TYPE="user" PRINCIPAL="authenticated" PERMISSIONS="amsa"/>
+
+    <ACL_ROWS ACL_ID="2" TYPE="object" ENTRY_TYPE="user" PRINCIPAL="heinlja" PERMISSIONS="i,u,c"/>
+    <ACL_ROWS ACL_ID="2" TYPE="object" ENTRY_TYPE="user" PRINCIPAL="authenticated" PERMISSIONS="amsa"/>
+
+    <ACL_ROWS ACL_ID="3" TYPE="object" ENTRY_TYPE="user" PRINCIPAL="heinlja" PERMISSIONS="i,u"/>
+
+ </dataset>

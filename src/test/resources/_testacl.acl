@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<acl description="test acl">
+<entries>
+<entry type="object">
+<principal id="test_admin" type="localgroup"/>
+<permissions>
+<permission id="u"/>
+</permissions>
+</entry>
+
+<entry type="object">
+<principal id="heinlja" type="user"/>
+<permissions>
+<permission id="i"/>
+</permissions>
+</entry>
+
+</entries>
+</acl>
