@@ -30,7 +30,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -177,6 +179,32 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         vocabularyService.updateVocabularyConcept(result);
         result = vocabularyService.getVocabularyConcept(3, "concept1", true);
         assertEquals("Modified label", "modified", result.getLabel());
+    }
+
+
+    @Test
+    public void testupdatevocabularyconceptDate() throws ServiceException {
+        VocabularyConcept result = vocabularyService.getVocabularyConcept(3, "concept1", true);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(0);
+        cal.set(2014, Calendar.APRIL, 12, 0,0,0 );
+        Date dCreated = cal.getTime();
+
+        cal.setTimeInMillis(0);
+        cal.set(2014, Calendar.MAY, 8, 0,0,0 );
+        Date dObsolete = cal.getTime();
+
+        result.setCreated(dCreated);
+        result.setObsolete(dObsolete);
+
+        vocabularyService.updateVocabularyConcept(result);
+        result = vocabularyService.getVocabularyConcept(3, "concept1", true);
+
+        assertEquals("Modified obsolete", result.getObsolete().getTime(), dObsolete.getTime());
+
+        cal.setTime(result.getCreated());
+        assertEquals("Modified created", cal.get(Calendar.MONTH), Calendar.APRIL);
+
     }
 
     @Test

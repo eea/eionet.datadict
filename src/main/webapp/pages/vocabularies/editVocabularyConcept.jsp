@@ -67,8 +67,6 @@
                 <stripes:hidden name="vocabularyFolder.numericConceptIdentifiers" />
                 <stripes:hidden name="vocabularyConcept.id" />
                 <stripes:hidden name="vocabularyConcept.identifier" />
-                <stripes:hidden name="vocabularyConcept.created" />
-                <stripes:hidden name="vocabularyConcept.obsolete" />
                 <stripes:hidden id="txtEditDivId" name="editDivId" />
 
 
@@ -141,14 +139,16 @@
                         <th scope="row" class="scope-row simple_attr_title">
                             Created</th>
                         <td class="simple_attr_help"></td>
-                        <td class="simple_attr_value"><fmt:formatDate pattern="dd.MM.yyyy" value="${actionBean.vocabularyConcept.created}" />
+                        <td class="simple_attr_value">
+                            <stripes:text formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.created" class="smalltext" size="30"/>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">
                             Obsolete</th>
                         <td class="simple_attr_help"></td>
-                        <td class="simple_attr_value"><fmt:formatDate pattern="dd.MM.yyyy" value="${actionBean.vocabularyConcept.obsolete}" />
+                        <td class="simple_attr_value">
+                            <stripes:text formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.obsolete" class="smalltext" size="30"/>
                         </td>
                     </tr>
 

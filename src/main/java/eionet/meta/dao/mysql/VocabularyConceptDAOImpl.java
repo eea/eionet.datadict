@@ -252,7 +252,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         StringBuilder sql = new StringBuilder();
         sql.append("update VOCABULARY_CONCEPT set IDENTIFIER = :identifier, LABEL = :label, ")
-            .append("DEFINITION = :definition, NOTATION = :notation ");
+            .append("DEFINITION = :definition, NOTATION = :notation, CREATION_DATE = :created, OBSOLETE_DATE = :obsolete  ");
 
         sql.append("where VOCABULARY_CONCEPT_ID = :vocabularyConceptId");
 
@@ -265,6 +265,9 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             vocabularyConcept.setNotation(vocabularyConcept.getNotation().trim());
         }
         parameters.put("notation", vocabularyConcept.getNotation());
+
+        parameters.put("created", vocabularyConcept.getCreated());
+        parameters.put("obsolete", vocabularyConcept.getObsolete());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
