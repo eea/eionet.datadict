@@ -10,6 +10,7 @@ import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
+import eionet.util.Pair;
 import eionet.util.VocabularyCSVOutputHelper;
 import org.apache.commons.lang.StringUtils;
 import org.openrdf.model.Literal;
@@ -19,12 +20,15 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementation of OpenRDF's {@link RDFHandler} that will be used by implementations of
@@ -34,17 +38,21 @@ import java.util.Map;
  *
  * @author enver
  */
+@Configurable
 public class VocabularyRDFImportHandler implements RDFHandler {
 
     /* static constants */
     /**
-     * used with concept attributes.
+     * Mapping for predicate ignorance. If a predicate needs to be ignored it can be put in to map with its String value as a key.
+     * Value for that key is an instance of Pair holds a Class and a String. Class is used to check the type of Object (in triple).
+     * String is a regular expression to match with Object's string value.
+     * This works as follows:
+     * Triple<Subject S, Predicate P, Object O> T
+     * *****if rule set has a Rule (Pair) R in Map for P then
+     * *********if O is an instance of R.Class and O.stringValue matches with R.String then
+     * **************ignore T
      */
-    private static final String SKOS_CONCEPT_ATTRIBUTE_NS = "skosConceptAttribute";
-    /**
-     * concept attribute namespaces to update concept fields instead of dataelements.
-     */
-    private static final List<String> SKOS_CONCEPT_ATTRIBUTES;
+    private static final Map<String, Pair<Class, String>> PREDICATE_IGNORANCE_RULES;
 
     /**
      * notation attribute of concept.
@@ -59,17 +67,31 @@ public class VocabularyRDFImportHandler implements RDFHandler {
      */
     private static final String DEFINITION = "definition";
 
+    /**
+     * used with concept attributes.
+     */
+    private static final String SKOS_CONCEPT_ATTRIBUTE_NS = VocabularyXmlWriter.SKOS_NS;
+    /**
+     * concept attribute namespaces to update concept fields instead of dataelements.
+     */
+    private static final List<String> SKOS_CONCEPT_ATTRIBUTES;
+
     static {
         SKOS_CONCEPT_ATTRIBUTES = new ArrayList<String>();
-        SKOS_CONCEPT_ATTRIBUTES.add(NOTATION);
-        SKOS_CONCEPT_ATTRIBUTES.add(PREF_LABEL);
-        SKOS_CONCEPT_ATTRIBUTES.add(DEFINITION);
+        SKOS_CONCEPT_ATTRIBUTES.add("notation");
+        SKOS_CONCEPT_ATTRIBUTES.add("prefLabel");
+        SKOS_CONCEPT_ATTRIBUTES.add("definition");
+        PREDICATE_IGNORANCE_RULES = new HashMap<String, Pair<Class, String>>();
+        PREDICATE_IGNORANCE_RULES.put(VocabularyXmlWriter.SKOS_NS + "inScheme", new Pair<Class, String>(Object.class, "(.)*"));
+        PREDICATE_IGNORANCE_RULES.put(VocabularyXmlWriter.RDF_NS + "type",
+                new Pair<Class, String>(URI.class, VocabularyXmlWriter.SKOS_NS + "Concept"));
     }
 
     /* member fields */
     /**
      * Vocabulary service.
      */
+    @Autowired
     private IVocabularyService vocabularyService;
     /**
      * value with folderContextRoot + CONCEPT_KEY .
@@ -139,15 +161,22 @@ public class VocabularyRDFImportHandler implements RDFHandler {
      * Temporary map to hold found related concepts for caching.
      */
     private Map<String, VocabularyConcept> relatedConceptCache = null;
+    /**
+     * Newly created concepts.
+     */
+    private int numberOfCreatedConcepts = 0;
+    /**
+     * Number of concepts updated per predicate.
+     */
+    private Map<String, Set<Integer>> predicateUpdatesAtConcepts = null;
 
+    //TODO remove these!! they are used for debugging purposes!
     private int numberOfSearches = 0;
     private int numberOfPotentialRelatedConcepts = 0;
     private int numberOfVocabularySearches = 0;
-
     private long start = 0;
     private long end = 0;
-    private int numberOfCacheFound = 0;
-
+    private int numberOfCacheHit = 0;
 
     /**
      * Constructor for RDFHandler to import rdf into vocabulary.
@@ -159,7 +188,7 @@ public class VocabularyRDFImportHandler implements RDFHandler {
      */
     public VocabularyRDFImportHandler(String folderContextRoot, List<VocabularyConcept> concepts, Map<String,
             List<String>> bindedElements, Map<String, Integer> bindedElementsIds) {
-        this.folderContextRootWithConceptKey = folderContextRoot; // + CONCEPT_KEY;
+        this.folderContextRootWithConceptKey = folderContextRoot;
         this.concepts = concepts;
         this.bindedElements = bindedElements;
         this.bindedElementsIds = bindedElementsIds;
@@ -168,9 +197,7 @@ public class VocabularyRDFImportHandler implements RDFHandler {
         this.boundedURIs = new HashMap<String, String>();
         this.attributePositions = new HashMap<String, Map<String, Integer>>();
         this.relatedConceptCache = new HashMap<String, VocabularyConcept>();
-        //@Configure and @Autowired does not work :\
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring-context.xml");
-        this.vocabularyService = context.getBean(IVocabularyService.class);
+        this.predicateUpdatesAtConcepts = new HashMap<String, Set<Integer>>();
     } // end of constructor
 
     @Override
@@ -221,37 +248,49 @@ public class VocabularyRDFImportHandler implements RDFHandler {
         }
 
         String predicateUri = predicate.stringValue();
-        String attributeIdentifier = null;
-        String predicateNS = null;
-        for (String key : this.boundedURIs.keySet()) {
-            if (StringUtils.startsWith(predicateUri, key)) {
-                attributeIdentifier = predicateUri.replace(key, "");
-                predicateNS = this.boundedURIs.get(key);
-                if (!this.bindedElements.get(predicateNS).contains(attributeIdentifier)) {
-                    predicateNS = null;
-                }
-                break;
+
+        Pair<Class, String> ignoranceRule = PREDICATE_IGNORANCE_RULES.get(predicateUri);
+        if (ignoranceRule != null) {
+            if (ignoranceRule.getLeft().isInstance(object) && object.stringValue().matches(ignoranceRule.getRight())) {
+                //ignore value
+                return;
             }
         }
 
-        boolean conceptAttribute = false;
+        String attributeIdentifier = null;
+        String predicateNS = null;
+
+        boolean candidateForConceptAttribute = false;
         if (StringUtils.isEmpty(predicateNS)) {
             if (StringUtils.startsWith(predicateUri, VocabularyXmlWriter.SKOS_NS)) {
                 attributeIdentifier = predicateUri.replace(VocabularyXmlWriter.SKOS_NS, "");
-                conceptAttribute = SKOS_CONCEPT_ATTRIBUTES.contains(attributeIdentifier);
-                if (conceptAttribute) {
+                candidateForConceptAttribute = SKOS_CONCEPT_ATTRIBUTES.contains(attributeIdentifier);
+                if (candidateForConceptAttribute) {
                     predicateNS = SKOS_CONCEPT_ATTRIBUTE_NS;
+                }
+            }
+        }
+
+        if (candidateForConceptAttribute && !(object instanceof Literal)) {
+            //this.logs.add(st.toString() + " NOT imported, object is not a Literal for concept attribute");
+            return;
+        }
+
+        if (!candidateForConceptAttribute) {
+            for (String key : this.boundedURIs.keySet()) {
+                if (StringUtils.startsWith(predicateUri, key)) {
+                    attributeIdentifier = predicateUri.replace(key, "");
+                    predicateNS = this.boundedURIs.get(key);
+                    if (!this.bindedElements.get(predicateNS).contains(attributeIdentifier)) {
+                        predicateNS = null;
+                    }
+                    break;
                 }
             }
         }
 
         if (StringUtils.isEmpty(predicateNS)) {
             //this.logs.add(st.toString() + " NOT imported, predicate is not a bound URI nor a concept attribute");
-            return;
-        }
-
-        if (conceptAttribute && !(object instanceof Literal)) {
-            //this.logs.add(st.toString() + " NOT imported, object is not a Literal for concept attribute");
             return;
         }
 
@@ -291,7 +330,9 @@ public class VocabularyRDFImportHandler implements RDFHandler {
                 if (this.lastFoundConcept == null && j == this.toBeUpdatedConcepts.size()) {
                     // if there is already such a concept, ignore that line. if not, add a new concept with params.
                     this.lastFoundConcept = new VocabularyConcept();
+                    this.lastFoundConcept.setId(--this.numberOfCreatedConcepts);
                     this.lastFoundConcept.setIdentifier(conceptIdentifier);
+                    //this.lastFoundConcept.setLabel("");
                     // TODO set other properties
                     List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
                     this.lastFoundConcept.setElementAttributes(newConceptElementAttributes);
@@ -301,13 +342,28 @@ public class VocabularyRDFImportHandler implements RDFHandler {
             }
         }
 
-        // if vocabulary concept couldnt find or created
+        // if vocabulary concept couldnt find or couldnt be created
         if (this.lastFoundConcept == null) {
             //this.logs.add(st.toString() + " NOT imported, cannot find or create.");
             return;
         }
 
-        if (conceptAttribute) {
+        Set<Integer> conceptIdsUpdatedWithPredicate = this.predicateUpdatesAtConcepts.get(predicateUri);
+        if (conceptIdsUpdatedWithPredicate == null) {
+            conceptIdsUpdatedWithPredicate = new HashSet<Integer>();
+            this.predicateUpdatesAtConcepts.put(predicateUri, conceptIdsUpdatedWithPredicate);
+        }
+
+        //if it is first seen for preflabel and notation and definition then it is concept attribute
+        //but if it is not the first one then it is a dataelem attribute
+        if (candidateForConceptAttribute) {
+            if (conceptIdsUpdatedWithPredicate.contains(this.lastFoundConcept.getId())) {
+                candidateForConceptAttribute = false;
+            }
+        }
+        conceptIdsUpdatedWithPredicate.add(this.lastFoundConcept.getId());
+
+        if (candidateForConceptAttribute) {
             //update concept value here
             if (StringUtils.equals(attributeIdentifier, NOTATION)) {
                 this.lastFoundConcept.setNotation(object.stringValue());
@@ -396,7 +452,7 @@ public class VocabularyRDFImportHandler implements RDFHandler {
                         }
 
                     } else {
-                        numberOfCacheFound++;
+                        numberOfCacheHit++;
                     }
 
                     //either found in cache or in database
@@ -472,8 +528,18 @@ public class VocabularyRDFImportHandler implements RDFHandler {
         this.logs.add("Number of search: " + numberOfSearches);
         this.logs.add("Time of handling (msecs): " + (end - start));
         this.logs.add("Found related concept cache count: " + this.relatedConceptCache.keySet().size());
-        this.logs.add("Cache hit: " + numberOfCacheFound);
+        this.logs.add("Cache hit: " + numberOfCacheHit);
+        this.logs.add("Number of predicates seen: " + this.predicateUpdatesAtConcepts.size());
+        for (String key : this.predicateUpdatesAtConcepts.keySet()) {
+            this.logs.add("Number of concepts updated for predicate (" + key + "): "
+                    + this.predicateUpdatesAtConcepts.get(key).size());
+        }
+        this.logs.add("Number of newly created concepts: " + ((-1) * this.numberOfCreatedConcepts));
     } // end of method endRDF
+
+    public List<VocabularyConcept> getToBeUpdatedConcepts() {
+        return toBeUpdatedConcepts;
+    }
 
     public List<String> getLogs() {
         return this.logs;

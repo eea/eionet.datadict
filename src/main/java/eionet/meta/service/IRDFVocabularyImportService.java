@@ -30,4 +30,4 @@ public interface IRDFVocabularyImportService {
     List<String> importRdfIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData,
             boolean purgeBoundedElements) throws ServiceException;
 
-}// end of interface IRDFVocabularyImportService
+} // end of interface IRDFVocabularyImportService

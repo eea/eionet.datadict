@@ -13,6 +13,7 @@
     <!-- Scans within the base package of the application for @Components
         to configure as beans -->
     <context:component-scan base-package="eionet.meta" />
+    <context:spring-configured/>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
         destroy-method="close">
