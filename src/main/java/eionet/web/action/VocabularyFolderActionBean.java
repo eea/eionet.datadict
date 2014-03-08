@@ -148,7 +148,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private static final String RDF_FILE_EXTENSION = ".rdf";
 
 
-
     /**
      * Vocabulary service.
      */
@@ -1163,7 +1162,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             Reader rdfFileReader = new InputStreamReader(this.uploadedFileToImport.getInputStream(), CharEncoding.UTF_8);
             List<String> systemMessages =
-                    this.vocabularyRdfImportService.importRdfIntoVocabulary(rdfFileReader, vocabularyFolder, false, false);
+                    this.vocabularyRdfImportService.importRdfIntoVocabulary(rdfFileReader, vocabularyFolder,
+                            this.purgeVocabularyData, this.purgeBoundedElements);
             for (String systemMessage : systemMessages) {
                 addSystemMessage(systemMessage);
             }

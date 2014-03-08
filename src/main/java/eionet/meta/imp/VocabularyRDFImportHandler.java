@@ -169,6 +169,10 @@ public class VocabularyRDFImportHandler implements RDFHandler {
      * Number of concepts updated per predicate.
      */
     private Map<String, Set<Integer>> predicateUpdatesAtConcepts = null;
+    /**
+     * Boolean to create new data elements for predicates.
+     */
+    private boolean createNewDataElementsForPredicates = false;
 
     //TODO remove these!! they are used for debugging purposes!
     private int numberOfSearches = 0;
@@ -177,6 +181,7 @@ public class VocabularyRDFImportHandler implements RDFHandler {
     private long start = 0;
     private long end = 0;
     private int numberOfCacheHit = 0;
+    private int hitForNewCreation = 0;
 
     /**
      * Constructor for RDFHandler to import rdf into vocabulary.
@@ -187,17 +192,19 @@ public class VocabularyRDFImportHandler implements RDFHandler {
      * @param bindedElementsIds binded elements ids.
      */
     public VocabularyRDFImportHandler(String folderContextRoot, List<VocabularyConcept> concepts, Map<String,
-            List<String>> bindedElements, Map<String, Integer> bindedElementsIds) {
+            List<String>> bindedElements, Map<String, Integer> bindedElementsIds, boolean createNewDataElementsForPredicates) {
         this.folderContextRootWithConceptKey = folderContextRoot;
         this.concepts = concepts;
         this.bindedElements = bindedElements;
         this.bindedElementsIds = bindedElementsIds;
+        this.createNewDataElementsForPredicates = createNewDataElementsForPredicates;
         this.toBeUpdatedConcepts = new ArrayList<VocabularyConcept>();
         this.logs = new ArrayList<String>();
         this.boundedURIs = new HashMap<String, String>();
         this.attributePositions = new HashMap<String, Map<String, Integer>>();
         this.relatedConceptCache = new HashMap<String, VocabularyConcept>();
         this.predicateUpdatesAtConcepts = new HashMap<String, Set<Integer>>();
+
     } // end of constructor
 
     @Override
@@ -361,7 +368,6 @@ public class VocabularyRDFImportHandler implements RDFHandler {
                 candidateForConceptAttribute = false;
             }
         }
-        conceptIdsUpdatedWithPredicate.add(this.lastFoundConcept.getId());
 
         if (candidateForConceptAttribute) {
             //update concept value here
@@ -381,9 +387,12 @@ public class VocabularyRDFImportHandler implements RDFHandler {
             if (!StringUtils.equals(attributeIdentifier, this.prevAttributeIdentifier)) {
                 this.elementsOfConcept = VocabularyCSVOutputHelper.getDataElementValuesByName(dataElemIdentifier,
                         this.lastFoundConcept.getElementAttributes());
-                if (this.elementsOfConcept == null) {
+                if (this.elementsOfConcept == null
+                        || (this.createNewDataElementsForPredicates
+                        && !conceptIdsUpdatedWithPredicate.contains(this.lastFoundConcept.getId()))) {
                     this.elementsOfConcept = new ArrayList<DataElement>();
                     this.lastFoundConcept.getElementAttributes().add(this.elementsOfConcept);
+                    this.hitForNewCreation++;
                 }
             }
 
@@ -514,6 +523,7 @@ public class VocabularyRDFImportHandler implements RDFHandler {
                 }
             }
             attributePosition.put(attributeIdentifier, ++index);
+            conceptIdsUpdatedWithPredicate.add(this.lastFoundConcept.getId());
         }
 
         this.numberOfValidTriples++;
@@ -534,7 +544,9 @@ public class VocabularyRDFImportHandler implements RDFHandler {
             this.logs.add("Number of concepts updated for predicate (" + key + "): "
                     + this.predicateUpdatesAtConcepts.get(key).size());
         }
+        this.logs.add("Newly created dataelems for concepts: " + this.hitForNewCreation);
         this.logs.add("Number of newly created concepts: " + ((-1) * this.numberOfCreatedConcepts));
+
     } // end of method endRDF
 
     public List<VocabularyConcept> getToBeUpdatedConcepts() {

@@ -56,7 +56,7 @@ public class RDFVocabularyImportServiceImpl implements IRDFVocabularyImportServi
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public List<String> importRdfIntoVocabulary(Reader contents, final VocabularyFolder vocabularyFolder,
-            boolean purgeVocabularyData, boolean purgeBoundedElements) throws ServiceException {
+            boolean purgeVocabularyData, boolean purgePredicateBasis) throws ServiceException {
         long start = System.currentTimeMillis();
         this.logMessages = new ArrayList<String>();
 
@@ -67,6 +67,14 @@ public class RDFVocabularyImportServiceImpl implements IRDFVocabularyImportServi
                         vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
 
         final List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+
+        if (purgeVocabularyData) {
+            String message = "All concepts ";
+            purgeConcepts(concepts);
+            concepts = new ArrayList<VocabularyConcept>();
+            message += "are deleted (with purge operation).";
+            this.logMessages.add(message);
+        }
 
         Map<String, Integer> elemToId = new HashMap<String, Integer>();
         Map<String, List<String>> bindedElemsByNS = new HashMap<String, List<String>>();
@@ -94,7 +102,7 @@ public class RDFVocabularyImportServiceImpl implements IRDFVocabularyImportServi
                 + ", number of binded elements: " + bindedElements.size());
 
         RDFParser parser = new RDFXMLParser();
-        VocabularyRDFImportHandler rdfHandler = new VocabularyRDFImportHandler(folderCtxRoot, concepts, bindedElemsByNS, elemToId);
+        VocabularyRDFImportHandler rdfHandler = new VocabularyRDFImportHandler(folderCtxRoot, concepts, bindedElemsByNS, elemToId, purgePredicateBasis);
         parser.setRDFHandler(rdfHandler);
         // parser.setStopAtFirstError(false);
         ParserConfig config = parser.getParserConfig();

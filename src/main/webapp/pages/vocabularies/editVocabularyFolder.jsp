@@ -588,6 +588,13 @@
 				       </ul>
 				</div>
 
+                <div>
+                    <stripes:checkbox id="purgeVocabularyDataRdf" name="purgeVocabularyData"/><label for="purgeVocabularyData" class="question">Purge Vocabulary Data</label>
+                </div>
+                <div>
+                    <stripes:checkbox id="purgeBoundedElementsRdf" name="purgeBoundedElements" /><label for="purgeBoundedElements" class="question">Purge Per Predicate</label>
+                </div>
+
 	            <stripes:file name="uploadedFileToImport" id="fileToUpload" size="40"  title="Select a .rdf file to import"/>
 	            <stripes:submit name="uploadRdf" value="Upload"/>
 	            <input type="button" id="closeUploadRDFDialog" value="Cancel"/>
