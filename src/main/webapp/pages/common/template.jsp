@@ -24,11 +24,14 @@
             <link rel="shortcut icon" href="<c:url value="/favicon.ico"/>" type="image/x-icon" />
 
             <link type="text/css" href="<c:url value="/css/smoothness/jquery-ui-1.8.16.custom.css" />" rel="stylesheet" />
+            <link type="text/css" media="all" href="<c:url value="/css/jscalendar/jsDatePick_ltr.min.css"/>"  rel="stylesheet" />
+
             <script type="text/javascript" src="<c:url value="/scripts/jquery-1.6.2.min.js" />"></script>
             <script type="text/javascript" src="<c:url value="/scripts/jquery-ui-1.8.16.custom.min.js" />"></script>
             <script type="text/javascript" src="<c:url value="/scripts/jquery-timers.js"/>"></script>
             <script type="text/javascript" src="<c:url value="/scripts/jquery.autocomplete.js"/>"></script>
             <script type="text/javascript" src="<c:url value="/scripts/jquery.form.min.js"/>"></script>
+            <script type="text/javascript" src="<c:url value="/scripts/jsDatePick.min.1.3.js" />"></script>
 
             <script type="text/javascript" src="<c:url value="/scripts/prototype.js"/>"></script>
             <script type="text/javascript" src="<c:url value="/scripts/util.js"/>"></script>

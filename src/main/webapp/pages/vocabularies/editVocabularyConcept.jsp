@@ -30,6 +30,24 @@
                 }
             });
         } ) ( jQuery );
+
+        window.onload = function(){
+            new JsDatePick({
+                useMode:2,
+                target:"txtObsoleteDate",
+                dateFormat:"%d.%m.%Y",
+                imgPath:"<c:url value='/css/jscalendar/img/'/>"
+            });
+            new JsDatePick({
+                useMode:2,
+                target:"txtCreatedDate",
+                dateFormat:"%d.%m.%Y",
+                imgPath:"<c:url value='/css/jscalendar/img/'/>"
+            });
+
+
+        };
+
         // ]]>
         </script>
     </stripes:layout-component>
@@ -140,7 +158,7 @@
                             Created</th>
                         <td class="simple_attr_help"></td>
                         <td class="simple_attr_value">
-                            <stripes:text formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.created" class="smalltext" size="30"/>
+                            <stripes:text id="txtCreatedDate" formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.created" class="smalltext" size="12"/>
                         </td>
                     </tr>
                     <tr>
@@ -148,7 +166,7 @@
                             Obsolete</th>
                         <td class="simple_attr_help"></td>
                         <td class="simple_attr_value">
-                            <stripes:text formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.obsolete" class="smalltext" size="30"/>
+                            <stripes:text id="txtObsoleteDate" formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.obsolete" class="smalltext" size="12"/>
                         </td>
                     </tr>
 
