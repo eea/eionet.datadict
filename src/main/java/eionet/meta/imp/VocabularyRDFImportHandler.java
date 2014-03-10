@@ -173,23 +173,23 @@ public class VocabularyRDFImportHandler implements RDFHandler {
      * Boolean to create new data elements for predicates.
      */
     private boolean createNewDataElementsForPredicates = false;
-
-    //TODO remove these!! they are used for debugging purposes!
-    private int numberOfSearches = 0;
-    private int numberOfPotentialRelatedConcepts = 0;
-    private int numberOfVocabularySearches = 0;
-    private long start = 0;
-    private long end = 0;
-    private int numberOfCacheHit = 0;
-    private int hitForNewCreation = 0;
+    /**
+     * This set includes predicates which are not bounded to vocabulary.
+     */
+    private Set<String> notBoundedPredicates = null;
+    /**
+     * This is map to get data element identifier for a predicate.
+     */
+    private Map<String, String> identifierOfPredicate = null;
 
     /**
      * Constructor for RDFHandler to import rdf into vocabulary.
      *
-     * @param folderContextRoot base uri for vocabulary.
-     * @param concepts          concepts of vocabulary
-     * @param bindedElements    binded elements to vocabulary.
-     * @param bindedElementsIds binded elements ids.
+     * @param folderContextRoot                  base uri for vocabulary.
+     * @param concepts                           concepts of vocabulary
+     * @param bindedElements                     binded elements to vocabulary.
+     * @param bindedElementsIds                  binded elements ids.
+     * @param createNewDataElementsForPredicates create new data elements for seen predicates
      */
     public VocabularyRDFImportHandler(String folderContextRoot, List<VocabularyConcept> concepts, Map<String,
             List<String>> bindedElements, Map<String, Integer> bindedElementsIds, boolean createNewDataElementsForPredicates) {
@@ -204,12 +204,12 @@ public class VocabularyRDFImportHandler implements RDFHandler {
         this.attributePositions = new HashMap<String, Map<String, Integer>>();
         this.relatedConceptCache = new HashMap<String, VocabularyConcept>();
         this.predicateUpdatesAtConcepts = new HashMap<String, Set<Integer>>();
-
+        this.notBoundedPredicates = new HashSet<String>();
+        this.identifierOfPredicate = new HashMap<String, String>();
     } // end of constructor
 
     @Override
     public void startRDF() throws RDFHandlerException {
-        start = System.currentTimeMillis();
     } // end of method startRDF
 
     @Override
@@ -235,13 +235,13 @@ public class VocabularyRDFImportHandler implements RDFHandler {
             return;
         }
 
-        if (!(object instanceof URI) && !(object instanceof Literal)) { // a resource or a literal (value)
+        // object should a resource or a literal (value)
+        if (!(object instanceof URI) && !(object instanceof Literal)) {
             //this.logs.add(st.toString() + " NOT imported, object is not instance of URI or Literal");
             return;
         }
 
-        //remove concept key if there is. TODO am i missing something here? some concepts has this some not!
-        String conceptUri = subject.stringValue(); //.replace(CONCEPT_KEY, "");
+        String conceptUri = subject.stringValue();
         if (!StringUtils.startsWith(conceptUri, this.folderContextRootWithConceptKey)) {
             //this.logs.add(st.toString() + " NOT imported, does not have base URI");
             return;
@@ -298,6 +298,7 @@ public class VocabularyRDFImportHandler implements RDFHandler {
 
         if (StringUtils.isEmpty(predicateNS)) {
             //this.logs.add(st.toString() + " NOT imported, predicate is not a bound URI nor a concept attribute");
+            this.notBoundedPredicates.add(predicateUri);
             return;
         }
 
@@ -310,7 +311,7 @@ public class VocabularyRDFImportHandler implements RDFHandler {
         }
         this.prevConceptIdentifier = conceptIdentifier;
 
-        //TODO copied and pasted code from CSV, make it common, and use collection finder
+        //TODO copied and pasted code from CSV import, make it common, collection finder
         if (this.lastFoundConcept == null) {
             int j;
             for (j = 0; j < this.concepts.size(); j++) {
@@ -339,12 +340,10 @@ public class VocabularyRDFImportHandler implements RDFHandler {
                     this.lastFoundConcept = new VocabularyConcept();
                     this.lastFoundConcept.setId(--this.numberOfCreatedConcepts);
                     this.lastFoundConcept.setIdentifier(conceptIdentifier);
-                    //this.lastFoundConcept.setLabel("");
-                    // TODO set other properties
                     List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
                     this.lastFoundConcept.setElementAttributes(newConceptElementAttributes);
-                    // vocabulary concept created
-                    this.toBeUpdatedConcepts.add(lastFoundConcept);
+                    // vocabulary concept created, add it to list
+                    this.toBeUpdatedConcepts.add(this.lastFoundConcept);
                 }
             }
         }
@@ -384,15 +383,20 @@ public class VocabularyRDFImportHandler implements RDFHandler {
         } else {
             //find the data element
             String dataElemIdentifier = predicateNS + ":" + attributeIdentifier;
+            if (!this.identifierOfPredicate.containsKey(predicateUri)) {
+                this.identifierOfPredicate.put(predicateUri, dataElemIdentifier);
+            }
             if (!StringUtils.equals(attributeIdentifier, this.prevAttributeIdentifier)) {
                 this.elementsOfConcept = VocabularyCSVOutputHelper.getDataElementValuesByName(dataElemIdentifier,
                         this.lastFoundConcept.getElementAttributes());
                 if (this.elementsOfConcept == null
                         || (this.createNewDataElementsForPredicates
                         && !conceptIdsUpdatedWithPredicate.contains(this.lastFoundConcept.getId()))) {
+                    if (this.elementsOfConcept != null) {
+                        this.lastFoundConcept.getElementAttributes().remove(this.elementsOfConcept);
+                    }
                     this.elementsOfConcept = new ArrayList<DataElement>();
                     this.lastFoundConcept.getElementAttributes().add(this.elementsOfConcept);
-                    this.hitForNewCreation++;
                 }
             }
 
@@ -410,8 +414,6 @@ public class VocabularyRDFImportHandler implements RDFHandler {
                 relatedConceptIdentifier = relatedConceptUri.substring(lastSlashIndex);
                 relatedConceptBaseUri = relatedConceptUri.substring(0, lastSlashIndex);
                 if (StringUtils.isNotEmpty(relatedConceptBaseUri) && StringUtils.isNotEmpty(relatedConceptIdentifier)) {
-                    this.numberOfPotentialRelatedConcepts++;
-
                     //check cache first
                     VocabularyConcept foundRelatedConcept = this.relatedConceptCache.get(relatedConceptUri);
                     //&& !this.notFoundRelatedConceptCache.contains(relatedConceptUri)
@@ -427,7 +429,6 @@ public class VocabularyRDFImportHandler implements RDFHandler {
                                 VocabularyFilter vocabularyFilter = new VocabularyFilter();
                                 vocabularyFilter.setIdentifier(relatedConceptVocabularyIdentifier);
                                 vocabularyFilter.setWorkingCopy(false);
-                                this.numberOfVocabularySearches++;
                                 //first search for vocabularies, to find correct concept and to make searching faster for concepts
                                 VocabularyResult vocabularyResult = this.vocabularyService.searchVocabularies(vocabularyFilter);
                                 if (vocabularyResult != null) {
@@ -448,7 +449,6 @@ public class VocabularyRDFImportHandler implements RDFHandler {
                                     filter.setVocabularyFolderId(foundVocabularyFolder.getId());
                                     //search for concepts now
                                     VocabularyConceptResult results = this.vocabularyService.searchVocabularyConcepts(filter);
-                                    this.numberOfSearches++;
                                     //if found more than one, how can system detect which one is searched for!
                                     if (results != null && results.getFullListSize() == 1) {
                                         foundRelatedConcept = results.getList().get(0);
@@ -459,9 +459,6 @@ public class VocabularyRDFImportHandler implements RDFHandler {
                                 e.printStackTrace();
                             }
                         }
-
-                    } else {
-                        numberOfCacheHit++;
                     }
 
                     //either found in cache or in database
@@ -531,22 +528,34 @@ public class VocabularyRDFImportHandler implements RDFHandler {
 
     @Override
     public void endRDF() throws RDFHandlerException {
-        end = System.currentTimeMillis();
+        //if purge per predicate is selected and rdf does not contain any for some concepts. Then those untouched concepts
+        //should be updated to remove these predicates if they have
+        for (VocabularyConcept concept : this.toBeUpdatedConcepts) {
+            for (String key : this.predicateUpdatesAtConcepts.keySet()) {
+                if (!this.predicateUpdatesAtConcepts.get(key).contains(concept.getId())) {
+                    List<DataElement> conceptElements = VocabularyCSVOutputHelper.getDataElementValuesByName(
+                            this.identifierOfPredicate.get(key),
+                            concept.getElementAttributes());
+                    if (conceptElements != null && conceptElements.size() > 0) {
+                        concept.getElementAttributes().remove(conceptElements);
+                    }
+                }
+            }
+        }
+
         this.logs.add("Valid (" + this.numberOfValidTriples + ") / Total (" + this.totalNumberOfTriples + ")");
-        this.logs.add("Number of potential related concept: " + numberOfPotentialRelatedConcepts);
-        this.logs.add("Number of vocabulary searches: " + numberOfVocabularySearches);
-        this.logs.add("Number of search: " + numberOfSearches);
-        this.logs.add("Time of handling (msecs): " + (end - start));
         this.logs.add("Found related concept cache count: " + this.relatedConceptCache.keySet().size());
-        this.logs.add("Cache hit: " + numberOfCacheHit);
         this.logs.add("Number of predicates seen: " + this.predicateUpdatesAtConcepts.size());
+        this.logs.add("Number updated concepts for predicates: ");
         for (String key : this.predicateUpdatesAtConcepts.keySet()) {
-            this.logs.add("Number of concepts updated for predicate (" + key + "): "
+            this.logs.add("--> " + key + " (" + this.identifierOfPredicate.get(key) + "): "
                     + this.predicateUpdatesAtConcepts.get(key).size());
         }
-        this.logs.add("Newly created dataelems for concepts: " + this.hitForNewCreation);
         this.logs.add("Number of newly created concepts: " + ((-1) * this.numberOfCreatedConcepts));
-
+        this.logs.add("Not imported predicates (" + this.notBoundedPredicates.size() + ") which are not bounded to vocabulary: ");
+        for (String predicate : this.notBoundedPredicates) {
+            this.logs.add("--> " + predicate);
+        }
     } // end of method endRDF
 
     public List<VocabularyConcept> getToBeUpdatedConcepts() {

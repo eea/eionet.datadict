@@ -98,11 +98,9 @@ public class RDFVocabularyImportServiceImpl implements IRDFVocabularyImportServi
             domainElements.add(temp[1]);
         }
 
-        this.logMessages.add("Number of found concepts: " + concepts.size()
-                + ", number of binded elements: " + bindedElements.size());
-
         RDFParser parser = new RDFXMLParser();
-        VocabularyRDFImportHandler rdfHandler = new VocabularyRDFImportHandler(folderCtxRoot, concepts, bindedElemsByNS, elemToId, purgePredicateBasis);
+        VocabularyRDFImportHandler rdfHandler = new VocabularyRDFImportHandler(folderCtxRoot, concepts, bindedElemsByNS,
+                elemToId, purgePredicateBasis);
         parser.setRDFHandler(rdfHandler);
         // parser.setStopAtFirstError(false);
         ParserConfig config = parser.getParserConfig();
@@ -133,29 +131,22 @@ public class RDFVocabularyImportServiceImpl implements IRDFVocabularyImportServi
 
         try {
             parser.parse(contents, folderCtxRoot);
-            //TODO handle error log messages and handler messages
             this.logMessages.addAll(rdfHandler.getLogs());
-            long importStart = System.currentTimeMillis();
-
+            this.logMessages.add("Number of errors received: " + errorLogMessages.size());
             final List<VocabularyConcept> toBeUpdatedConcepts = rdfHandler.getToBeUpdatedConcepts();
             this.logMessages.add("Number of concepts to be updated: " + toBeUpdatedConcepts.size());
             importIntoDb(vocabularyFolder.getId(), toBeUpdatedConcepts, new ArrayList<DataElement>());
-            long importEnd = System.currentTimeMillis();
-            this.logMessages.add("Import time (msecs): " + (importEnd - importStart));
         } catch (RDFParseException e) {
-            this.logMessages.add("Exception Received: " + e.getMessage());
-            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
         } catch (RDFHandlerException e) {
-            this.logMessages.add("Exception Received: " + e.getMessage());
-            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
         } catch (IOException e) {
-            this.logMessages.add("Exception Received: " + e.getMessage());
-            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
         }
 
         this.logMessages.add("RDF imported to database.");
         long end = System.currentTimeMillis();
-        this.logMessages.add("Total time for execution (msecs): " + (end - start));
+        this.logMessages.add("Total time of execution (msecs): " + (end - start));
 
         return this.logMessages;
     } // end of method importCsvIntoVocabulary
@@ -176,23 +167,6 @@ public class RDFVocabularyImportServiceImpl implements IRDFVocabularyImportServi
             this.vocabularyService.deleteVocabularyConcepts(conceptIds);
         }
     } // end of method purgeConcepts
-
-    //TODO copied pasted code refactor
-
-    /**
-     * Purge/delete binded elements from vocabulary folder.
-     *
-     * @param vocabularyFolderId id of vocabulary folder
-     * @param bindedElements     binded elements
-     * @throws ServiceException if an error occurs during operation
-     */
-    private void purgeBindedElements(int vocabularyFolderId, List<DataElement> bindedElements) throws ServiceException {
-        if (bindedElements != null && bindedElements.size() > 0) {
-            for (DataElement elem : bindedElements) {
-                this.vocabularyService.removeDataElement(vocabularyFolderId, elem.getId());
-            }
-        }
-    } // end of method purgeBindedElements
 
     /**
      * This method import objects into DB. It creates not-existing objects and then updates values.

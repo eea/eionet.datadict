@@ -458,7 +458,6 @@
                     </c:if>
 
                     <div>
-
                         <stripes:hidden name="vocabularyFolder.workingCopy" />
                         <stripes:hidden name="vocabularyFolder.id" />
                         <stripes:hidden name="vocabularyFolder.identifier" />
@@ -589,10 +588,13 @@
 				</div>
 
                 <div>
-                    <stripes:checkbox id="purgeVocabularyDataRdf" name="purgeVocabularyData"/><label for="purgeVocabularyData" class="question">Purge Vocabulary Data</label>
+                    <stripes:radio id="rdfDontPurge" name="rdfPurgeOption" checked="true" value="1" /><label for="rdfDontPurge" class="question">Don't purge vocabulary data</label>
                 </div>
                 <div>
-                    <stripes:checkbox id="purgeBoundedElementsRdf" name="purgeBoundedElements" /><label for="purgeBoundedElements" class="question">Purge Per Predicate</label>
+                    <stripes:radio id="rdfPurgeBoundedElements" name="rdfPurgeOption"  value="2"/><label for="rdfPurgeBoundedElements" class="question">Purge Per Predicate</label>
+                </div>
+                <div>
+                    <stripes:radio id="rdfPurgeVocabularyData" name="rdfPurgeOption" value="3" /><label for="rdfPurgeVocabularyData" class="question">Purge All Vocabulary Data</label>
                 </div>
 
 	            <stripes:file name="uploadedFileToImport" id="fileToUpload" size="40"  title="Select a .rdf file to import"/>

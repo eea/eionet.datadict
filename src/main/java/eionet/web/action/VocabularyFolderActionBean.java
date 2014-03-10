@@ -79,10 +79,16 @@ import java.util.List;
 public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
-     * JSP pages.
+     * JSP pages for vocabulary adding.
      */
     private static final String ADD_VOCABULARY_FOLDER_JSP = "/pages/vocabularies/addVocabularyFolder.jsp";
+    /**
+     * JSP pages for vocabulary editing.
+     */
     private static final String EDIT_VOCABULARY_FOLDER_JSP = "/pages/vocabularies/editVocabularyFolder.jsp";
+    /**
+     * JSP pages for vocabulary viewing.
+     */
     private static final String VIEW_VOCABULARY_FOLDER_JSP = "/pages/vocabularies/viewVocabularyFolder.jsp";
 
     /**
@@ -97,12 +103,15 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * Reserved event names, that cannot be vocabulary concept identifiers.
      */
-    public static List<String> RESERVED_VOCABULARY_EVENTS;
+    public static final List<String> RESERVED_VOCABULARY_EVENTS;
 
     /**
-     * Folder choice values.
+     * Folder choice value [existing].
      */
     private static final String FOLDER_CHOICE_EXISTING = "existing";
+    /**
+     * Folder choice value [new].
+     */
     private static final String FOLDER_CHOICE_NEW = "new";
 
     static {
@@ -278,6 +287,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * UI
      */
     private String origIdentifier;
+    /**
+     * Rdf purge option.
+     */
+    private int rdfPurgeOption;
 
     /**
      * Navigates to view vocabulary folder page.
@@ -414,6 +427,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution removeDataElement() throws ServiceException {
+        validateView();
+        if (!vocabularyFolder.isWorkingCopy()) {
+            throw new ServiceException("Vocabulary should be in working copy status");
+        }
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
@@ -1103,7 +1120,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             // consume stupid bom first!! if it exists!
             InputStream is = this.uploadedFileToImport.getInputStream();
             byte[] firstThreeBytes = new byte[3];
-            is.read(firstThreeBytes);
+            int readBytes = is.read(firstThreeBytes);
+            if (readBytes != 3) {
+                is.close();
+                throw new ServiceException("Input stream cannot be read");
+            }
 
             if (!Arrays.equals(firstThreeBytes, VocabularyCSVOutputHelper.BOM_BYTE_ARRAY)) {
                 is.close();
@@ -1161,9 +1182,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
 
             Reader rdfFileReader = new InputStreamReader(this.uploadedFileToImport.getInputStream(), CharEncoding.UTF_8);
+            //TODO use enum instead for rdf purge option
             List<String> systemMessages =
                     this.vocabularyRdfImportService.importRdfIntoVocabulary(rdfFileReader, vocabularyFolder,
-                            this.purgeVocabularyData, this.purgeBoundedElements);
+                            this.rdfPurgeOption == 3, this.rdfPurgeOption == 2);
             for (String systemMessage : systemMessages) {
                 addSystemMessage(systemMessage);
             }
@@ -1558,4 +1580,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         this.purgeBoundedElements = purgeBoundedElements;
     }
 
+    public void setRdfPurgeOption(int rdfPurgeOption) {
+        this.rdfPurgeOption = rdfPurgeOption;
+    }
 }
