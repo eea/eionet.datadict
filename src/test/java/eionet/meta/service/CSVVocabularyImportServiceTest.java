@@ -982,7 +982,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         } catch (ServiceException e) {
             Assert.assertEquals(
                     "Exception Message is not correct",
-                    "Cannot find single data element for column: env:de. Search returns: 2 elements. Please bind element manually then upload CSV.",
+                    "Cannot find any data element for column: env:de. Please bind element manually then upload CSV.",
                     e.getMessage());
             Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
         }
@@ -1009,7 +1009,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
             Assert.fail("Exception is not received");
         } catch (ServiceException e) {
             Assert.assertEquals("Exception Message is not correct",
-                    "Found data element does not EXACTLY match with column: env:dec, found: env:declaration", e.getMessage());
+                    "Cannot find any data element for column: env:dec. Please bind element manually then upload CSV.", e.getMessage());
             Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
         }
     }// end of test step testExceptionAndRollbackWhenAHeaderColumnDoesNotExactlyMatch

@@ -531,7 +531,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         // that has already been injected into the servlet context mock obtained above.
         Map<String, Object> richTypeRequestParams = new HashMap<String, Object>();
         FileBean uploadedCsvFile = new FileBean(null, "something", "");
-        richTypeRequestParams.put("uploadedCsvFile", uploadedCsvFile);
+        richTypeRequestParams.put("uploadedFileToImport", uploadedCsvFile);
         trip.getRequest().setAttribute(RICH_TYPE_REQUEST_PARAMS_ATTR_NAME, richTypeRequestParams);
 
         try {
@@ -542,7 +542,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
             ServiceException se = (ServiceException) e.getCause();
             Assert.assertEquals("Exception Message is not correct", "File should be a CSV file", se.getMessage());
         }
-    }// end of test step testUploadCsvWithEmptyName
+    } // end of test step testUploadCsvWithEmptyName
 
     /**
      * test when a null CSV file is uploaded
@@ -565,7 +565,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         trip.addParameter("vocabularyFolder.workingCopy", "1");
         Map<String, Object> richTypeRequestParams = new HashMap<String, Object>();
         FileBean uploadedCsvFile = new FileBean(null, "something", "uploadedfile.env");
-        richTypeRequestParams.put("uploadedCsvFile", uploadedCsvFile);
+        richTypeRequestParams.put("uploadedFileToImport", uploadedCsvFile);
         trip.getRequest().setAttribute(RICH_TYPE_REQUEST_PARAMS_ATTR_NAME, richTypeRequestParams);
 
         try {
@@ -599,7 +599,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         trip.addParameter("vocabularyFolder.workingCopy", "1");
         Map<String, Object> richTypeRequestParams = new HashMap<String, Object>();
         FileBean uploadedCsvFile = new FileBean(null, "something", "uploadedfile.csv");
-        richTypeRequestParams.put("uploadedCsvFile", uploadedCsvFile);
+        richTypeRequestParams.put("uploadedFileToImport", uploadedCsvFile);
         trip.getRequest().setAttribute(RICH_TYPE_REQUEST_PARAMS_ATTR_NAME, richTypeRequestParams);
 
         try {
@@ -611,7 +611,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
             Assert.assertEquals("Exception Message is not correct", "You should upload a valid CSV file (plain/text or csv/text)",
                     se.getMessage());
         }
-    }// end of test step testUploadCsvWithNotCsvExtension
+    } // end of test step testUploadCsvWithInvalidContentType
 
     @Override
     protected String getSeedFilename() {
