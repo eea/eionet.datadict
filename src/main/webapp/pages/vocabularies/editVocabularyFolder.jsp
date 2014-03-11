@@ -48,11 +48,23 @@
 
                 $('#uploadRDFDialog').dialog({
                     autoOpen: false,
-                    width: 500
+                    width: 500,
+                    closeOnEscape: false,
+                    open: function(event, ui) { $(".ui-dialog-titlebar-close").hide();}
                 });
 
                 $("#closeUploadRDFDialog").click(function() {
                     $('#uploadRDFDialog').dialog("close");
+                    return true;
+                });
+
+                $("#uploadRdf").click(function(){
+                    $('input#uploadRdf').attr("disabled", true);
+                    $('input#closeUploadRDFDialog').attr("disabled", true);
+                    $('#spinningImage').show();
+                    alert("This operation can take several minutes depending on size of RDF file, please do not press back button of your browser!");
+                    //$("#uploadRDFForm").attr('action', 'uploadRdf').submit();
+                    $("#uploadRDFForm").submit();
                     return true;
                 });
 
@@ -574,7 +586,7 @@
 
 	    <%-- The upload RDF dialog. Hidden unless activated. --%>
 	    <div id="uploadRDFDialog" title="Upload RDF">
-	        <stripes:form beanclass="${actionBean.class.name}" method="post">
+	        <stripes:form id="uploadRDFForm" beanclass="${actionBean.class.name}" method="post" action="uploadRdf">
 	        	<stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                 <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
                 <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
@@ -584,6 +596,9 @@
 				       <ul>
 				          <li>With this operation, contents of RDF file will be imported into vocabulary folder.</li>
 				          <li>Only a working copy can be updated with a RDF file upload.</li>
+                          <li>If user select "Purge Per Predicate" option. All seen predicates will be removed from vocabulary.</li>
+                          <li>If user select "Purge All Vocabulary Data" option. All data will be removed from vocabulary.</li>
+                          <li>Once import is successful, operation cannot be undone. If an error occurs during import, then all data will be roll-backed.</li>
 				       </ul>
 				</div>
 
@@ -598,8 +613,9 @@
                 </div>
 
 	            <stripes:file name="uploadedFileToImport" id="fileToUpload" size="40"  title="Select a .rdf file to import"/>
-	            <stripes:submit name="uploadRdf" value="Upload"/>
+	            <stripes:submit id="uploadRdf" name="uploadRdf" value="Upload"/>
 	            <input type="button" id="closeUploadRDFDialog" value="Cancel"/>
+                <img id="spinningImage" src="<%=request.getContextPath()%>/images/indicator.gif" alt="Importing..." style="display: none;"/>
 
 	        </stripes:form>
 	    </div>
