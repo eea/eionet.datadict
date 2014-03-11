@@ -21,21 +21,21 @@
 
 package eionet.meta.service;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyCSVImportHandler;
-import eionet.meta.service.data.ObsoleteStatus;
-import eionet.util.Pair;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyCSVImportHandler;
+import eionet.meta.service.data.ObsoleteStatus;
 
 /**
  * Service implementation to import CSV into a Vocabulary Folder.
@@ -83,11 +83,10 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
 
         final String folderContextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
-        VocabularyCSVImportHandler handler = new VocabularyCSVImportHandler();
-        Pair<List<VocabularyConcept>, List<DataElement>> willBeUpdatedObjects =
-                handler.generateUpdatedBeans(content, folderContextRoot, concepts, elementToId);
+        VocabularyCSVImportHandler handler = new VocabularyCSVImportHandler(folderContextRoot, concepts, elementToId, content);
+        handler.generateUpdatedBeans();
 
-        importIntoDb(vocabularyFolder.getId(), willBeUpdatedObjects.getLeft(), willBeUpdatedObjects.getRight());
+        importIntoDb(vocabularyFolder.getId(), handler.getToBeUpdatedConcepts(), handler.getNewBindedElement());
         this.logMessages.add("CSV imported into Database.");
 
         return this.logMessages;

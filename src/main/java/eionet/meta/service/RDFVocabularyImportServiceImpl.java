@@ -21,11 +21,14 @@
 
 package eionet.meta.service;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyRDFImportHandler;
-import eionet.meta.service.data.ObsoleteStatus;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.openrdf.rio.ParseErrorListener;
 import org.openrdf.rio.ParserConfig;
@@ -37,12 +40,11 @@ import org.openrdf.rio.rdfxml.RDFXMLParser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyRDFImportHandler;
+import eionet.meta.service.data.ObsoleteStatus;
 
 /**
  * Service implementation to import RDF into a Vocabulary Folder.
@@ -101,8 +103,8 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         }
 
         RDFParser parser = new RDFXMLParser();
-        VocabularyRDFImportHandler rdfHandler = new VocabularyRDFImportHandler(folderCtxRoot, concepts, bindedElemsByNS,
-                elemToId, purgePredicateBasis);
+        VocabularyRDFImportHandler rdfHandler =
+                new VocabularyRDFImportHandler(folderCtxRoot, concepts, elemToId, bindedElemsByNS, purgePredicateBasis);
         parser.setRDFHandler(rdfHandler);
         // parser.setStopAtFirstError(false);
         ParserConfig config = parser.getParserConfig();
@@ -135,8 +137,8 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
             parser.parse(contents, folderCtxRoot);
             this.logMessages.addAll(rdfHandler.getLogMessages());
             this.logMessages.add("Number of errors received: " + errorLogMessages.size());
-            final List<VocabularyConcept> toBeUpdatedConcepts = rdfHandler.getToBeUpdatedConcepts();
-            this.logMessages.add("Number of concepts to be updated: " + toBeUpdatedConcepts.size());
+            Set<VocabularyConcept> toBeUpdatedConcepts = rdfHandler.getToBeUpdatedConcepts();
+            this.logMessages.add("Number of concepts updated: " + toBeUpdatedConcepts.size());
             importIntoDb(vocabularyFolder.getId(), toBeUpdatedConcepts, new ArrayList<DataElement>());
         } catch (RDFParseException e) {
             throw new ServiceException(e.getMessage());

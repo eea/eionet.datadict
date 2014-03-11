@@ -104,32 +104,16 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
     }
 
     /* member fields */
-
-    /**
-     * value with folderContextRoot + CONCEPT_KEY .
-     */
-    private String folderContextRootWithConceptKey = null;
-
     /**
      * bounded uri's to vocabulary.
      */
     private Map<String, String> boundedURIs = null;
-    /**
-     * Concepts of folder.
-     */
-    private List<VocabularyConcept> concepts = null;
-    /**
-     * Generated concept beans.
-     */
-    private List<VocabularyConcept> toBeUpdatedConcepts = null;
+
     /**
      * Binded elements of vocabulary.
      */
-    private Map<String, List<String>> bindedElements = null;
-    /**
-     * Binded elements ids.
-     */
-    Map<String, Integer> bindedElementsIds = null;
+    protected Map<String, List<String>> bindedElements = null;
+
     /**
      * number of valid triples that are processed.
      */
@@ -171,10 +155,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      */
     private Map<String, VocabularyConcept> relatedConceptCache = null;
     /**
-     * Newly created concepts.
-     */
-    private int numberOfCreatedConcepts = 0;
-    /**
      * Number of concepts updated per predicate.
      */
     private Map<String, Set<Integer>> predicateUpdatesAtConcepts = null;
@@ -206,14 +186,11 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      *            create new data elements for seen predicates
      */
     public VocabularyRDFImportHandler(String folderContextRoot, List<VocabularyConcept> concepts,
-            Map<String, List<String>> bindedElements, Map<String, Integer> bindedElementsIds,
+            Map<String, Integer> bindedElementsIds, Map<String, List<String>> bindedElements,
             boolean createNewDataElementsForPredicates) {
-        this.folderContextRootWithConceptKey = folderContextRoot;
-        this.concepts = concepts;
+        super(folderContextRoot, concepts, bindedElementsIds);
         this.bindedElements = bindedElements;
-        this.bindedElementsIds = bindedElementsIds;
         this.createNewDataElementsForPredicates = createNewDataElementsForPredicates;
-        this.toBeUpdatedConcepts = new ArrayList<VocabularyConcept>();
         this.boundedURIs = new HashMap<String, String>();
         this.attributePositions = new HashMap<String, Map<String, Integer>>();
         this.relatedConceptCache = new HashMap<String, VocabularyConcept>();
@@ -256,13 +233,13 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         }
 
         String conceptUri = subject.stringValue();
-        if (!StringUtils.startsWith(conceptUri, this.folderContextRootWithConceptKey)) {
+        if (!StringUtils.startsWith(conceptUri, this.folderContextRoot)) {
             // this.logMessages.add(st.toString() + " NOT imported, does not have base URI");
             return;
         }
 
         // if it does not a have conceptIdentifier than it may be an attribute for vocabulary or a wrong record, so just ignore it
-        String conceptIdentifier = conceptUri.replace(this.folderContextRootWithConceptKey, "");
+        String conceptIdentifier = conceptUri.replace(this.folderContextRoot, "");
         if (StringUtils.isEmpty(conceptIdentifier) || StringUtils.contains(conceptIdentifier, "/")) {
             // this.logMessages.add(st.toString() + " NOT imported, contains a / in concept identifier or empty");
             return;
@@ -282,13 +259,11 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         String predicateNS = null;
 
         boolean candidateForConceptAttribute = false;
-        if (StringUtils.isEmpty(predicateNS)) {
-            if (StringUtils.startsWith(predicateUri, VocabularyXmlWriter.SKOS_NS)) {
-                attributeIdentifier = predicateUri.replace(VocabularyXmlWriter.SKOS_NS, "");
-                candidateForConceptAttribute = SKOS_CONCEPT_ATTRIBUTES.contains(attributeIdentifier);
-                if (candidateForConceptAttribute) {
-                    predicateNS = SKOS_CONCEPT_ATTRIBUTE_NS;
-                }
+        if (StringUtils.startsWith(predicateUri, VocabularyXmlWriter.SKOS_NS)) {
+            attributeIdentifier = predicateUri.replace(VocabularyXmlWriter.SKOS_NS, "");
+            candidateForConceptAttribute = SKOS_CONCEPT_ATTRIBUTES.contains(attributeIdentifier);
+            if (candidateForConceptAttribute) {
+                predicateNS = SKOS_CONCEPT_ATTRIBUTE_NS;
             }
         }
 
@@ -325,47 +300,17 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         }
         this.prevConceptIdentifier = conceptIdentifier;
 
-        // TODO copied and pasted code from CSV import, make it common, collection finder
         if (this.lastFoundConcept == null) {
-            int j;
-            for (j = 0; j < this.concepts.size(); j++) {
-                VocabularyConcept vc = this.concepts.get(j);
-                if (StringUtils.equals(conceptIdentifier, vc.getIdentifier())) {
-                    break;
-                }
+            this.lastFoundConcept = findOrCreateConcept(conceptIdentifier);
+
+            // if vocabulary concept couldnt find or couldnt be created
+            if (this.lastFoundConcept == null) {
+                // this.logMessages.add(st.toString() + " NOT imported, cannot find or create.");
+                return;
             }
 
-            // this.lastFoundConcept = null;
-            // concept found
-            if (j < this.concepts.size()) {
-                this.lastFoundConcept = this.concepts.remove(j);
-                // vocabulary concept found
-                this.toBeUpdatedConcepts.add(lastFoundConcept);
-            } else {
-                for (j = 0; j < this.toBeUpdatedConcepts.size(); j++) {
-                    VocabularyConcept vc = this.toBeUpdatedConcepts.get(j);
-                    if (StringUtils.equals(conceptIdentifier, vc.getIdentifier())) {
-                        this.lastFoundConcept = vc;
-                        break;
-                    }
-                }
-                if (this.lastFoundConcept == null && j == this.toBeUpdatedConcepts.size()) {
-                    // if there is already such a concept, ignore that line. if not, add a new concept with params.
-                    this.lastFoundConcept = new VocabularyConcept();
-                    this.lastFoundConcept.setId(--this.numberOfCreatedConcepts);
-                    this.lastFoundConcept.setIdentifier(conceptIdentifier);
-                    List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
-                    this.lastFoundConcept.setElementAttributes(newConceptElementAttributes);
-                    // vocabulary concept created, add it to list
-                    this.toBeUpdatedConcepts.add(this.lastFoundConcept);
-                }
-            }
-        }
-
-        // if vocabulary concept couldnt find or couldnt be created
-        if (this.lastFoundConcept == null) {
-            // this.logMessages.add(st.toString() + " NOT imported, cannot find or create.");
-            return;
+            // vocabulary concept found or created, add it to list
+            this.toBeUpdatedConcepts.add(this.lastFoundConcept);
         }
 
         Set<Integer> conceptIdsUpdatedWithPredicate = this.predicateUpdatesAtConcepts.get(predicateUri);
@@ -424,7 +369,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             // if object is a resource (i.e. URI), it can be a related concept
             if (object instanceof URI && StringUtils.isNotEmpty(elementValue)) {
                 // for better meaning
-                String relatedConceptUri = elementValue;
+                String relatedConceptUri = elementValue; // for code readability
                 int lastSlashIndex = relatedConceptUri.lastIndexOf("/") + 1;
                 relatedConceptIdentifier = relatedConceptUri.substring(lastSlashIndex);
                 relatedConceptBaseUri = relatedConceptUri.substring(0, lastSlashIndex);
@@ -572,9 +517,5 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             this.logMessages.add("--> " + predicate);
         }
     } // end of method endRDF
-
-    public List<VocabularyConcept> getToBeUpdatedConcepts() {
-        return toBeUpdatedConcepts;
-    }
 
 } // end of class VocabularyRDFImportHandler

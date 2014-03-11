@@ -39,7 +39,6 @@ import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
-import eionet.util.Pair;
 import eionet.util.VocabularyCSVOutputHelper;
 
 /**
@@ -51,30 +50,36 @@ import eionet.util.VocabularyCSVOutputHelper;
 public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
     /**
-     * In this method, beans are generated (either created or updated) according to values in CSV file.
+     * CSV file reader.
+     */
+    private Reader content;
+
+    /**
      *
+     * @param folderContextRoot
+     *            base uri for vocabulary.
+     * @param concepts
+     *            concepts of vocabulary
+     * @param bindedElements
+     *            binded elements to vocabulary
      * @param content
      *            reader to read file contents
-     * @param folderContextRoot
-     *            context root of folder under bulk edit
-     * @param concepts
-     *            founded concepts before import operation
-     * @param bindedElementsToFolder
-     *            already binded elements to vocabulary
-     * @return generated beans(concepts and dataelements) for update operation
+     */
+    public VocabularyCSVImportHandler(String folderContextRoot, List<VocabularyConcept> concepts,
+            Map<String, Integer> bindedElements, Reader content) {
+        super(folderContextRoot, concepts, bindedElements);
+        this.content = content;
+    }
+
+    /**
+     * In this method, beans are generated (either created or updated) according to values in CSV file.
+     *
      * @throws eionet.meta.service.ServiceException
      *             if there is the input is invalid
      */
-    public Pair<List<VocabularyConcept>, List<DataElement>> generateUpdatedBeans(Reader content, String folderContextRoot,
-            List<VocabularyConcept> concepts, Map<String, Integer> bindedElementsToFolder) throws ServiceException {
-
-        List<VocabularyConcept> toBeUpdatedConcepts = new ArrayList<VocabularyConcept>();
-        List<DataElement> newBindedElement = new ArrayList<DataElement>();
-        Pair<List<VocabularyConcept>, List<DataElement>> returnPair =
-                new Pair<List<VocabularyConcept>, List<DataElement>>(toBeUpdatedConcepts, newBindedElement);
-
+    public void generateUpdatedBeans() throws ServiceException {
         // content.
-        CSVReader reader = new CSVReader(content);
+        CSVReader reader = new CSVReader(this.content);
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
@@ -107,7 +112,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 }
 
                 // if already binded elements does not contain header, add it (if possible)
-                if (!bindedElementsToFolder.containsKey(elementHeader)) {
+                if (!this.bindedElementsIds.containsKey(elementHeader)) {
                     // search for data element
                     DataElementsFilter elementsFilter = new DataElementsFilter();
                     elementsFilter.setRegStatus("Released");
@@ -115,7 +120,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     elementsFilter.setIdentifier(elementHeader);
                     elementsFilter.setIncludeHistoricVersions(false);
                     elementsFilter.setExactIdentifierMatch(true);
-                    DataElementsResult elementsResult = dataService.searchDataElements(elementsFilter);
+                    DataElementsResult elementsResult = this.dataService.searchDataElements(elementsFilter);
                     // if there is one and only one element check if header and identifer exactly matches!
                     if (elementsResult.getTotalResults() < 1) {
                         throw new ServiceException("Cannot find any data element for column: " + elementHeader
@@ -128,8 +133,8 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                         DataElement elem = elementsResult.getDataElements().get(0);
                         if (StringUtils.equals(elementHeader, elem.getIdentifier())) {
                             // found it, add to list and map
-                            bindedElementsToFolder.put(elementHeader, elementsResult.getDataElements().get(0).getId());
-                            newBindedElement.add(elem);
+                            this.bindedElementsIds.put(elementHeader, elementsResult.getDataElements().get(0).getId());
+                            this.newBindedElement.add(elem);
                         } else {
                             throw new ServiceException("Found data element does not EXACTLY match with column: " + elementHeader
                                     + ", found: " + elem.getIdentifier());
@@ -160,66 +165,38 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     this.logMessages
                             .add("Row (" + rowNumber + ") is skipped (Concept is excluded by user from update operation).");
                     continue;
-                } else if (!StringUtils.startsWith(uri, folderContextRoot)) {
+                } else if (!StringUtils.startsWith(uri, this.folderContextRoot)) {
                     this.logMessages.add("Row (" + rowNumber + ") is skipped (Base URI does not match with Vocabulary).");
                     continue;
                 }
 
-                String identifier = uri.replace(folderContextRoot, "");
-                if (StringUtils.contains(identifier, "/")) {
+                String conceptIdentifier = uri.replace(this.folderContextRoot, "");
+                if (StringUtils.contains(conceptIdentifier, "/")) {
                     this.logMessages.add("Row (" + rowNumber + ") does not contain a valid concept identifier.");
                     continue;
                 } // end of if identifier matches
 
                 // now we have a valid row
-                int j = 0;
-                for (j = 0; j < concepts.size(); j++) {
-                    VocabularyConcept vc = concepts.get(j);
-                    if (StringUtils.equals(identifier, vc.getIdentifier())) {
-                        break;
-                    }
-                }
-
-                VocabularyConcept found = null;
-                // concept found
-                if (j < concepts.size()) {
-                    found = concepts.remove(j);
-                } else {
-                    for (j = 0; j < toBeUpdatedConcepts.size(); j++) {
-                        VocabularyConcept vc = toBeUpdatedConcepts.get(j);
-                        if (StringUtils.equals(identifier, vc.getIdentifier())) {
-                            break;
-                        }
-                    }
-                    if (j == toBeUpdatedConcepts.size()) {
-                        // if there is already such a concept, ignore that line. if not, add a new concept with params.
-                        found = new VocabularyConcept();
-
-                        found.setIdentifier(identifier);
-                        // TODO set other properties
-                        List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
-                        found.setElementAttributes(newConceptElementAttributes);
-                    }
-                }
+                VocabularyConcept lastFoundConcept = findOrCreateConcept(conceptIdentifier);
 
                 // if vocabulary concept duplicated with another row, importer will ignore it not to repeat
-                if (found == null) {
+                if (lastFoundConcept == null) {
                     this.logMessages.add("Row (" + rowNumber + ") duplicates with a previous concept, it is skipped.");
                     continue;
                 }
 
                 // vocabulary concept found or created
-                toBeUpdatedConcepts.add(found);
+                this.toBeUpdatedConcepts.add(lastFoundConcept);
 
-                found.setLabel(StringUtils.trimToNull(lineParams[1]));
-                found.setDefinition(StringUtils.trimToNull(lineParams[2]));
-                found.setNotation(StringUtils.trimToNull(lineParams[3]));
-                // TODO if it is not a valid date, then it can be skippped actually
+                lastFoundConcept.setLabel(StringUtils.trimToNull(lineParams[1]));
+                lastFoundConcept.setDefinition(StringUtils.trimToNull(lineParams[2]));
+                lastFoundConcept.setNotation(StringUtils.trimToNull(lineParams[3]));
+
                 if (StringUtils.isNotEmpty(lineParams[4])) {
-                    found.setCreated(dateFormatter.parse(lineParams[4]));
+                    lastFoundConcept.setCreated(dateFormatter.parse(lineParams[4]));
                 }
                 if (StringUtils.isNotEmpty(lineParams[5])) {
-                    found.setObsolete(dateFormatter.parse(lineParams[5]));
+                    lastFoundConcept.setObsolete(dateFormatter.parse(lineParams[5]));
                 }
 
                 // now it is time iterate on rest of the columns, here is the tricky part
@@ -240,18 +217,19 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
                     if (!StringUtils.equals(elementHeader, prevHeader)) {
                         elementsOfConcept =
-                                VocabularyCSVOutputHelper.getDataElementValuesByName(elementHeader, found.getElementAttributes());
+                                VocabularyCSVOutputHelper.getDataElementValuesByName(elementHeader,
+                                        lastFoundConcept.getElementAttributes());
 
                         if (elementsOfConcept == null) {
                             elementsOfConcept = new ArrayList<DataElement>();
-                            found.getElementAttributes().add(elementsOfConcept);
+                            lastFoundConcept.getElementAttributes().add(elementsOfConcept);
                         }
                     }
 
                     if (!StringUtils.equals(elementHeader, prevHeader) || !StringUtils.equals(lang, prevLang)) {
                         elementsOfConceptByLang =
                                 VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang(elementHeader, lang,
-                                        found.getElementAttributes());
+                                        lastFoundConcept.getElementAttributes());
                     }
 
                     if (!attributePosition.containsKey(header[k])) {
@@ -261,7 +239,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
                     // if lineParams[k] is empty, user wants to delete
                     if (StringUtils.isNotEmpty(lineParams[k])) {
-                        DataElement elem = null;
+                        DataElement elem;
                         if (index < elementsOfConceptByLang.size()) {
                             elem = elementsOfConceptByLang.get(index);
                         } else {
@@ -269,8 +247,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                             elementsOfConcept.add(elem);
                             elem.setAttributeLanguage(lang);
                             elem.setIdentifier(elementHeader);
-                            elem.setId(bindedElementsToFolder.get(elementHeader));
-                            // TODO set some properties here
+                            elem.setId(this.bindedElementsIds.get(elementHeader));
                         }
 
                         // TODO what if it is a relational element, it makes things more complicated
@@ -313,7 +290,6 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 e.printStackTrace();
             }
         }
-        return returnPair;
     } // end of method generatedUpdatedBeans
 
 } // end of class VocabularyCSVImportHandler

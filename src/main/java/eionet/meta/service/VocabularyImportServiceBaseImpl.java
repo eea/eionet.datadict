@@ -22,6 +22,7 @@ package eionet.meta.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -104,11 +105,10 @@ public abstract class VocabularyImportServiceBaseImpl {
      *            concepts of vocabulary
      * @param newBindedElement
      *            newly binded elements
-     * @return
      * @throws ServiceException
      *             when an error occurs
      */
-    protected void importIntoDb(int vocabularyId, List<VocabularyConcept> vocabularyConcepts, List<DataElement> newBindedElement)
+    protected void importIntoDb(int vocabularyId, Set<VocabularyConcept> vocabularyConcepts, List<DataElement> newBindedElement)
             throws ServiceException {
         // first of all insert new binded element
         for (DataElement elem : newBindedElement) {
