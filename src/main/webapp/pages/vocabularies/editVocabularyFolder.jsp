@@ -586,7 +586,7 @@
 
 	    <%-- The upload RDF dialog. Hidden unless activated. --%>
 	    <div id="uploadRDFDialog" title="Upload RDF">
-	        <stripes:form id="uploadRDFForm" beanclass="${actionBean.class.name}" method="post" action="uploadRdf">
+	        <stripes:form id="uploadRDFForm" beanclass="${actionBean.class.name}" method="post" action="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/uploadRdf">
 	        	<stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                 <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
                 <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />

@@ -12,7 +12,7 @@
  * The Original Code is Data Dictionary
  *
  * The Initial Owner of the Original Code is European Environment
- * Agency.  Portions created by TripleDev are Copyright
+ * Agency. Portions created by TripleDev are Copyright
  * (C) European Environment Agency.  All Rights Reserved.
  *
  * Contributor(s):
@@ -23,12 +23,10 @@ package eionet.util;
 import java.io.Serializable;
 
 /**
- *
- * @author Enver
- *
  * @param <L>
  * @param <C>
  * @param <R>
+ * @author Enver
  */
 public class Triple<L, C, R> implements Serializable {
 
@@ -37,16 +35,27 @@ public class Triple<L, C, R> implements Serializable {
      */
     private static final long serialVersionUID = 2L;
 
-    /** */
+    /**
+     * Left Value.
+     */
     private L left;
+    /**
+     * Central Value.
+     */
     private C central;
+    /**
+     * Right Value.
+     */
     private R right;
 
     /**
-     * @param left
-     * @param right
+     * Class constructor.
+     *
+     * @param left    left
+     * @param central central
+     * @param right   right
      */
-    public Triple(L left, C central, R right) {        
+    public Triple(L left, C central, R right) {
         this.left = left;
         this.central = central;
         this.right = right;
@@ -60,11 +69,10 @@ public class Triple<L, C, R> implements Serializable {
     }
 
     /**
-     * @param left
-     *            the left to set
+     * @param left the left to set
      */
-    public void setLeft(L id) {
-        this.left = id;
+    public void setLeft(L left) {
+        this.left = left;
     }
 
     /**
@@ -89,10 +97,9 @@ public class Triple<L, C, R> implements Serializable {
     }
 
     /**
-     * @param right
-     *            the right to set
+     * @param right the right to set
      */
-    public void setRight(R value) {
-        this.right = value;
+    public void setRight(R right) {
+        this.right = right;
     }
 }

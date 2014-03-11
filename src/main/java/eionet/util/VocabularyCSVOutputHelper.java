@@ -9,7 +9,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
- * The Original Code is Content Registry 3
+ * The Original Code is Data Dictionary
  *
  * The Initial Owner of the Original Code is European Environment
  * Agency. Portions created by TripleDev or Zero Technologies are Copyright
@@ -37,17 +37,19 @@ import eionet.meta.dao.domain.VocabularyConcept;
 
 /**
  * Vocabulary CSV output helper.
- * 
+ *
  * @author Juhan Voolaid
  */
 public final class VocabularyCSVOutputHelper {
-    
+
     /**
-     * how many values are takend from vocabulary concept.
+     * how many values are taken from vocabulary concept.
      */
     public static final int CONCEPT_ENTRIES_COUNT = 6;
-    
-    public static final byte[] BOM_BYTE_ARRAY = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+    /**
+     * BOM byte array length.
+     */
+    public static final int BOM_BYTE_ARRAY_LENGTH = 3;
 
     /**
      * Prevent public initialization.
@@ -58,7 +60,7 @@ public final class VocabularyCSVOutputHelper {
 
     /**
      * Writes CSV to output stream.
-     * 
+     *
      * @param out
      *            outputstream
      * @param uriPrefix
@@ -153,23 +155,22 @@ public final class VocabularyCSVOutputHelper {
 
     /**
      * Writes utf-8 BOM in the given writer.
-     * 
+     *
      * @param out
      *            current outputstream
      * @throws IOException
      *             if connection fails
      */
     private static void addBOM(OutputStream out) throws IOException {
-        
-        for (byte b : BOM_BYTE_ARRAY) {
+        byte[] bomByteArray = getBomByteArray();
+        for (byte b : bomByteArray) {
             out.write(b);
         }
-
     }
 
     /**
      * finds list of data element values by name.
-     * 
+     *
      * @param elemName
      *            element name to be looked for
      * @param elems
@@ -180,7 +181,7 @@ public final class VocabularyCSVOutputHelper {
         for (List<DataElement> elem : elems) {
             if (elem != null && elem.size() > 0) {
                 DataElement elemMeta = elem.get(0);
-                if (elemMeta != null && StringUtils.equals(elemMeta.getIdentifier(),elemName)) {
+                if (elemMeta != null && StringUtils.equals(elemMeta.getIdentifier(), elemName)) {
                     return elem;
                 }
             }
@@ -189,8 +190,8 @@ public final class VocabularyCSVOutputHelper {
     }
 
     /**
-     * finds list of data element values by name and language
-     * 
+     * finds list of data element values by name and language.
+     *
      * @param elemName
      *            element name to be looked for
      * @param lang
@@ -199,12 +200,11 @@ public final class VocabularyCSVOutputHelper {
      *            list containing element definitions with values
      * @return list of dataelement objects containing values
      */
-    public static List<DataElement>
-            getDataElementValuesByNameAndLang(String elemName, String lang, List<List<DataElement>> elems) {
+    public static List<DataElement> getDataElementValuesByNameAndLang(String elemName, String lang, List<List<DataElement>> elems) {
         boolean isLangEmpty = StringUtils.isEmpty(lang);
         ArrayList<DataElement> elements = new ArrayList<DataElement>();
         for (List<DataElement> elem : elems) {
-            if (elem == null || elem.size() < 1 || !StringUtils.equals(elem.get(0).getIdentifier(), elemName)) {// check first one
+            if (elem == null || elem.size() < 1 || !StringUtils.equals(elem.get(0).getIdentifier(), elemName)) { // check first one
                 continue;
             }
             for (DataElement elemMeta : elem) {
@@ -215,15 +215,14 @@ public final class VocabularyCSVOutputHelper {
                     break;
                 }
             }
-           // return elements;
+            // return elements;
         }
         return elements;
-    }// end of method getDataElementValuesByNameAndLang
+    } // end of method getDataElementValuesByNameAndLang
 
     /**
-     * Adds pre-defined entries to the array.
-     * If updated 
-     * 
+     * Adds pre-defined entries to the array. If updated
+     *
      * @param entries
      *            array for CSV output
      */
@@ -235,4 +234,13 @@ public final class VocabularyCSVOutputHelper {
         entries[4] = "StartDate";
         entries[5] = "EndDate";
     }
+
+    /**
+     * Returns bom byte array.
+     *
+     * @return bom byte array
+     */
+    public static byte[] getBomByteArray() {
+        return new byte[] {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+    } // end of method getBomByteArray
 }

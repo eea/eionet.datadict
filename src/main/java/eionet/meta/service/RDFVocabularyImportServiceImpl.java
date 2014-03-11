@@ -1,3 +1,24 @@
+/*
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ *
+ * The Original Code is Data Dictionary
+ *
+ * The Initial Owner of the Original Code is European Environment
+ * Agency. Portions created by TripleDev are Copyright
+ * (C) European Environment Agency.  All Rights Reserved.
+ *
+ * Contributor(s):
+ * TripleDev
+ */
+
 package eionet.meta.service;
 
 import eionet.meta.dao.domain.DataElement;
@@ -13,7 +34,6 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.helpers.BasicParserSettings;
 import org.openrdf.rio.rdfxml.RDFXMLParser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,25 +50,7 @@ import java.util.Map;
  * @author enver
  */
 @Service
-public class RDFVocabularyImportServiceImpl implements IRDFVocabularyImportService {
-
-    /**
-     * Vocabulary service.
-     */
-    @Autowired
-    private IVocabularyService vocabularyService;
-
-    /**
-     * Data elements service.
-     */
-    @Autowired
-    private IDataService dataService;
-
-    /**
-     * Log message list.
-     */
-    private List<String> logMessages = null;
-
+public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseImpl implements IRDFVocabularyImportService {
 
     /**
      * {@inheritDoc}
@@ -131,7 +133,7 @@ public class RDFVocabularyImportServiceImpl implements IRDFVocabularyImportServi
 
         try {
             parser.parse(contents, folderCtxRoot);
-            this.logMessages.addAll(rdfHandler.getLogs());
+            this.logMessages.addAll(rdfHandler.getLogMessages());
             this.logMessages.add("Number of errors received: " + errorLogMessages.size());
             final List<VocabularyConcept> toBeUpdatedConcepts = rdfHandler.getToBeUpdatedConcepts();
             this.logMessages.add("Number of concepts to be updated: " + toBeUpdatedConcepts.size());
@@ -149,54 +151,6 @@ public class RDFVocabularyImportServiceImpl implements IRDFVocabularyImportServi
         this.logMessages.add("Total time of execution (msecs): " + (end - start));
 
         return this.logMessages;
-    } // end of method importCsvIntoVocabulary
+    } // end of method importRdfIntoVocabulary
 
-    /**
-     * Purge/delete concepts from database.
-     *
-     * @param concepts to be deleted
-     * @throws ServiceException if an error occurs during operation
-     */
-    private void purgeConcepts(List<VocabularyConcept> concepts) throws ServiceException {
-        List<Integer> conceptIds = new ArrayList<Integer>();
-
-        if (concepts != null && concepts.size() > 0) {
-            for (VocabularyConcept vc : concepts) {
-                conceptIds.add(vc.getId());
-            }
-            this.vocabularyService.deleteVocabularyConcepts(conceptIds);
-        }
-    } // end of method purgeConcepts
-
-    /**
-     * This method import objects into DB. It creates not-existing objects and then updates values.
-     * All operation is done Spring Service Layer.
-     *
-     * @param vocabularyId       vocabulary id
-     * @param vocabularyConcepts concepts of vocabulary
-     * @param newBindedElement   newly binded elements
-     * @return
-     * @throws ServiceException when an error occurs
-     */
-    private void importIntoDb(int vocabularyId, List<VocabularyConcept> vocabularyConcepts, List<DataElement> newBindedElement)
-            throws ServiceException {
-        // first of all insert new binded element
-        for (DataElement elem : newBindedElement) {
-            this.vocabularyService.addDataElement(vocabularyId, elem.getId());
-        }
-
-        for (VocabularyConcept vc : vocabularyConcepts) {
-            // STEP 1., UPDATE OR INSERT VOCABULARY CONCEPT
-            if (vc.getId() <= 0) {
-                // INSERT VOCABULARY CONCEPT
-                int insertedId = this.vocabularyService.createVocabularyConcept(vocabularyId, vc);
-                // after insert operation get id of the vocabulary and set it!
-                vc.setId(insertedId);
-            }
-
-            // UPDATE VOCABULARY CONCEPT
-            this.vocabularyService.updateVocabularyConceptNonTransactional(vc);
-        }
-    } // end of method importIntoDb
-
-} // end of class CSVVocabularyImport
+} // end of class RDFVocabularyImportServiceImpl
