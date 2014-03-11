@@ -36,12 +36,14 @@
                 useMode:2,
                 target:"txtObsoleteDate",
                 dateFormat:"%d.%m.%Y",
+                cellColorScheme:"eea",
                 imgPath:"<c:url value='/css/jscalendar/img/'/>"
             });
             new JsDatePick({
                 useMode:2,
                 target:"txtCreatedDate",
                 dateFormat:"%d.%m.%Y",
+                cellColorScheme:"eea",
                 imgPath:"<c:url value='/css/jscalendar/img/'/>"
             });
 
