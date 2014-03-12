@@ -157,10 +157,22 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
     }// end of method findVocabularyConceptById
 
     /**
-     * In this test, three line CSV is imported.
-     * Row 1 includes updated values for concept and DataElements (no insertion, only update)
-     * Row 2 is a commented out line, it has updated values but importer should ignore this line.
-     * Row 3 is not updated (it has same values in database, there should be no update for this vocabulary concept)
+     * Utility code to make test code more readable. Finds VocabularyConcept with given identifier in a list
+     *
+     * @param concepts
+     *            VocabularyConcepts to be searched
+     * @param identifier
+     *            identifier for comparison
+     * @return First found VocabularyConcept
+     */
+    private VocabularyConcept findVocabularyConceptByIdentifier(List<VocabularyConcept> concepts, String identifier) {
+        return (VocabularyConcept) CollectionUtils.find(concepts, new VocabularyConceptEvaluateOnIdentifierPredicate(identifier));
+    }// end of method findVocabularyConceptByIdentifier
+
+    /**
+     * In this test, three line CSV is imported. Row 1 includes updated values for concept and DataElements (no insertion, only
+     * update) Row 2 is a commented out line, it has updated values but importer should ignore this line. Row 3 is not updated (it
+     * has same values in database, there should be no update for this vocabulary concept)
      *
      * @throws Exception
      */
@@ -178,7 +190,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
-        //transactionManager.getTransaction(null).flush();
+        // transactionManager.getTransaction(null).flush();
         Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
@@ -206,9 +218,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
     }// end of test step testIfConceptAndElementsUpdated
 
     /**
-     * In this test, two line CSV is imported.
-     * Row 1 includes updated values for concept and DataElements (no insertion, only update)
-     * Row 2 includes updated values for concept and DataElements (no insertion, only update)
+     * In this test, two line CSV is imported. Row 1 includes updated values for concept and DataElements (no insertion, only
+     * update) Row 2 includes updated values for concept and DataElements (no insertion, only update)
      *
      * @throws Exception
      */
@@ -263,8 +274,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
     }// end of test step testIfConceptsAndElementsUpdated
 
     /**
-     * In this test, one line CSV is imported.
-     * Row 1 includes a non existing concept to be imported with data elements
+     * In this test, one line CSV is imported. Row 1 includes a non existing concept to be imported with data elements
      *
      * @throws Exception
      */
@@ -345,8 +355,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
     }// end of test step testIfNewConceptAdded
 
     /**
-     * In this test, one line CSV is imported.
-     * Row 1 includes a non existing concept to be imported with data elements after purge
+     * In this test, one line CSV is imported. Row 1 includes a non existing concept to be imported with data elements after purge
      *
      * @throws Exception
      */
@@ -428,9 +437,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
     }// end of test step testIfNewConceptAddedAfterPurge
 
     /**
-     * In this test, two line CSV is imported.
-     * Row 1 includes updated values for concept and DataElements (no insertion, only update)
-     * Row 2 includes updated values for concept and DataElements (no insertion, only update)
+     * In this test, two line CSV is imported. Row 1 includes updated values for concept and DataElements (no insertion, only
+     * update) Row 2 includes updated values for concept and DataElements (no insertion, only update)
      *
      * @throws Exception
      */
@@ -479,8 +487,11 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
         Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
-        vc8.setId(updatedConcepts.get(0).getId());
-        vc10.setId(updatedConcepts.get(1).getId());
+
+        VocabularyConcept vc8Updated = findVocabularyConceptByIdentifier(updatedConcepts, vc8.getIdentifier());
+        vc8.setId(vc8Updated.getId());
+        VocabularyConcept vc10Updated = findVocabularyConceptByIdentifier(updatedConcepts, vc10.getIdentifier());
+        vc10.setId(vc10Updated.getId());
         concepts = new ArrayList<VocabularyConcept>();
         concepts.add(vc8);
         concepts.add(vc10);
@@ -491,8 +502,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
     }// end of test step testIfConceptsAndElementsUpdatedAfterPurge
 
     /**
-     * In this test, two line CSV is imported.
-     * Rows are derived from base CSV. Just identifiers are updated. Purge operation is tested.
+     * In this test, two line CSV is imported. Rows are derived from base CSV. Just identifiers are updated. Purge operation is
+     * tested.
      *
      * @throws Exception
      */
@@ -523,8 +534,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
 
         // concepts should be inserted in the same order as they are in csv file, get ids from updated beans
-        concepts.get(0).setId(updatedConcepts.get(0).getId());
-        concepts.get(1).setId(updatedConcepts.get(1).getId());
+        concepts.get(0).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(0).getIdentifier()).getId());
+        concepts.get(1).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(1).getIdentifier()).getId());
 
         // compare manually updated objects with queried ones (after import operation)
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
@@ -532,8 +543,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
     }// end of test step testIfConceptsAddedAfterPurge
 
     /**
-     * In this test, two line CSV is imported.
-     * Rows are derived from base CSV. Just identifiers are updated. Both purge operations are tested.
+     * In this test, two line CSV is imported. Rows are derived from base CSV. Just identifiers are updated. Both purge operations
+     * are tested.
      *
      * @throws Exception
      */
@@ -564,8 +575,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
 
         // concepts should be inserted in the same order as they are in csv file, get ids from updated beans
-        concepts.get(0).setId(updatedConcepts.get(0).getId());
-        concepts.get(1).setId(updatedConcepts.get(1).getId());
+        concepts.get(0).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(0).getIdentifier()).getId());
+        concepts.get(1).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(1).getIdentifier()).getId());
 
         // compare manually updated objects with queried ones (after import operation)
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
@@ -573,8 +584,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
     }// end of test step testIfConceptsAddedAfterAllPurge
 
     /**
-     * In this test, two line CSV is imported.
-     * Rows are derived from base CSV. Just identifiers are updated. Both purge operations are tested.
+     * In this test, two line CSV is imported. Rows are derived from base CSV. Just identifiers are updated. Both purge operations
+     * are tested.
      *
      * @throws Exception
      */
@@ -799,8 +810,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
 
         // concepts should be inserted in the same order as they are in csv file, get ids from updated beans
-        concepts.get(0).setId(updatedConcepts.get(0).getId());
-        concepts.get(1).setId(updatedConcepts.get(1).getId());
+        concepts.get(0).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(0).getIdentifier()).getId());
+        concepts.get(1).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(1).getIdentifier()).getId());
 
         // compare manually updated objects with queried ones (after import operation)
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
@@ -808,16 +819,14 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
     }// end of test step testIfConceptsAddedAfterAllPurge
 
     /**
-     * In this test, 9 lines CSV is imported.
-     * Row 1 includes updated values for concept and DataElement (no insertion, only update)
-     * Row 2 is a commented out line, it has updated values but importer should ignore this line.
-     * Row 3 has wrong base uri, it has updated values but importer should ignore this line.
-     * Row 4 does not have base uri, it has updated values but importer should ignore this line.
-     * Row 5 has blank base uri, it has updated values but importer should ignore this line.
-     * Row 6 has identifier starting with /, it has updated values but importer should ignore this line.
-     * Row 7 has identifier ending with /, it has updated values but importer should ignore this line.
-     * Row 8 is a duplicate with concept at row 1, it has updated values but importer should ignore this line.
-     * Row 9 has not equal column with header, it has updated values but importer should ignore this line.
+     * In this test, 9 lines CSV is imported. Row 1 includes updated values for concept and DataElement (no insertion, only update)
+     * Row 2 is a commented out line, it has updated values but importer should ignore this line. Row 3 has wrong base uri, it has
+     * updated values but importer should ignore this line. Row 4 does not have base uri, it has updated values but importer should
+     * ignore this line. Row 5 has blank base uri, it has updated values but importer should ignore this line. Row 6 has identifier
+     * starting with /, it has updated values but importer should ignore this line. Row 7 has identifier ending with /, it has
+     * updated values but importer should ignore this line. Row 8 is a duplicate with concept at row 1, it has updated values but
+     * importer should ignore this line. Row 9 has not equal column with header, it has updated values but importer should ignore
+     * this line.
      *
      * @throws Exception
      */
@@ -980,8 +989,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
             vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
             Assert.fail("Exception is not received");
         } catch (ServiceException e) {
-            Assert.assertEquals(
-                    "Exception Message is not correct",
+            Assert.assertEquals("Exception Message is not correct",
                     "Cannot find any data element for column: env:de. Please bind element manually then upload CSV.",
                     e.getMessage());
             Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
@@ -1009,7 +1017,8 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
             Assert.fail("Exception is not received");
         } catch (ServiceException e) {
             Assert.assertEquals("Exception Message is not correct",
-                    "Cannot find any data element for column: env:dec. Please bind element manually then upload CSV.", e.getMessage());
+                    "Cannot find any data element for column: env:dec. Please bind element manually then upload CSV.",
+                    e.getMessage());
             Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
         }
     }// end of test step testExceptionAndRollbackWhenAHeaderColumnDoesNotExactlyMatch
@@ -1032,6 +1041,25 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
             return this.id == vc.getId();
         }
     }// end of inner class VocabularyConceptEvaluateOnIdPredicate
+
+    /**
+     *
+     * Inner class used to search for a VocabularyConcept in a Collection using it's id
+     *
+     */
+    public static class VocabularyConceptEvaluateOnIdentifierPredicate implements Predicate {
+        private String identifier = null;
+
+        public VocabularyConceptEvaluateOnIdentifierPredicate(String identifier) {
+            this.identifier = identifier;
+        }
+
+        @Override
+        public boolean evaluate(Object object) {
+            VocabularyConcept vc = (VocabularyConcept) object;
+            return StringUtils.equals(this.identifier, vc.getIdentifier());
+        }
+    }// end of inner class VocabularyConceptEvaluateOnIdentifierPredicate
 
     /**
      *

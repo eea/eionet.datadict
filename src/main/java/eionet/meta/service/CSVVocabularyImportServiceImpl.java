@@ -87,6 +87,7 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         handler.generateUpdatedBeans();
 
         importIntoDb(vocabularyFolder.getId(), handler.getToBeUpdatedConcepts(), handler.getNewBindedElement());
+        this.logMessages.addAll(handler.getLogMessages());
         this.logMessages.add("CSV imported into Database.");
 
         return this.logMessages;
