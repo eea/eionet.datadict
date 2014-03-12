@@ -291,13 +291,11 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
         if (this.lastFoundConcept == null) {
             this.lastFoundConcept = findOrCreateConcept(conceptIdentifier);
-
             // if vocabulary concept couldnt find or couldnt be created
             if (this.lastFoundConcept == null) {
                 // this.logMessages.add(st.toString() + " NOT imported, cannot find or create.");
                 return;
             }
-
             // vocabulary concept found or created, add it to list
             this.toBeUpdatedConcepts.add(this.lastFoundConcept);
         }
@@ -318,12 +316,13 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
         if (candidateForConceptAttribute) {
             // update concept value here
+            String val = StringUtils.trimToNull(object.stringValue());
             if (StringUtils.equals(attributeIdentifier, NOTATION)) {
-                this.lastFoundConcept.setNotation(object.stringValue());
+                this.lastFoundConcept.setNotation(val);
             } else if (StringUtils.equals(attributeIdentifier, DEFINITION)) {
-                this.lastFoundConcept.setDefinition(object.stringValue());
+                this.lastFoundConcept.setDefinition(val);
             } else if (StringUtils.equals(attributeIdentifier, PREF_LABEL)) {
-                this.lastFoundConcept.setLabel(object.stringValue());
+                this.lastFoundConcept.setLabel(val);
             } else {
                 // this.logMessages.add("this line shouldn't be reached");
                 return;
@@ -395,8 +394,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 if (foundRelatedConcept != null) {
                     elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
                     elem.setRelatedConceptId(foundRelatedConcept.getId());
-                    // elem.setRelatedConceptVocabulary(relatedConceptVocabularyIdentifier);
-                    // elem.setRelatedConceptBaseURI(relatedConceptBaseUri);
                 } else {
                     elem.setAttributeValue(elementValue);
                 }

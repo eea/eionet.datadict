@@ -21,10 +21,12 @@
 
 package eionet.meta.imp;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +62,10 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
      * CSV file reader.
      */
     private Reader content;
+    /**
+     * Elements filter to be used in search.
+     */
+    private final DataElementsFilter elementsFilter;
 
     /**
      *
@@ -76,6 +82,11 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
             Map<String, Integer> bindedElements, Reader content) {
         super(folderContextRoot, concepts, bindedElements);
         this.content = content;
+        this.elementsFilter = new DataElementsFilter();
+        this.elementsFilter.setRegStatus("Released");
+        this.elementsFilter.setElementType(DataElementsFilter.COMMON_ELEMENT_TYPE);
+        this.elementsFilter.setIncludeHistoricVersions(false);
+        this.elementsFilter.setExactIdentifierMatch(true);
     }
 
     /**
@@ -121,13 +132,8 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 // if already binded elements does not contain header, add it (if possible)
                 if (!this.bindedElementsIds.containsKey(elementHeader)) {
                     // search for data element
-                    DataElementsFilter elementsFilter = new DataElementsFilter();
-                    elementsFilter.setRegStatus("Released");
-                    elementsFilter.setElementType(DataElementsFilter.COMMON_ELEMENT_TYPE);
-                    elementsFilter.setIdentifier(elementHeader);
-                    elementsFilter.setIncludeHistoricVersions(false);
-                    elementsFilter.setExactIdentifierMatch(true);
-                    DataElementsResult elementsResult = this.dataService.searchDataElements(elementsFilter);
+                    this.elementsFilter.setIdentifier(elementHeader);
+                    DataElementsResult elementsResult = this.dataService.searchDataElements(this.elementsFilter);
                     // if there is one and only one element check if header and identifer exactly matches!
                     if (elementsResult.getTotalResults() < 1) {
                         throw new ServiceException("Cannot find any data element for column: " + elementHeader
@@ -164,7 +170,6 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
                 // do line processing
                 String uri = lineParams[0];
-
                 if (StringUtils.isEmpty(uri)) {
                     this.logMessages.add("Row (" + rowNumber + ") is skipped (Base URI is empty).");
                     continue;
@@ -185,7 +190,6 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
                 // now we have a valid row
                 VocabularyConcept lastFoundConcept = findOrCreateConcept(conceptIdentifier);
-
                 // if vocabulary concept duplicated with another row, importer will ignore it not to repeat
                 if (lastFoundConcept == null) {
                     this.logMessages.add("Row (" + rowNumber + ") duplicates with a previous concept, it is skipped.");
@@ -194,7 +198,6 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
                 // vocabulary concept found or created
                 this.toBeUpdatedConcepts.add(lastFoundConcept);
-
                 lastFoundConcept.setLabel(StringUtils.trimToNull(lineParams[1]));
                 lastFoundConcept.setDefinition(StringUtils.trimToNull(lineParams[2]));
                 lastFoundConcept.setNotation(StringUtils.trimToNull(lineParams[3]));
@@ -214,7 +217,6 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 String prevLang = null;
                 for (int k = VocabularyCSVOutputHelper.CONCEPT_ENTRIES_COUNT; k < lineParams.length; k++) {
                     String elementHeader = header[k];
-
                     String lang = null;
                     String[] tempStrArray = elementHeader.split("[@]");
                     if (tempStrArray.length == 2) {
@@ -239,7 +241,6 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                         attributePosition.put(header[k], 0);
                     }
                     int index = attributePosition.get(header[k]);
-
                     // if lineParams[k] is empty, user wants to delete
                     if (StringUtils.isNotEmpty(lineParams[k])) {
                         DataElement elem;
@@ -279,14 +280,18 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                         }
                     }
                     attributePosition.put(header[k], ++index);
-
                     prevLang = lang;
                     prevHeader = elementHeader;
                 } // end of for loop iterating on rest of the columns (for data elements)
 
             } // end of row iterator (while loop on rows)
-
-        } catch (Exception e) {
+        } catch (ParseException e) {
+            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
+        } catch (RuntimeException e) {
             e.printStackTrace();
             throw new ServiceException(e.getMessage());
         } finally {
