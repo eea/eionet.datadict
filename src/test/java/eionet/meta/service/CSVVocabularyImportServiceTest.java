@@ -106,7 +106,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         byte[] firstThreeBytes = new byte[3];
         is.read(firstThreeBytes);
 
-        if (!Arrays.equals(firstThreeBytes, VocabularyCSVOutputHelper.BOM_BYTE_ARRAY)) {
+        if (!Arrays.equals(firstThreeBytes, VocabularyCSVOutputHelper.getBomByteArray())) {
             is.close();
             is = getClass().getClassLoader().getResourceAsStream(resourceLoc);
         }
