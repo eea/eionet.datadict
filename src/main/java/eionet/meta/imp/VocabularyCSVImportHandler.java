@@ -22,6 +22,8 @@
 package eionet.meta.imp;
 
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +50,11 @@ import eionet.util.VocabularyCSVOutputHelper;
  */
 @Configurable
 public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
+
+    /**
+     * URI prefix to check related concept.
+     */
+    private static final String URI_PREFIX = "http://";
 
     /**
      * CSV file reader.
@@ -216,10 +223,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     }
 
                     if (!StringUtils.equals(elementHeader, prevHeader)) {
-                        elementsOfConcept =
-                                VocabularyCSVOutputHelper.getDataElementValuesByName(elementHeader,
-                                        lastFoundConcept.getElementAttributes());
-
+                        elementsOfConcept = getDataElementValuesByName(elementHeader, lastFoundConcept.getElementAttributes());
                         if (elementsOfConcept == null) {
                             elementsOfConcept = new ArrayList<DataElement>();
                             lastFoundConcept.getElementAttributes().add(elementsOfConcept);
@@ -228,8 +232,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
                     if (!StringUtils.equals(elementHeader, prevHeader) || !StringUtils.equals(lang, prevLang)) {
                         elementsOfConceptByLang =
-                                VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang(elementHeader, lang,
-                                        lastFoundConcept.getElementAttributes());
+                                getDataElementValuesByNameAndLang(elementHeader, lang, lastFoundConcept.getElementAttributes());
                     }
 
                     if (!attributePosition.containsKey(header[k])) {
@@ -250,18 +253,21 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                             elem.setId(this.bindedElementsIds.get(elementHeader));
                         }
 
-                        // TODO what if it is a relational element, it makes things more complicated
+                        VocabularyConcept foundRelatedConcept = null;
                         // TODO what if user wanted to deleted a relational concept
-                        if (StringUtils.contains(lineParams[k], folderContextRoot)) { // it is a relational element
-                            String relatedConceptIdentifier = lineParams[k].replace(folderContextRoot, "");
-                            // identifier should not contain extra slashes, if it does, then it is not valid!
-                            if (!StringUtils.contains(relatedConceptIdentifier, "/")) {
-                                if (!elem.isRelationalElement()
-                                        || !StringUtils.equals(elem.getRelatedConceptIdentifier(), relatedConceptIdentifier)) {
-                                    elem.setRelatedConceptIdentifier(relatedConceptIdentifier);
-                                    elem.setRelatedConceptId(-1);
-                                }
+                        if (StringUtils.startsWith(lineParams[k], URI_PREFIX)) {
+                            // it can be a related concept
+                            try {
+                                URL relatedConceptURL = new URL(lineParams[k]);
+                                foundRelatedConcept = findRelatedConcept(relatedConceptURL.toString());
+                            } catch (MalformedURLException e) {
+                                // it is not a valid url so we don't accept it as a related concept identifier
+                                e.printStackTrace();
                             }
+                        }
+                        if (foundRelatedConcept != null) {
+                            elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
+                            elem.setRelatedConceptId(foundRelatedConcept.getId());
                         } else {
                             elem.setAttributeValue(lineParams[k]);
                         }

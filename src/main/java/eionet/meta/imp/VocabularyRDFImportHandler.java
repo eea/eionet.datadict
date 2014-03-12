@@ -40,15 +40,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
-import eionet.meta.service.ServiceException;
-import eionet.meta.service.data.VocabularyConceptFilter;
-import eionet.meta.service.data.VocabularyConceptResult;
-import eionet.meta.service.data.VocabularyFilter;
-import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Pair;
-import eionet.util.VocabularyCSVOutputHelper;
 
 /**
  * Implementation of OpenRDF's {@link RDFHandler} that will be used by implementations of
@@ -150,10 +143,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      * Temporary object to hold last found concept not to iterate over again in lists.
      */
     private VocabularyConcept lastFoundConcept;
-    /**
-     * Temporary map to hold found related concepts for caching.
-     */
-    private Map<String, VocabularyConcept> relatedConceptCache = null;
+
     /**
      * Number of concepts updated per predicate.
      */
@@ -193,7 +183,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         this.createNewDataElementsForPredicates = createNewDataElementsForPredicates;
         this.boundedURIs = new HashMap<String, String>();
         this.attributePositions = new HashMap<String, Map<String, Integer>>();
-        this.relatedConceptCache = new HashMap<String, VocabularyConcept>();
         this.predicateUpdatesAtConcepts = new HashMap<String, Set<Integer>>();
         this.notBoundedPredicates = new HashSet<String>();
         this.identifierOfPredicate = new HashMap<String, String>();
@@ -347,8 +336,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             }
             if (!StringUtils.equals(attributeIdentifier, this.prevAttributeIdentifier)) {
                 this.elementsOfConcept =
-                        VocabularyCSVOutputHelper.getDataElementValuesByName(dataElemIdentifier,
-                                this.lastFoundConcept.getElementAttributes());
+                        getDataElementValuesByName(dataElemIdentifier, this.lastFoundConcept.getElementAttributes());
+
                 if (this.elementsOfConcept == null
                         || (this.createNewDataElementsForPredicates && !conceptIdsUpdatedWithPredicate
                                 .contains(this.lastFoundConcept.getId()))) {
@@ -362,70 +351,10 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
             String elementValue = object.stringValue();
             String elemLang = null;
-            int relatedConceptId = -1;
-            String relatedConceptIdentifier = null;
-            String relatedConceptBaseUri = null;
-            String relatedConceptVocabularyIdentifier = null;
+            VocabularyConcept foundRelatedConcept = null;
             // if object is a resource (i.e. URI), it can be a related concept
             if (object instanceof URI && StringUtils.isNotEmpty(elementValue)) {
-                // for better meaning
-                String relatedConceptUri = elementValue; // for code readability
-                int lastSlashIndex = relatedConceptUri.lastIndexOf("/") + 1;
-                relatedConceptIdentifier = relatedConceptUri.substring(lastSlashIndex);
-                relatedConceptBaseUri = relatedConceptUri.substring(0, lastSlashIndex);
-                if (StringUtils.isNotEmpty(relatedConceptBaseUri) && StringUtils.isNotEmpty(relatedConceptIdentifier)) {
-                    // check cache first
-                    VocabularyConcept foundRelatedConcept = this.relatedConceptCache.get(relatedConceptUri);
-                    // && !this.notFoundRelatedConceptCache.contains(relatedConceptUri)
-                    if (foundRelatedConcept == null) {
-                        // not found in cache search in database
-                        String temp = relatedConceptBaseUri.substring(0, relatedConceptBaseUri.length() - 1);
-                        relatedConceptVocabularyIdentifier = temp.substring(temp.lastIndexOf("/") + 1);
-                        if (StringUtils.isNotEmpty(relatedConceptVocabularyIdentifier)) {
-                            try {
-
-                                VocabularyFolder foundVocabularyFolder = null;
-                                // create vocabulary filter
-                                VocabularyFilter vocabularyFilter = new VocabularyFilter();
-                                vocabularyFilter.setIdentifier(relatedConceptVocabularyIdentifier);
-                                vocabularyFilter.setWorkingCopy(false);
-                                // first search for vocabularies, to find correct concept and to make searching faster for concepts
-                                VocabularyResult vocabularyResult = this.vocabularyService.searchVocabularies(vocabularyFilter);
-                                if (vocabularyResult != null) {
-                                    for (VocabularyFolder vocabularyFolder : vocabularyResult.getList()) {
-                                        // if it matches with base uri then we found it! this is an costly operation
-                                        // but to satisfy consistency we need it.
-                                        if (StringUtils.equals(relatedConceptBaseUri,
-                                                VocabularyFolder.getBaseUri(vocabularyFolder))) {
-                                            foundVocabularyFolder = vocabularyFolder;
-                                            break;
-                                        }
-                                    }
-                                }
-                                // if a vocabulary not found don't go on!
-                                if (foundVocabularyFolder != null) {
-                                    VocabularyConceptFilter filter = new VocabularyConceptFilter();
-                                    filter.setIdentifier(relatedConceptIdentifier);
-                                    filter.setVocabularyFolderId(foundVocabularyFolder.getId());
-                                    // search for concepts now
-                                    VocabularyConceptResult results = this.vocabularyService.searchVocabularyConcepts(filter);
-                                    // if found more than one, how can system detect which one is searched for!
-                                    if (results != null && results.getFullListSize() == 1) {
-                                        foundRelatedConcept = results.getList().get(0);
-                                        this.relatedConceptCache.put(relatedConceptUri, foundRelatedConcept);
-                                    }
-                                }
-                            } catch (ServiceException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    // either found in cache or in database
-                    if (foundRelatedConcept != null) {
-                        relatedConceptId = foundRelatedConcept.getId();
-                    }
-                }
+                foundRelatedConcept = findRelatedConcept(elementValue);
             } else if (object instanceof Literal) {
                 // it is literal
                 elemLang = ((Literal) object).getLanguage();
@@ -433,7 +362,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
             if (!StringUtils.equals(attributeIdentifier, this.prevAttributeIdentifier) || !StringUtils.equals(elemLang, prevLang)) {
                 this.elementsOfConceptByLang =
-                        VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang(dataElemIdentifier, elemLang,
+                        getDataElementValuesByNameAndLang(dataElemIdentifier, elemLang,
                                 this.lastFoundConcept.getElementAttributes());
             }
             this.prevLang = elemLang;
@@ -463,11 +392,11 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                     elem.setId(this.bindedElementsIds.get(dataElemIdentifier));
                 }
 
-                if (relatedConceptId > 0) {
-                    elem.setRelatedConceptIdentifier(relatedConceptIdentifier);
-                    elem.setRelatedConceptId(relatedConceptId);
-                    elem.setRelatedConceptVocabulary(relatedConceptVocabularyIdentifier);
-                    elem.setRelatedConceptBaseURI(relatedConceptBaseUri);
+                if (foundRelatedConcept != null) {
+                    elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
+                    elem.setRelatedConceptId(foundRelatedConcept.getId());
+                    // elem.setRelatedConceptVocabulary(relatedConceptVocabularyIdentifier);
+                    // elem.setRelatedConceptBaseURI(relatedConceptBaseUri);
                 } else {
                     elem.setAttributeValue(elementValue);
                 }
@@ -493,8 +422,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             for (String key : this.predicateUpdatesAtConcepts.keySet()) {
                 if (!this.predicateUpdatesAtConcepts.get(key).contains(concept.getId())) {
                     List<DataElement> conceptElements =
-                            VocabularyCSVOutputHelper.getDataElementValuesByName(this.identifierOfPredicate.get(key),
-                                    concept.getElementAttributes());
+                            getDataElementValuesByName(this.identifierOfPredicate.get(key), concept.getElementAttributes());
                     if (conceptElements != null && conceptElements.size() > 0) {
                         concept.getElementAttributes().remove(conceptElements);
                     }
