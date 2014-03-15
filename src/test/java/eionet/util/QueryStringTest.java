@@ -1,26 +1,29 @@
 package eionet.util;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * 
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
-public class QueryStringTest
-     extends TestCase {
+public class QueryStringTest {
 
-        private boolean hasParam(QueryString queryString, String param){
+    private boolean hasParam(QueryString queryString, String param){
 
-                if (queryString.getValue().indexOf(param + "=")>0)
-                        return true;
-                return false;
-        }
+        if (queryString.getValue().indexOf(param + "=") > 0)
+            return true;
+        return false;
+    }
 
-        public void testHasParam(){
+    @Test
+    public void testHasParam(){
 
-                QueryString qryStr = new QueryString("param1=value1&param2=");
-                assertTrue(hasParam(qryStr, "param2"));
-        }
+        QueryString qryStr = new QueryString("param1=value1&param2=");
+        assertTrue(hasParam(qryStr, "param2"));
+    }
 
 }

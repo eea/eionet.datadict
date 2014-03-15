@@ -1,21 +1,28 @@
 package eionet.util;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 
 import org.apache.commons.validator.routines.UrlValidator;
-import org.junit.Assert;
 
 /**
  *
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
-public class UtilTest extends TestCase {
+public class UtilTest {
 
     /**
      *
      *
      */
+    @Test
     public void test_replaceTags() {
         assertEquals(Util.processForDisplay("http://cdr.eionet.europa.eu/search?y=1&z=2"),
         "<a href=\"http://cdr.eionet.europa.eu/search?y=1&amp;z=2\">http://cdr.eionet.europa.eu/search?y=1&amp;z=2</a>");
@@ -38,16 +45,40 @@ public class UtilTest extends TestCase {
         assertEquals(Util.processForDisplay("<div class=\"Quotes\">"), "&lt;div class=&quot;Quotes&quot;&gt;");
     }
 
+    /*
+     * Check that newlines in input immediately after a URL are handled correctly.
+     */
+    @Test
+    public void test_replaceTagsMultiLine() {
+        String input = "The templates (XML schema) and the reporting manual are available"
+           + " at: http://www.eionet.europa.eu/schemas/eprtr\n\nTemplate for resubmissions is"
+           + " available at: http://circa.europa.eu/Public/irc/env/e_prtr/library?l=/e-prtr_r"
+           + "e-delivery/resubmissionxls/_EN_1.0_&a=i";
+
+        String expected = "The templates (XML schema) and the reporting manual are available"
+           + " at: <a href=\"http://www.eionet.europa.eu/schemas/eprtr\">http://www.eionet.e"
+           + "uropa.eu/schemas/eprtr</a><br/><br/>Template for resubmissions is"
+           + " available at: <a href=\"http://circa.europa.eu/Public/irc/env/e_prtr/library?"
+           + "l=/e-prtr_re-delivery/resubmissionxls/_EN_1.0_&amp;a=i\">http://circa.europa.eu"
+           + "/Public/irc/env/e_prtr/libra...</a>";
+
+        String result = Util.processForDisplay(input);
+        //System.out.println(result);
+        assertEquals(expected, result);
+    }
+
     /**
      *
      *
      */
+    @Test
     public void test_isURI() {
         assertTrue(Util.isURI("http://cdr.eionet.europa.eu/"));
         assertTrue(Util.isURI("ftp://ftp.eionet.europa.eu/"));
         assertTrue(Util.isURI("XXX"));
     }
 
+    @Test
     public void test_setAnchorsInParenthesis() {
         assertEquals(
                 "Some text (<a href=\"http://en.wikipedia.org/wiki/Fahrvergnügen\">http://en.wikipedia.org/wiki/Fahrvergnügen</a>).",
@@ -60,39 +91,40 @@ public class UtilTest extends TestCase {
                 Util.processForLink("Some text ( http://en.wikipedia.org/wiki/Fahrvergnügen).", false, 100));
     }
 
+    @Test
     public void testEncodeUrl() {
         assertEquals("a%20b", Util.encodeURLPath("a b"));
         assertEquals("ABC", Util.encodeURLPath("ABC"));
         assertEquals("A+b%20%20%20c", Util.encodeURLPath("A+b   c"));
-
-
-
     }
 
+    @Test
     public void testIrrelevantAttributes() {
         assertTrue(Util.skipAttributeByDatatype("MinSize", "localref"));
         assertTrue(!Util.skipAttributeByDatatype("Name", "string"));
     }
 
+    @Test
     public void testvalidUrl() {
 
-        Assert.assertTrue(Util.isValidUri("http://java.sun.com"));
-        Assert.assertTrue(!Util.isValidUri("http://www. spacein.there.dk"));
+        assertTrue(Util.isValidUri("http://java.sun.com"));
+        assertFalse(Util.isValidUri("http://www. spacein.there.dk"));
 
-        Assert.assertTrue(!Util.isValidUri("appi"));
-        Assert.assertTrue(!Util.isValidUri("http://"));
-        Assert.assertTrue(Util.isValidUri("ftp://someftp.outthere.org"));
+        assertFalse(Util.isValidUri("appi"));
+        assertFalse(Util.isValidUri("http://"));
+        assertTrue(Util.isValidUri("ftp://someftp.outthere.org"));
 
-        Assert.assertTrue(Util.isValidUri("urn:aa:lv"));
+        assertTrue(Util.isValidUri("urn:aa:lv"));
 
-        Assert.assertTrue(Util.isValidUri("mailto:juhan@hot.ee"));
+        assertTrue(Util.isValidUri("mailto:juhan@hot.ee"));
 
     }
 
+/*
     private static boolean isValid(String str, UrlValidator val) {
         System.out.println(str + " " + val.isValid(str));
             return Util.isURI(str);
     }
-
+*/
 
 }
