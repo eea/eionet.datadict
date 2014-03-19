@@ -160,7 +160,7 @@
                         Created</th>
                     <td class="simple_attr_help"></td>
                     <td class="simple_attr_value">
-                        <stripes:text id="txtCreatedDate" formatType="date" formatPattern="medium" name="vocabularyConcept.created" class="smalltext" size="12"/>
+                        <stripes:text id="txtCreatedDate" formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.created" class="smalltext" size="12"/>
                     </td>
                 </tr>
                 <tr>
@@ -168,7 +168,7 @@
                         Obsolete</th>
                     <td class="simple_attr_help"></td>
                     <td class="simple_attr_value">
-                        <stripes:text id="txtObsoleteDate" formatType="date" formatPattern="medium" name="vocabularyConcept.obsolete" class="smalltext" size="12"/>
+                        <stripes:text id="txtObsoleteDate" formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.obsolete" class="smalltext" size="12"/>
                     </td>
                 </tr>
 
