@@ -20,13 +20,13 @@
 </c:choose>
 
 <!--  emtpy value -->
-<option value=""></option>
+<option value=""> </option>
 
 <c:forEach var="fxv" items="${fixedValues}">
 
 <c:choose>
  <c:when test="${fxv.value == value}">
-  <option value="${fxv.value}" selected="true">${fxv.label}</option>
+  <option value="${fxv.value}" selected="selected">${fxv.label}</option>
  </c:when>
  <c:otherwise>
   <option value="${fxv.value}">${fxv.label}</option>
