@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import au.com.bytecode.opencsv.CSVReader;
 import eionet.meta.dao.domain.DataElement;
@@ -50,7 +49,7 @@ import eionet.util.VocabularyCSVOutputHelper;
  *
  * @author enver
  */
-@Configurable
+// @Configurable
 public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
     /**
@@ -102,8 +101,8 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
         try {
             String[] header = reader.readNext();
-            // first check if headers contains fix columns
 
+            // first check if headers contains fix columns
             String[] fixedHeaders = new String[VocabularyCSVOutputHelper.CONCEPT_ENTRIES_COUNT];
             VocabularyCSVOutputHelper.addFixedEntryHeaders(fixedHeaders);
 
@@ -186,7 +185,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 if (StringUtils.contains(conceptIdentifier, "/")) {
                     this.logMessages.add("Row (" + rowNumber + ") does not contain a valid concept identifier.");
                     continue;
-                } // end of if identifier matches
+                }
 
                 // now we have a valid row
                 VocabularyConcept lastFoundConcept = findOrCreateConcept(conceptIdentifier);
@@ -268,7 +267,11 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                         }
                         if (foundRelatedConcept != null) {
                             elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
-                            elem.setRelatedConceptId(foundRelatedConcept.getId());
+                            int id = foundRelatedConcept.getId();
+                            elem.setRelatedConceptId(id);
+                            if (id < 0) {
+                                addToElementsReferringNotCreatedConcepts(id, elem);
+                            }
                         } else {
                             elem.setAttributeValue(lineParams[k]);
                         }
@@ -283,8 +286,8 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     prevLang = lang;
                     prevHeader = elementHeader;
                 } // end of for loop iterating on rest of the columns (for data elements)
-
             } // end of row iterator (while loop on rows)
+            processUnseenConceptsForRelatedElements();
         } catch (ParseException e) {
             e.printStackTrace();
             throw new ServiceException(e.getMessage());

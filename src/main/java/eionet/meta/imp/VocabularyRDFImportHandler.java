@@ -36,7 +36,6 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -50,7 +49,7 @@ import eionet.util.Pair;
  *
  * @author enver
  */
-@Configurable
+// @Configurable
 public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler implements RDFHandler {
 
     /* static constants */
@@ -79,7 +78,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
     /**
      * used with concept attributes.
      */
-    private static final String SKOS_CONCEPT_ATTRIBUTE_NS = VocabularyXmlWriter.SKOS_NS;
+    private static final String SKOS_CONCEPT_ATTRIBUTE_NS = "skos";
     /**
      * concept attribute namespaces to update concept fields instead of dataelements.
      */
@@ -130,7 +129,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
     /**
      * Previous successful triple's predicate (data element) identifier.
      */
-    private String prevAttributeIdentifier = null;
+    private String prevDataElemIdentifier = null;
     /**
      * Previous successful triple's language.
      */
@@ -143,7 +142,10 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      * Temporary object to hold last found concept not to iterate over again in lists.
      */
     private VocabularyConcept lastFoundConcept;
-
+    /**
+     * This map is used to detect if a predicate (prefLabel, definition or notation) is used for concept update or not.
+     */
+    private Map<String, Set<Integer>> conceptsUpdatedForAttributes = null;
     /**
      * Number of concepts updated per predicate.
      */
@@ -186,6 +188,10 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         this.predicateUpdatesAtConcepts = new HashMap<String, Set<Integer>>();
         this.notBoundedPredicates = new HashSet<String>();
         this.identifierOfPredicate = new HashMap<String, String>();
+        this.conceptsUpdatedForAttributes = new HashMap<String, Set<Integer>>();
+        this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + PREF_LABEL, new HashSet<Integer>());
+        this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + DEFINITION, new HashSet<Integer>());
+        this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + NOTATION, new HashSet<Integer>());
     } // end of constructor
 
     @Override
@@ -283,7 +289,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         // if execution comes here so we have a valid triple to import
         // first find the concept
         if (!StringUtils.equals(conceptIdentifier, this.prevConceptIdentifier)) {
-            this.prevAttributeIdentifier = null;
+            this.prevDataElemIdentifier = null;
             this.prevLang = null;
             this.lastFoundConcept = null;
         }
@@ -293,28 +299,22 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             this.lastFoundConcept = findOrCreateConcept(conceptIdentifier);
             // if vocabulary concept couldnt find or couldnt be created
             if (this.lastFoundConcept == null) {
-                // this.logMessages.add(st.toString() + " NOT imported, cannot find or create.");
+                // this.logMessages.add(st.toString() + " NOT imported, duplicate of previously imported concept.");
                 return;
             }
             // vocabulary concept found or created, add it to list
             this.toBeUpdatedConcepts.add(this.lastFoundConcept);
         }
 
-        Set<Integer> conceptIdsUpdatedWithPredicate = this.predicateUpdatesAtConcepts.get(predicateUri);
-        if (conceptIdsUpdatedWithPredicate == null) {
-            conceptIdsUpdatedWithPredicate = new HashSet<Integer>();
-            this.predicateUpdatesAtConcepts.put(predicateUri, conceptIdsUpdatedWithPredicate);
-        }
+        String dataElemIdentifier = predicateNS + ":" + attributeIdentifier;
 
-        // if it is first seen for preflabel and notation and definition then it is concept attribute
-        // but if it is not the first one then it is a dataelem attribute
-        if (candidateForConceptAttribute) {
-            if (conceptIdsUpdatedWithPredicate.contains(this.lastFoundConcept.getId())) {
-                candidateForConceptAttribute = false;
-            }
+        if (candidateForConceptAttribute
+                && this.conceptsUpdatedForAttributes.get(dataElemIdentifier).contains(this.lastFoundConcept.getId())) {
+            candidateForConceptAttribute = false;
         }
 
         if (candidateForConceptAttribute) {
+            this.conceptsUpdatedForAttributes.get(dataElemIdentifier).add(this.lastFoundConcept.getId());
             // update concept value here
             String val = StringUtils.trimToNull(object.stringValue());
             if (StringUtils.equals(attributeIdentifier, NOTATION)) {
@@ -328,21 +328,25 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 return;
             }
         } else {
+            Set<Integer> conceptIdsUpdatedWithPredicate = this.predicateUpdatesAtConcepts.get(predicateUri);
+            if (conceptIdsUpdatedWithPredicate == null) {
+                conceptIdsUpdatedWithPredicate = new HashSet<Integer>();
+                this.predicateUpdatesAtConcepts.put(predicateUri, conceptIdsUpdatedWithPredicate);
+            }
             // find the data element
-            String dataElemIdentifier = predicateNS + ":" + attributeIdentifier;
             if (!this.identifierOfPredicate.containsKey(predicateUri)) {
                 this.identifierOfPredicate.put(predicateUri, dataElemIdentifier);
             }
-            if (!StringUtils.equals(attributeIdentifier, this.prevAttributeIdentifier)) {
-                this.elementsOfConcept =
-                        getDataElementValuesByName(dataElemIdentifier, this.lastFoundConcept.getElementAttributes());
-
-                if (this.elementsOfConcept == null
-                        || (this.createNewDataElementsForPredicates && !conceptIdsUpdatedWithPredicate
-                                .contains(this.lastFoundConcept.getId()))) {
+            if (!StringUtils.equals(dataElemIdentifier, this.prevDataElemIdentifier)) {
+                elementsOfConcept = getDataElementValuesByName(dataElemIdentifier, lastFoundConcept.getElementAttributes());
+                if (createNewDataElementsForPredicates && !conceptIdsUpdatedWithPredicate.contains(lastFoundConcept.getId())) {
                     if (this.elementsOfConcept != null) {
                         this.lastFoundConcept.getElementAttributes().remove(this.elementsOfConcept);
                     }
+                    this.elementsOfConcept = null;
+                }
+
+                if (this.elementsOfConcept == null) {
                     this.elementsOfConcept = new ArrayList<DataElement>();
                     this.lastFoundConcept.getElementAttributes().add(this.elementsOfConcept);
                 }
@@ -359,13 +363,12 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 elemLang = ((Literal) object).getLanguage();
             }
 
-            if (!StringUtils.equals(attributeIdentifier, this.prevAttributeIdentifier) || !StringUtils.equals(elemLang, prevLang)) {
-                this.elementsOfConceptByLang =
-                        getDataElementValuesByNameAndLang(dataElemIdentifier, elemLang,
-                                this.lastFoundConcept.getElementAttributes());
+            if (!StringUtils.equals(dataElemIdentifier, prevDataElemIdentifier) || !StringUtils.equals(elemLang, prevLang)) {
+                elementsOfConceptByLang =
+                        getDataElementValuesByNameAndLang(dataElemIdentifier, elemLang, lastFoundConcept.getElementAttributes());
             }
             this.prevLang = elemLang;
-            this.prevAttributeIdentifier = attributeIdentifier;
+            this.prevDataElemIdentifier = dataElemIdentifier;
 
             Map<String, Integer> attributePosition = this.attributePositions.get(conceptIdentifier);
             if (attributePosition == null) {
@@ -373,10 +376,14 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 this.attributePositions.put(conceptIdentifier, attributePosition);
             }
 
-            if (!attributePosition.containsKey(attributeIdentifier)) {
-                attributePosition.put(attributeIdentifier, 0);
+            String dataElemIdentifierWithLang = dataElemIdentifier;
+            if (StringUtils.isNotEmpty(elemLang)) {
+                dataElemIdentifierWithLang += "@" + elemLang;
             }
-            int index = attributePosition.get(attributeIdentifier);
+            if (!attributePosition.containsKey(dataElemIdentifierWithLang)) {
+                attributePosition.put(dataElemIdentifierWithLang, 0);
+            }
+            int index = attributePosition.get(dataElemIdentifierWithLang);
 
             // if object is empty, user wants to delete
             if (StringUtils.isNotEmpty(elementValue)) {
@@ -387,13 +394,17 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                     elem = new DataElement();
                     this.elementsOfConcept.add(elem);
                     elem.setAttributeLanguage(elemLang);
-                    elem.setIdentifier(attributeIdentifier);
+                    elem.setIdentifier(dataElemIdentifier);
                     elem.setId(this.bindedElementsIds.get(dataElemIdentifier));
                 }
 
                 if (foundRelatedConcept != null) {
                     elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
-                    elem.setRelatedConceptId(foundRelatedConcept.getId());
+                    int id = foundRelatedConcept.getId();
+                    elem.setRelatedConceptId(id);
+                    if (id < 0) {
+                        addToElementsReferringNotCreatedConcepts(id, elem);
+                    }
                 } else {
                     elem.setAttributeValue(elementValue);
                 }
@@ -404,29 +415,50 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                     elem.setAttributeValue(elementValue);
                 }
             }
-            attributePosition.put(attributeIdentifier, ++index);
+            attributePosition.put(dataElemIdentifierWithLang, ++index);
             conceptIdsUpdatedWithPredicate.add(this.lastFoundConcept.getId());
         }
-
         this.numberOfValidTriples++;
     } // end of method handleStatement
 
     @Override
     public void endRDF() throws RDFHandlerException {
-        // if purge per predicate is selected and rdf does not contain any for some concepts. Then those untouched concepts
-        // should be updated to remove these predicates if they have
-        for (VocabularyConcept concept : this.toBeUpdatedConcepts) {
-            for (String key : this.predicateUpdatesAtConcepts.keySet()) {
-                if (!this.predicateUpdatesAtConcepts.get(key).contains(concept.getId())) {
+        if (this.createNewDataElementsForPredicates) {
+            // if purge per predicate is selected and rdf does not contain any for some concepts. Then those untouched concepts
+            // should be updated to remove these predicates if they have
+            // 1. first do it for toBeUpdateConcepts
+            for (VocabularyConcept concept : this.toBeUpdatedConcepts) {
+                for (String key : this.predicateUpdatesAtConcepts.keySet()) {
+                    if (!this.predicateUpdatesAtConcepts.get(key).contains(concept.getId())) {
+                        List<DataElement> conceptElements =
+                                getDataElementValuesByName(this.identifierOfPredicate.get(key), concept.getElementAttributes());
+                        if (conceptElements != null && conceptElements.size() > 0) {
+                            concept.getElementAttributes().remove(conceptElements);
+                        }
+                    }
+                }
+            }
+            // 2. do it for untouched concepts
+            for (VocabularyConcept concept : this.concepts) {
+                boolean conceptUpdated = false;
+                for (String key : this.predicateUpdatesAtConcepts.keySet()) {
                     List<DataElement> conceptElements =
                             getDataElementValuesByName(this.identifierOfPredicate.get(key), concept.getElementAttributes());
                     if (conceptElements != null && conceptElements.size() > 0) {
                         concept.getElementAttributes().remove(conceptElements);
+                        conceptUpdated = true;
                     }
+                }
+                if (conceptUpdated) {
+                    this.toBeUpdatedConcepts.add(concept);
                 }
             }
         }
 
+        // process unseen concepts for related elements
+        processUnseenConceptsForRelatedElements();
+
+        // add some logs
         this.logMessages.add("Valid (" + this.numberOfValidTriples + ") / Total (" + this.totalNumberOfTriples + ")");
         this.logMessages.add("Found related concept cache count: " + this.relatedConceptCache.keySet().size());
         this.logMessages.add("Number of predicates seen: " + this.predicateUpdatesAtConcepts.size());
@@ -435,7 +467,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             this.logMessages.add("--> " + key + " (" + this.identifierOfPredicate.get(key) + "): "
                     + this.predicateUpdatesAtConcepts.get(key).size());
         }
-        this.logMessages.add("Number of newly created concepts: " + ((-1) * this.numberOfCreatedConcepts));
         this.logMessages.add("Not imported predicates (" + this.notBoundedPredicates.size()
                 + ") which are not bounded to vocabulary: ");
         for (String predicate : this.notBoundedPredicates) {

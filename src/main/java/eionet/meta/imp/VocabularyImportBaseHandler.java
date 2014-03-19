@@ -21,7 +21,6 @@
 package eionet.meta.imp;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +29,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -48,6 +48,7 @@ import eionet.util.VocabularyCSVOutputHelper;
  *
  * @author enver
  */
+@Configurable
 public abstract class VocabularyImportBaseHandler {
 
     /**
@@ -56,9 +57,19 @@ public abstract class VocabularyImportBaseHandler {
     protected List<String> logMessages = null;
 
     /**
+     * Concepts of folder.
+     */
+    protected List<VocabularyConcept> concepts = null;
+
+    /**
      * Generated concept beans.
      */
-    protected Set<VocabularyConcept> toBeUpdatedConcepts = null;
+    protected List<VocabularyConcept> toBeUpdatedConcepts = null;
+
+    /**
+     * Not seen concepts yet.
+     */
+    protected List<VocabularyConcept> notSeenConceptsYet = null;
 
     /**
      * To be automatically binded elements.
@@ -71,14 +82,14 @@ public abstract class VocabularyImportBaseHandler {
     protected String folderContextRoot = null;
 
     /**
-     * Concepts of folder.
-     */
-    protected List<VocabularyConcept> concepts = null;
-
-    /**
      * Binded elements ids.
      */
     protected Map<String, Integer> bindedElementsIds = null;
+
+    /**
+     * This map is used for found related concepts which are not created yet.
+     */
+    protected Map<Integer, Set<DataElement>> elementsRelatedToNotCreatedConcepts = null;
 
     /**
      * Temporary map to hold found related concepts for caching.
@@ -103,7 +114,7 @@ public abstract class VocabularyImportBaseHandler {
     protected IDataService dataService;
 
     /**
-     * Default constructor. An object can only be instantiated from this package.
+     * An object can only be instantiated from this package.
      *
      * @param folderContextRoot
      *            Folder base URI
@@ -118,16 +129,18 @@ public abstract class VocabularyImportBaseHandler {
         this.concepts = concepts;
         this.bindedElementsIds = bindedElementsIds;
         this.logMessages = new ArrayList<String>();
-        this.toBeUpdatedConcepts = new HashSet<VocabularyConcept>();
+        this.toBeUpdatedConcepts = new ArrayList<VocabularyConcept>();
         this.newBindedElement = new ArrayList<DataElement>();
         this.relatedConceptCache = new HashMap<String, VocabularyConcept>();
+        this.notSeenConceptsYet = new ArrayList<VocabularyConcept>();
+        this.elementsRelatedToNotCreatedConcepts = new HashMap<Integer, Set<DataElement>>();
     }
 
     public List<String> getLogMessages() {
         return this.logMessages;
     }
 
-    public Set<VocabularyConcept> getToBeUpdatedConcepts() {
+    public List<VocabularyConcept> getToBeUpdatedConcepts() {
         return toBeUpdatedConcepts;
     }
 
@@ -135,26 +148,9 @@ public abstract class VocabularyImportBaseHandler {
         return newBindedElement;
     }
 
-    /**
-     * Utility method to search a concept in a list of concepts with identifier.
-     *
-     * @param listOfConcepts
-     *            haystack
-     * @param conceptIdentifier
-     *            needle
-     * @return found index, or size of list if not found
-     */
-    protected int getPositionIn(Collection<VocabularyConcept> listOfConcepts, String conceptIdentifier) {
-
-        int j = 0;
-        for (VocabularyConcept vc : listOfConcepts) {
-            if (StringUtils.equals(conceptIdentifier, vc.getIdentifier())) {
-                break;
-            }
-            j++;
-        }
-        return j;
-    } // end of method getPositionIn
+    public Map<Integer, Set<DataElement>> getElementsRelatedToNotCreatedConcepts() {
+        return elementsRelatedToNotCreatedConcepts;
+    }
 
     /**
      * Utility method to searches concepts (both touched and untouched, and returns found if any, null otherwise).
@@ -166,53 +162,30 @@ public abstract class VocabularyImportBaseHandler {
     protected VocabularyConcept findOrCreateConcept(String conceptIdentifier) {
         int j = getPositionIn(this.concepts, conceptIdentifier);
 
-        VocabularyConcept lastFoundConcept = null;
         // concept found
         if (j < this.concepts.size()) {
-            lastFoundConcept = this.concepts.remove(j);
-        } else {
-            j = getPositionIn(this.toBeUpdatedConcepts, conceptIdentifier);
-            if (j == this.toBeUpdatedConcepts.size()) {
-                // if there is already such a concept, ignore that line. if not, add a new concept with params.
-                lastFoundConcept = new VocabularyConcept();
-                lastFoundConcept.setId(--this.numberOfCreatedConcepts);
-                lastFoundConcept.setIdentifier(conceptIdentifier);
-                List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
-                lastFoundConcept.setElementAttributes(newConceptElementAttributes);
-            }
+            return this.concepts.remove(j);
+        }
+
+        // concept may already created, check it first
+        j = getPositionIn(this.notSeenConceptsYet, conceptIdentifier);
+        if (j < this.notSeenConceptsYet.size()) {
+            return this.notSeenConceptsYet.remove(j);
+        }
+
+        VocabularyConcept lastFoundConcept = null;
+        j = getPositionIn(this.toBeUpdatedConcepts, conceptIdentifier);
+        if (j == this.toBeUpdatedConcepts.size()) {
+            // if there is already such a concept, ignore that line. if not, add a new concept with params.
+            lastFoundConcept = new VocabularyConcept();
+            lastFoundConcept.setId(--this.numberOfCreatedConcepts);
+            lastFoundConcept.setIdentifier(conceptIdentifier);
+            List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
+            lastFoundConcept.setElementAttributes(newConceptElementAttributes);
         }
 
         return lastFoundConcept;
     } // end of method findOrCreateConcept
-
-    /**
-     * Finds list of data element values by name. Returns to reference to a list in parameter elems.
-     *
-     * @param elemName
-     *            element name to be looked for
-     * @param dataElements
-     *            list containing element definitions with values
-     * @return list of dataelement objects containing values
-     */
-    protected List<DataElement> getDataElementValuesByName(String elemName, List<List<DataElement>> dataElements) {
-        return VocabularyCSVOutputHelper.getDataElementValuesByName(elemName, dataElements);
-    } // end of method getDataElementValuesByName
-
-    /**
-     * finds list of data element values by name and language. It creates a new list and returns it.
-     *
-     * @param elemName
-     *            element name to be looked for
-     * @param lang
-     *            element lang to be looked for
-     * @param dataElements
-     *            list containing element definitions with values
-     * @return list of dataelement objects containing values
-     */
-    protected List<DataElement> getDataElementValuesByNameAndLang(String elemName, String lang,
-            List<List<DataElement>> dataElements) {
-        return VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang(elemName, lang, dataElements);
-    } // end of method getDataElementValuesByNameAndLang
 
     /**
      * This method searches for a related concept in database or in cache.
@@ -223,10 +196,43 @@ public abstract class VocabularyImportBaseHandler {
      */
     protected VocabularyConcept findRelatedConcept(String relatedConceptUri) {
         VocabularyConcept foundRelatedConcept = null;
-        String relatedConceptVocabularyIdentifier = null;
+        String relatedConceptIdentifier;
+
+        if (StringUtils.startsWith(relatedConceptUri, this.folderContextRoot)) {
+            // it is a self reference to a concept in this vocabulary.
+            // if it is in found concept then we are lucky. but it may be not created yet... and also wont be created at all...
+            relatedConceptIdentifier = relatedConceptUri.replace(this.folderContextRoot, "");
+            if (StringUtils.contains(relatedConceptIdentifier, "/")) {
+                return null;
+            }
+            int index = getPositionIn(this.concepts, relatedConceptIdentifier);
+            if (index < this.concepts.size()) {
+                return this.concepts.get(index);
+            }
+
+            index = getPositionIn(this.toBeUpdatedConcepts, relatedConceptIdentifier);
+            if (index < this.toBeUpdatedConcepts.size()) {
+                return this.toBeUpdatedConcepts.get(index);
+            }
+
+            // concept not seen yet.
+            index = getPositionIn(this.notSeenConceptsYet, relatedConceptIdentifier);
+            if (index < this.notSeenConceptsYet.size()) {
+                return this.notSeenConceptsYet.get(index);
+            }
+
+            // so create it
+            foundRelatedConcept = new VocabularyConcept();
+            foundRelatedConcept.setId(--this.numberOfCreatedConcepts);
+            foundRelatedConcept.setIdentifier(relatedConceptIdentifier);
+            List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
+            foundRelatedConcept.setElementAttributes(newConceptElementAttributes);
+            this.notSeenConceptsYet.add(foundRelatedConcept);
+            return foundRelatedConcept;
+        }
 
         int lastSlashIndex = relatedConceptUri.lastIndexOf("/") + 1;
-        String relatedConceptIdentifier = relatedConceptUri.substring(lastSlashIndex);
+        relatedConceptIdentifier = relatedConceptUri.substring(lastSlashIndex);
         String relatedConceptBaseUri = relatedConceptUri.substring(0, lastSlashIndex);
         if (StringUtils.isNotEmpty(relatedConceptBaseUri) && StringUtils.isNotEmpty(relatedConceptIdentifier)) {
             // check cache first
@@ -235,10 +241,9 @@ public abstract class VocabularyImportBaseHandler {
             if (foundRelatedConcept == null) {
                 // not found in cache search in database
                 String temp = relatedConceptBaseUri.substring(0, relatedConceptBaseUri.length() - 1);
-                relatedConceptVocabularyIdentifier = temp.substring(temp.lastIndexOf("/") + 1);
+                String relatedConceptVocabularyIdentifier = temp.substring(temp.lastIndexOf("/") + 1);
                 if (StringUtils.isNotEmpty(relatedConceptVocabularyIdentifier)) {
                     try {
-
                         VocabularyFolder foundVocabularyFolder = null;
                         // create vocabulary filter
                         VocabularyFilter vocabularyFilter = new VocabularyFilter();
@@ -259,6 +264,7 @@ public abstract class VocabularyImportBaseHandler {
                         // if a vocabulary not found don't go on!
                         if (foundVocabularyFolder != null) {
                             VocabularyConceptFilter filter = new VocabularyConceptFilter();
+                            filter.setUsePaging(false);
                             filter.setIdentifier(relatedConceptIdentifier);
                             filter.setVocabularyFolderId(foundVocabularyFolder.getId());
                             // search for concepts now
@@ -277,5 +283,88 @@ public abstract class VocabularyImportBaseHandler {
         }
         return foundRelatedConcept;
     } // end of method findRelatedConcept
+
+    /**
+     * This method includes common code to update elementsRelatedToNotCreatedConcepts.
+     *
+     * @param conceptId
+     *            concept id which is not created (it should be less than 0)
+     * @param element
+     *            data elem to be added set with this concept id
+     */
+    protected void addToElementsReferringNotCreatedConcepts(int conceptId, DataElement element) {
+        Set<DataElement> elementsReferringThisConcept = this.elementsRelatedToNotCreatedConcepts.get(conceptId);
+        if (elementsReferringThisConcept == null) {
+            elementsReferringThisConcept = new HashSet<DataElement>();
+            this.elementsRelatedToNotCreatedConcepts.put(conceptId, elementsReferringThisConcept);
+        }
+        elementsReferringThisConcept.add(element);
+    } // end of method addToElementsReferringNotCreatedConcepts
+
+    /**
+     * If a concept is not seen after all file is processed then just set related concept id to null. And set the value of dataelem.
+     */
+    protected void processUnseenConceptsForRelatedElements() {
+        for (VocabularyConcept concept : this.notSeenConceptsYet) {
+            Set<DataElement> elements = this.elementsRelatedToNotCreatedConcepts.remove(concept.getId());
+            if (elements != null) {
+                for (DataElement elem : elements) {
+                    String relatedConceptIdentifier = elem.getRelatedConceptIdentifier();
+                    elem.setAttributeValue(this.folderContextRoot + relatedConceptIdentifier);
+                    elem.setRelatedConceptId(null);
+                    elem.setRelatedConceptIdentifier(null);
+                }
+            }
+        }
+    } // end of method processUnseenConceptsForRelatedElements
+
+    /**
+     * Utility method to search a concept in a list of concepts with identifier.
+     *
+     * @param listOfConcepts
+     *            haystack
+     * @param conceptIdentifier
+     *            needle
+     * @return found index, or size of list if not found
+     */
+    public static int getPositionIn(List<VocabularyConcept> listOfConcepts, String conceptIdentifier) {
+        int j = 0;
+        for (VocabularyConcept vc : listOfConcepts) {
+            if (StringUtils.equals(conceptIdentifier, vc.getIdentifier())) {
+                break;
+            }
+            j++;
+        }
+        return j;
+    } // end of method getPositionIn
+
+    /**
+     * Finds list of data element values by name. Returns to reference to a list in parameter elems.
+     *
+     * @param elemName
+     *            element name to be looked for
+     * @param dataElements
+     *            list containing element definitions with values
+     * @return list of dataelement objects containing values
+     */
+    public static List<DataElement> getDataElementValuesByName(String elemName, List<List<DataElement>> dataElements) {
+        return VocabularyCSVOutputHelper.getDataElementValuesByName(elemName, dataElements);
+    } // end of method getDataElementValuesByName
+
+    /**
+     * finds list of data element values by name and language. It creates a new list and returns it.
+     *
+     * @param elemName
+     *            element name to be looked for
+     * @param lang
+     *            element lang to be looked for
+     * @param dataElements
+     *            list containing element definitions with values
+     * @return list of dataelement objects containing values
+     */
+    public static List<DataElement> getDataElementValuesByNameAndLang(String elemName, String lang,
+            List<List<DataElement>> dataElements) {
+        return VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang(elemName, lang, dataElements);
+    } // end of method getDataElementValuesByNameAndLang
 
 } // end of class VocabularyImportBaseHandler

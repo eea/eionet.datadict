@@ -30,55 +30,29 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.unitils.UnitilsJUnit4;
 import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
-import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.data.ObsoleteStatus;
 import eionet.util.VocabularyCSVOutputHelper;
 
 /**
  * JUnit integration test with Unitils for CSV Vocabulary Import Service.
  *
- * @author
+ * @author enver
  */
-@SpringApplicationContext("spring-context.xml")
-public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
-
-    private static final int TEST_VALID_VOCAB_FOLDER_ID = 4;
-
-    /** Logger. */
-    protected static final Logger LOGGER = Logger.getLogger(CSVVocabularyImportServiceTest.class);
-
+public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestBase {
     /** Vocabulary folder CSV import service. */
     @SpringBeanByType
     private ICSVVocabularyImportService vocabularyImportService;
-
-    /** Vocabulary service. */
-    @SpringBeanByType
-    private IVocabularyService vocabularyService;
-
-    /** Data elements service. */
-    @SpringBeanByType
-    private IDataService dataService;
-
-    @SpringBeanByType
-    private PlatformTransactionManager transactionManager;
 
     @BeforeClass
     public static void loadData() throws Exception {
@@ -92,15 +66,9 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
     }
 
     /**
-     * Get a reader from given CSV file location. If there is a BOM character, skip it.
-     *
-     * @param resourceLoc
-     *            CSV file location
-     * @return Reader object (BOM skipped)
-     * @throws Exception
-     *             if an error occurs
+     * {@inheritDoc} This method skips BOM character
      */
-    private Reader getReaderFromCsvResource(String resourceLoc) throws Exception {
+    protected Reader getReaderFromResource(String resourceLoc) throws Exception {
 
         InputStream is = getClass().getClassLoader().getResourceAsStream(resourceLoc);
         byte[] firstThreeBytes = new byte[3];
@@ -113,61 +81,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         InputStreamReader reader = new InputStreamReader(is);
 
         return reader;
-    }// end of method getReaderFromCsvResource
-
-    /**
-     * Utility code to make test code more readable. Returns vocabulary concepts with attributes by delegating call to
-     * vocabularyService
-     *
-     * @param vf
-     *            VocabularyFolder which holds concepts
-     * @return List of vocabulary concepts of given folder
-     * @throws Exception
-     *             if an error occurs
-     */
-    private List<VocabularyConcept> getVocabularyConceptsWithAttributes(VocabularyFolder vf) throws Exception {
-        return vocabularyService.getVocabularyConceptsWithAttributes(vf.getId(), vf.isNumericConceptIdentifiers(),
-                ObsoleteStatus.ALL);
-    }// end of method getVocabularyConceptsWithAttributes
-
-    /**
-     * Utility code to make test code more readable. Finds DataElement with given name in a list
-     *
-     * @param elems
-     *            DataElements to be searched
-     * @param attrValue
-     *            Value for comparison
-     * @return First found DataElement
-     */
-    private DataElement findDataElemByAttrValue(List<DataElement> elems, String attrValue) {
-        return (DataElement) CollectionUtils.find(elems, new DataElementEvaluateOnAttributeValuePredicate(attrValue));
-    }// end of method findDataElemByAttrValue
-
-    /**
-     * Utility code to make test code more readable. Finds VocabularyConcept with given id in a list
-     *
-     * @param concepts
-     *            VocabularyConcepts to be searched
-     * @param id
-     *            Id for comparison
-     * @return First found VocabularyConcept
-     */
-    private VocabularyConcept findVocabularyConceptById(List<VocabularyConcept> concepts, int id) {
-        return (VocabularyConcept) CollectionUtils.find(concepts, new VocabularyConceptEvaluateOnIdPredicate(id));
-    }// end of method findVocabularyConceptById
-
-    /**
-     * Utility code to make test code more readable. Finds VocabularyConcept with given identifier in a list
-     *
-     * @param concepts
-     *            VocabularyConcepts to be searched
-     * @param identifier
-     *            identifier for comparison
-     * @return First found VocabularyConcept
-     */
-    private VocabularyConcept findVocabularyConceptByIdentifier(List<VocabularyConcept> concepts, String identifier) {
-        return (VocabularyConcept) CollectionUtils.find(concepts, new VocabularyConceptEvaluateOnIdentifierPredicate(identifier));
-    }// end of method findVocabularyConceptByIdentifier
+    } // end of method getReaderFromResource
 
     /**
      * In this test, three line CSV is imported. Row 1 includes updated values for concept and DataElements (no insertion, only
@@ -186,7 +100,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_1.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_1.csv");
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
@@ -233,7 +147,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_2.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_2.csv");
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
@@ -288,7 +202,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_3.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_3.csv");
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
@@ -369,7 +283,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_3.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_3.csv");
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
@@ -452,7 +366,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_2.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_2.csv");
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
@@ -517,7 +431,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_4.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_4.csv");
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
@@ -558,7 +472,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_4.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_4.csv");
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
@@ -599,7 +513,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_5.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_5.csv");
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
@@ -842,7 +756,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_6.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_6.csv");
 
         // import CSV into database
         List<String> logMessages = vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, true);
@@ -901,7 +815,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_7.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_7.csv");
 
         try {
             // import CSV into database
@@ -929,7 +843,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_8.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_8.csv");
 
         try {
             // import CSV into database
@@ -954,7 +868,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_9.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_9.csv");
 
         try {
             // import CSV into database
@@ -982,7 +896,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_10.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_10.csv");
 
         try {
             // import CSV into database
@@ -1009,7 +923,7 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
 
         // get reader for CSV file
-        Reader reader = getReaderFromCsvResource("csv_import/csv_import_test_11.csv");
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_11.csv");
 
         try {
             // import CSV into database
@@ -1023,60 +937,4 @@ public class CSVVocabularyImportServiceTest extends UnitilsJUnit4 {
         }
     }// end of test step testExceptionAndRollbackWhenAHeaderColumnDoesNotExactlyMatch
 
-    /**
-     *
-     * Inner class used to search for a VocabularyConcept in a Collection using it's id
-     *
-     */
-    public static class VocabularyConceptEvaluateOnIdPredicate implements Predicate {
-        private int id = -1;
-
-        public VocabularyConceptEvaluateOnIdPredicate(int id) {
-            this.id = id;
-        }
-
-        @Override
-        public boolean evaluate(Object object) {
-            VocabularyConcept vc = (VocabularyConcept) object;
-            return this.id == vc.getId();
-        }
-    }// end of inner class VocabularyConceptEvaluateOnIdPredicate
-
-    /**
-     *
-     * Inner class used to search for a VocabularyConcept in a Collection using it's id
-     *
-     */
-    public static class VocabularyConceptEvaluateOnIdentifierPredicate implements Predicate {
-        private String identifier = null;
-
-        public VocabularyConceptEvaluateOnIdentifierPredicate(String identifier) {
-            this.identifier = identifier;
-        }
-
-        @Override
-        public boolean evaluate(Object object) {
-            VocabularyConcept vc = (VocabularyConcept) object;
-            return StringUtils.equals(this.identifier, vc.getIdentifier());
-        }
-    }// end of inner class VocabularyConceptEvaluateOnIdentifierPredicate
-
-    /**
-     *
-     * Inner class used to search for a DataElement using it's attribute value in a Collection
-     *
-     */
-    public static class DataElementEvaluateOnAttributeValuePredicate implements Predicate {
-        private String value = null;
-
-        public DataElementEvaluateOnAttributeValuePredicate(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public boolean evaluate(Object object) {
-            DataElement elem = (DataElement) object;
-            return StringUtils.equals(value, elem.getAttributeValue());
-        }
-    }// end of inner class DataElementEvaluateOnAttributeValuePredicate
 }// end of test case CSVVocabularyImportServiceTest

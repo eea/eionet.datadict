@@ -22,6 +22,7 @@ package eionet.meta.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,26 +106,37 @@ public abstract class VocabularyImportServiceBaseImpl {
      *            concepts of vocabulary
      * @param newBindedElement
      *            newly binded elements
+     * @param elementsRelatedToNotCreatedConcepts
+     *            data elements which are related to newly created concepts
      * @throws ServiceException
      *             when an error occurs
      */
-    protected void importIntoDb(int vocabularyId, Set<VocabularyConcept> vocabularyConcepts, List<DataElement> newBindedElement)
-            throws ServiceException {
+    protected void importIntoDb(int vocabularyId, List<VocabularyConcept> vocabularyConcepts, List<DataElement> newBindedElement,
+            Map<Integer, Set<DataElement>> elementsRelatedToNotCreatedConcepts) throws ServiceException {
         // first of all insert new binded element
         for (DataElement elem : newBindedElement) {
             this.vocabularyService.addDataElement(vocabularyId, elem.getId());
         }
 
         for (VocabularyConcept vc : vocabularyConcepts) {
-            // STEP 1., UPDATE OR INSERT VOCABULARY CONCEPT
-            if (vc.getId() <= 0) {
+            // STEP 1. INSERT VOCABULARY CONCEPT and UPDATE DATAELEMENT WHO ARE RELATED TO NEWLY CREATED CONCEPT
+            int id = vc.getId();
+            if (id <= 0) {
                 // INSERT VOCABULARY CONCEPT
                 int insertedId = this.vocabularyService.createVocabularyConcept(vocabularyId, vc);
                 // after insert operation get id of the vocabulary and set it!
                 vc.setId(insertedId);
+                Set<DataElement> elementsRelatedToConcept = elementsRelatedToNotCreatedConcepts.get(id);
+                if (elementsRelatedToConcept != null) {
+                    for (DataElement elem : elementsRelatedToConcept) {
+                        elem.setRelatedConceptId(insertedId);
+                    }
+                }
             }
+        }
 
-            // UPDATE VOCABULARY CONCEPT
+        for (VocabularyConcept vc : vocabularyConcepts) {
+            // STEP 2. UPDATE VOCABULARY CONCEPT
             this.vocabularyService.updateVocabularyConceptNonTransactional(vc);
         }
     } // end of method importIntoDb

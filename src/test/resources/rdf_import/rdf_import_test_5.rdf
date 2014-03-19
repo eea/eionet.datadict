@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:dctype="http://purl.org/dc/dcmitype/"
+   xmlns:owl="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+   xmlns:dcterms="http://purl.org/dc/terms/"
+   xmlns:geo="http://geo.org#ws64"
+   xmlns="http://127.0.0.1:8080/datadict/property/"
+   xml:base="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/">
+
+   <!-- Concept 3 -->
+   <skos:Concept rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_3">
+      <skos:prefLabel>rdf_test_concept_label_3</skos:prefLabel>
+      <skos:definition>rdf_test_concept_def_3_updated</skos:definition>
+      <skos:relatedMatch>http://test.tripledev.ee/datadict/vocabulary/test/test_another_source/another2</skos:relatedMatch>
+      <skos:related rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_2"/>
+      <skos:prefLabel xml:lang="bg">bg_rdf_test_concept_3_updated</skos:prefLabel>      
+   </skos:Concept>
+</rdf:RDF>

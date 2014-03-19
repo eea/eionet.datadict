@@ -21,19 +21,15 @@
 
 package eionet.meta.service;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.openrdf.rio.ParseErrorListener;
 import org.openrdf.rio.ParserConfig;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.helpers.BasicParserSettings;
 import org.openrdf.rio.rdfxml.RDFXMLParser;
@@ -84,6 +80,8 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         Map<String, List<String>> bindedElemsByNS = new HashMap<String, List<String>>();
         for (DataElement elem : bindedElements) {
             String identifier = elem.getIdentifier();
+
+            // TODO use dataelem getNameSpacePrefix and isExternalElement
             String[] temp = identifier.split("[:]");
 
             if (temp.length != 2) {
@@ -124,6 +122,7 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
 
             @Override
             public void fatalError(String arg0, int arg1, int arg2) {
+                // TODO to throw ServiceException or not to throw?
                 errorLogMessages.add("Fatal Error: " + arg0);
             }
 
@@ -137,14 +136,10 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
             parser.parse(contents, folderCtxRoot);
             this.logMessages.addAll(rdfHandler.getLogMessages());
             this.logMessages.add("Number of errors received: " + errorLogMessages.size());
-            Set<VocabularyConcept> toBeUpdatedConcepts = rdfHandler.getToBeUpdatedConcepts();
-            this.logMessages.add("Number of concepts updated: " + toBeUpdatedConcepts.size());
-            importIntoDb(vocabularyFolder.getId(), toBeUpdatedConcepts, new ArrayList<DataElement>());
-        } catch (RDFParseException e) {
-            throw new ServiceException(e.getMessage());
-        } catch (RDFHandlerException e) {
-            throw new ServiceException(e.getMessage());
-        } catch (IOException e) {
+            importIntoDb(vocabularyFolder.getId(), rdfHandler.getToBeUpdatedConcepts(), new ArrayList<DataElement>(),
+                    rdfHandler.getElementsRelatedToNotCreatedConcepts());
+        } catch (Exception e) {
+            // all exceptions should cause rollback operation
             throw new ServiceException(e.getMessage());
         }
 
