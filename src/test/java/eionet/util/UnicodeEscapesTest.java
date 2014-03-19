@@ -1,45 +1,35 @@
 package eionet.util;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+
 
 /**
  * 
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
-public class UnicodeEscapesTest extends TestCase {
+public class UnicodeEscapesTest {
     
     /** */
     protected UnicodeEscapes unicodeEscapes = null;
-
-    /**
-     * 
-     * @param name
-     */
-    public UnicodeEscapesTest(String name) {
-        super(name);
-    }
 
     /*
      *  (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         unicodeEscapes = new UnicodeEscapes();
     }
 
-    /*
-     *  (non-Javadoc)
-     * @see junit.framework.TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     /*
      * Test method for 'eionet.util.UnicodeEscapes.isXHTMLEntity(String)'
      */
+    @Test
     public void testIsXHTMLEntity() {
         
         assertEquals(true, unicodeEscapes.isXHTMLEntity("&euro;"));
