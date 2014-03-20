@@ -401,27 +401,17 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         }
     }// end of test step testNotFoundVocabularyConcept
 
-
     /**
-     * test when an CSV file is uploaded for non-working copy folder
-     * Note: all success conditions are tested in service test, steps are not repeated here. See: CSVVocabularyImportServiceTest
+     * test when an CSV file is uploaded for non-working copy folder Note: all success conditions are tested in service test, steps
+     * are not repeated here. See: CSVVocabularyImportServiceTest
      *
      * @throws Exception
      *             if test fails
      */
     @Test
     public void testUploadCsvToNotWorkingCopy() throws Exception {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
-        // set a user
-        DDUser user = new FakeUser();
-        user.authenticate("testUser", "testUser");
-        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
-        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
-        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
-        trip.addParameter("vocabularyFolder.workingCopy", "0");
         try {
-            trip.execute("uploadCsv");
+            uploadFileToNotWorkingCopy("uploadCsv");
             Assert.fail("Exception not received for not working copy folder bulk edit.");
         } catch (StripesServletException e) {
             Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
@@ -438,13 +428,8 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
      */
     @Test
     public void testUploadCsvForNotAuthenticatedUser() throws Exception {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
-        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
-        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
-        trip.addParameter("vocabularyFolder.workingCopy", "1");
         try {
-            trip.execute("uploadCsv");
+            uploadFileForNotAuthenticatedUser("uploadCsv");
             Assert.fail("Exception not received for not working copy folder bulk edit.");
         } catch (StripesServletException e) {
             Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
@@ -461,17 +446,8 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
      */
     @Test
     public void testUploadCsvForNotOwnedUser() throws Exception {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
-     // set a user
-        DDUser user = new FakeUser();
-        user.authenticate("testUser2", "testUser2");
-        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
-        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
-        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
-        trip.addParameter("vocabularyFolder.workingCopy", "1");
         try {
-            trip.execute("uploadCsv");
+            uploadFileForNotOwnedUser("uploadCsv");
             Assert.fail("Exception not received for not working copy folder bulk edit.");
         } catch (StripesServletException e) {
             Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
@@ -488,18 +464,8 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
      */
     @Test
     public void testUploadNullCsv() throws Exception {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
-        // set a user
-        DDUser user = new FakeUser();
-        user.authenticate("testUser", "testUser");
-        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
-
-        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
-        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
-        trip.addParameter("vocabularyFolder.workingCopy", "1");
         try {
-            trip.execute("uploadCsv");
+            uploadNullFile("uploadCsv");
             Assert.fail("Exception not received for not working copy folder bulk edit.");
         } catch (StripesServletException e) {
             Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
@@ -509,33 +475,15 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     }// end of test step testUploadNullCsv
 
     /**
-     * test when a null CSV file is uploaded
+     * test when a empty name file us uploaded for CSV import.
      *
      * @throws Exception
      *             if test fails
      */
     @Test
     public void testUploadCsvWithEmptyName() throws Exception {
-        MockServletContext ctx = getServletContextWithProperyBinder();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
-        // set a user
-        DDUser user = new FakeUser();
-        user.authenticate("testUser", "testUser");
-        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
-
-        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
-        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
-        trip.addParameter("vocabularyFolder.workingCopy", "1");
-
-        // Prepare rich-type (e.g. file bean) request parameters. These will be picked up by MyActionBeanPropertyBinder
-        // that has already been injected into the servlet context mock obtained above.
-        Map<String, Object> richTypeRequestParams = new HashMap<String, Object>();
-        FileBean uploadedCsvFile = new FileBean(null, "something", "");
-        richTypeRequestParams.put("uploadedFileToImport", uploadedCsvFile);
-        trip.getRequest().setAttribute(RICH_TYPE_REQUEST_PARAMS_ATTR_NAME, richTypeRequestParams);
-
         try {
-            trip.execute("uploadCsv");
+            uploadEmptyNameFile("uploadCsv");
             Assert.fail("Exception not received for not working copy folder bulk edit.");
         } catch (StripesServletException e) {
             Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
@@ -552,24 +500,8 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
      */
     @Test
     public void testUploadCsvWithNotCsvExtension() throws Exception {
-        MockServletContext ctx = getServletContextWithProperyBinder();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
-        // set a user
-        DDUser user = new FakeUser();
-        user.authenticate("testUser", "testUser");
-        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
-        // trip.getRequest().setAttribute(SecurityUtil.REMOTEUSER, user);
-
-        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
-        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
-        trip.addParameter("vocabularyFolder.workingCopy", "1");
-        Map<String, Object> richTypeRequestParams = new HashMap<String, Object>();
-        FileBean uploadedCsvFile = new FileBean(null, "something", "uploadedfile.env");
-        richTypeRequestParams.put("uploadedFileToImport", uploadedCsvFile);
-        trip.getRequest().setAttribute(RICH_TYPE_REQUEST_PARAMS_ATTR_NAME, richTypeRequestParams);
-
         try {
-            trip.execute("uploadCsv");
+            uploadFileWithEnvExtension("uploadCsv");
             Assert.fail("Exception not received for not working copy folder bulk edit.");
         } catch (StripesServletException e) {
             Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
@@ -612,6 +544,223 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
                     se.getMessage());
         }
     } // end of test step testUploadCsvWithInvalidContentType
+
+    /**
+     * test when an RDF file is uploaded for non-working copy folder Note: all success conditions are tested in service test, steps
+     * are not repeated here. See: RDFVocabularyImportServiceTest
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadRdfToNotWorkingCopy() throws Exception {
+        try {
+            uploadFileToNotWorkingCopy("uploadRdf");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "Vocabulary should be in working copy status", se.getMessage());
+        }
+    }// end of test step testUploadRdfToNotWorkingCopy
+
+    /**
+     * test when an RDF file is uploaded for non-authenticated user copy folder
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadRdfForNotAuthenticatedUser() throws Exception {
+        try {
+            uploadFileForNotAuthenticatedUser("uploadRdf");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "User must be logged in", se.getMessage());
+        }
+    }// end of test step testUploadRdfForNotAuthenticatedUser
+
+    /**
+     * test when an RDF file is uploaded for not-owned user copy folder
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadRdfForNotOwnedUser() throws Exception {
+        try {
+            uploadFileForNotOwnedUser("uploadRdf");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "Illegal user for viewing this working copy", se.getMessage());
+        }
+    }// end of test step testUploadRdfForNotOwnedUser
+
+    /**
+     * test when a null RDF file is uploaded
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadNullRdf() throws Exception {
+        try {
+            uploadNullFile("uploadRdf");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "You should upload a file", se.getMessage());
+        }
+    }// end of test step testUploadNullRdf
+
+    /**
+     * test when an empty name file is uploaded for RDF import.
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadRdfWithEmptyName() throws Exception {
+        try {
+            uploadEmptyNameFile("uploadRdf");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "File should be a RDF file", se.getMessage());
+        }
+    } // end of test step testUploadRdfWithEmptyName
+
+    /**
+     * test when a non rdf extension file is uploaded for RDF import.
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadRdfWithNotRdfExtension() throws Exception {
+        try {
+            uploadFileWithEnvExtension("uploadRdf");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "File should be a RDF file", se.getMessage());
+        }
+    }// end of test step testUploadRdfWithNotRdfExtension
+
+    /*
+     * Upload a file with env extension.
+     */
+    private void uploadFileWithEnvExtension(String execute) throws Exception {
+        MockServletContext ctx = getServletContextWithProperyBinder();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        // set a user
+        DDUser user = new FakeUser();
+        user.authenticate("testUser", "testUser");
+        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
+        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
+        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
+        trip.addParameter("vocabularyFolder.workingCopy", "1");
+        Map<String, Object> richTypeRequestParams = new HashMap<String, Object>();
+        FileBean uploadedRdfFile = new FileBean(null, "something", "uploadedfile.env");
+        richTypeRequestParams.put("uploadedFileToImport", uploadedRdfFile);
+        trip.getRequest().setAttribute(RICH_TYPE_REQUEST_PARAMS_ATTR_NAME, richTypeRequestParams);
+        // call test method
+        trip.execute(execute);
+    }// end of method uploadFileWithEnvExtension
+
+    /*
+     * upload a file with no name
+     */
+    private void uploadEmptyNameFile(String execute) throws Exception {
+        MockServletContext ctx = getServletContextWithProperyBinder();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        // set a user
+        DDUser user = new FakeUser();
+        user.authenticate("testUser", "testUser");
+        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
+        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
+        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
+        trip.addParameter("vocabularyFolder.workingCopy", "1");
+        // Prepare rich-type (e.g. file bean) request parameters. These will be picked up by MyActionBeanPropertyBinder
+        // that has already been injected into the servlet context mock obtained above.
+        Map<String, Object> richTypeRequestParams = new HashMap<String, Object>();
+        FileBean uploadedRdfFile = new FileBean(null, "something", "");
+        richTypeRequestParams.put("uploadedFileToImport", uploadedRdfFile);
+        trip.getRequest().setAttribute(RICH_TYPE_REQUEST_PARAMS_ATTR_NAME, richTypeRequestParams);
+        // call test method
+        trip.execute(execute);
+    } // end of method uploadEmptyNameFile
+
+    /*
+     * uploads null file.
+     */
+    private void uploadNullFile(String execute) throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        // set a user
+        DDUser user = new FakeUser();
+        user.authenticate("testUser", "testUser");
+        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
+        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
+        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
+        trip.addParameter("vocabularyFolder.workingCopy", "1");
+        // call test method
+        trip.execute(execute);
+    }// end of method uploadNullFile
+
+    /*
+     * uploads a file for not-owned user copy folder
+     */
+    private void uploadFileForNotOwnedUser(String execute) throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        // set a user
+        DDUser user = new FakeUser();
+        user.authenticate("testUser2", "testUser2");
+        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
+        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
+        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
+        trip.addParameter("vocabularyFolder.workingCopy", "1");
+        // call test method
+        trip.execute(execute);
+    }// end of method uploadFileForNotOwnedUser
+
+    /*
+     * uploads file to non-working copy folder.
+     */
+    private void uploadFileToNotWorkingCopy(String execute) throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        // set a user
+        DDUser user = new FakeUser();
+        user.authenticate("testUser", "testUser");
+        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
+        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
+        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
+        trip.addParameter("vocabularyFolder.workingCopy", "0");
+        // call test method
+        trip.execute(execute);
+    }// end of method uploadFileToNotWorkingCopy
+
+    /*
+     * upload a file for non-authenticated user copy folder
+     */
+    private void uploadFileForNotAuthenticatedUser(String execute) throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
+        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
+        trip.addParameter("vocabularyFolder.workingCopy", "1");
+        // call test method
+        trip.execute(execute);
+    }// end of method uploadFileForNotAuthenticatedUser
 
     @Override
     protected String getSeedFilename() {
