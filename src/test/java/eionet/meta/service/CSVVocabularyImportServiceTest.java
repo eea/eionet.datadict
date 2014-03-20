@@ -803,6 +803,81 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
     }// end of test step testIfLinesAreSkippedAndDataElementsNotPurged
 
     /**
+     * In this test, two line CSV is imported. New concepts added to another vocabulary folder and related items are set.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfRelatedConceptsUpdated() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(6);
+        // get reader for CSV file
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_12.csv");
+
+        // import CSV into database
+        vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Updated concepts does not include 2 items", updatedConcepts.size(), 2);
+
+        // Check for first concept
+        VocabularyConcept concept = findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_1");
+        List<DataElement> elements =
+                VocabularyCSVOutputHelper.getDataElementValuesByName("skos:relatedMatch", concept.getElementAttributes());
+        DataElement element = elements.get(0);
+        Assert.assertEquals("Related Concept Id Doesn't Match", 11, element.getRelatedConceptId().intValue());
+        Assert.assertEquals("Related Concept Identifier Doesn't Match", "csv_test_concept_3",
+                element.getRelatedConceptIdentifier());
+        Assert.assertEquals("Related Concept Label Doesn't Match", "csv_test_concept_label_3", element.getRelatedConceptLabel());
+        Assert.assertEquals("Related Concept Vocabulary Doesn't Match", "csv_header_vocab", element.getRelatedConceptVocabulary());
+        Assert.assertEquals("Related Concept Vocabulary Set Doesn't Match", "csv_header_vs", element.getRelatedConceptVocSet());
+        Assert.assertNull("Attribute Value is Not Null", element.getAttributeValue());
+
+        elements = VocabularyCSVOutputHelper.getDataElementValuesByName("skos:related", concept.getElementAttributes());
+        element = elements.get(0);
+        Assert.assertEquals("Related Concept Id Doesn't Match",
+                findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_2").getId(), element.getRelatedConceptId()
+                        .intValue());
+        Assert.assertEquals("Related Concept Identifier Doesn't Match", "csv_test_concept_2",
+                element.getRelatedConceptIdentifier());
+        Assert.assertEquals("Related Concept Label Doesn't Match", "csv_test_concept_label_2", element.getRelatedConceptLabel());
+        Assert.assertEquals("Related Concept Vocabulary Doesn't Match", "csv_header_vocab_2",
+                element.getRelatedConceptVocabulary());
+        Assert.assertEquals("Related Concept Vocabulary Set Doesn't Match", "csv_header_vs", element.getRelatedConceptVocSet());
+        Assert.assertNull("Attribute Value is Not Null", element.getAttributeValue());
+
+        // Check for second concept
+        concept = findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_2");
+        elements = VocabularyCSVOutputHelper.getDataElementValuesByName("skos:relatedMatch", concept.getElementAttributes());
+        element = elements.get(0);
+        Assert.assertNull("Related Concept Id is Not Null", element.getRelatedConceptId());
+        Assert.assertNull("Related Concept Identifier is Not Null", element.getRelatedConceptIdentifier());
+        Assert.assertNull("Related Concept Label is Not Null", element.getRelatedConceptLabel());
+        Assert.assertNull("Related Concept Vocabulary is Not Null", element.getRelatedConceptVocabulary());
+        Assert.assertNull("Related Concept Vocabulary Set is Not Null", element.getRelatedConceptVocSet());
+        Assert.assertEquals("Attribute Value Doesn't Match",
+                "http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab_2/csv_test_concept_3",
+                element.getAttributeValue());
+
+        elements = VocabularyCSVOutputHelper.getDataElementValuesByName("skos:related", concept.getElementAttributes());
+        element = elements.get(0);
+        Assert.assertEquals("Related Concept Id Doesn't Match",
+                findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_1").getId(), element.getRelatedConceptId()
+                        .intValue());
+        Assert.assertEquals("Related Concept Identifier Doesn't Match", "csv_test_concept_1",
+                element.getRelatedConceptIdentifier());
+        Assert.assertEquals("Related Concept Label Doesn't Match", "csv_test_concept_label_1", element.getRelatedConceptLabel());
+        Assert.assertEquals("Related Concept Vocabulary Doesn't Match", "csv_header_vocab_2",
+                element.getRelatedConceptVocabulary());
+        Assert.assertEquals("Related Concept Vocabulary Set Doesn't Match", "csv_header_vs", element.getRelatedConceptVocSet());
+        Assert.assertNull("Attribute Value is Not Null", element.getAttributeValue());
+        Assert.assertNull("Attribute Value is Not Null", element.getAttributeValue());
+
+    }// end of test step testIfRelatedConceptsUpdated
+
+    /**
      * In this test, three line CSV is imported. All rows includes updated values. But there should be no update performed since it
      * does not have valid headers (invalid fixed header). All transaction should be rollbacked
      *
