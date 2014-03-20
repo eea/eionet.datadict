@@ -121,7 +121,6 @@ public final class VocabularyCSVOutputHelper {
             // add extra fields
             for (Triple<String, String, Integer> row : attributesMeta) {
                 String elemName = row.getLeft();
-
                 attributeElems = getDataElementValuesByNameAndLang(elemName, row.getCentral(), c.getElementAttributes());
 
                 int sizeOfAttributeElems = 0;
@@ -130,6 +129,8 @@ public final class VocabularyCSVOutputHelper {
                     for (int j = 0; j < attributeElems.size(); j++) {
                         DataElement e = attributeElems.get(j);
                         if (e.isRelationalElement()) {
+                            value = e.getRelatedConceptUri();
+                        } else if (StringUtils.isNotEmpty(e.getRelatedConceptIdentifier()) && StringUtils.isNotEmpty(e.getDatatype()) && e.getDatatype().equalsIgnoreCase("reference")) {
                             value = folderContextRoot + e.getRelatedConceptIdentifier();
                         } else {
                             value = e.getAttributeValue();

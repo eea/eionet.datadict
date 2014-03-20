@@ -1274,16 +1274,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @return string
      */
     public String getUriPrefix() {
-        String baseUri = vocabularyFolder.getBaseUri();
-        if (StringUtils.isEmpty(baseUri)) {
-            baseUri =
-                    Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + vocabularyFolder.getFolderName() + "/"
-                            + vocabularyFolder.getIdentifier();
-        }
-        if (!baseUri.endsWith("/")) {
-            baseUri += "/";
-        }
-
+        String baseUri = VocabularyFolder.getBaseUri(vocabularyFolder);
         return VocabularyXmlWriter.escapeIRI(baseUri);
     }
 

@@ -187,11 +187,9 @@ public class VocabularyXmlWriter {
 
         if (siteCodeType) {
             writer.writeNamespace("dd", DD_SCHEMA_NS);
-        } else {
         }
         writer.writeDefaultNamespace(commonElemsUri);
         writer.writeAttribute("xml", XML_NS, "base", escapeIRI(contextRoot));
-
     }
 
     /**
@@ -250,10 +248,15 @@ public class VocabularyXmlWriter {
      * Writes vocabulary folder XML.
      *
      * @param folderContextRoot
+     *            vocabulary base uri
      * @param vocabularyContextRoot
+     *            vocabulary set base uri
      * @param vocabularyFolder
+     *            vocabulary
      * @param vocabularyConcepts
+     *            concepts of vocabulary
      * @throws XMLStreamException
+     *             when an error occurs during write operation
      */
     public void writeVocabularyFolderXml(String folderContextRoot, String vocabularyContextRoot,
             VocabularyFolder vocabularyFolder, List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
@@ -337,7 +340,8 @@ public class VocabularyXmlWriter {
                             writer.writeEmptyElement(elem.getIdentifier());
                             writer.writeAttribute("rdf", RDF_NS, "resource", elem.getRelatedConceptUri());
                         } else if (StringUtils.isNotEmpty(elem.getAttributeValue())) {
-                            if (StringUtils.isNotEmpty(elem.getDatatype()) && elem.getDatatype().equalsIgnoreCase("reference")) {
+                            if (StringUtils.isNotEmpty(elem.getRelatedConceptUri()) && StringUtils.isNotEmpty(elem.getDatatype())
+                                    && elem.getDatatype().equalsIgnoreCase("reference")) {
                                 writer.writeEmptyElement(elem.getIdentifier());
                                 writer.writeAttribute("rdf", RDF_NS, "resource", elem.getRelatedConceptUri());
                             } else {
@@ -345,10 +349,9 @@ public class VocabularyXmlWriter {
                                 if (StringUtils.isNotEmpty(elem.getAttributeLanguage())) {
                                     writer.writeAttribute("xml", XML_NS, "lang", elem.getAttributeLanguage());
                                 }
-                                if (StringUtils.isNotEmpty(elem.getDatatype()) && !(elem.getDatatype().equalsIgnoreCase("string"))) {
+                                if (StringUtils.isNotEmpty(elem.getDatatype()) && !elem.getDatatype().equalsIgnoreCase("string")) {
                                     writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(elem.getDatatype()));
                                 }
-
                                 writer.writeCharacters(elem.getAttributeValue());
                                 writer.writeEndElement();
                             }
