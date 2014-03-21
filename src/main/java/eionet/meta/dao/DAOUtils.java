@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Util methods for handling domain objects.
  */
-public class DAOUtils {
+public final class DAOUtils {
 
     /** prevent initialization ot util class. */
     private  DAOUtils() {    }
@@ -36,7 +36,7 @@ public class DAOUtils {
     }
 
     /**
-     * Checks vocabulary concepts status
+     * Checks vocabulary concepts status.
      * @param vocabulary Vocabulary
      * @return true if at least one concept is valid
      */

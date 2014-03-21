@@ -96,10 +96,10 @@ public interface IVocabularyFolderDAO {
     /**
      * Returns vocabulary folder.
      *
-     * @param folderName
-     * @param identifier
-     * @param workingCopy
-     * @return
+     * @param folderName vocabulary set
+     * @param identifier vocabulary identifier
+     * @param workingCopy if to return working copy
+     * @return Vocabulary folder
      */
     VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy);
 
@@ -114,8 +114,8 @@ public interface IVocabularyFolderDAO {
     /**
      * Returns the checked out version of the given vocabulary folder.
      *
-     * @param checkedOutCopyId
-     * @return
+     * @param checkedOutCopyId  vocabulary ID
+     * @return Checked out Vocabulary
      */
     VocabularyFolder getVocabularyWorkingCopy(int checkedOutCopyId);
 
@@ -123,7 +123,7 @@ public interface IVocabularyFolderDAO {
      * Deletes vocabulary folders.
      *
      * @param ids IDs of folders to be deleted
-     * @keepRelatedValues if flagged relations are kept as uris in values instead of IDs
+     * @param keepRelatedValues if flagged relations are kept as uris in values instead of IDs
      */
     void deleteVocabularyFolders(List<Integer> ids, boolean keepRelatedValues);
 

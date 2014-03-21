@@ -37,19 +37,24 @@ import java.util.List;
 
 /**
  * Vocabulary XML Writer in INSPIRE codelist format.
+ *
  * @author Kaido Laine
  */
-public class InspireCodelistXmlWriter   {
+public class InspireCodelistXmlWriter {
 
     /**
      * Vocabulary the INSPIRE output is created from.
      */
     private VocabularyFolder vocabulary;
 
-    /** vocabulary cont4xt Root. */
+    /**
+     * vocabulary cont4xt Root.
+     */
     private String contextRoot;
 
-    /** XML encoding. */
+    /**
+     * XML encoding.
+     */
     private static final String ENCODING = "UTF-8";
 
     /**
@@ -57,26 +62,40 @@ public class InspireCodelistXmlWriter   {
      */
     private XMLStreamWriter writer = null;
 
-    /** inspire no extensibility. */
-    private  static final String INSPIRE_EXTENSIBILITY_NONE = "http://inspire.ec.europa.eu/registry/extensibility/none";
+    /**
+     * inspire no extensibility.
+     */
+    private static final String INSPIRE_EXTENSIBILITY_NONE = "http://inspire.ec.europa.eu/registry/extensibility/none";
 
-    /** valid status in inspire. */
-    private  static final String INSPIRE_STATUS_VALID = "http://inspire.ec.europa.eu/registry/status/valid";
+    /**
+     * valid status in inspire.
+     */
+    private static final String INSPIRE_STATUS_VALID = "http://inspire.ec.europa.eu/registry/status/valid";
 
-    /** Obsolete status in inspire. */
-    private  static final String INSPIRE_STATUS_OBSOLETE = "http://inspire.ec.europa.eu/registry/status/retired";
+    /**
+     * Obsolete status in inspire.
+     */
+    private static final String INSPIRE_STATUS_OBSOLETE = "http://inspire.ec.europa.eu/registry/status/retired";
 
-    /** not released status in inspire. */
-    private  static final String INSPIRE_STATUS_PUBLICDRAFT = "http://inspire.ec.europa.eu/registry/status/submitted";
+    /**
+     * not released status in inspire.
+     */
+    private static final String INSPIRE_STATUS_PUBLICDRAFT = "http://inspire.ec.europa.eu/registry/status/submitted";
 
 
-    /** INSPIRE XSD location. */
-    private  static  final String INSPIRE_XSD_LOCATION = "http://inspire.ec.europa.eu/draft-schemas/registry/0.3/codelist.xsd";
+    /**
+     * INSPIRE XSD location.
+     */
+    private static final String INSPIRE_XSD_LOCATION = "http://inspire.ec.europa.eu/draft-schemas/registry/0.3/codelist.xsd";
 
-    /** XSI Namespace. */
-    private  static  final String XSI_NAMESPACE = "http://www.w3.org/2001/XMLSchema-instance";
+    /**
+     * XSI Namespace.
+     */
+    private static final String XSI_NAMESPACE = "http://www.w3.org/2001/XMLSchema-instance";
 
-    /** default namespaces that are present in inspire . */
+    /**
+     * default namespaces that are present in INSPIRE.
+     */
     private static final HashMap<String, String> INSIPIRE_NAMESPACES = new HashMap<String, String>();
 
     /** init namespaces hash. */
@@ -90,22 +109,32 @@ public class InspireCodelistXmlWriter   {
 
     /**
      * Inits INSPIRE XML writer.
-     * @param out output stream,
-     * @param  voc Vocabulary
+     *
+     * @param out output stream
+     * @param voc Vocabulary
+     * @param ctx context URL for DD
      * @throws XMLStreamException if streaming fails
      */
     public InspireCodelistXmlWriter(OutputStream out, VocabularyFolder voc, String ctx) throws XMLStreamException {
         writer = XMLOutputFactory.newInstance().createXMLStreamWriter(out, ENCODING);
         vocabulary = voc;
-
         contextRoot = ctx;
     }
 
+    /**
+     * Writes xml output.
+     * @throws XMLStreamException if writing does not succeed
+     */
     public void writeXml() throws XMLStreamException {
         writeXmlStart();
         writeVocabularyXml();
         writeXmlEnd();
     }
+
+    /**
+     * Writes vocabulary in xml format.
+     * @throws XMLStreamException if wirting fails
+     */
     public void writeVocabularyXml() throws XMLStreamException {
 
         writeLabelEN(vocabulary.getLabel());
@@ -123,7 +152,7 @@ public class InspireCodelistXmlWriter   {
 
         //description
         RegStatus status = vocabulary.getRegStatus();
-        String statusLabel="";
+        String statusLabel = "";
         writer.writeCharacters("\n");
         writer.writeStartElement("status");
         if (status.equals(RegStatus.PUBLIC_DRAFT)) {
@@ -171,6 +200,10 @@ public class InspireCodelistXmlWriter   {
     }
 
 
+    /**
+     * writes XML start element.
+     * @throws XMLStreamException if writing fails
+     */
     public void writeXmlStart() throws XMLStreamException {
         writer.writeStartDocument(ENCODING, "1.0");
         writer.writeCharacters("\n");
@@ -201,14 +234,16 @@ public class InspireCodelistXmlWriter   {
 
     /**
      * ID attribute value.
+     *
      * @return vocabulary URI
      */
     private String generateVocabularyID() {
-        return contextRoot + "/vocabulary/" + vocabulary.getFolderName() + "/" +  vocabulary.getIdentifier();
+        return contextRoot + "/vocabulary/" + vocabulary.getFolderName() + "/" + vocabulary.getIdentifier();
     }
 
     /**
      * vocabulary SET value for an ID.
+     *
      * @return vocabulary set URI
      */
     private String generateVocabularySetID() {
@@ -217,6 +252,7 @@ public class InspireCodelistXmlWriter   {
 
     /**
      * Writes label element in xml:lang = "EN".
+     *
      * @param labelText text to write
      * @throws javax.xml.stream.XMLStreamException if writing fails
      */
@@ -228,6 +264,10 @@ public class InspireCodelistXmlWriter   {
         writer.writeEndElement();
     }
 
+    /**
+     * Writes concepts array.
+     * @throws XMLStreamException if writing fails
+     */
     private void writeConcepts() throws XMLStreamException {
         List<VocabularyConcept> concepts = vocabulary.getConcepts();
         boolean hasConcepts = concepts != null && concepts.size() > 0;
