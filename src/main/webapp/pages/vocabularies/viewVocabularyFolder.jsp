@@ -99,25 +99,36 @@
         <c:if test="${not actionBean.vocabularyFolder.draftStatus && not actionBean.vocabularyFolder.workingCopy}">
         <c:url var="rdfIconUrl" value="/images/rdf-icon.gif" />
         <c:url var="csvIconUrl" value="/images/csv_icon_sm.gif" />
+        <c:url var="codelistIconUrl" value="/images/inspire_icon.gif" />
         <div id="createbox" style="clear:right">
             <table id="outputsmenu">
                 <tr>
                     <td style="width:73%">Get RDF output of this vocabulary</td>
                     <td style="width:27%">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="rdf">
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="rdf" title="Export RDF">
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                            <img src="${rdfIconUrl}" alt="Export RDF" />
+                            <img src="${rdfIconUrl}" alt="" />
                         </stripes:link>
                     </td>
                 </tr>
                 <tr>
                     <td style="width:73%">Get CSV output of this vocabulary</td>
                     <td style="width:27%">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="csv">
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="csv" title="Export CSV">
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                            <img src="${csvIconUrl}" alt="Export CSV" />
+                            <img src="${csvIconUrl}" alt="" />
+                        </stripes:link>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:73%">Get XML output in INSPIRE codelist format</td>
+                    <td style="width:27%">
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="codelist" title="Export XML in INSPIRE codelist format">
+                            <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                            <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                            <img src="${codelistIconUrl}" alt="" />
                         </stripes:link>
                     </td>
                 </tr>

@@ -79,7 +79,7 @@ public class VocabularyServiceRelationsTest extends UnitilsJUnit4 {
         vocabularyService.deleteVocabularyFolders(ids, true);
 
         //VocabularyFolder vf2 = vocabularyService.getVocabularyFolder(2);
-        List<VocabularyConcept> concepts2 =  vocabularyService.getVocabularyConceptsWithAttributes(2, false, ObsoleteStatus.ALL);
+        List<VocabularyConcept> concepts2 =  vocabularyService.getValidConceptsWithAttributes(2);
         Assert.assertTrue(concepts2.size() == 2);
 
         VocabularyConcept concept22 = concepts2.get(1);
@@ -95,7 +95,7 @@ public class VocabularyServiceRelationsTest extends UnitilsJUnit4 {
         vocabularyService.deleteVocabularyFolders(ids, false);
 
         //VocabularyFolder vf3 = vocabularyService.getVocabularyFolder(3);
-        List<VocabularyConcept> concepts3 = vocabularyService.getVocabularyConceptsWithAttributes(3, false, ObsoleteStatus.ALL);
+        List<VocabularyConcept> concepts3 = vocabularyService.getValidConceptsWithAttributes(3);
 
         Assert.assertTrue(concepts3.size() == 2);
         VocabularyConcept concept31 = concepts3.get(0);

@@ -63,8 +63,8 @@ import eionet.util.Triple;
  *
  * @author Juhan Voolaid
  */
-@SpringApplicationContext("spring-context.xml")
 // @DataSet({"seed-vocabularies.xml"})
+@SpringApplicationContext("spring-context.xml")
 public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /** Logger. */
@@ -316,7 +316,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
         assertNotNull("Expected vocabulary folder", result);
 
-        List<VocabularyConcept> concepts = vocabularyService.getVocabularyConceptsWithAttributes(id, false, ObsoleteStatus.ALL);
+        List<VocabularyConcept> concepts = vocabularyService.getValidConceptsWithAttributes(id);
 
         assertEquals("Expected concepts size ", 4, concepts.size());
         int expectedRelatedID = 0;

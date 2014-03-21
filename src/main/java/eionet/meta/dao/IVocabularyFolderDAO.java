@@ -21,12 +21,12 @@
 
 package eionet.meta.dao;
 
-import java.util.List;
-
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
+
+import java.util.List;
 
 /**
  * Vocabulary DAO interface.
@@ -47,7 +47,6 @@ public interface IVocabularyFolderDAO {
      * Returns vocabulary folders.
      *
      * @param userName
-     *
      * @return
      */
     List<VocabularyFolder> getVocabularyFolders(String userName);
@@ -65,10 +64,8 @@ public interface IVocabularyFolderDAO {
      * Returns versions of the vocabulary folders.
      *
      * @param continuityId
-     * @param vocabularyFolderId
-     *            folder to exclude
+     * @param vocabularyFolderId folder to exclude
      * @param userName
-     *
      * @return
      */
     List<VocabularyFolder> getVocabularyFolderVersions(String continuityId, int vocabularyFolderId, String userName);
@@ -107,11 +104,10 @@ public interface IVocabularyFolderDAO {
     VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy);
 
     /**
-     * Returns vocabulary folder.
+     * Returns vocabulary folder WITHOUT concepts.
      *
-     * @param vocabularyFolderId
-     * @return
-     * @throws ServiceException
+     * @param vocabularyFolderId vocabulary ID
+     * @return vocabulary domain entity
      */
     VocabularyFolder getVocabularyFolder(int vocabularyFolderId);
 
@@ -120,7 +116,6 @@ public interface IVocabularyFolderDAO {
      *
      * @param checkedOutCopyId
      * @return
-     * @throws ServiceException
      */
     VocabularyFolder getVocabularyWorkingCopy(int checkedOutCopyId);
 
@@ -135,8 +130,8 @@ public interface IVocabularyFolderDAO {
     /**
      * True, if identifier is unique.
      *
-     * @param folderId folder id
-     * @param identifier new identifier to check
+     * @param folderId                    folder id
+     * @param identifier                  new identifier to check
      * @param excludedVocabularyFolderIds folder ids not to be checked
      * @return true if folder is unique
      */
@@ -144,6 +139,7 @@ public interface IVocabularyFolderDAO {
 
     /**
      * Forcefully sets notations to identifiers in all concepts within the vocabulary with the given id.
+     *
      * @param vocabularyId The given vocabulary id.
      * @return The number of concepts where the notation was different from identifier.
      */
@@ -151,6 +147,7 @@ public interface IVocabularyFolderDAO {
 
     /**
      * Returns the vocabulary by the vocabulary id of the given concept.
+     *
      * @param conceptId Id of the concept whose parent vocabulary is to be returned.
      * @return The vocabulary object as described above.
      */
@@ -158,6 +155,7 @@ public interface IVocabularyFolderDAO {
 
     /**
      * returns list of bound element names used in CSV header.
+     *
      * @param vocabularyFolderId vocabulary ID
      * @return list of Pairs where Left = element name and Right=max count of elements in a concept in this vocabulary folder
      */
@@ -166,6 +164,7 @@ public interface IVocabularyFolderDAO {
 
     /**
      * Search vocabularies by the given parameters. No concepts assigned to DAO objects.
+     *
      * @param filter container object for filtering parameters
      * @return Result containing values for the paged request
      */
@@ -174,14 +173,16 @@ public interface IVocabularyFolderDAO {
     /**
      * Updates concept element values where concepts of this vocabulary are marked as related concepts.
      * element value is updated with base URI + concept identifier.
+     *
      * @param vocabularyIds list of vocabulary IDs to be checked and handled
      */
     void updateRelatedConceptValueToUri(List<Integer> vocabularyIds);
 
     /**
      * checks if any of the folders have base uri entered.
+     *
      * @param ids list of vocabularies
-     * @return true if at least one base uri exists in vocabulries of the given IDs
+     * @return true if at least one base uri exists in vocabularies of the given IDs
      */
     boolean vocabularyHasBaseUri(List<Integer> ids);
 }

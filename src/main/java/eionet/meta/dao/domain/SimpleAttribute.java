@@ -26,15 +26,22 @@ package eionet.meta.dao.domain;
  *
  * @author Juhan Voolaid
  */
-public class SimpleAttribute {
+public class
+        SimpleAttribute {
 
-    /** M_ATTRIBUTE_ID. */
+    /**
+     * M_ATTRIBUTE_ID.
+     */
     private int attributeId;
 
-    /** DATAELEM_ID. */
+    /**
+     * DATAELEM_ID.
+     */
     private int objectId;
 
-    /** M_ATTRIBUTE.SHORT_NAME. */
+    /**
+     * M_ATTRIBUTE.SHORT_NAME.
+     */
     private String identifier;
 
     private String label;
@@ -67,8 +74,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param attributeId
-     *            the attributeId to set
+     * @param attributeId the attributeId to set
      */
     public void setAttributeId(int attributeId) {
         this.attributeId = attributeId;
@@ -82,8 +88,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param objectId
-     *            the objectId to set
+     * @param objectId the objectId to set
      */
     public void setObjectId(int objectId) {
         this.objectId = objectId;
@@ -97,8 +102,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param identifier
-     *            the identifier to set
+     * @param identifier the identifier to set
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -112,8 +116,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param label
-     *            the label to set
+     * @param label the label to set
      */
     public void setLabel(String label) {
         this.label = label;
@@ -127,8 +130,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param value
-     *            the value to set
+     * @param value the value to set
      */
     public void setValue(String value) {
         this.value = value;
@@ -142,8 +144,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param inputType
-     *            the inputType to set
+     * @param inputType the inputType to set
      */
     public void setInputType(String inputType) {
         this.inputType = inputType;
@@ -157,8 +158,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param dataType
-     *            the dataType to set
+     * @param dataType the dataType to set
      */
     public void setDataType(String dataType) {
         this.dataType = dataType;
@@ -172,8 +172,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param width
-     *            the width to set
+     * @param width the width to set
      */
     public void setWidth(int width) {
         this.width = width;
@@ -187,8 +186,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param height
-     *            the height to set
+     * @param height the height to set
      */
     public void setHeight(int height) {
         this.height = height;
@@ -202,8 +200,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param multiValue
-     *            the multiValue to set
+     * @param multiValue the multiValue to set
      */
     public void setMultiValue(boolean multiValue) {
         this.multiValue = multiValue;
@@ -217,8 +214,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param mandatory
-     *            the mandatory to set
+     * @param mandatory the mandatory to set
      */
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
@@ -232,8 +228,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param rdfPropertyName
-     *            the rdfPropertyName to set
+     * @param rdfPropertyName the rdfPropertyName to set
      */
     public void setRdfPropertyName(String rdfPropertyName) {
         this.rdfPropertyName = rdfPropertyName;
@@ -247,8 +242,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param rdfPropertyUri
-     *            the rdfPropertyUri to set
+     * @param rdfPropertyUri the rdfPropertyUri to set
      */
     public void setRdfPropertyUri(String rdfPropertyUri) {
         this.rdfPropertyUri = rdfPropertyUri;
@@ -262,8 +256,7 @@ public class SimpleAttribute {
     }
 
     /**
-     * @param rdfPropertyPrefix
-     *            the rdfPropertyPrefix to set
+     * @param rdfPropertyPrefix the rdfPropertyPrefix to set
      */
     public void setRdfPropertyPrefix(String rdfPropertyPrefix) {
         this.rdfPropertyPrefix = rdfPropertyPrefix;

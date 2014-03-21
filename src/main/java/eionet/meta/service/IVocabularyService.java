@@ -160,12 +160,12 @@ public interface IVocabularyService {
     void updateVocabularyFolder(VocabularyFolder vocabularyFolder, Folder newFolder) throws ServiceException;
 
     /**
-     * Returns vocabulary folder.
+     * Returns vocabulary information with attributes and WITHOUT concepts.
      *
-     * @param folderName
-     * @param identifier
-     * @param workingCopy
-     * @return
+     * @param folderName vocabulary name
+     * @param identifier vocabulary identifier
+     * @param workingCopy true if working copy is needed
+     * @return vocabulary information without concepts
      * @throws ServiceException if operation fails
      */
     VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy) throws ServiceException;
@@ -189,10 +189,10 @@ public interface IVocabularyService {
     VocabularyFolder getVocabularyFolder(int vocabularyFolderId) throws ServiceException;
 
     /**
-     * Returns vocabulary concept.
+     * Returns vocabulary concept of a vocabulary by the identifier.
      *
-     * @param vocabularyFolderId
-     * @param conceptIdentifier
+     * @param vocabularyFolderId vocabulary ID
+     * @param conceptIdentifier concept identifier
      * @param emptyAttributes
      *            when true, then attributes that are not valued are also included
      * @return
@@ -220,16 +220,13 @@ public interface IVocabularyService {
     VocabularyConceptResult searchVocabularyConcepts(VocabularyConceptFilter filter) throws ServiceException;
 
     /**
-     * Returns the vocabulary folder's concepts with additional attributes for RDF.
+     * Returns valid vocabulary concepts of a vocabulary with additional attributes for RDF.
      *
      * @param vocabularyFolderId
-     * @param numericConceptIdentifiers
-     * @param obsoleteStatus
-     * @return
+     * @return list of valid concepts with attributes
      * @throws ServiceException if operation fails
      */
-    List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers,
-            ObsoleteStatus obsoleteStatus) throws ServiceException;
+    List<VocabularyConcept> getValidConceptsWithAttributes(int vocabularyFolderId) throws ServiceException;
 
     /**
      * Creates new vocabulary concept into database.
@@ -542,10 +539,11 @@ public interface IVocabularyService {
     void bindVocabulary(int elementId, int vocabularyId);
 
     /**
-     *
-     * @param vocabularyIds
-     * @return
+     * Returns a vocabulary with ALL concepts - obsolete and valid.
+     * @param identifier vocabulary identifier
+     * @param  vocabularySet vocabulary set identifier
+     * @return vocabulary entity with all concepts assigned
      */
-    //boolean vocabularyHasBaseUri(List<Integer> vocabularyIds);
+    VocabularyFolder getVocabularyWithConcepts(String identifier, String vocabularySet);
 
 }

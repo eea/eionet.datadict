@@ -355,7 +355,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param notationsEqualIdentifiers the notationsEqualIdentifiers to set
+     * @param enforceNotationToId do notations equal identifiers
      */
     public void setNotationsEqualIdentifiers(boolean enforceNotationToId) {
         this.notationsEqualIdentifiers = enforceNotationToId;

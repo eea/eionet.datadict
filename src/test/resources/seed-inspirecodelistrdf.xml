@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <T_RDF_NAMESPACE ID="1" NAME_PREFIX="geo" URI="http://geo.org#ws64"/>
+    <T_RDF_NAMESPACE ID="2" NAME_PREFIX="skos" URI="http://www.w3.org/2004/02/skos/core#"/>
+
+
+    <NAMESPACE NAMESPACE_ID="1" SHORT_NAME="datasets"/>
+
+    <VOCABULARY_SET ID="10" IDENTIFIER="wise"
+                    LABEL="WISE - Water Information System for Europe"/>
+
+    <VOCABULARY VOCABULARY_ID="1" CONTINUITY_ID="123" IDENTIFIER="BWaterCat"
+                LABEL="Bathing Water Category" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser"  FOLDER_ID="10"/>
+    <VOCABULARY VOCABULARY_ID="2" CONTINUITY_ID="123" IDENTIFIER="BWClosed"
+                LABEL="Bathing Water Closed status" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="10"/>
+    <VOCABULARY VOCABULARY_ID="3" CONTINUITY_ID="123" IDENTIFIER="BWType"
+                LABEL="Type of bathing water." REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser"  FOLDER_ID="10"/>
+
+
+    <!-- Concepts for vocabulary 1 -->
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="1" VOCABULARY_ID="1" IDENTIFIER="C"
+                        LABEL="Coastal Water" DEFINITION="Coastal water = surface water on the landward side of a line, every point of which is at a distance of one nautical mile on the seaward side from the nearest point of the baseline from which the breadth of territorial waters is measured, extending where appropriate up to the outer limit of transitional waters"/>
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="2" VOCABULARY_ID="1" IDENTIFIER="L"
+                        LABEL="Lake" DEFINITION="Lake = body of standing inland surface water" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="3" VOCABULARY_ID="1" IDENTIFIER="R"
+                        LABEL="River" DEFINITION="River = body of inland water flowing for most part on the surface of the land but which may flow underground for part of its course"/>
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="4" VOCABULARY_ID="1" IDENTIFIER="T"
+                        LABEL="Transitional Water" DEFINITION="Transitional water = bodies of surface water in the vicinity of river mouths which are partly saline in character as a result of their proximity to coastal waters but which are substantially influenced by freshwater flows" />
+
+    <!-- Concepts for vocabulary 2 -->
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="5" VOCABULARY_ID="2" IDENTIFIER="N"
+                        LABEL="Not Closed" DEFINITION="Bathing water is not closed" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="6" VOCABULARY_ID="2" IDENTIFIER="YP"
+                        LABEL="Yes - permanently" DEFINITION="Bathing water is permanently closed if classified as “poor” for five consecutive years or Member State released permanent bathing prohibition or advice against bathing" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="7" VOCABULARY_ID="2" IDENTIFIER="YT"
+                        LABEL="Yes - temporarily" DEFINITION="Bathing water is temporarily closed for a part of one season or the entire season, but not yet permanently closed" />
+
+    <!-- Concepts for vocabulary 3 -->
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="8" VOCABULARY_ID="3" IDENTIFIER="1"
+                        LABEL="existing bathing water" DEFINITION="including re-opened bathing water if closed or permanently closed in the previous season(s)" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="9" VOCABULARY_ID="3" IDENTIFIER="2"
+                        LABEL="new bathing water" DEFINITION="" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="10" VOCABULARY_ID="3" IDENTIFIER="3"
+                        LABEL="permanently closed bathing water" DEFINITION="bathing water has a permanent bathing prohibition or permanent advice against bathing" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="11" VOCABULARY_ID="3" IDENTIFIER="5"
+                        LABEL="reference to skos matc" DEFINITION="fake skos match" />
+
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="11" NAME="Definition" OBLIGATION="O" DEFINITION="Name"
+                 SHORT_NAME="Definition" NAMESPACE_ID="44" DISP_TYPE="text" DISP_ORDER="1"
+                 DISP_WHEN="1024" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="1"
+                 DATA_TYPE="string"
+                 RDF_PROPERTY_NAMESPACE_ID="1" RDF_PROPERTY_NAME="definition"/>
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="1" NAME="Name" OBLIGATION="O" DEFINITION="Name"
+                 SHORT_NAME="Name" NAMESPACE_ID="2" DISP_TYPE="text" DISP_ORDER="1"
+                 DISP_WHEN="75" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="1"/>
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="2" NAME="Datatype" OBLIGATION="O" DEFINITION="Data type"
+                 SHORT_NAME="Datatype" NAMESPACE_ID="2" DISP_TYPE="select" DISP_ORDER="1"
+                 DISP_WHEN="75" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="1"/>
+
+
+    <ATTRIBUTE M_ATTRIBUTE_ID="1" DATAELEM_ID="1" VALUE="Bathing Water Category" PARENT_TYPE="VCF"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="11" DATAELEM_ID="2" VALUE="Closed Definition" PARENT_TYPE="VCF"/>
+
+    <DATAELEM DATAELEM_ID="1" NAMESPACE_ID="1" SHORT_NAME="CountryCode" REG_STATUS="Released" IDENTIFIER="CountryCode"/>
+    <DATAELEM DATAELEM_ID="2" NAMESPACE_ID="1" SHORT_NAME="AnotherCode" REG_STATUS="Released" IDENTIFIER="AnotherCode"/>
+    <DATAELEM DATAELEM_ID="3" NAMESPACE_ID="1" SHORT_NAME="definition" REG_STATUS="Released" IDENTIFIER="skos:definition"/>
+
+    <DATAELEM DATAELEM_ID="4" NAMESPACE_ID="1" SHORT_NAME="longitude" REG_STATUS="Released" IDENTIFIER="geo:long"/>
+    <DATAELEM DATAELEM_ID="5" NAMESPACE_ID="1" SHORT_NAME="latitude" REG_STATUS="Released" IDENTIFIER="geo:lat"/>
+    <DATAELEM DATAELEM_ID="6" NAMESPACE_ID="1" SHORT_NAME="SKOSRelatedMatch" REG_STATUS="Released" IDENTIFIER="skos:relatedMatch"/>
+    <DATAELEM DATAELEM_ID="7" NAMESPACE_ID="1" SHORT_NAME="skos:related" REG_STATUS="Released" IDENTIFIER="skos:related"/>
+
+
+    <!--  data type -->
+    <ATTRIBUTE M_ATTRIBUTE_ID="2" DATAELEM_ID="2" VALUE="string" PARENT_TYPE="E"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="2" DATAELEM_ID="7" VALUE="localref" PARENT_TYPE="E"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="2" DATAELEM_ID="6" VALUE="reference" PARENT_TYPE="E"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="2" DATAELEM_ID="4" VALUE="decimal" PARENT_TYPE="E"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="2" DATAELEM_ID="5" VALUE="decimal" PARENT_TYPE="E"/>
+
+    <VOCABULARY2ELEM VOCABULARY_ID="3" DATAELEM_ID="1"/>
+    <VOCABULARY2ELEM VOCABULARY_ID="3" DATAELEM_ID="2"/>
+    <VOCABULARY2ELEM VOCABULARY_ID="3" DATAELEM_ID="3"/>
+
+    <VOCABULARY2ELEM VOCABULARY_ID="2" DATAELEM_ID="4"/>
+    <VOCABULARY2ELEM VOCABULARY_ID="2" DATAELEM_ID="5"/>
+    <VOCABULARY2ELEM VOCABULARY_ID="2" DATAELEM_ID="7"/>
+
+    <VOCABULARY2ELEM VOCABULARY_ID="3" DATAELEM_ID="6"/>
+
+    <VOCABULARY_CONCEPT_ELEMENT ID="1" VOCABULARY_CONCEPT_ID="8" DATAELEM_ID="1" ELEMENT_VALUE="EE" LANGUAGE="[NULL]"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="2" VOCABULARY_CONCEPT_ID="8" DATAELEM_ID="2" ELEMENT_VALUE="otherCodeX" LANGUAGE="[NULL]"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="3" VOCABULARY_CONCEPT_ID="9" DATAELEM_ID="2" ELEMENT_VALUE="otherCodeY" LANGUAGE="[NULL]"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="4" VOCABULARY_CONCEPT_ID="9" DATAELEM_ID="3" ELEMENT_VALUE="Definition is ok" LANGUAGE="[NULL]"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="5" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="4" ELEMENT_VALUE="1.1" LANGUAGE="[NULL]"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="6" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="5" ELEMENT_VALUE="2.2" LANGUAGE="[NULL]"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="7" VOCABULARY_CONCEPT_ID="11" DATAELEM_ID="6"
+                                ELEMENT_VALUE="http://en.wikipedia.org/wiki/Semantic%20Web" LANGUAGE="[NULL]"/>
+    <!-- reference to concept in other vocabulary -->
+    <VOCABULARY_CONCEPT_ELEMENT ID="8" VOCABULARY_CONCEPT_ID="10" DATAELEM_ID="6" RELATED_CONCEPT_ID="6"/>
+
+    <!-- reference to concept in same vocabulary #2 -->
+    <VOCABULARY_CONCEPT_ELEMENT ID="9" VOCABULARY_CONCEPT_ID="6" DATAELEM_ID="7" RELATED_CONCEPT_ID="7"/>
+</dataset>

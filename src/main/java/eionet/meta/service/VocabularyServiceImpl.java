@@ -515,7 +515,14 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public VocabularyFolder getVocabularyFolder(int vocabularyFolderId) throws ServiceException {
         try {
-            return vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
+            VocabularyFolder result = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
+
+            //Attributes
+            List<List<SimpleAttribute>> attributes = attributeDAO.getVocabularyFolderAttributes(result.getId(), true);
+            result.setAttributes(attributes);
+
+            return result;
+
         } catch (Exception e) {
             String parameters = "id=" + vocabularyFolderId;
             throw new ServiceException("Failed to get vocabulary folder ( " + parameters + "): " + e.getMessage(), e);
@@ -899,25 +906,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers,
-            ObsoleteStatus obsoleteStatus) throws ServiceException {
+    public List<VocabularyConcept> getValidConceptsWithAttributes(int vocabularyFolderId) throws ServiceException {
         try {
-
-            VocabularyConceptFilter filter = new VocabularyConceptFilter();
-            filter.setVocabularyFolderId(vocabularyFolderId);
-            filter.setUsePaging(false);
-            filter.setNumericIdentifierSorting(numericConceptIdentifiers);
-            filter.setObsoleteStatus(obsoleteStatus);
-
-            // List<VocabularyConcept> result = vocabularyConceptDAO.searchVocabularyConcepts(filter).getList();
             List<VocabularyConcept> result = vocabularyConceptDAO.getValidConceptsWithValuedElements(vocabularyFolderId);
-
-            /*
-             * for (VocabularyConcept vc : result) {
-             *
-             * List<List<DataElement>> elementAttributes = dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId,
-             * vc.getId(), false); vc.setElementAttributes(elementAttributes); }
-             */
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
@@ -1195,5 +1186,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
         dataElementDAO.bindVocabulary(elementId, vocabularyId);
     }
 
+    @Override
+    public VocabularyFolder getVocabularyWithConcepts(String identifier, String vocSet) {
+        VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(vocSet, identifier, false);
+        List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(vocabulary.getId());
 
+        vocabulary.setConcepts(concepts);
+
+        return vocabulary;
+    }
 }
