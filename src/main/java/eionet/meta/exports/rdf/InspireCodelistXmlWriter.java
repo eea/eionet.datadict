@@ -181,6 +181,8 @@ public class InspireCodelistXmlWriter {
 
         writeRegisterElement();
 
+        //TODO - add theme and applicationschema
+        /*
         //theme
         writer.writeCharacters("\n");
         writer.writeStartElement("theme");
@@ -188,14 +190,14 @@ public class InspireCodelistXmlWriter {
         writeLabelEN(vocabulary.getLabel());
         writer.writeCharacters("\n");
         writer.writeEndElement(); //theme
-        //applicationscheme
+        //applicationschema
         writer.writeCharacters("\n");
-        writer.writeStartElement("applicationscheme");
+        writer.writeStartElement("applicationschema");
         writer.writeAttribute("id", generateVocabularySetID());
         writeLabelEN(vocabulary.getFolderLabel());
         writer.writeCharacters("\n");
-        writer.writeEndElement(); //applicationscheme
-
+        writer.writeEndElement(); //applicationschema
+        */
         writeConcepts();
     }
 
@@ -304,6 +306,8 @@ public class InspireCodelistXmlWriter {
 
                 writeRegisterElement();
 
+                //TODO theme and applicationschema if complex attrs are implemented
+                /*
                 //theme
                 writer.writeCharacters("\n");
                 writer.writeStartElement("theme");
@@ -312,14 +316,14 @@ public class InspireCodelistXmlWriter {
                 writer.writeCharacters("\n");
                 writer.writeEndElement(); //theme
 
-                //applicationscheme
+                //applicationschema
                 writer.writeCharacters("\n");
-                writer.writeStartElement("applicationscheme");
+                writer.writeStartElement("applicationschema");
                 writer.writeAttribute("id", generateVocabularySetID());
                 writeLabelEN(vocabulary.getFolderLabel());
                 writer.writeCharacters("\n");
-                writer.writeEndElement(); //applicationscheme
-
+                writer.writeEndElement(); //applicationschema
+                */
                 writer.writeCharacters("\n");
                 writer.writeStartElement("codelist");
                 writer.writeAttribute("id", generateVocabularyID());

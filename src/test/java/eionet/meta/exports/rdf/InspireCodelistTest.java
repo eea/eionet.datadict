@@ -2,7 +2,6 @@ package eionet.meta.exports.rdf;
 
 import eionet.DDDatabaseTestCase;
 import eionet.meta.ActionBeanUtils;
-import eionet.web.action.FolderActionBean;
 import eionet.web.action.VocabularyFolderActionBean;
 import net.sourceforge.stripes.mock.MockRoundtrip;
 import net.sourceforge.stripes.mock.MockServletContext;
@@ -39,8 +38,6 @@ public class InspireCodelistTest extends DDDatabaseTestCase {
 
         assertTrue("Output has to contain 3 concepts",
                 StringUtils.countMatches(output, "<value") == 3);
-
-        System.out.println(trip.getOutputString());
 
     }
 }
