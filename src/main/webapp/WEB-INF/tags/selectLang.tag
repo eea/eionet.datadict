@@ -2,7 +2,7 @@
 <%@ attribute name="id" required="false" %>
 <%@ attribute name="name" required="true" %>
 <%@ attribute name="value" required="false" %>
-<c:set var="languages" value="<%=eionet.util.EuropeanLanguages.values()%>"/>
+<c:set var="languages" value="<%=eionet.util.PropsLanguages.getValues()%>"/>
 
 <c:choose>
  <c:when test="${not empty id}">
