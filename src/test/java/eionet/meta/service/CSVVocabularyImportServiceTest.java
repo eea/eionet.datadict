@@ -789,14 +789,14 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // and finally compare log messages
         String[] logMessagesManually =
                 new String[] {
-                        "Row (3) is skipped (Concept is excluded by user from update operation).",
-                        "Row (4) is skipped (Base URI does not match with Vocabulary).",
-                        "Row (5) is skipped (Base URI does not match with Vocabulary).",
-                        "Row (6) is skipped (Base URI is empty).",
-                        "Row (7) does not contain a valid concept identifier.",
-                        "Row (8) does not contain a valid concept identifier.",
-                        "Row (9) duplicates with a previous concept, it is skipped.",
-                        "Row (10) does not have same number of columns with header, it is skipped. It should have have same number of columns (empty or filled).",
+                        "Row (3) was skipped (Concept was excluded by user from update operation).",
+                        "Row (4) was skipped (Base URI did not match with Vocabulary).",
+                        "Row (5) was skipped (Base URI did not match with Vocabulary).",
+                        "Row (6) was skipped (Base URI was empty).",
+                        "Row (7) did not contain a valid concept identifier.",
+                        "Row (8) did not contain a valid concept identifier.",
+                        "Row (9) duplicated with a previous concept, it was skipped.",
+                        "Row (10) did not have same number of columns with header, it was skipped. It should have have same number of columns (empty or filled).",
                         "CSV imported into Database."};
         // compare
         ReflectionAssert.assertReflectionEquals(Arrays.asList(logMessagesManually), logMessages);

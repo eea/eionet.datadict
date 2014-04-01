@@ -511,41 +511,6 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     }// end of test step testUploadCsvWithNotCsvExtension
 
     /**
-     * test when a null CSV file is uploaded
-     *
-     * @throws Exception
-     *             if test fails
-     */
-    @Test
-    public void testUploadCsvWithInvalidContentType() throws Exception {
-        MockServletContext ctx = getServletContextWithProperyBinder();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
-        // set a user
-        DDUser user = new FakeUser();
-        user.authenticate("testUser", "testUser");
-        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
-        // trip.getRequest().setAttribute(SecurityUtil.REMOTEUSER, user);
-
-        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
-        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
-        trip.addParameter("vocabularyFolder.workingCopy", "1");
-        Map<String, Object> richTypeRequestParams = new HashMap<String, Object>();
-        FileBean uploadedCsvFile = new FileBean(null, "something", "uploadedfile.csv");
-        richTypeRequestParams.put("uploadedFileToImport", uploadedCsvFile);
-        trip.getRequest().setAttribute(RICH_TYPE_REQUEST_PARAMS_ATTR_NAME, richTypeRequestParams);
-
-        try {
-            trip.execute("uploadCsv");
-            Assert.fail("Exception not received for not working copy folder bulk edit.");
-        } catch (StripesServletException e) {
-            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
-            ServiceException se = (ServiceException) e.getCause();
-            Assert.assertEquals("Exception Message is not correct", "You should upload a valid CSV file (plain/text or csv/text)",
-                    se.getMessage());
-        }
-    } // end of test step testUploadCsvWithInvalidContentType
-
-    /**
      * test when an RDF file is uploaded for non-working copy folder Note: all success conditions are tested in service test, steps
      * are not repeated here. See: RDFVocabularyImportServiceTest
      *

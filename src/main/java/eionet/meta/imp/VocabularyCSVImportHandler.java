@@ -161,7 +161,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 if (lineParams.length != header.length) {
                     StringBuilder message = new StringBuilder();
                     message.append("Row (").append(rowNumber).append(") ");
-                    message.append("did not have same number of columns with header, it is skipped.");
+                    message.append("did not have same number of columns with header, it was skipped.");
                     message.append(" It should have have same number of columns (empty or filled).");
                     this.logMessages.add(message.toString());
                     continue;
@@ -170,7 +170,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 // do line processing
                 String uri = lineParams[0];
                 if (StringUtils.isEmpty(uri)) {
-                    this.logMessages.add("Row (" + rowNumber + ") was skipped (Base URI is empty).");
+                    this.logMessages.add("Row (" + rowNumber + ") was skipped (Base URI was empty).");
                     continue;
                 } else if (StringUtils.startsWith(uri, "//")) {
                     this.logMessages

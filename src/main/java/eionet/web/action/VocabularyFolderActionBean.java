@@ -143,18 +143,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     private static final String CSV_FILE_EXTENSION = ".csv";
     /**
-     * text/plain CSV content type.
-     */
-    private static final String CSV_FILE_CONTENT_TYPE_PLAIN = "text/plain";
-    /**
-     * text/csv CSV content type.
-     */
-    private static final String CSV_FILE_CONTENT_TYPE_CSV = "text/csv";
-    /**
-     * on Win64 CSV files have got this content type.
-     */
-    private static final String CSV_FILE_CONTENT_TYPE_XLS = "application/vnd.ms-excel";
-    /**
      * Extension for RDF files.
      */
     private static final String RDF_FILE_EXTENSION = ".rdf";
@@ -1143,13 +1131,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             String fileName = this.uploadedFileToImport.getFileName();
             if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.CSV_FILE_EXTENSION)) {
                 throw new ServiceException("File should be a CSV file");
-            }
-
-            String contentType = this.uploadedFileToImport.getContentType();
-            if (!StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_PLAIN)
-                    && !StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_CSV)
-                    && !StringUtils.equals(contentType, VocabularyFolderActionBean.CSV_FILE_CONTENT_TYPE_XLS)) {
-                throw new ServiceException("You should upload a valid CSV file (plain/text or csv/text)");
             }
 
             // consume stupid bom first!! if it exists!
