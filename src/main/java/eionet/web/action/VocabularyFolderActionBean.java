@@ -441,6 +441,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution removeDataElement() throws ServiceException {
+        vocabularyFolder =
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                        vocabularyFolder.isWorkingCopy());
         validateView();
         if (!vocabularyFolder.isWorkingCopy()) {
             throw new ServiceException("Vocabulary should be in working copy status");
