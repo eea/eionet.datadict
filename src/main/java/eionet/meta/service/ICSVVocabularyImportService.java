@@ -21,13 +21,13 @@ public interface ICSVVocabularyImportService {
      *            Vocabulary folder under bulk edit mode
      * @param purgeVocabularyData
      *            Purge all vocabulary concepts of folder
-     * @param purgeBoundedElements
-     *            Purge all bounded elements of folder
+     * @param purgeBoundElements
+     *            Purge all bound elements of folder
      * @return List of log messages
      * @throws ServiceException
      *             Error if input is not valid
      */
     List<String> importCsvIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData,
-            boolean purgeBoundedElements) throws ServiceException;
+            boolean purgeBoundElements) throws ServiceException;
 
-}// end of interface ICSVVocabularyImport
+} // end of interface ICSVVocabularyImport

@@ -97,9 +97,9 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
     /* member fields */
     /**
-     * bounded uri's to vocabulary.
+     * bound uri's to vocabulary.
      */
-    private Map<String, String> boundedURIs = null;
+    private Map<String, String> boundURIs = null;
 
     /**
      * Binded elements of vocabulary.
@@ -155,9 +155,9 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      */
     private boolean createNewDataElementsForPredicates = false;
     /**
-     * This set includes predicates which are not bounded to vocabulary.
+     * This set includes predicates which are not bound to vocabulary.
      */
-    private Set<String> notBoundedPredicates = null;
+    private Set<String> notBoundPredicates = null;
     /**
      * This is map to get data element identifier for a predicate.
      */
@@ -183,10 +183,10 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         super(folderContextRoot, concepts, bindedElementsIds);
         this.bindedElements = bindedElements;
         this.createNewDataElementsForPredicates = createNewDataElementsForPredicates;
-        this.boundedURIs = new HashMap<String, String>();
+        this.boundURIs = new HashMap<String, String>();
         this.attributePositions = new HashMap<String, Map<String, Integer>>();
         this.predicateUpdatesAtConcepts = new HashMap<String, Set<Integer>>();
-        this.notBoundedPredicates = new HashSet<String>();
+        this.notBoundPredicates = new HashSet<String>();
         this.identifierOfPredicate = new HashMap<String, String>();
         this.conceptsUpdatedForAttributes = new HashMap<String, Set<Integer>>();
         this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + PREF_LABEL, new HashSet<Integer>());
@@ -205,7 +205,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
     @Override
     public void handleNamespace(String prefix, String uri) throws RDFHandlerException {
         if (this.bindedElements.containsKey(prefix)) {
-            this.boundedURIs.put(uri, prefix);
+            this.boundURIs.put(uri, prefix);
         }
     } // end of method handleNamespace
 
@@ -268,10 +268,10 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         }
 
         if (!candidateForConceptAttribute) {
-            for (String key : this.boundedURIs.keySet()) {
+            for (String key : this.boundURIs.keySet()) {
                 if (StringUtils.startsWith(predicateUri, key)) {
                     attributeIdentifier = predicateUri.replace(key, "");
-                    predicateNS = this.boundedURIs.get(key);
+                    predicateNS = this.boundURIs.get(key);
                     if (!this.bindedElements.get(predicateNS).contains(attributeIdentifier)) {
                         predicateNS = null;
                     }
@@ -282,7 +282,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
         if (StringUtils.isEmpty(predicateNS)) {
             // this.logMessages.add(st.toString() + " NOT imported, predicate is not a bound URI nor a concept attribute");
-            this.notBoundedPredicates.add(predicateUri);
+            this.notBoundPredicates.add(predicateUri);
             return;
         }
 
@@ -467,9 +467,9 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             this.logMessages.add("--> " + key + " (" + this.identifierOfPredicate.get(key) + "): "
                     + this.predicateUpdatesAtConcepts.get(key).size());
         }
-        this.logMessages.add("Not imported predicates (" + this.notBoundedPredicates.size()
-                + ") which are not bounded to vocabulary: ");
-        for (String predicate : this.notBoundedPredicates) {
+        this.logMessages.add("Not imported predicates (" + this.notBoundPredicates.size()
+                + ") which are not bound to vocabulary: ");
+        for (String predicate : this.notBoundPredicates) {
             this.logMessages.add("--> " + predicate);
         }
     } // end of method endRDF

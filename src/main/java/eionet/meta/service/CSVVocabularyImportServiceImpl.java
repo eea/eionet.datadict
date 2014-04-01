@@ -51,7 +51,7 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public List<String> importCsvIntoVocabulary(Reader content, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData,
-            boolean purgeBoundedElements) throws ServiceException {
+            boolean purgeBoundElements) throws ServiceException {
 
         this.logMessages = new ArrayList<String>();
         List<VocabularyConcept> concepts =
@@ -64,12 +64,12 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
             String message = "All concepts ";
             purgeConcepts(concepts);
             concepts = new ArrayList<VocabularyConcept>();
-            if (purgeBoundedElements) {
+            if (purgeBoundElements) {
                 purgeBindedElements(vocabularyFolder.getId(), bindedElements);
                 bindedElements = new ArrayList<DataElement>();
-                message += "and bounded elements ";
+                message += "and bound elements ";
             }
-            message += "are deleted (with purge operation).";
+            message += "were deleted (with purge operation).";
             this.logMessages.add(message);
         }
 

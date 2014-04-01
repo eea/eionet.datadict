@@ -148,7 +148,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                             this.bindedElementsIds.put(elementHeader, elementsResult.getDataElements().get(0).getId());
                             this.newBindedElement.add(elem);
                         } else {
-                            throw new ServiceException("Found data element does not EXACTLY match with column: " + elementHeader
+                            throw new ServiceException("Found data element did not EXACTLY match with column: " + elementHeader
                                     + ", found: " + elem.getIdentifier());
                         }
                     }
@@ -161,7 +161,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 if (lineParams.length != header.length) {
                     StringBuilder message = new StringBuilder();
                     message.append("Row (").append(rowNumber).append(") ");
-                    message.append("does not have same number of columns with header, it is skipped.");
+                    message.append("did not have same number of columns with header, it is skipped.");
                     message.append(" It should have have same number of columns (empty or filled).");
                     this.logMessages.add(message.toString());
                     continue;
@@ -170,20 +170,20 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 // do line processing
                 String uri = lineParams[0];
                 if (StringUtils.isEmpty(uri)) {
-                    this.logMessages.add("Row (" + rowNumber + ") is skipped (Base URI is empty).");
+                    this.logMessages.add("Row (" + rowNumber + ") was skipped (Base URI is empty).");
                     continue;
                 } else if (StringUtils.startsWith(uri, "//")) {
                     this.logMessages
-                            .add("Row (" + rowNumber + ") is skipped (Concept is excluded by user from update operation).");
+                            .add("Row (" + rowNumber + ") was skipped (Concept was excluded by user from update operation).");
                     continue;
                 } else if (!StringUtils.startsWith(uri, this.folderContextRoot)) {
-                    this.logMessages.add("Row (" + rowNumber + ") is skipped (Base URI does not match with Vocabulary).");
+                    this.logMessages.add("Row (" + rowNumber + ") was skipped (Base URI did not match with Vocabulary).");
                     continue;
                 }
 
                 String conceptIdentifier = uri.replace(this.folderContextRoot, "");
                 if (StringUtils.contains(conceptIdentifier, "/")) {
-                    this.logMessages.add("Row (" + rowNumber + ") does not contain a valid concept identifier.");
+                    this.logMessages.add("Row (" + rowNumber + ") did not contain a valid concept identifier.");
                     continue;
                 }
 
@@ -191,7 +191,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 VocabularyConcept lastFoundConcept = findOrCreateConcept(conceptIdentifier);
                 // if vocabulary concept duplicated with another row, importer will ignore it not to repeat
                 if (lastFoundConcept == null) {
-                    this.logMessages.add("Row (" + rowNumber + ") duplicates with a previous concept, it is skipped.");
+                    this.logMessages.add("Row (" + rowNumber + ") duplicated with a previous concept, it was skipped.");
                     continue;
                 }
 

@@ -21,11 +21,11 @@
             	$("#purgeVocabularyData").click(function() {
             		if ($('input#purgeVocabularyData').is(':checked')) {
 	                   alert("If you check this option all data will be deleted! If you are not sure about this, please uncheck it!");
-	                   $('input#purgeBoundedElements').removeAttr("disabled");
+	                   $('input#purgeBoundElements').removeAttr("disabled");
             		}
             		else{
-            		   $('input#purgeBoundedElements').attr("disabled", true);
-            		   $('input#purgeBoundedElements').attr("checked", false);
+            		   $('input#purgeBoundElements').attr("disabled", true);
+            		   $('input#purgeBoundElements').attr("checked", false);
             		}
                     return true;
                 });
@@ -558,24 +558,25 @@
                 <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
 
 	            <div class="note-msg">
-	                <strong>Note</strong>
-		                <ul>
-			                <li>With this operation, contents of CSV file will be imported into vocabulary folder. File should contains valid headers and rows.</li>
-			                <li>If there are invalid elements for headers, system will generate an error and will not import.</li>
-			                <li>If there is an error with a row (with a concept), then concept will be ignored and won't be imported. If you prepend // to an URI, then no update will be performed for that concept.</li>
-			                <li>If user select "Purge" option. All concepts and bounded elements will be removed from vocabulary and vocabulary will be populated with the contents of CSV file.</li>
-			                <li>Once import is successful, operation cannot be undone. If an error occurs during import, then all data will be roll-backed.</li>
-			                <li>It is strongly recommended to use an exported CSV file. You can add new columns, new rows, remove some columns, remove some rows or update contents/values for bulk edit purposes.</li>
-			                <li>Existing values will be overwritten with values in CSV. Not existing values will be added.</li>
-			                <li>Only a working copy can be updated with a CSV file upload.</li>
-		                </ul>
+                    CSV Import
+                    <br><br>The CSV file should contain a header row for element names and data rows for concepts.
+                    <br>It is strongly recommended to use an exported CSV file as a template for bulk editing. Columns and rows can be added to or deleted from the template file.
+                    <br>A concept can be ignored by prepending a double-slash '//' to the concept row in the CSV
+                    <ul>
+                        Notes:
+                        <li>If the header row contains unknown elements the import will aborted and data will be roll-backed</li>
+                        <li>Erroneous concept rows are ignored, valid data rows are still imported</li>
+                        <li>Successful import cannot be undone (unless "undo checkout" is performed)</li>
+                        <li>If a concept with the same identifier already exists in the vocabulary it will be overwritten</li>
+                        <li>"Purge Vocabulary" option deletes all the vocabulary concepts before import</li>
+                    </ul>
 	            </div>
 
 				<div>
 					<stripes:checkbox id="purgeVocabularyData" name="purgeVocabularyData"/><label for="purgeVocabularyData" class="question">Purge Vocabulary Data</label>
 				</div>
 				<div>
-					<stripes:checkbox id="purgeBoundedElements" name="purgeBoundedElements" disabled="true"/><label for="purgeBoundedElements" class="question">Purge Bounded Elements</label>
+					<stripes:checkbox id="purgeBoundElements" name="purgeBoundElements" disabled="true"/><label for="purgeBoundElements" class="question">Purge Bound Elements</label>
 				</div>
 	            <stripes:file name="uploadedFileToImport" id="fileToUpload" size="40" accept="text/csv" title="Select a .csv file to import"/>
 	            <stripes:submit name="uploadCsv" value="Upload"/>
@@ -606,7 +607,7 @@
                     <stripes:radio id="rdfDontPurge" name="rdfPurgeOption" checked="true" value="1" /><label for="rdfDontPurge" class="question">Don't purge vocabulary data</label>
                 </div>
                 <div>
-                    <stripes:radio id="rdfPurgeBoundedElements" name="rdfPurgeOption"  value="2"/><label for="rdfPurgeBoundedElements" class="question">Purge Per Predicate</label>
+                    <stripes:radio id="rdfPurgePerPredicate" name="rdfPurgeOption"  value="2"/><label for="rdfPurgePerPredicate" class="question">Purge Per Predicate</label>
                 </div>
                 <div>
                     <stripes:radio id="rdfPurgeVocabularyData" name="rdfPurgeOption" value="3" /><label for="rdfPurgeVocabularyData" class="question">Purge All Vocabulary Data</label>

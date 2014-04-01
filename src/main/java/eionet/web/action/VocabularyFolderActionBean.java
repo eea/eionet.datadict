@@ -280,9 +280,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private boolean purgeVocabularyData = false;
 
     /**
-     * Before import, if user requested purging bounded elements.
+     * Before import, if user requested purging bound elements.
      */
-    private boolean purgeBoundedElements = false;
+    private boolean purgeBoundElements = false;
 
     /**
      * Identifier before the user started editing. Needed to make the URLs working correctly still if user deletes identifier in the
@@ -1166,7 +1166,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             Reader csvFileReader = new InputStreamReader(is, CharEncoding.UTF_8);
             List<String> systemMessages =
                     this.vocabularyCsvImportService.importCsvIntoVocabulary(csvFileReader, vocabularyFolder, purgeVocabularyData,
-                            purgeBoundedElements);
+                            purgeBoundElements);
             for (String systemMessage : systemMessages) {
                 addSystemMessage(systemMessage);
             }
@@ -1612,11 +1612,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param purgeBoundedElements
+     * @param purgeBoundElements
      *            purge before importing csv
      */
-    public void setPurgeBoundedElements(boolean purgeBoundedElements) {
-        this.purgeBoundedElements = purgeBoundedElements;
+    public void setPurgeBoundElements(boolean purgeBoundElements) {
+        this.purgeBoundElements = purgeBoundElements;
     }
 
     public void setRdfPurgeOption(int rdfPurgeOption) {

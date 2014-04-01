@@ -21,13 +21,13 @@ public interface IRDFVocabularyImportService {
      *            Vocabulary folder under bulk edit mode
      * @param purgeVocabularyData
      *            Purge all vocabulary concepts of folder
-     * @param purgeBoundedElements
-     *            Purge all bounded elements of folder
+     * @param purgePredicateBasis
+     *            Purge bound elements per predicate basis
      * @return List of log messages
      * @throws ServiceException
      *             Error if input is not valid
      */
     List<String> importRdfIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData,
-            boolean purgeBoundedElements) throws ServiceException;
+            boolean purgePredicateBasis) throws ServiceException;
 
 } // end of interface IRDFVocabularyImportService
