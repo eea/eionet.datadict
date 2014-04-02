@@ -30,6 +30,12 @@
                     return true;
                 });
 
+                $("#rdfPurgeVocabularyData").click(function() {
+                    if ($('input#rdfPurgeVocabularyData').is(':checked')) {
+                        alert("If you check this option all data will be deleted! If you are not sure about this, please uncheck it!");
+                    }
+                    return true;
+                });
 
                 $('#uploadCSVDialog').dialog({
                     autoOpen: false,
