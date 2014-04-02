@@ -328,6 +328,11 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 return;
             }
         } else {
+            if (!this.bindedElementsIds.containsKey(dataElemIdentifier)) {
+                this.notBoundPredicates.add(predicateUri);
+                return;
+            }
+
             Set<Integer> conceptIdsUpdatedWithPredicate = this.predicateUpdatesAtConcepts.get(predicateUri);
             if (conceptIdsUpdatedWithPredicate == null) {
                 conceptIdsUpdatedWithPredicate = new HashSet<Integer>();
@@ -460,7 +465,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
         // add some logs
         this.logMessages.add("Valid (" + this.numberOfValidTriples + ") / Total (" + this.totalNumberOfTriples + ")");
-        this.logMessages.add("Found related concept cache count: " + this.relatedConceptCache.keySet().size());
+        //this.logMessages.add("Found related concept cache count: " + this.relatedConceptCache.keySet().size());
         this.logMessages.add("Number of predicates seen: " + this.predicateUpdatesAtConcepts.size());
         this.logMessages.add("Number updated concepts for predicates: ");
         for (String key : this.predicateUpdatesAtConcepts.keySet()) {
