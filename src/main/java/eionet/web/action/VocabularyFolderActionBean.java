@@ -369,6 +369,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         folderChoice = FOLDER_CHOICE_EXISTING;
 
         bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+        setRdfPurgeOption(1);
 
         return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
     }
@@ -1605,5 +1606,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     public void setRdfPurgeOption(int rdfPurgeOption) {
         this.rdfPurgeOption = rdfPurgeOption;
+    }
+
+    public int getRdfPurgeOption() {
+        return rdfPurgeOption;
     }
 }

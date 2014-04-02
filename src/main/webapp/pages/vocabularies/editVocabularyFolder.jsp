@@ -604,13 +604,13 @@
 				</div>
 
                 <div>
-                    <stripes:radio id="rdfDontPurge" name="rdfPurgeOption" checked="true" value="1" /><label for="rdfDontPurge" class="question">Don't purge vocabulary data</label>
+                    <stripes:radio id="rdfDontPurge" name="rdfPurgeOption" value="1"/><label for="rdfDontPurge" class="question">Don't purge vocabulary data</label>
                 </div>
                 <div>
-                    <stripes:radio id="rdfPurgePerPredicate" name="rdfPurgeOption"  value="2"/><label for="rdfPurgePerPredicate" class="question">Purge Per Predicate</label>
+                    <stripes:radio id="rdfPurgePerPredicate" name="rdfPurgeOption" value="2"/><label for="rdfPurgePerPredicate" class="question">Purge Per Predicate</label>
                 </div>
                 <div>
-                    <stripes:radio id="rdfPurgeVocabularyData" name="rdfPurgeOption" value="3" /><label for="rdfPurgeVocabularyData" class="question">Purge All Vocabulary Data</label>
+                    <stripes:radio id="rdfPurgeVocabularyData" name="rdfPurgeOption" value="3"/><label for="rdfPurgeVocabularyData" class="question">Purge All Vocabulary Data</label>
                 </div>
 
 	            <stripes:file name="uploadedFileToImport" id="fileToUpload" size="40"  title="Select a .rdf file to import"/>
