@@ -342,6 +342,7 @@
             <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="item" style="width:80%"
                 requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/edit">
                 <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
+                <display:setProperty name="paging.banner.placement" value="both" />
                 <display:setProperty name="paging.banner.item_name" value="concept" />
                 <display:setProperty name="paging.banner.items_name" value="concepts" />
 
@@ -376,7 +377,7 @@
                 </c:if>
             </display:table>
             <c:if test="${not empty actionBean.vocabularyConcepts.list}">
-                <div>
+                <div style="padding-top: 10px;">
                     <stripes:hidden name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                     <stripes:hidden name="vocabularyFolder.identifier" />
                     <stripes:hidden name="vocabularyFolder.workingCopy" />

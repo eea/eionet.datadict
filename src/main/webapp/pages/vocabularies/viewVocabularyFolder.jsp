@@ -271,6 +271,7 @@
         <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept"
             style="width:80%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view" >
             <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
+            <display:setProperty name="paging.banner.placement" value="both" />
             <display:setProperty name="paging.banner.item_name" value="concept" />
             <display:setProperty name="paging.banner.items_name" value="concepts" />
 
