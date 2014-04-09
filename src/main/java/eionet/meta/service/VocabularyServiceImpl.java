@@ -48,6 +48,7 @@ import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IFolderDAO;
+import eionet.meta.dao.INamespaceDAO;
 import eionet.meta.dao.IRdfNamespaceDAO;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
@@ -59,7 +60,8 @@ import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.data.ObsoleteStatus;
+import eionet.meta.service.data.NamespaceFilter;
+import eionet.meta.service.data.NamespaceResult;
 import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -107,9 +109,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Autowired
     private IDataElementDAO dataElementDAO;
 
-    /** namespace DAO. */
+    /** Rdf namespace DAO. */
     @Autowired
-    private IRdfNamespaceDAO namespaceDAO;
+    private IRdfNamespaceDAO rdfNamespaceDAO;
+
+    /** Namespace DAO. */
+    @Autowired
+    private INamespaceDAO namespaceDAO;
 
     /** special elements . */
     private static EnumMap<RelationalElement, String> relationalElements;
@@ -517,7 +523,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             VocabularyFolder result = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
-            //Attributes
+            // Attributes
             List<List<SimpleAttribute>> attributes = attributeDAO.getVocabularyFolderAttributes(result.getId(), true);
             result.setAttributes(attributes);
 
@@ -616,7 +622,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
                 // Remove old data element relations
                 dataElementDAO.deleteVocabularyDataElements(originalVocabularyFolderId);
-                //update ch3 element reference
+                // update ch3 element reference
                 dataElementDAO.moveVocabularySources(originalVocabularyFolderId, vocabularyFolderId);
 
             }
@@ -1086,7 +1092,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 for (DataElement elem : elems) {
                     RdfNamespace ns;
                     if (elem.isExternalSchema()) {
-                        ns = namespaceDAO.getNamespace(elem.getNameSpacePrefix());
+                        ns = rdfNamespaceDAO.getNamespace(elem.getNameSpacePrefix());
                         if (!nameSpaces.contains(ns)) {
                             nameSpaces.add(ns);
                         }
@@ -1099,6 +1105,30 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
         } catch (DAOException daoe) {
             throw new ServiceException("Failed to get vocabulary namespaces " + daoe.getMessage(), daoe);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NamespaceResult getNamespaces(NamespaceFilter filter) throws ServiceException {
+        try {
+            return namespaceDAO.getNamespaces(filter);
+        } catch (DAOException daoe) {
+            throw new ServiceException("Failed to get namespaces " + daoe.getMessage(), daoe);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<RdfNamespace> getRdfNamespaces() throws ServiceException {
+        try {
+            return rdfNamespaceDAO.getRdfNamespaces();
+        } catch (DAOException daoe) {
+            throw new ServiceException("Failed to get RDF namespaces " + daoe.getMessage(), daoe);
         }
     }
 
@@ -1138,7 +1168,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public List<Triple<String, String, Integer>> getVocabularyBoundElementNames(VocabularyFolder vocabularyFolder) {
         int vocabularyFolderId = vocabularyFolder.getId();
-        List<Triple<String, String, Integer>> elementsMeta = vocabularyFolderDAO.getVocabularyFolderBoundElementsMeta(vocabularyFolderId);
+        List<Triple<String, String, Integer>> elementsMeta =
+                vocabularyFolderDAO.getVocabularyFolderBoundElementsMeta(vocabularyFolderId);
         return elementsMeta;
     }
 

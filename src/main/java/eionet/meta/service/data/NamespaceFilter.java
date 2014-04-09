@@ -16,34 +16,16 @@
  * (C) European Environment Agency.  All Rights Reserved.
  *
  * Contributor(s):
- *        Kaido Laine
+ *        TripleDev
  */
 
 package eionet.meta.service.data;
 
-import java.util.List;
-
-import eionet.meta.dao.domain.VocabularyFolder;
-
 /**
+ * Namespace search filter. This class is implemented for further usage and to align with current development practices.
  *
- * Paged Result of searched Vocabularies.
- *
- * @author Kaido Laine
+ * @author enver
  */
-public class VocabularyResult extends PagedResult<VocabularyFolder> {
+public class NamespaceFilter extends PagedRequest {
 
-    /**
-     * Class constructor.
-     *
-     * @param items
-     *            found items array
-     * @param totalItems
-     *            count of found items
-     * @param pagedRequest
-     *            paged request the result is passed to
-     */
-    public VocabularyResult(List<VocabularyFolder> items, int totalItems, PagedRequest pagedRequest) {
-        super(items, totalItems, pagedRequest);
-    }
 }

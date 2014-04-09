@@ -286,6 +286,10 @@
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/bindvocabulary/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/namespaces/*</url-pattern>
+    </servlet-mapping>
 
 
     <servlet>

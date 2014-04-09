@@ -35,9 +35,21 @@ public interface IRdfNamespaceDAO {
 
     /**
      * returns list of namespace objects for dataelements.
-     * @param element element set
+     *
+     * @param elements
+     *            element set
      * @return array of namespace objects
-     * @throws DAOException if query fails
+     * @throws DAOException
+     *             if query fails
      */
     List<RdfNamespace> getElementExternalNamespaces(List<DataElement> elements) throws DAOException;
+
+    /**
+     * Returns all rows in rdf namespace table.
+     *
+     * @return RDF Namespace objects
+     * @throws DAOException
+     *             if query fails
+     */
+    List<RdfNamespace> getRdfNamespaces() throws DAOException;
 }
