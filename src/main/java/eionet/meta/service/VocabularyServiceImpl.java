@@ -48,7 +48,6 @@ import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IFolderDAO;
-import eionet.meta.dao.INamespaceDAO;
 import eionet.meta.dao.IRdfNamespaceDAO;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
@@ -60,8 +59,6 @@ import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.data.NamespaceFilter;
-import eionet.meta.service.data.NamespaceResult;
 import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -112,10 +109,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
     /** Rdf namespace DAO. */
     @Autowired
     private IRdfNamespaceDAO rdfNamespaceDAO;
-
-    /** Namespace DAO. */
-    @Autowired
-    private INamespaceDAO namespaceDAO;
 
     /** special elements . */
     private static EnumMap<RelationalElement, String> relationalElements;
@@ -1105,30 +1098,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
         } catch (DAOException daoe) {
             throw new ServiceException("Failed to get vocabulary namespaces " + daoe.getMessage(), daoe);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NamespaceResult getNamespaces(NamespaceFilter filter) throws ServiceException {
-        try {
-            return namespaceDAO.getNamespaces(filter);
-        } catch (DAOException daoe) {
-            throw new ServiceException("Failed to get namespaces " + daoe.getMessage(), daoe);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<RdfNamespace> getRdfNamespaces() throws ServiceException {
-        try {
-            return rdfNamespaceDAO.getRdfNamespaces();
-        } catch (DAOException daoe) {
-            throw new ServiceException("Failed to get RDF namespaces " + daoe.getMessage(), daoe);
         }
     }
 

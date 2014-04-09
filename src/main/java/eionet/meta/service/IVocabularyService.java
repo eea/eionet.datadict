@@ -29,8 +29,6 @@ import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.data.NamespaceFilter;
-import eionet.meta.service.data.NamespaceResult;
 import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -586,26 +584,6 @@ public interface IVocabularyService {
      *             if query fails
      */
     List<RdfNamespace> getVocabularyNamespaces(List<VocabularyFolder> vocabularyFolders) throws ServiceException;
-
-    /**
-     * Returns all namespaces.
-     *
-     * @param filter
-     *            any search criteria or filtering.
-     * @return list of namespaces as a result set.
-     * @throws ServiceException
-     *             when an error occurs
-     */
-    NamespaceResult getNamespaces(NamespaceFilter filter) throws ServiceException;
-
-    /**
-     * Returns all rdf namespaces.
-     *
-     * @return container of RDF Namespace objects
-     * @throws ServiceException
-     *             if query fails
-     */
-    List<RdfNamespace> getRdfNamespaces() throws ServiceException;
 
     /**
      * Some data element has special treatment. For example for handling relations between internal concepts we use skos:relation

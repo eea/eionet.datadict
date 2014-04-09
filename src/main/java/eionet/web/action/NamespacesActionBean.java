@@ -29,8 +29,7 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import eionet.meta.dao.domain.RdfNamespace;
-import eionet.meta.service.IDataService;
-import eionet.meta.service.IVocabularyService;
+import eionet.meta.service.INamespaceService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.NamespaceFilter;
 import eionet.meta.service.data.NamespaceResult;
@@ -50,11 +49,7 @@ public class NamespacesActionBean extends AbstractActionBean {
 
     /** Vocabulary service. */
     @SpringBean
-    private IVocabularyService vocabularyService;
-
-    /** data service. */
-    @SpringBean
-    private IDataService dataService;
+    private INamespaceService namespaceService;
 
     /**
      * RDF Namespaces display list.
@@ -80,7 +75,7 @@ public class NamespacesActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution viewList() throws ServiceException {
-        List<RdfNamespace> rdfNamespaceList = this.vocabularyService.getRdfNamespaces();
+        List<RdfNamespace> rdfNamespaceList = this.namespaceService.getRdfNamespaces();
         if (rdfNamespaceList != null) {
             PagedRequest rdfPagedRequest = new PagedRequest();
             rdfPagedRequest.setUsePaging(false);
@@ -89,7 +84,7 @@ public class NamespacesActionBean extends AbstractActionBean {
 
         NamespaceFilter filter = new NamespaceFilter();
         filter.setPageNumber(this.page);
-        this.namespaceResult = this.vocabularyService.getNamespaces(filter);
+        this.namespaceResult = this.namespaceService.getNamespaces(filter);
         return new ForwardResolution(NamespacesActionBean.LIST_NAMESPACES_JSP);
     } // end of method viewList
 
