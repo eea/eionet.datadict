@@ -30,16 +30,13 @@
             <display:setProperty name="paging.banner.item_name" value="namespace" />
             <display:setProperty name="paging.banner.items_name" value="namespaces" />
             <display:column title="Prefix" sortable="true">
-                <c:out value="${actionBean.sitePrefix}" />
+                <c:out value="${datasetNamespace.prefix}" />
             </display:column>
-            <display:column title="Url" sortable="true">
-                <c:out value="${datasetNamespace.url}" />
+            <display:column title="URI" sortable="true">
+                <c:out value="${actionBean.sitePrefix}namespace.jsp?ns_id=${datasetNamespace.ID}" />
             </display:column>
-            <display:column title="Short name" sortable="true">
+            <display:column title="Identifier" sortable="true">
                 <c:out value="${datasetNamespace.shortName}" />
-            </display:column>
-            <display:column title="Full name" sortable="false">
-                <c:out value="${datasetNamespace.fullName}" />
             </display:column>
         </display:table>
 
