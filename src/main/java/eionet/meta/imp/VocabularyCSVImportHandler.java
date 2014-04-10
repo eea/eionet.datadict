@@ -42,6 +42,7 @@ import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
+import eionet.util.Pair;
 import eionet.util.VocabularyCSVOutputHelper;
 
 /**
@@ -173,8 +174,8 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     this.logMessages.add("Row (" + rowNumber + ") was skipped (Base URI was empty).");
                     continue;
                 } else if (StringUtils.startsWith(uri, "//")) {
-                    this.logMessages
-                            .add("Row (" + rowNumber + ") was skipped (Concept was excluded by user from update operation).");
+                    this.logMessages.add("Row (" + rowNumber
+                            + ") was skipped (Concept was excluded by user from update operation).");
                     continue;
                 } else if (!StringUtils.startsWith(uri, this.folderContextRoot)) {
                     this.logMessages.add("Row (" + rowNumber + ") was skipped (Base URI did not match with Vocabulary).");
@@ -188,13 +189,15 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 }
 
                 // now we have a valid row
-                VocabularyConcept lastFoundConcept = findOrCreateConcept(conceptIdentifier);
+                Pair<VocabularyConcept, Boolean> foundConceptWithFlag = findOrCreateConcept(conceptIdentifier);
+
                 // if vocabulary concept duplicated with another row, importer will ignore it not to repeat
-                if (lastFoundConcept == null) {
+                if (foundConceptWithFlag == null || foundConceptWithFlag.getRight()) {
                     this.logMessages.add("Row (" + rowNumber + ") duplicated with a previous concept, it was skipped.");
                     continue;
                 }
 
+                VocabularyConcept lastFoundConcept = foundConceptWithFlag.getLeft();
                 // vocabulary concept found or created
                 this.toBeUpdatedConcepts.add(lastFoundConcept);
                 lastFoundConcept.setLabel(StringUtils.trimToNull(lineParams[1]));

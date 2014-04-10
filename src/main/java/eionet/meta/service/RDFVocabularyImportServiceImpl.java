@@ -41,6 +41,8 @@ import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.imp.VocabularyRDFImportHandler;
 import eionet.meta.service.data.ObsoleteStatus;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 
 /**
  * Service implementation to import RDF into a Vocabulary Folder.
@@ -102,7 +104,8 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
 
         RDFParser parser = new RDFXMLParser();
         VocabularyRDFImportHandler rdfHandler =
-                new VocabularyRDFImportHandler(folderCtxRoot, concepts, elemToId, bindedElemsByNS, purgePredicateBasis);
+                new VocabularyRDFImportHandler(folderCtxRoot, concepts, elemToId, bindedElemsByNS, purgePredicateBasis,
+                        Props.getProperty(PropsIF.DD_WORKING_LANGUAGE_KEY));
         parser.setRDFHandler(rdfHandler);
         // parser.setStopAtFirstError(false);
         ParserConfig config = parser.getParserConfig();

@@ -21,6 +21,10 @@
 
 package eionet.meta.imp;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +44,7 @@ import org.openrdf.rio.RDFHandlerException;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
+import eionet.meta.service.ServiceException;
 import eionet.util.Pair;
 
 /**
@@ -74,7 +79,14 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      * definition attribute of concept.
      */
     private static final String DEFINITION = "definition";
-
+    /**
+     * Private static final String Hashing Algorithm for Triples.
+     */
+    private static final String HASHING_ALGORITHM = "MD5";
+    /**
+     * Used when getting bytes of a string to hash.
+     */
+    private static final String DEFAULT_ENCODING_OF_STRINGS = "UTF-8";
     /**
      * used with concept attributes.
      */
@@ -162,6 +174,22 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      * This is map to get data element identifier for a predicate.
      */
     private Map<String, String> identifierOfPredicate = null;
+    /**
+     * Working language, should be two letters language code in lower case.
+     */
+    private String workingLanguage = null;
+    /**
+     * Number of duplicated triples.
+     */
+    private int numberOfDuplicatedTriples = 0;
+    /**
+     * In this set seen statements hascodes are stored not to process same statement once again.
+     */
+    private Set<BigInteger> seenStatementsHashCodes = null;
+    /**
+     * Message Digest instance used for triple hashing.
+     */
+    private MessageDigest messageDigestInstance = null;
 
     /**
      * Constructor for RDFHandler to import rdf into vocabulary.
@@ -174,12 +202,16 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      *            binded elements to vocabulary.
      * @param bindedElementsIds
      *            binded elements ids.
+     * @param workingLanguage
+     *            working language
      * @param createNewDataElementsForPredicates
      *            create new data elements for seen predicates
+     * @throws ServiceException
+     *             when digest algorithm cannot be found
      */
     public VocabularyRDFImportHandler(String folderContextRoot, List<VocabularyConcept> concepts,
             Map<String, Integer> bindedElementsIds, Map<String, List<String>> bindedElements,
-            boolean createNewDataElementsForPredicates) {
+            boolean createNewDataElementsForPredicates, String workingLanguage) throws ServiceException {
         super(folderContextRoot, concepts, bindedElementsIds);
         this.bindedElements = bindedElements;
         this.createNewDataElementsForPredicates = createNewDataElementsForPredicates;
@@ -192,6 +224,13 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + PREF_LABEL, new HashSet<Integer>());
         this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + DEFINITION, new HashSet<Integer>());
         this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + NOTATION, new HashSet<Integer>());
+        this.workingLanguage = workingLanguage;
+        this.seenStatementsHashCodes = new HashSet<BigInteger>();
+        try {
+            this.messageDigestInstance = MessageDigest.getInstance(HASHING_ALGORITHM);
+        } catch (NoSuchAlgorithmException e) {
+            throw new ServiceException(e.getMessage());
+        }
     } // end of constructor
 
     @Override
@@ -209,6 +248,20 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         }
     } // end of method handleNamespace
 
+    private int reason1 = 0;
+    private int reason2 = 0;
+    private int reason3 = 0;
+    private int reason4 = 0;
+    private int reason5 = 0;
+    private int reason6 = 0;
+    private int reason7 = 0;
+    private int reason8 = 0;
+    private int reason9 = 0;
+    private int reason10 = 0;
+    private int reason11 = 0;
+
+    private HashMap<BigInteger, String> hashCodes = new HashMap<BigInteger, String>();
+
     @Override
     public void handleStatement(Statement st) throws RDFHandlerException {
         this.totalNumberOfTriples++;
@@ -218,25 +271,46 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
         if (!(subject instanceof URI)) {
             // this.logMessages.add(st.toString() + " NOT imported, subject is not a URI");
+            reason1++;
             return;
         }
 
         // object should a resource or a literal (value)
         if (!(object instanceof URI) && !(object instanceof Literal)) {
             // this.logMessages.add(st.toString() + " NOT imported, object is not instance of URI or Literal");
+            reason2++;
             return;
         }
 
         String conceptUri = subject.stringValue();
         if (!StringUtils.startsWith(conceptUri, this.folderContextRoot)) {
             // this.logMessages.add(st.toString() + " NOT imported, does not have base URI");
+            reason3++;
             return;
         }
+
+        this.messageDigestInstance.reset();
+        byte[] digested;
+        try {
+            digested = this.messageDigestInstance.digest(st.toString().getBytes(DEFAULT_ENCODING_OF_STRINGS));
+        } catch (UnsupportedEncodingException e) {
+            throw new RDFHandlerException(e);
+        }
+        BigInteger statementHashCode = new BigInteger(1, digested);
+        if (this.seenStatementsHashCodes.contains(statementHashCode)) {
+            // this.logMessages.add(st.toString() + " NOT imported, duplicates a previous triple");
+            this.numberOfDuplicatedTriples++;
+            reason4++;
+            return;
+        }
+        this.seenStatementsHashCodes.add(statementHashCode);
+        hashCodes.put(statementHashCode, st.toString());
 
         // if it does not a have conceptIdentifier than it may be an attribute for vocabulary or a wrong record, so just ignore it
         String conceptIdentifier = conceptUri.replace(this.folderContextRoot, "");
         if (StringUtils.isEmpty(conceptIdentifier) || StringUtils.contains(conceptIdentifier, "/")) {
             // this.logMessages.add(st.toString() + " NOT imported, contains a / in concept identifier or empty");
+            reason5++;
             return;
         }
 
@@ -246,6 +320,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         if (ignoranceRule != null) {
             if (ignoranceRule.getLeft().isInstance(object) && object.stringValue().matches(ignoranceRule.getRight())) {
                 // ignore value
+                reason6++;
                 return;
             }
         }
@@ -264,6 +339,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
         if (candidateForConceptAttribute && !(object instanceof Literal)) {
             // this.logMessages.add(st.toString() + " NOT imported, object is not a Literal for concept attribute");
+            reason7++;
             return;
         }
 
@@ -283,6 +359,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         if (StringUtils.isEmpty(predicateNS)) {
             // this.logMessages.add(st.toString() + " NOT imported, predicate is not a bound URI nor a concept attribute");
             this.notBoundPredicates.add(predicateUri);
+            reason8++;
             return;
         }
 
@@ -296,14 +373,18 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         this.prevConceptIdentifier = conceptIdentifier;
 
         if (this.lastFoundConcept == null) {
-            this.lastFoundConcept = findOrCreateConcept(conceptIdentifier);
+            Pair<VocabularyConcept, Boolean> foundConceptWithFlag = findOrCreateConcept(conceptIdentifier);
             // if vocabulary concept couldnt find or couldnt be created
-            if (this.lastFoundConcept == null) {
-                // this.logMessages.add(st.toString() + " NOT imported, duplicate of previously imported concept.");
+            if (foundConceptWithFlag == null) {
+                reason9++;
                 return;
             }
-            // vocabulary concept found or created, add it to list
-            this.toBeUpdatedConcepts.add(this.lastFoundConcept);
+
+            this.lastFoundConcept = foundConceptWithFlag.getLeft();
+            if (!foundConceptWithFlag.getRight()) {
+                // vocabulary concept found or created, add it to list
+                this.toBeUpdatedConcepts.add(this.lastFoundConcept);
+            }
         }
 
         String dataElemIdentifier = predicateNS + ":" + attributeIdentifier;
@@ -325,11 +406,13 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 this.lastFoundConcept.setLabel(val);
             } else {
                 // this.logMessages.add("this line shouldn't be reached");
+                reason10++;
                 return;
             }
         } else {
             if (!this.bindedElementsIds.containsKey(dataElemIdentifier)) {
                 this.notBoundPredicates.add(predicateUri);
+                reason11++;
                 return;
             }
 
@@ -465,8 +548,9 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
         // add some logs
         this.logMessages.add("Valid (" + this.numberOfValidTriples + ") / Total (" + this.totalNumberOfTriples + ")");
-        //this.logMessages.add("Found related concept cache count: " + this.relatedConceptCache.keySet().size());
+        // this.logMessages.add("Found related concept cache count: " + this.relatedConceptCache.keySet().size());
         this.logMessages.add("Number of predicates seen: " + this.predicateUpdatesAtConcepts.size());
+        this.logMessages.add("Number of duplicate triples: " + this.numberOfDuplicatedTriples);
         this.logMessages.add("Number updated concepts for predicates: ");
         for (String key : this.predicateUpdatesAtConcepts.keySet()) {
             this.logMessages.add("--> " + key + " (" + this.identifierOfPredicate.get(key) + "): "

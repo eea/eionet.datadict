@@ -41,6 +41,7 @@ import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
+import eionet.util.Pair;
 import eionet.util.VocabularyCSVOutputHelper;
 
 /**
@@ -157,34 +158,39 @@ public abstract class VocabularyImportBaseHandler {
      *
      * @param conceptIdentifier
      *            identifier of concept to search for
-     * @return found concept or null
+     * @return found concept with a flag if it is found in seen concepts
      */
-    protected VocabularyConcept findOrCreateConcept(String conceptIdentifier) {
+    protected Pair<VocabularyConcept, Boolean> findOrCreateConcept(String conceptIdentifier) {
         int j = getPositionIn(this.concepts, conceptIdentifier);
 
         // concept found
         if (j < this.concepts.size()) {
-            return this.concepts.remove(j);
+            return new Pair<VocabularyConcept, Boolean>(this.concepts.remove(j), false);
         }
 
         // concept may already created, check it first
         j = getPositionIn(this.notSeenConceptsYet, conceptIdentifier);
         if (j < this.notSeenConceptsYet.size()) {
-            return this.notSeenConceptsYet.remove(j);
+            return new Pair<VocabularyConcept, Boolean>(this.notSeenConceptsYet.remove(j), false);
         }
 
-        VocabularyConcept lastFoundConcept = null;
         j = getPositionIn(this.toBeUpdatedConcepts, conceptIdentifier);
+        // concept found in to be updated concepts
+        if (j < this.toBeUpdatedConcepts.size()) {
+            return new Pair<VocabularyConcept, Boolean>(this.toBeUpdatedConcepts.get(j), true);
+        }
+
         if (j == this.toBeUpdatedConcepts.size()) {
             // if there is already such a concept, ignore that line. if not, add a new concept with params.
-            lastFoundConcept = new VocabularyConcept();
+            VocabularyConcept lastFoundConcept = new VocabularyConcept();
             lastFoundConcept.setId(--this.numberOfCreatedConcepts);
             lastFoundConcept.setIdentifier(conceptIdentifier);
             List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
             lastFoundConcept.setElementAttributes(newConceptElementAttributes);
+            return new Pair<VocabularyConcept, Boolean>(lastFoundConcept, false);
         }
 
-        return lastFoundConcept;
+        return null;
     } // end of method findOrCreateConcept
 
     /**
