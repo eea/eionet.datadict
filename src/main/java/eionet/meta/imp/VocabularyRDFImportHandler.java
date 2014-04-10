@@ -248,20 +248,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         }
     } // end of method handleNamespace
 
-    private int reason1 = 0;
-    private int reason2 = 0;
-    private int reason3 = 0;
-    private int reason4 = 0;
-    private int reason5 = 0;
-    private int reason6 = 0;
-    private int reason7 = 0;
-    private int reason8 = 0;
-    private int reason9 = 0;
-    private int reason10 = 0;
-    private int reason11 = 0;
-
-    private HashMap<BigInteger, String> hashCodes = new HashMap<BigInteger, String>();
-
     @Override
     public void handleStatement(Statement st) throws RDFHandlerException {
         this.totalNumberOfTriples++;
@@ -271,21 +257,18 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
         if (!(subject instanceof URI)) {
             // this.logMessages.add(st.toString() + " NOT imported, subject is not a URI");
-            reason1++;
             return;
         }
 
         // object should a resource or a literal (value)
         if (!(object instanceof URI) && !(object instanceof Literal)) {
             // this.logMessages.add(st.toString() + " NOT imported, object is not instance of URI or Literal");
-            reason2++;
             return;
         }
 
         String conceptUri = subject.stringValue();
         if (!StringUtils.startsWith(conceptUri, this.folderContextRoot)) {
             // this.logMessages.add(st.toString() + " NOT imported, does not have base URI");
-            reason3++;
             return;
         }
 
@@ -300,17 +283,14 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         if (this.seenStatementsHashCodes.contains(statementHashCode)) {
             // this.logMessages.add(st.toString() + " NOT imported, duplicates a previous triple");
             this.numberOfDuplicatedTriples++;
-            reason4++;
             return;
         }
         this.seenStatementsHashCodes.add(statementHashCode);
-        hashCodes.put(statementHashCode, st.toString());
 
         // if it does not a have conceptIdentifier than it may be an attribute for vocabulary or a wrong record, so just ignore it
         String conceptIdentifier = conceptUri.replace(this.folderContextRoot, "");
         if (StringUtils.isEmpty(conceptIdentifier) || StringUtils.contains(conceptIdentifier, "/")) {
             // this.logMessages.add(st.toString() + " NOT imported, contains a / in concept identifier or empty");
-            reason5++;
             return;
         }
 
@@ -320,7 +300,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         if (ignoranceRule != null) {
             if (ignoranceRule.getLeft().isInstance(object) && object.stringValue().matches(ignoranceRule.getRight())) {
                 // ignore value
-                reason6++;
                 return;
             }
         }
@@ -339,7 +318,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
         if (candidateForConceptAttribute && !(object instanceof Literal)) {
             // this.logMessages.add(st.toString() + " NOT imported, object is not a Literal for concept attribute");
-            reason7++;
             return;
         }
 
@@ -359,7 +337,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         if (StringUtils.isEmpty(predicateNS)) {
             // this.logMessages.add(st.toString() + " NOT imported, predicate is not a bound URI nor a concept attribute");
             this.notBoundPredicates.add(predicateUri);
-            reason8++;
             return;
         }
 
@@ -376,7 +353,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             Pair<VocabularyConcept, Boolean> foundConceptWithFlag = findOrCreateConcept(conceptIdentifier);
             // if vocabulary concept couldnt find or couldnt be created
             if (foundConceptWithFlag == null) {
-                reason9++;
                 return;
             }
 
@@ -406,13 +382,11 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 this.lastFoundConcept.setLabel(val);
             } else {
                 // this.logMessages.add("this line shouldn't be reached");
-                reason10++;
                 return;
             }
         } else {
             if (!this.bindedElementsIds.containsKey(dataElemIdentifier)) {
                 this.notBoundPredicates.add(predicateUri);
-                reason11++;
                 return;
             }
 
