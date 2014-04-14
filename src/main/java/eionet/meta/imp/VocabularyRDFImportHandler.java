@@ -190,6 +190,10 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      * Message Digest instance used for triple hashing.
      */
     private MessageDigest messageDigestInstance = null;
+    /**
+     * This map store last seen candidate for DEFINITION and LABEL. Key value should be conceptId+dataelemIdentifier.
+     */
+    private Map<String, Literal> lastCandidateForConceptAttribute = null;
 
     /**
      * Constructor for RDFHandler to import rdf into vocabulary.
@@ -224,6 +228,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + PREF_LABEL, new HashSet<Integer>());
         this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + DEFINITION, new HashSet<Integer>());
         this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + NOTATION, new HashSet<Integer>());
+        this.lastCandidateForConceptAttribute = new HashMap<String, Literal>();
         this.workingLanguage = workingLanguage;
         this.seenStatementsHashCodes = new HashSet<BigInteger>();
         try {
@@ -364,27 +369,59 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         }
 
         String dataElemIdentifier = predicateNS + ":" + attributeIdentifier;
-
+        // TODO code below can be refactored
         if (candidateForConceptAttribute
-                && this.conceptsUpdatedForAttributes.get(dataElemIdentifier).contains(this.lastFoundConcept.getId())) {
-            candidateForConceptAttribute = false;
-        }
-
-        if (candidateForConceptAttribute) {
+                && !this.conceptsUpdatedForAttributes.get(dataElemIdentifier).contains(this.lastFoundConcept.getId())) {
             this.conceptsUpdatedForAttributes.get(dataElemIdentifier).add(this.lastFoundConcept.getId());
             // update concept value here
             String val = StringUtils.trimToNull(object.stringValue());
             if (StringUtils.equals(attributeIdentifier, NOTATION)) {
                 this.lastFoundConcept.setNotation(val);
-            } else if (StringUtils.equals(attributeIdentifier, DEFINITION)) {
-                this.lastFoundConcept.setDefinition(val);
-            } else if (StringUtils.equals(attributeIdentifier, PREF_LABEL)) {
-                this.lastFoundConcept.setLabel(val);
             } else {
-                // this.logMessages.add("this line shouldn't be reached");
-                return;
+                if (StringUtils.equals(attributeIdentifier, DEFINITION)) {
+                    this.lastFoundConcept.setDefinition(val);
+                } else if (StringUtils.equals(attributeIdentifier, PREF_LABEL)) {
+                    this.lastFoundConcept.setLabel(val);
+                }
+                String elemLang = ((Literal) object).getLanguage();
+                if (StringUtils.isNotEmpty(elemLang)) {
+                    this.lastCandidateForConceptAttribute
+                            .put(this.lastFoundConcept.getId() + dataElemIdentifier, (Literal) object);
+                }
             }
+        } else if (candidateForConceptAttribute
+                && this.lastCandidateForConceptAttribute.containsKey(this.lastFoundConcept.getId() + dataElemIdentifier)) {
+            // check if more prior value received
+            Literal previousCandidate =
+                    this.lastCandidateForConceptAttribute.remove(this.lastFoundConcept.getId() + dataElemIdentifier);
+
+            String elemLang = ((Literal) object).getLanguage();
+            boolean updateValue = false;
+            if (StringUtils.isEmpty(elemLang)) {
+                updateValue = true;
+            } else if (StringUtils.equals(elemLang, this.workingLanguage)
+                    && !StringUtils.equals(previousCandidate.getLanguage(), this.workingLanguage)) {
+                updateValue = true;
+                this.lastCandidateForConceptAttribute.put(this.lastFoundConcept.getId() + dataElemIdentifier, (Literal) object);
+            } else {
+                this.lastCandidateForConceptAttribute.put(this.lastFoundConcept.getId() + dataElemIdentifier, previousCandidate);
+            }
+
+            if (updateValue) {
+                String val = StringUtils.trimToNull(object.stringValue());
+                if (StringUtils.equals(attributeIdentifier, DEFINITION)) {
+                    this.lastFoundConcept.setDefinition(val);
+                } else if (StringUtils.equals(attributeIdentifier, PREF_LABEL)) {
+                    this.lastFoundConcept.setLabel(val);
+                }
+                object = previousCandidate;
+            }
+            candidateForConceptAttribute = false;
         } else {
+            candidateForConceptAttribute = false;
+        }
+
+        if (!candidateForConceptAttribute) {
             if (!this.bindedElementsIds.containsKey(dataElemIdentifier)) {
                 this.notBoundPredicates.add(predicateUri);
                 return;
@@ -517,6 +554,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             }
         }
 
+        // check for null label containing concepts
+        List<String> conceptsWithNullLabels = processNewlyCreatedConceptsForNullCheck();
         // process unseen concepts for related elements
         processUnseenConceptsForRelatedElements();
 
@@ -525,7 +564,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         // this.logMessages.add("Found related concept cache count: " + this.relatedConceptCache.keySet().size());
         this.logMessages.add("Number of predicates seen: " + this.predicateUpdatesAtConcepts.size());
         this.logMessages.add("Number of duplicate triples: " + this.numberOfDuplicatedTriples);
-        this.logMessages.add("Number updated concepts for predicates: ");
+        this.logMessages.add("Number of concepts seen per predicate: ");
         for (String key : this.predicateUpdatesAtConcepts.keySet()) {
             this.logMessages.add("--> " + key + " (" + this.identifierOfPredicate.get(key) + "): "
                     + this.predicateUpdatesAtConcepts.get(key).size());
@@ -535,6 +574,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         for (String predicate : this.notBoundPredicates) {
             this.logMessages.add("--> " + predicate);
         }
+        this.logMessages.addAll(conceptsWithNullLabels);
+        this.logMessages.add("Number of updated concepts: " + this.toBeUpdatedConcepts.size());
     } // end of method endRDF
 
 } // end of class VocabularyRDFImportHandler

@@ -23,6 +23,7 @@ package eionet.meta.imp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -306,6 +307,39 @@ public abstract class VocabularyImportBaseHandler {
         }
         elementsReferringThisConcept.add(element);
     } // end of method addToElementsReferringNotCreatedConcepts
+
+    /**
+     * If a newly created concept does not have a label field, then remove it from list and add it ${this.notSeenConceptsYet}. This
+     * is necessary not to receive a null constraint fail exception when updating table. This error won't be received from CSV
+     * import, since it has more strict controls. This method should be called before processUnseenConceptsForRelatedElements.
+     *
+     * @return log message
+     */
+    protected List<String> processNewlyCreatedConceptsForNullCheck() {
+        int numberOfRemovedConcepts = 0;
+        StringBuffer messageBuffer = new StringBuffer("--> Identifiers of not created concepts are as following: ");
+        Iterator<VocabularyConcept> conceptIterator = this.toBeUpdatedConcepts.iterator();
+        while (conceptIterator.hasNext()) {
+            VocabularyConcept concept = conceptIterator.next();
+            if (concept.getId() < 0 && StringUtils.isEmpty(concept.getLabel())) {
+                conceptIterator.remove();
+                messageBuffer.append(concept.getIdentifier()).append(", ");
+                numberOfRemovedConcepts++;
+                this.notSeenConceptsYet.add(concept);
+            }
+        }
+        if (numberOfRemovedConcepts > 0) {
+            // delete last two characters from message buffer because they are no necessary.
+            messageBuffer.deleteCharAt(messageBuffer.length() - 1);
+            messageBuffer.deleteCharAt(messageBuffer.length() - 1);
+            List<String> messageBufferList = new ArrayList<String>();
+            messageBufferList.add(numberOfRemovedConcepts + " concepts not created because of empty label specification.");
+            messageBufferList.add(messageBuffer.toString());
+            return messageBufferList;
+        }
+
+        return null;
+    } // end of method processNewlyCreatedConceptsForNullCheck
 
     /**
      * If a concept is not seen after all file is processed then just set related concept id to null. And set the value of dataelem.
