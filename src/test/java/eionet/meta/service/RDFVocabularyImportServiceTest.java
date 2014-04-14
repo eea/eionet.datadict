@@ -676,4 +676,55 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
                 ReflectionComparatorMode.LENIENT_ORDER);
     } // end of test step testIfConceptsSetRelatedInOtherVocabularies
+
+    /**
+     * In this test, four concepts RDF is imported. Concepts are derived from base RDF. Labels are are updated. Labels with working
+     * language tested.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptsAddedWithCorrectLabelsAfterPurge() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_9.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, true, false);
+        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Updated Concepts does not include 3 vocabulary concepts", updatedConcepts.size(), 3);
+
+        // manually compare updated objects values
+        // Concept 1
+        VocabularyConcept concept = findVocabularyConceptByIdentifier(updatedConcepts, "rdf_test_concept_1");
+        Assert.assertEquals("Label does not match for concept.", "en_rdf_test_concept_1", concept.getLabel());
+        Assert.assertEquals("skos:prefLabel should have 2 elements for concept.", 2, VocabularyImportBaseHandler
+                .getDataElementValuesByName("skos:prefLabel", concept.getElementAttributes()).size());
+
+        // Concept 2
+        concept = findVocabularyConceptByIdentifier(updatedConcepts, "rdf_test_concept_2");
+        Assert.assertEquals("Label does not match for concept.", "rdf_test_concept_label_2", concept.getLabel());
+        Assert.assertEquals("Definition does not match for concept.", "rdf_test_concept_def_2", concept.getDefinition());
+        Assert.assertEquals("skos:prefLabel should have 2 elements for concept.", 2, VocabularyImportBaseHandler
+                .getDataElementValuesByName("skos:prefLabel", concept.getElementAttributes()).size());
+        Assert.assertEquals("skos:definition should have 1 elements for concept.", 1, VocabularyImportBaseHandler
+                .getDataElementValuesByName("skos:definition", concept.getElementAttributes()).size());
+
+        // Concept 3
+        concept = findVocabularyConceptByIdentifier(updatedConcepts, "rdf_test_concept_3");
+        Assert.assertEquals("Label does not match for concept.", "bg_rdf_test_concept_3", concept.getLabel());
+        Assert.assertEquals("Definition does not match for concept.", "en_rdf_test_concept_3", concept.getDefinition());
+        Assert.assertEquals("skos:prefLabel should have 12 elements for concept.", 1, VocabularyImportBaseHandler
+                .getDataElementValuesByName("skos:prefLabel", concept.getElementAttributes()).size());
+        Assert.assertEquals("skos:definition should have 1 elements for concept.", 1, VocabularyImportBaseHandler
+                .getDataElementValuesByName("skos:definition", concept.getElementAttributes()).size());
+
+    } // end of test step testIfConceptsAddedAfterPurge
+
 }// end of test case RDFVocabularyImportServiceTest

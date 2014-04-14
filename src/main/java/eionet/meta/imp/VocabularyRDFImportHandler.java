@@ -574,7 +574,9 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         for (String predicate : this.notBoundPredicates) {
             this.logMessages.add("--> " + predicate);
         }
-        this.logMessages.addAll(conceptsWithNullLabels);
+        if (conceptsWithNullLabels != null) {
+            this.logMessages.addAll(conceptsWithNullLabels);
+        }
         this.logMessages.add("Number of updated concepts: " + this.toBeUpdatedConcepts.size());
     } // end of method endRDF
 
