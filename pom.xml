@@ -208,6 +208,7 @@
 
         <filters>
             <filter>${env}.properties</filter>
+            <filter>src/test/resources/testlanguagesbase.properties</filter>
         </filters>
 
         <!-- resources for the main code -->
