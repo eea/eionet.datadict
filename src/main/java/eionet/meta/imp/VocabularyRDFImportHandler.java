@@ -387,6 +387,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 if (StringUtils.isNotEmpty(elemLang)) {
                     this.lastCandidateForConceptAttribute
                             .put(this.lastFoundConcept.getId() + dataElemIdentifier, (Literal) object);
+                    candidateForConceptAttribute = false;
                 }
             }
         } else if (candidateForConceptAttribute
@@ -402,9 +403,11 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             } else if (StringUtils.equals(elemLang, this.workingLanguage)
                     && !StringUtils.equals(previousCandidate.getLanguage(), this.workingLanguage)) {
                 updateValue = true;
+                candidateForConceptAttribute = false;
                 this.lastCandidateForConceptAttribute.put(this.lastFoundConcept.getId() + dataElemIdentifier, (Literal) object);
             } else {
                 this.lastCandidateForConceptAttribute.put(this.lastFoundConcept.getId() + dataElemIdentifier, previousCandidate);
+                candidateForConceptAttribute = false;
             }
 
             if (updateValue) {
@@ -414,9 +417,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 } else if (StringUtils.equals(attributeIdentifier, PREF_LABEL)) {
                     this.lastFoundConcept.setLabel(val);
                 }
-                object = previousCandidate;
             }
-            candidateForConceptAttribute = false;
         } else {
             candidateForConceptAttribute = false;
         }

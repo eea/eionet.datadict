@@ -1199,6 +1199,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 throw new ServiceException("File should be a RDF file");
             }
 
+            LOGGER.debug("Starting RDF import operation");
             Reader rdfFileReader = new InputStreamReader(this.uploadedFileToImport.getInputStream(), CharEncoding.UTF_8);
             // TODO use enum instead for rdf purge option
             List<String> systemMessages =
@@ -1206,7 +1207,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                             this.rdfPurgeOption == 3, this.rdfPurgeOption == 2);
             for (String systemMessage : systemMessages) {
                 addSystemMessage(systemMessage);
+                LOGGER.info(systemMessage);
             }
+            LOGGER.debug("RDF import completed");
 
             RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
             resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());

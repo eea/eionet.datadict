@@ -181,4 +181,4 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
             return StringUtils.equals(value, elem.getAttributeValue());
         }
     }// end of inner class DataElementEvaluateOnAttributeValuePredicate
-}// end of test case RDFVocabularyImportServiceTest
+}// end of test case VocabularyImportServiceTestBase
