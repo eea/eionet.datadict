@@ -128,7 +128,6 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
             conn.setAutoCommit(false);
 
             int i = 0;
-            LOGGER.debug("Starting inserts ...");
 
             long startTime = System.currentTimeMillis();
             stmt = conn.createStatement();
@@ -174,7 +173,6 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
             String sql = AlternativeCopyHandler.simpleAttrsCopyStatement("?", "?", "E");
 
             int i = 0;
-            LOGGER.debug("Starting inserts ...");
 
             long startTime = System.currentTimeMillis();
             pstmt = conn.prepareStatement(sql);
@@ -226,7 +224,6 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
             conn.setAutoCommit(false);
 
             int i = 0;
-            LOGGER.debug("Starting single extended insert ...");
 
             long startTime = System.currentTimeMillis();
 
@@ -255,8 +252,6 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
                 i++;
             }
             SQL.close(rs);
-
-            LOGGER.debug(i + " current rows retreived for single extended insert");
 
             stmt.executeUpdate(insertNewRowsSQL.toString());
 
@@ -295,8 +290,6 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
         try {
             conn = getConnection().getConnection();
             conn.setAutoCommit(false);
-
-            LOGGER.debug("Starting single batch insert ...");
 
             long startTime = System.currentTimeMillis();
             pstmt = conn.prepareStatement(sql);

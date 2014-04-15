@@ -74,7 +74,7 @@ public class StringEncoderTest {
     @Test
     public void encodeIRISomeChars() {
         String testString = ";/?:@&=+$,aA-_.!~*'()[]<>#%\"{}\n\t ";
-        String expected = ";/?:@&=%2B$,aA-_.!~*'()[]%3C%3E#%%22%7B%7D\n\t%20";
+        String expected = ";/?:@&=+$,aA-_.!~*'()[]%3C%3E#%%22%7B%7D\n\t%20";
         String actual = StringEncoder.encodeToIRI(testString);
         assertEquals(expected, actual);
     }
@@ -88,8 +88,8 @@ public class StringEncoderTest {
 
     @Test
     public void encodeIRIAllSpecial() {
-        String input = " {}<>\"|\\^`+";
-        String expct = "%20%7B%7D%3C%3E%22%7C%5C%5E%60%2B";
+        String input = " {}<>\"|\\^`";
+        String expct = "%20%7B%7D%3C%3E%22%7C%5C%5E%60";
         assertEquals(expct, StringEncoder.encodeToIRI(input));
     }
 

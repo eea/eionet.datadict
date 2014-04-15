@@ -107,17 +107,6 @@ public class VocabularyXmlWriter {
     }
 
     /**
-     * Escapes IRI's reserved characters in the given URL string.
-     *
-     * @param url
-     *            is a string.
-     * @return escaped URI
-     */
-    public static String escapeIRI(String url) {
-        return StringEncoder.encodeToIRI(url);
-    }
-
-    /**
      * Writes rdf output to stream for one vocabulary folder.
      *
      * @param commonElemsUri
@@ -190,7 +179,7 @@ public class VocabularyXmlWriter {
         } else {
         }
         writer.writeDefaultNamespace(commonElemsUri);
-        writer.writeAttribute("xml", XML_NS, "base", escapeIRI(contextRoot));
+        writer.writeAttribute("xml", XML_NS, "base", StringEncoder.encodeToIRI(contextRoot));
 
     }
 
@@ -211,7 +200,7 @@ public class VocabularyXmlWriter {
         // dctype:Collection for Folder:
         writer.writeCharacters("\n");
         writer.writeStartElement(DCTYPE_NS, "Collection");
-        writer.writeAttribute("rdf", RDF_NS, "about", escapeIRI(folderContext));
+        writer.writeAttribute("rdf", RDF_NS, "about", StringEncoder.encodeToIRI(folderContext));
 
         writer.writeCharacters("\n");
         writer.writeStartElement(RDFS_NS, "label");
@@ -227,7 +216,7 @@ public class VocabularyXmlWriter {
         for (VocabularyFolder v : vocabularies) {
             writer.writeCharacters("\n");
             writer.writeEmptyElement(DCTERMS_NS, "hasPart");
-            writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(folderContext + v.getIdentifier() + "/"));
+            writer.writeAttribute("rdf", RDF_NS, "resource", StringEncoder.encodeToIRI(folderContext + v.getIdentifier() + "/"));
         }
         writer.writeCharacters("\n");
         writer.writeEndElement(); // End Collection
@@ -259,7 +248,7 @@ public class VocabularyXmlWriter {
             VocabularyFolder vocabularyFolder, List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
         writer.writeCharacters("\n");
         writer.writeStartElement(SKOS_NS, "ConceptScheme");
-        writer.writeAttribute("rdf", RDF_NS, "about", escapeIRI(vocabularyContextRoot));
+        writer.writeAttribute("rdf", RDF_NS, "about", StringEncoder.encodeToIRI(vocabularyContextRoot));
 
         writer.writeCharacters("\n");
         writer.writeStartElement(RDFS_NS, "label");
@@ -273,7 +262,7 @@ public class VocabularyXmlWriter {
 
         writer.writeCharacters("\n");
         writer.writeEmptyElement(DCTERMS_NS, "isPartOf");
-        writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(folderContextRoot));
+        writer.writeAttribute("rdf", RDF_NS, "resource", StringEncoder.encodeToIRI(folderContextRoot));
 
         writer.writeCharacters("\n");
         writer.writeEndElement(); // End ConceptScheme
@@ -281,7 +270,7 @@ public class VocabularyXmlWriter {
         for (VocabularyConcept vc : vocabularyConcepts) {
             writer.writeCharacters("\n");
             writer.writeStartElement(SKOS_NS, "Concept");
-            writer.writeAttribute("rdf", RDF_NS, "about", escapeIRI(vocabularyContextRoot + vc.getIdentifier()));
+            writer.writeAttribute("rdf", RDF_NS, "about", StringEncoder.encodeToIRI(vocabularyContextRoot + vc.getIdentifier()));
 
             if (StringUtils.isNotEmpty(vc.getNotation())) {
                 writer.writeCharacters("\n");
@@ -304,7 +293,7 @@ public class VocabularyXmlWriter {
 
             writer.writeCharacters("\n");
             writer.writeEmptyElement(SKOS_NS, "inScheme");
-            writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(vocabularyContextRoot));
+            writer.writeAttribute("rdf", RDF_NS, "resource", StringEncoder.encodeToIRI(vocabularyContextRoot));
 
             if (vocabularyFolder.isSiteCodeType()) {
                 writeSiteCodeData((SiteCode) vc);

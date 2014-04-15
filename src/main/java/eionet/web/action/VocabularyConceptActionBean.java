@@ -51,6 +51,7 @@ import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.StringEncoder;
 import eionet.util.Util;
 
 /**
@@ -525,7 +526,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @return concept uri
      */
     public String getConceptUri() {
-        return VocabularyXmlWriter.escapeIRI(getUriPrefix() + getConceptIdentifier());
+        return StringEncoder.encodeToIRI(getUriPrefix() + getConceptIdentifier());
     }
 
     /**
@@ -554,7 +555,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             baseUri += "/";
         }
 
-        return VocabularyXmlWriter.escapeIRI(baseUri);
+        return StringEncoder.encodeToIRI(baseUri);
     }
 
     /**

@@ -29,7 +29,13 @@ import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.*;
-import eionet.util.*;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.SecurityUtil;
+import eionet.util.StringEncoder;
+import eionet.util.Triple;
+import eionet.util.Util;
+import eionet.util.VocabularyCSVOutputHelper;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
@@ -597,7 +603,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *
      * @throws ServiceException if checking fails
      */
-    @ValidationMethod(on = {"addDataElement"})
+    @ValidationMethod(on = { "addDataElement" })
     public void validateAddDataElement() throws ServiceException {
         if (vocabularyService.vocabularyHasDataElementBinding(vocabularyFolder.getId(), elementId)) {
             addGlobalValidationError("This vocabulary already has binding to this element.");
@@ -624,7 +630,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *
      * @throws ServiceException if checking fails
      */
-    @ValidationMethod(on = {"removeDataElement"})
+    @ValidationMethod(on = { "removeDataElement" })
     public void validaRemoveDataElement() throws ServiceException {
 
         // if this element binding has valued in any concept - do not remove it
@@ -813,7 +819,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *
      * @throws ServiceException
      */
-    @ValidationMethod(on = {"saveConcept"})
+    @ValidationMethod(on = { "saveConcept" })
     public void validateSaveConcept() throws ServiceException {
         if (!isUpdateRight()) {
             addGlobalValidationError("No permission to modify vocabulary");
@@ -1078,7 +1084,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             baseUri += "/";
         }
 
-        return VocabularyXmlWriter.escapeIRI(baseUri);
+        return StringEncoder.encodeToIRI(baseUri);
     }
 
     /**
