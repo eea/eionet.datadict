@@ -143,4 +143,5 @@ public interface PropsIF {
 
     /** Maximum amount available site codes to reserve. */
     public static final String SITE_CODES_MAX_RESERVE_AMOUNT = "siteCode.reserve.maxAmount";
+
 }
