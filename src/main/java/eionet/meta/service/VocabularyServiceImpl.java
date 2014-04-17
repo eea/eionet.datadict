@@ -59,7 +59,6 @@ import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -517,7 +516,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             VocabularyFolder result = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
-            //Attributes
+            // Attributes
             List<List<SimpleAttribute>> attributes = attributeDAO.getVocabularyFolderAttributes(result.getId(), true);
             result.setAttributes(attributes);
 
@@ -616,7 +615,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
                 // Remove old data element relations
                 dataElementDAO.deleteVocabularyDataElements(originalVocabularyFolderId);
-                //update ch3 element reference
+                // update ch3 element reference
                 dataElementDAO.moveVocabularySources(originalVocabularyFolderId, vocabularyFolderId);
 
             }
@@ -1136,11 +1135,37 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     @Override
-    public List<Triple<String, String, Integer>> getVocabularyBoundElementNames(VocabularyFolder vocabularyFolder) {
+    public List<Triple<String, String, Integer>> getVocabularyBoundElementNamesByLanguage(VocabularyFolder vocabularyFolder) {
         int vocabularyFolderId = vocabularyFolder.getId();
-        List<Triple<String, String, Integer>> elementsMeta = vocabularyFolderDAO.getVocabularyFolderBoundElementsMeta(vocabularyFolderId);
+        List<Triple<String, String, Integer>> elementsMeta =
+                vocabularyFolderDAO.getVocabularyFolderBoundElementsMeta(vocabularyFolderId);
+        // because of empty language values list may contain irregular values, process it first and then return
+
+        if (elementsMeta != null && elementsMeta.size() > 1) {
+            List<Triple<String, String, Integer>> elementsMetaTemp = new ArrayList<Triple<String, String, Integer>>();
+            elementsMetaTemp.add(elementsMeta.get(0));
+
+            int arraySize = elementsMeta.size();
+            for (int i = 1; i < arraySize; i++) {
+                Triple<String, String, Integer> row1 = elementsMeta.get(i);
+                boolean found = false;
+                for (int j = 0; j < elementsMetaTemp.size(); j++) {
+                    Triple<String, String, Integer> row2 = elementsMetaTemp.get(j);
+                    if (StringUtils.equals(row1.getLeft(), row2.getLeft())
+                            && StringUtils.equals(row1.getCentral(), row2.getCentral())) {
+                        row2.setRight(row2.getRight() + row1.getRight());
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    elementsMetaTemp.add(row1);
+                }
+            }
+            elementsMeta = elementsMetaTemp;
+        }
         return elementsMeta;
-    }
+    } // end of method getVocabularyBoundElementNamesByLanguage
 
     @Override
     public VocabularyResult searchVocabularies(VocabularyFilter filter) throws ServiceException {

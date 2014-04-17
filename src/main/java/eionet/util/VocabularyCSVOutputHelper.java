@@ -37,7 +37,7 @@ import eionet.meta.dao.domain.VocabularyConcept;
 
 /**
  * Vocabulary CSV output helper.
- * 
+ *
  * @author Juhan Voolaid
  */
 public final class VocabularyCSVOutputHelper {
@@ -56,7 +56,7 @@ public final class VocabularyCSVOutputHelper {
 
     /**
      * Writes CSV to output stream.
-     * 
+     *
      * @param out
      *            outputstream
      * @param uriPrefix
@@ -76,7 +76,7 @@ public final class VocabularyCSVOutputHelper {
         OutputStreamWriter osw = new OutputStreamWriter(out, "UTF-8");
         addBOM(out);
 
-        ArrayList<String> toBeAddedToHeader = new ArrayList<String>();
+        List<String> toBeAddedToHeader = new ArrayList<String>();
         for (Triple<String, String, Integer> row : attributesMeta) {
             String lang = "";
             if (StringUtils.isNotEmpty(row.getCentral())) {
@@ -117,13 +117,12 @@ public final class VocabularyCSVOutputHelper {
             // add extra fields
             for (Triple<String, String, Integer> row : attributesMeta) {
                 String elemName = row.getLeft();
-
                 attributeElems = getDataElementValuesByNameAndLang(elemName, row.getCentral(), c.getElementAttributes());
 
                 int sizeOfAttributeElems = 0;
                 if (attributeElems != null) {
                     sizeOfAttributeElems = attributeElems.size();
-                    for (int j = 0; j < attributeElems.size(); j++) {
+                    for (int j = 0; j < sizeOfAttributeElems; j++) {
                         DataElement e = attributeElems.get(j);
                         if (e.isRelationalElement()) {
                             value = folderContextRoot + e.getRelatedConceptIdentifier();
@@ -140,7 +139,6 @@ public final class VocabularyCSVOutputHelper {
                 for (int j = sizeOfAttributeElems; j < maximumNumberOfElements; j++) {
                     entries[CONCEPT_ENTRIES_COUNT + elemPos + j] = null;
                 }
-
                 elemPos += maximumNumberOfElements;
             }
             writer.writeNext(entries);
@@ -151,7 +149,7 @@ public final class VocabularyCSVOutputHelper {
 
     /**
      * Writes utf-8 BOM in the given writer.
-     * 
+     *
      * @param out
      *            current outputstream
      * @throws IOException
@@ -168,7 +166,7 @@ public final class VocabularyCSVOutputHelper {
 
     /**
      * finds list of data element values by name.
-     * 
+     *
      * @param elemName
      *            element name to be looked for
      * @param elems
@@ -188,8 +186,8 @@ public final class VocabularyCSVOutputHelper {
     }
 
     /**
-     * finds list of data element values by name and language
-     * 
+     * Finds list of data element values by name and language.
+     *
      * @param elemName
      *            element name to be looked for
      * @param lang
@@ -203,7 +201,7 @@ public final class VocabularyCSVOutputHelper {
         boolean isLangEmpty = StringUtils.isEmpty(lang);
         ArrayList<DataElement> elements = new ArrayList<DataElement>();
         for (List<DataElement> elem : elems) {
-            if (elem == null || elem.size() < 1 || !elem.get(0).getIdentifier().equals(elemName)) {// check first one
+            if (elem == null || elem.size() < 1 || !elem.get(0).getIdentifier().equals(elemName)) { // check first one
                 continue;
             }
             for (DataElement elemMeta : elem) {
@@ -217,11 +215,11 @@ public final class VocabularyCSVOutputHelper {
             return elements;
         }
         return null;
-    }// end of method getDataElementValuesByNameAndLang
+    } // end of method getDataElementValuesByNameAndLang
 
     /**
      * Adds pre-defined entries to the array.
-     * 
+     *
      * @param entries
      *            array for CSV output
      */

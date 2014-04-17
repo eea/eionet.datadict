@@ -54,8 +54,7 @@ public class DataElement {
     private String tableName;
 
     /**
-     * parent namespace ID.
-     * NULL if common element
+     * parent namespace ID. NULL if common element
      */
     private Integer parentNamespace;
 
@@ -65,7 +64,7 @@ public class DataElement {
 
     private boolean workingCopy;
 
-    //TODO - make a new DAO entity for VOCABULARY_CONCEPT_ELEMENT
+    // TODO - make a new DAO entity for VOCABULARY_CONCEPT_ELEMENT
     /** Value from VOCABULARY_CONCEPT_ELEMENT table. Expected to be IRI encoded in DB. */
     private String attributeValue;
 
@@ -100,15 +99,13 @@ public class DataElement {
     private Integer vocabularyId;
 
     /**
-     * if element gets fxv from a vocabulary shows if all concepts are valid.
-     * if false only concepts released before releasing the element and not marked
-     * obsolete are valid.
+     * if element gets fxv from a vocabulary shows if all concepts are valid. if false only concepts released before releasing the
+     * element and not marked obsolete are valid.
      */
     private Boolean allConceptsValid;
 
     /** update date. */
     private String date;
-
 
     /**
      * Name attribute value is saved in this variable for better performance in search.
@@ -256,21 +253,20 @@ public class DataElement {
      */
     public String getDatatype() {
         String dataType = "string";
-        List<String> elemDatatypeAttr = elemAttributeValues != null && elemAttributeValues.containsKey("Datatype")
-                ? elemAttributeValues.get("Datatype") : null;
+        List<String> elemDatatypeAttr =
+                elemAttributeValues != null && elemAttributeValues.containsKey("Datatype") ? elemAttributeValues.get("Datatype")
+                        : null;
 
         return elemDatatypeAttr != null ? elemDatatypeAttr.get(0) : dataType;
     }
 
     public String getAttributeLanguage() {
-        return attributeLanguage;
+        return StringUtils.trimToNull(attributeLanguage);
     }
 
     public void setAttributeLanguage(String attributeLanguage) {
-        this.attributeLanguage = attributeLanguage;
+        this.attributeLanguage = StringUtils.trimToNull(attributeLanguage);
     }
-
-
 
     /**
      * Checks if given element is used for describing relations.
@@ -278,7 +274,7 @@ public class DataElement {
      * @return true if an relation element
      */
     public boolean isRelationalElement() {
-        //this DAO class is used for metadata and data element with values
+        // this DAO class is used for metadata and data element with values
         return (relatedConceptId != null && relatedConceptId != 0) || getDatatype().equals("localref");
     }
 
@@ -307,8 +303,8 @@ public class DataElement {
     }
 
     /**
-     * Generate the relative path to a concept in a different vocabulary in the same data dictionary.
-     * The path looks like "common/nuts/AT111".
+     * Generate the relative path to a concept in a different vocabulary in the same data dictionary. The path looks like
+     * "common/nuts/AT111".
      *
      * @return the path
      */
@@ -317,16 +313,14 @@ public class DataElement {
     }
 
     /**
-     * Generate the full URI to a related concept. The concept can be specified
-     * as a foreign key reference to another concept in the database or it
-     * can be specified as a text string.
+     * Generate the full URI to a related concept. The concept can be specified as a foreign key reference to another concept in the
+     * database or it can be specified as a text string.
      *
      * @return the url - IRI encoded.
      */
     public String getRelatedConceptUri() {
         if (isRelationalElement()) {
-            return StringEncoder.encodeToIRI(Props.getRequiredProperty(PropsIF.DD_URL)
-                    + "/vocabulary/"
+            return StringEncoder.encodeToIRI(Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/"
                     + getRelatedConceptRelativePath());
         } else {
             return attributeValue;
@@ -359,6 +353,7 @@ public class DataElement {
 
     /**
      * returns Name attribute. Short name if data element does not have name.
+     *
      * @return name in ATTRIBUTES table, default is empty string
      */
     public String getName() {
@@ -381,15 +376,15 @@ public class DataElement {
     }
 
     /**
-     * Indicates if Element values can have values in several languages.
-     * false by default
+     * Indicates if Element values can have values in several languages. false by default
+     *
      * @return is Language used in ATTRIBUTES table
      */
     public boolean isLanguageUsed() {
         if (elemAttributeValues != null) {
             if (elemAttributeValues.containsKey("languageUsed")) {
                 String lang = elemAttributeValues.get("languageUsed").get(0);
-                //TODO - change to check only one value if some solution is made for boolean attributes, see #16975
+                // TODO - change to check only one value if some solution is made for boolean attributes, see #16975
                 return lang.equals("1") || lang.equalsIgnoreCase("Yes") || lang.equalsIgnoreCase("true");
             }
         }

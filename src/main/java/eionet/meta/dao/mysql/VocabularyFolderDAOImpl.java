@@ -617,7 +617,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                     @Override
                     public Triple<String, String, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
                         String elementName = rs.getString("IDENTIFIER");
-                        String elementLanguage = rs.getString("ELEM_LANG");
+                        String elementLanguage = StringUtils.trimToNull(rs.getString("ELEM_LANG"));
                         Integer elementMaxCount = rs.getInt("ELEM_COUNT");
                         Triple<String, String, Integer> pair =
                                 new Triple<String, String, Integer>(elementName, elementLanguage, elementMaxCount);
@@ -674,8 +674,8 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
             if (filter.isWordMatch()) {
                 params.put("text", "[[:<:]]" + filter.getConceptText() + "[[:>:]]");
-                sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ").append(
-                        " AND (vc.LABEL REGEXP :conceptText OR vc.IDENTIFIER REGEXP :conceptText OR vc.DEFINITION REGEXP :conceptText)) ");
+                sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ")
+                        .append(" AND (vc.LABEL REGEXP :conceptText OR vc.IDENTIFIER REGEXP :conceptText OR vc.DEFINITION REGEXP :conceptText)) ");
 
             } else if (filter.isExactMatch()) {
                 params.put("conceptText", filter.getConceptText());
@@ -684,8 +684,8 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
             } else {
 
                 params.put("conceptText", "%" + filter.getConceptText() + "%");
-                sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ").append(
-                        " AND (vc.LABEL like :conceptText OR vc.IDENTIFIER like :conceptText OR vc.DEFINITION like :conceptText) ) ");
+                sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ")
+                        .append(" AND (vc.LABEL like :conceptText OR vc.IDENTIFIER like :conceptText OR vc.DEFINITION like :conceptText) ) ");
             }
         }
         sql.append(" ORDER BY v.IDENTIFIER");

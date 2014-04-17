@@ -21,14 +21,44 @@
 
 package eionet.web.action;
 
-import eionet.meta.dao.domain.*;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ErrorResolution;
+import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
+import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.StreamingResolution;
+import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
+
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.RdfNamespace;
+import eionet.meta.dao.domain.SimpleAttribute;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.InspireCodelistXmlWriter;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
-import eionet.meta.service.data.*;
+import eionet.meta.service.data.DataElementsFilter;
+import eionet.meta.service.data.DataElementsResult;
+import eionet.meta.service.data.ObsoleteStatus;
+import eionet.meta.service.data.SiteCodeFilter;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
@@ -36,17 +66,6 @@ import eionet.util.StringEncoder;
 import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
-import net.sourceforge.stripes.action.*;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-import net.sourceforge.stripes.validation.ValidationMethod;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Edit vocabulary folder action bean.
@@ -271,7 +290,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Navigates to edit vocabulary folder form.
      *
      * @return Resolution
-     * @throws ServiceException if error in queries
+     * @throws ServiceException
+     *             if error in queries
      */
     public Resolution edit() throws ServiceException {
         vocabularyFolder =
@@ -601,9 +621,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * Validation on adding a binded data element.
      *
-     * @throws ServiceException if checking fails
+     * @throws ServiceException
+     *             if checking fails
      */
-    @ValidationMethod(on = { "addDataElement" })
+    @ValidationMethod(on = {"addDataElement"})
     public void validateAddDataElement() throws ServiceException {
         if (vocabularyService.vocabularyHasDataElementBinding(vocabularyFolder.getId(), elementId)) {
             addGlobalValidationError("This vocabulary already has binding to this element.");
@@ -628,9 +649,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * validates removing data elements. Elements which have values in any concepts cannot be removed.
      *
-     * @throws ServiceException if checking fails
+     * @throws ServiceException
+     *             if checking fails
      */
-    @ValidationMethod(on = { "removeDataElement" })
+    @ValidationMethod(on = {"removeDataElement"})
     public void validaRemoveDataElement() throws ServiceException {
 
         // if this element binding has valued in any concept - do not remove it
@@ -819,7 +841,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *
      * @throws ServiceException
      */
-    @ValidationMethod(on = { "saveConcept" })
+    @ValidationMethod(on = {"saveConcept"})
     public void validateSaveConcept() throws ServiceException {
         if (!isUpdateRight()) {
             addGlobalValidationError("No permission to modify vocabulary");
@@ -926,8 +948,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 siteCodeFilter.setIdentifier(identifier);
                 concepts = siteCodeService.searchSiteCodes(siteCodeFilter).getList();
             } else {
-                concepts =
-                        vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
+                concepts = vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
             }
 
             final List<? extends VocabularyConcept> finalConcepts = concepts;
@@ -972,16 +993,16 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         try {
 
             vocabularyFolder =
-                    vocabularyService.getVocabularyWithConcepts(vocabularyFolder.getIdentifier(), vocabularyFolder.getFolderName());
+                    vocabularyService
+                            .getVocabularyWithConcepts(vocabularyFolder.getIdentifier(), vocabularyFolder.getFolderName());
 
-            final String folderContextRoot =
-                    Props.getRequiredProperty(PropsIF.DD_URL);
+            final String folderContextRoot = Props.getRequiredProperty(PropsIF.DD_URL);
 
             StreamingResolution result = new StreamingResolution("application/xml") {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
-                    InspireCodelistXmlWriter xmlWriter = new InspireCodelistXmlWriter(response.getOutputStream(),
-                            vocabularyFolder, folderContextRoot);
+                    InspireCodelistXmlWriter xmlWriter =
+                            new InspireCodelistXmlWriter(response.getOutputStream(), vocabularyFolder, folderContextRoot);
                     xmlWriter.writeXml();
                 }
             };
@@ -1018,10 +1039,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                             + "/"
                             + vocabularyFolder.getIdentifier() + "/";
 
-            final List<VocabularyConcept> concepts =
-                    vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
+            final List<VocabularyConcept> concepts = vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
             final List<Triple<String, String, Integer>> fieldNamesWithLanguage =
-                    vocabularyService.getVocabularyBoundElementNames(vocabularyFolder);
+                    vocabularyService.getVocabularyBoundElementNamesByLanguage(vocabularyFolder);
 
             StreamingResolution result = new StreamingResolution("text/csv") {
                 @Override
@@ -1039,7 +1059,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             return error;
         }
     }
-
 
     /**
      * Forwards to vocabulary concept page, if the url patter is: /vocabylary/folderIdentifier/conceptIdentifier.
@@ -1188,7 +1207,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyFolder the vocabularyFolder to set
+     * @param vocabularyFolder
+     *            the vocabularyFolder to set
      */
     public void setVocabularyFolder(VocabularyFolder vocabularyFolder) {
         this.vocabularyFolder = vocabularyFolder;
@@ -1202,14 +1222,16 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcepts the vocabularyConcepts to set
+     * @param vocabularyConcepts
+     *            the vocabularyConcepts to set
      */
     public void setVocabularyConcepts(VocabularyConceptResult vocabularyConcepts) {
         this.vocabularyConcepts = vocabularyConcepts;
     }
 
     /**
-     * @param vocabularyService the vocabularyService to set
+     * @param vocabularyService
+     *            the vocabularyService to set
      */
     public void setVocabularyService(IVocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
@@ -1223,7 +1245,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcept the vocabularyConcept to set
+     * @param vocabularyConcept
+     *            the vocabularyConcept to set
      */
     public void setVocabularyConcept(VocabularyConcept vocabularyConcept) {
         this.vocabularyConcept = vocabularyConcept;
@@ -1237,7 +1260,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param conceptIds the conceptIds to set
+     * @param conceptIds
+     *            the conceptIds to set
      */
     public void setConceptIds(List<Integer> conceptIds) {
         this.conceptIds = conceptIds;
@@ -1251,7 +1275,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param copyId the copyId to set
+     * @param copyId
+     *            the copyId to set
      */
     public void setCopyId(int copyId) {
         this.copyId = copyId;
@@ -1279,7 +1304,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param filter the filter to set
+     * @param filter
+     *            the filter to set
      */
     public void setFilter(VocabularyConceptFilter filter) {
         this.filter = filter;
@@ -1293,7 +1319,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param page the page to set
+     * @param page
+     *            the page to set
      */
     public void setPage(int page) {
         this.page = page;
@@ -1314,7 +1341,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folder the folder to set
+     * @param folder
+     *            the folder to set
      */
     public void setFolder(Folder folder) {
         this.folder = folder;
@@ -1328,7 +1356,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folderChoice the folderChoice to set
+     * @param folderChoice
+     *            the folderChoice to set
      */
     public void setFolderChoice(String folderChoice) {
         this.folderChoice = folderChoice;
@@ -1349,7 +1378,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param elementsFilter the elementsFilter to set
+     * @param elementsFilter
+     *            the elementsFilter to set
      */
     public void setElementsFilter(DataElementsFilter elementsFilter) {
         this.elementsFilter = elementsFilter;
@@ -1377,7 +1407,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param elementId the elementId to set
+     * @param elementId
+     *            the elementId to set
      */
     public void setElementId(int elementId) {
         this.elementId = elementId;

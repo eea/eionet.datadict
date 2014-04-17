@@ -51,7 +51,6 @@ import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
-import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
@@ -627,7 +626,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     @Test
     public void testFolderCSVInfo() throws Exception {
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(1);
-        List<Triple<String, String, Integer>> attributeNames = vocabularyService.getVocabularyBoundElementNames(vocabularyFolder);
+        List<Triple<String, String, Integer>> attributeNames = vocabularyService.getVocabularyBoundElementNamesByLanguage(vocabularyFolder);
 
         assertTrue(attributeNames.size() == 2);
         Triple<String, String, Integer> dev = attributeNames.get(0);
@@ -647,7 +646,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     @Test
     public void testFolderCSVInfo2() throws Exception {
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(4);
-        List<Triple<String, String, Integer>> attributeNames = vocabularyService.getVocabularyBoundElementNames(vocabularyFolder);
+        List<Triple<String, String, Integer>> attributeNames = vocabularyService.getVocabularyBoundElementNamesByLanguage(vocabularyFolder);
 
         int numberOfElements = 9;
         assertTrue(attributeNames.size() == numberOfElements);
