@@ -4,34 +4,54 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import javax.servlet.ServletContextEvent;
+import javax.servlet.http.HttpServletRequest;
+
+import net.sourceforge.stripes.action.ActionBean;
+import net.sourceforge.stripes.action.ActionBeanContext;
+import net.sourceforge.stripes.action.FileBean;
+import net.sourceforge.stripes.controller.DefaultActionBeanPropertyBinder;
+import net.sourceforge.stripes.controller.DispatcherServlet;
+import net.sourceforge.stripes.controller.StripesFilter;
 import net.sourceforge.stripes.exception.StripesServletException;
 import net.sourceforge.stripes.mock.MockRoundtrip;
 import net.sourceforge.stripes.mock.MockServletContext;
+import net.sourceforge.stripes.util.bean.BeanUtil;
+import net.sourceforge.stripes.validation.ValidationErrors;
 
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.web.context.ContextLoaderListener;
 
 import eionet.DDDatabaseTestCase;
 import eionet.meta.ActionBeanUtils;
+import eionet.meta.DDUser;
+import eionet.meta.FakeUser;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.SecurityUtil;
 import eionet.web.action.ErrorActionBean;
 import eionet.web.action.VocabularyFolderActionBean;
 
 /**
  * Tests for VocabularyConteptActionBean.
- * 
+ *
  * @author Kaido Laine
  */
 public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
+    /** Name for the request attribute via which we inject rich-type (e.g. file bean) request parameters for the action bean. */
+    public static final String RICH_TYPE_REQUEST_PARAMS_ATTR_NAME = "RICH_TYPE_REQUEST_PARAMS";
+
     /**
      * test if CSV output contains collection resource for a folder.
-     * 
+     *
      * @throws Exception
      *             if test fails
      */
@@ -72,7 +92,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test if CSV output contains attribute elements Assumption: This test will work for only cases when content does not include
      * comma (,). For simplicity of test case, this is preferred.
-     * 
+     *
      * @throws Exception
      *             if test fails
      */
@@ -236,7 +256,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
     /**
      * test when found vocabulary identifier is requested.
-     * 
+     *
      * @throws Exception
      *             if test fails
      */
@@ -253,7 +273,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
     /**
      * test when found vocabulary concept is requested.
-     * 
+     *
      * @throws Exception
      *             if test fails
      */
@@ -271,7 +291,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
     /**
      * test when vocabulary identifier is null.
-     * 
+     *
      * @throws Exception
      *             if test fails
      */
@@ -298,7 +318,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
     /**
      * test if not found vocabulary identifier is requested.
-     * 
+     *
      * @throws Exception
      *             if test fails
      */
@@ -326,7 +346,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
     /**
      * test if not found vocabulary set is requested.
-     * 
+     *
      * @throws Exception
      *             if test fails
      */
@@ -354,7 +374,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
     /**
      * test if not found vocabulary concept is requested.
-     * 
+     *
      * @throws Exception
      *             if test fails
      */
@@ -379,11 +399,408 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
             Assert.assertTrue("Incorrect error type", ((ErrorActionBean.ErrorType) errorParameters
                     .get(ErrorActionBean.ERROR_TYPE_KEY)).equals(ErrorActionBean.ErrorType.NOT_FOUND_404));
         }
-    }
+    }// end of test step testNotFoundVocabularyConcept
+
+    /**
+     * test when an CSV file is uploaded for non-working copy folder Note: all success conditions are tested in service test, steps
+     * are not repeated here. See: CSVVocabularyImportServiceTest
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadCsvToNotWorkingCopy() throws Exception {
+        try {
+            uploadFileToNotWorkingCopy("uploadCsv");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "Vocabulary should be in working copy status", se.getMessage());
+        }
+    }// end of test step testUploadCsvToNotWorkingCopy
+
+    /**
+     * test when an CSV file is uploaded for non-authenticated user copy folder
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadCsvForNotAuthenticatedUser() throws Exception {
+        try {
+            uploadFileForNotAuthenticatedUser("uploadCsv");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "User must be logged in", se.getMessage());
+        }
+    }// end of test step testUploadCsvForNotAuthenticatedUser
+
+    /**
+     * test when an CSV file is uploaded for not-owned user copy folder
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadCsvForNotOwnedUser() throws Exception {
+        try {
+            uploadFileForNotOwnedUser("uploadCsv");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "Illegal user for viewing this working copy", se.getMessage());
+        }
+    }// end of test step testUploadCsvForNotOwnedUser
+
+    /**
+     * test when a null CSV file is uploaded
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadNullCsv() throws Exception {
+        try {
+            uploadNullFile("uploadCsv");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "You should upload a file", se.getMessage());
+        }
+    }// end of test step testUploadNullCsv
+
+    /**
+     * test when a empty name file us uploaded for CSV import.
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadCsvWithEmptyName() throws Exception {
+        try {
+            uploadEmptyNameFile("uploadCsv");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "File should be a CSV file", se.getMessage());
+        }
+    } // end of test step testUploadCsvWithEmptyName
+
+    /**
+     * test when a null CSV file is uploaded
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadCsvWithNotCsvExtension() throws Exception {
+        try {
+            uploadFileWithEnvExtension("uploadCsv");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "File should be a CSV file", se.getMessage());
+        }
+    }// end of test step testUploadCsvWithNotCsvExtension
+
+    /**
+     * test when an RDF file is uploaded for non-working copy folder Note: all success conditions are tested in service test, steps
+     * are not repeated here. See: RDFVocabularyImportServiceTest
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadRdfToNotWorkingCopy() throws Exception {
+        try {
+            uploadFileToNotWorkingCopy("uploadRdf");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "Vocabulary should be in working copy status", se.getMessage());
+        }
+    }// end of test step testUploadRdfToNotWorkingCopy
+
+    /**
+     * test when an RDF file is uploaded for non-authenticated user copy folder
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadRdfForNotAuthenticatedUser() throws Exception {
+        try {
+            uploadFileForNotAuthenticatedUser("uploadRdf");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "User must be logged in", se.getMessage());
+        }
+    }// end of test step testUploadRdfForNotAuthenticatedUser
+
+    /**
+     * test when an RDF file is uploaded for not-owned user copy folder
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadRdfForNotOwnedUser() throws Exception {
+        try {
+            uploadFileForNotOwnedUser("uploadRdf");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "Illegal user for viewing this working copy", se.getMessage());
+        }
+    }// end of test step testUploadRdfForNotOwnedUser
+
+    /**
+     * test when a null RDF file is uploaded
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadNullRdf() throws Exception {
+        try {
+            uploadNullFile("uploadRdf");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "You should upload a file", se.getMessage());
+        }
+    }// end of test step testUploadNullRdf
+
+    /**
+     * test when an empty name file is uploaded for RDF import.
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadRdfWithEmptyName() throws Exception {
+        try {
+            uploadEmptyNameFile("uploadRdf");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "File should be a RDF file", se.getMessage());
+        }
+    } // end of test step testUploadRdfWithEmptyName
+
+    /**
+     * test when a non rdf extension file is uploaded for RDF import.
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testUploadRdfWithNotRdfExtension() throws Exception {
+        try {
+            uploadFileWithEnvExtension("uploadRdf");
+            Assert.fail("Exception not received for not working copy folder bulk edit.");
+        } catch (StripesServletException e) {
+            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
+            ServiceException se = (ServiceException) e.getCause();
+            Assert.assertEquals("Exception Message is not correct", "File should be a RDF file", se.getMessage());
+        }
+    }// end of test step testUploadRdfWithNotRdfExtension
+
+    /*
+     * Upload a file with env extension.
+     */
+    private void uploadFileWithEnvExtension(String execute) throws Exception {
+        MockServletContext ctx = getServletContextWithProperyBinder();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        // set a user
+        DDUser user = new FakeUser();
+        user.authenticate("testUser", "testUser");
+        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
+        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
+        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
+        trip.addParameter("vocabularyFolder.workingCopy", "1");
+        Map<String, Object> richTypeRequestParams = new HashMap<String, Object>();
+        FileBean uploadedRdfFile = new FileBean(null, "something", "uploadedfile.env");
+        richTypeRequestParams.put("uploadedFileToImport", uploadedRdfFile);
+        trip.getRequest().setAttribute(RICH_TYPE_REQUEST_PARAMS_ATTR_NAME, richTypeRequestParams);
+        // call test method
+        trip.execute(execute);
+    }// end of method uploadFileWithEnvExtension
+
+    /*
+     * upload a file with no name
+     */
+    private void uploadEmptyNameFile(String execute) throws Exception {
+        MockServletContext ctx = getServletContextWithProperyBinder();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        // set a user
+        DDUser user = new FakeUser();
+        user.authenticate("testUser", "testUser");
+        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
+        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
+        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
+        trip.addParameter("vocabularyFolder.workingCopy", "1");
+        // Prepare rich-type (e.g. file bean) request parameters. These will be picked up by MyActionBeanPropertyBinder
+        // that has already been injected into the servlet context mock obtained above.
+        Map<String, Object> richTypeRequestParams = new HashMap<String, Object>();
+        FileBean uploadedRdfFile = new FileBean(null, "something", "");
+        richTypeRequestParams.put("uploadedFileToImport", uploadedRdfFile);
+        trip.getRequest().setAttribute(RICH_TYPE_REQUEST_PARAMS_ATTR_NAME, richTypeRequestParams);
+        // call test method
+        trip.execute(execute);
+    } // end of method uploadEmptyNameFile
+
+    /*
+     * uploads null file.
+     */
+    private void uploadNullFile(String execute) throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        // set a user
+        DDUser user = new FakeUser();
+        user.authenticate("testUser", "testUser");
+        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
+        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
+        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
+        trip.addParameter("vocabularyFolder.workingCopy", "1");
+        // call test method
+        trip.execute(execute);
+    }// end of method uploadNullFile
+
+    /*
+     * uploads a file for not-owned user copy folder
+     */
+    private void uploadFileForNotOwnedUser(String execute) throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        // set a user
+        DDUser user = new FakeUser();
+        user.authenticate("testUser2", "testUser2");
+        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
+        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
+        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
+        trip.addParameter("vocabularyFolder.workingCopy", "1");
+        // call test method
+        trip.execute(execute);
+    }// end of method uploadFileForNotOwnedUser
+
+    /*
+     * uploads file to non-working copy folder.
+     */
+    private void uploadFileToNotWorkingCopy(String execute) throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        // set a user
+        DDUser user = new FakeUser();
+        user.authenticate("testUser", "testUser");
+        trip.getRequest().getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
+        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
+        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
+        trip.addParameter("vocabularyFolder.workingCopy", "0");
+        // call test method
+        trip.execute(execute);
+    }// end of method uploadFileToNotWorkingCopy
+
+    /*
+     * upload a file for non-authenticated user copy folder
+     */
+    private void uploadFileForNotAuthenticatedUser(String execute) throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        trip.addParameter("vocabularyFolder.folderName", "csv_header_vs");
+        trip.addParameter("vocabularyFolder.identifier", "csv_header_vocab");
+        trip.addParameter("vocabularyFolder.workingCopy", "1");
+        // call test method
+        trip.execute(execute);
+    }// end of method uploadFileForNotAuthenticatedUser
 
     @Override
     protected String getSeedFilename() {
         return "seed-vocabularycsv.xml";
     }
 
-}
+    /**
+     * This method creates and returns a mock servlet context with a property finder to be used with file bean
+     *
+     * @return
+     */
+    private MockServletContext getServletContextWithProperyBinder() {
+        MockServletContext ctx = new MockServletContext("test");
+
+        Map<String, String> filterParams = new HashMap<String, String>();
+
+        filterParams.put("Interceptor.Classes", "net.sourceforge.stripes.integration.spring.SpringInterceptor");
+        filterParams.put("ActionResolver.Packages", "eionet.web.action");
+
+        filterParams.put("ActionBeanContext.Class", "eionet.web.DDActionBeanContext");
+        filterParams.put("ActionBeanPropertyBinder.Class",
+                "eionet.meta.web.action.VocabularyFolderActionBeanTest$MyActionBeanPropertyBinder");
+
+        ctx.addFilter(StripesFilter.class, "StripesFilter", filterParams);
+        ctx.addInitParameter("contextConfigLocation", "classpath:mock-spring-context.xml");
+
+        ctx.setServlet(DispatcherServlet.class, "StripesDispatcher", null);
+
+        ContextLoaderListener springContextLoader = new ContextLoaderListener();
+        springContextLoader.contextInitialized(new ServletContextEvent(ctx));
+        return ctx;
+    }// end of method getServletContextWithProperyBinder
+
+    /**
+     * Extension of {@link DefaultActionBeanPropertyBinder} in order to directly inject the proper file bean.
+     *
+     * @author Jaanus
+     */
+    public static class MyActionBeanPropertyBinder extends DefaultActionBeanPropertyBinder {
+
+        /**
+         * Default constructor.
+         */
+        public MyActionBeanPropertyBinder() {
+            super();
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see net.sourceforge.stripes.controller.DefaultActionBeanPropertyBinder#bind(net.sourceforge.stripes.action.ActionBean,
+         * net.sourceforge.stripes.action.ActionBeanContext, boolean)
+         */
+        @Override
+        public ValidationErrors bind(ActionBean bean, ActionBeanContext context, boolean validate) {
+
+            ValidationErrors validationErrors = super.bind(bean, context, validate);
+
+            if (bean != null && context != null) {
+                HttpServletRequest request = context.getRequest();
+                if (request != null) {
+                    Object o = request.getAttribute(RICH_TYPE_REQUEST_PARAMS_ATTR_NAME);
+                    if (o instanceof Map<?, ?>) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> richTypeRequestParams = (Map<String, Object>) o;
+                        for (Entry<String, Object> entry : richTypeRequestParams.entrySet()) {
+                            String paramName = entry.getKey();
+                            Object paramValue = entry.getValue();
+                            BeanUtil.setPropertyValue(paramName, bean, paramValue);
+                        }
+                    }
+                }
+            }
+            return validationErrors;
+        }
+    }// end of inner class MyActionBeanPropertyBinder
+
+}// end of test VocabularyFolderActionBean

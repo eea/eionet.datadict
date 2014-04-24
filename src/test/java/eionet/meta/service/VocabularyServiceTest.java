@@ -26,6 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -43,6 +44,7 @@ import org.junit.Test;
 import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
+
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
@@ -583,10 +585,10 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
      */
     @Test
     public void getValuedConceptsTest() throws ServiceException {
-        assertTrue(vocabularyService.getConceptsWithElementValue(1, 1).size() == 1);
-        assertTrue(vocabularyService.getConceptsWithElementValue(5, 1).size() == 1);
-        assertTrue(vocabularyService.getConceptsWithElementValue(1, 2).size() == 0);
-        assertTrue(vocabularyService.getConceptsWithElementValue(2, 1).size() == 0);
+        assertTrue("Concept size is not 4", vocabularyService.getConceptsWithElementValue(1, 1).size() == 4);
+        assertTrue("Concept size is not 1", vocabularyService.getConceptsWithElementValue(5, 1).size() == 1);
+        assertTrue("Concept size is not 0", vocabularyService.getConceptsWithElementValue(1, 2).size() == 0);
+        assertTrue("Concept size is not 0", vocabularyService.getConceptsWithElementValue(2, 1).size() == 0);
     }
 
     /**

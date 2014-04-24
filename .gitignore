@@ -10,3 +10,5 @@ target/
 /deploy.bat
 /local.properties
 Makefile
+/.idea
+/datadict.iml

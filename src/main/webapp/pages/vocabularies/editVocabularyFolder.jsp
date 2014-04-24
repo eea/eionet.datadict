@@ -13,6 +13,67 @@
         ( function($) {
             $(document).ready(function() {
 
+            	$("#uploadCSVLink").click(function() {
+                    $('#uploadCSVDialog').dialog('open');
+                    return false;
+                });
+
+            	$("#purgeVocabularyData").click(function() {
+            		if ($('input#purgeVocabularyData').is(':checked')) {
+	                   alert("If you check this option all data will be deleted! If you are not sure about this, please uncheck it!");
+	                   $('input#purgeBoundElements').removeAttr("disabled");
+            		}
+            		else{
+            		   $('input#purgeBoundElements').attr("disabled", true);
+            		   $('input#purgeBoundElements').attr("checked", false);
+            		}
+                    return true;
+                });
+
+                $("#rdfPurgeVocabularyData").click(function() {
+                    if ($('input#rdfPurgeVocabularyData').is(':checked')) {
+                        alert("If you check this option all data will be deleted! If you are not sure about this, please uncheck it!");
+                    }
+                    return true;
+                });
+
+                $('#uploadCSVDialog').dialog({
+                    autoOpen: false,
+                    width: 500
+                });
+
+                $("#closeUploadCSVDialog").click(function() {
+                    $('#uploadCSVDialog').dialog("close");
+                    return true;
+                });
+
+                $("#uploadRDFLink").click(function() {
+                    $('#uploadRDFDialog').dialog('open');
+                    return false;
+                });
+
+                $('#uploadRDFDialog').dialog({
+                    autoOpen: false,
+                    width: 500,
+                    closeOnEscape: false,
+                    open: function(event, ui) { $(".ui-dialog-titlebar-close").hide();}
+                });
+
+                $("#closeUploadRDFDialog").click(function() {
+                    $('#uploadRDFDialog').dialog("close");
+                    return true;
+                });
+
+                $("#uploadRdf").click(function(){
+                    $('input#uploadRdf').attr("disabled", true);
+                    $('input#closeUploadRDFDialog').attr("disabled", true);
+                    $('#spinningImage').show();
+                    alert("This operation can take several minutes depending on size of RDF file, please do not press back button of your browser!");
+                    //$("#uploadRDFForm").attr('action', 'uploadRdf').submit();
+                    $("#uploadRDFForm").submit();
+                    return true;
+                });
+
                 $(".folderChoice").click(function() {
                     handleFolderChoice();
                 });
@@ -80,8 +141,6 @@
             }
         }
 
-
-
         // ]]>
 
         </script>
@@ -103,7 +162,13 @@
                 </li>
                 <c:if test="${actionBean.userWorkingCopy}">
           <li>
-            <a href="#" id="addNewConceptLink">Add new concept</a>
+              <a href="#" id="addNewConceptLink">Add new concept</a>
+          </li>
+          <li>
+              <a href="#" id="uploadCSVLink">Upload CSV</a>
+          </li>
+          <li>
+              <a href="#" id="uploadRDFLink">Upload RDF</a>
           </li>
         </c:if>
                 <li>
@@ -412,7 +477,6 @@
                     </c:if>
 
                     <div>
-
                         <stripes:hidden name="vocabularyFolder.workingCopy" />
                         <stripes:hidden name="vocabularyFolder.id" />
                         <stripes:hidden name="vocabularyFolder.identifier" />
@@ -491,6 +555,78 @@
                 </stripes:form>
             </div>
         </c:forEach>
+
+	    <%-- The upload CSV dialog. Hidden unless activated. --%>
+	    <div id="uploadCSVDialog" title="Upload CSV">
+	        <stripes:form beanclass="${actionBean.class.name}" method="post">
+	        	<stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+
+	            <div class="note-msg">
+                    CSV Import
+                    <br><br>The CSV file should contain a header row for element names and data rows for concepts.
+                    <br>It is strongly recommended to use an exported CSV file as a template for bulk editing. Columns and rows can be added to or deleted from the template file.
+                    <br>A concept can be ignored by prepending a double-slash '//' to the concept row in the CSV
+                    <ul>
+                        Notes:
+                        <li>If the header row contains unknown elements the import will aborted and data will be roll-backed</li>
+                        <li>Erroneous concept rows are ignored, valid data rows are still imported</li>
+                        <li>Successful import cannot be undone (unless "undo checkout" is performed)</li>
+                        <li>If a concept with the same identifier already exists in the vocabulary it will be overwritten</li>
+                        <li>"Purge Vocabulary" option deletes all the vocabulary concepts before import</li>
+                    </ul>
+	            </div>
+
+				<div>
+					<stripes:checkbox id="purgeVocabularyData" name="purgeVocabularyData"/><label for="purgeVocabularyData" class="question">Purge Vocabulary Data</label>
+				</div>
+				<div>
+					<stripes:checkbox id="purgeBoundElements" name="purgeBoundElements" disabled="true"/><label for="purgeBoundElements" class="question">Purge Bound Elements</label>
+				</div>
+	            <stripes:file name="uploadedFileToImport" id="fileToUpload" size="40" accept="text/csv" title="Select a .csv file to import"/>
+	            <stripes:submit name="uploadCsv" value="Upload"/>
+	            <input type="button" id="closeUploadCSVDialog" value="Cancel"/>
+
+	        </stripes:form>
+	    </div>
+
+	    <%-- The upload RDF dialog. Hidden unless activated. --%>
+	    <div id="uploadRDFDialog" title="Upload RDF">
+	        <stripes:form id="uploadRDFForm" beanclass="${actionBean.class.name}" method="post" action="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/uploadRdf">
+	        	<stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                <div class="note-msg">
+				    <strong>Note</strong>
+				       <ul>
+				          <li>With this operation, contents of RDF file will be imported into vocabulary folder.</li>
+				          <li>Only a working copy can be updated with a RDF file upload.</li>
+                          <li>If user select "Purge Per Predicate" option. All seen predicates will be removed from vocabulary.</li>
+                          <li>If user select "Purge All Vocabulary Data" option. All data will be removed from vocabulary.</li>
+                          <li>Once import is successful, operation cannot be undone. If an error occurs during import, then all data will be roll-backed.</li>
+				       </ul>
+				</div>
+
+                <div>
+                    <stripes:radio id="rdfDontPurge" name="rdfPurgeOption" value="1"/><label for="rdfDontPurge" class="question">Don't purge vocabulary data</label>
+                </div>
+                <div>
+                    <stripes:radio id="rdfPurgePerPredicate" name="rdfPurgeOption" value="2"/><label for="rdfPurgePerPredicate" class="question">Purge Per Predicate</label>
+                </div>
+                <div>
+                    <stripes:radio id="rdfPurgeVocabularyData" name="rdfPurgeOption" value="3"/><label for="rdfPurgeVocabularyData" class="question">Purge All Vocabulary Data</label>
+                </div>
+
+	            <stripes:file name="uploadedFileToImport" id="fileToUpload" size="40"  title="Select a .rdf file to import"/>
+	            <stripes:submit id="uploadRdf" name="uploadRdf" value="Upload"/>
+	            <input type="button" id="closeUploadRDFDialog" value="Cancel"/>
+                <img id="spinningImage" src="<%=request.getContextPath()%>/images/indicator.gif" alt="Importing..." style="display: none;"/>
+
+	        </stripes:form>
+	    </div>
 
     </stripes:layout-component>
 

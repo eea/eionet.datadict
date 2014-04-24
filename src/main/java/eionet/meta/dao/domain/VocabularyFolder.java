@@ -21,6 +21,10 @@
 
 package eionet.meta.dao.domain;
 
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +35,9 @@ import java.util.List;
  */
 public class VocabularyFolder {
 
-    /** Properties. */
+    /**
+     * Properties.
+     */
     private int id;
     private String identifier;
     private String continuityId;
@@ -48,7 +54,9 @@ public class VocabularyFolder {
     private int folderId;
     private boolean notationsEqualIdentifiers;
 
-    /** Joined property - folder identifier. */
+    /**
+     * Joined property - folder identifier.
+     */
     private String folderName;
     private String folderLabel;
 
@@ -355,7 +363,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param enforceNotationToId do notations equal identifiers
+     * @param enforceNotationToId the notationsEqualIdentifiers to set
      */
     public void setNotationsEqualIdentifiers(boolean enforceNotationToId) {
         this.notationsEqualIdentifiers = enforceNotationToId;
@@ -368,5 +376,20 @@ public class VocabularyFolder {
     public void setConcepts(List<VocabularyConcept> concepts) {
         this.concepts = concepts;
     }
+
+    /**
+     * Utility method to return baseUri for folder context.
+     *
+     * @param vf Vocabulary folder
+     * @return base uri
+     */
+    public static String getBaseUri(VocabularyFolder vf) {
+        return StringUtils.isNotEmpty(vf.getBaseUri()) ? vf.getBaseUri() : Props
+                .getRequiredProperty(PropsIF.DD_URL)
+                + "/vocabulary/"
+                + vf.getFolderName()
+                + "/"
+                + vf.getIdentifier() + "/";
+    } //end of static method getBaseUri
 
 }

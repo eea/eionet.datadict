@@ -51,28 +51,28 @@ public class VocabularyXmlWriter {
     private static final String ENCODING = "UTF-8";
 
     /** RDF namespace prefix. */
-    private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    public static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
     /** RDFS namespace prefix. */
-    private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
+    public static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 
     /** SKOS namespace prefix. */
-    private static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
+    public static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
 
     /** XML namespace prefix. */
-    private static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
+    public static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
 
     /** OWL namespace prefix. */
-    private static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
+    public static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
 
     /** DCTYPE namespace prefix. */
-    private static final String DCTYPE_NS = "http://purl.org/dc/dcmitype/";
+    public static final String DCTYPE_NS = "http://purl.org/dc/dcmitype/";
 
     /** DCTERMS namespace prefix. */
-    private static final String DCTERMS_NS = "http://purl.org/dc/terms/";
+    public static final String DCTERMS_NS = "http://purl.org/dc/terms/";
 
     /** DD namespace prefix. */
-    private static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
+    public static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
 
     /** default namespaces that are present in all vocabulary RDFs. */
     private static final HashMap<String, String> DEFAULT_NAMESPACES = new HashMap<String, String>();
@@ -104,6 +104,17 @@ public class VocabularyXmlWriter {
         DEFAULT_NAMESPACES.put("owl", OWL_NS);
         DEFAULT_NAMESPACES.put("dctype", DCTYPE_NS);
         DEFAULT_NAMESPACES.put("dcterms", DCTERMS_NS);
+    }
+
+    /**
+     * Escapes IRI's reserved characters in the given URL string.
+     *
+     * @param url
+     *            is a string.
+     * @return escaped URI
+     */
+    public static String escapeIRI(String url) {
+        return StringEncoder.encodeToIRI(url);
     }
 
     /**
@@ -176,11 +187,9 @@ public class VocabularyXmlWriter {
 
         if (siteCodeType) {
             writer.writeNamespace("dd", DD_SCHEMA_NS);
-        } else {
         }
         writer.writeDefaultNamespace(commonElemsUri);
-        writer.writeAttribute("xml", XML_NS, "base", StringEncoder.encodeToIRI(contextRoot));
-
+        writer.writeAttribute("xml", XML_NS, "base", escapeIRI(contextRoot));
     }
 
     /**
@@ -239,10 +248,15 @@ public class VocabularyXmlWriter {
      * Writes vocabulary folder XML.
      *
      * @param folderContextRoot
+     *            vocabulary base uri
      * @param vocabularyContextRoot
+     *            vocabulary set base uri
      * @param vocabularyFolder
+     *            vocabulary
      * @param vocabularyConcepts
+     *            concepts of vocabulary
      * @throws XMLStreamException
+     *             when an error occurs during write operation
      */
     public void writeVocabularyFolderXml(String folderContextRoot, String vocabularyContextRoot,
             VocabularyFolder vocabularyFolder, List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
@@ -326,7 +340,8 @@ public class VocabularyXmlWriter {
                             writer.writeEmptyElement(elem.getIdentifier());
                             writer.writeAttribute("rdf", RDF_NS, "resource", elem.getRelatedConceptUri());
                         } else if (StringUtils.isNotEmpty(elem.getAttributeValue())) {
-                            if (StringUtils.isNotEmpty(elem.getDatatype()) && elem.getDatatype().equalsIgnoreCase("reference")) {
+                            if (StringUtils.isNotEmpty(elem.getRelatedConceptUri()) && StringUtils.isNotEmpty(elem.getDatatype())
+                                    && elem.getDatatype().equalsIgnoreCase("reference")) {
                                 writer.writeEmptyElement(elem.getIdentifier());
                                 writer.writeAttribute("rdf", RDF_NS, "resource", elem.getRelatedConceptUri());
                             } else {
@@ -334,10 +349,9 @@ public class VocabularyXmlWriter {
                                 if (StringUtils.isNotEmpty(elem.getAttributeLanguage())) {
                                     writer.writeAttribute("xml", XML_NS, "lang", elem.getAttributeLanguage());
                                 }
-                                if (StringUtils.isNotEmpty(elem.getDatatype()) && !(elem.getDatatype().equalsIgnoreCase("string"))) {
+                                if (StringUtils.isNotEmpty(elem.getDatatype()) && !elem.getDatatype().equalsIgnoreCase("string")) {
                                     writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(elem.getDatatype()));
                                 }
-
                                 writer.writeCharacters(elem.getAttributeValue());
                                 writer.writeEndElement();
                             }

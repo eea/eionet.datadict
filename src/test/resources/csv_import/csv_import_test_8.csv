@@ -1,0 +1,4 @@
+"URI","Label","Definition","Notation","StartDate","EndDate","AnotherCode","","geo:lat","skos:definition@de","skos:definition@de","skos:definition@en","skos:definition@pl","skos:prefLabel@bg","skos:prefLabel@bg","skos:prefLabel@en","skos:prefLabel@et","skos:prefLabel@pl"
+"http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab/csv_test_concept_1","_updated","_updated",,"2014-02-17",,,,,,,,"_updated","_updated","_updated","_updated","_updated",
+"http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab/csv_test_concept_2","_updated","_updated",,"2014-02-17",,,,,"_updated","_updated",,"_updated",,"_updated",,,
+"http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab/csv_test_concept_3","_updated","_updated",,"2014-02-17",,"_updated","_updated","_updated","_updated",,"_updated","_updated","_updated","_updated","_updated",,"_updated"

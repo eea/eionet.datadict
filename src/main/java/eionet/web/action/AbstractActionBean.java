@@ -52,9 +52,11 @@ public abstract class AbstractActionBean implements ActionBean {
 
     /** Logger. */
     protected static final Logger LOGGER = Logger.getLogger(AbstractActionBean.class);
-
+    /** Tag for system messages. */
     private static final String SYSTEM_MESSAGES = "systemMessages";
+    /** Tag for caution messages. */
     private static final String CAUTION_MESSAGES = "cautionMessages";
+    /** Tag for warning messages. */
     private static final String WARNING_MESSAGES = "warningMessages";
 
     /** DD ActionBeanContext extension. */
@@ -125,7 +127,7 @@ public abstract class AbstractActionBean implements ActionBean {
     /**
      * Returns site URL beginning part. It is configured in the datadict.properties file.
      *
-     * @return
+     * @return site prefix
      */
     public String getSitePrefix() {
         return Props.getProperty(PropsIF.JSP_URL_PREFIX);
@@ -142,7 +144,7 @@ public abstract class AbstractActionBean implements ActionBean {
 
     /**
      *
-     * @return
+     * @return user name
      */
     public String getUserName() {
         DDUser user = getUser();
@@ -152,7 +154,7 @@ public abstract class AbstractActionBean implements ActionBean {
     /**
      * Method returns login url.
      *
-     * @return String.
+     * @return login url
      */
     public String getLoginUrl() {
         return SecurityUtil.getLoginURL(getContext().getRequest());
@@ -178,7 +180,7 @@ public abstract class AbstractActionBean implements ActionBean {
 
     /**
      *
-     * @return
+     * @return if it post request or not.
      */
     public boolean isPostRequest() {
         return getContext().getRequest().getMethod().equalsIgnoreCase("POST");
@@ -186,7 +188,7 @@ public abstract class AbstractActionBean implements ActionBean {
 
     /**
      *
-     * @return
+     * @return if it is head or get request.
      */
     public boolean isGetOrHeadRequest() {
         String method = getContext().getRequest().getMethod().toUpperCase();
@@ -195,7 +197,7 @@ public abstract class AbstractActionBean implements ActionBean {
 
     /**
      *
-     * @return
+     * @return url binding.
      */
     public String getUrlBinding() {
         if (urlBinding == null) {
@@ -209,7 +211,7 @@ public abstract class AbstractActionBean implements ActionBean {
 
     /**
      *
-     * @return
+     * @return context path.
      */
     public String getContextPath() {
         if (contextPath == null) {
@@ -220,7 +222,7 @@ public abstract class AbstractActionBean implements ActionBean {
 
     /**
      *
-     * @return
+     * @return if there is validation error or not.
      */
     public boolean isValidationErrors() {
         return MapUtils.isNotEmpty(getContext().getValidationErrors());

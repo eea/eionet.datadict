@@ -9,7 +9,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
- * The Original Code is Content Registry 3
+ * The Original Code is Data Dictionary
  *
  * The Initial Owner of the Original Code is European Environment
  * Agency. Portions created by TripleDev or Zero Technologies are Copyright
@@ -37,15 +37,19 @@ import eionet.meta.dao.domain.VocabularyConcept;
 
 /**
  * Vocabulary CSV output helper.
- *
+ * 
  * @author Juhan Voolaid
  */
 public final class VocabularyCSVOutputHelper {
 
     /**
-     * how many values are takend from vocabulary concept.
+     * how many values are taken from vocabulary concept.
      */
-    private static final int CONCEPT_ENTRIES_COUNT = 6;
+    public static final int CONCEPT_ENTRIES_COUNT = 6;
+    /**
+     * BOM byte array length.
+     */
+    public static final int BOM_BYTE_ARRAY_LENGTH = 3;
 
     /**
      * Prevent public initialization.
@@ -56,7 +60,7 @@ public final class VocabularyCSVOutputHelper {
 
     /**
      * Writes CSV to output stream.
-     *
+     * 
      * @param out
      *            outputstream
      * @param uriPrefix
@@ -117,6 +121,7 @@ public final class VocabularyCSVOutputHelper {
             // add extra fields
             for (Triple<String, String, Integer> row : attributesMeta) {
                 String elemName = row.getLeft();
+
                 attributeElems = getDataElementValuesByNameAndLang(elemName, row.getCentral(), c.getElementAttributes());
 
                 int sizeOfAttributeElems = 0;
@@ -125,6 +130,8 @@ public final class VocabularyCSVOutputHelper {
                     for (int j = 0; j < sizeOfAttributeElems; j++) {
                         DataElement e = attributeElems.get(j);
                         if (e.isRelationalElement()) {
+                            value = e.getRelatedConceptUri();
+                        } else if (StringUtils.isNotEmpty(e.getRelatedConceptIdentifier()) && StringUtils.isNotEmpty(e.getDatatype()) && e.getDatatype().equalsIgnoreCase("reference")) {
                             value = folderContextRoot + e.getRelatedConceptIdentifier();
                         } else {
                             value = e.getAttributeValue();
@@ -139,6 +146,7 @@ public final class VocabularyCSVOutputHelper {
                 for (int j = sizeOfAttributeElems; j < maximumNumberOfElements; j++) {
                     entries[CONCEPT_ENTRIES_COUNT + elemPos + j] = null;
                 }
+
                 elemPos += maximumNumberOfElements;
             }
             writer.writeNext(entries);
@@ -149,35 +157,33 @@ public final class VocabularyCSVOutputHelper {
 
     /**
      * Writes utf-8 BOM in the given writer.
-     *
+     * 
      * @param out
      *            current outputstream
      * @throws IOException
      *             if connection fails
      */
     private static void addBOM(OutputStream out) throws IOException {
-        byte[] bom = new byte[] {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-
-        for (byte b : bom) {
+        byte[] bomByteArray = getBomByteArray();
+        for (byte b : bomByteArray) {
             out.write(b);
         }
-
     }
 
     /**
      * finds list of data element values by name.
-     *
+     * 
      * @param elemName
      *            element name to be looked for
      * @param elems
      *            list containing element definitions with values
      * @return list of dataelement objects containing values
      */
-    private static List<DataElement> getDataElementValuesByName(String elemName, List<List<DataElement>> elems) {
+    public static List<DataElement> getDataElementValuesByName(String elemName, List<List<DataElement>> elems) {
         for (List<DataElement> elem : elems) {
             if (elem != null && elem.size() > 0) {
                 DataElement elemMeta = elem.get(0);
-                if (elemMeta != null && elemMeta.getIdentifier().equals(elemName)) {
+                if (elemMeta != null && StringUtils.equals(elemMeta.getIdentifier(), elemName)) {
                     return elem;
                 }
             }
@@ -187,7 +193,7 @@ public final class VocabularyCSVOutputHelper {
 
     /**
      * Finds list of data element values by name and language.
-     *
+     * 
      * @param elemName
      *            element name to be looked for
      * @param lang
@@ -196,12 +202,11 @@ public final class VocabularyCSVOutputHelper {
      *            list containing element definitions with values
      * @return list of dataelement objects containing values
      */
-    private static List<DataElement>
-            getDataElementValuesByNameAndLang(String elemName, String lang, List<List<DataElement>> elems) {
+    public static List<DataElement> getDataElementValuesByNameAndLang(String elemName, String lang, List<List<DataElement>> elems) {
         boolean isLangEmpty = StringUtils.isEmpty(lang);
         ArrayList<DataElement> elements = new ArrayList<DataElement>();
         for (List<DataElement> elem : elems) {
-            if (elem == null || elem.size() < 1 || !elem.get(0).getIdentifier().equals(elemName)) { // check first one
+            if (elem == null || elem.size() < 1 || !StringUtils.equals(elem.get(0).getIdentifier(), elemName)) { // check first one
                 continue;
             }
             for (DataElement elemMeta : elem) {
@@ -212,18 +217,18 @@ public final class VocabularyCSVOutputHelper {
                     break;
                 }
             }
-            return elements;
+            // return elements;
         }
-        return null;
-    } // end of method getDataElementValuesByNameAndLang
+        return elements;
+    }// end of method getDataElementValuesByNameAndLang
 
     /**
-     * Adds pre-defined entries to the array.
-     *
+     * Adds pre-defined entries to the array. 
+     * 
      * @param entries
      *            array for CSV output
      */
-    private static void addFixedEntryHeaders(String[] entries) {
+    public static void addFixedEntryHeaders(String[] entries) {
         entries[0] = "URI";
         entries[1] = "Label";
         entries[2] = "Definition";
@@ -231,4 +236,13 @@ public final class VocabularyCSVOutputHelper {
         entries[4] = "StartDate";
         entries[5] = "EndDate";
     }
+
+    /**
+     * Returns bom byte array.
+     *
+     * @return bom byte array
+     */
+    public static byte[] getBomByteArray() {
+        return new byte[] {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+    } // end of method getBomByteArray
 }

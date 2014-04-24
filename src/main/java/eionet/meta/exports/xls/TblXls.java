@@ -50,9 +50,9 @@ public class TblXls extends Xls implements CachableIF {
     private HSSFSheet dropDownReferencesHiddenSheet = null;
     /** Hidden sheet row index. */
     private int dropDownReferencesHiddenSheetNewIndex = 0;
-    /** ID for this Xls (it can be table id or dataset id) */
+    /** ID for this Xls (it can be table id or dataset id). */
     protected String xlsId = null;
-    /** If excel will have drop downs or not */
+    /** If excel will have drop downs or not. */
     protected boolean withDropDown = false;
 
     /**
@@ -64,9 +64,9 @@ public class TblXls extends Xls implements CachableIF {
     }
 
     /**
-     * 
+     *
      * Class constructor.
-     * 
+     *
      * @param conn
      */
     public TblXls(Connection conn) {
@@ -76,9 +76,9 @@ public class TblXls extends Xls implements CachableIF {
     }
 
     /**
-     * 
+     *
      * Class constructor.
-     * 
+     *
      * @param searchEngine
      * @param os
      */
@@ -91,7 +91,7 @@ public class TblXls extends Xls implements CachableIF {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.exports.xls.XlsIF#create(java.lang.String)
      */
     @Override
@@ -100,7 +100,7 @@ public class TblXls extends Xls implements CachableIF {
     }
 
     /**
-     * 
+     *
      * @param xlsId
      * @param caching
      * @throws Exception
@@ -123,7 +123,7 @@ public class TblXls extends Xls implements CachableIF {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.exports.xls.XlsIF#write()
      */
     @Override
@@ -132,7 +132,7 @@ public class TblXls extends Xls implements CachableIF {
     }
 
     /**
-     * 
+     *
      * @param caching
      * @throws Exception
      */
@@ -148,6 +148,7 @@ public class TblXls extends Xls implements CachableIF {
 
     /**
      * Create empty sheet for table
+     *
      * @param tblID
      * @throws Exception
      */
@@ -166,7 +167,7 @@ public class TblXls extends Xls implements CachableIF {
         this.dropDownReferencesHiddenSheetName = Props.getProperty(PropsIF.XLS_DROPDOWN_FXV_SHEET);
         this.dropDownReferencesHiddenSheetNewIndex = 0;
         this.dropDownReferencesHiddenSheet = wb.createSheet(dropDownReferencesHiddenSheetName);
-        this.wb.setSheetHidden(this.wb.getNumberOfSheets() - 1, true);// hide references sheet
+        this.wb.setSheetHidden(this.wb.getNumberOfSheets() - 1, true); // hide references sheet
         HSSFRow row = this.dropDownReferencesHiddenSheet.createRow(this.dropDownReferencesHiddenSheetNewIndex);
         HSSFCell cell = row.createCell(0);
         cell.setCellValue("Please do not delete or modify this sheet!!! It is used for drop-down items in this file for your convenience.");
@@ -174,7 +175,7 @@ public class TblXls extends Xls implements CachableIF {
     }
 
     /**
-     * 
+     *
      * @param tblID
      * @throws Exception
      */
@@ -198,7 +199,7 @@ public class TblXls extends Xls implements CachableIF {
     }
 
     /**
-     * 
+     *
      * @param tbl
      * @throws Exception
      */
@@ -214,7 +215,7 @@ public class TblXls extends Xls implements CachableIF {
     }
 
     /**
-     * 
+     *
      * @param elm
      * @param index
      * @throws Exception
@@ -249,18 +250,18 @@ public class TblXls extends Xls implements CachableIF {
                 HSSFName namedCell = wb.createName();
                 namedCell.setNameName(name);
                 String endColumnLetter = CellReference.convertNumToColString(fxvs.size());
-                int rowNum = dropDownReferencesHiddenSheetNewIndex + 1;// row num is one greater than index
+                int rowNum = dropDownReferencesHiddenSheetNewIndex + 1; // row num is one greater than index
                 // reference starts from column B because column A is used as a label
                 StringBuilder sb = new StringBuilder();
-                sb.append("'").append(dropDownReferencesHiddenSheetName).append("'!");// reference sheet name
-                sb.append("$B$").append(rowNum).append(":");// starting cell ($column$row)
-                sb.append("$").append(endColumnLetter).append("$").append(rowNum);// end cell
+                sb.append("'").append(dropDownReferencesHiddenSheetName).append("'!"); // reference sheet name
+                sb.append("$B$").append(rowNum).append(":"); // starting cell ($column$row)
+                sb.append("$").append(endColumnLetter).append("$").append(rowNum); // end cell
                 namedCell.setRefersToFormula(sb.toString());
 
                 // set constraints and drop-down items to current sheet
                 DVConstraint constraintForElement = DVConstraint.createFormulaListConstraint(name);
-                CellRangeAddressList fixedValuesForElement = new CellRangeAddressList(1, Short.MAX_VALUE, index, index);// span all
-                                                                                                                        // column
+                CellRangeAddressList fixedValuesForElement = new CellRangeAddressList(1, Short.MAX_VALUE, index, index); // span all
+                                                                                                                         // column
                 HSSFDataValidation dataValidation = new HSSFDataValidation(fixedValuesForElement, constraintForElement);
                 dataValidation.setSuppressDropDownArrow(false);
                 sheet.addValidationData(dataValidation);
@@ -273,7 +274,7 @@ public class TblXls extends Xls implements CachableIF {
 
     /**
      * Set schema urls
-     * 
+     *
      * @throws Exception
      *             when an error occurs in super class method
      */
@@ -282,7 +283,7 @@ public class TblXls extends Xls implements CachableIF {
     }
 
     /**
-     * 
+     *
      * @param title
      * @param index
      */
@@ -294,7 +295,7 @@ public class TblXls extends Xls implements CachableIF {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.exports.xls.XlsIF#getName()
      */
     @Override
@@ -304,7 +305,7 @@ public class TblXls extends Xls implements CachableIF {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.exports.CachableIF#updateCache(java.lang.String)
      */
     @Override
@@ -335,7 +336,7 @@ public class TblXls extends Xls implements CachableIF {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.exports.CachableIF#clearCache(java.lang.String)
      */
     @Override
@@ -349,7 +350,7 @@ public class TblXls extends Xls implements CachableIF {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.exports.CachableIF#setCachePath(java.lang.String)
      */
     @Override
@@ -365,7 +366,7 @@ public class TblXls extends Xls implements CachableIF {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.exports.CachableIF#isCached(java.lang.String)
      */
     @Override
@@ -422,7 +423,7 @@ public class TblXls extends Xls implements CachableIF {
     }
 
     /**
-     * 
+     *
      * @param id
      * @param fn
      * @param conn
@@ -467,7 +468,7 @@ public class TblXls extends Xls implements CachableIF {
     }
 
     /**
-     * 
+     *
      * @param id
      * @param conn
      * @return

@@ -24,6 +24,10 @@ package eionet.meta.dao.domain;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * Vocabulary concept.
  *
@@ -46,7 +50,6 @@ public class VocabularyConcept {
     /** Attributes. */
     private List<List<DataElement>> elementAttributes;
 
-
     /** vocabulary Label. */
     private String vocabularyLabel;
 
@@ -55,7 +58,6 @@ public class VocabularyConcept {
 
     /** vocabulary Set label. */
     private String vocabularySetLabel;
-
     /**
      * @return the id
      */
@@ -176,9 +178,15 @@ public class VocabularyConcept {
         this.elementAttributes = elementAttributes;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
-        return getIdentifier();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("id", id).append("identifier", identifier)
+                .append("label", label).append("definition", definition).append("notation", notation).toString();
     }
 
     public int getVocabularyId() {
@@ -213,4 +221,26 @@ public class VocabularyConcept {
         this.vocabularySetId = vocabularySetId;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+
+        VocabularyConcept rhs = (VocabularyConcept) obj;
+        return new EqualsBuilder().append(id, rhs.id).append(identifier, rhs.identifier).append(label, rhs.label)
+                .append(definition, rhs.definition).append(notation, rhs.notation).isEquals();
+    }
 }

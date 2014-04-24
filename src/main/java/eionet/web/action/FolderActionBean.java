@@ -21,20 +21,6 @@
 
 package eionet.web.action;
 
-import java.net.HttpURLConnection;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ErrorResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-
-import org.apache.commons.lang.StringUtils;
-
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -47,6 +33,16 @@ import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ErrorResolution;
+import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.StreamingResolution;
+import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+
+import javax.servlet.http.HttpServletResponse;
+import java.net.HttpURLConnection;
+import java.util.List;
 
 /**
  * Folder action bean. Folder contains collection of vocabularies.
@@ -56,15 +52,21 @@ import eionet.util.PropsIF;
 @UrlBinding("/vocabularyfolder/{folder.identifier}/{$event}")
 public class FolderActionBean extends AbstractActionBean {
 
-    /** Vocabulary service. */
+    /**
+     * Vocabulary service.
+     */
     @SpringBean
     private IVocabularyService vocabularyService;
 
-    /** Site code service. */
+    /**
+     * Site code service.
+     */
     @SpringBean
     private ISiteCodeService siteCodeService;
 
-    /** Folder containing vocabularies. */
+    /**
+     * Folder containing vocabularies.
+     */
     private Folder folder;
 
     /**
@@ -111,12 +113,7 @@ public class FolderActionBean extends AbstractActionBean {
 
                         final List<? extends VocabularyConcept> finalConcepts = concepts;
 
-                        String vocabularyContextRoot =
-                                StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
-                                        .getRequiredProperty(PropsIF.DD_URL)
-                                        + "/vocabulary/"
-                                        + vocabularyFolder.getFolderName()
-                                        + "/" + vocabularyFolder.getIdentifier() + "/";
+                        String vocabularyContextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
                         xmlWriter.writeVocabularyFolderXml(folderContextRoot, vocabularyContextRoot, vocabularyFolder,
                                 finalConcepts);

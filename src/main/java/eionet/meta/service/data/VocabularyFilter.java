@@ -24,24 +24,30 @@ package eionet.meta.service.data;
 import eionet.meta.dao.domain.RegStatus;
 
 /**
- *
  * Filter for searching vocabularies.
  *
  * @author Kaido Laine
  */
 public class VocabularyFilter extends PagedRequest {
 
-
-    /** Text search value. */
+    /**
+     * Text search value.
+     */
     private String text;
 
-    /** filter by working copy status. */
+    /**
+     * filter by working copy status.
+     */
     private Boolean workingCopy;
 
-    /** text to be searched in the concepts of the vocabulary. */
+    /**
+     * text to be searched in the concepts of the vocabulary.
+     */
     private String conceptText;
 
-    /** vocabulary status. */
+    /**
+     * vocabulary status.
+     */
     private RegStatus status;
 
     /** if false perform full text search otherwise exact match .*/
@@ -51,7 +57,12 @@ public class VocabularyFilter extends PagedRequest {
      * if true results are search where one or more fields contain the text as a separate word.
      */
     private boolean wordMatch = false;
-
+	
+	/**
+     * filter by identifier
+     */
+    private String identifier;
+	
     public String getText() {
         return text;
     }
@@ -99,5 +110,16 @@ public class VocabularyFilter extends PagedRequest {
     public void setWordMatch(boolean wordMatch) {
         this.wordMatch = wordMatch;
     }
+	
+	public Boolean getWorkingCopy() {
+        return workingCopy;
+    }
 
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 }

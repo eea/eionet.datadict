@@ -55,4 +55,3 @@ public class BaseHandler extends DefaultHandler {
         this.user = user;
     }
 }
-

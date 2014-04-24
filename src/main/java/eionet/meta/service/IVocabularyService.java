@@ -272,6 +272,14 @@ public interface IVocabularyService {
     void updateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException;
 
     /**
+     * Updates vocabulary concept in non-transactional.
+     *
+     * @param vocabularyConcept
+     * @throws ServiceException if operation fails
+     */
+    void updateVocabularyConceptNonTransactional(VocabularyConcept vocabularyConcept) throws ServiceException;
+
+    /**
      * Updates vocabulary concept without updating attributes.
      *
      * @param vocabularyConcept
