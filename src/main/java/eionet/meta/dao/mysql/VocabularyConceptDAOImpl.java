@@ -21,25 +21,24 @@
 
 package eionet.meta.dao.mysql;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Vocabulary concept DAO.
@@ -568,7 +567,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         elem.setRelatedConceptVocabulary(rs.getString("RVOCIDENTIFIER"));
                         elem.setRelatedConceptIdentifier(rs.getString("RCONCEPTIDENTIFIER"));
                         elem.setRelatedConceptLabel(rs.getString("RCONCEPTLABEL"));
-                        //elem.setRelatedConceptBaseURI(rs.getString("RVOCBASE_URI"));
+                        elem.setRelatedConceptBaseURI(rs.getString("RVOCBASE_URI"));
                     }
                     // add Datatype - is used in RDF output
                     String dataType = rs.getString("DATATYPE");
