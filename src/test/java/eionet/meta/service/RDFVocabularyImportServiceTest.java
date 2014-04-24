@@ -629,14 +629,12 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // get initial values of concepts with attributes
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        // get initial values of data elements of this vocabulary folder
-        List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 
         // get reader for RDF file
         Reader reader = getReaderFromResource("rdf_import/rdf_import_test_7.rdf");
 
         // import RDF into database
-        List<String> logMessages = vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, false);
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, false);
         Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
@@ -665,6 +663,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         elem.setRelatedConceptLabel("rdf_test_concept_label_555");
         elem.setRelatedConceptVocabulary("rdf_header_vocab_2");
         elem.setRelatedConceptVocSet("rdf_header_vs");
+        elem.setRelatedConceptBaseURI("http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab_2/");
         elems.add(elem);
 
         dataElements.add(elems);
