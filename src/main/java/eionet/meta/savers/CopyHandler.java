@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eionet.meta.DDSearchEngine;
@@ -575,15 +576,15 @@ public class CopyHandler extends OldCopyHandler {
 
                    if (elementId != prevElemId) {
                        stmtInsertBinding.setInt(1, Integer.valueOf(newElmId));
-                       stmtInsertBinding.setInt(2,vocabularyFolderId);
+                       stmtInsertBinding.setInt(2, vocabularyFolderId);
                        stmtInsertBinding.execute();
                    }
                    Integer conceptId = rs.getInt("VOCABULARY_CONCEPT_ID");
 
                    if (conceptId != null) {
                        String value = rs.getString("ELEMENT_VALUE");
-                       String language = rs.getString("LANGUAGE");
-                       Integer relatedConceptId = (rs.getInt("RELATED_CONCEPT_ID") == 0 ? null : rs.getInt("RELATED_CONCEPT_ID")) ;
+                       String language = StringUtils.trimToNull(rs.getString("LANGUAGE"));
+                       Integer relatedConceptId = (rs.getInt("RELATED_CONCEPT_ID") == 0 ? null : rs.getInt("RELATED_CONCEPT_ID"));
                        String linkText = rs.getString("LINK_TEXT");
 
                        stmtInsertValue.setInt(1, Integer.valueOf(newElmId));
