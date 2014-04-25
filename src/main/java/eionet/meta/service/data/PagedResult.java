@@ -27,22 +27,24 @@ import org.displaytag.pagination.PaginatedList;
 import org.displaytag.properties.SortOrderEnum;
 
 /**
- * Abstract paged result object, meant to be used in dsiplay:table tag.
+ * Abstract paged result object, meant to be used in display:table tag.
  *
  * @author Juhan Voolaid
+ * @param <T>
+ *            Generic type
  */
 public abstract class PagedResult<T> implements PaginatedList {
-
+    /** List of items. */
     private List<T> items;
-
+    /** Page size. */
     private int pageSize;
-
+    /** Page number. */
     private int pageNumber;
-
+    /** Total number of items. */
     private int totalItems;
-
+    /** Sort property. */
     private String sortProperty;
-
+    /** Sort order. */
     private SortOrderEnum sortOrder;
 
     /**
@@ -56,8 +58,11 @@ public abstract class PagedResult<T> implements PaginatedList {
      * Class constructor.
      *
      * @param items
+     *            items
      * @param totalItems
+     *            total item number
      * @param pagedRequest
+     *            requested page
      */
     public PagedResult(List<T> items, int totalItems, PagedRequest pagedRequest) {
         this.items = items;
@@ -114,7 +119,7 @@ public abstract class PagedResult<T> implements PaginatedList {
     /**
      * Sets items.
      *
-     * @param items
+     * @param items items
      */
     public void setList(List<T> items) {
         this.items = items;

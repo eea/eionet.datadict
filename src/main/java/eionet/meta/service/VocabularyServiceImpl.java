@@ -21,6 +21,27 @@
 
 package eionet.meta.service;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import eionet.meta.DElemAttribute;
 import eionet.meta.DElemAttribute.ParentType;
 import eionet.meta.dao.DAOException;
@@ -48,26 +69,6 @@ import eionet.util.PropsIF;
 import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.web.action.ErrorActionBean;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Vocabulary service.
@@ -78,56 +79,38 @@ import java.util.Map;
 @Transactional
 public class VocabularyServiceImpl implements IVocabularyService {
 
-    /**
-     * Logger.
-     */
+    /** Logger. */
     protected static final Logger LOGGER = Logger.getLogger(VocabularyServiceImpl.class);
 
-    /**
-     * Vocabulary folder DAO.
-     */
+    /** Vocabulary folder DAO. */
     @Autowired
     private IVocabularyFolderDAO vocabularyFolderDAO;
 
-    /**
-     * Vocabulary concept DAO.
-     */
+    /** Vocabulary concept DAO. */
     @Autowired
     private IVocabularyConceptDAO vocabularyConceptDAO;
 
-    /**
-     * Site Code DAO.
-     */
+    /** Site Code DAO. */
     @Autowired
     private ISiteCodeDAO siteCodeDAO;
 
-    /**
-     * Attribute DAO.
-     */
+    /** Attribute DAO. */
     @Autowired
     private IAttributeDAO attributeDAO;
 
-    /**
-     * Folder DAO.
-     */
+    /** Folder DAO. */
     @Autowired
     private IFolderDAO folderDAO;
 
-    /**
-     * Data element DAO.
-     */
+    /** Data element DAO. */
     @Autowired
     private IDataElementDAO dataElementDAO;
 
-    /**
-     * namespace DAO.
-     */
+    /** Rdf namespace DAO. */
     @Autowired
-    private IRdfNamespaceDAO namespaceDAO;
+    private IRdfNamespaceDAO rdfNamespaceDAO;
 
-    /**
-     * special elements .
-     */
+    /** special elements . */
     private static EnumMap<RelationalElement, String> relationalElements;
 
     static {
@@ -342,7 +325,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
     /**
      * updates bound element values included related bound elements.
      *
-     * @param vocabularyConcept concept
+     * @param vocabularyConcept
+     *            concept
      */
     private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept) {
         List<DataElement> dataElementValues = new ArrayList<DataElement>();
@@ -388,8 +372,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * makes sure that the concepts are related in both sides (A related with B -> B related with A). Also when relation gets
      * deleted from one side, then we make sure to deleted it also from the other side of the relation.
      *
-     * @param vocabularyConcept Concept to be updated
-     * @param dataElementValues bound data elements with values
+     * @param vocabularyConcept
+     *            Concept to be updated
+     * @param dataElementValues
+     *            bound data elements with values
      */
     private void fixRelatedElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues) {
         try {
@@ -631,7 +617,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
                 // Remove old data element relations
                 dataElementDAO.deleteVocabularyDataElements(originalVocabularyFolderId);
-                //update ch3 element reference
+                // update ch3 element reference
                 dataElementDAO.moveVocabularySources(originalVocabularyFolderId, vocabularyFolderId);
 
             }
@@ -1099,14 +1085,17 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 for (DataElement elem : elems) {
                     RdfNamespace ns;
                     if (elem.isExternalSchema()) {
-                        ns = namespaceDAO.getNamespace(elem.getNameSpacePrefix());
+                        ns = rdfNamespaceDAO.getNamespace(elem.getNameSpacePrefix());
                         if (!nameSpaces.contains(ns)) {
                             nameSpaces.add(ns);
                         }
                     }
                 }
+
             }
+
             return nameSpaces;
+
         } catch (DAOException daoe) {
             throw new ServiceException("Failed to get vocabulary namespaces " + daoe.getMessage(), daoe);
         }
@@ -1124,7 +1113,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
     /**
      * Checks if given element has some special behaviour.
      *
-     * @param specialElement special element
+     * @param specialElement
+     *            special element
      * @return String prefix in RDF
      */
     @Override

@@ -49,7 +49,6 @@ public class CodelistXML extends Codelist {
      *
      * @param conn
      * @param writer
-     * @param delim
      */
     public CodelistXML(Connection conn, PrintWriter writer) {
 

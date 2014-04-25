@@ -16,22 +16,22 @@
  * (C) European Environment Agency.  All Rights Reserved.
  *
  * Contributor(s):
- *        Kaido Laine
+ *        TripleDev
  */
 
 package eionet.meta.service.data;
 
 import java.util.List;
 
-import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.Namespace;
 
 /**
  *
- * Paged Result of searched Vocabularies.
+ * Paged Result of Namespaces.
  *
- * @author Kaido Laine
+ * @author enver
  */
-public class VocabularyResult extends PagedResult<VocabularyFolder> {
+public class NamespaceResult extends PagedResult<Namespace> {
 
     /**
      * Class constructor.
@@ -43,7 +43,7 @@ public class VocabularyResult extends PagedResult<VocabularyFolder> {
      * @param pagedRequest
      *            paged request the result is passed to
      */
-    public VocabularyResult(List<VocabularyFolder> items, int totalItems, PagedRequest pagedRequest) {
+    public NamespaceResult(List<Namespace> items, int totalItems, PagedRequest pagedRequest) {
         super(items, totalItems, pagedRequest);
     }
 }
