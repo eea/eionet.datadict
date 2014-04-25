@@ -39,14 +39,15 @@ public class Props implements PropsIF {
     @SuppressWarnings("rawtypes")
     protected Props() {
 
+        defaults = new Hashtable();
+        setDefaults(defaults);
+
         try {
             bundle = ResourceBundle.getBundle(getBundleName());
         } catch (MissingResourceException mre) {
             LOGGER.warn("Properties file " + getBundleName() + ".properties not found. Using defaults.");
         }
 
-        defaults = new Hashtable();
-        setDefaults(defaults);
     }
 
     /**
