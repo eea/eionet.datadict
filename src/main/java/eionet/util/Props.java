@@ -4,6 +4,7 @@
 package eionet.util;
 
 import eionet.meta.DDRuntimeException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
