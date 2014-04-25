@@ -21,6 +21,10 @@
 
 package eionet.meta.dao.domain;
 
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +35,9 @@ import java.util.List;
  */
 public class VocabularyFolder {
 
-    /** Properties. */
+    /**
+     * Properties.
+     */
     private int id;
     private String identifier;
     private String continuityId;
@@ -48,7 +54,9 @@ public class VocabularyFolder {
     private int folderId;
     private boolean notationsEqualIdentifiers;
 
-    /** Joined property - folder identifier. */
+    /**
+     * Joined property - folder identifier.
+     */
     private String folderName;
     private String folderLabel;
 
@@ -104,8 +112,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param id
-     *            the id to set
+     * @param id the id to set
      */
     public void setId(int id) {
         this.id = id;
@@ -119,8 +126,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param identifier
-     *            the identifier to set
+     * @param identifier the identifier to set
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -134,8 +140,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param regStatus
-     *            the regStatus to set
+     * @param regStatus the regStatus to set
      */
     public void setRegStatus(RegStatus regStatus) {
         this.regStatus = regStatus;
@@ -149,8 +154,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param workingCopy
-     *            the workingCopy to set
+     * @param workingCopy the workingCopy to set
      */
     public void setWorkingCopy(boolean workingCopy) {
         this.workingCopy = workingCopy;
@@ -164,8 +168,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param workingUser
-     *            the workingUser to set
+     * @param workingUser the workingUser to set
      */
     public void setWorkingUser(String workingUser) {
         this.workingUser = workingUser;
@@ -179,8 +182,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param dateModified
-     *            the dateModified to set
+     * @param dateModified the dateModified to set
      */
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
@@ -194,8 +196,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param userModified
-     *            the userModified to set
+     * @param userModified the userModified to set
      */
     public void setUserModified(String userModified) {
         this.userModified = userModified;
@@ -209,8 +210,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param checkedOutCopyId
-     *            the checkedOutCopyId to set
+     * @param checkedOutCopyId the checkedOutCopyId to set
      */
     public void setCheckedOutCopyId(int checkedOutCopyId) {
         this.checkedOutCopyId = checkedOutCopyId;
@@ -224,8 +224,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param label
-     *            the label to set
+     * @param label the label to set
      */
     public void setLabel(String label) {
         this.label = label;
@@ -239,8 +238,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param continuityId
-     *            the continuityId to set
+     * @param continuityId the continuityId to set
      */
     public void setContinuityId(String continuityId) {
         this.continuityId = continuityId;
@@ -254,8 +252,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param numericConceptIdentifiers
-     *            the numericConceptIdentifiers to set
+     * @param numericConceptIdentifiers the numericConceptIdentifiers to set
      */
     public void setNumericConceptIdentifiers(boolean numericConceptIdentifiers) {
         this.numericConceptIdentifiers = numericConceptIdentifiers;
@@ -269,8 +266,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param baseUri
-     *            the baseUri to set
+     * @param baseUri the baseUri to set
      */
     public void setBaseUri(String baseUri) {
         this.baseUri = baseUri;
@@ -284,8 +280,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param type
-     *            the type to set
+     * @param type the type to set
      */
     public void setType(VocabularyType type) {
         this.type = type;
@@ -299,8 +294,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param folderName
-     *            the folderName to set
+     * @param folderName the folderName to set
      */
     public void setFolderName(String folderName) {
         this.folderName = folderName;
@@ -314,8 +308,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param attributes
-     *            the attributes to set
+     * @param attributes the attributes to set
      */
     public void setAttributes(List<List<SimpleAttribute>> attributes) {
         this.attributes = attributes;
@@ -329,8 +322,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param folderId
-     *            the folderId to set
+     * @param folderId the folderId to set
      */
     public void setFolderId(int folderId) {
         this.folderId = folderId;
@@ -355,7 +347,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param enforceNotationToId do notations equal identifiers
+     * @param enforceNotationToId the notationsEqualIdentifiers to set
      */
     public void setNotationsEqualIdentifiers(boolean enforceNotationToId) {
         this.notationsEqualIdentifiers = enforceNotationToId;
@@ -368,5 +360,20 @@ public class VocabularyFolder {
     public void setConcepts(List<VocabularyConcept> concepts) {
         this.concepts = concepts;
     }
+
+    /**
+     * Utility method to return baseUri for folder context.
+     *
+     * @param vf Vocabulary folder
+     * @return base uri
+     */
+    public static String getBaseUri(VocabularyFolder vf) {
+        return StringUtils.isNotEmpty(vf.getBaseUri()) ? vf.getBaseUri() : Props
+                .getRequiredProperty(PropsIF.DD_URL)
+                + "/vocabulary/"
+                + vf.getFolderName()
+                + "/"
+                + vf.getIdentifier() + "/";
+    } //end of static method getBaseUri
 
 }

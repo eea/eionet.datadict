@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<dataset>
+    <T_RDF_NAMESPACE ID="1" NAME_PREFIX="ns1" URI="http://namespace1.somewhere.com" />
+    <T_RDF_NAMESPACE ID="2" NAME_PREFIX="ns2" URI="http://namespace2.somewhere.com" />
+    <T_RDF_NAMESPACE ID="3" NAME_PREFIX="ns3" URI="http://namespace3.somewhere.com" />
+
+    <NAMESPACE NAMESPACE_ID="1" SHORT_NAME="short_name_1" FULL_NAME="Full Name 1"/>
+    <NAMESPACE NAMESPACE_ID="2" SHORT_NAME="short_name_2" FULL_NAME="Full Name 2"/>
+    <NAMESPACE NAMESPACE_ID="3" SHORT_NAME="short_name_3" FULL_NAME="Full Name 3"/>
+    <NAMESPACE NAMESPACE_ID="4" SHORT_NAME="short_name_4" FULL_NAME="Full Name 4"/>
+    <NAMESPACE NAMESPACE_ID="5" SHORT_NAME="short_name_5" FULL_NAME="Full Name 5"/>
+    <NAMESPACE NAMESPACE_ID="6" SHORT_NAME="short_name_6" FULL_NAME="Full Name 6"/>
+    <NAMESPACE NAMESPACE_ID="7" SHORT_NAME="short_name_7" FULL_NAME="Full Name 7"/>
+    <NAMESPACE NAMESPACE_ID="8" SHORT_NAME="short_name_8" FULL_NAME="Full Name 8"/>
+    <NAMESPACE NAMESPACE_ID="9" SHORT_NAME="short_name_9" FULL_NAME="Full Name 9"/>
+
+</dataset>

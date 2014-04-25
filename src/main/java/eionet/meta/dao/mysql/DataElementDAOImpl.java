@@ -21,22 +21,6 @@
 
 package eionet.meta.dao.mysql;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.IDataElementDAO;
@@ -46,6 +30,21 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Data element DAO.
@@ -55,7 +54,9 @@ import eionet.meta.service.data.DataElementsResult;
 @Repository
 public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDAO {
 
-    /** Logger. */
+    /**
+     * Logger.
+     */
     protected static final Logger LOGGER = Logger.getLogger(DataElementDAOImpl.class);
 
     /**
@@ -81,20 +82,19 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * finds Common elements.
      *
-     * @param filter
-     *            search filter
+     * @param filter search filter
      * @return list of data elements
      */
     private List<DataElement> executeCommonElementQuery(final DataElementsFilter filter) {
         Map<String, Object> params = new HashMap<String, Object>();
         StringBuilder sql = new StringBuilder();
 
-        sql.append("select de.DATAELEM_ID, de.IDENTIFIER, de.SHORT_NAME, de.REG_STATUS, de.DATE, de.TYPE, de.WORKING_USER, ")
-            .append("a.VALUE as NAME ");
+        sql.append("select de.DATAELEM_ID, de.IDENTIFIER, de.SHORT_NAME, de.REG_STATUS, de.DATE, de.TYPE, de.WORKING_USER, ");
+        sql.append("a.VALUE as NAME ");
         sql.append("from DATAELEM de ");
-        sql.append("LEFT JOIN (ATTRIBUTE a, M_ATTRIBUTE ma) ")
-            .append("ON (de.DATAELEM_ID=a.DATAELEM_ID AND a.PARENT_TYPE='E' AND ma.M_ATTRIBUTE_ID=a.M_ATTRIBUTE_ID ")
-            .append("and ma.SHORT_NAME='Name') ");
+        sql.append("LEFT JOIN (ATTRIBUTE a, M_ATTRIBUTE ma) ");
+        sql.append("ON (de.DATAELEM_ID=a.DATAELEM_ID AND a.PARENT_TYPE='E' AND ma.M_ATTRIBUTE_ID=a.M_ATTRIBUTE_ID ");
+        sql.append("and ma.SHORT_NAME='Name') ");
         sql.append("where ");
         sql.append("de.PARENT_NS is null ");
         sql.append("and de.WORKING_COPY = 'N' ");
@@ -114,7 +114,11 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         }
         if (StringUtils.isNotEmpty(filter.getIdentifier())) {
             sql.append("and de.IDENTIFIER like :identifier ");
-            params.put("identifier", "%" + filter.getIdentifier() + "%");
+            String like = "%";
+            if (filter.isExactIdentifierMatch()) {
+                like = "";
+            }
+            params.put("identifier", like + filter.getIdentifier() + like);
         }
 
         if (filter.isIncludeOnlyInternal()) {
@@ -150,8 +154,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-
-                int elmID = rs.getInt("de.DATAELEM_ID");
+                //int elmID = rs.getInt("de.DATAELEM_ID");
                 String elmIdf = rs.getString("de.IDENTIFIER");
                 // skip non-existing elements, ie trash from some erroneous situation
                 if (elmIdf == null) {
@@ -187,8 +190,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * finds non-Common elements.
      *
-     * @param filter
-     *            search filter
+     * @param filter search filter
      * @return list of data elements
      */
     private List<DataElement> executeNonCommonElementQuery(final DataElementsFilter filter) {
@@ -200,9 +202,9 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 .append("t.TABLE_ID, de.WORKING_USER, de.WORKING_COPY, a.VALUE AS NAME ");
         sql.append("from DATAELEM de ");
         sql.append("left join TBL2ELEM t2e on (de.DATAELEM_ID = t2e.DATAELEM_ID) ");
-        sql.append("LEFT JOIN (ATTRIBUTE a, M_ATTRIBUTE ma) ")
-            .append("ON (de.DATAELEM_ID=a.DATAELEM_ID AND a.PARENT_TYPE='E' AND ma.M_ATTRIBUTE_ID=a.M_ATTRIBUTE_ID ")
-            .append("and ma.SHORT_NAME='Name') ");
+        sql.append("LEFT JOIN (ATTRIBUTE a, M_ATTRIBUTE ma) ");
+        sql.append("ON (de.DATAELEM_ID=a.DATAELEM_ID AND a.PARENT_TYPE='E' AND ma.M_ATTRIBUTE_ID=a.M_ATTRIBUTE_ID ");
+        sql.append("and ma.SHORT_NAME='Name') ");
         sql.append("left join DS_TABLE t on (t2e.TABLE_ID = t.TABLE_ID) ");
         sql.append("left join DST2TBL d2t on (t.TABLE_ID = d2t.TABLE_ID) ");
         sql.append("left join DATASET ds on (d2t.DATASET_ID = ds.DATASET_ID) ");
@@ -273,7 +275,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                     return;
                 }
 
-                int elmID = rs.getInt("de.DATAELEM_ID");
+                //int elmID = rs.getInt("de.DATAELEM_ID");
                 String elmIdf = rs.getString("de.IDENTIFIER");
                 // skip non-existing elements, ie trash from some erroneous situation
                 if (elmIdf == null) {
@@ -538,7 +540,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         params.put("vocabularyConceptId", vocabularyConceptId);
 
         getNamedParameterJdbcTemplate().update(sql, params);
-
     }
 
     /**
@@ -644,7 +645,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                     values = new ArrayList<DataElement>();
                 }
 
-
                 de.setElemAttributeValues(getDataElementAttributeValues(rs.getInt("d.DATAELEM_ID")));
 
                 values.add(de);
@@ -665,8 +665,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void insertVocabularyConceptDataElementValues(int vocabularyConceptId, List<DataElement> dataElementValues) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ")
-            .append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
+        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ");
+		sql.append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
         sql.append("values (:vocabularyConceptId, :dataElementId, :elementValue, :language, :relatedConceptId)");
 
         @SuppressWarnings("unchecked")
@@ -691,8 +691,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void checkoutVocabularyConceptDataElementValues(int newVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ")
-               .append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
+        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ");
+		sql.append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
         sql.append("select con.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID ");
         sql.append("from VOCABULARY_CONCEPT_ELEMENT v ");
         sql.append("left join VOCABULARY_CONCEPT con on v.VOCABULARY_CONCEPT_ID = con.ORIGINAL_CONCEPT_ID  ");
@@ -705,19 +705,20 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         updateCheckedoutRelatedConceptIds(newVocabularyFolderId);
     }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void copyVocabularyConceptDataElementValues(int oldVocabularyId, int newVocabularyId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ")
-               .append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
+        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ");
+		sql.append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
         sql.append("select newc.VOCABULARY_CONCEPT_ID, vce.DATAELEM_ID, vce.ELEMENT_VALUE, vce.LANGUAGE, vce.RELATED_CONCEPT_ID ");
         sql.append("from VOCABULARY_CONCEPT_ELEMENT vce, ");
         sql.append("VOCABULARY_CONCEPT oldc, VOCABULARY_CONCEPT newc ");
-        sql.append("where oldc.VOCABULARY_CONCEPT_ID=vce.VOCABULARY_CONCEPT_ID AND oldc.VOCABULARY_ID = :oldVocabularyFolderId ")
-            .append("AND newc.VOCABULARY_ID = :newVocabularyFolderId AND newc.IDENTIFIER = oldc.IDENTIFIER ");
+        sql.append("where oldc.VOCABULARY_CONCEPT_ID=vce.VOCABULARY_CONCEPT_ID AND oldc.VOCABULARY_ID = :oldVocabularyFolderId ");
+        sql.append("AND newc.VOCABULARY_ID = :newVocabularyFolderId AND newc.IDENTIFIER = oldc.IDENTIFIER ");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("newVocabularyFolderId", newVocabularyId);
@@ -728,17 +729,17 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         updateCopiedRelatedConceptIds(oldVocabularyId, newVocabularyId);
     }
 
-
     /**
      * After copying localref type element IDs have to be changed.
+     *
      * @param oldVocabularyId old vocabulary ID
      * @param newVocabularyId new vocabulary ID
      */
     private void updateCopiedRelatedConceptIds(int oldVocabularyId, int newVocabularyId) {
         StringBuilder sql = new StringBuilder();
 
-        sql.append("UPDATE VOCABULARY_CONCEPT_ELEMENT ocev, VOCABULARY_CONCEPT oldc, VOCABULARY_CONCEPT newc, ")
-            .append("VOCABULARY_CONCEPT relc ");
+        sql.append("UPDATE VOCABULARY_CONCEPT_ELEMENT ocev, VOCABULARY_CONCEPT oldc, VOCABULARY_CONCEPT newc, ");
+		sql.append("VOCABULARY_CONCEPT relc ");
         sql.append("SET ocev.RELATED_CONCEPT_ID = newc.VOCABULARY_CONCEPT_ID ");
         sql.append("where ");
         sql.append("ocev.RELATED_CONCEPT_ID = oldc.VOCABULARY_CONCEPT_ID ");
@@ -775,6 +776,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
     /**
      * updates localref IDs to the new concept ones.
+     *
      * @param newVocabularyId new vocabulary ID
      */
     private void updateCheckedoutRelatedConceptIds(int newVocabularyId) {
@@ -836,8 +838,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public List<DataElement> getDataSetElements(int datasetId) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select distinct de.* from DST2TBL dt, TBL2ELEM te, DATAELEM de WHERE dt.TABLE_ID = te.TABLE_ID ")
-            .append("and te.DATAELEM_ID = de.DATAELEM_ID AND dt.DATASET_ID = :datasetId");
+        sb.append("select distinct de.* from DST2TBL dt, TBL2ELEM te, DATAELEM de WHERE dt.TABLE_ID = te.TABLE_ID ");
+		sb.append("and te.DATAELEM_ID = de.DATAELEM_ID AND dt.DATASET_ID = :datasetId");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("datasetId", datasetId);

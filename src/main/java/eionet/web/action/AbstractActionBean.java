@@ -21,10 +21,11 @@
 
 package eionet.web.action;
 
-import java.util.Enumeration;
-
-import javax.servlet.http.HttpServletRequest;
-
+import eionet.meta.DDUser;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.SecurityUtil;
+import eionet.web.DDActionBeanContext;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.SimpleMessage;
@@ -33,15 +34,11 @@ import net.sourceforge.stripes.controller.StripesConstants;
 import net.sourceforge.stripes.validation.SimpleError;
 import nl.bitwalker.useragentutils.Browser;
 import nl.bitwalker.useragentutils.BrowserType;
-
 import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.Logger;
 
-import eionet.meta.DDUser;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.util.SecurityUtil;
-import eionet.web.DDActionBeanContext;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
 
 /**
  * Root class for all DD ActionBeans.
@@ -50,14 +47,26 @@ import eionet.web.DDActionBeanContext;
  */
 public abstract class AbstractActionBean implements ActionBean {
 
-    /** Logger. */
+    /**
+     * Logger.
+     */
     protected static final Logger LOGGER = Logger.getLogger(AbstractActionBean.class);
-
+    /**
+     * Tag for system messages.
+     */
     private static final String SYSTEM_MESSAGES = "systemMessages";
+    /**
+     * Tag for caution messages.
+     */
     private static final String CAUTION_MESSAGES = "cautionMessages";
+    /**
+     * Tag for warning messages.
+     */
     private static final String WARNING_MESSAGES = "warningMessages";
 
-    /** DD ActionBeanContext extension. */
+    /**
+     * DD ActionBeanContext extension.
+     */
     private DDActionBeanContext context;
 
     /** */
@@ -86,8 +95,7 @@ public abstract class AbstractActionBean implements ActionBean {
      * Adds system message. The message will be shown in a simple rectangle and is to provide information on <i>successful</i>
      * actions.
      *
-     * @param message
-     *            Message text in HTML format.
+     * @param message Message text in HTML format.
      */
     protected void addSystemMessage(final String message) {
         getContext().getMessages(SYSTEM_MESSAGES).add(new SimpleMessage(message));
@@ -97,8 +105,7 @@ public abstract class AbstractActionBean implements ActionBean {
      * Adds caution message. The message will be shown wrapped in the &lt;div class="caution-msg"&lt; element. A caution is less
      * severe than a warning. It can e.g. be used when the application has to say to the user that it has ignored some input.
      *
-     * @param message
-     *            Message text in HTML format.
+     * @param message Message text in HTML format.
      */
     protected void addCautionMessage(final String message) {
         getContext().getMessages(CAUTION_MESSAGES).add(new SimpleMessage(message));
@@ -107,15 +114,13 @@ public abstract class AbstractActionBean implements ActionBean {
     /**
      * Adds warning message. The message will be shown wrapped in the &lt;div class="warning-msg"&lt; element.
      *
-     * @param message
-     *            Message text in HTML format.
+     * @param message Message text in HTML format.
      */
     protected void addWarningMessage(final String message) {
         getContext().getMessages(WARNING_MESSAGES).add(new SimpleMessage(message));
     }
 
     /**
-     *
      * @param simpleErrorMessage error msg
      */
     protected void addGlobalValidationError(String simpleErrorMessage) {
@@ -125,7 +130,7 @@ public abstract class AbstractActionBean implements ActionBean {
     /**
      * Returns site URL beginning part. It is configured in the datadict.properties file.
      *
-     * @return
+     * @return site prefix
      */
     public String getSitePrefix() {
         return Props.getProperty(PropsIF.JSP_URL_PREFIX);
@@ -141,8 +146,7 @@ public abstract class AbstractActionBean implements ActionBean {
     }
 
     /**
-     *
-     * @return
+     * @return user name
      */
     public String getUserName() {
         DDUser user = getUser();
@@ -152,7 +156,7 @@ public abstract class AbstractActionBean implements ActionBean {
     /**
      * Method returns login url.
      *
-     * @return String.
+     * @return login url
      */
     public String getLoginUrl() {
         return SecurityUtil.getLoginURL(getContext().getRequest());
@@ -177,16 +181,14 @@ public abstract class AbstractActionBean implements ActionBean {
     }
 
     /**
-     *
-     * @return
+     * @return if it post request or not.
      */
     public boolean isPostRequest() {
         return getContext().getRequest().getMethod().equalsIgnoreCase("POST");
     }
 
     /**
-     *
-     * @return
+     * @return if it is head or get request.
      */
     public boolean isGetOrHeadRequest() {
         String method = getContext().getRequest().getMethod().toUpperCase();
@@ -194,8 +196,7 @@ public abstract class AbstractActionBean implements ActionBean {
     }
 
     /**
-     *
-     * @return
+     * @return url binding.
      */
     public String getUrlBinding() {
         if (urlBinding == null) {
@@ -208,8 +209,7 @@ public abstract class AbstractActionBean implements ActionBean {
     }
 
     /**
-     *
-     * @return
+     * @return context path.
      */
     public String getContextPath() {
         if (contextPath == null) {
@@ -219,8 +219,7 @@ public abstract class AbstractActionBean implements ActionBean {
     }
 
     /**
-     *
-     * @return
+     * @return if there is validation error or not.
      */
     public boolean isValidationErrors() {
         return MapUtils.isNotEmpty(getContext().getValidationErrors());
@@ -248,6 +247,7 @@ public abstract class AbstractActionBean implements ActionBean {
         String finalPath = (servletPath != null ? servletPath : "") + (pathInfo != null ? pathInfo : "");
         return finalPath;
     }
+
     /**
      *
      */
@@ -278,6 +278,7 @@ public abstract class AbstractActionBean implements ActionBean {
 
     /**
      * Checks is client request comes from web browser.
+     *
      * @return true if request comes from web browser or Mobile browser
      */
     protected boolean isWebBrowser() {

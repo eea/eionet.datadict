@@ -8,13 +8,14 @@ package eionet.util;
  */
 public final class StringEncoder {
     /**
-     * Characters that aren't allowed in IRIs. Special consideration for plus (+): It is historically used to encode space. If we
-     * leave it unencoded, then it could be mistakenly decoded back to a space.
+     * Characters that aren't allowed in IRIs. Note special consideration for
+     * plus (+): It is historically used to encode space in <em>query strings</em>.
+     * We leave it unencoded here, so don't use this encoder for query strings.
      */
-    private static final char[] BAD_IRI_CHARS = {' ', '{', '}', '<', '>', '"', '|', '\\', '^', '`', '+'};
+    private static final char[] BAD_IRI_CHARS = {' ', '{', '}', '<', '>', '"', '|', '\\', '^', '`'};
     /** Replacements for characters that aren't allowed in IRIs. */
     private static final String[] BAD_IRI_CHARS_ESCAPES = {"%20", "%7B", "%7D", "%3C", "%3E",
-                                                        "%22", "%7C", "%5C", "%5E", "%60", "%2B"};
+                                                        "%22", "%7C", "%5C", "%5E", "%60"};
 
     /** * Characters that aren't allowed in XML.  */
     private static final char[] BAD_XML_CHARS = {'\'', '"', '&', '<', '>'};
@@ -46,6 +47,9 @@ public final class StringEncoder {
 
     /**
      * Escapes IRI's reserved characters in the given URL string.
+     * Note: Special consideration for plus (+): It is historically used to
+     * encode space in <em>query strings</em>.
+     * We leave it unencoded here, so don't use this encoder for query strings.
      *
      * @param url
      *            The string to %-escape.

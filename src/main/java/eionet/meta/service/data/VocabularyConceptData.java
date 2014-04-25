@@ -32,29 +32,48 @@ import eionet.meta.dao.domain.RegStatus;
  * @author Kaido Laine
  */
 public class VocabularyConceptData {
-
-    /** concept label.*/
+    /**
+     * concept id.
+     */
+    private int id;
+    /**
+     * concept label.
+     */
     private String label;
 
-    /** concept identifier.*/
+    /**
+     * concept identifier.
+     */
     private String identifier;
 
-    /** Vocabulary label.*/
+    /**
+     * Vocabulary label.
+     */
     private String vocabularyLabel;
 
-    /** Vocabulary identifier.*/
+    /**
+     * Vocabulary identifier.
+     */
     private String vocabularyIdentifier;
 
-    /** True if Vocabulary is working copy.*/
+    /**
+     * True if Vocabulary is working copy.
+     */
     private boolean workingCopy;
 
-    /** user who has checked out the vocabulary.*/
+    /**
+     * user who has checked out the vocabulary.
+     */
     private String userName;
 
-    /** Vocabulary Set label.*/
+    /**
+     * Vocabulary Set label.
+     */
     private String vocabularySetLabel;
 
-    /** Vocabulary Set identifier.*/
+    /**
+     * Vocabulary Set identifier.
+     */
     private String vocabularySetIdentifier;
 
     /**
@@ -92,6 +111,14 @@ public class VocabularyConceptData {
 
     public String getVocabularySetIdentifier() {
         return vocabularySetIdentifier;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setLabel(String label) {

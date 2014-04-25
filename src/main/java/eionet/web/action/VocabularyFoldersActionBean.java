@@ -9,7 +9,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
- * The Original Code is Content Registry 3
+ * The Original Code is Data Dictionary.
  *
  * The Initial Owner of the Original Code is European Environment
  * Agency. Portions created by TripleDev or Zero Technologies are Copyright
@@ -178,8 +178,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /**
      * Action for updating folder.
      *
-     * @return
-     * @throws ServiceException
+     * @return resolution
+     * @throws ServiceException if operation fails
      */
     public Resolution saveFolder() throws ServiceException {
         LOGGER.debug("Saving folder: " + getSubmittedFolder().getIdentifier());
@@ -191,8 +191,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /**
      * Action for deleting folder.
      *
-     * @return
-     * @throws ServiceException
+     * @return resolution
+     * @throws ServiceException if operation fails
      */
     public Resolution deleteFolder() throws ServiceException {
         LOGGER.debug("Deleting folder: " + getSubmittedFolder().getIdentifier());
@@ -338,7 +338,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         if (expand) {
             result.add(folderId);
         } else {
-            result.remove(new Integer(folderId));
+            result.remove(Integer.valueOf(folderId));
         }
 
         expanded = StringUtils.join(result, ",");
@@ -363,8 +363,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /**
      * Deletes vocabulary folders.
      *
-     * @return
-     * @throws ServiceException
+     * @return resolution
+     * @throws ServiceException if operation fails
      */
     public Resolution delete() throws ServiceException {
         vocabularyService.deleteVocabularyFolders(folderIds, keepRelationsOnDelete);

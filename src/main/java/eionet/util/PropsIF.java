@@ -25,123 +25,149 @@
 package eionet.util;
 
 /**
- * An interface container for the application's properties-related constants.
- * TODO: Interfaces should not be used as mere constant containers, so it's better to mve them into {@link Props} for example.
+ * An interface container for the application's properties-related constants. TODO: Interfaces should not be used as mere constant
+ * containers, so it's better to mve them into {@link Props} for example.
  *
  * @author Jaanus Heinlaid
  */
 public interface PropsIF {
 
     /** */
-    public static final String PROP_FILE = "datadict";
-    public static final String TEST_PROP_FILE = "datadict-test";
+    String PROP_FILE = "datadict";
+    String TEST_PROP_FILE = "datadict-test";
 
     /** */
-    public static final String DBDRV = "db.drv";
-    public static final String DBURL = "db.url";
-    public static final String DBUSR = "db.usr";
-    public static final String DBPSW = "db.psw";
+    String DBDRV = "db.drv";
+    String DBURL = "db.url";
+    String DBUSR = "db.usr";
+    String DBPSW = "db.psw";
 
     /** */
-    public static final String DB_UNITTEST_DRV = "db.unitest.drv";
-    public static final String DB_UNITTEST_URL = "db.unitest.url";
-    public static final String DB_UNITTEST_USR = "db.unitest.usr";
-    public static final String DB_UNITTEST_PWD = "db.unitest.psw";
+    String DB_UNITTEST_DRV = "db.unitest.drv";
+    String DB_UNITTEST_URL = "db.unitest.url";
+    String DB_UNITTEST_USR = "db.unitest.usr";
+    String DB_UNITTEST_PWD = "db.unitest.psw";
 
     /** */
-    public static final String HRV_LOG = "harvester.log";
-    public static final String HRV_LOGLEV = "harvester.log-level";
+    String HRV_LOG = "harvester.log";
+    String HRV_LOGLEV = "harvester.log-level";
 
-    public static final String UNI_FONT = "pdf.uni-font";
+    String UNI_FONT = "pdf.uni-font";
 
-    public static final String XFORMS_NSS = "xforms.nss";
-    public static final String XFORMS_NS = "xforms.ns";
-    public static final String XFORM_TEMPLATE_URL = "xforms.templ.url";
+    String XFORMS_NSS = "xforms.nss";
+    String XFORMS_NS = "xforms.ns";
+    String XFORM_TEMPLATE_URL = "xforms.templ.url";
 
-    public static final String XLS_SCHEMA_URL = "xls.schema-url";
-    public static final String XLS_SCHEMA_URL_SHEET = "xls.schema-url-sheet";
-    public static final String XLS_DROPDOWN_FXV_SHEET = "xls.schema-dropdown-fxv-sheet";
+    String XLS_SCHEMA_URL = "xls.schema-url";
+    String XLS_SCHEMA_URL_SHEET = "xls.schema-url-sheet";
+    String XLS_DROPDOWN_FXV_SHEET = "xls.schema-dropdown-fxv-sheet";
 
-    public static final String INSERV_PREFIX = "inserv.";
-    public static final String INSERV_NAME = ".name";
-    public static final String INSERV_URL = ".url";
-    public static final String INSERV_USR = ".usr";
-    public static final String INSERV_PSW = ".psw";
+    String INSERV_PREFIX = "inserv.";
+    String INSERV_NAME = ".name";
+    String INSERV_URL = ".url";
+    String INSERV_USR = ".usr";
+    String INSERV_PSW = ".psw";
 
-    public static final String INSERV_ROD_RA_URLPATTERN = "inserv.webrod.ra-url-pattern";
-    public static final String INSERV_ROD_RA_IDPATTERN = "<RA_ID>";
+    String INSERV_ROD_RA_URLPATTERN = "inserv.webrod.ra-url-pattern";
+    String INSERV_ROD_RA_IDPATTERN = "<RA_ID>";
 
-    public static final String OUTSERV_ELM_URLPATTERN = "outserv.elm-details-url";
-    public static final String OUTSERV_ELM_IDPATTERN = "<ELM_ID>";
-    public static final String OUTSERV_ROD_OBLIG_URL = "outserv.rod-obligation-url";
-    public static final String OUTSERV_PRED_IDENTIFIER = "outserv.pred-identifier";
-    public static final String OUTSERV_PRED_TITLE = "outserv.pred-title";
+    String OUTSERV_ELM_URLPATTERN = "outserv.elm-details-url";
+    String OUTSERV_ELM_IDPATTERN = "<ELM_ID>";
+    String OUTSERV_ROD_OBLIG_URL = "outserv.rod-obligation-url";
+    String OUTSERV_PRED_IDENTIFIER = "outserv.pred-identifier";
+    String OUTSERV_PRED_TITLE = "outserv.pred-title";
 
-    public static final String JSP_URL_PREFIX = "jsp.url-prefix";
-    public static final String DD_URL = "dd.url";
+    String JSP_URL_PREFIX = "jsp.url-prefix";
+    String DD_URL = "dd.url";
 
-    public static final String DD_RDF_SCHEMA_URL = "dd.rdf-schema.url";
-    public static final String PREDICATE_RDF_TYPE = "predicate.rdf-type";
-    public static final String PREDICATE_RDF_LABEL = "predicate.rdf-label";
+    String DD_RDF_SCHEMA_URL = "dd.rdf-schema.url";
+    String PREDICATE_RDF_TYPE = "predicate.rdf-type";
+    String PREDICATE_RDF_LABEL = "predicate.rdf-label";
 
-    public static final String TEMP_FILE_PATH = "general.temp-file-path";
-    public static final String DOC_PATH = "general.doc-path";
-    public static final String OPENDOC_ODS_PATH = "opendoc.ods.path";
-
-    /** */
-    public static final String SCREEN_NAME = "documentation.screen-name";
+    String TEMP_FILE_PATH = "general.temp-file-path";
+    String DOC_PATH = "general.doc-path";
+    String OPENDOC_ODS_PATH = "opendoc.ods.path";
 
     /** */
-    public static final String IRRELEVANT_ATTRS_PREFIX = "irrelevantAttrs.";
+    String SCREEN_NAME = "documentation.screen-name";
 
     /** */
-    public static final String RDF_TABLES_BASE_URI = "rdf.tables.baseUri";
-    public static final String RDF_DATAELEMENTS_BASE_URI = "rdf.dataelements.baseUri";
+    String IRRELEVANT_ATTRS_PREFIX = "irrelevantAttrs.";
 
     /** */
-    public static final String GENERAL_SCHEMA_URI = "dd.generalSchemaUri";
-    public static final String MULTIVAL_DELIM_ATTR = "dd.multiValueDelimAttrName";
+    String RDF_TABLES_BASE_URI = "rdf.tables.baseUri";
+    String RDF_DATAELEMENTS_BASE_URI = "rdf.dataelements.baseUri";
 
     /** */
-    public static final String DATASET_MS_ACCESS_TEMPLTAE = "datasetMSAccessTemplate";
-
-    /** Full path to the root directory of DD's file store. */
-    public static final String FILESTORE_PATH = "filestore.path";
+    String GENERAL_SCHEMA_URI = "dd.generalSchemaUri";
+    String MULTIVAL_DELIM_ATTR = "dd.multiValueDelimAttrName";
 
     /** */
-    public static final String SCHEMA_REPO_LOCATION = "schemaRepo.location";
+    String DATASET_MS_ACCESS_TEMPLTAE = "datasetMSAccessTemplate";
+
+    /**
+     * Full path to the root directory of DD's file store.
+     */
+    String FILESTORE_PATH = "filestore.path";
 
     /** */
-    public static final String CHECK_IN_COMMENTS_REQUIRED = "checkInCommentsRequired";
+    String SCHEMA_REPO_LOCATION = "schemaRepo.location";
 
     /** */
-    public static final String XML_CONV_URL = "xmlConv.url";
+    String CHECK_IN_COMMENTS_REQUIRED = "checkInCommentsRequired";
 
-    /** Master password for simulating users */
-    public static final String DD_MASTER_PASSWORD_HASH = "dd.master.pwd.hash";
+    /** */
+    String XML_CONV_URL = "xmlConv.url";
 
-    /** Site code notification addresses. */
-    public static final String SITE_CODE_NOTIFICATION_FROM = "siteCode.notification.from";
-    public static final String SITE_CODE_ALLOCATE_NOTIFICATION_TO = "siteCode.allocate.notification.to";
-    public static final String SITE_CODE_RESERVE_NOTIFICATION_TO = "siteCode.reserve.notification.to";
-    public static final String SITE_CODE_TEST_NOTIFICATION_TO = "siteCode.test.notification.to";
+    /**
+     * Master password for simulating users.
+     */
+    String DD_MASTER_PASSWORD_HASH = "dd.master.pwd.hash";
 
-    /** Content Registry URL for making the request to reharvest the source */
-    public static final String CR_PING_URL = "cr.reharvest.request.url";
+    /**
+     * Site code notification addresses.
+     */
+    String SITE_CODE_NOTIFICATION_FROM = "siteCode.notification.from";
+    String SITE_CODE_ALLOCATE_NOTIFICATION_TO = "siteCode.allocate.notification.to";
+    String SITE_CODE_RESERVE_NOTIFICATION_TO = "siteCode.reserve.notification.to";
+    String SITE_CODE_TEST_NOTIFICATION_TO = "siteCode.test.notification.to";
 
-    /** The property that withholds the friendly URI template for DD namespaces. */
-    public static final String NAMESPACE_FRIENDLY_URI_TEMPLATE = "dd.namespaces.friendlyUriTemplate";
+    /**
+     * Content Registry URL for making the request to reharvest the source.
+     */
+    String CR_PING_URL = "cr.reharvest.request.url";
 
-    /** Maximum amount site codes to allocate. */
-    public static final String SITE_CODES_MAX_ALLOCATE = "siteCode.allocate.maxAmount";
+    /**
+     * The property that withholds the friendly URI template for DD namespaces.
+     */
+    String NAMESPACE_FRIENDLY_URI_TEMPLATE = "dd.namespaces.friendlyUriTemplate";
 
-    /** Maximum amount site codes to allocate without name. */
-    public static final String SITE_CODES_MAX_ALLOCATE_WITHOUT_NAMES = "siteCode.allocate.maxAmountWithoutName";
+    /**
+     * Maximum amount site codes to allocate.
+     */
+    String SITE_CODES_MAX_ALLOCATE = "siteCode.allocate.maxAmount";
 
-    /** Maximum amount site codes to allocate by ETC or EEA users. */
-    public static final String SITE_CODES_MAX_ALLOCATE_ETC_EEA = "siteCode.allocate.maxAmountForEtcEeaUsers";
+    /**
+     * Maximum amount site codes to allocate without name.
+     */
+    String SITE_CODES_MAX_ALLOCATE_WITHOUT_NAMES = "siteCode.allocate.maxAmountWithoutName";
 
-    /** Maximum amount available site codes to reserve. */
-    public static final String SITE_CODES_MAX_RESERVE_AMOUNT = "siteCode.reserve.maxAmount";
+    /**
+     * Maximum amount site codes to allocate by ETC or EEA users.
+     */
+    String SITE_CODES_MAX_ALLOCATE_ETC_EEA = "siteCode.allocate.maxAmountForEtcEeaUsers";
 
+    /**
+     * Maximum amount available site codes to reserve.
+     */
+    String SITE_CODES_MAX_RESERVE_AMOUNT = "siteCode.reserve.maxAmount";
+    /**
+     * Data Dictionary Working Language.
+     */
+    String DD_WORKING_LANGUAGE_KEY = "dd.working.language";
+
+    /**
+     * Data Dictionary Default Working Language Values (used when working language is not defined in local.properties).
+     */
+    String DD_DEFAULT_WORKING_LANGUAGE_VALUE = "en";
 }

@@ -21,14 +21,14 @@
 
 package eionet.web.action;
 
-import javax.servlet.http.HttpServletResponse;
-
+import eionet.meta.service.ServiceException;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
-import eionet.meta.service.ServiceException;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Error page action bean.
@@ -43,7 +43,7 @@ public class ErrorActionBean extends AbstractActionBean {
 
     /** Possible Error Types. */
     public static enum ErrorType {
-        UNKNOWN, NOT_FOUND_404
+        UNKNOWN, NOT_FOUND_404, INVALID_INPUT
     };
 
     /** Error message. */
@@ -83,6 +83,8 @@ public class ErrorActionBean extends AbstractActionBean {
             // not found 404 errors are handled in DDExceptionHandler, this line probably wont be reached
             case NOT_FOUND_404:
                 return "404 Not Found";
+            case INVALID_INPUT:
+                return "An error has occurred due to invalid input";
             case UNKNOWN:
             default:
                 return "An unexpected system error has occurred:";

@@ -3,16 +3,14 @@
  */
 package eionet.util;
 
+import eionet.meta.DDRuntimeException;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.log4j.Logger;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.apache.log4j.Logger;
-
-import eionet.meta.DDRuntimeException;
 
 /**
  * Utility class for retrieving the configured properties of this application.
@@ -33,7 +31,7 @@ public class Props implements PropsIF {
     private Hashtable defaults = null;
 
     /** The instance of this class. */
-    private static Props instance = null;
+    private static volatile Props instance = null;
 
     /**
      * Default constructor.
@@ -41,14 +39,15 @@ public class Props implements PropsIF {
     @SuppressWarnings("rawtypes")
     protected Props() {
 
+        defaults = new Hashtable();
+        setDefaults(defaults);
+
         try {
             bundle = ResourceBundle.getBundle(getBundleName());
         } catch (MissingResourceException mre) {
             LOGGER.warn("Properties file " + getBundleName() + ".properties not found. Using defaults.");
         }
 
-        defaults = new Hashtable();
-        setDefaults(defaults);
     }
 
     /**
@@ -56,7 +55,7 @@ public class Props implements PropsIF {
      *
      * @return The instance
      */
-    private static synchronized Props getInstance() {
+    private static Props getInstance() {
         if (Props.instance == null) {
             Props.instance = new Props();
         }
@@ -75,11 +74,10 @@ public class Props implements PropsIF {
     }
 
     /**
-     * Returns the value of the given property. If no property is found, the default is returned if one exists. If no default is
-     * found either, returns null.
+     * Returns the value of the given property. If no property is found, the default is returned if one exists.
+     * If no default is found either, returns null.
      *
-     * @param name
-     *            Given property name.
+     * @param name Given property name.
      * @return The value.
      */
     public static synchronized String getProperty(String name) {
@@ -87,11 +85,10 @@ public class Props implements PropsIF {
     }
 
     /**
-     * Returns the value of the given property as integer. If no property is found, the default is returned if one exists. If no
-     * default is found either, returns 0.
+     * Returns the value of the given property as integer. If no property is found, the default is returned if one exists.
+     * If no default is found either, returns 0.
      *
-     * @param name
-     *            Given property name.
+     * @param name Given property name.
      * @return The value.
      */
     public static synchronized int getIntProperty(String name) {
@@ -110,8 +107,7 @@ public class Props implements PropsIF {
     /**
      * Returns the value of the given property. If no value is found, an no default either, then throws {@link DDRuntimeException}.
      *
-     * @param name
-     *            Given property name.
+     * @param name Given property name.
      * @return The value.
      */
     public static String getRequiredProperty(String name) {
@@ -126,8 +122,7 @@ public class Props implements PropsIF {
     /**
      * Internal worker method for the public property getter methods in this class.
      *
-     * @param name
-     *            Given property name.
+     * @param name Given property name.
      * @return The value.
      */
     protected final String getPropertyInternal(String name) {
@@ -138,6 +133,7 @@ public class Props implements PropsIF {
                 value = bundle.getString(name);
             } catch (MissingResourceException mre) {
                 // Ignore deliberately.
+                mre.printStackTrace();
             }
         }
 
@@ -197,12 +193,10 @@ public class Props implements PropsIF {
     /**
      * Sets the default properties.
      *
-     * @param defaults
-     *            The hash-table of defaults to populate.
+     * @param defaults The hash-table of defaults to populate.
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void setDefaults(Hashtable defaults) {
-
         defaults.put(XFORM_TEMPLATE_URL, "http://cdr-ewn.eionet.europa.eu/webq/GetXFormTemplate");
         defaults.put(INSERV_ROD_RA_URLPATTERN, "http://rod.eionet.europa.eu/obligations/<RA_ID>");
         defaults.put(XLS_SCHEMA_URL_SHEET, "DO_NOT_DELETE_THIS_SHEET");
@@ -216,6 +210,7 @@ public class Props implements PropsIF {
         defaults.put(SITE_CODES_MAX_ALLOCATE_WITHOUT_NAMES, "100");
         defaults.put(SITE_CODES_MAX_ALLOCATE_ETC_EEA, "1000");
         defaults.put(SITE_CODES_MAX_RESERVE_AMOUNT, "10000");
+        defaults.put(DD_WORKING_LANGUAGE_KEY, DD_DEFAULT_WORKING_LANGUAGE_VALUE);
     }
 
     /**

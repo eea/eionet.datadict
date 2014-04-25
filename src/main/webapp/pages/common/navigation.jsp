@@ -29,5 +29,6 @@
         %>
         <li><a href="<%=request.getContextPath()%>/vocabularies">Vocabularies</a></li>
         <li><a href="<%=request.getContextPath()%>/services/list">Services</a></li>
+        <li><a href="<%=request.getContextPath()%>/namespaces">Namespaces</a></li>
     </ul>
 </div>

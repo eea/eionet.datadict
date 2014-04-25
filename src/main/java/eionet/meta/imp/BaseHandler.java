@@ -2,10 +2,9 @@
 // Copyright (c) 2000 TietoEnator
 package eionet.meta.imp;
 
+import eionet.meta.DDUser;
 import org.xml.sax.Locator;
 import org.xml.sax.helpers.DefaultHandler;
-
-import eionet.meta.DDUser;
 
 
 /**
@@ -22,7 +21,7 @@ public class BaseHandler extends DefaultHandler {
     protected DDUser user = null;
 
   /**
-   * Constructor
+   * Constructor.
    */
     public BaseHandler() {
       this.errorBuff = new StringBuffer();
@@ -55,4 +54,3 @@ public class BaseHandler extends DefaultHandler {
         this.user = user;
     }
 }
-

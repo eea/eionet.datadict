@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:tx="http://www.springframework.org/schema/tx"
-    xsi:schemaLocation="
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/context
@@ -12,37 +12,38 @@
 
     <!-- Scans within the base package of the application for @Components
         to configure as beans -->
-    <context:component-scan base-package="eionet.meta" />
+    <context:component-scan base-package="eionet.meta"/>
+    <context:spring-configured/>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-        destroy-method="close">
-        <property name="driverClassName" value="${db.drv}" />
-        <property name="url" value="${db.url}" />
-        <property name="username" value="${db.usr}" />
-        <property name="password" value="${db.psw}" />
+          destroy-method="close">
+        <property name="driverClassName" value="${db.drv}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="username" value="${db.usr}"/>
+        <property name="password" value="${db.psw}"/>
         <!-- The following two properties required because MySQL kills idle
             connections after 8 hours. -->
-        <property name="validationQuery" value="SELECT 1" />
-        <property name="testOnBorrow" value="true" />
+        <property name="validationQuery" value="SELECT 1"/>
+        <property name="testOnBorrow" value="true"/>
     </bean>
 
     <!-- enable the configuration of transactional behavior based on annotations -->
-    <tx:annotation-driven transaction-manager="txManager" />
+    <tx:annotation-driven transaction-manager="txManager"/>
 
     <bean id="txManager"
-        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource" />
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
     </bean>
 
     <bean id="freemarkerConfiguration"
-        class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
-        <property name="templateLoaderPath" value="/WEB-INF/templates/" />
+          class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+        <property name="templateLoaderPath" value="/WEB-INF/templates/"/>
     </bean>
 
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value="${smtp.host}" />
-        <property name="username" value="${smtp.username}" />
-        <property name="password" value="${smtp.password}" />
+        <property name="host" value="${smtp.host}"/>
+        <property name="username" value="${smtp.username}"/>
+        <property name="password" value="${smtp.password}"/>
         <property name="javaMailProperties">
             <props>
                 <prop key="mail.smtp.starttls.enable">${smtp.tls}</prop>
@@ -50,6 +51,6 @@
         </property>
     </bean>
 
-    <context:property-placeholder location="classpath:datadict.properties" />
+    <context:property-placeholder location="classpath:datadict.properties"/>
 
 </beans>

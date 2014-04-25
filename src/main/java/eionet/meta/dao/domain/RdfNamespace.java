@@ -21,18 +21,17 @@
 
 package eionet.meta.dao.domain;
 
-
 /**
  * RDF namespace.
  *
  * @author Juhan Voolaid
  */
 public class RdfNamespace {
-
+    /** ID. */
     private int id;
-
+    /** URI. */
     private String uri;
-
+    /** Prefix. */
     private String prefix;
 
     /**
@@ -90,13 +89,17 @@ public class RdfNamespace {
 
     @Override
     public boolean equals(Object otherNs) {
+        if (otherNs == null) {
+            return false;
+        }
+        if (!(otherNs instanceof RdfNamespace)) {
+            return false;
+        }
         if (this == otherNs) {
             return true;
         }
         RdfNamespace other = (RdfNamespace) otherNs;
         return uri.equals(other.uri);
     }
-
-
 
 }

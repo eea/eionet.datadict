@@ -59,7 +59,6 @@ import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -107,9 +106,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Autowired
     private IDataElementDAO dataElementDAO;
 
-    /** namespace DAO. */
+    /** Rdf namespace DAO. */
     @Autowired
-    private IRdfNamespaceDAO namespaceDAO;
+    private IRdfNamespaceDAO rdfNamespaceDAO;
 
     /** special elements . */
     private static EnumMap<RelationalElement, String> relationalElements;
@@ -306,19 +305,21 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException {
-        try {
-            VocabularyFolder vocFolder = vocabularyFolderDAO.getVocabularyFolderOfConcept(vocabularyConcept.getId());
-            if (vocFolder != null && vocFolder.isNotationsEqualIdentifiers()) {
-                vocabularyConcept.setNotation(vocabularyConcept.getIdentifier());
-            }
+        updateVocabularyConceptNonTransactional(vocabularyConcept);
+    }
 
-            vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateVocabularyConceptNonTransactional(VocabularyConcept vocabularyConcept) throws ServiceException {
+        try {
+            quickUpdateVocabularyConcept(vocabularyConcept);
             // updateVocabularyConceptAttributes(vocabularyConcept);
             updateVocabularyConceptDataElementValues(vocabularyConcept);
         } catch (Exception e) {
             throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
         }
-
     }
 
     /**
@@ -348,6 +349,22 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
 
         fixRelatedElements(vocabularyConcept, dataElementValues);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void quickUpdateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException {
+        try {
+            VocabularyFolder vocFolder = vocabularyFolderDAO.getVocabularyFolderOfConcept(vocabularyConcept.getId());
+            if (vocFolder != null && vocFolder.isNotationsEqualIdentifiers()) {
+                vocabularyConcept.setNotation(vocabularyConcept.getIdentifier());
+            }
+            vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -402,22 +419,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
             LOGGER.warn("Handling related element bindings failed " + e);
         }
 
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void quickUpdateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException {
-        try {
-            VocabularyFolder vocFolder = vocabularyFolderDAO.getVocabularyFolderOfConcept(vocabularyConcept.getId());
-            if (vocFolder != null && vocFolder.isNotationsEqualIdentifiers()) {
-                vocabularyConcept.setNotation(vocabularyConcept.getIdentifier());
-            }
-            vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
-        } catch (Exception e) {
-            throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
-        }
     }
 
     /**
@@ -517,7 +518,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             VocabularyFolder result = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
-            //Attributes
+            // Attributes
             List<List<SimpleAttribute>> attributes = attributeDAO.getVocabularyFolderAttributes(result.getId(), true);
             result.setAttributes(attributes);
 
@@ -616,7 +617,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
                 // Remove old data element relations
                 dataElementDAO.deleteVocabularyDataElements(originalVocabularyFolderId);
-                //update ch3 element reference
+                // update ch3 element reference
                 dataElementDAO.moveVocabularySources(originalVocabularyFolderId, vocabularyFolderId);
 
             }
@@ -894,9 +895,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public VocabularyConcept getVocabularyConcept(int vocabularyConceptId) throws ServiceException {
         try {
-            VocabularyConcept result = vocabularyConceptDAO.getVocabularyConcept(vocabularyConceptId);
-
-            return result;
+            return vocabularyConceptDAO.getVocabularyConcept(vocabularyConceptId);
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
         }
@@ -1078,7 +1077,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public List<RdfNamespace> getVocabularyNamespaces(List<VocabularyFolder> vocabularyFolders) throws ServiceException {
         List<RdfNamespace> nameSpaces = new ArrayList<RdfNamespace>();
-        String baseUri = Props.getRequiredProperty(PropsIF.RDF_DATAELEMENTS_BASE_URI);
+        // String baseUri = Props.getRequiredProperty(PropsIF.RDF_DATAELEMENTS_BASE_URI);
 
         try {
             for (VocabularyFolder vocabulary : vocabularyFolders) {
@@ -1086,7 +1085,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 for (DataElement elem : elems) {
                     RdfNamespace ns;
                     if (elem.isExternalSchema()) {
-                        ns = namespaceDAO.getNamespace(elem.getNameSpacePrefix());
+                        ns = rdfNamespaceDAO.getNamespace(elem.getNameSpacePrefix());
                         if (!nameSpaces.contains(ns)) {
                             nameSpaces.add(ns);
                         }
@@ -1136,11 +1135,37 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     @Override
-    public List<Triple<String, String, Integer>> getVocabularyBoundElementNames(VocabularyFolder vocabularyFolder) {
+    public List<Triple<String, String, Integer>> getVocabularyBoundElementNamesByLanguage(VocabularyFolder vocabularyFolder) {
         int vocabularyFolderId = vocabularyFolder.getId();
-        List<Triple<String, String, Integer>> elementsMeta = vocabularyFolderDAO.getVocabularyFolderBoundElementsMeta(vocabularyFolderId);
+        List<Triple<String, String, Integer>> elementsMeta =
+                vocabularyFolderDAO.getVocabularyFolderBoundElementsMeta(vocabularyFolderId);
+        // because of empty language values list may contain irregular values, process it first and then return
+
+        if (elementsMeta != null && elementsMeta.size() > 1) {
+            List<Triple<String, String, Integer>> elementsMetaTemp = new ArrayList<Triple<String, String, Integer>>();
+            elementsMetaTemp.add(elementsMeta.get(0));
+
+            int arraySize = elementsMeta.size();
+            for (int i = 1; i < arraySize; i++) {
+                Triple<String, String, Integer> row1 = elementsMeta.get(i);
+                boolean found = false;
+                for (int j = 0; j < elementsMetaTemp.size(); j++) {
+                    Triple<String, String, Integer> row2 = elementsMetaTemp.get(j);
+                    if (StringUtils.equals(row1.getLeft(), row2.getLeft())
+                            && StringUtils.equals(row1.getCentral(), row2.getCentral())) {
+                        row2.setRight(row2.getRight() + row1.getRight());
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    elementsMetaTemp.add(row1);
+                }
+            }
+            elementsMeta = elementsMetaTemp;
+        }
         return elementsMeta;
-    }
+    } // end of method getVocabularyBoundElementNamesByLanguage
 
     @Override
     public VocabularyResult searchVocabularies(VocabularyFilter filter) throws ServiceException {
@@ -1161,6 +1186,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(concept.getVocabularyId());
 
                 VocabularyConceptData data = new VocabularyConceptData();
+                data.setId(concept.getId());
                 data.setIdentifier(concept.getIdentifier());
                 data.setLabel(concept.getLabel());
                 data.setUserName(vocabulary.getWorkingUser());

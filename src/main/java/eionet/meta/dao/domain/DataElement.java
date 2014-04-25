@@ -21,16 +21,15 @@
 
 package eionet.meta.dao.domain;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.StringEncoder;
 import eionet.util.Util;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Data element.
@@ -39,18 +38,33 @@ import eionet.util.Util;
  */
 public class DataElement {
 
+    /**
+     * Id.
+     */
     private int id;
-
+    /**
+     * Identifier.
+     */
     private String identifier;
-
+    /**
+     * Shortname.
+     */
     private String shortName;
-
+    /**
+     * Type.
+     */
     private String type;
-
+    /**
+     * Status.
+     */
     private String status;
-
+    /**
+     * Modified date.
+     */
     private Date modified;
-
+    /**
+     * Table name.
+     */
     private String tableName;
 
     /**
@@ -58,58 +72,73 @@ public class DataElement {
      * NULL if common element
      */
     private Integer parentNamespace;
-
+    /**
+     * Dataset name.
+     */
     private String dataSetName;
-
+    /**
+     * Working user.
+     */
     private String workingUser;
-
+    /**
+     * Working copy.
+     */
     private boolean workingCopy;
-
     //TODO - make a new DAO entity for VOCABULARY_CONCEPT_ELEMENT
-    /** Value from VOCABULARY_CONCEPT_ELEMENT table. Expected to be IRI encoded in DB. */
+    /**
+     * Value from VOCABULARY_CONCEPT_ELEMENT table. Expected to be IRI encoded in DB.
+     */
     private String attributeValue;
-
-    /** Language from VOCABULARY_CONCEPT_ELEMENT table. */
+    /**
+     * Language from VOCABULARY_CONCEPT_ELEMENT table.
+     */
     private String attributeLanguage;
-
-    /** Related concept id. */
+    /**
+     * Related concept id.
+     */
     private Integer relatedConceptId;
-
-    /** Related concept identifier. */
+    /**
+     * Related concept identifier.
+     */
     private String relatedConceptIdentifier;
-
-    /** Related concept identifier. */
+    /**
+     * Related concept identifier.
+     */
     private String relatedConceptLabel;
-
-    /** Related concept vocabulary identifier. */
+    /**
+     * Related concept vocabulary identifier.
+     */
     private String relatedConceptVocabulary;
-
-    /** Related concept vocabulary set identifier. */
+    /**
+     * Related concept vocabulary set identifier.
+     */
     private String relatedConceptVocSet;
-
-    /** Related concept vocabulary base URI. */
+    /**
+     * Related concept vocabulary base URI.
+     */
     private String relatedConceptBaseURI;
-
-    /** attribute metadata in M_ATTRIBUTE. */
+    /**
+     * attribute metadata in M_ATTRIBUTE.
+     */
     private Map<String, List<String>> elemAttributeValues;
-
-    /** fixed values. */
+    /**
+     * fixed values.
+     */
     private List<FixedValue> fixedValues;
-
-    /** relation to a vocabulary if fixed values element are from a vocabulary. */
+    /**
+     * relation to a vocabulary if fixed values element are from a vocabulary.
+     */
     private Integer vocabularyId;
-
     /**
      * if element gets fxv from a vocabulary shows if all concepts are valid.
      * if false only concepts released before releasing the element and not marked
      * obsolete are valid.
      */
     private Boolean allConceptsValid;
-
-    /** update date. */
+    /**
+     * update date.
+     */
     private String date;
-
-
     /**
      * Name attribute value is saved in this variable for better performance in search.
      */
@@ -256,20 +285,20 @@ public class DataElement {
      */
     public String getDatatype() {
         String dataType = "string";
-        List<String> elemDatatypeAttr = elemAttributeValues != null && elemAttributeValues.containsKey("Datatype")
-                ? elemAttributeValues.get("Datatype") : null;
+        List<String> elemDatatypeAttr =
+                elemAttributeValues != null && elemAttributeValues.containsKey("Datatype") ? elemAttributeValues.get("Datatype")
+                        : null;
 
         return elemDatatypeAttr != null ? elemDatatypeAttr.get(0) : dataType;
     }
 
     public String getAttributeLanguage() {
-        return attributeLanguage;
+        return StringUtils.trimToNull(attributeLanguage);
     }
 
     public void setAttributeLanguage(String attributeLanguage) {
-        this.attributeLanguage = attributeLanguage;
+        this.attributeLanguage = StringUtils.trimToNull(attributeLanguage);
     }
-
 
 
     /**
@@ -325,6 +354,9 @@ public class DataElement {
      */
     public String getRelatedConceptUri() {
         if (isRelationalElement()) {
+            if (StringUtils.isNotEmpty(this.relatedConceptBaseURI)) {
+                return this.relatedConceptBaseURI + this.relatedConceptIdentifier;
+            }
             return StringEncoder.encodeToIRI(Props.getRequiredProperty(PropsIF.DD_URL)
                     + "/vocabulary/"
                     + getRelatedConceptRelativePath());
@@ -353,12 +385,21 @@ public class DataElement {
         return relatedConceptBaseURI;
     }
 
+    /**
+     * Sets related base uri if input is not empty string.
+     *
+     * @param relatedConceptBaseURI base uri
+     */
     public void setRelatedConceptBaseURI(String relatedConceptBaseURI) {
-        this.relatedConceptBaseURI = relatedConceptBaseURI;
+        this.relatedConceptBaseURI = StringUtils.trimToNull(relatedConceptBaseURI);
+        if (StringUtils.isNotEmpty(this.relatedConceptBaseURI) && !StringUtils.endsWith(this.relatedConceptBaseURI, "/")) {
+            this.relatedConceptBaseURI += "/";
+        }
     }
 
     /**
      * returns Name attribute. Short name if data element does not have name.
+     *
      * @return name in ATTRIBUTES table, default is empty string
      */
     public String getName() {
@@ -382,7 +423,7 @@ public class DataElement {
 
     /**
      * Indicates if Element values can have values in several languages.
-     * false by default
+     *
      * @return is Language used in ATTRIBUTES table
      */
     public boolean isLanguageUsed() {

@@ -9,7 +9,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
- * The Original Code is Content Registry 3
+ * The Original Code is Data Dictionary.
  *
  * The Initial Owner of the Original Code is European Environment
  * Agency. Portions created by TripleDev or Zero Technologies are Copyright
@@ -36,9 +36,12 @@ public class VocabularyResult extends PagedResult<VocabularyFolder> {
     /**
      * Class constructor.
      *
-     * @param items found items array
-     * @param totalItems count of found items
-     * @param pagedRequest paged request the result is passed to
+     * @param items
+     *            found items array
+     * @param totalItems
+     *            count of found items
+     * @param pagedRequest
+     *            paged request the result is passed to
      */
     public VocabularyResult(List<VocabularyFolder> items, int totalItems, PagedRequest pagedRequest) {
         super(items, totalItems, pagedRequest);
