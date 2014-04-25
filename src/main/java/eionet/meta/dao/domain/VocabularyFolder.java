@@ -112,8 +112,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param id
-     *            the id to set
+     * @param id the id to set
      */
     public void setId(int id) {
         this.id = id;
@@ -127,8 +126,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param identifier
-     *            the identifier to set
+     * @param identifier the identifier to set
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -142,8 +140,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param regStatus
-     *            the regStatus to set
+     * @param regStatus the regStatus to set
      */
     public void setRegStatus(RegStatus regStatus) {
         this.regStatus = regStatus;
@@ -157,8 +154,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param workingCopy
-     *            the workingCopy to set
+     * @param workingCopy the workingCopy to set
      */
     public void setWorkingCopy(boolean workingCopy) {
         this.workingCopy = workingCopy;
@@ -172,8 +168,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param workingUser
-     *            the workingUser to set
+     * @param workingUser the workingUser to set
      */
     public void setWorkingUser(String workingUser) {
         this.workingUser = workingUser;
@@ -187,8 +182,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param dateModified
-     *            the dateModified to set
+     * @param dateModified the dateModified to set
      */
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
@@ -202,8 +196,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param userModified
-     *            the userModified to set
+     * @param userModified the userModified to set
      */
     public void setUserModified(String userModified) {
         this.userModified = userModified;
@@ -217,8 +210,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param checkedOutCopyId
-     *            the checkedOutCopyId to set
+     * @param checkedOutCopyId the checkedOutCopyId to set
      */
     public void setCheckedOutCopyId(int checkedOutCopyId) {
         this.checkedOutCopyId = checkedOutCopyId;
@@ -232,8 +224,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param label
-     *            the label to set
+     * @param label the label to set
      */
     public void setLabel(String label) {
         this.label = label;
@@ -247,8 +238,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param continuityId
-     *            the continuityId to set
+     * @param continuityId the continuityId to set
      */
     public void setContinuityId(String continuityId) {
         this.continuityId = continuityId;
@@ -262,8 +252,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param numericConceptIdentifiers
-     *            the numericConceptIdentifiers to set
+     * @param numericConceptIdentifiers the numericConceptIdentifiers to set
      */
     public void setNumericConceptIdentifiers(boolean numericConceptIdentifiers) {
         this.numericConceptIdentifiers = numericConceptIdentifiers;
@@ -277,8 +266,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param baseUri
-     *            the baseUri to set
+     * @param baseUri the baseUri to set
      */
     public void setBaseUri(String baseUri) {
         this.baseUri = baseUri;
@@ -292,8 +280,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param type
-     *            the type to set
+     * @param type the type to set
      */
     public void setType(VocabularyType type) {
         this.type = type;
@@ -307,8 +294,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param folderName
-     *            the folderName to set
+     * @param folderName the folderName to set
      */
     public void setFolderName(String folderName) {
         this.folderName = folderName;
@@ -322,8 +308,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param attributes
-     *            the attributes to set
+     * @param attributes the attributes to set
      */
     public void setAttributes(List<List<SimpleAttribute>> attributes) {
         this.attributes = attributes;
@@ -337,8 +322,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @param folderId
-     *            the folderId to set
+     * @param folderId the folderId to set
      */
     public void setFolderId(int folderId) {
         this.folderId = folderId;

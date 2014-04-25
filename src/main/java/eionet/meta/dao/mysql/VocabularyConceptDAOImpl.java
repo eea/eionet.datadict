@@ -87,10 +87,11 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         Map<String, Object> params = new HashMap<String, Object>();
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select SQL_CALC_FOUND_ROWS c.VOCABULARY_CONCEPT_ID, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, c.DEFINITION, c.NOTATION, ");
-        sql.append("c.CREATION_DATE, c.OBSOLETE_DATE, v.LABEL AS VOCABULARY_LABEL, v.IDENTIFIER as VOCABULARY_IDENTIFIER, ");
-        sql.append("s.ID AS VOCSET_ID, s.LABEL as VOCSET_LABEL ");
-        sql.append("from VOCABULARY_CONCEPT c, VOCABULARY v, VOCABULARY_SET s where v.VOCABULARY_ID = c.VOCABULARY_ID AND v.FOLDER_ID = s.ID ");
+        sql.append("select SQL_CALC_FOUND_ROWS c.VOCABULARY_CONCEPT_ID, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, c.DEFINITION, ");
+        sql.append("c.NOTATION, c.CREATION_DATE, c.OBSOLETE_DATE, v.LABEL AS VOCABULARY_LABEL, ");
+        sql.append("v.IDENTIFIER as VOCABULARY_IDENTIFIER, s.ID AS VOCSET_ID, s.LABEL as VOCSET_LABEL ");
+        sql.append("from VOCABULARY_CONCEPT c, VOCABULARY v, VOCABULARY_SET s ");
+        sql.append("where v.VOCABULARY_ID = c.VOCABULARY_ID AND v.FOLDER_ID = s.ID ");
         if (filter.getVocabularyFolderId() > 0) {
             params.put("vocabularyFolderId", filter.getVocabularyFolderId());
             sql.append("and c.VOCABULARY_ID=:vocabularyFolderId ");
@@ -102,7 +103,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 sql.append("or c.LABEL REGEXP :text ");
                 sql.append("or c.DEFINITION REGEXP :text ");
                 sql.append("or c.IDENTIFIER REGEXP :text) ");
-            //word match overrides exactmatch as it contains also exact matches
+                //word match overrides exactmatch as it contains also exact matches
             } else if (filter.isExactMatch()) {
                 params.put("text", filter.getText());
                 sql.append("and (c.NOTATION = :text ");
@@ -117,6 +118,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 sql.append("or c.DEFINITION like :text ");
                 sql.append("or c.IDENTIFIER like :text) ");
             }
+        }
         if (StringUtils.isNotEmpty(filter.getIdentifier())) {
             params.put("identifier", filter.getIdentifier());
             sql.append("and c.IDENTIFIER = :identifier ");
@@ -160,7 +162,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         }
 
         if (filter.getExcludedVocabularySetIds() != null && filter.getExcludedVocabularySetIds().size() > 0) {
-            params.put("excludedVocSetIds",  filter.getExcludedVocabularySetIds());
+            params.put("excludedVocSetIds", filter.getExcludedVocabularySetIds());
             sql.append("AND s.ID NOT IN (:excludedVocSetIds) ");
         }
         if (filter.isNumericIdentifierSorting()) {

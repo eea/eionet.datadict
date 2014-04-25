@@ -43,10 +43,10 @@ public interface PropsIF {
     String DBPSW = "db.psw";
 
     /** */
-   String DB_UNITTEST_DRV = "db.unitest.drv";
-   String DB_UNITTEST_URL = "db.unitest.url";
-   String DB_UNITTEST_USR = "db.unitest.usr";
-   String DB_UNITTEST_PWD = "db.unitest.psw";
+    String DB_UNITTEST_DRV = "db.unitest.drv";
+    String DB_UNITTEST_URL = "db.unitest.url";
+    String DB_UNITTEST_USR = "db.unitest.usr";
+    String DB_UNITTEST_PWD = "db.unitest.psw";
 
     /** */
     String HRV_LOG = "harvester.log";
@@ -105,7 +105,9 @@ public interface PropsIF {
     /** */
     String DATASET_MS_ACCESS_TEMPLTAE = "datasetMSAccessTemplate";
 
-    /** Full path to the root directory of DD's file store. */
+    /**
+     * Full path to the root directory of DD's file store.
+     */
     String FILESTORE_PATH = "filestore.path";
 
     /** */
@@ -117,36 +119,56 @@ public interface PropsIF {
     /** */
     String XML_CONV_URL = "xmlConv.url";
 
-    /** Master password for simulating users. */
+    /**
+     * Master password for simulating users.
+     */
     String DD_MASTER_PASSWORD_HASH = "dd.master.pwd.hash";
 
-    /** Site code notification addresses. */
+    /**
+     * Site code notification addresses.
+     */
     String SITE_CODE_NOTIFICATION_FROM = "siteCode.notification.from";
     String SITE_CODE_ALLOCATE_NOTIFICATION_TO = "siteCode.allocate.notification.to";
     String SITE_CODE_RESERVE_NOTIFICATION_TO = "siteCode.reserve.notification.to";
     String SITE_CODE_TEST_NOTIFICATION_TO = "siteCode.test.notification.to";
 
-    /** Content Registry URL for making the request to reharvest the source. */
+    /**
+     * Content Registry URL for making the request to reharvest the source.
+     */
     String CR_PING_URL = "cr.reharvest.request.url";
 
-    /** The property that withholds the friendly URI template for DD namespaces. */
+    /**
+     * The property that withholds the friendly URI template for DD namespaces.
+     */
     String NAMESPACE_FRIENDLY_URI_TEMPLATE = "dd.namespaces.friendlyUriTemplate";
 
-    /** Maximum amount site codes to allocate. */
+    /**
+     * Maximum amount site codes to allocate.
+     */
     String SITE_CODES_MAX_ALLOCATE = "siteCode.allocate.maxAmount";
 
-    /** Maximum amount site codes to allocate without name. */
+    /**
+     * Maximum amount site codes to allocate without name.
+     */
     String SITE_CODES_MAX_ALLOCATE_WITHOUT_NAMES = "siteCode.allocate.maxAmountWithoutName";
 
-    /** Maximum amount site codes to allocate by ETC or EEA users. */
+    /**
+     * Maximum amount site codes to allocate by ETC or EEA users.
+     */
     String SITE_CODES_MAX_ALLOCATE_ETC_EEA = "siteCode.allocate.maxAmountForEtcEeaUsers";
 
-    /** Maximum amount available site codes to reserve. */
+    /**
+     * Maximum amount available site codes to reserve.
+     */
     String SITE_CODES_MAX_RESERVE_AMOUNT = "siteCode.reserve.maxAmount";
 
-    /** Data Dictionary Working Language. */
+    /**
+     * Data Dictionary Working Language.
+     */
     String DD_WORKING_LANGUAGE_KEY = "dd.working.language";
 
-    /** Data Dictionary Default Working Language Values (used when working language is not defined in local.properties). */
+    /**
+     * Data Dictionary Default Working Language Values (used when working language is not defined in local.properties).
+     */
     String DD_DEFAULT_WORKING_LANGUAGE_VALUE = "en";
 }

@@ -21,6 +21,16 @@
 
 package eionet.meta.imp;
 
+import au.com.bytecode.opencsv.CSVReader;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.DataElementsFilter;
+import eionet.meta.service.data.DataElementsResult;
+import eionet.util.Pair;
+import eionet.util.VocabularyCSVOutputHelper;
+import org.apache.commons.lang.StringUtils;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -33,17 +43,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
-import au.com.bytecode.opencsv.CSVReader;
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.service.ServiceException;
-import eionet.meta.service.data.DataElementsFilter;
-import eionet.meta.service.data.DataElementsResult;
-import eionet.util.Pair;
-import eionet.util.VocabularyCSVOutputHelper;
 
 /**
  * Includes code for parsing and handling CSV lines.
@@ -68,15 +67,10 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
     private final DataElementsFilter elementsFilter;
 
     /**
-     *
-     * @param folderContextRoot
-     *            base uri for vocabulary.
-     * @param concepts
-     *            concepts of vocabulary
-     * @param bindedElements
-     *            binded elements to vocabulary
-     * @param content
-     *            reader to read file contents
+     * @param folderContextRoot base uri for vocabulary.
+     * @param concepts          concepts of vocabulary
+     * @param bindedElements    binded elements to vocabulary
+     * @param content           reader to read file contents
      */
     public VocabularyCSVImportHandler(String folderContextRoot, List<VocabularyConcept> concepts,
             Map<String, Integer> bindedElements, Reader content) {
@@ -92,8 +86,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
     /**
      * In this method, beans are generated (either created or updated) according to values in CSV file.
      *
-     * @throws eionet.meta.service.ServiceException
-     *             if there is the input is invalid
+     * @throws eionet.meta.service.ServiceException if there is the input is invalid
      */
     public void generateUpdatedBeans() throws ServiceException {
         // content.

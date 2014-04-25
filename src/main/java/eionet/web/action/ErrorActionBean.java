@@ -21,14 +21,14 @@
 
 package eionet.web.action;
 
-import javax.servlet.http.HttpServletResponse;
-
+import eionet.meta.service.ServiceException;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
-import eionet.meta.service.ServiceException;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Error page action bean.

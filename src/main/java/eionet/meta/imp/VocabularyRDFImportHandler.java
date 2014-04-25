@@ -21,6 +21,20 @@
 
 package eionet.meta.imp;
 
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.exports.rdf.VocabularyXmlWriter;
+import eionet.meta.service.ServiceException;
+import eionet.util.Pair;
+import org.apache.commons.lang.StringUtils;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.rio.RDFHandler;
+import org.openrdf.rio.RDFHandlerException;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -31,21 +45,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.rio.RDFHandler;
-import org.openrdf.rio.RDFHandlerException;
-
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.exports.rdf.VocabularyXmlWriter;
-import eionet.meta.service.ServiceException;
-import eionet.util.Pair;
 
 /**
  * Implementation of OpenRDF's {@link RDFHandler} that will be used by implementations of
@@ -198,20 +197,13 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
     /**
      * Constructor for RDFHandler to import rdf into vocabulary.
      *
-     * @param folderContextRoot
-     *            base uri for vocabulary.
-     * @param concepts
-     *            concepts of vocabulary
-     * @param bindedElements
-     *            binded elements to vocabulary.
-     * @param bindedElementsIds
-     *            binded elements ids.
-     * @param workingLanguage
-     *            working language
-     * @param createNewDataElementsForPredicates
-     *            create new data elements for seen predicates
-     * @throws ServiceException
-     *             when digest algorithm cannot be found
+     * @param folderContextRoot                  base uri for vocabulary.
+     * @param concepts                           concepts of vocabulary
+     * @param bindedElements                     binded elements to vocabulary.
+     * @param bindedElementsIds                  binded elements ids.
+     * @param workingLanguage                    working language
+     * @param createNewDataElementsForPredicates create new data elements for seen predicates
+     * @throws ServiceException when digest algorithm cannot be found
      */
     public VocabularyRDFImportHandler(String folderContextRoot, List<VocabularyConcept> concepts,
             Map<String, Integer> bindedElementsIds, Map<String, List<String>> bindedElements,

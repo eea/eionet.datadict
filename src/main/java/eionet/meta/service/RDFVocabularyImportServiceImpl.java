@@ -21,12 +21,12 @@
 
 package eionet.meta.service;
 
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyRDFImportHandler;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import org.apache.commons.lang.StringUtils;
 import org.openrdf.rio.ParseErrorListener;
 import org.openrdf.rio.ParserConfig;
@@ -36,13 +36,11 @@ import org.openrdf.rio.rdfxml.RDFXMLParser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyRDFImportHandler;
-import eionet.meta.service.data.ObsoleteStatus;
-import eionet.util.Props;
-import eionet.util.PropsIF;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Service implementation to import RDF into a Vocabulary Folder.
@@ -65,8 +63,7 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         final String folderCtxRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
         List<VocabularyConcept> concepts =
-                vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
-                        vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.ALL);
+                vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
 
         final List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 

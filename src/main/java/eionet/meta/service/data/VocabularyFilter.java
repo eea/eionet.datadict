@@ -50,19 +50,21 @@ public class VocabularyFilter extends PagedRequest {
      */
     private RegStatus status;
 
-    /** if false perform full text search otherwise exact match .*/
+    /**
+     * if false perform full text search otherwise exact match .
+     */
     private boolean exactMatch = false;
 
     /**
      * if true results are search where one or more fields contain the text as a separate word.
      */
     private boolean wordMatch = false;
-	
-	/**
-     * filter by identifier
+
+    /**
+     * filter by identifier.
      */
     private String identifier;
-	
+
     public String getText() {
         return text;
     }
@@ -110,8 +112,8 @@ public class VocabularyFilter extends PagedRequest {
     public void setWordMatch(boolean wordMatch) {
         this.wordMatch = wordMatch;
     }
-	
-	public Boolean getWorkingCopy() {
+
+    public Boolean getWorkingCopy() {
         return workingCopy;
     }
 

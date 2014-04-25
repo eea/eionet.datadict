@@ -21,12 +21,6 @@
 
 package eionet.meta.dao.domain;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.StringEncoder;
@@ -307,7 +301,6 @@ public class DataElement {
     }
 
 
-
     /**
      * Checks if given element is used for describing relations.
      *
@@ -406,6 +399,7 @@ public class DataElement {
 
     /**
      * returns Name attribute. Short name if data element does not have name.
+     *
      * @return name in ATTRIBUTES table, default is empty string
      */
     public String getName() {

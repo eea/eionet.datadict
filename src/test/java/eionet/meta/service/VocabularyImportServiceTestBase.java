@@ -21,9 +21,10 @@
 
 package eionet.meta.service;
 
-import java.io.Reader;
-import java.util.List;
-
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.ObsoleteStatus;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -32,10 +33,8 @@ import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.data.ObsoleteStatus;
+import java.io.Reader;
+import java.util.List;
 
 /**
  * JUnit integration test with Unitils for Vocabulary Import Services.
@@ -50,11 +49,15 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
      */
     protected static final int TEST_VALID_VOCAB_FOLDER_ID = 4;
 
-    /** Vocabulary service. */
+    /**
+     * Vocabulary service.
+     */
     @SpringBeanByType
     protected IVocabularyService vocabularyService;
 
-    /** Data elements service. */
+    /**
+     * Data elements service.
+     */
     @SpringBeanByType
     protected IDataService dataService;
 
@@ -64,11 +67,9 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
     /**
      * Get a reader from given RDF file location. If there is a BOM character, skip it.
      *
-     * @param resourceLoc
-     *            RDF file location
+     * @param resourceLoc RDF file location
      * @return Reader object (BOM skipped)
-     * @throws Exception
-     *             if an error occurs
+     * @throws Exception if an error occurs
      */
     protected abstract Reader getReaderFromResource(String resourceLoc) throws Exception;
 
@@ -76,24 +77,19 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
      * Utility code to make test code more readable. Returns vocabulary concepts with attributes by delegating call to
      * vocabularyService
      *
-     * @param vf
-     *            VocabularyFolder which holds concepts
+     * @param vf VocabularyFolder which holds concepts
      * @return List of vocabulary concepts of given folder
-     * @throws Exception
-     *             if an error occurs
+     * @throws Exception if an error occurs
      */
     protected List<VocabularyConcept> getVocabularyConceptsWithAttributes(VocabularyFolder vf) throws Exception {
-        return vocabularyService.getVocabularyConceptsWithAttributes(vf.getId(), vf.isNumericConceptIdentifiers(),
-                ObsoleteStatus.ALL);
+        return vocabularyService.getValidConceptsWithAttributes(vf.getId());
     }// end of method getVocabularyConceptsWithAttributes
 
     /**
      * Utility code to make test code more readable. Finds DataElement with given name in a list
      *
-     * @param elems
-     *            DataElements to be searched
-     * @param attrValue
-     *            Value for comparison
+     * @param elems     DataElements to be searched
+     * @param attrValue Value for comparison
      * @return First found DataElement
      */
     protected DataElement findDataElemByAttrValue(List<DataElement> elems, String attrValue) {
@@ -103,10 +99,8 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
     /**
      * Utility code to make test code more readable. Finds VocabularyConcept with given id in a list
      *
-     * @param concepts
-     *            VocabularyConcepts to be searched
-     * @param id
-     *            Id for comparison
+     * @param concepts VocabularyConcepts to be searched
+     * @param id       Id for comparison
      * @return First found VocabularyConcept
      */
     protected VocabularyConcept findVocabularyConceptById(List<VocabularyConcept> concepts, int id) {
@@ -116,10 +110,8 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
     /**
      * Utility code to make test code more readable. Finds VocabularyConcept with given identifier in a list
      *
-     * @param concepts
-     *            VocabularyConcepts to be searched
-     * @param identifier
-     *            identifier for comparison
+     * @param concepts   VocabularyConcepts to be searched
+     * @param identifier identifier for comparison
      * @return First found VocabularyConcept
      */
     protected VocabularyConcept findVocabularyConceptByIdentifier(List<VocabularyConcept> concepts, String identifier) {
@@ -127,9 +119,7 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
     }// end of method findVocabularyConceptByIdentifier
 
     /**
-     *
      * Inner class used to search for a VocabularyConcept in a Collection using it's id
-     *
      */
     public static class VocabularyConceptEvaluateOnIdPredicate implements Predicate {
         private int id = -1;
@@ -146,7 +136,6 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
     }// end of inner class VocabularyConceptEvaluateOnIdPredicate
 
     /**
-     *
      * Inner class used to search for a VocabularyConcept in a Collection using it's id `
      */
     public static class VocabularyConceptEvaluateOnIdentifierPredicate implements Predicate {
@@ -164,9 +153,7 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
     }// end of inner class VocabularyConceptEvaluateOnIdentifierPredicate
 
     /**
-     *
      * Inner class used to search for a DataElement using it's attribute value in a Collection
-     *
      */
     public static class DataElementEvaluateOnAttributeValuePredicate implements Predicate {
         private String value = null;

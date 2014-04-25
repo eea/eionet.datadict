@@ -21,31 +21,6 @@
 
 package eionet.meta.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.unitils.UnitilsJUnit4;
-import org.unitils.spring.annotation.SpringApplicationContext;
-import org.unitils.spring.annotation.SpringBeanByType;
-
-
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
@@ -58,6 +33,28 @@ import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.unitils.UnitilsJUnit4;
+import org.unitils.spring.annotation.SpringApplicationContext;
+import org.unitils.spring.annotation.SpringBeanByType;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * JUnit integration test with Unitils for vocabulary service.
@@ -68,7 +65,9 @@ import eionet.util.Triple;
 @SpringApplicationContext("spring-context.xml")
 public class VocabularyServiceTest extends UnitilsJUnit4 {
 
-    /** Logger. */
+    /**
+     * Logger.
+     */
     protected static final Logger LOGGER = Logger.getLogger(VocabularyServiceTest.class);
 
     @SpringBeanByType
@@ -149,8 +148,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * full text identifier must work in filter.
      *
-     * @throws ServiceException
-     *             if bad things happen
+     * @throws ServiceException if bad things happen
      */
     @Test
     public void testSearchVocabularyConceptsByIdentifier() throws ServiceException {
@@ -188,11 +186,11 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         VocabularyConcept result = vocabularyService.getVocabularyConcept(3, "concept1", true);
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(0);
-        cal.set(2014, Calendar.APRIL, 12, 0,0,0 );
+        cal.set(2014, Calendar.APRIL, 12, 0, 0, 0);
         Date dCreated = cal.getTime();
 
         cal.setTimeInMillis(0);
-        cal.set(2014, Calendar.MAY, 8, 0,0,0 );
+        cal.set(2014, Calendar.MAY, 8, 0, 0, 0);
         Date dObsolete = cal.getTime();
 
         result.setCreated(dCreated);
@@ -476,8 +474,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * The purpose is to test the {@link IVocabularyService#getReleasedVocabularyFolders(int)} function.
      *
-     * @throws ServiceException
-     *             An error happens in the called service(s).
+     * @throws ServiceException An error happens in the called service(s).
      */
     @Test
     public void testReleasedVocabularyFolders() throws ServiceException {
@@ -490,8 +487,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * The purpose is to test the vocabularies' "enforce concept notation equals concept identifier" functionality.
      *
-     * @throws ServiceException
-     *             An error happens in the called services.
+     * @throws ServiceException An error happens in the called services.
      */
     @Test
     public void testNotationEqualsIdentifier() throws ServiceException {
@@ -568,8 +564,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * tests vocabularyHasDataElementBinding() method.
      *
-     * @throws ServiceException
-     *             if bad things happen
+     * @throws ServiceException if bad things happen
      */
     @Test
     public void vocabularyBindingExistsTest() throws ServiceException {
@@ -580,8 +575,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * test on getConceptsWithElementValue method.
      *
-     * @throws ServiceException
-     *             if bad things happen
+     * @throws ServiceException if bad things happen
      */
     @Test
     public void getValuedConceptsTest() throws ServiceException {
@@ -594,8 +588,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * test if namespaces of elements are generated correctly.
      *
-     * @throws ServiceException
-     *             if error happens
+     * @throws ServiceException if error happens
      */
     @Test
     public void getVocabularyNamespacesTest() throws ServiceException {
@@ -610,8 +603,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * tsest on relational elements.
      *
-     * @throws Exception
-     *             if fail
+     * @throws Exception if fail
      */
     @Test
     public void testRelationalElement() throws Exception {
@@ -622,8 +614,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * tests getvocabularyFolder meta.
      *
-     * @throws Exception
-     *             if fail
+     * @throws Exception if fail
      */
     @Test
     public void testFolderCSVInfo() throws Exception {
@@ -642,8 +633,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * tests getvocabularyFolder meta.
      *
-     * @throws Exception
-     *             if fail
+     * @throws Exception if fail
      */
     @Test
     public void testFolderCSVInfo2() throws Exception {
@@ -676,8 +666,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * test on search vocabularies.
      *
-     * @throws Exception
-     *             if fail
+     * @throws Exception if fail
      */
     @Test
     public void testSearchVocabularies() throws Exception {
@@ -804,7 +793,6 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         filter.setWordMatch(true);
         result = vocabularyService.searchVocabularies(filter);
         assertTrue(result.getTotalItems() == 1);
-
 
         filter.setText("csv");
 

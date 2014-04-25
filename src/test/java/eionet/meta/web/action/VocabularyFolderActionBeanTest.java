@@ -1,15 +1,15 @@
 package eionet.meta.web.action;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.http.HttpServletRequest;
-
+import eionet.DDDatabaseTestCase;
+import eionet.meta.ActionBeanUtils;
+import eionet.meta.DDUser;
+import eionet.meta.FakeUser;
+import eionet.meta.service.ServiceException;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.SecurityUtil;
+import eionet.web.action.ErrorActionBean;
+import eionet.web.action.VocabularyFolderActionBean;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.FileBean;
@@ -21,23 +21,20 @@ import net.sourceforge.stripes.mock.MockRoundtrip;
 import net.sourceforge.stripes.mock.MockServletContext;
 import net.sourceforge.stripes.util.bean.BeanUtil;
 import net.sourceforge.stripes.validation.ValidationErrors;
-
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.web.context.ContextLoaderListener;
 
-import eionet.DDDatabaseTestCase;
-import eionet.meta.ActionBeanUtils;
-import eionet.meta.DDUser;
-import eionet.meta.FakeUser;
-import eionet.meta.service.ServiceException;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.util.SecurityUtil;
-import eionet.web.action.ErrorActionBean;
-import eionet.web.action.VocabularyFolderActionBean;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Tests for VocabularyConteptActionBean.
@@ -46,14 +43,15 @@ import eionet.web.action.VocabularyFolderActionBean;
  */
 public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
-    /** Name for the request attribute via which we inject rich-type (e.g. file bean) request parameters for the action bean. */
+    /**
+     * Name for the request attribute via which we inject rich-type (e.g. file bean) request parameters for the action bean.
+     */
     public static final String RICH_TYPE_REQUEST_PARAMS_ATTR_NAME = "RICH_TYPE_REQUEST_PARAMS";
 
     /**
      * test if CSV output contains collection resource for a folder.
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testCsvContainsElements() throws Exception {
@@ -77,7 +75,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
                 StringUtils.contains(output, "\"http://url1.com\",\"http://url2.com\""));
         Assert.assertTrue("Output does not contain correct SKOSRelatedMatch",
                 StringUtils.contains(output, "\"http://url3.com\",\"http://url4.com\",\"http://url0.com\""));// ordered by concept
-                                                                                                             // id
+        // id
 
         Assert.assertTrue("Output does not contain correct geo:lat", StringUtils.contains(output, "\"2.2\",\"3\",\"4.5\",\"1\""));
         Assert.assertTrue("Incorrect size of binded elements",
@@ -93,8 +91,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
      * test if CSV output contains attribute elements Assumption: This test will work for only cases when content does not include
      * comma (,). For simplicity of test case, this is preferred.
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testCsvContainsAttributeElementsCorreclty() throws Exception {
@@ -257,8 +254,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test when found vocabulary identifier is requested.
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testFoundVocabularySetAndIdentifier() throws Exception {
@@ -274,8 +270,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test when found vocabulary concept is requested.
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testFoundVocabularyConcept() throws Exception {
@@ -292,8 +287,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test when vocabulary identifier is null.
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testNullVocabularyIdentifier() throws Exception {
@@ -319,8 +313,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test if not found vocabulary identifier is requested.
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testNotFoundVocabularyIdentifier() throws Exception {
@@ -347,8 +340,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test if not found vocabulary set is requested.
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testNotFoundVocabularySet() throws Exception {
@@ -375,8 +367,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test if not found vocabulary concept is requested.
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testNotFoundVocabularyConcept() throws Exception {
@@ -405,8 +396,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
      * test when an CSV file is uploaded for non-working copy folder Note: all success conditions are tested in service test, steps
      * are not repeated here. See: CSVVocabularyImportServiceTest
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testUploadCsvToNotWorkingCopy() throws Exception {
@@ -423,8 +413,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test when an CSV file is uploaded for non-authenticated user copy folder
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testUploadCsvForNotAuthenticatedUser() throws Exception {
@@ -441,8 +430,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test when an CSV file is uploaded for not-owned user copy folder
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testUploadCsvForNotOwnedUser() throws Exception {
@@ -459,8 +447,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test when a null CSV file is uploaded
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testUploadNullCsv() throws Exception {
@@ -477,8 +464,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test when a empty name file us uploaded for CSV import.
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testUploadCsvWithEmptyName() throws Exception {
@@ -495,8 +481,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test when a null CSV file is uploaded
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testUploadCsvWithNotCsvExtension() throws Exception {
@@ -514,8 +499,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
      * test when an RDF file is uploaded for non-working copy folder Note: all success conditions are tested in service test, steps
      * are not repeated here. See: RDFVocabularyImportServiceTest
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testUploadRdfToNotWorkingCopy() throws Exception {
@@ -532,8 +516,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test when an RDF file is uploaded for non-authenticated user copy folder
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testUploadRdfForNotAuthenticatedUser() throws Exception {
@@ -550,8 +533,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test when an RDF file is uploaded for not-owned user copy folder
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testUploadRdfForNotOwnedUser() throws Exception {
@@ -568,8 +550,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test when a null RDF file is uploaded
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testUploadNullRdf() throws Exception {
@@ -586,8 +567,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test when an empty name file is uploaded for RDF import.
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testUploadRdfWithEmptyName() throws Exception {
@@ -604,8 +584,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
     /**
      * test when a non rdf extension file is uploaded for RDF import.
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     @Test
     public void testUploadRdfWithNotRdfExtension() throws Exception {

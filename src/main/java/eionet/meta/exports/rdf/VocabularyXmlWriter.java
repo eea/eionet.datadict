@@ -21,17 +21,6 @@
 
 package eionet.meta.exports.rdf;
 
-import java.io.OutputStream;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.commons.lang.StringUtils;
-
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
@@ -39,6 +28,15 @@ import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.SiteCode;
 import eionet.util.StringEncoder;
+import org.apache.commons.lang.StringUtils;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.OutputStream;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Vocabulary RDF-XML writer.
@@ -47,34 +45,54 @@ import eionet.util.StringEncoder;
  */
 public class VocabularyXmlWriter {
 
-    /** RDF write constants. */
+    /**
+     * RDF write constants.
+     */
     private static final String ENCODING = "UTF-8";
 
-    /** RDF namespace prefix. */
+    /**
+     * RDF namespace prefix.
+     */
     public static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
-    /** RDFS namespace prefix. */
+    /**
+     * RDFS namespace prefix.
+     */
     public static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 
-    /** SKOS namespace prefix. */
+    /**
+     * SKOS namespace prefix.
+     */
     public static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
 
-    /** XML namespace prefix. */
+    /**
+     * XML namespace prefix.
+     */
     public static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
 
-    /** OWL namespace prefix. */
+    /**
+     * OWL namespace prefix.
+     */
     public static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
 
-    /** DCTYPE namespace prefix. */
+    /**
+     * DCTYPE namespace prefix.
+     */
     public static final String DCTYPE_NS = "http://purl.org/dc/dcmitype/";
 
-    /** DCTERMS namespace prefix. */
+    /**
+     * DCTERMS namespace prefix.
+     */
     public static final String DCTERMS_NS = "http://purl.org/dc/terms/";
 
-    /** DD namespace prefix. */
+    /**
+     * DD namespace prefix.
+     */
     public static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
 
-    /** default namespaces that are present in all vocabulary RDFs. */
+    /**
+     * default namespaces that are present in all vocabulary RDFs.
+     */
     private static final HashMap<String, String> DEFAULT_NAMESPACES = new HashMap<String, String>();
 
     /**
@@ -85,10 +103,8 @@ public class VocabularyXmlWriter {
     /**
      * Class constructor.
      *
-     * @param out
-     *            output stream
-     * @throws XMLStreamException
-     *             if writing fails
+     * @param out output stream
+     * @throws XMLStreamException if writing fails
      */
     public VocabularyXmlWriter(OutputStream out) throws XMLStreamException {
         writer = XMLOutputFactory.newInstance().createXMLStreamWriter(out, ENCODING);
@@ -109,8 +125,7 @@ public class VocabularyXmlWriter {
     /**
      * Escapes IRI's reserved characters in the given URL string.
      *
-     * @param url
-     *            is a string.
+     * @param url is a string.
      * @return escaped URI
      */
     public static String escapeIRI(String url) {
@@ -120,20 +135,13 @@ public class VocabularyXmlWriter {
     /**
      * Writes rdf output to stream for one vocabulary folder.
      *
-     * @param commonElemsUri
-     *            uri for common elements
-     * @param folderContextRoot
-     *            IRI for folder
-     * @param contextRoot
-     *            folder context IRI
-     * @param vocabularyFolder
-     *            vocabulary
-     * @param vocabularyConcepts
-     *            concepts in the vocabulary
-     * @param rdfNamespaces
-     *            Namespaces that are used in the RDF entities
-     * @throws XMLStreamException
-     *             if streaming fails
+     * @param commonElemsUri     uri for common elements
+     * @param folderContextRoot  IRI for folder
+     * @param contextRoot        folder context IRI
+     * @param vocabularyFolder   vocabulary
+     * @param vocabularyConcepts concepts in the vocabulary
+     * @param rdfNamespaces      Namespaces that are used in the RDF entities
+     * @throws XMLStreamException if streaming fails
      */
     public void writeRDFXml(String commonElemsUri, String folderContextRoot, String contextRoot,
             VocabularyFolder vocabularyFolder, List<? extends VocabularyConcept> vocabularyConcepts,
@@ -149,16 +157,11 @@ public class VocabularyXmlWriter {
     /**
      * Writes start of XML.
      *
-     * @param siteCodeType
-     *            if true it is a site code vocabulary
-     * @param commonElemsUri
-     *            uri for common elements
-     * @param contextRoot
-     *            IRI for context
-     * @param nameSpaces
-     *            namespaces to be written to the header
-     * @throws XMLStreamException
-     *             if writing does not succeed
+     * @param siteCodeType   if true it is a site code vocabulary
+     * @param commonElemsUri uri for common elements
+     * @param contextRoot    IRI for context
+     * @param nameSpaces     namespaces to be written to the header
+     * @throws XMLStreamException if writing does not succeed
      */
     public void writeXmlStart(boolean siteCodeType, String commonElemsUri, String contextRoot, List<RdfNamespace> nameSpaces)
             throws XMLStreamException {
@@ -195,14 +198,10 @@ public class VocabularyXmlWriter {
     /**
      * Writes dcterms:Collection resource of the folder.
      *
-     * @param folderContext
-     *            Folder context IRI
-     * @param folder
-     *            Folder for the vocabularies
-     * @param vocabularies
-     *            concepts collection in the vocabulary
-     * @throws XMLStreamException
-     *             if rdf output fails
+     * @param folderContext Folder context IRI
+     * @param folder        Folder for the vocabularies
+     * @param vocabularies  concepts collection in the vocabulary
+     * @throws XMLStreamException if rdf output fails
      */
     public void writeFolderXml(String folderContext, Folder folder, List<? extends VocabularyFolder> vocabularies)
             throws XMLStreamException {
@@ -235,8 +234,7 @@ public class VocabularyXmlWriter {
     /**
      * Writes closing tags of XML.
      *
-     * @throws XMLStreamException
-     *             if writing fails
+     * @throws XMLStreamException if writing fails
      */
     public void writeXmlEnd() throws XMLStreamException {
         writer.writeCharacters("\n");
@@ -247,16 +245,11 @@ public class VocabularyXmlWriter {
     /**
      * Writes vocabulary folder XML.
      *
-     * @param folderContextRoot
-     *            vocabulary base uri
-     * @param vocabularyContextRoot
-     *            vocabulary set base uri
-     * @param vocabularyFolder
-     *            vocabulary
-     * @param vocabularyConcepts
-     *            concepts of vocabulary
-     * @throws XMLStreamException
-     *             when an error occurs during write operation
+     * @param folderContextRoot     vocabulary base uri
+     * @param vocabularyContextRoot vocabulary set base uri
+     * @param vocabularyFolder      vocabulary
+     * @param vocabularyConcepts    concepts of vocabulary
+     * @throws XMLStreamException when an error occurs during write operation
      */
     public void writeVocabularyFolderXml(String folderContextRoot, String vocabularyContextRoot,
             VocabularyFolder vocabularyFolder, List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
@@ -323,12 +316,9 @@ public class VocabularyXmlWriter {
     /**
      * Write binded elements to RDF.
      *
-     * @param contextRoot
-     *            contex root
-     * @param elements
-     *            elements list
-     * @throws XMLStreamException
-     *             if writing fails
+     * @param contextRoot contex root
+     * @param elements    elements list
+     * @throws XMLStreamException if writing fails
      */
     private void writeBoundElements(String contextRoot, List<List<DataElement>> elements) throws XMLStreamException {
         if (elements != null) {
@@ -365,10 +355,8 @@ public class VocabularyXmlWriter {
     /**
      * Writes site code specific properties to RDF output.
      *
-     * @param sc
-     *            sitecode
-     * @throws XMLStreamException
-     *             if export fails
+     * @param sc sitecode
+     * @throws XMLStreamException if export fails
      */
     private void writeSiteCodeData(SiteCode sc) throws XMLStreamException {
         writer.writeCharacters("\n");

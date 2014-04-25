@@ -21,15 +21,10 @@
 
 package eionet.meta.service;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.util.VocabularyCSVOutputHelper;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -39,10 +34,14 @@ import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.util.VocabularyCSVOutputHelper;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * JUnit integration test with Unitils for CSV Vocabulary Import Service.
@@ -50,7 +49,9 @@ import eionet.util.VocabularyCSVOutputHelper;
  * @author enver
  */
 public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestBase {
-    /** Vocabulary folder CSV import service. */
+    /**
+     * Vocabulary folder CSV import service.
+     */
     @SpringBeanByType
     private ICSVVocabularyImportService vocabularyImportService;
 
@@ -839,7 +840,8 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element = elements.get(0);
         Assert.assertEquals("Related Concept Id Doesn't Match",
                 findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_2").getId(), element.getRelatedConceptId()
-                        .intValue());
+                        .intValue()
+        );
         Assert.assertEquals("Related Concept Identifier Doesn't Match", "csv_test_concept_2",
                 element.getRelatedConceptIdentifier());
         Assert.assertEquals("Related Concept Label Doesn't Match", "csv_test_concept_label_2", element.getRelatedConceptLabel());
@@ -865,7 +867,8 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element = elements.get(0);
         Assert.assertEquals("Related Concept Id Doesn't Match",
                 findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_1").getId(), element.getRelatedConceptId()
-                        .intValue());
+                        .intValue()
+        );
         Assert.assertEquals("Related Concept Identifier Doesn't Match", "csv_test_concept_1",
                 element.getRelatedConceptIdentifier());
         Assert.assertEquals("Related Concept Label Doesn't Match", "csv_test_concept_label_1", element.getRelatedConceptLabel());

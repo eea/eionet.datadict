@@ -3,15 +3,14 @@
  */
 package eionet.util;
 
+import eionet.meta.DDRuntimeException;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.log4j.Logger;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
-import org.apache.commons.lang.math.NumberUtils;
-import org.apache.log4j.Logger;
-
-import eionet.meta.DDRuntimeException;
 
 /**
  * Utility class for retrieving the configured properties of this application.

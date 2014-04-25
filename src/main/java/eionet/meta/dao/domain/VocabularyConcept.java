@@ -21,12 +21,12 @@
 
 package eionet.meta.dao.domain;
 
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Vocabulary concept.

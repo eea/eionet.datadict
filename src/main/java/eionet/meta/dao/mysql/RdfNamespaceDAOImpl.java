@@ -1,19 +1,18 @@
 package eionet.meta.dao.mysql;
 
+import eionet.meta.DataElement;
+import eionet.meta.dao.DAOException;
+import eionet.meta.dao.IRdfNamespaceDAO;
+import eionet.meta.dao.domain.RdfNamespace;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
-import eionet.meta.DataElement;
-import eionet.meta.dao.DAOException;
-import eionet.meta.dao.IRdfNamespaceDAO;
-import eionet.meta.dao.domain.RdfNamespace;
 
 /**
  * IRDFNamespaceDAO implementation in mysql.
@@ -55,8 +54,8 @@ public class RdfNamespaceDAOImpl extends GeneralDAOImpl implements IRdfNamespace
                 ns.setPrefix(rs.getString("NAME_PREFIX"));
                 ns.setUri(rs.getString("URI"));
 
-                        return ns;
-                    }
+                return ns;
+            }
         });
 
         return resultList.size() > 0 ? resultList.get(0) : null;

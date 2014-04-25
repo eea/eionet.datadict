@@ -20,15 +20,14 @@
  */
 package eionet.meta.service;
 
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
 
 /**
  * Base abstract class used for vocabulary import from different sources (RDF or CSV).
@@ -62,10 +61,8 @@ public abstract class VocabularyImportServiceBaseImpl {
     /**
      * Purge/delete concepts from database.
      *
-     * @param concepts
-     *            to be deleted
-     * @throws ServiceException
-     *             if an error occurs during operation
+     * @param concepts to be deleted
+     * @throws ServiceException if an error occurs during operation
      */
     protected void purgeConcepts(List<VocabularyConcept> concepts) throws ServiceException {
         List<Integer> conceptIds = new ArrayList<Integer>();
@@ -81,12 +78,9 @@ public abstract class VocabularyImportServiceBaseImpl {
     /**
      * Purge/delete binded elements from vocabulary folder.
      *
-     * @param vocabularyFolderId
-     *            id of vocabulary folder
-     * @param bindedElements
-     *            binded elements
-     * @throws ServiceException
-     *             if an error occurs during operation
+     * @param vocabularyFolderId id of vocabulary folder
+     * @param bindedElements     binded elements
+     * @throws ServiceException if an error occurs during operation
      */
     protected void purgeBindedElements(int vocabularyFolderId, List<DataElement> bindedElements) throws ServiceException {
         if (bindedElements != null && bindedElements.size() > 0) {
@@ -100,16 +94,11 @@ public abstract class VocabularyImportServiceBaseImpl {
      * This method import objects into DB. It creates not-existing objects and then updates values. All operation is done Spring
      * Service Layer.
      *
-     * @param vocabularyId
-     *            vocabulary id
-     * @param vocabularyConcepts
-     *            concepts of vocabulary
-     * @param newBindedElement
-     *            newly binded elements
-     * @param elementsRelatedToNotCreatedConcepts
-     *            data elements which are related to newly created concepts
-     * @throws ServiceException
-     *             when an error occurs
+     * @param vocabularyId                        vocabulary id
+     * @param vocabularyConcepts                  concepts of vocabulary
+     * @param newBindedElement                    newly binded elements
+     * @param elementsRelatedToNotCreatedConcepts data elements which are related to newly created concepts
+     * @throws ServiceException when an error occurs
      */
     protected void importIntoDb(int vocabularyId, List<VocabularyConcept> vocabularyConcepts, List<DataElement> newBindedElement,
             Map<Integer, Set<DataElement>> elementsRelatedToNotCreatedConcepts) throws ServiceException {
