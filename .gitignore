@@ -12,3 +12,4 @@ target/
 Makefile
 /.idea
 /datadict.iml
+/*.bat
