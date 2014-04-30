@@ -21,6 +21,22 @@
 
 package eionet.meta.dao.mysql;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.IDataElementDAO;
@@ -30,21 +46,6 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 /**
  * Data element DAO.
@@ -82,7 +83,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * finds Common elements.
      *
-     * @param filter search filter
+     * @param filter
+     *            search filter
      * @return list of data elements
      */
     private List<DataElement> executeCommonElementQuery(final DataElementsFilter filter) {
@@ -154,7 +156,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                //int elmID = rs.getInt("de.DATAELEM_ID");
+                // int elmID = rs.getInt("de.DATAELEM_ID");
                 String elmIdf = rs.getString("de.IDENTIFIER");
                 // skip non-existing elements, ie trash from some erroneous situation
                 if (elmIdf == null) {
@@ -190,7 +192,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * finds non-Common elements.
      *
-     * @param filter search filter
+     * @param filter
+     *            search filter
      * @return list of data elements
      */
     private List<DataElement> executeNonCommonElementQuery(final DataElementsFilter filter) {
@@ -275,7 +278,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                     return;
                 }
 
-                //int elmID = rs.getInt("de.DATAELEM_ID");
+                // int elmID = rs.getInt("de.DATAELEM_ID");
                 String elmIdf = rs.getString("de.IDENTIFIER");
                 // skip non-existing elements, ie trash from some erroneous situation
                 if (elmIdf == null) {
@@ -666,7 +669,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     public void insertVocabularyConceptDataElementValues(int vocabularyConceptId, List<DataElement> dataElementValues) {
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ");
-		sql.append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
+        sql.append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
         sql.append("values (:vocabularyConceptId, :dataElementId, :elementValue, :language, :relatedConceptId)");
 
         @SuppressWarnings("unchecked")
@@ -692,7 +695,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     public void checkoutVocabularyConceptDataElementValues(int newVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ");
-		sql.append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
+        sql.append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
         sql.append("select con.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID ");
         sql.append("from VOCABULARY_CONCEPT_ELEMENT v ");
         sql.append("left join VOCABULARY_CONCEPT con on v.VOCABULARY_CONCEPT_ID = con.ORIGINAL_CONCEPT_ID  ");
@@ -713,7 +716,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     public void copyVocabularyConceptDataElementValues(int oldVocabularyId, int newVocabularyId) {
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ");
-		sql.append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
+        sql.append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
         sql.append("select newc.VOCABULARY_CONCEPT_ID, vce.DATAELEM_ID, vce.ELEMENT_VALUE, vce.LANGUAGE, vce.RELATED_CONCEPT_ID ");
         sql.append("from VOCABULARY_CONCEPT_ELEMENT vce, ");
         sql.append("VOCABULARY_CONCEPT oldc, VOCABULARY_CONCEPT newc ");
@@ -732,14 +735,16 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * After copying localref type element IDs have to be changed.
      *
-     * @param oldVocabularyId old vocabulary ID
-     * @param newVocabularyId new vocabulary ID
+     * @param oldVocabularyId
+     *            old vocabulary ID
+     * @param newVocabularyId
+     *            new vocabulary ID
      */
     private void updateCopiedRelatedConceptIds(int oldVocabularyId, int newVocabularyId) {
         StringBuilder sql = new StringBuilder();
 
         sql.append("UPDATE VOCABULARY_CONCEPT_ELEMENT ocev, VOCABULARY_CONCEPT oldc, VOCABULARY_CONCEPT newc, ");
-		sql.append("VOCABULARY_CONCEPT relc ");
+        sql.append("VOCABULARY_CONCEPT relc ");
         sql.append("SET ocev.RELATED_CONCEPT_ID = newc.VOCABULARY_CONCEPT_ID ");
         sql.append("where ");
         sql.append("ocev.RELATED_CONCEPT_ID = oldc.VOCABULARY_CONCEPT_ID ");
@@ -777,7 +782,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * updates localref IDs to the new concept ones.
      *
-     * @param newVocabularyId new vocabulary ID
+     * @param newVocabularyId
+     *            new vocabulary ID
      */
     private void updateCheckedoutRelatedConceptIds(int newVocabularyId) {
         StringBuilder sql = new StringBuilder();
@@ -839,7 +845,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     public List<DataElement> getDataSetElements(int datasetId) {
         StringBuilder sb = new StringBuilder();
         sb.append("select distinct de.* from DST2TBL dt, TBL2ELEM te, DATAELEM de WHERE dt.TABLE_ID = te.TABLE_ID ");
-		sb.append("and te.DATAELEM_ID = de.DATAELEM_ID AND dt.DATASET_ID = :datasetId");
+        sb.append("and te.DATAELEM_ID = de.DATAELEM_ID AND dt.DATASET_ID = :datasetId");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("datasetId", datasetId);
@@ -889,13 +895,13 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
     @Override
     public List<DataElement> getVocabularySourceElements(List<Integer> vocabularyIds) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("select  de.* from DATAELEM de WHERE de.VOCABULARY_ID IN(:vocabularyIds)");
+        StringBuilder sql = new StringBuilder();
+        sql.append("select  de.* from DATAELEM de WHERE de.VOCABULARY_ID IN(:vocabularyIds)");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyIds", vocabularyIds);
 
-        List<DataElement> result = getNamedParameterJdbcTemplate().query(sb.toString(), params, new RowMapper<DataElement>() {
+        List<DataElement> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<DataElement>() {
 
             @Override
             public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -934,4 +940,38 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         getNamedParameterJdbcTemplate().update(sql, params);
 
     }
+
+    @Override
+    public List<DataElement> getPotentialReferringVocabularyConceptsElements() {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT v.*, bu.base_uri, bu.vocabulary_id, bu.identifier FROM vocabulary_concept_element AS v, ");
+        sql.append("(SELECT base_uri, vocabulary_id, identifier FROM vocabulary ");
+        sql.append("WHERE base_uri IS NOT NULL AND base_uri > '') AS bu, ");
+        sql.append("dataelem AS d, attribute AS a, m_attribute AS ma ");
+        sql.append("WHERE v.dataelem_id = d.dataelem_id AND d.dataelem_id = a.dataelem_id ");
+        sql.append("AND ma.m_attribute_id = a.m_attribute_id AND v.related_concept_id IS NULL ");
+        sql.append("AND v.element_value IS NOT NULL AND v.element_value LIKE CONCAT(bu.base_uri,'%') ");
+        sql.append("AND d.PARENT_NS IS NULL AND (a.value = 'reference' OR a.value = 'localref') ");
+        sql.append("GROUP BY v.id ");
+        sql.append("HAVING COUNT(v.id) = 1 ");
+        sql.append("ORDER BY v.id, v.dataelem_id ");
+
+        List<DataElement> result =
+                getNamedParameterJdbcTemplate().query(sql.toString(), new HashMap<String, Object>(), new RowMapper<DataElement>() {
+                    @Override
+                    public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        DataElement de = new DataElement();
+                        // id field of DataElement class is used to store Vocabulary_Concept_Element.ID column.
+                        de.setId(rs.getInt("v.id"));
+                        de.setAttributeValue(rs.getString("v.element_value"));
+                        de.setRelatedConceptBaseURI(rs.getString("bu.base_uri"));
+                        de.setRelatedConceptVocabulary(rs.getString("bu.identifier"));
+                        // !!! ATTENTION: related concept id field is used to store vocabulary id temporarily.
+                        de.setRelatedConceptId(rs.getInt("bu.vocabulary_id"));
+                        return de;
+                    }
+                });
+
+        return result;
+    } // end of method getPotentialReferringVocabularyConceptsElements
 }

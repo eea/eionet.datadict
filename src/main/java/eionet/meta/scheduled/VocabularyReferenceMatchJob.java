@@ -21,15 +21,25 @@
 
 package eionet.meta.scheduled;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
+import eionet.meta.service.IVocabularyReferenceMatchService;
+import eionet.meta.service.ServiceException;
 
 /**
  * Scheduled Job class to match references in vocabulary.
  *
  * @author enver
  */
+@Configurable
+@DisallowConcurrentExecution
 public class VocabularyReferenceMatchJob extends AbstractScheduledJob {
     /**
      * Static definition of name of job. Visible to all parties.
@@ -40,12 +50,28 @@ public class VocabularyReferenceMatchJob extends AbstractScheduledJob {
      */
     private static final Logger LOGGER = Logger.getLogger(VocabularyReferenceMatchJob.class);
 
+    /**
+     * Match service.
+     */
+    @Autowired
+    protected IVocabularyReferenceMatchService service;
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        long start = System.currentTimeMillis();
         LOGGER.info("Starting to match references.");
-
-        LOGGER.info("References matched.");
-    }
+        List<String> strings = null;
+        try {
+            strings = service.matchReferences();
+        } catch (ServiceException e) {
+            LOGGER.error("Match operation failed: " + e.getMessage());
+            throw new JobExecutionException(e);
+        }
+        for (String s : strings) {
+            LOGGER.debug(s);
+        }
+        LOGGER.info("References matched in " + (System.currentTimeMillis() - start) + " msecs.");
+    } // end of method execute
 
     @Override
     protected String getName() {
