@@ -26,7 +26,7 @@ The necessary versions are as follows:
 * Maven 2.0.4 or higher
 * Tomcat 5.5 or higher
 * GIT 1.8.4 or higher
-* MySql 5.0.77 or higher
+* MySql 5.1.71 or higher
 
 #### Download DD source code
 
@@ -57,6 +57,7 @@ $ mysql -u root -p
 create database DataDict;
 CREATE USER 'dduser'@'localhost' IDENTIFIED BY 'password-here';
 GRANT ALL PRIVILEGES ON DataDict.* TO 'dduser'@'localhost';
+GRANT TRIGGER ON DataDict.* TO 'dduser'@'localhost';
 ```
 
 #### Unit testing

@@ -1576,4 +1576,33 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropColumn columnName="SITE_CODE_ID" tableName="T_SITE_CODE"/>		
         <addPrimaryKey columnNames="VOCABULARY_CONCEPT_ID" tableName="T_SITE_CODE"/>
 	</changeSet>
+
+    <changeSet author="lainekai" id="rev-128">
+        <comment>Add unique hashed key value to avoid duplicate concept element values</comment>
+        <addColumn tableName="VOCABULARY_CONCEPT_ELEMENT">
+            <column name="ATTR_MD5" type="VARCHAR(32)"  ></column>
+        </addColumn>
+        <addUniqueConstraint tableName="VOCABULARY_CONCEPT_ELEMENT" columnNames="ATTR_MD5" constraintName="UNIQ_ATTR_MD5"/>
+    </changeSet>
+
+    <changeSet author="lainekai" id="rev-129">
+        <comment>Create triggers automatically creating key hashes on the VOCABULARY_CONCEPT_ELEMENT table</comment>
+        <sql>
+            CREATE TRIGGER ATTR_MD5_ON_INSERT
+            BEFORE INSERT ON VOCABULARY_CONCEPT_ELEMENT
+            FOR EACH ROW
+            SET NEW.ATTR_MD5 = MD5(CONCAT(NEW.VOCABULARY_CONCEPT_ID, ',', NEW.DATAELEM_ID, ',',
+            COALESCE(NEW.RELATED_CONCEPT_ID, NEW.ELEMENT_VALUE), '@', COALESCE(NEW.LANGUAGE, ''))
+            );
+            CREATE TRIGGER ATTR_MD5_ON_UPDATE
+            BEFORE UPDATE ON VOCABULARY_CONCEPT_ELEMENT
+            FOR EACH ROW
+            SET NEW.ATTR_MD5 = MD5(
+            CONCAT(NEW.VOCABULARY_CONCEPT_ID, ',', NEW.DATAELEM_ID, ',',
+            COALESCE(NEW.RELATED_CONCEPT_ID, NEW.ELEMENT_VALUE), '@', COALESCE(NEW.LANGUAGE, '')
+            )
+            );
+            UPDATE VOCABULARY_CONCEPT_ELEMENT SET DATAELEM_ID=DATAELEM_ID;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
