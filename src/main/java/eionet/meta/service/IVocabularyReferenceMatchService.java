@@ -31,10 +31,12 @@ public interface IVocabularyReferenceMatchService {
     /**
      * A Transactional method to match references. Expected to be called from a background task. *
      *
+     * @param dataElementIdentifiers
+     *            data element identifiers.
      * @return List of log messages
      * @throws eionet.meta.service.ServiceException
      *             Error if operation fails for any reason.
      */
-    List<String> matchReferences() throws ServiceException;
+    List<String> matchReferences(String[] dataElementIdentifiers) throws ServiceException;
 
 } // end of interface IVocabularyReferenceMatchService

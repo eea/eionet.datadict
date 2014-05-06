@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
+import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,10 @@ public class VocabularyReferenceMatchJob extends AbstractScheduledJob {
      * Logging instance.
      */
     private static final Logger LOGGER = Logger.getLogger(VocabularyReferenceMatchJob.class);
+    /**
+     * Elements key.
+     */
+    private static final String ELEMENTS_KEY = NAME + "ElementsKey";
 
     /**
      * Match service.
@@ -62,13 +67,13 @@ public class VocabularyReferenceMatchJob extends AbstractScheduledJob {
         LOGGER.info("Starting to match references.");
         List<String> strings = null;
         try {
-            strings = service.matchReferences();
+            strings = service.matchReferences((String[]) jobExecutionContext.getJobDetail().getJobDataMap().get(ELEMENTS_KEY));
         } catch (ServiceException e) {
             LOGGER.error("Match operation failed: " + e.getMessage());
             throw new JobExecutionException(e);
         }
         for (String s : strings) {
-            LOGGER.debug(s);
+            LOGGER.info(s);
         }
         LOGGER.info("References matched in " + (System.currentTimeMillis() - start) + " msecs.");
     } // end of method execute
@@ -77,4 +82,9 @@ public class VocabularyReferenceMatchJob extends AbstractScheduledJob {
     protected String getName() {
         return VocabularyReferenceMatchJob.NAME;
     } // end of method getName
+
+    @Override
+    protected void parseJobData(JobDetail jobDetails, String jobData) {
+        jobDetails.getJobDataMap().put(ELEMENTS_KEY, jobData.split("[,]"));
+    } // end of method parseJobData
 } // end of class VocabularyReferenceMatchJob

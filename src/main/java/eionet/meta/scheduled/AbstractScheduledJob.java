@@ -24,6 +24,7 @@ package eionet.meta.scheduled;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.quartz.CronExpression;
 import org.quartz.Job;
@@ -40,9 +41,13 @@ import eionet.util.Props;
 public abstract class AbstractScheduledJob implements ServletContextListener, Job {
 
     /**
-     * Property suffix used for each job properties in resource file.
+     * Schedule property suffix used for each job properties in resource file.
      */
-    public static final String PROPERTY_SUFFIX = ".job.schedule";
+    public static final String SCHEDULE_PROPERTY_SUFFIX = ".job.schedule";
+    /**
+     * Data property suffix used for each job properties in resource file.
+     */
+    public static final String DATA_PROPERTY_SUFFIX = ".job.data";
 
     /**
      * local logger.
@@ -57,13 +62,34 @@ public abstract class AbstractScheduledJob implements ServletContextListener, Jo
     protected abstract String getName();
 
     /**
-     * Property name.
+     * Schedule property name.
      *
      * @return A string to query property for job.
      */
-    protected String getPropName() {
-        return getName() + PROPERTY_SUFFIX;
-    } // end of method getPropName
+    protected String getSchedulePropName() {
+        return getName() + SCHEDULE_PROPERTY_SUFFIX;
+    } // end of method getSchedulePropName
+
+    /**
+     * Data property name.
+     *
+     * @return A string to query property for job.
+     */
+    protected String getDataPropName() {
+        return getName() + DATA_PROPERTY_SUFFIX;
+    } // end of method getDataPropName
+
+    /**
+     * Parses job data. It does not have a default implementation yet. It can be overwritten by subclasses for specific needs.
+     *
+     * @param jobDetails
+     *            cron object for job details
+     * @param jobData
+     *            String job data from properties file
+     */
+    protected void parseJobData(JobDetail jobDetails, String jobData) {
+        throw new UnsupportedOperationException("Base method is not implemented");
+    } // end of method parseJobData
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -71,7 +97,12 @@ public abstract class AbstractScheduledJob implements ServletContextListener, Jo
         JobBuilder jobBuilder = JobBuilder.newJob(clazz);
         jobBuilder.withIdentity(clazz.getSimpleName(), clazz.getName());
         JobDetail jobDetails = jobBuilder.build();
-        String propName = getPropName();
+        String jobData = Props.getProperty(getDataPropName());
+        jobData = StringUtils.trimToEmpty(jobData);
+        if (StringUtils.isNotBlank(jobData)) {
+            parseJobData(jobDetails, jobData);
+        }
+        String propName = getSchedulePropName();
         String intervalPrpValue = Props.getProperty(propName);
         try {
             if (CronExpression.isValidExpression(intervalPrpValue)) {
