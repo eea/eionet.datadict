@@ -43,24 +43,27 @@ import eionet.meta.service.data.RdfNamespaceResult;
  */
 @UrlBinding("/namespaces")
 public class NamespacesActionBean extends AbstractActionBean {
-
-    /** Page path. */
+    /**
+     * Page path.
+     */
     private static final String LIST_NAMESPACES_JSP = "/pages/namespaces/listNamespaces.jsp";
-
-    /** Vocabulary service. */
+    /**
+     * Namespace page size.
+     */
+    private static final int NAMESPACE_PAGE_SIZE = 40;
+    /**
+     * Vocabulary service.
+     */
     @SpringBean
     private INamespaceService namespaceService;
-
     /**
      * RDF Namespaces display list.
      */
     private RdfNamespaceResult rdfNamespaceResult;
-
     /**
      * Namespaces display list.
      */
     private NamespaceResult namespaceResult;
-
     /**
      * Namespace current page.
      */
@@ -84,6 +87,7 @@ public class NamespacesActionBean extends AbstractActionBean {
 
         NamespaceFilter filter = new NamespaceFilter();
         filter.setPageNumber(this.page);
+        filter.setPageSize(NAMESPACE_PAGE_SIZE);
         this.namespaceResult = this.namespaceService.getNamespaces(filter);
         return new ForwardResolution(NamespacesActionBean.LIST_NAMESPACES_JSP);
     } // end of method viewList
