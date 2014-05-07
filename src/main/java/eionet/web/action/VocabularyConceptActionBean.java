@@ -47,9 +47,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.web.util.UriUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Vocabulary concept action bean.
@@ -314,8 +312,11 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             addGlobalValidationError("Vocabulary concept identifier is not unique");
         }
 
+        List<String> uniqueValues = new ArrayList<String>();
+
         if (vocabularyConcept.getElementAttributes() != null) {
             for (List<DataElement> elems : vocabularyConcept.getElementAttributes()) {
+                uniqueValues.clear();
                 if (elems != null) {
                     DataElement metaInfo = elems.get(0);
                     for (DataElement elem : elems) {
@@ -328,6 +329,12 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                                             + "http, https, ftp, mailto, tel and urn");
                                 }
                             }
+
+                            if (uniqueValues.contains(elem.getUniqueValueHash())) {
+                                addGlobalValidationError("'" + metaInfo.getName() + "'"
+                                        + " has the same value for the same language more than once: " + elem.getValueText() );
+                            }
+                            uniqueValues.add(elem.getUniqueValueHash());
                         }
                     }
                 }
@@ -358,7 +365,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
         validateView();
         initBeans();
-        initSeachFilters();
+        initSearchFilters();
 
         relatedConceptsFilter.setExcludedIds(Collections.singletonList(vocabularyConcept.getId()));
 
@@ -749,7 +756,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     /**
      * initializes filters and other helper variables.
      */
-    private void initSeachFilters() {
+    private void initSearchFilters() {
         // related concepts
         if (relatedConceptsFilter == null) {
             relatedConceptsFilter = new VocabularyConceptFilter();

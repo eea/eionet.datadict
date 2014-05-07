@@ -479,4 +479,24 @@ public class DataElement {
         this.date = date;
     }
 
+
+    /**
+     * MD5 hash of the value similar to the DB unique key.
+     * @return md5 hash of element values.
+     */
+    public String getUniqueValueHash() {
+        return Util.md5((getId() + "," + (getRelatedConceptId() != null ? getRelatedConceptId() : getAttributeValue())
+                + "@" + StringUtils.defaultString(getAttributeLanguage())));
+    }
+
+    /**
+     * String representation of the element attribute value.
+     *
+     * @return value or related concept label depending on the element type
+     */
+    public String getValueText() {
+        return isRelationalElement()
+                ? StringUtils.trimToEmpty(getRelatedConceptLabel()) : StringUtils.trimToEmpty(getAttributeValue())
+                + (getAttributeLanguage() != null ? " [" + getAttributeLanguage() + "]" : "");
+    }
 }
