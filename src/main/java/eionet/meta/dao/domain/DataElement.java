@@ -481,7 +481,8 @@ public class DataElement {
 
 
     /**
-     * MD5 hash of the value similar to the DB unique key.
+     * MD5 hash of the value similar to the DB unique key without concept id.
+     *
      * @return md5 hash of element values.
      */
     public String getUniqueValueHash() {
