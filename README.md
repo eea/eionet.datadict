@@ -57,7 +57,6 @@ $ mysql -u root -p
 create database DataDict;
 CREATE USER 'dduser'@'localhost' IDENTIFIED BY 'password-here';
 GRANT ALL PRIVILEGES ON DataDict.* TO 'dduser'@'localhost';
-GRANT TRIGGER ON DataDict.* TO 'dduser'@'localhost';
 ```
 
 #### Unit testing
