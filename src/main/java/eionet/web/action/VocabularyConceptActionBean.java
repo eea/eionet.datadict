@@ -332,7 +332,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
                             if (uniqueValues.contains(elem.getUniqueValueHash())) {
                                 addGlobalValidationError("'" + metaInfo.getName() + "'"
-                                        + " has the same value for the same language more than once: " + elem.getValueText());
+                                        + " has the same value more than once: " + elem.getValueText());
                             }
                             uniqueValues.add(elem.getUniqueValueHash());
                         }
