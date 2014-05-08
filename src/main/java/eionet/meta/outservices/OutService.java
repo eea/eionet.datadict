@@ -1,5 +1,11 @@
 package eionet.meta.outservices;
 
+import eionet.meta.DDSearchEngine;
+import eionet.meta.Dataset;
+import eionet.meta.DsTable;
+import eionet.util.Util;
+import eionet.util.sql.ConnectionUtil;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -7,12 +13,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
-
-import eionet.meta.DDSearchEngine;
-import eionet.meta.Dataset;
-import eionet.meta.DsTable;
-import eionet.util.Util;
-import eionet.util.sql.ConnectionUtil;
 
 /**
  * This is a class that serves public methods to the XML-RPC interface of Data Dictionary.
