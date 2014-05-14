@@ -29,59 +29,70 @@
 <c:url var="delIcon" value="/images/button_remove.gif" />
 
 <script type="text/javascript">
-// <![CDATA[
-( function($) {
-    $(document).ready(function() {
+    // <![CDATA[
+    ( function($) {
+        $(document).ready(function() {
 
-       var currentSize = ${fn:length(dataElements)};
+            var currentSize = ${fn:length(dataElements)};
 
-        $("#referenceAdd${uniqueId}").live("click", function(event){
-          $('#add-value${uniqueId}').dialog('open');
-          return false;
-       });
+            $("#referenceAdd${uniqueId}").live("click", function(event){
+                $('#add-value${uniqueId}').dialog('open');
+                return false;
+            });
 
 
-        $("#add-value${uniqueId}").dialog({
-          autoOpen: false,
-            resizable: false,
-            maxHeight: 300,
-            width: 500,
-            modal: true,
-            buttons: {
-                "Yes, find concept in DD" : function() {
-                    clearSysMsg();
-                    var action = "saveConcept";
-                    $('#txtEditDivId').attr('value', 'findVocabularyDiv');
-                    //submit data to not loose changes
-                    $("#editForm").attr('action', action).ajaxSubmit({type: 'post'});
-                    var elementId=${elementId};
-                    openVocabularySearch(elementId);
-                    $(this).dialog("close");
-                  return false;
-                },
-                "No, enter the URL": function() {
-                  clearSysMsg();
-                  var newInput = $("#newField${uniqueId}").clone(true);
-                  newInput.attr("id", "multySpan${uniqueId}-" + currentSize);
-                  newInput.find("input[id='elem-${uniqueId}.id']").attr("name", "${fieldName}[" + currentSize + "].id");
-                  newInput.find("input[id='elem-${uniqueId}.id']").attr("value", "${elementId}");
-                  newInput.find("input[type='text']").attr("name", "${fieldName}[" + currentSize + "].attributeValue");
+            $("#add-value${uniqueId}").dialog({
+                autoOpen: false,
+                resizable: false,
+                maxHeight: 300,
+                width: 500,
+                modal: true,
+                buttons: {
+                    "Yes, find concept in DD" : function() {
+                        clearSysMsg();
+                        var action = "saveConcept";
+                        $('#txtEditDivId').attr('value', 'findVocabularyDiv');
+                        //submit data to not loose changes, TODO: handle response
+                        $("#editForm").attr('action', action).ajaxSubmit({type: 'post'});
+                        var elementId=${elementId};
 
-                  newInput.appendTo("#multiDiv${uniqueId}");
-                  currentSize++;
+                        //if CH3 - skip vocabulary search as vocabulary is related to the element
+                        if ("${dataElements[0].type}" == "CH3") {
+                            document.getElementById('txtEditDivId').value='addConceptDiv';
+                            document.getElementById('txtConceptElementId').value=elementId;
+                            document.getElementById('txtVocabularyId').value="${dataElements[0].vocabularyId}";
+                            document.getElementById('nonCh3Div').style.display = "none";
+                            openPopup("#addConceptDiv");
+                        } else {
+                            document.getElementById('nonCh3Div').style.display = "block";
+                            openVocabularySearch(elementId);
+                        }
+                        $(this).dialog("close");
+                        return false;
+                    },
+                    "No, enter the URL": function() {
+                        clearSysMsg();
+                        var newInput = $("#newField${uniqueId}").clone(true);
+                        newInput.attr("id", "multySpan${uniqueId}-" + currentSize);
+                        newInput.find("input[id='elem-${uniqueId}.id']").attr("name", "${fieldName}[" + currentSize + "].id");
+                        newInput.find("input[id='elem-${uniqueId}.id']").attr("value", "${elementId}");
+                        newInput.find("input[type='text']").attr("name", "${fieldName}[" + currentSize + "].attributeValue");
 
-                  $(this).dialog("close");
-                  newInput.find("input[type='text']").focus();
+                        newInput.appendTo("#multiDiv${uniqueId}");
+                        currentSize++;
+
+                        $(this).dialog("close");
+                        newInput.find("input[type='text']").focus();
+                    }
                 }
-            }
+            });
+
         });
-
-    });
-}) ( jQuery );
+    }) ( jQuery );
 
 
 
-// ]]>
+    // ]]>
 </script>
 <!--  text field for adding regular URL -->
 <div style="display:none">
@@ -96,28 +107,28 @@
 <div id="multiDiv${uniqueId}">
     <c:forEach var="attr" items="${dataElements}" varStatus="innerLoop">
         <c:if test="${not empty attr.attributeValue or (not empty attr.relatedConceptId && attr.relatedConceptId != 0)}">
-        <div id="multySpan${uniqueId}-${innerLoop.index}">
-            <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
-            <input type="hidden" name="${fieldName}[${innerLoop.index}].identifier" value="${attr.identifier}" />
-            <stripes:hidden name="elementId" value="${elementId}"/>
+            <div id="multySpan${uniqueId}-${innerLoop.index}">
+                <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
+                <input type="hidden" name="${fieldName}[${innerLoop.index}].identifier" value="${attr.identifier}" />
+                <stripes:hidden name="elementId" value="${elementId}"/>
 
-            <c:choose>
-              <c:when test="${attr.relationalElement}">
-                  <stripes:hidden name="${fieldName}[${innerLoop.index}].relatedConceptId" value="${attr.relatedConceptId}" />
+                <c:choose>
+                    <c:when test="${attr.relationalElement}">
+                        <stripes:hidden name="${fieldName}[${innerLoop.index}].relatedConceptId" value="${attr.relatedConceptId}" />
 
-                  <a href="${actionBean.conceptViewPrefix}${attr.relatedConceptRelativePath}/view"><c:out value="${attr.relatedConceptIdentifier}" />
-                      <c:if test="${not empty attr.relatedConceptLabel}">
-                          (<c:out value="${attr.relatedConceptLabel}" />)
-                      </c:if>
-                  </a>
-              </c:when>
-            <c:otherwise>
-                <input name="${fieldName}[${innerLoop.index}].attributeValue" value="${attr.attributeValue}" class="${fieldClass}" size="${fieldSize}" type="text"/>
-            </c:otherwise>
-            </c:choose>
+                        <a href="${actionBean.conceptViewPrefix}${attr.relatedConceptRelativePath}/view"><c:out value="${attr.relatedConceptIdentifier}" />
+                            <c:if test="${not empty attr.relatedConceptLabel}">
+                                (<c:out value="${attr.relatedConceptLabel}" />)
+                            </c:if>
+                        </a>
+                    </c:when>
+                    <c:otherwise>
+                        <input name="${fieldName}[${innerLoop.index}].attributeValue" value="${attr.attributeValue}" class="${fieldClass}" size="${fieldSize}" type="text"/>
+                    </c:otherwise>
+                </c:choose>
 
-            <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove'/></a>
-        </div>
+                <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove'/></a>
+            </div>
         </c:if>
     </c:forEach>
 </div>

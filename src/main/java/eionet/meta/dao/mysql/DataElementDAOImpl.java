@@ -635,6 +635,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setRelatedConceptVocabulary(rs.getString("rcv.IDENTIFIER"));
                 de.setRelatedConceptBaseURI(rs.getString("rcv.BASE_URI"));
                 de.setRelatedConceptVocSet(rs.getString("rcvs.IDENTIFIER"));
+                de.setVocabularyId(rs.getInt("d.VOCABULARY_ID"));
 
                 List<FixedValue> fxvs = getFixedValues(de.getId());
 

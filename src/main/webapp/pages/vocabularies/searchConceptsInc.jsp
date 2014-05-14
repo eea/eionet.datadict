@@ -69,10 +69,9 @@
                 }
             });
 
-
             <c:if test="${not empty actionBean.editDivId}">
-            openPopup("#${actionBean.editDivId}");
-            $("#txtElemName").attr("value","${actionBean.elementId}");
+                openPopup("#${actionBean.editDivId}");
+                $("#txtElemName").attr("value","${actionBean.elementId}");
             </c:if>
         });
     } ) ( jQuery );
@@ -95,17 +94,19 @@
             <stripes:hidden name="vocabularyFolder.folderName" />
             <stripes:hidden name="vocabularyFolder.identifier" />
             <stripes:hidden name="vocabularyFolder.workingCopy" />
-            <stripes:hidden name="elementId" />
-            <stripes:hidden name="folderId" />
+            <stripes:hidden id="txtConceptElementId" name="elementId" />
+            <!-- this is vocabulary ID, param name is misleading -->
+            <stripes:hidden id = "txtVocabularyId" name="folderId" />
+            <c:set var="fieldSize" value="68" />
 
 
         </div>
+        <div id = "nonCh3Div">
         <table class="datatable" style="width:100%">
             <colgroup>
                 <col style="width:20em;"/>
                 <col style="width:40em;"/>
             </colgroup>
-
             <c:if test="${not empty actionBean.relatedVocabulary}">
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
@@ -117,13 +118,15 @@
                 </tr>
             </c:if>
             <c:if test="${empty actionBean.relatedVocabulary}">
+
                 <tr>
                     <th></th>
                     <td class="simple_attr_value">
+
                         [<a href="#" class="delLink" id="backToSearch">Back to search</a>]
+
                     </td>
                 </tr>
-
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Found Vocabulary Sets
@@ -173,6 +176,17 @@
                     </tr>
                 </c:if>
             </c:if>
+
+        </table>
+        </div>
+        <table class="datatable" style="width:100%">
+            <colgroup>
+                <col style="width:20em;"/>
+                <col style="width:40em;"/>
+            </colgroup>
+
+
+
             <tr>
                 <th scope="row" class="scope-row simple_attr_title">
                     <label for="filterText"><span style="white-space:nowrap;">Vocabulary Concept</span></label>
