@@ -33,6 +33,10 @@
                 return false;
             });
 
+            $("#cancelCH3ConceptBtn").click(function(){
+                $("#addCH3ConceptDiv").dialog("close");
+                return false;
+            });
 
             // Add concept dialog setup
             $("#addConceptDiv").dialog({
@@ -41,6 +45,14 @@
                 modal: true
 
             });
+
+            $("#addCH3ConceptDiv").dialog({
+                autoOpen: false,
+                width: 600,
+                modal: true
+
+            });
+
             $("#findVocabularyDiv").dialog({
                 autoOpen: false,
                 width: 600,
@@ -70,8 +82,9 @@
             });
 
             <c:if test="${not empty actionBean.editDivId}">
-                openPopup("#${actionBean.editDivId}");
-                $("#txtElemName").attr("value","${actionBean.elementId}");
+            $("#ch3SearchResults").attr('style', 'display:inline');
+            openPopup("#${actionBean.editDivId}");
+            $("#txtElemName").attr("value","${actionBean.elementId}");
             </c:if>
         });
     } ) ( jQuery );
@@ -83,7 +96,98 @@
         openPopup("#findVocabularyDiv");
     };
 
+    function openCH3Search(elementId, vocabularyId, vocabularyLabel) {
+        document.getElementById('txtEditDivId').value='addCH3ConceptDiv';
+        document.getElementById('txtConceptElementId').value=elementId;
+        document.getElementById('txtVocabularyId').value=vocabularyId;
+        document.getElementById("relatedVocName").innerHTML=vocabularyLabel;
+        openPopup("#addCH3ConceptDiv");
+
+    }
+
 </script>
+
+
+<!--  Search concepts div -->
+<div id="addCH3ConceptDiv" title="Find a concept" style="display:inline">
+    <stripes:form method="post" beanclass="${actionBean.class.name}" id="frmSearchCH3Concept">
+        <div>
+            <stripes:hidden name="vocabularyConcept.identifier" />
+            <stripes:hidden name="vocabularyFolder.folderName" />
+            <stripes:hidden name="vocabularyFolder.identifier" />
+            <stripes:hidden name="vocabularyFolder.workingCopy" />
+            <stripes:hidden id="txtConceptElementId" name="elementId" />
+            <stripes:hidden id = "txtVocabularyId" name="elemVocabularyId" />
+            <c:set var="fieldSize" value="68" />
+
+        </div>
+
+        <table class="datatable" style="width:100%">
+            <colgroup>
+                <col style="width:20em;"/>
+                <col style="width:40em;"/>
+            </colgroup>
+
+
+            <tr>
+                <th scope="row" class="scope-row simple_attr_title">
+                    <span style="white-space:nowrap;">Vocabulary</span>
+                </th>
+                <td class="simple_attr_value">
+                    <span id="relatedVocName"><c:if test="${not empty actionBean.relatedVocabulary}">${actionBean.relatedVocabulary.label}</c:if></span>
+                </td>
+            </tr>
+
+            <tr>
+                <th scope="row" class="scope-row simple_attr_title">
+                    <label for="filterCH3Text"><span style="white-space:nowrap;">Vocabulary Concept</span></label>
+                </th>
+                <td class="simple_attr_value">
+                    <input class="smalltext" size="50" name="relatedConceptsFilter.text" id="filterCH3Text" value="${actionBean.relatedConceptsFilter.text}" placeholder="Search by concept identifier, label or definition"/>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <stripes:submit name="searchConcepts" value="Search" class="mediumbuttonb"/>
+                    <stripes:button id="cancelCH3ConceptBtn" name="cancelConceptSearch" value="Cancel" class="mediumbuttonb"/>
+                </td>
+            </tr>
+        </table>
+        <div id="ch3SearchResults" style='display:none'>
+            <c:if test="${not empty actionBean.relatedVocabularyConcepts and not empty actionBean.editDivId}">
+                <display:table name="actionBean.relatedVocabularyConcepts.list" class="sortable" id="item" pagesize="20"
+                               requestURI="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/${actionBean.searchEventName}">
+                    <c:if test="${empty actionBean.relatedVocabulary}">
+                        <display:column title="Vocabulary Set" sortable="true" sortProperty="vocabularySetLabel">
+                            ${item.vocabularySetLabel}
+                        </display:column>
+                        <display:column title="Vocabulary" sortable="true" sortProperty="vocabularyLabel">
+                            ${item.vocabularyLabel}
+                        </display:column>
+                    </c:if>
+                    <display:column title="Concept" sortable="true" sortProperty="identifier">
+                        <stripes:link beanclass="${actionBean.class.name}" event="addRelatedConcept" title="Select the concept">
+                            <stripes:param name="conceptId" value="${item.id}" />
+                            <c:if test="${not empty actionBean.elementId}">
+                                <stripes:param name="elementId" value="${actionBean.elementId}" />
+                            </c:if>
+                            <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                            <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                            <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                            <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                            <stripes:param name="vocabularyConcept.identifier" value="${actionBean.vocabularyConcept.identifier}" />
+                            ${item.identifier}
+                        </stripes:link>
+                    </display:column>
+                    <display:column title="Label" sortable="true" sortProperty="label">
+                        <span title="${item.definition}">${item.label}</span>
+                    </display:column>
+                </display:table>
+            </c:if>
+        </div>
+    </stripes:form>
+</div>
 
 
 <!--  Search concepts div -->
@@ -94,19 +198,19 @@
             <stripes:hidden name="vocabularyFolder.folderName" />
             <stripes:hidden name="vocabularyFolder.identifier" />
             <stripes:hidden name="vocabularyFolder.workingCopy" />
-            <stripes:hidden id="txtConceptElementId" name="elementId" />
             <!-- this is vocabulary ID, param name is misleading -->
-            <stripes:hidden id = "txtVocabularyId" name="folderId" />
+            <stripes:hidden name="folderId" />
             <c:set var="fieldSize" value="68" />
 
 
         </div>
-        <div id = "nonCh3Div">
+
         <table class="datatable" style="width:100%">
             <colgroup>
                 <col style="width:20em;"/>
                 <col style="width:40em;"/>
             </colgroup>
+
             <c:if test="${not empty actionBean.relatedVocabulary}">
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
@@ -176,14 +280,6 @@
                     </tr>
                 </c:if>
             </c:if>
-
-        </table>
-        </div>
-        <table class="datatable" style="width:100%">
-            <colgroup>
-                <col style="width:20em;"/>
-                <col style="width:40em;"/>
-            </colgroup>
 
 
 

@@ -55,6 +55,7 @@
     <display:column title="Type" sortable="true">
         <c:if test="${item.type == 'CH1'}">Fixed values</c:if>
         <c:if test="${item.type == 'CH2'}">Quantitative</c:if>
+        <c:if test="${item.type == 'CH3'}">Vocabulary</c:if>
     </display:column>
     <display:column title="Status" sortable="true">
         <c:url var="imgSrc" value="/images/${item.statusImage}" />
@@ -138,6 +139,7 @@
         <display:column title="Type" sortable="true">
             <c:if test="${item.type == 'CH1'}">Fixed values</c:if>
             <c:if test="${item.type == 'CH2'}">Quantitative</c:if>
+            <c:if test="${item.type == 'CH3'}">Vocabulary</c:if>
         </display:column>
         <display:column title="Status" sortable="true">
             <c:url var="imgSrc" value="/images/${item.statusImage}" />

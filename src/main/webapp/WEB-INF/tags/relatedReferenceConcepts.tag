@@ -5,6 +5,7 @@
 <%@ attribute name="dataElements" required="true" type="java.util.ArrayList" %>
 <%@ attribute name="fieldSize" required="false" %>
 <%@ attribute name="fieldClass" required="false" %>
+<%@ attribute name="elemVocName" required="false" %>
 
 <%--
     Input tag for related reference concepts which supports multiple values.
@@ -16,6 +17,7 @@
         - fieldName must be the Stripes bean property name (actionBean.vocabularyConcept.testAttribute)
         - uniqueId id that is used as suffix for ids of different html elements
         - fieldSize and fieldClass are optional with default values "30" and "smalltext"
+        - elemVocName - vocabulary label for the ch3 element
  --%>
 
 <c:if test="${empty fieldSize}">
@@ -51,20 +53,26 @@
                     "Yes, find concept in DD" : function() {
                         clearSysMsg();
                         var action = "saveConcept";
+
                         $('#txtEditDivId').attr('value', 'findVocabularyDiv');
                         //submit data to not loose changes, TODO: handle response
+                        //save old action:
+                        var oldAction = $("#editForm").attr('action');
+                        //$.preventDefault();
+
                         $("#editForm").attr('action', action).ajaxSubmit({type: 'post'});
+                        $("#editForm").attr('action', oldAction);
+
                         var elementId=${elementId};
 
                         //if CH3 - skip vocabulary search as vocabulary is related to the element
                         if ("${dataElements[0].type}" == "CH3") {
-                            document.getElementById('txtEditDivId').value='addConceptDiv';
-                            document.getElementById('txtConceptElementId').value=elementId;
-                            document.getElementById('txtVocabularyId').value="${dataElements[0].vocabularyId}";
-                            document.getElementById('nonCh3Div').style.display = "none";
-                            openPopup("#addConceptDiv");
+                            var vocabularyId = "${dataElements[0].vocabularyId}";
+                            var vocabularyLabel = "${elemVocName}";
+                            $("#ch3SearchResults").attr('style', 'display:none');
+                            $("#filterCH3Text").attr('value', '');
+                            openCH3Search(elementId, vocabularyId, vocabularyLabel);
                         } else {
-                            document.getElementById('nonCh3Div').style.display = "block";
                             openVocabularySearch(elementId);
                         }
                         $(this).dialog("close");
@@ -110,6 +118,8 @@
             <div id="multySpan${uniqueId}-${innerLoop.index}">
                 <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
                 <input type="hidden" name="${fieldName}[${innerLoop.index}].identifier" value="${attr.identifier}" />
+                <input type="hidden" name="${fieldName}[${innerLoop.index}].type" value="${attr.type}" />
+                <input type="hidden" name="${fieldName}[${innerLoop.index}].vocabularyId" value="${attr.vocabularyId}" />
                 <stripes:hidden name="elementId" value="${elementId}"/>
 
                 <c:choose>

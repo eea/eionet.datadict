@@ -1362,7 +1362,7 @@
                 </p>
                 <ul>
                     <li>Copy an existing element by filling the input for Identifier (others will be ignored) and clicking <em>Copy</em>.</li>
-                    <li>Create new element by filling at least the mandatory inputs and clikcing <em>Add.</em></li>
+                    <li>Create new element by filling at least the mandatory inputs and clicking <em>Add.</em></li>
                 </ul>
                 <%
                     }
@@ -1790,7 +1790,7 @@
                                                 </tr><%
                                                     }
 
-                                                        String elmDataType = "string";
+                                                        String elmDataType = type.equals("CH3") ? "reference" :  "string";
                                                         if (mode.equals("add") || mode.equals("edit")) {
                                                             String _elmDataType = request.getParameter("elm_datatype");
                                                             if (_elmDataType != null && _elmDataType.length() > 0)

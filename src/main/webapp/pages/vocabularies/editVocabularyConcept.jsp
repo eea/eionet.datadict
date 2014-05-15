@@ -203,6 +203,7 @@
                                     <dd:relatedReferenceConcepts dataElements="${elementValues}"
                                                                  elementId="${attrMeta.id}"
                                                                  fieldName="vocabularyConcept.elementAttributes[${outerLoop.index}]"
+                                                                 elemVocName="${actionBean.elemVocabularyNames[outerLoop.index]}"
                                                                  uniqueId="conceptElement${outerLoop.index}" />
                                 </c:when>
 

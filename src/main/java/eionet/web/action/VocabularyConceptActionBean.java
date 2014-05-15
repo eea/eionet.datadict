@@ -36,18 +36,16 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.StringEncoder;
 import eionet.util.Util;
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.util.UriUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Vocabulary concept action bean.
@@ -122,6 +120,11 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * selected vocabulary for reference element.
      */
     private VocabularyFolder relatedVocabulary;
+
+    /**
+     * ch3 element related vocabulary names.
+     */
+    private List<String> elemVocabularyNames;
 
     /**
      * Popup div id to keep open, when validation error occur.
@@ -202,10 +205,12 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
+
         validateView();
+        initElemVocabularyNames();
         initBeans();
 
-        // LOGGER.debug("Element attributes: " + vocabularyConcept.getElementAttributes().size());
+        editDivId = null;
 
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
     }
@@ -221,6 +226,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         vocabularyConcept.setIdentifier(getConceptIdentifier());
         vocabularyService.updateVocabularyConcept(vocabularyConcept);
 
+        relatedVocabulary = null;
+        relatedVocabularyConcepts = null;
+
         addSystemMessage("Vocabulary concept saved successfully");
 
         RedirectResolution resolution = new RedirectResolution(getClass(), "edit");
@@ -232,6 +240,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         resolution.addParameter("editDivId", editDivId);
         resolution.addParameter("elementId", elementId);
 
+        //initElemVocabularyNames();
         return resolution;
     }
 
@@ -344,6 +353,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         if (isValidationErrors()) {
             initBeans();
             addElementMetadata();
+            initElemVocabularyNames();
         }
     }
 
@@ -355,6 +365,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     public Resolution searchConcepts() throws ServiceException {
 
+        String realRequestPath = getRequestedPath(getContext().getRequest());
         setConceptIdentifier(vocabularyConcept.getIdentifier());
 
         vocabularyFolder =
@@ -372,8 +383,16 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         // this is needed because of "limit " clause in the SQL. if this remains true, paging does not work in display:table
         relatedConceptsFilter.setUsePaging(false);
 
-        // vocabulary is selected in step 1
+        // vocabulary is selected in step 1 (non CH3)
         String vocabularyId = getContext().getRequestParameter("folderId");
+
+        boolean isCH3RelationalElem = false;
+        //check if it is a reference element to another vocabulary
+        if (StringUtils.isBlank(vocabularyId)) {
+            vocabularyId = getContext().getRequestParameter("elemVocabularyId");
+            isCH3RelationalElem = StringUtils.isNotBlank(vocabularyId);
+        }
+
         if (!StringUtils.isBlank(vocabularyId)) {
             int folderId = Integer.valueOf(vocabularyId);
             relatedConceptsFilter.setVocabularyFolderId(folderId);
@@ -396,7 +415,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         relatedVocabularyConcepts = vocabularyService.searchVocabularyConcepts(relatedConceptsFilter);
 
         elementId = getContext().getRequestParameter("elementId");
-        editDivId = "addConceptDiv";
+        editDivId = isCH3RelationalElem ? "addCH3ConceptDiv" : "addConceptDiv";
+        initElemVocabularyNames();
 
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
     }
@@ -440,7 +460,10 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
         // close all popups
         editDivId = null;
+        relatedVocabulary = null;
+        relatedVocabularyConcepts = null;
         initBeans();
+        initElemVocabularyNames();
 
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
     }
@@ -770,5 +793,26 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             excludedVocSetLabels = new ArrayList<String>();
         }
 
+    }
+
+    public List<String> getElemVocabularyNames() {
+        return elemVocabularyNames;
+    }
+
+    /**
+     * insert vocabulary labels of ch3 elments to the special list.
+     * @throws eionet.meta.service.ServiceException if query vocabulary fails
+     */
+    private void initElemVocabularyNames() throws ServiceException {
+        elemVocabularyNames = new ArrayList<String>();
+        for (List<DataElement> elems : vocabularyConcept.getElementAttributes()) {
+            DataElement elemMeta = elems.get(0);
+            String vocName = "";
+            if (elemMeta.getType() != null && elemMeta.getType().equals("CH3")) {
+                int vocabularyId = elemMeta.getVocabularyId();
+                vocName = vocabularyService.getVocabularyFolder(vocabularyId).getLabel();
+            }
+            elemVocabularyNames.add(vocName);
+        }
     }
 }
