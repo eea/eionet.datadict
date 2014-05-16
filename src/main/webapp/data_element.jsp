@@ -1790,7 +1790,7 @@
                                                 </tr><%
                                                     }
 
-                                                        String elmDataType = type.equals("CH3") ? "reference" :  "string";
+                                                        String elmDataType = type == null || !type.equals("CH3") ? "string" : "reference";
                                                         if (mode.equals("add") || mode.equals("edit")) {
                                                             String _elmDataType = request.getParameter("elm_datatype");
                                                             if (_elmDataType != null && _elmDataType.length() > 0)
