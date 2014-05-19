@@ -951,7 +951,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         sql.append("WHERE v.dataelem_id = d.dataelem_id AND d.dataelem_id = a.dataelem_id ");
         sql.append("AND ma.m_attribute_id = a.m_attribute_id AND v.related_concept_id IS NULL ");
         sql.append("AND v.element_value IS NOT NULL AND v.element_value LIKE CONCAT(bu.base_uri,'%') ");
-        sql.append("AND d.PARENT_NS IS NULL AND (a.value = 'reference' OR a.value = 'localref') ");
+        sql.append("AND d.PARENT_NS IS NULL AND a.value = 'reference' ");
         sql.append("GROUP BY v.id ");
         sql.append("HAVING COUNT(v.id) = 1 ");
         sql.append("ORDER BY v.id, v.dataelem_id ");
@@ -975,39 +975,4 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         return result;
     } // end of method getPotentialReferringVocabularyConceptsElements
 
-    //@Override
-    public List<DataElement> getPotentialOwlSameAsVocabularyConceptsElements(int elementId) {
-
-        String mySql =  "SELECT * FROM ("
-                + "SELECT NULL, source.VOCABULARY_CONCEPT_ID AS VOCABULARY_CONCEPT_ID, :owlSameAsIdentifier AS DATAELEM_ID,"
-                + "   NULL AS ELEMENT_VALUE,"
-                + "   NULL AS LANGUAGE,"
-                + "   destination.VOCABULARY_CONCEPT_ID AS RELATED_CONCEPT_ID,"
-                + "   NULL AS LINK_TEXT"
-                + " FROM VOCABULARY_CONCEPT AS source"
-                + " JOIN VOCABULARY_CONCEPT AS destination"
-                + "  ON source.NOTATION = destination.NOTATION AND source.VOCABULARY_ID <> destination.VOCABULARY_ID"
-                + " ) AS c"
-                + " WHERE NOT EXISTS (SELECT 1 FROM vocabulary_concept_element AS vce WHERE vce.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID AND vce.DATAELEM_ID = c.DATAELEM_ID AND vce.RELATED_CONCEPT_ID = c.RELATED_CONCEPT_ID)";
-
-
-
-        List<DataElement> result =
-                getNamedParameterJdbcTemplate().query(mySql, new HashMap<String, Object>(), new RowMapper<DataElement>() {
-                    @Override
-                    public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        DataElement de = new DataElement();
-                        // id field of DataElement class is used to store Vocabulary_Concept_Element.ID column.
-                        de.setId(rs.getInt("v.id"));
-                        de.setAttributeValue(rs.getString("v.element_value"));
-                        de.setRelatedConceptBaseURI(rs.getString("bu.base_uri"));
-                        de.setRelatedConceptVocabulary(rs.getString("bu.identifier"));
-                        // !!! ATTENTION: related concept id field is used to store vocabulary id temporarily.
-                        de.setRelatedConceptId(rs.getInt("bu.vocabulary_id"));
-                        return de;
-                    }
-                });
-
-        return result;
-    } // end of method getPotentialReferringVocabularyConceptsElements
 }

@@ -48,18 +48,11 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
      * Valid vocabulary folder id.
      */
     protected static final int TEST_VALID_VOCAB_FOLDER_ID = 4;
-
     /**
      * Vocabulary service.
      */
     @SpringBeanByType
     protected IVocabularyService vocabularyService;
-
-    /**
-     * Data elements service.
-     */
-    @SpringBeanByType
-    protected IDataService dataService;
 
     @SpringBeanByType
     protected PlatformTransactionManager transactionManager;
@@ -92,7 +85,7 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
      * @param attrValue Value for comparison
      * @return First found DataElement
      */
-    protected DataElement findDataElemByAttrValue(List<DataElement> elems, String attrValue) {
+    public static DataElement findDataElemByAttrValue(List<DataElement> elems, String attrValue) {
         return (DataElement) CollectionUtils.find(elems, new DataElementEvaluateOnAttributeValuePredicate(attrValue));
     }// end of method findDataElemByAttrValue
 
@@ -103,7 +96,7 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
      * @param id       Id for comparison
      * @return First found VocabularyConcept
      */
-    protected VocabularyConcept findVocabularyConceptById(List<VocabularyConcept> concepts, int id) {
+    public static VocabularyConcept findVocabularyConceptById(List<VocabularyConcept> concepts, int id) {
         return (VocabularyConcept) CollectionUtils.find(concepts, new VocabularyConceptEvaluateOnIdPredicate(id));
     }// end of method findVocabularyConceptById
 
@@ -114,7 +107,7 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
      * @param identifier identifier for comparison
      * @return First found VocabularyConcept
      */
-    protected VocabularyConcept findVocabularyConceptByIdentifier(List<VocabularyConcept> concepts, String identifier) {
+    public static VocabularyConcept findVocabularyConceptByIdentifier(List<VocabularyConcept> concepts, String identifier) {
         return (VocabularyConcept) CollectionUtils.find(concepts, new VocabularyConceptEvaluateOnIdentifierPredicate(identifier));
     }// end of method findVocabularyConceptByIdentifier
 

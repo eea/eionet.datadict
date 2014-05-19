@@ -50,13 +50,12 @@ public class VocabularyReferenceMatchServiceImpl implements IVocabularyReference
     /**
      * Data elem to job map.
      */
-    private static Map<String, Class<? extends ReferenceMatchJobChunk>> dataElementsJobMatchMap =
+    private static Map<String, Class<? extends ReferenceMatchJobChunk>> jobMatchMap =
             new HashMap<String, Class<? extends ReferenceMatchJobChunk>>();
-    // static block to populate dataElementsJobMatchMap
-    static {
-        dataElementsJobMatchMap.put(SkosExactMatchDataElement.DATA_ELEMENT_IDENTIFIER, SkosExactMatchDataElement.class);
-        dataElementsJobMatchMap.put(OwlSameAsDataElement.DATA_ELEMENT_IDENTIFIER, OwlSameAsDataElement.class);
 
+    // static block to populate jobMatchMap
+    static {
+        jobMatchMap.put(MatchPotentialReferringElementValues.JOB_IDENTIFIER, MatchPotentialReferringElementValues.class);
     } // end of static block
 
     /**
@@ -64,30 +63,27 @@ public class VocabularyReferenceMatchServiceImpl implements IVocabularyReference
      */
     // @Transactional(rollbackFor = ServiceException.class)
     @Override
-    public List<String> matchReferences(String[] dataElementIdentifiers) throws ServiceException {
+    public List<String> matchReferences(String[] jobIdentifiers) throws ServiceException {
         List<String> logs = new ArrayList<String>();
-        // STEP 1. First try to match concepts which may have links for other concepts.
-        ReferenceMatchJobChunk referringElementValues = new MatchPotentialReferringElementValues();
-        List<String> internalLogs = referringElementValues.execute();
-        logs.addAll(internalLogs);
 
-        if (dataElementIdentifiers != null && dataElementIdentifiers.length > 0) {
-            for (String dataElemIdentifier : dataElementIdentifiers) {
-                Class<? extends ReferenceMatchJobChunk> clazz = dataElementsJobMatchMap.get(dataElemIdentifier);
+        if (jobIdentifiers != null && jobIdentifiers.length > 0) {
+            for (String jobChunkIdentifier : jobIdentifiers) {
+                Class<? extends ReferenceMatchJobChunk> clazz = jobMatchMap.get(jobChunkIdentifier);
                 if (clazz != null) {
                     try {
                         ReferenceMatchJobChunk jobChunk = clazz.newInstance();
-                        internalLogs = jobChunk.execute();
+                        logs.add("Starting " + jobChunkIdentifier);
+                        List<String> internalLogs = jobChunk.execute();
                         logs.addAll(internalLogs);
                     } catch (InstantiationException e) {
-                        logs.add("Cannot create job chunk for " + dataElemIdentifier);
+                        logs.add("Cannot create job chunk for " + jobChunkIdentifier);
                         logs.add(e.getMessage());
                     } catch (IllegalAccessException e) {
-                        logs.add("Cannot create job chunk for " + dataElemIdentifier);
+                        logs.add("Cannot create job chunk for " + jobChunkIdentifier);
                         logs.add(e.getMessage());
                     }
                 } else {
-                    logs.add("No implementation set for " + dataElemIdentifier);
+                    logs.add("No implementation set for " + jobChunkIdentifier);
                 }
             }
         }
@@ -106,12 +102,16 @@ public class VocabularyReferenceMatchServiceImpl implements IVocabularyReference
         List<String> execute();
     } // end of inner interface MatchJobChunk
 
-
     /**
      * Job chunk to convert element values to related concept ids.
      */
     @Configurable
-    protected static class MatchPotentialReferringElementValues implements ReferenceMatchJobChunk {
+    public static class MatchPotentialReferringElementValues implements ReferenceMatchJobChunk {
+        /**
+         * Job identifier.
+         */
+        public static final String JOB_IDENTIFIER = "match:References";
+
         /**
          * Vocabulary folder DAO.
          */
@@ -164,47 +164,5 @@ public class VocabularyReferenceMatchServiceImpl implements IVocabularyReference
             return logs;
         } // end of method onExecute
     } // end of inner class MatchPotentialReferringElementValues
-
-    /**
-     * Inner class to match "skos:exactMatch" elements.
-     */
-    protected static class SkosExactMatchDataElement implements ReferenceMatchJobChunk {
-        /**
-         * Data element identifier.
-         */
-        protected static final String DATA_ELEMENT_IDENTIFIER = "skos:exactMatch";
-
-        @Override
-        public List<String> execute() {
-            List<String> logs = new ArrayList<String>();
-            logs.add(DATA_ELEMENT_IDENTIFIER + " job executed.");
-            return logs;
-        } // end of method onExecute
-    } // end of inner class SkosExactMatchDataElement
-
-    /**
-     * Inner class to match "owl:sameAs" elements.
-     */
-    @Configurable
-    protected static class OwlSameAsDataElement implements ReferenceMatchJobChunk {
-        /**
-         * Data element identifier.
-         */
-        protected static final String DATA_ELEMENT_IDENTIFIER = "owl:sameAs";
-        /**
-         * Data element DAO.
-         */
-        @Autowired
-        private IDataElementDAO dataElementDAO;
-
-        @Override
-        public List<String> execute() {
-            List<String> logs = new ArrayList<String>();
-            DataElement element = this.dataElementDAO.getDataElement(DATA_ELEMENT_IDENTIFIER);
-            logs.add("Id of " + DATA_ELEMENT_IDENTIFIER + " is " + element.getId());
-            logs.add(DATA_ELEMENT_IDENTIFIER + " job executed.");
-            return logs;
-        } // end of method onExecute
-    } // end of inner class OwlSameAsDataElement
 
 } // end of class RDFVocabularyImportServiceImpl
