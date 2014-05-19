@@ -1006,7 +1006,7 @@
             if (strType == null || strType.length==0){
                 return;
             }
-
+            var datatypeElemAttrID = <%=getAttributeIdByName("Datatype", mAttributes)%>
 
             var requestQS = new Querystring();
             var arr = new Array();
@@ -1028,11 +1028,19 @@
             requestQS.remove("mode");
             inputsQS.remove("reg_status");
             inputsQS.remove("mode");
+            //remove dataelem if CH3. Actually
+            var datatypeElemID = "attr_<%=getAttributeIdByName("Datatype", mAttributes)%>";
+            var eType = strType
+
+            if (eType == "CH3") {
+                inputsQS.remove(datatypeElemID);
+            }
 
             var newLocation = "<%=request.getContextPath()%>/dataelements/add/?";
             if (document.forms["form1"].reg_status){
                 newLocation = newLocation + "reg_status=" + escape(document.forms["form1"].reg_status.value) + "&";
             }
+
             newLocation = newLocation + requestQS.toString() + "&" + inputsQS.toString();
             window.location.assign(newLocation);
         }

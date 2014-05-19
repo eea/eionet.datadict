@@ -354,6 +354,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             initBeans();
             addElementMetadata();
             initElemVocabularyNames();
+            editDivId = null;
         }
     }
 
