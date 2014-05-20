@@ -186,6 +186,7 @@ public class Props implements PropsIF {
                 longValue = Long.parseLong(value) * coefficient;
             } catch (Exception e) {
                 // Ignore exceptions resulting from string-to-integer conversion here.
+                e.printStackTrace();
             }
         }
         return longValue;
@@ -196,7 +197,7 @@ public class Props implements PropsIF {
      *
      * @param defaults The hash-table of defaults to populate.
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings( {"rawtypes", "unchecked"} )
     protected void setDefaults(Hashtable defaults) {
         defaults.put(XFORM_TEMPLATE_URL, "http://cdr-ewn.eionet.europa.eu/webq/GetXFormTemplate");
         defaults.put(INSERV_ROD_RA_URLPATTERN, "http://rod.eionet.europa.eu/obligations/<RA_ID>");

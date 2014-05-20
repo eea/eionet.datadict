@@ -944,10 +944,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public List<DataElement> getPotentialReferringVocabularyConceptsElements() {
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT v.*, bu.base_uri, bu.vocabulary_id, bu.identifier FROM vocabulary_concept_element AS v, ");
-        sql.append("(SELECT base_uri, vocabulary_id, identifier FROM vocabulary ");
+        sql.append("SELECT v.*, bu.base_uri, bu.vocabulary_id, bu.identifier FROM VOCABULARY_CONCEPT_ELEMENT AS v, ");
+        sql.append("(SELECT base_uri, vocabulary_id, identifier FROM VOCABULARY ");
         sql.append("WHERE base_uri IS NOT NULL AND base_uri > '') AS bu, ");
-        sql.append("dataelem AS d, attribute AS a, m_attribute AS ma ");
+        sql.append("DATAELEM AS d, ATTRIBUTE AS a, M_ATTRIBUTE AS ma ");
         sql.append("WHERE v.dataelem_id = d.dataelem_id AND d.dataelem_id = a.dataelem_id ");
         sql.append("AND ma.m_attribute_id = a.m_attribute_id AND v.related_concept_id IS NULL ");
         sql.append("AND v.element_value IS NOT NULL AND v.element_value LIKE CONCAT(bu.base_uri,'%') ");
