@@ -564,8 +564,12 @@
             <artifactId>mail</artifactId>
             <version>1.4.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>1.9.13</version>
+        </dependency>
         <!-- start org.openrdf.sesame dependencies -->
-
         <dependency>
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-util</artifactId>
@@ -646,8 +650,8 @@
             <artifactId>sesame-queryalgebra-model</artifactId>
             <version>${sesame.openrdf.version}</version>
         </dependency>
-
         <!-- end org.openrdf.sesame dependencies -->
+
         <!-- TEST dependencies -->
         <dependency>
             <groupId>junit</groupId>
