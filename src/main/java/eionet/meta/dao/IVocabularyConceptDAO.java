@@ -38,7 +38,8 @@ public interface IVocabularyConceptDAO {
      * Returns the vocabulary folder's concepts.
      *
      * @param filter
-     * @return
+     *            filter
+     * @return concepts as a result
      */
     VocabularyConceptResult searchVocabularyConcepts(VocabularyConceptFilter filter);
 
@@ -46,7 +47,8 @@ public interface IVocabularyConceptDAO {
      * Returns the vocabulary folder's concepts.
      *
      * @param vocabularyFolderId
-     * @return
+     *            vocabulary id
+     * @return list of concepts
      */
     List<VocabularyConcept> getVocabularyConcepts(int vocabularyFolderId);
 
@@ -54,8 +56,10 @@ public interface IVocabularyConceptDAO {
      * Returns vocabulary concept.
      *
      * @param vocabularyFolderId
+     *            vocabulary id
      * @param conceptIdentifier
-     * @return
+     *            concept identifier
+     * @return vocabulary concept
      */
     VocabularyConcept getVocabularyConcept(int vocabularyFolderId, String conceptIdentifier);
 
@@ -63,7 +67,8 @@ public interface IVocabularyConceptDAO {
      * Returns vocabulary concept.
      *
      * @param vocabularyConceptId
-     * @return
+     *            concept id
+     * @return vocabulary concept
      */
     VocabularyConcept getVocabularyConcept(int vocabularyConceptId);
 
@@ -71,15 +76,17 @@ public interface IVocabularyConceptDAO {
      * Creates new vocabulary concept into database.
      *
      * @param vocabularyFolderId
+     *            vocabulary id
      * @param vocabularyConcept
-     * @return
+     *            concept
+     * @return created concept id
      */
     int createVocabularyConcept(int vocabularyFolderId, VocabularyConcept vocabularyConcept);
 
     /**
      * Updates vocabulary concept.
      *
-     * @param vocabularyConcept
+     * @param vocabularyConcept concept to be updated
      */
     void updateVocabularyConcept(VocabularyConcept vocabularyConcept);
 
@@ -87,6 +94,7 @@ public interface IVocabularyConceptDAO {
      * Deletes vocabulary concepts.
      *
      * @param ids
+     *            ids
      */
     void deleteVocabularyConcepts(List<Integer> ids);
 
@@ -94,6 +102,7 @@ public interface IVocabularyConceptDAO {
      * Mark concepts obsolete.
      *
      * @param ids
+     *            ids
      */
     void markConceptsObsolete(List<Integer> ids);
 
@@ -101,6 +110,7 @@ public interface IVocabularyConceptDAO {
      * Remove obsolete date from concepts.
      *
      * @param ids
+     *            ids
      */
     void unMarkConceptsObsolete(List<Integer> ids);
 
@@ -108,6 +118,7 @@ public interface IVocabularyConceptDAO {
      * Deletes vocabulary concepts.
      *
      * @param vocabularyFolderId
+     *            vocabulary id
      */
     void deleteVocabularyConcepts(int vocabularyFolderId);
 
@@ -115,7 +126,9 @@ public interface IVocabularyConceptDAO {
      * Moves vocabulary concepts from one folder to another.
      *
      * @param fromVocabularyFolderId
+     *            from vocabulary id
      * @param toVocabularyFolderId
+     *            to vocabulary id
      */
     void moveVocabularyConcepts(int fromVocabularyFolderId, int toVocabularyFolderId);
 
@@ -123,9 +136,12 @@ public interface IVocabularyConceptDAO {
      * True, if identifier is unique.
      *
      * @param identifier
+     *            concept identifier
      * @param vocabularyFolderId
+     *            vocabulary id
      * @param vocabularyConceptId
-     * @return
+     *            concept id
+     * @return is unique or not
      */
     boolean isUniqueConceptIdentifier(String identifier, int vocabularyFolderId, int vocabularyConceptId);
 
@@ -133,7 +149,8 @@ public interface IVocabularyConceptDAO {
      * Returns the next highest vocabulary concept identifier numeric value.
      *
      * @param vocabularyFolderId
-     * @return
+     *            vocabulary id
+     * @return next identifier value
      */
     int getNextIdentifierValue(int vocabularyFolderId);
 
@@ -141,10 +158,15 @@ public interface IVocabularyConceptDAO {
      * Inserts multiple empty concepts.
      *
      * @param vocabularyFolderId
+     *            vocabulary id
      * @param amount
+     *            number
      * @param startingIdentifier
+     *            starting identifier
      * @param label
-     * @param defintion
+     *            label
+     * @param definition
+     *            definition
      */
     void insertEmptyConcepts(int vocabularyFolderId, int amount, int startingIdentifier, String label, String definition);
 
@@ -152,9 +174,12 @@ public interface IVocabularyConceptDAO {
      * Returns identifiers that match with the given range.
      *
      * @param vocabularyFolderId
+     *            vocabulary id
      * @param amount
+     *            number
      * @param startingIdentifier
-     * @return
+     *            starting identifier
+     * @return list of integer as identifiers
      */
     List<Integer> checkAvailableIdentifiers(int vocabularyFolderId, int amount, int startingIdentifier);
 
@@ -170,27 +195,39 @@ public interface IVocabularyConceptDAO {
 
     /**
      * Checks if any concept has values in the bound data element. Returns list of such elements.
-     * @param elementId element id
-     * @param vocabularyId vocabulary ID
+     *
+     * @param elementId
+     *            element id
+     * @param vocabularyId
+     *            vocabulary ID
      * @return list of data elements
      */
     List<VocabularyConcept> getConceptsWithValuedElement(int elementId, int vocabularyId);
 
     /**
-     * When vocabulary is checked in this vocabulary concepts get new IDs.
-     * If they are used in foreign concepts as refence elements the relations have to be changed to the new ID
-     * @param oldVocabularyId old vocabulary record ID
-     * @param newVocabularyId new record ID
+     * When vocabulary is checked in this vocabulary concepts get new IDs. If they are used in foreign concepts as refence elements
+     * the relations have to be changed to the new ID
+     *
+     * @param oldVocabularyId
+     *            old vocabulary record ID
+     * @param newVocabularyId
+     *            new record ID
      */
     void moveReferenceConcepts(int oldVocabularyId, int newVocabularyId);
 
-
     /**
-     * finds vocabulary concepts of the vocabulary that are not obsolete.
-     * Expects an element to have datatype attribute otherwise not included to the result
-     * @param vocabularyId vocabulary ID
+     * finds vocabulary concepts of the vocabulary that are not obsolete. Expects an element to have datatype attribute otherwise
+     * not included to the result.
+     *
+     * @param vocabularyId
+     *            vocabulary ID
+     * @param dataElementIdentifier
+     *            data element identifier as a filter, if null all data elements
+     * @param language
+     *            identifier as a filter, if null all languages
+     *
      * @return elements with valued bound elements
      */
-    List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId);
+    List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String dataElementIdentifier, String language);
 
 }

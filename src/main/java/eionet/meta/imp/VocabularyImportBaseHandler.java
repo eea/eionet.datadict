@@ -31,7 +31,7 @@ import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Pair;
-import eionet.util.VocabularyCSVOutputHelper;
+import eionet.util.VocabularyOutputHelper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -376,7 +376,7 @@ public abstract class VocabularyImportBaseHandler {
      * @return list of dataelement objects containing values
      */
     public static List<DataElement> getDataElementValuesByName(String elemName, List<List<DataElement>> dataElements) {
-        return VocabularyCSVOutputHelper.getDataElementValuesByName(elemName, dataElements);
+        return VocabularyOutputHelper.getDataElementValuesByName(elemName, dataElements);
     } // end of method getDataElementValuesByName
 
     /**
@@ -389,7 +389,7 @@ public abstract class VocabularyImportBaseHandler {
      */
     public static List<DataElement> getDataElementValuesByNameAndLang(String elemName, String lang,
             List<List<DataElement>> dataElements) {
-        return VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang(elemName, lang, dataElements);
+        return VocabularyOutputHelper.getDataElementValuesByNameAndLang(elemName, lang, dataElements);
     } // end of method getDataElementValuesByNameAndLang
 
 } // end of class VocabularyImportBaseHandler

@@ -55,15 +55,13 @@ public final class VocabularyJSONOutputHelper {
      *            vocabulary folder identifier
      * @param concepts
      *            list of vocabulary concepts
-     * @param attributesMeta
-     *            list of field names
      * @param language
      *            language for the preferred label
      * @throws java.io.IOException
      *             if error in I/O
      */
     public static void writeJSON(OutputStream out, String vocabularyFolderIdentifier, List<VocabularyConcept> concepts,
-            List<Triple<String, String, Integer>> attributesMeta, String language) throws IOException {
+            String language) throws IOException {
 
         OutputStreamWriter osw = new OutputStreamWriter(out, "UTF-8");
 
@@ -91,7 +89,7 @@ public final class VocabularyJSONOutputHelper {
             String label;
             if (checkLanguage) {
                 List<DataElement> dataElementValuesByNameAndLang =
-                        VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", language,
+                        VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", language,
                                 concept.getElementAttributes());
                 if (dataElementValuesByNameAndLang != null && dataElementValuesByNameAndLang.size() > 0) {
                     label = dataElementValuesByNameAndLang.get(0).getAttributeValue();

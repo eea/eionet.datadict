@@ -32,6 +32,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import eionet.util.VocabularyOutputHelper;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.FileBean;
@@ -286,7 +287,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     private int rdfPurgeOption;
     /**
-     * Json language
+     * Json language.
      */
     private String jsonLanguage;
 
@@ -1171,14 +1172,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             // consume stupid bom first!! if it exists!
             InputStream is = this.uploadedFileToImport.getInputStream();
-            byte[] firstBomBytes = new byte[VocabularyCSVOutputHelper.BOM_BYTE_ARRAY_LENGTH];
+            byte[] firstBomBytes = new byte[VocabularyOutputHelper.BOM_BYTE_ARRAY_LENGTH];
             int readBytes = is.read(firstBomBytes);
-            if (readBytes != VocabularyCSVOutputHelper.BOM_BYTE_ARRAY_LENGTH) {
+            if (readBytes != VocabularyOutputHelper.BOM_BYTE_ARRAY_LENGTH) {
                 is.close();
                 throw new ServiceException("Input stream cannot be read");
             }
 
-            if (!Arrays.equals(firstBomBytes, VocabularyCSVOutputHelper.getBomByteArray())) {
+            if (!Arrays.equals(firstBomBytes, VocabularyOutputHelper.getBomByteArray())) {
                 is.close();
                 is = this.uploadedFileToImport.getInputStream();
             }
@@ -1306,15 +1307,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 throw new RuntimeException("Vocabulary is not in released or public draft status.");
             }
 
-            final List<VocabularyConcept> concepts = vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
-            final List<Triple<String, String, Integer>> fieldNamesWithLanguage =
-                    vocabularyService.getVocabularyBoundElementNamesByLanguage(vocabularyFolder);
+            final List<VocabularyConcept> concepts =
+                    vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), "skos:prefLabel", jsonLanguage);
 
             StreamingResolution result = new StreamingResolution("application/json") {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
                     VocabularyJSONOutputHelper.writeJSON(response.getOutputStream(), vocabularyFolder.getIdentifier(), concepts,
-                            fieldNamesWithLanguage, jsonLanguage);
+                            jsonLanguage);
                 }
             };
             result.setFilename(vocabularyFolder.getIdentifier() + ".json");

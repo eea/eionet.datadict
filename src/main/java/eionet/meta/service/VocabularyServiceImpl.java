@@ -907,7 +907,24 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public List<VocabularyConcept> getValidConceptsWithAttributes(int vocabularyFolderId) throws ServiceException {
         try {
-            List<VocabularyConcept> result = vocabularyConceptDAO.getValidConceptsWithValuedElements(vocabularyFolderId);
+            List<VocabularyConcept> result =
+                    vocabularyConceptDAO.getValidConceptsWithValuedElements(vocabularyFolderId, null, null);
+            return result;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<VocabularyConcept>
+            getValidConceptsWithAttributes(int vocabularyFolderId, String elementIdentifier, String language)
+                    throws ServiceException {
+        try {
+            List<VocabularyConcept> result =
+                    vocabularyConceptDAO.getValidConceptsWithValuedElements(vocabularyFolderId, elementIdentifier, language);
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);

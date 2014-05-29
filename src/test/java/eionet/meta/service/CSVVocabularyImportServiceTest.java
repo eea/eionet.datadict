@@ -24,7 +24,7 @@ package eionet.meta.service;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.util.VocabularyCSVOutputHelper;
+import eionet.util.VocabularyOutputHelper;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -75,7 +75,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         byte[] firstThreeBytes = new byte[3];
         is.read(firstThreeBytes);
 
-        if (!Arrays.equals(firstThreeBytes, VocabularyCSVOutputHelper.getBomByteArray())) {
+        if (!Arrays.equals(firstThreeBytes, VocabularyOutputHelper.getBomByteArray())) {
             is.close();
             is = getClass().getClassLoader().getResourceAsStream(resourceLoc);
         }
@@ -114,11 +114,11 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         List<List<DataElement>> dataElements = vc8.getElementAttributes();
         List<DataElement> elems = null;
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
         DataElement element = findDataElemByAttrValue(elems, "bg_csv_test_concept_1");
         element.setAttributeValue("bg_csv_test_concept_1_updated");
 
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "et", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "et", dataElements);
         element = findDataElemByAttrValue(elems, "et_csv_test_concept_1");
         element.setAttributeValue("et_csv_test_concept_1_updated");
 
@@ -160,11 +160,11 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         List<List<DataElement>> dataElements = vc8.getElementAttributes();
         List<DataElement> elems = null;
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
         DataElement element = findDataElemByAttrValue(elems, "bg2_csv_test_concept_1");
         element.setAttributeValue("bg2_csv_test_concept_1_updated");
 
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "en", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "en", dataElements);
         element = findDataElemByAttrValue(elems, "en_csv_test_concept_1");
         element.setAttributeValue("en_csv_test_concept_1_updated");
 
@@ -172,11 +172,11 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc10.setLabel("csv_test_concept_label_3_updated");
 
         dataElements = vc10.getElementAttributes();
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
         element = findDataElemByAttrValue(elems, "bg_csv_test_concept_3");
         element.setAttributeValue("bg_csv_test_concept_3_updated");
 
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:definition", "pl", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:definition", "pl", dataElements);
         element = findDataElemByAttrValue(elems, "pl_csv_test_concept_3");
         element.setAttributeValue("pl_csv_test_concept_3_updated");
 
@@ -379,11 +379,11 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         List<List<DataElement>> dataElements = vc8.getElementAttributes();
         List<DataElement> elems = null;
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
         DataElement element = findDataElemByAttrValue(elems, "bg2_csv_test_concept_1");
         element.setAttributeValue("bg2_csv_test_concept_1_updated");
 
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "en", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "en", dataElements);
         element = findDataElemByAttrValue(elems, "en_csv_test_concept_1");
         element.setAttributeValue("en_csv_test_concept_1_updated");
 
@@ -391,11 +391,11 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc10.setLabel("csv_test_concept_label_3_updated");
 
         dataElements = vc10.getElementAttributes();
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
         element = findDataElemByAttrValue(elems, "bg_csv_test_concept_3");
         element.setAttributeValue("bg_csv_test_concept_3_updated");
 
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:definition", "pl", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:definition", "pl", dataElements);
         element = findDataElemByAttrValue(elems, "pl_csv_test_concept_3");
         element.setAttributeValue("pl_csv_test_concept_3_updated");
 
@@ -770,7 +770,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         List<List<DataElement>> dataElements = vc8.getElementAttributes();
         List<DataElement> elems = null;
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
         DataElement element = findDataElemByAttrValue(elems, "bg_csv_test_concept_1");
         element.setAttributeValue("bg_csv_test_concept_1_updated");
 
@@ -826,7 +826,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // Check for first concept
         VocabularyConcept concept = findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_1");
         List<DataElement> elements =
-                VocabularyCSVOutputHelper.getDataElementValuesByName("skos:relatedMatch", concept.getElementAttributes());
+                VocabularyOutputHelper.getDataElementValuesByName("skos:relatedMatch", concept.getElementAttributes());
         DataElement element = elements.get(0);
         Assert.assertEquals("Related Concept Id Doesn't Match", 11, element.getRelatedConceptId().intValue());
         Assert.assertEquals("Related Concept Identifier Doesn't Match", "csv_test_concept_3",
@@ -836,7 +836,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Assert.assertEquals("Related Concept Vocabulary Set Doesn't Match", "csv_header_vs", element.getRelatedConceptVocSet());
         Assert.assertNull("Attribute Value is Not Null", element.getAttributeValue());
 
-        elements = VocabularyCSVOutputHelper.getDataElementValuesByName("skos:related", concept.getElementAttributes());
+        elements = VocabularyOutputHelper.getDataElementValuesByName("skos:related", concept.getElementAttributes());
         element = elements.get(0);
         Assert.assertEquals("Related Concept Id Doesn't Match",
                 findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_2").getId(), element.getRelatedConceptId()
@@ -852,7 +852,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // Check for second concept
         concept = findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_2");
-        elements = VocabularyCSVOutputHelper.getDataElementValuesByName("skos:relatedMatch", concept.getElementAttributes());
+        elements = VocabularyOutputHelper.getDataElementValuesByName("skos:relatedMatch", concept.getElementAttributes());
         element = elements.get(0);
         Assert.assertNull("Related Concept Id is Not Null", element.getRelatedConceptId());
         Assert.assertNull("Related Concept Identifier is Not Null", element.getRelatedConceptIdentifier());
@@ -863,7 +863,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
                 "http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab_2/csv_test_concept_3",
                 element.getAttributeValue());
 
-        elements = VocabularyCSVOutputHelper.getDataElementValuesByName("skos:related", concept.getElementAttributes());
+        elements = VocabularyOutputHelper.getDataElementValuesByName("skos:related", concept.getElementAttributes());
         element = elements.get(0);
         Assert.assertEquals("Related Concept Id Doesn't Match",
                 findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_1").getId(), element.getRelatedConceptId()

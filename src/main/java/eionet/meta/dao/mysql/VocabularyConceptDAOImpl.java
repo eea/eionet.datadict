@@ -21,24 +21,25 @@
 
 package eionet.meta.dao.mysql;
 
-import eionet.meta.dao.IVocabularyConceptDAO;
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.service.data.ObsoleteStatus;
-import eionet.meta.service.data.VocabularyConceptFilter;
-import eionet.meta.service.data.VocabularyConceptResult;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import eionet.meta.dao.IVocabularyConceptDAO;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.data.ObsoleteStatus;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
 
 /**
  * Vocabulary concept DAO.
@@ -103,7 +104,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 sql.append("or c.LABEL REGEXP :text ");
                 sql.append("or c.DEFINITION REGEXP :text ");
                 sql.append("or c.IDENTIFIER REGEXP :text) ");
-                //word match overrides exactmatch as it contains also exact matches
+                // word match overrides exactmatch as it contains also exact matches
             } else if (filter.isExactMatch()) {
                 params.put("text", filter.getText());
                 sql.append("and (c.NOTATION = :text ");
@@ -536,7 +537,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     }
 
     @Override
-    public List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId) {
+    public List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String dataElementIdentifier,
+            String language) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyId", vocabularyId);
 
@@ -555,6 +557,15 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("left join (ATTRIBUTE a, M_ATTRIBUTE ma)  on (a.DATAELEM_ID = d.DATAELEM_ID ");
         sql.append("and PARENT_TYPE = 'E' and a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME='Datatype') ");
         sql.append("where c.VOCABULARY_ID = :vocabularyId AND c.OBSOLETE_DATE IS NULL ");
+        if (StringUtils.isNotBlank(dataElementIdentifier)) {
+            sql.append(" AND d.IDENTIFIER like :dataElementIdentifier ");
+            params.put("dataElementIdentifier", StringUtils.trimToEmpty(dataElementIdentifier));
+        }
+        if (StringUtils.isNotBlank(language)) {
+            sql.append(" AND v.LANGUAGE like :language ");
+            params.put("language", StringUtils.trimToEmpty(language));
+        }
+
         sql.append("ORDER by c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, d.IDENTIFIER, v.LANGUAGE, rcv.IDENTIFIER ");
 
         final List<VocabularyConcept> resultList = new ArrayList<VocabularyConcept>();
@@ -627,6 +638,6 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         });
 
         return resultList;
-    }
+    } // end of method getValidConceptsWithValuedElements
 
 }
