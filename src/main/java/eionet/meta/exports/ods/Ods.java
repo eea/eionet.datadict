@@ -520,10 +520,13 @@ public abstract class Ods {
      *             if operation fails.
      */
     private void zip(String fileToZip, String fileName) throws Exception {
+        // get source file
         File src = new File(workingFolderPath + ODS_FILE_NAME);
         ZipFile zipFile = new ZipFile(src);
+        // create temp file for output
         File tempDst = new File(workingFolderPath + ODS_FILE_NAME + ".zip");
         ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(tempDst));
+        // iterate on each entry in zip file
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         while (entries.hasMoreElements()) {
             ZipEntry zipEntry = entries.nextElement();
@@ -541,33 +544,13 @@ public abstract class Ods {
             }
             zos.closeEntry();
             bis.close();
-
         }
         zos.finish();
         zos.close();
         zipFile.close();
-
+        // rename file
         src.delete();
         tempDst.renameTo(src);
-
-        //
-        //
-        // Map<String, String> env = new HashMap<String, String>();
-        // env.put("create", "true");
-        //
-        // File zipFile = new File(workingFolderPath + ODS_FILE_NAME);
-        // URI uri = URI.create("jar:" + zipFile.toURI());
-        // try (FileSystem zipFS = FileSystems.newFileSystem(uri, env)) {
-        // Path externalFile = Paths.get(fileToZip);
-        // Path pathInZipfile = zipFS.getPath(fileName);
-        // // copy a file into the zip file
-        // //Files.copy(externalFile, pathInZipfile, StandardCopyOption.REPLACE_EXISTING);
-        // Iterable<FileStore> fileStores = zipFS.getFileStores();
-        // for (FileStore fs : fileStores){
-        //
-        // }
-        // }
-
     } // end of method zip
 
     /**
