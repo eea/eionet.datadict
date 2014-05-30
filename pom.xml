@@ -9,7 +9,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <env>local</env>
-        <java_version>1.6</java_version>
+        <java_version>1.7</java_version>
         <spring.version>3.1.1.RELEASE</spring.version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
         <liquibase.changeLogFile>sql/dd-struct.xml</liquibase.changeLogFile>
