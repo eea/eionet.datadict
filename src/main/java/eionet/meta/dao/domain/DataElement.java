@@ -479,14 +479,14 @@ public class DataElement {
     public void setDate(String date) {
         this.date = date;
     }
-	
-	    public int getVocabularyConceptId() {
+
+    public int getVocabularyConceptId() {
         return vocabularyConceptId;
     }
 
     public void setVocabularyConceptId(int vocabularyConceptId) {
         this.vocabularyConceptId = vocabularyConceptId;
-
+    }
 
     /**
      * MD5 hash of the value similar to the DB unique key without concept id.
@@ -494,8 +494,9 @@ public class DataElement {
      * @return md5 hash of element values.
      */
     public String getUniqueValueHash() {
-        return Util.md5((getId() + "," + (getRelatedConceptId() != null ? getRelatedConceptId() : getAttributeValue())
-                + "@" + StringUtils.defaultString(getAttributeLanguage())));
+        return Util
+                .md5((getId() + "," + (getRelatedConceptId() != null ? getRelatedConceptId() : getAttributeValue()) + "@" + StringUtils
+                        .defaultString(getAttributeLanguage())));
     }
 
     /**
@@ -504,9 +505,8 @@ public class DataElement {
      * @return value or related concept label depending on the element type
      */
     public String getValueText() {
-        return isRelationalElement()
-                ? StringUtils.trimToEmpty(getRelatedConceptLabel()) : StringUtils.trimToEmpty(getAttributeValue())
-                + (getAttributeLanguage() != null ? " [" + getAttributeLanguage() + "]" : "");
+        return isRelationalElement() ? StringUtils.trimToEmpty(getRelatedConceptLabel()) : StringUtils
+                .trimToEmpty(getAttributeValue()) + (getAttributeLanguage() != null ? " [" + getAttributeLanguage() + "]" : "");
     }
-	
+
 }
