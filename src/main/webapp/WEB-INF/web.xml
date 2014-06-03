@@ -57,6 +57,13 @@
         <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
     </listener>
 
+    <listener>
+        <listener-class>eionet.meta.scheduled.DDJobScheduler</listener-class>
+    </listener>
+    <listener>
+        <listener-class>eionet.meta.scheduled.VocabularyReferenceMatchJob</listener-class>
+    </listener>
+
     <!-- filters -->
     <filter>
         <filter-name>CAS Filter</filter-name>

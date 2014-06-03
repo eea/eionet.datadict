@@ -11,6 +11,7 @@
     <VOCABULARY VOCABULARY_ID="3" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab/" FOLDER_ID="5"/>
     <VOCABULARY VOCABULARY_ID="4" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="3" BASE_URI="http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab/" FOLDER_ID="5"/>
     <VOCABULARY VOCABULARY_ID="6" CONTINUITY_ID="125" IDENTIFIER="csv_header_vocab_2" LABEL="csv_header_vocab_test_2" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab_2/" FOLDER_ID="5"/>
+    <VOCABULARY VOCABULARY_ID="16" CONTINUITY_ID="125" IDENTIFIER="invalid_vocabulary" LABEL="invalid_vocabulary" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/invalid_vocabulary//" FOLDER_ID="5"/>
 
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="8" VOCABULARY_ID="4" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="csv_test_concept_1" LABEL="csv_test_concept_label_1_lets_get_sure" DEFINITION="[NULL]"/>
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="9" VOCABULARY_ID="4" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="csv_test_concept_2" LABEL="csv_test_concept_label_2"  DEFINITION="[NULL]"/>
@@ -44,7 +45,7 @@
     <VOCABULARY2ELEM VOCABULARY_ID="4" DATAELEM_ID="9" />
     <VOCABULARY2ELEM VOCABULARY_ID="4" DATAELEM_ID="2" />
     <VOCABULARY2ELEM VOCABULARY_ID="4" DATAELEM_ID="5" />
-    
+
     <VOCABULARY2ELEM VOCABULARY_ID="6" DATAELEM_ID="7" />
 
   <!--   <VOCABULARY_CONCEPT_ELEMENT ID="16" VOCABULARY_CONCEPT_ID="7" DATAELEM_ID="7" ELEMENT_VALUE="" RELATED_CONCEPT_ID="6" LANGUAGE="[NULL]"/>  -->

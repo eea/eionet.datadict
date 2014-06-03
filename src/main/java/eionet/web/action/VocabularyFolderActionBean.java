@@ -21,6 +21,32 @@
 
 package eionet.web.action;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ErrorResolution;
+import net.sourceforge.stripes.action.FileBean;
+import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
+import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.StreamingResolution;
+import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringUtils;
+
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
@@ -48,29 +74,6 @@ import eionet.util.StringEncoder;
 import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ErrorResolution;
-import net.sourceforge.stripes.action.FileBean;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-import net.sourceforge.stripes.validation.ValidationMethod;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.StringUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Edit vocabulary folder action bean.
@@ -285,7 +288,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Navigates to view vocabulary folder page.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     @DefaultHandler
     public Resolution view() throws ServiceException {
@@ -314,7 +318,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution search() throws ServiceException {
         return new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP);
@@ -324,7 +329,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Navigates to view vocabulary's working copy page.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution viewWorkingCopy() throws ServiceException {
         vocabularyFolder = vocabularyService.getVocabularyWorkingCopy(vocabularyFolder.getId());
@@ -339,7 +345,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Navigates to add vocabulary folder form.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution add() throws ServiceException {
         folders = vocabularyService.getFolders(getUserName(), null);
@@ -350,7 +357,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Navigates to edit vocabulary folder form.
      *
      * @return Resolution
-     * @throws ServiceException if error in queries
+     * @throws ServiceException
+     *             if error in queries
      */
     public Resolution edit() throws ServiceException {
         vocabularyFolder =
@@ -372,7 +380,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Searches data elements.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution searchDataElements() throws ServiceException {
         vocabularyFolder =
@@ -400,7 +409,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Adds data element relation.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution addDataElement() throws ServiceException {
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
@@ -418,7 +428,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Removes data element relation.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution removeDataElement() throws ServiceException {
         vocabularyFolder =
@@ -484,7 +495,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Save vocabulary folder action.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution saveFolder() throws ServiceException {
         if (vocabularyFolder.getId() == 0) {
@@ -532,7 +544,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Save vocabulary concept action.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution saveConcept() throws ServiceException {
 
@@ -562,7 +575,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Action for checking in vocabulary folder.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution checkIn() throws ServiceException {
         vocabularyService.checkInVocabularyFolder(vocabularyFolder.getId(), getUserName());
@@ -578,7 +592,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Action for checking out vocabulary folder.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution checkOut() throws ServiceException {
         vocabularyService.checkOutVocabularyFolder(vocabularyFolder.getId(), getUserName());
@@ -594,7 +609,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Deletes the checked out version.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution undoCheckOut() throws ServiceException {
         int id = vocabularyService.undoCheckOut(vocabularyFolder.getId(), getUserName());
@@ -611,7 +627,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Deletes vocabulary concepts.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution deleteConcepts() throws ServiceException {
         vocabularyService.deleteVocabularyConcepts(conceptIds);
@@ -627,7 +644,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Marks vocabulary concepts obsolete.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution markConceptsObsolete() throws ServiceException {
         vocabularyService.markConceptsObsolete(conceptIds);
@@ -643,7 +661,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Removes the obsolete status from concepts.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution unMarkConceptsObsolete() throws ServiceException {
         vocabularyService.unMarkConceptsObsolete(conceptIds);
@@ -658,7 +677,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * Validates check out.
      *
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     @ValidationMethod(on = {"checkOut"})
     public void validateCheckOut() throws ServiceException {
@@ -671,7 +691,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * Validates view action.
      *
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     private void validateView() throws ServiceException {
         if (vocabularyFolder.isWorkingCopy() || vocabularyFolder.isDraftStatus()) {
@@ -688,7 +709,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * Validation on adding a binded data element.
      *
-     * @throws ServiceException if checking fails
+     * @throws ServiceException
+     *             if checking fails
      */
     @ValidationMethod(on = {"addDataElement"})
     public void validateAddDataElement() throws ServiceException {
@@ -715,7 +737,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * validates removing data elements. Elements which have values in any concepts cannot be removed.
      *
-     * @throws ServiceException if checking fails
+     * @throws ServiceException
+     *             if checking fails
      */
     @ValidationMethod(on = {"removeDataElement"})
     public void validaRemoveDataElement() throws ServiceException {
@@ -749,7 +772,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * Validates save folder.
      *
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     @ValidationMethod(on = {"saveFolder"})
     public void validateSaveFolder() throws ServiceException {
@@ -801,8 +825,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
 
         if (StringUtils.isNotEmpty(vocabularyFolder.getBaseUri())) {
-            if (!Util.isURI(vocabularyFolder.getBaseUri())) {
-                addGlobalValidationError("Base URI contains illegal characters");
+            if (!Util.isValidUri(vocabularyFolder.getBaseUri())) {
+                addGlobalValidationError("Base URI is not a valid URI. \n The allowed schemes are: "
+                        + "http, https, ftp, mailto, tel and urn. ");
             }
         }
 
@@ -852,7 +877,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * data to do validation and re-displaying the attributes on the form when validation errors occour. This method loads the
      * attributes metadata from database and merges them with the submitted attributes.
      *
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     private void mergeAttributes() throws ServiceException {
         List<SimpleAttribute> attrMeta = vocabularyService.getVocabularyFolderAttributesMetadata();
@@ -884,8 +910,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * Returns new attribute object with merged data.
      *
-     * @param metadata       simple attribute 1
-     * @param attributeValue simple attribute 2
+     * @param metadata
+     *            simple attribute 1
+     * @param attributeValue
+     *            simple attribute 2
      * @return simple attribute after merge
      */
     private SimpleAttribute mergeTwoAttributes(SimpleAttribute metadata, SimpleAttribute attributeValue) {
@@ -904,7 +932,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * Validates save concept.
      *
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     @ValidationMethod(on = {"saveConcept"})
     public void validateSaveConcept() throws ServiceException {
@@ -969,7 +998,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Navigates to edit vocabulary folder page.
      *
      * @return resolution
-     * @throws ServiceException if an error occurs
+     * @throws ServiceException
+     *             if an error occurs
      */
     public Resolution cancelSave() throws ServiceException {
         vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getId());
@@ -1112,7 +1142,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Imports CSV contents into vocabulary.
      *
      * @return resolution
-     * @throws ServiceException when an error occurs
+     * @throws ServiceException
+     *             when an error occurs
      */
     public Resolution uploadCsv() throws ServiceException {
         try {
@@ -1176,7 +1207,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Imports RDF contents into vocabulary.
      *
      * @return resolution
-     * @throws ServiceException when an error occurs
+     * @throws ServiceException
+     *             when an error occurs
      */
     public Resolution uploadRdf() throws ServiceException {
         try {
@@ -1365,7 +1397,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyFolder the vocabularyFolder to set
+     * @param vocabularyFolder
+     *            the vocabularyFolder to set
      */
     public void setVocabularyFolder(VocabularyFolder vocabularyFolder) {
         this.vocabularyFolder = vocabularyFolder;
@@ -1379,14 +1412,16 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcepts the vocabularyConcepts to set
+     * @param vocabularyConcepts
+     *            the vocabularyConcepts to set
      */
     public void setVocabularyConcepts(VocabularyConceptResult vocabularyConcepts) {
         this.vocabularyConcepts = vocabularyConcepts;
     }
 
     /**
-     * @param vocabularyService the vocabularyService to set
+     * @param vocabularyService
+     *            the vocabularyService to set
      */
     public void setVocabularyService(IVocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
@@ -1400,7 +1435,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param vocabularyConcept the vocabularyConcept to set
+     * @param vocabularyConcept
+     *            the vocabularyConcept to set
      */
     public void setVocabularyConcept(VocabularyConcept vocabularyConcept) {
         this.vocabularyConcept = vocabularyConcept;
@@ -1414,7 +1450,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param conceptIds the conceptIds to set
+     * @param conceptIds
+     *            the conceptIds to set
      */
     public void setConceptIds(List<Integer> conceptIds) {
         this.conceptIds = conceptIds;
@@ -1428,7 +1465,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param copyId the copyId to set
+     * @param copyId
+     *            the copyId to set
      */
     public void setCopyId(int copyId) {
         this.copyId = copyId;
@@ -1456,7 +1494,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param filter the filter to set
+     * @param filter
+     *            the filter to set
      */
     public void setFilter(VocabularyConceptFilter filter) {
         this.filter = filter;
@@ -1470,7 +1509,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param page the page to set
+     * @param page
+     *            the page to set
      */
     public void setPage(int page) {
         this.page = page;
@@ -1491,7 +1531,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folder the folder to set
+     * @param folder
+     *            the folder to set
      */
     public void setFolder(Folder folder) {
         this.folder = folder;
@@ -1505,7 +1546,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folderChoice the folderChoice to set
+     * @param folderChoice
+     *            the folderChoice to set
      */
     public void setFolderChoice(String folderChoice) {
         this.folderChoice = folderChoice;
@@ -1526,7 +1568,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param elementsFilter the elementsFilter to set
+     * @param elementsFilter
+     *            the elementsFilter to set
      */
     public void setElementsFilter(DataElementsFilter elementsFilter) {
         this.elementsFilter = elementsFilter;
@@ -1555,7 +1598,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param elementId the elementId to set
+     * @param elementId
+     *            the elementId to set
      */
     public void setElementId(int elementId) {
         this.elementId = elementId;
@@ -1570,21 +1614,24 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param uploadedFileToImport the uploadedFile to set
+     * @param uploadedFileToImport
+     *            the uploadedFile to set
      */
     public void setUploadedFileToImport(FileBean uploadedFileToImport) {
         this.uploadedFileToImport = uploadedFileToImport;
     }
 
     /**
-     * @param purgeVocabularyData purge before importing csv
+     * @param purgeVocabularyData
+     *            purge before importing csv
      */
     public void setPurgeVocabularyData(boolean purgeVocabularyData) {
         this.purgeVocabularyData = purgeVocabularyData;
     }
 
     /**
-     * @param purgeBoundElements purge before importing csv
+     * @param purgeBoundElements
+     *            purge before importing csv
      */
     public void setPurgeBoundElements(boolean purgeBoundElements) {
         this.purgeBoundElements = purgeBoundElements;

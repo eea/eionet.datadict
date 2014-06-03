@@ -161,7 +161,6 @@ public interface PropsIF {
      * Maximum amount available site codes to reserve.
      */
     String SITE_CODES_MAX_RESERVE_AMOUNT = "siteCode.reserve.maxAmount";
-
     /**
      * Data Dictionary Working Language.
      */
