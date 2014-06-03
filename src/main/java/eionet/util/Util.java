@@ -51,6 +51,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -76,15 +78,14 @@ import eionet.meta.dao.domain.VocabularyFolder;
  *
  * @author Jaanus Heinlaid
  */
-public class Util {
+public final class Util {
 
     /** Size of buffer for the write() method. */
     private static final int BUF_SIZE = 1024;
     private static Hashtable xmlEscapes = null;
-    private static String[][] allowedFxvDatatypeConversions = { { "boolean", "string" }, { "date", "string" },
-        { "float", "string" }, { "double", "string" }, { "integer", "string" }, { "integer", "float" },
-        { "integer", "double" }, { "integer", "decimal" }, { "float", "double" }, { "float", "decimal" },
-        { "double", "decimal" }, { "decimal", "string" } };
+    private static String[][] allowedFxvDatatypeConversions = { {"boolean", "string"}, {"date", "string"}, {"float", "string"},
+            {"double", "string"}, {"integer", "string"}, {"integer", "float"}, {"integer", "double"}, {"integer", "decimal"},
+            {"float", "double"}, {"float", "decimal"}, {"double", "decimal"}, {"decimal", "string"}};
 
     /** */
     private static final SimpleDateFormat hhmmssFormat = new SimpleDateFormat("HH:mm:ss");
@@ -101,6 +102,7 @@ public class Util {
     private Util() {
         throw new UnsupportedOperationException();
     }
+
     /**
      * Returns true if the given string is null or its length is 0.
      *
@@ -259,8 +261,7 @@ public class Util {
 
     /**
      * A method for calculating time difference in MILLISECONDS, between a date-time specified in input parameters and the current
-     * date-time.
-     * <BR>
+     * date-time. <BR>
      * This should be useful for calculating sleep time for code that has a certain schedule for execution.
      *
      * @param hour
@@ -297,8 +298,7 @@ public class Util {
 
         // here we assume that every full hour is accepted
         /*
-         * if (hour < 0 || hour > 23) {
-         * hour = cur_hour>=23 ? 0 : cur_hour + 1; }
+         * if (hour < 0 || hour > 23) { hour = cur_hour>=23 ? 0 : cur_hour + 1; }
          */
 
         if (wday >= 1 && wday <= 7) {
@@ -566,9 +566,13 @@ public class Util {
 
     /**
      * Finds all urls in a given string and replaces them with HTML anchors with target being a new window.
-     * @param in - the text to scan in plain text.
-     * @param newWindow - whether to launch links in a new window.
-     * @param cutLink - can shorten the link text in the output HTML.
+     *
+     * @param in
+     *            - the text to scan in plain text.
+     * @param newWindow
+     *            - whether to launch links in a new window.
+     * @param cutLink
+     *            - can shorten the link text in the output HTML.
      * @return The modified text as HTML
      */
     public static String processForLink(String in, boolean newWindow, int cutLink) {
@@ -870,19 +874,13 @@ public class Util {
         return literal;
 
         /*
-         * if (literal == null) return null;
-         * UnicodeEscapes unicodeEscapes = null;
-         * StringBuffer buf = new StringBuffer(); for (int i = 0; i < literal.length(); i++) {
-         * char c = literal.charAt(i);
-         * if (c=='&') { int j = literal.indexOf(";", i); if (j > i) { char cc = literal.charAt(i + 1); int decimal = -1; if (cc=='#') {
-         * // handle Unicode decimal escape String sDecimal = literal.substring(i + 2, j);
-         * try { decimal = Integer.parseInt(sDecimal); } catch (Exception e) {} } else { // handle entity String ent =
-         * literal.substring(i + 1, j); if (unicodeEscapes == null) unicodeEscapes = new UnicodeEscapes(); decimal =
-         * unicodeEscapes.getDecimal(ent); }
-         * if (decimal >= 0) { // if decimal was found, use the corresponding char. otherwise stick to c. c = (char) decimal; i = j;
-         * } } }
-         * buf.append(c); }
-         * return buf.toString();
+         * if (literal == null) return null; UnicodeEscapes unicodeEscapes = null; StringBuffer buf = new StringBuffer(); for (int i
+         * = 0; i < literal.length(); i++) { char c = literal.charAt(i); if (c=='&') { int j = literal.indexOf(";", i); if (j > i) {
+         * char cc = literal.charAt(i + 1); int decimal = -1; if (cc=='#') { // handle Unicode decimal escape String sDecimal =
+         * literal.substring(i + 2, j); try { decimal = Integer.parseInt(sDecimal); } catch (Exception e) {} } else { // handle
+         * entity String ent = literal.substring(i + 1, j); if (unicodeEscapes == null) unicodeEscapes = new UnicodeEscapes();
+         * decimal = unicodeEscapes.getDecimal(ent); } if (decimal >= 0) { // if decimal was found, use the corresponding char.
+         * otherwise stick to c. c = (char) decimal; i = j; } } } buf.append(c); } return buf.toString();
          */
     }
 
@@ -984,8 +982,8 @@ public class Util {
      */
     public static boolean skipAttributeByDatatype(String attrShortName, String datatype) {
 
-        return (attrShortName == null || datatype == null) ? false
-                : IrrelevantAttributes.getInstance().isIrrelevant(datatype, attrShortName);
+        return (attrShortName == null || datatype == null) ? false : IrrelevantAttributes.getInstance().isIrrelevant(datatype,
+                attrShortName);
     }
 
     /*
@@ -1023,7 +1021,7 @@ public class Util {
      *
      */
     public static void forward2errorpage(HttpServletRequest request, HttpServletResponse response, Throwable t, String backURL)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
 
         String msg = t.getMessage();
 
@@ -1180,8 +1178,8 @@ public class Util {
     }
 
     /**
-     * Converts a collection to a row of comma-separated-values. Caution: empty strings are ignored,
-     * values are not enclosed in double quotes. Double-quotes in values are not escaped.
+     * Converts a collection to a row of comma-separated-values. Caution: empty strings are ignored, values are not enclosed in
+     * double quotes. Double-quotes in values are not escaped.
      *
      * @param coll
      * @return
@@ -1202,8 +1200,8 @@ public class Util {
     }
 
     /**
-     * Converts an array to a row of comma-separated-values. Caution: empty strings are ignored,
-     * values are not enclosed in double quotes. Double-quotes in values are not escaped.
+     * Converts an array to a row of comma-separated-values. Caution: empty strings are ignored, values are not enclosed in double
+     * quotes. Double-quotes in values are not escaped.
      *
      * @param coll
      * @return
@@ -1245,7 +1243,9 @@ public class Util {
 
     /**
      * Convert a byte to a Boolean. 0 is false. Everything else is true.
-     * @param i - the byte
+     *
+     * @param i
+     *            - the byte
      * @return the Boolean value
      */
     public static boolean toBoolean(byte i) {
@@ -1258,7 +1258,9 @@ public class Util {
 
     /**
      * Convert a Boolean value to a byte.
-     * @param b - the value
+     *
+     * @param b
+     *            - the value
      * @return 0 or 1.
      */
     public static byte toByte(boolean b) {
@@ -1363,7 +1365,8 @@ public class Util {
     /**
      * Returns true if the identifier doesn't contain banned characters.
      *
-     * @param identifier - the string to test.
+     * @param identifier
+     *            - the string to test.
      * @return - the true/false result.
      */
     public static boolean isValidIdentifier(String identifier) {
@@ -1377,7 +1380,8 @@ public class Util {
     /**
      * Format a date object to yyyy-MM-dd HH:mm:ss. Is this format chosen to fit what the database uses?
      *
-     * @param date - the date
+     * @param date
+     *            - the date
      * @return date as string
      */
     public static String formatDateTime(Date date) {
@@ -1386,7 +1390,9 @@ public class Util {
 
     /**
      * Encodes URL fragment to UTF-8.
-     * @param value value to be encoded
+     *
+     * @param value
+     *            value to be encoded
      * @return encoded value
      */
     public static String encodeURLPath(String value) {
@@ -1401,55 +1407,54 @@ public class Util {
     }
 
     /**
-     * Checks if the given String corresponds to URI syntax.
-     * Is different from isURI() that supports all prefixes and requires double slash to be entered after the scheme.
-     * The allowed schemes are: http, https, ftp, mailto, tel and urn
-     * @param str string to be checked
-     * @return  true if matches URI requirements
+     * Checks if the given String corresponds to URI syntax. Is different from isURI() that supports all prefixes and requires
+     * double slash to be entered after the scheme. The allowed schemes are: http, https, ftp, mailto, tel and urn.
+     *
+     * @param str
+     *            string to be checked
+     * @return true if matches URI requirements
      */
     public static boolean isValidUri(String str) {
-
-        if (str == null || str.indexOf(':') == -1) {
+        // if it is a blank string or does not contain schema seperator, just return false!
+        if (StringUtils.isBlank(str) || str.indexOf(':') == -1) {
             return false;
         }
-        str = str.toLowerCase().trim();
 
+        str = str.toLowerCase().trim();
+        // check for schemas
         if (!str.startsWith("http://") && !str.startsWith("https://") && !str.startsWith("ftp://") && !str.startsWith("mailto:")
                 && !str.startsWith("tel:") && !str.startsWith("urn:")) {
             return false;
         }
 
         try {
-
             URI uri = new URI(str);
             String scheme = uri.getScheme();
 
-            if (scheme == null) {
+            if (StringUtils.isBlank(scheme)) {
                 return false;
             }
 
             if (scheme.equals("http") || scheme.equals("https") || scheme.equals("ftp")) {
-
-                if (uri.getHost() == null) {
+                if (StringUtils.isBlank(uri.getHost())) {
                     return false;
                 }
 
                 String path = uri.getPath();
-                if (path != null) {
-
-                    int len = path.length();
-                    for (int i = 0; i < len; i++) {
-
-                        if ("?<>:*|\"".indexOf(path.charAt(i)) > -1) {
-                            return false;
-                        }
+                if (StringUtils.isNotBlank(path)) {
+                    String pattern = "[?<>:*|\"\\\\]|//|\\.\\.|  ";
+                    Pattern regex = Pattern.compile(pattern);
+                    Matcher matcher = regex.matcher(path);
+                    // check if the regex matches path
+                    if (matcher.find()) {
+                        return false;
                     }
                 }
             }
 
             return true;
         } catch (Exception ex) {
-
+            ex.printStackTrace();
             return false;
         }
     }
