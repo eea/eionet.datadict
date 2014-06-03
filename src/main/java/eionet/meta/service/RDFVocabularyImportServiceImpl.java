@@ -21,12 +21,12 @@
 
 package eionet.meta.service;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyRDFImportHandler;
-import eionet.util.Props;
-import eionet.util.PropsIF;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.openrdf.rio.ParseErrorListener;
 import org.openrdf.rio.ParserConfig;
@@ -36,11 +36,13 @@ import org.openrdf.rio.rdfxml.RDFXMLParser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyRDFImportHandler;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.Util;
 
 /**
  * Service implementation to import RDF into a Vocabulary Folder.
@@ -61,12 +63,16 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         this.logMessages = new ArrayList<String>();
 
         final String folderCtxRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
+        //check for valid base uri
+        if (!Util.isValidUri(folderCtxRoot)) {
+            throw new ServiceException("Vocabulary does not have a valid base URI");
+        }
 
-        List<VocabularyConcept> concepts =
-                vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
-
+        // get concepts
+        List<VocabularyConcept> concepts = vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
+        // get bound data elements to vocabulary
         final List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-
+        // do purging if requested
         if (purgeVocabularyData) {
             String message = "All concepts ";
             purgeConcepts(concepts);
@@ -79,10 +85,8 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         Map<String, List<String>> bindedElemsByNS = new HashMap<String, List<String>>();
         for (DataElement elem : bindedElements) {
             String identifier = elem.getIdentifier();
-
             // TODO use dataelem getNameSpacePrefix and isExternalElement
             String[] temp = identifier.split("[:]");
-
             if (temp.length != 2) {
                 continue;
             }

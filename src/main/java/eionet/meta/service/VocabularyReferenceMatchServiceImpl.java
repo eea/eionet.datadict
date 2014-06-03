@@ -140,7 +140,7 @@ public class VocabularyReferenceMatchServiceImpl implements IVocabularyReference
                 if (StringUtils.isNotEmpty(conceptIdentifier) && !StringUtils.contains(conceptIdentifier, "/")) {
                     // now hope we have a valid concept here, search for it.
                     VocabularyConceptFilter filter = new VocabularyConceptFilter();
-                    // !!! ATTENTION: this is really dependent getPotentialReferringVocabularyConceptsElements method implementation
+                    // !!! ATTENTION: this is really dependent to implementation of getPotentialReferringVocabularyConceptsElements
                     filter.setVocabularyFolderId(elem.getRelatedConceptId());
                     filter.setIdentifier(conceptIdentifier);
                     filter.setUsePaging(false);
@@ -150,10 +150,16 @@ public class VocabularyReferenceMatchServiceImpl implements IVocabularyReference
                     if (concepts.size() == 1) {
                         VocabularyConcept concept = vocabularyConceptResult.getList().get(0);
                         elem.setRelatedConceptId(concept.getId());
+                        String tempElementValue = elem.getAttributeValue();
                         elem.setAttributeValue(null);
-                        // now update it
+                        // update it
                         this.vocabularyFolderDAO.updateRelatedConceptValueToId(elem);
                         numberOfMatchedElementValuesToIds++;
+                        logs.add("Vocabulary Concept Element (which has ID \"" + elem.getId()
+                                + "\" and is an attribute of concept with id \"" + elem.getVocabularyConceptId()
+                                + "\") is updated. \"" + tempElementValue + "\" is replaced by \"" + conceptIdentifier
+                                + "\" (with concept id \"" + concept.getId() + "\") in vocabulary \""
+                                + concept.getVocabularyIdentifier() + "\"");
                     }
                 }
             }

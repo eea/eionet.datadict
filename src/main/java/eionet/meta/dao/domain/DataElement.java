@@ -21,15 +21,16 @@
 
 package eionet.meta.dao.domain;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.StringEncoder;
 import eionet.util.Util;
-import org.apache.commons.lang.StringUtils;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Data element.
@@ -68,8 +69,7 @@ public class DataElement {
     private String tableName;
 
     /**
-     * parent namespace ID.
-     * NULL if common element
+     * parent namespace ID. NULL if common element
      */
     private Integer parentNamespace;
     /**
@@ -84,11 +84,15 @@ public class DataElement {
      * Working copy.
      */
     private boolean workingCopy;
-    //TODO - make a new DAO entity for VOCABULARY_CONCEPT_ELEMENT
+    // TODO - make a new DAO entity for VOCABULARY_CONCEPT_ELEMENT
     /**
      * Value from VOCABULARY_CONCEPT_ELEMENT table. Expected to be IRI encoded in DB.
      */
     private String attributeValue;
+    /**
+     * Vocabulary concept id.
+     */
+    private int vocabularyConceptId;
     /**
      * Language from VOCABULARY_CONCEPT_ELEMENT table.
      */
@@ -130,9 +134,8 @@ public class DataElement {
      */
     private Integer vocabularyId;
     /**
-     * if element gets fxv from a vocabulary shows if all concepts are valid.
-     * if false only concepts released before releasing the element and not marked
-     * obsolete are valid.
+     * if element gets fxv from a vocabulary shows if all concepts are valid. if false only concepts released before releasing the
+     * element and not marked obsolete are valid.
      */
     private Boolean allConceptsValid;
     /**
@@ -300,14 +303,13 @@ public class DataElement {
         this.attributeLanguage = StringUtils.trimToNull(attributeLanguage);
     }
 
-
     /**
      * Checks if given element is used for describing relations.
      *
      * @return true if an relation element
      */
     public boolean isRelationalElement() {
-        //this DAO class is used for metadata and data element with values
+        // this DAO class is used for metadata and data element with values
         return (relatedConceptId != null && relatedConceptId != 0) || getDatatype().equals("localref");
     }
 
@@ -336,8 +338,8 @@ public class DataElement {
     }
 
     /**
-     * Generate the relative path to a concept in a different vocabulary in the same data dictionary.
-     * The path looks like "common/nuts/AT111".
+     * Generate the relative path to a concept in a different vocabulary in the same data dictionary. The path looks like
+     * "common/nuts/AT111".
      *
      * @return the path
      */
@@ -346,9 +348,8 @@ public class DataElement {
     }
 
     /**
-     * Generate the full URI to a related concept. The concept can be specified
-     * as a foreign key reference to another concept in the database or it
-     * can be specified as a text string.
+     * Generate the full URI to a related concept. The concept can be specified as a foreign key reference to another concept in the
+     * database or it can be specified as a text string.
      *
      * @return the url - IRI encoded.
      */
@@ -357,8 +358,7 @@ public class DataElement {
             if (StringUtils.isNotEmpty(this.relatedConceptBaseURI)) {
                 return this.relatedConceptBaseURI + this.relatedConceptIdentifier;
             }
-            return StringEncoder.encodeToIRI(Props.getRequiredProperty(PropsIF.DD_URL)
-                    + "/vocabulary/"
+            return StringEncoder.encodeToIRI(Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/"
                     + getRelatedConceptRelativePath());
         } else {
             return attributeValue;
@@ -388,7 +388,8 @@ public class DataElement {
     /**
      * Sets related base uri if input is not empty string.
      *
-     * @param relatedConceptBaseURI base uri
+     * @param relatedConceptBaseURI
+     *            base uri
      */
     public void setRelatedConceptBaseURI(String relatedConceptBaseURI) {
         this.relatedConceptBaseURI = StringUtils.trimToNull(relatedConceptBaseURI);
@@ -430,7 +431,7 @@ public class DataElement {
         if (elemAttributeValues != null) {
             if (elemAttributeValues.containsKey("languageUsed")) {
                 String lang = elemAttributeValues.get("languageUsed").get(0);
-                //TODO - change to check only one value if some solution is made for boolean attributes, see #16975
+                // TODO - change to check only one value if some solution is made for boolean attributes, see #16975
                 return lang.equals("1") || lang.equalsIgnoreCase("Yes") || lang.equalsIgnoreCase("true");
             }
         }
@@ -479,4 +480,11 @@ public class DataElement {
         this.date = date;
     }
 
+    public int getVocabularyConceptId() {
+        return vocabularyConceptId;
+    }
+
+    public void setVocabularyConceptId(int vocabularyConceptId) {
+        this.vocabularyConceptId = vocabularyConceptId;
+    }
 }

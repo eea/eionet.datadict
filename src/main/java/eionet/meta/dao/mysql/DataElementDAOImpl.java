@@ -963,6 +963,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                         DataElement de = new DataElement();
                         // id field of DataElement class is used to store Vocabulary_Concept_Element.ID column.
                         de.setId(rs.getInt("v.id"));
+                        de.setVocabularyConceptId(rs.getInt("v.vocabulary_concept_id"));
                         de.setAttributeValue(rs.getString("v.element_value"));
                         de.setRelatedConceptBaseURI(rs.getString("bu.base_uri"));
                         de.setRelatedConceptVocabulary(rs.getString("bu.identifier"));

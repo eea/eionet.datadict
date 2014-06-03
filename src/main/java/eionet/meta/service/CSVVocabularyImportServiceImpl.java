@@ -21,19 +21,21 @@
 
 package eionet.meta.service;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyCSVImportHandler;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyCSVImportHandler;
+import eionet.util.Util;
 
 /**
  * Service implementation to import CSV into a Vocabulary Folder.
@@ -51,10 +53,16 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
     public List<String> importCsvIntoVocabulary(Reader content, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData,
             boolean purgeBoundElements) throws ServiceException {
 
-        this.logMessages = new ArrayList<String>();
-        List<VocabularyConcept> concepts =
-                vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
+        final String folderContextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
+        // check for valid base uri
+        if (!Util.isValidUri(folderContextRoot)) {
+            throw new ServiceException("Vocabulary does not have a valid base URI");
+        }
 
+        this.logMessages = new ArrayList<String>();
+        // get concepts
+        List<VocabularyConcept> concepts = vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
+        // get bound elements
         List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
         if (purgeVocabularyData) {
             String message = "All concepts ";
@@ -76,8 +84,6 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
                 elementToId.put(identifier, elem.getId());
             }
         }
-
-        final String folderContextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
         VocabularyCSVImportHandler handler = new VocabularyCSVImportHandler(folderContextRoot, concepts, elementToId, content);
         handler.generateUpdatedBeans();
