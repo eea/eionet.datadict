@@ -21,10 +21,15 @@
 
 package eionet.meta.service;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyImportBaseHandler;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -34,14 +39,10 @@ import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyImportBaseHandler;
 
 /**
  * JUnit integration test with Unitils for RDF Vocabulary Import Service.
@@ -102,15 +103,24 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
         vc8.setLabel("rdf_test_concept_label_1_updated");
 
+        int dataElemId = 8;
+        String identifier = "skos:prefLabel";
         List<List<DataElement>> dataElements = vc8.getElementAttributes();
         List<DataElement> elems = null;
-        elems = VocabularyImportBaseHandler.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
-        DataElement element = findDataElemByAttrValue(elems, "bg_rdf_test_concept_1");
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        DataElement element = new DataElement();
         element.setAttributeValue("bg_rdf_test_concept_1_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("bg");
+        elems.add(element);
 
-        elems = VocabularyImportBaseHandler.getDataElementValuesByNameAndLang("skos:prefLabel", "et", dataElements);
-        element = findDataElemByAttrValue(elems, "et_rdf_test_concept_1");
+        element = new DataElement();
         element.setAttributeValue("et_rdf_test_concept_1_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("et");
+        elems.add(element);
 
         VocabularyConcept vc9 = findVocabularyConceptById(concepts, 9);
         dataElements = vc9.getElementAttributes();
@@ -155,28 +165,47 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
         vc8.setDefinition("rdf_test_concept_def_1_updated");
 
+        int dataElemId = 8;
+        String identifier = "skos:prefLabel";
         List<List<DataElement>> dataElements = vc8.getElementAttributes();
         List<DataElement> elems = null;
-        elems = VocabularyImportBaseHandler.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
-        DataElement element = findDataElemByAttrValue(elems, "bg2_rdf_test_concept_1");
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        DataElement element = new DataElement();
         element.setAttributeValue("bg2_rdf_test_concept_1_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("bg");
+        elems.add(element);
 
-        elems = VocabularyImportBaseHandler.getDataElementValuesByNameAndLang("skos:prefLabel", "en", dataElements);
-        element = findDataElemByAttrValue(elems, "en_rdf_test_concept_1");
+        element = new DataElement();
         element.setAttributeValue("en_rdf_test_concept_1_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("en");
+        elems.add(element);
 
         VocabularyConcept vc10 = findVocabularyConceptById(concepts, 10);
         vc10.setLabel("rdf_test_concept_label_3_updated");
         vc10.setDefinition("rdf_test_concept_def_3_updated");
 
         dataElements = vc10.getElementAttributes();
-        elems = VocabularyImportBaseHandler.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
-        element = findDataElemByAttrValue(elems, "bg_rdf_test_concept_3");
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        element = new DataElement();
         element.setAttributeValue("bg_rdf_test_concept_3_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("bg");
+        elems.add(element);
 
-        elems = VocabularyImportBaseHandler.getDataElementValuesByNameAndLang("skos:definition", "pl", dataElements);
-        element = findDataElemByAttrValue(elems, "pl_rdf_test_concept_3");
+        dataElemId = 9;
+        identifier = "skos:definition";
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        element = new DataElement();
         element.setAttributeValue("pl_rdf_test_concept_3_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("pl");
+        elems.add(element);
 
         VocabularyConcept vc9 = findVocabularyConceptById(concepts, 9);
         dataElements = vc9.getElementAttributes();
@@ -599,15 +628,27 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyConcept vc10 = findVocabularyConceptById(concepts, 10);
         vc10.setDefinition("rdf_test_concept_def_3_updated");
 
+        int dataElemId = 8;
+        String identifier = "skos:prefLabel";
         List<List<DataElement>> dataElements = vc10.getElementAttributes();
         List<DataElement> elems = null;
-        elems = VocabularyImportBaseHandler.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
-        DataElement element = findDataElemByAttrValue(elems, "bg_rdf_test_concept_3");
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        DataElement element = new DataElement();
         element.setAttributeValue("bg_rdf_test_concept_3_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("bg");
+        elems.add(element);
 
-        elems = VocabularyImportBaseHandler.getDataElementValuesByNameAndLang("skos:definition", "de", dataElements);
-        element = findDataElemByAttrValue(elems, "de_rdf_test_concept_3");
+        dataElemId = 9;
+        identifier = "skos:definition";
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier , dataElements);
+        element = new DataElement();
         element.setAttributeValue("de_rdf_test_concept_3_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("de");
+        elems.add(element);
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);

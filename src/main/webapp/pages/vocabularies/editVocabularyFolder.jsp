@@ -354,7 +354,7 @@
         </stripes:form>
 
         <!-- Bound data elements -->
-        <jsp:include page="editBindedElementsInc.jsp" />
+        <jsp:include page="editBoundElementsInc.jsp" />
 
         <!-- New concept popup -->
         <jsp:include page="newConceptInc.jsp" />

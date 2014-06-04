@@ -82,11 +82,11 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         // id
 
         Assert.assertTrue("Output does not contain correct geo:lat", StringUtils.contains(output, "\"2.2\",\"3\",\"4.5\",\"1\""));
-        Assert.assertTrue("Incorrect size of binded elements",
+        Assert.assertTrue("Incorrect size of bound elements",
                 StringUtils.contains(output, "\"geo:lat\",\"geo:lat\",\"geo:lat\",\"geo:lat\""));
 
         Assert.assertTrue("Output does not contain correct geo:long", StringUtils.contains(output, "\"1.1\""));
-        Assert.assertTrue("Incorrect size of binded elements", StringUtils.contains(output, "\"geo:long\""));
+        Assert.assertTrue("Incorrect size of bound elements", StringUtils.contains(output, "\"geo:long\""));
 
         Assert.assertTrue("Incorrect related element url", StringUtils.contains(output, expectedRelatedInternal));
     }

@@ -21,26 +21,29 @@
 
 package eionet.meta.service;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyRDFImportHandler;
-import eionet.util.Props;
-import eionet.util.PropsIF;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.openrdf.rio.ParseErrorListener;
 import org.openrdf.rio.ParserConfig;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.helpers.BasicParserSettings;
 import org.openrdf.rio.rdfxml.RDFXMLParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.RdfNamespace;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyRDFImportHandler;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 
 /**
  * Service implementation to import RDF into a Vocabulary Folder.
@@ -49,6 +52,12 @@ import java.util.Map;
  */
 @Service
 public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseImpl implements IRDFVocabularyImportService {
+
+    /**
+     * Namespace service.
+     */
+    @Autowired
+    private INamespaceService namespaceService;
 
     /**
      * {@inheritDoc}
@@ -62,10 +71,9 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
 
         final String folderCtxRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
-        List<VocabularyConcept> concepts =
-                vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
+        List<VocabularyConcept> concepts = vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
 
-        final List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+        final List<DataElement> boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 
         if (purgeVocabularyData) {
             String message = "All concepts ";
@@ -75,9 +83,12 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
             this.logMessages.add(message);
         }
 
+        List<RdfNamespace> rdfNamespaceList = this.namespaceService.getRdfNamespaces();
+
+        Map<String, String> boundURIs = new HashMap<String, String>();
         Map<String, Integer> elemToId = new HashMap<String, Integer>();
-        Map<String, List<String>> bindedElemsByNS = new HashMap<String, List<String>>();
-        for (DataElement elem : bindedElements) {
+        Map<String, List<String>> boundElementsByNS = new HashMap<String, List<String>>();
+        for (DataElement elem : boundElements) {
             String identifier = elem.getIdentifier();
 
             // TODO use dataelem getNameSpacePrefix and isExternalElement
@@ -91,18 +102,30 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
                 elemToId.put(identifier, elem.getId());
             }
 
-            List<String> domainElements = bindedElemsByNS.get(temp[0]);
+            List<String> domainElements = boundElementsByNS.get(temp[0]);
             if (domainElements == null) {
                 domainElements = new ArrayList<String>();
-                bindedElemsByNS.put(temp[0], domainElements);
+                boundElementsByNS.put(temp[0], domainElements);
+
+                RdfNamespace rns = null;
+                for (int i = 0; i < rdfNamespaceList.size(); i++) {
+                    rns = rdfNamespaceList.get(i);
+                    if (StringUtils.equals(rns.getPrefix(), temp[0])) {
+                        break;
+                    }
+                }
+                if (rns != null) {
+                    rdfNamespaceList.remove(rns);
+                    boundURIs.put(rns.getUri(), rns.getPrefix());
+                }
             }
             domainElements.add(temp[1]);
         }
 
         RDFParser parser = new RDFXMLParser();
         VocabularyRDFImportHandler rdfHandler =
-                new VocabularyRDFImportHandler(folderCtxRoot, concepts, elemToId, bindedElemsByNS, purgePredicateBasis,
-                        Props.getProperty(PropsIF.DD_WORKING_LANGUAGE_KEY));
+                new VocabularyRDFImportHandler(folderCtxRoot, concepts, elemToId, boundElementsByNS, boundURIs,
+                        purgePredicateBasis, Props.getProperty(PropsIF.DD_WORKING_LANGUAGE_KEY));
         parser.setRDFHandler(rdfHandler);
         // parser.setStopAtFirstError(false);
         ParserConfig config = parser.getParserConfig();
@@ -149,5 +172,4 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
 
         return this.logMessages;
     } // end of method importRdfIntoVocabulary
-
 } // end of class RDFVocabularyImportServiceImpl

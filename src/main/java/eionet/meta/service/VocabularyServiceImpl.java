@@ -368,7 +368,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     /**
-     * As a last step when updating vocabulary concept, this method checks all the binded elements that represent relations and
+     * As a last step when updating vocabulary concept, this method checks all the bound elements that represent relations and
      * makes sure that the concepts are related in both sides (A related with B -> B related with A). Also when relation gets
      * deleted from one side, then we make sure to deleted it also from the other side of the relation.
      *
@@ -1066,7 +1066,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyConceptDAO.getConceptsWithValuedElement(dataElementId, vocabularyId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to perform binded element values existence check: " + e.getMessage(), e);
+            throw new ServiceException("Failed to perform bound element values existence check: " + e.getMessage(), e);
         }
 
     }

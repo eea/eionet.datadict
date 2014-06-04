@@ -191,7 +191,7 @@ public interface ISchemaService {
     List<SchemaSet> getSchemaSetWorkingCopiesOf(String userName) throws ServiceException;
 
     /**
-     * Returns all attributes that are binded to schema sets.
+     * Returns all attributes that are bound to schema sets.
      *
      * @return
      * @throws ServiceException
@@ -199,7 +199,7 @@ public interface ISchemaService {
     List<Attribute> getSchemaSetAttributes() throws ServiceException;
 
     /**
-     * Returns all attributes that are binded to schemas.
+     * Returns all attributes that are bound to schemas.
      *
      * @return
      * @throws ServiceException

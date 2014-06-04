@@ -249,7 +249,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * Bound data elements.
      */
-    private List<DataElement> bindedElements;
+    private List<DataElement> boundElements;
 
     /**
      * Data element id.
@@ -307,7 +307,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
                         getUserName());
 
-        bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+        boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 
         return new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP);
     }
@@ -362,7 +362,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         folders = vocabularyService.getFolders(getUserName(), null);
         folderChoice = FOLDER_CHOICE_EXISTING;
 
-        bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+        boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
         setRdfPurgeOption(1);
 
         return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
@@ -391,7 +391,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         elementsResult = dataService.searchDataElements(elementsFilter);
         editDivId = "addElementsDiv";
 
-        bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+        boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 
         return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
     }
@@ -686,7 +686,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * Validation on adding a binded data element.
+     * Validation on adding a bound data element.
      *
      * @throws ServiceException if checking fails
      */
@@ -706,7 +706,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             folders = vocabularyService.getFolders(getUserName(), null);
             folderChoice = FOLDER_CHOICE_EXISTING;
 
-            bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+            boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
             Resolution resolution = new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
             getContext().setSourcePageResolution(resolution);
         }
@@ -739,7 +739,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             folders = vocabularyService.getFolders(getUserName(), null);
             folderChoice = FOLDER_CHOICE_EXISTING;
 
-            bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+            boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
             Resolution resolution = new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
             getContext().setSourcePageResolution(resolution);
         }
@@ -843,7 +843,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             folders = vocabularyService.getFolders(getUserName(), null);
             initFilter();
             vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
-            bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+            boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
         }
     }
 
@@ -952,7 +952,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getId());
             initFilter();
             vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
-            bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+            boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
         }
     }
 
@@ -1540,11 +1540,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * @return the bindedElements
+     * @return the boundElements
      */
-    public List<DataElement> getBindedElements() {
+    public List<DataElement> getBoundElements() {
 
-        return bindedElements;
+        return boundElements;
     }
 
     /**

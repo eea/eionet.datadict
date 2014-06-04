@@ -21,10 +21,15 @@
 
 package eionet.meta.service;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.util.VocabularyCSVOutputHelper;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -34,14 +39,11 @@ import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyImportBaseHandler;
+import eionet.util.VocabularyCSVOutputHelper;
 
 /**
  * JUnit integration test with Unitils for CSV Vocabulary Import Service.
@@ -112,15 +114,24 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
         vc8.setLabel("csv_test_concept_label_1_updated");
 
+        int dataElemId = 8;
+        String identifier = "skos:prefLabel";
         List<List<DataElement>> dataElements = vc8.getElementAttributes();
         List<DataElement> elems = null;
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
-        DataElement element = findDataElemByAttrValue(elems, "bg_csv_test_concept_1");
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        DataElement element = new DataElement();
         element.setAttributeValue("bg_csv_test_concept_1_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("bg");
+        elems.add(element);
 
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "et", dataElements);
-        element = findDataElemByAttrValue(elems, "et_csv_test_concept_1");
+        element = new DataElement();
         element.setAttributeValue("et_csv_test_concept_1_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("et");
+        elems.add(element);
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -128,8 +139,6 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // compare manually updated objects with queried ones (after import operation)
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
                 ReflectionComparatorMode.LENIENT_ORDER);
-
-        // boolean result2 = EqualsBuilder.reflectionEquals(concepts, updatedConcepts);
     }// end of test step testIfConceptAndElementsUpdated
 
     /**
@@ -158,27 +167,46 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
         vc8.setDefinition("csv_test_concept_def_1_updated");
 
+        int dataElemId = 8;
+        String identifier = "skos:prefLabel";
         List<List<DataElement>> dataElements = vc8.getElementAttributes();
         List<DataElement> elems = null;
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
-        DataElement element = findDataElemByAttrValue(elems, "bg2_csv_test_concept_1");
-        element.setAttributeValue("bg2_csv_test_concept_1_updated");
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        DataElement element = new DataElement();
 
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "en", dataElements);
-        element = findDataElemByAttrValue(elems, "en_csv_test_concept_1");
+        element.setAttributeValue("bg2_csv_test_concept_1_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("bg");
+        elems.add(element);
+        element = new DataElement();
         element.setAttributeValue("en_csv_test_concept_1_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("en");
+        elems.add(element);
 
         VocabularyConcept vc10 = findVocabularyConceptById(concepts, 10);
         vc10.setLabel("csv_test_concept_label_3_updated");
 
         dataElements = vc10.getElementAttributes();
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
-        element = findDataElemByAttrValue(elems, "bg_csv_test_concept_3");
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        element = new DataElement();
         element.setAttributeValue("bg_csv_test_concept_3_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("bg");
+        elems.add(element);
 
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:definition", "pl", dataElements);
-        element = findDataElemByAttrValue(elems, "pl_csv_test_concept_3");
+        dataElemId = 9;
+        identifier = "skos:definition";
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        element = new DataElement();
         element.setAttributeValue("pl_csv_test_concept_3_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("pl");
+        elems.add(element);
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -506,7 +534,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
      */
     @Test
     @Rollback
-    public void testIfConceptsAddedBindedElementsRemovedAndNewElementsAddedAfterAllPurge() throws Exception {
+    public void testIfConceptsAddedBoundElementsRemovedAndNewElementsAddedAfterAllPurge() throws Exception {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
 
@@ -524,19 +552,19 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         String[] boundElementIdentifiers =
                 new String[] {"skos:relatedMatch", "skos:prefLabel", "skos:definition", "env:prefLabel", "env:definition",
                         "env:declaration"};
-        List<String> bindedElements = new ArrayList<String>(Arrays.asList(boundElementIdentifiers));
+        List<String> boundElements = new ArrayList<String>(Arrays.asList(boundElementIdentifiers));
 
         // get updated values of data elements of this vocabulary folder
-        List<DataElement> bindedElementsUpdated = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-        Assert.assertEquals("Updated bound elements does not include 6 items", bindedElementsUpdated.size(), 6);
+        List<DataElement> boundElementsUpdated = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+        Assert.assertEquals("Updated bound elements does not include 6 items", boundElementsUpdated.size(), 6);
 
         // compare manually updated objects with queried ones (after import operation)
         // just compare identifiers
-        for (DataElement bindedElem : bindedElementsUpdated) {
-            Assert.assertTrue("Does not contain element with identifier: " + bindedElem.getIdentifier(),
-                    bindedElements.remove(bindedElem.getIdentifier()));
+        for (DataElement boundElem : boundElementsUpdated) {
+            Assert.assertTrue("Does not contain element with identifier: " + boundElem.getIdentifier(),
+                    boundElements.remove(boundElem.getIdentifier()));
         }
-        Assert.assertEquals("Some elements didn't match", bindedElements.size(), 0);
+        Assert.assertEquals("Some elements didn't match", boundElements.size(), 0);
 
         // manually create values of new concepts for comparison
         concepts.remove(2);// remove last object
@@ -754,7 +782,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // get initial values of concepts with attributes
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
         // get initial values of data elements of this vocabulary folder
-        List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+        List<DataElement> boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 
         // get reader for CSV file
         Reader reader = getReaderFromResource("csv_import/csv_import_test_6.csv");
@@ -768,11 +796,17 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
         vc8.setLabel("csv_test_concept_label_1_updated");
 
+        int dataElemId = 8;
+        String identifier = "skos:prefLabel";
         List<List<DataElement>> dataElements = vc8.getElementAttributes();
         List<DataElement> elems = null;
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
-        DataElement element = findDataElemByAttrValue(elems, "bg_csv_test_concept_1");
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        DataElement element = new DataElement();
         element.setAttributeValue("bg_csv_test_concept_1_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("bg");
+        elems.add(element);
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -782,9 +816,9 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
                 ReflectionComparatorMode.LENIENT_ORDER);
 
         // get updated values of data elements of this vocabulary folder (there shouldn't be any difference)
-        List<DataElement> bindedElementsUpdated = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+        List<DataElement> boundElementsUpdated = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
         // compare
-        ReflectionAssert.assertReflectionEquals(bindedElements, bindedElementsUpdated, ReflectionComparatorMode.LENIENT_DATES,
+        ReflectionAssert.assertReflectionEquals(boundElements, boundElementsUpdated, ReflectionComparatorMode.LENIENT_DATES,
                 ReflectionComparatorMode.LENIENT_ORDER);
 
         // and finally compare log messages
@@ -840,8 +874,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element = elements.get(0);
         Assert.assertEquals("Related Concept Id Doesn't Match",
                 findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_2").getId(), element.getRelatedConceptId()
-                        .intValue()
-        );
+                        .intValue());
         Assert.assertEquals("Related Concept Identifier Doesn't Match", "csv_test_concept_2",
                 element.getRelatedConceptIdentifier());
         Assert.assertEquals("Related Concept Label Doesn't Match", "csv_test_concept_label_2", element.getRelatedConceptLabel());
@@ -867,8 +900,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element = elements.get(0);
         Assert.assertEquals("Related Concept Id Doesn't Match",
                 findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_1").getId(), element.getRelatedConceptId()
-                        .intValue()
-        );
+                        .intValue());
         Assert.assertEquals("Related Concept Identifier Doesn't Match", "csv_test_concept_1",
                 element.getRelatedConceptIdentifier());
         Assert.assertEquals("Related Concept Label Doesn't Match", "csv_test_concept_label_1", element.getRelatedConceptLabel());

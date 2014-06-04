@@ -584,7 +584,7 @@ public interface IVocabularyService {
     List<VocabularyConcept> getConceptsWithElementValue(int dataElementId, int vocabularyId) throws ServiceException;
 
     /**
-     * Returns all namespaces that are used by the binded elements. Both external and internal. Internal namespaces are composed
+     * Returns all namespaces that are used by the bound elements. Both external and internal. Internal namespaces are composed
      * with prefix dd[element.idand uri BASE_URI/dataelement/[element.id]
      *
      * @param vocabularyFolders

@@ -20,6 +20,18 @@
  */
 package eionet.meta.imp;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -32,17 +44,6 @@ import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Pair;
 import eionet.util.VocabularyCSVOutputHelper;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Base abstract class used for vocabulary import handling from different sources (RDF or CSV).
@@ -73,9 +74,9 @@ public abstract class VocabularyImportBaseHandler {
     protected List<VocabularyConcept> notSeenConceptsYet = null;
 
     /**
-     * To be automatically binded elements.
+     * To be automatically bound elements.
      */
-    protected List<DataElement> newBindedElement;
+    protected List<DataElement> newBoundElement;
 
     /**
      * value with folderContextRoot.
@@ -83,9 +84,9 @@ public abstract class VocabularyImportBaseHandler {
     protected String folderContextRoot = null;
 
     /**
-     * Binded elements ids.
+     * Bound elements ids.
      */
-    protected Map<String, Integer> bindedElementsIds = null;
+    protected Map<String, Integer> boundElementsIds = null;
 
     /**
      * This map is used for found related concepts which are not created yet.
@@ -117,18 +118,21 @@ public abstract class VocabularyImportBaseHandler {
     /**
      * An object can only be instantiated from this package.
      *
-     * @param folderContextRoot Folder base URI
-     * @param concepts          Concepts of folder
-     * @param bindedElementsIds Binded elements to Folder
+     * @param folderContextRoot
+     *            Folder base URI
+     * @param concepts
+     *            Concepts of folder
+     * @param boundElementsIds
+     *            Bound elements to Folder
      */
     protected VocabularyImportBaseHandler(String folderContextRoot, List<VocabularyConcept> concepts,
-            Map<String, Integer> bindedElementsIds) {
+            Map<String, Integer> boundElementsIds) {
         this.folderContextRoot = folderContextRoot;
         this.concepts = concepts;
-        this.bindedElementsIds = bindedElementsIds;
+        this.boundElementsIds = boundElementsIds;
         this.logMessages = new ArrayList<String>();
         this.toBeUpdatedConcepts = new ArrayList<VocabularyConcept>();
-        this.newBindedElement = new ArrayList<DataElement>();
+        this.newBoundElement = new ArrayList<DataElement>();
         this.relatedConceptCache = new HashMap<String, VocabularyConcept>();
         this.notSeenConceptsYet = new ArrayList<VocabularyConcept>();
         this.elementsRelatedToNotCreatedConcepts = new HashMap<Integer, Set<DataElement>>();
@@ -142,8 +146,8 @@ public abstract class VocabularyImportBaseHandler {
         return toBeUpdatedConcepts;
     }
 
-    public List<DataElement> getNewBindedElement() {
-        return newBindedElement;
+    public List<DataElement> getNewBoundElement() {
+        return newBoundElement;
     }
 
     public Map<Integer, Set<DataElement>> getElementsRelatedToNotCreatedConcepts() {
@@ -153,7 +157,8 @@ public abstract class VocabularyImportBaseHandler {
     /**
      * Utility method to searches concepts (both touched and untouched, and returns found if any, null otherwise).
      *
-     * @param conceptIdentifier identifier of concept to search for
+     * @param conceptIdentifier
+     *            identifier of concept to search for
      * @return found concept with a flag if it is found in seen concepts
      */
     protected Pair<VocabularyConcept, Boolean> findOrCreateConcept(String conceptIdentifier) {
@@ -192,7 +197,8 @@ public abstract class VocabularyImportBaseHandler {
     /**
      * This method searches for a related concept in database or in cache.
      *
-     * @param relatedConceptUri uri of related concept
+     * @param relatedConceptUri
+     *            uri of related concept
      * @return found concept or null
      */
     protected VocabularyConcept findRelatedConcept(String relatedConceptUri) {
@@ -288,8 +294,10 @@ public abstract class VocabularyImportBaseHandler {
     /**
      * This method includes common code to update elementsRelatedToNotCreatedConcepts.
      *
-     * @param conceptId concept id which is not created (it should be less than 0)
-     * @param element   data elem to be added set with this concept id
+     * @param conceptId
+     *            concept id which is not created (it should be less than 0)
+     * @param element
+     *            data elem to be added set with this concept id
      */
     protected void addToElementsReferringNotCreatedConcepts(int conceptId, DataElement element) {
         Set<DataElement> elementsReferringThisConcept = this.elementsRelatedToNotCreatedConcepts.get(conceptId);
@@ -353,8 +361,10 @@ public abstract class VocabularyImportBaseHandler {
     /**
      * Utility method to search a concept in a list of concepts with identifier.
      *
-     * @param listOfConcepts    haystack
-     * @param conceptIdentifier needle
+     * @param listOfConcepts
+     *            haystack
+     * @param conceptIdentifier
+     *            needle
      * @return found index, or size of list if not found
      */
     public static int getPositionIn(List<VocabularyConcept> listOfConcepts, String conceptIdentifier) {
@@ -371,8 +381,10 @@ public abstract class VocabularyImportBaseHandler {
     /**
      * Finds list of data element values by name. Returns to reference to a list in parameter elems.
      *
-     * @param elemName     element name to be looked for
-     * @param dataElements list containing element definitions with values
+     * @param elemName
+     *            element name to be looked for
+     * @param dataElements
+     *            list containing element definitions with values
      * @return list of dataelement objects containing values
      */
     public static List<DataElement> getDataElementValuesByName(String elemName, List<List<DataElement>> dataElements) {
@@ -382,9 +394,12 @@ public abstract class VocabularyImportBaseHandler {
     /**
      * finds list of data element values by name and language. It creates a new list and returns it.
      *
-     * @param elemName     element name to be looked for
-     * @param lang         element lang to be looked for
-     * @param dataElements list containing element definitions with values
+     * @param elemName
+     *            element name to be looked for
+     * @param lang
+     *            element lang to be looked for
+     * @param dataElements
+     *            list containing element definitions with values
      * @return list of dataelement objects containing values
      */
     public static List<DataElement> getDataElementValuesByNameAndLang(String elemName, String lang,

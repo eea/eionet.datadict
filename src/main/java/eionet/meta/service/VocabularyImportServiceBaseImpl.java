@@ -76,19 +76,19 @@ public abstract class VocabularyImportServiceBaseImpl {
     } // end of method purgeConcepts
 
     /**
-     * Purge/delete binded elements from vocabulary folder.
+     * Purge/delete bound elements from vocabulary folder.
      *
      * @param vocabularyFolderId id of vocabulary folder
-     * @param bindedElements     binded elements
+     * @param boundElements     bound elements
      * @throws ServiceException if an error occurs during operation
      */
-    protected void purgeBindedElements(int vocabularyFolderId, List<DataElement> bindedElements) throws ServiceException {
-        if (bindedElements != null && bindedElements.size() > 0) {
-            for (DataElement elem : bindedElements) {
+    protected void purgeBoundElements(int vocabularyFolderId, List<DataElement> boundElements) throws ServiceException {
+        if (boundElements != null && boundElements.size() > 0) {
+            for (DataElement elem : boundElements) {
                 this.vocabularyService.removeDataElement(vocabularyFolderId, elem.getId());
             }
         }
-    } // end of method purgeBindedElements
+    } // end of method purgeBoundElements
 
     /**
      * This method import objects into DB. It creates not-existing objects and then updates values. All operation is done Spring
@@ -96,14 +96,14 @@ public abstract class VocabularyImportServiceBaseImpl {
      *
      * @param vocabularyId                        vocabulary id
      * @param vocabularyConcepts                  concepts of vocabulary
-     * @param newBindedElement                    newly binded elements
+     * @param newBoundElements                    newly bound elements
      * @param elementsRelatedToNotCreatedConcepts data elements which are related to newly created concepts
      * @throws ServiceException when an error occurs
      */
-    protected void importIntoDb(int vocabularyId, List<VocabularyConcept> vocabularyConcepts, List<DataElement> newBindedElement,
+    protected void importIntoDb(int vocabularyId, List<VocabularyConcept> vocabularyConcepts, List<DataElement> newBoundElements,
             Map<Integer, Set<DataElement>> elementsRelatedToNotCreatedConcepts) throws ServiceException {
-        // first of all insert new binded element
-        for (DataElement elem : newBindedElement) {
+        // first of all insert new bound element
+        for (DataElement elem : newBoundElements) {
             this.vocabularyService.addDataElement(vocabularyId, elem.getId());
         }
 

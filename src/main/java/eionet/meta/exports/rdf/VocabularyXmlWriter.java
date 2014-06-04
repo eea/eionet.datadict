@@ -314,7 +314,7 @@ public class VocabularyXmlWriter {
     }
 
     /**
-     * Write binded elements to RDF.
+     * Write bound elements to RDF.
      *
      * @param contextRoot contex root
      * @param elements    elements list

@@ -52,7 +52,7 @@ public class NamespacesActionBean extends AbstractActionBean {
      */
     private static final int NAMESPACE_PAGE_SIZE = 40;
     /**
-     * Vocabulary service.
+     * Namespace service.
      */
     @SpringBean
     private INamespaceService namespaceService;

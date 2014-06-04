@@ -55,14 +55,14 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         List<VocabularyConcept> concepts =
                 vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
 
-        List<DataElement> bindedElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+        List<DataElement> boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
         if (purgeVocabularyData) {
             String message = "All concepts ";
             purgeConcepts(concepts);
             concepts = new ArrayList<VocabularyConcept>();
             if (purgeBoundElements) {
-                purgeBindedElements(vocabularyFolder.getId(), bindedElements);
-                bindedElements = new ArrayList<DataElement>();
+                purgeBoundElements(vocabularyFolder.getId(), boundElements);
+                boundElements = new ArrayList<DataElement>();
                 message += "and bound elements ";
             }
             message += "were deleted (with purge operation).";
@@ -70,7 +70,7 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         }
 
         Map<String, Integer> elementToId = new HashMap<String, Integer>();
-        for (DataElement elem : bindedElements) {
+        for (DataElement elem : boundElements) {
             String identifier = elem.getIdentifier();
             if (StringUtils.isNotEmpty(identifier)) {
                 elementToId.put(identifier, elem.getId());
@@ -82,7 +82,7 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         VocabularyCSVImportHandler handler = new VocabularyCSVImportHandler(folderContextRoot, concepts, elementToId, content);
         handler.generateUpdatedBeans();
 
-        importIntoDb(vocabularyFolder.getId(), handler.getToBeUpdatedConcepts(), handler.getNewBindedElement(),
+        importIntoDb(vocabularyFolder.getId(), handler.getToBeUpdatedConcepts(), handler.getNewBoundElement(),
                 handler.getElementsRelatedToNotCreatedConcepts());
         this.logMessages.addAll(handler.getLogMessages());
         this.logMessages.add("CSV imported into Database.");

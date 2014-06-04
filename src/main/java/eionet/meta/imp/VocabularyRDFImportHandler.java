@@ -21,20 +21,6 @@
 
 package eionet.meta.imp;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.exports.rdf.VocabularyXmlWriter;
-import eionet.meta.service.ServiceException;
-import eionet.util.Pair;
-import org.apache.commons.lang.StringUtils;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.rio.RDFHandler;
-import org.openrdf.rio.RDFHandlerException;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -45,6 +31,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.rio.RDFHandler;
+import org.openrdf.rio.RDFHandlerException;
+
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.exports.rdf.VocabularyXmlWriter;
+import eionet.meta.service.ServiceException;
+import eionet.util.Pair;
 
 /**
  * Implementation of OpenRDF's {@link RDFHandler} that will be used by implementations of
@@ -113,9 +114,9 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
     private Map<String, String> boundURIs = null;
 
     /**
-     * Binded elements of vocabulary.
+     * Bound elements of vocabulary.
      */
-    protected Map<String, List<String>> bindedElements = null;
+    protected Map<String, List<String>> boundElements = null;
 
     /**
      * number of valid triples that are processed.
@@ -197,21 +198,30 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
     /**
      * Constructor for RDFHandler to import rdf into vocabulary.
      *
-     * @param folderContextRoot                  base uri for vocabulary.
-     * @param concepts                           concepts of vocabulary
-     * @param bindedElements                     binded elements to vocabulary.
-     * @param bindedElementsIds                  binded elements ids.
-     * @param workingLanguage                    working language
-     * @param createNewDataElementsForPredicates create new data elements for seen predicates
-     * @throws ServiceException when digest algorithm cannot be found
+     * @param folderContextRoot
+     *            base uri for vocabulary.
+     * @param concepts
+     *            concepts of vocabulary
+     * @param boundElements
+     *            bound elements to vocabulary.
+     * @param boundElementsToIds
+     *            bound elements ids.
+     * @param boundURIs
+     *            rdf namespaces for bound elements
+     * @param workingLanguage
+     *            working language
+     * @param createNewDataElementsForPredicates
+     *            create new data elements for seen predicates
+     * @throws ServiceException
+     *             when digest algorithm cannot be found
      */
     public VocabularyRDFImportHandler(String folderContextRoot, List<VocabularyConcept> concepts,
-            Map<String, Integer> bindedElementsIds, Map<String, List<String>> bindedElements,
+            Map<String, Integer> boundElementsToIds, Map<String, List<String>> boundElements, Map<String, String> boundURIs,
             boolean createNewDataElementsForPredicates, String workingLanguage) throws ServiceException {
-        super(folderContextRoot, concepts, bindedElementsIds);
-        this.bindedElements = bindedElements;
+        super(folderContextRoot, concepts, boundElementsToIds);
+        this.boundElements = boundElements;
         this.createNewDataElementsForPredicates = createNewDataElementsForPredicates;
-        this.boundURIs = new HashMap<String, String>();
+        this.boundURIs = boundURIs;
         this.attributePositions = new HashMap<String, Map<String, Integer>>();
         this.predicateUpdatesAtConcepts = new HashMap<String, Set<Integer>>();
         this.notBoundPredicates = new HashSet<String>();
@@ -240,9 +250,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
     @Override
     public void handleNamespace(String prefix, String uri) throws RDFHandlerException {
-        if (this.bindedElements.containsKey(prefix)) {
-            this.boundURIs.put(uri, prefix);
-        }
     } // end of method handleNamespace
 
     @Override
@@ -323,7 +330,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 if (StringUtils.startsWith(predicateUri, key)) {
                     attributeIdentifier = predicateUri.replace(key, "");
                     predicateNS = this.boundURIs.get(key);
-                    if (!this.bindedElements.get(predicateNS).contains(attributeIdentifier)) {
+                    if (!this.boundElements.get(predicateNS).contains(attributeIdentifier)) {
                         predicateNS = null;
                     }
                     break;
@@ -415,7 +422,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         }
 
         if (!candidateForConceptAttribute) {
-            if (!this.bindedElementsIds.containsKey(dataElemIdentifier)) {
+            if (!this.boundElementsIds.containsKey(dataElemIdentifier)) {
                 this.notBoundPredicates.add(predicateUri);
                 return;
             }
@@ -445,10 +452,14 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             }
 
             String elementValue = object.stringValue();
+            if (StringUtils.isEmpty(elementValue)) {
+                // value is empty, no need to continue
+                return;
+            }
             String elemLang = null;
             VocabularyConcept foundRelatedConcept = null;
             // if object is a resource (i.e. URI), it can be a related concept
-            if (object instanceof URI && StringUtils.isNotEmpty(elementValue)) {
+            if (object instanceof URI) {
                 foundRelatedConcept = findRelatedConcept(elementValue);
             } else if (object instanceof Literal) {
                 // it is literal
@@ -462,52 +473,46 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             this.prevLang = elemLang;
             this.prevDataElemIdentifier = dataElemIdentifier;
 
-            Map<String, Integer> attributePosition = this.attributePositions.get(conceptIdentifier);
-            if (attributePosition == null) {
-                attributePosition = new HashMap<String, Integer>();
-                this.attributePositions.put(conceptIdentifier, attributePosition);
+            // check for pre-existence of the VCE by attribute value or related concept id
+            Integer relatedId = null;
+            if (foundRelatedConcept != null) {
+                relatedId = foundRelatedConcept.getId();
             }
-
-            String dataElemIdentifierWithLang = dataElemIdentifier;
-            if (StringUtils.isNotEmpty(elemLang)) {
-                dataElemIdentifierWithLang += "@" + elemLang;
-            }
-            if (!attributePosition.containsKey(dataElemIdentifierWithLang)) {
-                attributePosition.put(dataElemIdentifierWithLang, 0);
-            }
-            int index = attributePosition.get(dataElemIdentifierWithLang);
-
-            // if object is empty, user wants to delete
-            if (StringUtils.isNotEmpty(elementValue)) {
-                DataElement elem;
-                if (index < this.elementsOfConceptByLang.size()) {
-                    elem = this.elementsOfConceptByLang.get(index);
-                } else {
-                    elem = new DataElement();
-                    this.elementsOfConcept.add(elem);
-                    elem.setAttributeLanguage(elemLang);
-                    elem.setIdentifier(dataElemIdentifier);
-                    elem.setId(this.bindedElementsIds.get(dataElemIdentifier));
+            for (DataElement elemByLang : elementsOfConceptByLang) {
+                String elementValueByLang = elemByLang.getAttributeValue();
+                if (StringUtils.equals(elementValue, elementValueByLang)) {
+                    // vocabulary concept element already in database, no need to continue, return
+                    return;
                 }
-
-                if (foundRelatedConcept != null) {
-                    elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
-                    int id = foundRelatedConcept.getId();
-                    elem.setRelatedConceptId(id);
-                    if (id < 0) {
-                        addToElementsReferringNotCreatedConcepts(id, elem);
+                if (relatedId != null) {
+                    Integer relatedConceptId = elemByLang.getRelatedConceptId();
+                    if (relatedConceptId != null && relatedConceptId.intValue() == relatedId.intValue()) {
+                        // vocabulary concept element already in database, no need to continue, return
+                        return;
                     }
-                } else {
-                    elem.setAttributeValue(elementValue);
+                }
+            }
+
+            // create VCE
+            DataElement elem = new DataElement();
+            this.elementsOfConcept.add(elem);
+            elem.setAttributeLanguage(elemLang);
+            elem.setIdentifier(dataElemIdentifier);
+            elem.setId(this.boundElementsIds.get(dataElemIdentifier));
+            // check if there is a found related concept
+            if (foundRelatedConcept != null) {
+                elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
+                int id = foundRelatedConcept.getId();
+                elem.setRelatedConceptId(id);
+                elem.setAttributeValue(null);
+                if (id < 0) {
+                    addToElementsReferringNotCreatedConcepts(id, elem);
                 }
             } else {
-                // if it is empty and if there is such a value then delete it, if there is no value just ignore it
-                if (index < this.elementsOfConceptByLang.size()) {
-                    DataElement elem = elementsOfConceptByLang.get(index);
-                    elem.setAttributeValue(elementValue);
-                }
+                elem.setAttributeValue(elementValue);
+                elem.setRelatedConceptId(null);
             }
-            attributePosition.put(dataElemIdentifierWithLang, ++index);
+
             conceptIdsUpdatedWithPredicate.add(this.lastFoundConcept.getId());
         }
         this.numberOfValidTriples++;

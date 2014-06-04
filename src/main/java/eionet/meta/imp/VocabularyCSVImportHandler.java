@@ -21,16 +21,6 @@
 
 package eionet.meta.imp;
 
-import au.com.bytecode.opencsv.CSVReader;
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.service.ServiceException;
-import eionet.meta.service.data.DataElementsFilter;
-import eionet.meta.service.data.DataElementsResult;
-import eionet.util.Pair;
-import eionet.util.VocabularyCSVOutputHelper;
-import org.apache.commons.lang.StringUtils;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -43,6 +33,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+
+import au.com.bytecode.opencsv.CSVReader;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.DataElementsFilter;
+import eionet.meta.service.data.DataElementsResult;
+import eionet.util.Pair;
+import eionet.util.VocabularyCSVOutputHelper;
 
 /**
  * Includes code for parsing and handling CSV lines.
@@ -67,14 +68,18 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
     private final DataElementsFilter elementsFilter;
 
     /**
-     * @param folderContextRoot base uri for vocabulary.
-     * @param concepts          concepts of vocabulary
-     * @param bindedElements    binded elements to vocabulary
-     * @param content           reader to read file contents
+     * @param folderContextRoot
+     *            base uri for vocabulary.
+     * @param concepts
+     *            concepts of vocabulary
+     * @param boundElements
+     *            bound elements to vocabulary
+     * @param content
+     *            reader to read file contents
      */
     public VocabularyCSVImportHandler(String folderContextRoot, List<VocabularyConcept> concepts,
-            Map<String, Integer> bindedElements, Reader content) {
-        super(folderContextRoot, concepts, bindedElements);
+            Map<String, Integer> boundElements, Reader content) {
+        super(folderContextRoot, concepts, boundElements);
         this.content = content;
         this.elementsFilter = new DataElementsFilter();
         this.elementsFilter.setRegStatus("Released");
@@ -86,7 +91,8 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
     /**
      * In this method, beans are generated (either created or updated) according to values in CSV file.
      *
-     * @throws eionet.meta.service.ServiceException if there is the input is invalid
+     * @throws eionet.meta.service.ServiceException
+     *             if there is the input is invalid
      */
     public void generateUpdatedBeans() throws ServiceException {
         // content.
@@ -122,8 +128,8 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     elementHeader = tempStrArray[0];
                 }
 
-                // if already binded elements does not contain header, add it (if possible)
-                if (!this.bindedElementsIds.containsKey(elementHeader)) {
+                // if bound elements do not contain header already, add it (if possible)
+                if (!this.boundElementsIds.containsKey(elementHeader)) {
                     // search for data element
                     this.elementsFilter.setIdentifier(elementHeader);
                     DataElementsResult elementsResult = this.dataService.searchDataElements(this.elementsFilter);
@@ -139,8 +145,8 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                         DataElement elem = elementsResult.getDataElements().get(0);
                         if (StringUtils.equals(elementHeader, elem.getIdentifier())) {
                             // found it, add to list and map
-                            this.bindedElementsIds.put(elementHeader, elementsResult.getDataElements().get(0).getId());
-                            this.newBindedElement.add(elem);
+                            this.boundElementsIds.put(elementHeader, elementsResult.getDataElements().get(0).getId());
+                            this.newBoundElement.add(elem);
                         } else {
                             throw new ServiceException("Found data element did not EXACTLY match with column: " + elementHeader
                                     + ", found: " + elem.getIdentifier());
@@ -211,6 +217,10 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 String prevHeader = null;
                 String prevLang = null;
                 for (int k = VocabularyCSVOutputHelper.CONCEPT_ENTRIES_COUNT; k < lineParams.length; k++) {
+                    if (StringUtils.isEmpty(lineParams[k])) {
+                        // value is empty, no need to proceed
+                        continue;
+                    }
                     String elementHeader = header[k];
                     String lang = null;
                     String[] tempStrArray = elementHeader.split("[@]");
@@ -232,55 +242,68 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                                 getDataElementValuesByNameAndLang(elementHeader, lang, lastFoundConcept.getElementAttributes());
                     }
 
-                    if (!attributePosition.containsKey(header[k])) {
-                        attributePosition.put(header[k], 0);
-                    }
-                    int index = attributePosition.get(header[k]);
-                    // if lineParams[k] is empty, user wants to delete
-                    if (StringUtils.isNotEmpty(lineParams[k])) {
-                        DataElement elem;
-                        if (index < elementsOfConceptByLang.size()) {
-                            elem = elementsOfConceptByLang.get(index);
-                        } else {
-                            elem = new DataElement();
-                            elementsOfConcept.add(elem);
-                            elem.setAttributeLanguage(lang);
-                            elem.setIdentifier(elementHeader);
-                            elem.setId(this.bindedElementsIds.get(elementHeader));
-                        }
-
-                        VocabularyConcept foundRelatedConcept = null;
-                        // TODO what if user wanted to deleted a relational concept
-                        if (StringUtils.startsWith(lineParams[k], URI_PREFIX)) {
-                            // it can be a related concept
-                            try {
-                                URL relatedConceptURL = new URL(lineParams[k]);
-                                foundRelatedConcept = findRelatedConcept(relatedConceptURL.toString());
-                            } catch (MalformedURLException e) {
-                                // it is not a valid url so we don't accept it as a related concept identifier
-                                e.printStackTrace();
-                            }
-                        }
-                        if (foundRelatedConcept != null) {
-                            elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
-                            int id = foundRelatedConcept.getId();
-                            elem.setRelatedConceptId(id);
-                            if (id < 0) {
-                                addToElementsReferringNotCreatedConcepts(id, elem);
-                            }
-                        } else {
-                            elem.setAttributeValue(lineParams[k]);
-                        }
-                    } else {
-                        // if it is empty and if there is such a value then delete it, if there is no value just ignore it
-                        if (index < elementsOfConceptByLang.size()) {
-                            DataElement elem = elementsOfConceptByLang.get(index);
-                            elem.setAttributeValue(lineParams[k]); // so if it is empty, it means delete it right ?
-                        }
-                    }
-                    attributePosition.put(header[k], ++index);
                     prevLang = lang;
                     prevHeader = elementHeader;
+
+                    VocabularyConcept foundRelatedConcept = null;
+                    if (StringUtils.startsWith(lineParams[k], URI_PREFIX)) {
+                        // it can be a related concept
+                        try {
+                            URL relatedConceptURL = new URL(lineParams[k]);
+                            foundRelatedConcept = findRelatedConcept(relatedConceptURL.toString());
+                        } catch (MalformedURLException e) {
+                            // it is not a valid url so we don't accept it as a related concept identifier
+                            e.printStackTrace();
+                        }
+                    }
+
+                    // check for pre-existence of the VCE by attribute value or related concept id
+                    Integer relatedId = null;
+                    if (foundRelatedConcept != null) {
+                        relatedId = foundRelatedConcept.getId();
+                    }
+                    boolean returnFromThisPoint = false;
+                    for (DataElement elemByLang : elementsOfConceptByLang) {
+                        String elementValueByLang = elemByLang.getAttributeValue();
+                        if (StringUtils.equals(lineParams[k], elementValueByLang)) {
+                            // vocabulary concept element already in database, no need to continue, return
+                            returnFromThisPoint = true;
+                            break;
+                        }
+
+                        if (relatedId != null) {
+                            Integer relatedConceptId = elemByLang.getRelatedConceptId();
+                            if (relatedConceptId != null && relatedConceptId.intValue() == relatedId.intValue()) {
+                                // vocabulary concept element already in database, no need to continue, return
+                                returnFromThisPoint = true;
+                                break;
+                            }
+                        }
+                    }
+                    // check if an existing VCE found or not
+                    if (returnFromThisPoint) {
+                        continue;
+                    }
+
+                    //create VCE
+                    DataElement elem = new DataElement();
+                    elementsOfConcept.add(elem);
+                    elem.setAttributeLanguage(lang);
+                    elem.setIdentifier(elementHeader);
+                    elem.setId(this.boundElementsIds.get(elementHeader));
+                    //check if there is a found related concept
+                    if (foundRelatedConcept != null) {
+                        elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
+                        int id = foundRelatedConcept.getId();
+                        elem.setRelatedConceptId(id);
+                        elem.setAttributeValue(null);
+                        if (id < 0) {
+                            addToElementsReferringNotCreatedConcepts(id, elem);
+                        }
+                    } else {
+                        elem.setAttributeValue(lineParams[k]);
+                        elem.setRelatedConceptId(null);
+                    }
                 } // end of for loop iterating on rest of the columns (for data elements)
             } // end of row iterator (while loop on rows)
             processUnseenConceptsForRelatedElements();
