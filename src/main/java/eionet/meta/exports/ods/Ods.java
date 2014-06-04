@@ -1,17 +1,38 @@
 /*
- * Created on 3.05.2006
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
  *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ *
+ * The Original Code is Data Dictionary
+ *
+ * The Initial Owner of the Original Code is European Environment
+ * Agency. Portions created by TripleDev or Zero Technologies are Copyright
+ * (C) European Environment Agency.  All Rights Reserved.
+ *
+ * Contributor(s):
+ *        TripleDev
  */
 package eionet.meta.exports.ods;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
+
+import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
@@ -26,32 +47,71 @@ import eionet.meta.exports.ods.tags.Table;
  */
 public abstract class Ods {
 
-    /** */
-    public static final String DOS_EXTENSION = "ods";
-
+    /**
+     * ODS extension.
+     */
+    public static final String ODS_EXTENSION = "ods";
+    /**
+     * Integer style name.
+     */
     public static final String INTEGER_STYLE_NAME = "ce2";
+    /**
+     * Default style name.
+     */
     public static final String DEFAULT_STYLE_NAME = "Default";
-
+    /**
+     * ODF file name.
+     */
     public static final String ODS_FILE_NAME = "template.ods";
+    /**
+     * Content file name.
+     */
     public static final String CONTENT_FILE_NAME = "content.xml";
+    /**
+     * Meta file name.
+     */
     public static final String META_FILE_NAME = "meta.xml";
+    /**
+     * Buffer size.
+     */
     public static final int BUF_SIZE = 1024;
 
-    /** */
+    /**
+     * Data Dictionary search engine.
+     */
     protected DDSearchEngine searchEngine = null;
+    /**
+     * Output file name.
+     */
     protected String finalFileName = null;
+    /**
+     * Schema URL trailer.
+     */
     protected String schemaURLTrailer = null;
-
+    /**
+     * Number of styles.
+     */
     protected Vector numberStyles = null;
+    /**
+     * Styles vector.
+     */
     protected Vector styles = null;
+    /**
+     * Tables vector.
+     */
     protected Vector tables = null;
-
+    /**
+     * Working folder path.
+     */
     private String workingFolderPath = null;
+    /**
+     * Schema URL base.
+     */
     private String schemaURLBase = null;
 
     /**
      *
-     * @return
+     * @return table count
      */
     protected final int getTableCount() {
         return tables == null ? 0 : tables.size();
@@ -59,7 +119,7 @@ public abstract class Ods {
 
     /**
      *
-     * @return
+     * @return total column count
      */
     protected final int getTotalColumnCount() {
 
@@ -74,8 +134,11 @@ public abstract class Ods {
         return count;
     }
 
-    /*
+    /**
+     * Adds a number style.
      *
+     * @param numberStyle
+     *            number style to be added
      */
     protected void addNumberStyle(NumberStyle numberStyle) {
 
@@ -85,8 +148,11 @@ public abstract class Ods {
         numberStyles.add(numberStyle);
     }
 
-    /*
+    /**
+     * Adds a style.
      *
+     * @param style
+     *            style to be added
      */
     protected void addStyle(Style style) {
 
@@ -96,8 +162,11 @@ public abstract class Ods {
         styles.add(style);
     }
 
-    /*
+    /**
+     * Adds a table.
      *
+     * @param table
+     *            table to be added
      */
     protected void addTable(Table table) {
 
@@ -107,8 +176,13 @@ public abstract class Ods {
         tables.add(table);
     }
 
-    /*
+    /**
+     * Prepares for table.
      *
+     * @param tbl
+     *            table
+     * @throws java.lang.Exception
+     *             when operation fails
      */
     protected void prepareTbl(DsTable tbl) throws Exception {
 
@@ -128,9 +202,11 @@ public abstract class Ods {
     }
 
     /**
+     * Returns default cell style name.
      *
      * @param elm
-     * @return
+     *            data element
+     * @return cell style name
      */
     protected String getDefaultCellStyleName(DataElement elm) {
 
@@ -171,8 +247,11 @@ public abstract class Ods {
     }
 
     /**
+     * Writes content into string.
      *
      * @param intoStr
+     *            string to be updated
+     * @return updated value
      */
     private String writeContentInto(String intoStr) {
 
@@ -197,9 +276,11 @@ public abstract class Ods {
     }
 
     /**
+     * Writes meto into string.
      *
      * @param intoStr
-     * @return
+     *            string to be updated
+     * @return updated value
      */
     private String writeMetaInto(String intoStr) {
 
@@ -280,8 +361,10 @@ public abstract class Ods {
     }
 
     /**
+     * Sets working folder path.
      *
      * @param folderPath
+     *            new folder path
      */
     public void setWorkingFolderPath(String folderPath) {
         this.workingFolderPath = folderPath;
@@ -290,8 +373,13 @@ public abstract class Ods {
     }
 
     /**
+     * Reads file content into string.
      *
-     *
+     * @param file
+     *            file to be read
+     * @return file content
+     * @throws java.lang.Exception
+     *             if operation fails
      */
     private String fileToString(File file) throws Exception {
 
@@ -322,17 +410,22 @@ public abstract class Ods {
     }
 
     /**
+     * Returns content file as string.
      *
-     *
+     * @return file content as string
+     * @throws java.lang.Exception
+     *             when operation fails
      */
     private String contentFileToString() throws Exception {
-
         return fileToString(new File(workingFolderPath + CONTENT_FILE_NAME));
     }
 
     /**
+     * Returns meta file as string.
      *
-     *
+     * @return file content as string
+     * @throws java.lang.Exception
+     *             when operation fails
      */
     private String metaFileToString() throws Exception {
 
@@ -340,9 +433,14 @@ public abstract class Ods {
     }
 
     /**
+     * Writes string value into given file.
      *
-     * @return
+     * @param str
+     *            value to be written
+     * @param file
+     *            file to be updated
      * @throws Exception
+     *             if operation fails
      */
     private void stringToFile(String str, File file) throws Exception {
 
@@ -361,9 +459,12 @@ public abstract class Ods {
     }
 
     /**
+     * Writes string value into content file.
      *
-     * @return
+     * @param str
+     *            value to be written
      * @throws Exception
+     *             if operation fails
      */
     private void stringToContentFile(String str) throws Exception {
 
@@ -371,27 +472,35 @@ public abstract class Ods {
     }
 
     /**
+     * Writes string value into meta file.
      *
-     * @return
+     * @param str
+     *            value to be written
      * @throws Exception
+     *             if operation fails
      */
     private void stringToMetaFile(String str) throws Exception {
 
         stringToFile(str, new File(workingFolderPath + META_FILE_NAME));
     }
 
-    /*
+    /**
+     * Writes content into file.
      *
+     * @throws Exception
+     *             if operation fails
      */
     private void writeContentIntoFile() throws Exception {
-
         String str = contentFileToString();
         str = writeContentInto(str);
         stringToContentFile(str);
     }
 
-    /*
+    /**
+     * Writes meta into file.
      *
+     * @throws Exception
+     *             if operation fails
      */
     private void writeMetaIntoFile() throws Exception {
 
@@ -401,58 +510,74 @@ public abstract class Ods {
     }
 
     /**
+     * Zips file.
      *
-     *
+     * @param fileToZip
+     *            file to zip (full path)
+     * @param fileName
+     *            file name
+     * @throws java.lang.Exception
+     *             if operation fails.
      */
-    private void zip(String fileToZip) throws Exception {
-
-        String[] command = new String[4];
-        command[0] = "zip";
-        command[1] = "-j"; // this one junks the folder name of content.xml
-        command[2] = workingFolderPath + ODS_FILE_NAME;
-        command[3] = fileToZip;
-
-        Process process = Runtime.getRuntime().exec(command);
-
-        // check process exit value after every 0.5sec, maximum for 10 seconds in total
-        int exitValue = -1;
-        int counter = 0;
-        boolean done = false;
-        while (done == false && counter <= 20) {
-            counter++;
-            try {
-                exitValue = process.exitValue();
-                done = true;
-            } catch (IllegalThreadStateException itse) {
-                Thread.sleep(500);
+    private void zip(String fileToZip, String fileName) throws Exception {
+        // get source file
+        File src = new File(workingFolderPath + ODS_FILE_NAME);
+        ZipFile zipFile = new ZipFile(src);
+        // create temp file for output
+        File tempDst = new File(workingFolderPath + ODS_FILE_NAME + ".zip");
+        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(tempDst));
+        // iterate on each entry in zip file
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry zipEntry = entries.nextElement();
+            BufferedInputStream bis;
+            if (StringUtils.equals(fileName, zipEntry.getName())) {
+                bis = new BufferedInputStream(new FileInputStream(new File(fileToZip)));
+            } else {
+                bis = new BufferedInputStream(zipFile.getInputStream(zipEntry));
             }
+            ZipEntry ze = new ZipEntry(zipEntry.getName());
+            zos.putNextEntry(ze);
+
+            while (bis.available() > 0) {
+                zos.write(bis.read());
+            }
+            zos.closeEntry();
+            bis.close();
         }
-
-        if (done == false)
-            throw new Exception("Process timed out");
-    }
-
-    /**
-     *
-     *
-     */
-    private void zipContent() throws Exception {
-
-        zip(workingFolderPath + CONTENT_FILE_NAME);
-    }
+        zos.finish();
+        zos.close();
+        zipFile.close();
+        // rename file
+        src.delete();
+        tempDst.renameTo(src);
+    } // end of method zip
 
     /**
-     *
-     *
-     */
-    private void zipMeta() throws Exception {
-
-        zip(workingFolderPath + META_FILE_NAME);
-    }
-
-    /**
+     * Zips content.
      *
      * @throws Exception
+     *             if operation fails
+     */
+    private void zipContent() throws Exception {
+        zip(workingFolderPath + CONTENT_FILE_NAME, CONTENT_FILE_NAME);
+    }
+
+    /**
+     * Zips meta.
+     *
+     * @throws Exception
+     *             if operation fails
+     */
+    private void zipMeta() throws Exception {
+        zip(workingFolderPath + META_FILE_NAME, META_FILE_NAME);
+    }
+
+    /**
+     * Processes content.
+     *
+     * @throws Exception
+     *             if operation fails
      */
     public void processContent() throws Exception {
         writeContentIntoFile();
@@ -460,41 +585,35 @@ public abstract class Ods {
     }
 
     /**
+     * Processes meta.
      *
      * @throws Exception
+     *             if operation fails
      */
     public void processMeta() throws Exception {
         writeMetaIntoFile();
         zipMeta();
     }
 
-    /**
-     *
-     * @return
-     */
     public String getFinalFileName() {
         return finalFileName;
     }
 
-    /**
-     *
-     * @return
-     */
     public String getWorkingFolderPath() {
         return workingFolderPath;
     }
 
-    /**
-     *
-     * @param schemaURLBase
-     */
     public void setSchemaURLBase(String schemaURLBase) {
         this.schemaURLBase = schemaURLBase;
     }
 
     /**
+     * Returns date.
      *
-     * @return
+     * @param timestamp
+     *            time stamp
+     *
+     * @return date as a string
      */
     public static String getDate(long timestamp) {
 
