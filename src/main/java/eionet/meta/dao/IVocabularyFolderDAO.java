@@ -220,4 +220,13 @@ public interface IVocabularyFolderDAO {
      * @return true if at least one base uri exists in vocabularies of the given IDs
      */
     boolean vocabularyHasBaseUri(List<Integer> ids);
+
+    /**
+     * Populates empty base uri values in vocabulary table.
+     *
+     * @param prefix
+     *            base uri prefix
+     * @return number of affected rows
+     */
+    int populateEmptyBaseUris(String prefix);
 }

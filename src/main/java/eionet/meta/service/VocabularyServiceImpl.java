@@ -1221,4 +1221,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
         return vocabulary;
     }
+
+    @Override
+    public int populateEmptyBaseUris(String prefix) throws ServiceException {
+        try {
+            return vocabularyFolderDAO.populateEmptyBaseUris(prefix);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
+        }
+    } // end of method populateEmptyBaseUris
 }

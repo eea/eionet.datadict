@@ -103,6 +103,9 @@
                     <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
                         <li><stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">Add vocabulary</stripes:link></li>
                     </c:if>
+                    <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
+                        <li><stripes:link beanclass="eionet.web.action.VocabularyFoldersActionBean" event="maintain">Maintain vocabularies</stripes:link></li>
+                    </c:if>
                 </ul>
             </div>
 

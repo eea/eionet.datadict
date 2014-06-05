@@ -38,6 +38,7 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
+import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
@@ -771,4 +772,17 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
         return result > 0;
     }
+
+    @Override
+    public int populateEmptyBaseUris(String prefix) {
+        String sql =
+                "UPDATE VOCABULARY AS v INNER JOIN VOCABULARY_SET AS vs ON v.FOLDER_ID = vs.ID "
+                        + "SET v.BASE_URI = CONCAT(:sitePrefix, vs.IDENTIFIER, :separator, v.IDENTIFIER, :separator) "
+                        + "WHERE v.BASE_URI IS NULL OR v.BASE_URI = ''";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("sitePrefix", prefix);
+        parameters.put("separator", "/");
+
+        return getNamedParameterJdbcTemplate().update(sql, parameters);
+    } //end of method populateEmptyBaseUris
 }
