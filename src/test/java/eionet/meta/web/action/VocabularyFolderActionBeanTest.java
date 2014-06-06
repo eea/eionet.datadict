@@ -701,24 +701,6 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         }
     } // end of test step testUploadRdfWithEmptyName
 
-    /**
-     * test when a non rdf extension file is uploaded for RDF import.
-     *
-     * @throws Exception
-     *             if test fails
-     */
-    @Test
-    public void testUploadRdfWithNotRdfExtension() throws Exception {
-        try {
-            uploadFileWithEnvExtension("uploadRdf");
-            Assert.fail("Exception not received for not working copy folder bulk edit.");
-        } catch (StripesServletException e) {
-            Assert.assertTrue("Incorrect cause of StripesServletException", e.getCause() instanceof ServiceException);
-            ServiceException se = (ServiceException) e.getCause();
-            Assert.assertEquals("Exception Message is not correct", "File should be a RDF file", se.getMessage());
-        }
-    }// end of test step testUploadRdfWithNotRdfExtension
-
     /*
      * Upload a file with env extension.
      */

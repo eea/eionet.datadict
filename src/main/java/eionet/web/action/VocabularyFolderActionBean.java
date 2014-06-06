@@ -141,10 +141,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Extension for CSV files.
      */
     private static final String CSV_FILE_EXTENSION = ".csv";
-    /**
-     * Extension for RDF files.
-     */
-    private static final String RDF_FILE_EXTENSION = ".rdf";
 
     /**
      * Vocabulary service.
@@ -1193,7 +1189,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
 
             String fileName = this.uploadedFileToImport.getFileName();
-            if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.RDF_FILE_EXTENSION)) {
+            if (StringUtils.isEmpty(fileName)) {
                 throw new ServiceException("File should be a RDF file");
             }
 
