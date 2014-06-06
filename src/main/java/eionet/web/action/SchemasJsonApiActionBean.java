@@ -20,22 +20,6 @@
  */
 package eionet.web.action;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sourceforge.stripes.action.ErrorResolution;
-import net.sourceforge.stripes.action.HandlesEvent;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-
 import eionet.meta.DownloadServlet;
 import eionet.meta.dao.domain.DataSetTable;
 import eionet.meta.dao.domain.Schema;
@@ -45,6 +29,15 @@ import eionet.meta.service.ITableService;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sourceforge.stripes.action.*;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Action bean for serving RESTful API methods for retrieving information related to XML Schemas.
@@ -90,7 +83,7 @@ public class SchemasJsonApiActionBean extends AbstractActionBean {
      *      obligationId - Obligation Identifier. Eg, ROD URL: http://rod.eionet.europa.eu/obligations/28
      *      releasedOnly - if true, then returns only released schemas. Otherwise all public schemas will be returned
      *
-     * @return
+     * @return Stripes StreamingResolution or ErrorResolution
      */
     @HandlesEvent("forObligation")
     public Resolution getSchemasForObligation() {
@@ -120,21 +113,21 @@ public class SchemasJsonApiActionBean extends AbstractActionBean {
     /**
      * Converts business objects to JSON result.
      * @param datasetTables List of DataSetTable objects.
-     * @param schemas
-     * @return
+     * @param schemas List of Schema objects.
+     * @return JSON string
      */
     private String convertToJson(List<DataSetTable> datasetTables, List<Schema> schemas) {
 
         String webAppUrl = Props.getRequiredProperty(PropsIF.DD_URL);
-        if (!webAppUrl.endsWith("/")) {
-            webAppUrl += "/";
+        if (webAppUrl.endsWith("/")) {
+            StringUtils.substringBeforeLast(webAppUrl, "/");
         }
 
         JSONArray itemList = new JSONArray();
         if (CollectionUtils.isNotEmpty(datasetTables)) {
             for (DataSetTable dsTable : datasetTables) {
                 JSONObject ci = new JSONObject();
-                ci.put("url", webAppUrl + "GetSchema?id=TBL" + dsTable.getId());
+                ci.put("url", webAppUrl + "/GetSchema?id=TBL" + dsTable.getId());
                 ci.put("identifier", dsTable.getIdentifier());
                 ci.put("name", dsTable.getName());
                 ci.put("status", dsTable.getDataSetStatus());
