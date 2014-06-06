@@ -46,6 +46,7 @@ import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
+import eionet.util.Util;
 
 /**
  * Action bean for listing vocabulary folders.
@@ -135,6 +136,14 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      * normal, and show the status only when it is different from the normal.
      */
     private RegStatus[] statusTextsToDisplay = {RegStatus.DRAFT, RegStatus.PUBLIC_DRAFT};
+    /**
+     * Old site prefix.
+     */
+    private String oldSitePrefix = null;
+    /**
+     * New site prefix.
+     */
+    private String newSitePrefix = null;
 
     /**
      * View vocabulary folders list action.
@@ -403,7 +412,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution populate() throws ServiceException {
-	// TODO check for user permission
+        // TODO check for user permission
         String sitePrefix = getSitePrefix();
         if (!sitePrefix.endsWith("/")) {
             sitePrefix += "/";
@@ -413,6 +422,28 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         RedirectResolution resolution = new RedirectResolution(VocabularyFoldersActionBean.class, "maintain");
         return resolution;
     } // end of method populate
+
+    /**
+     * Changes site prefix for base uris.
+     *
+     * @return resolution
+     * @throws ServiceException
+     *             if operation fails
+     */
+    public Resolution changeSitePrefix() throws ServiceException {
+        // TODO add validation
+        if (!StringUtils.endsWith(oldSitePrefix, "/")) {
+            oldSitePrefix += "/";
+        }
+        if (!StringUtils.endsWith(newSitePrefix, "/")) {
+            newSitePrefix += "/";
+        }
+        int numberOfRows = vocabularyService.changeSitePrefix(oldSitePrefix, newSitePrefix);
+        addSystemMessage("Site prefix changed. " + numberOfRows + " vocabularies were updated.");
+        addSystemMessage("\"" + oldSitePrefix + "\" replaced by \"" + newSitePrefix + "\"");
+        RedirectResolution resolution = new RedirectResolution(VocabularyFoldersActionBean.class, "maintain");
+        return resolution;
+    } // end of method changeSitePrefix
 
     /**
      * search vocabulary folders.
@@ -433,7 +464,6 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         vocabularyResult = vocabularyService.searchVocabularies(vocabularyFilter);
 
         return new ForwardResolution(VOCABULARY_SEARCH_RESULT_JSP);
-
     }
 
     /**
@@ -454,8 +484,34 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         vocabularyConceptResult = vocabularyService.searchAllVocabularyConcept(vocabularyConceptFilter);
 
         return new ForwardResolution(CONCEPT_SEARCH_RESULT_JSP);
-
     }
+
+    /**
+     * Validates changing site prefix.
+     *
+     * @throws ServiceException
+     *             if an error occurs
+     */
+    @ValidationMethod(on = {"changeSitePrefix"})
+    public void validateChangeSitePrefix() throws ServiceException {
+        if (StringUtils.isEmpty(newSitePrefix)) {
+            addGlobalValidationError("New Site Prefix is missing");
+        } else if (!Util.isValidUri(newSitePrefix)) {
+            addGlobalValidationError("New Site prefix is not a valid URI. \n The allowed schemes are: "
+                    + "http, https, ftp, mailto, tel and urn. ");
+        }
+
+        if (StringUtils.isBlank(oldSitePrefix)) {
+            addGlobalValidationError("Old Site Prefix is missing");
+        } else if (!Util.isValidUri(oldSitePrefix)) {
+            addGlobalValidationError("Old Site prefix is not a valid URI. \n The allowed schemes are: "
+                    + "http, https, ftp, mailto, tel and urn. ");
+        }
+
+        if (StringUtils.equals(oldSitePrefix, newSitePrefix)) {
+            addGlobalValidationError("Old and New Site Prefixes are the same.");
+        }
+    } // end of method validateChangeSitePrefix
 
     /**
      * @return the folderIds
@@ -620,4 +676,27 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         return statusTextsToDisplay;
     }
 
+    public String getOldSitePrefix() {
+        return oldSitePrefix;
+    }
+
+    public void setOldSitePrefix(String oldSitePrefix) {
+        this.oldSitePrefix = StringUtils.trimToNull(oldSitePrefix);
+    }
+
+    /**
+     * Returns site prefix.
+     *
+     * @return new site prefix or default
+     */
+    public String getNewSitePrefix() {
+        if (StringUtils.isEmpty(newSitePrefix)) {
+            return getSitePrefix();
+        }
+        return newSitePrefix;
+    }
+
+    public void setNewSitePrefix(String newSitePrefix) {
+        this.newSitePrefix = StringUtils.trimToNull(newSitePrefix);
+    }
 }

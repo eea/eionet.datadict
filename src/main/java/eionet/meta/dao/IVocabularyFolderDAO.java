@@ -229,4 +229,15 @@ public interface IVocabularyFolderDAO {
      * @return number of affected rows
      */
     int populateEmptyBaseUris(String prefix);
+
+    /**
+     * Changes site prefixes in vocabulary base uris.
+     *
+     * @param oldSitePrefix
+     *            old site prefix
+     * @param newSitePrefix
+     *            new site prefix
+     * @return number of affected rows
+     */
+    int changeSitePrefix(String oldSitePrefix, String newSitePrefix);
 }

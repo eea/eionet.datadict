@@ -38,7 +38,6 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
-import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
@@ -784,5 +783,18 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         parameters.put("separator", "/");
 
         return getNamedParameterJdbcTemplate().update(sql, parameters);
-    } //end of method populateEmptyBaseUris
+    } // end of method populateEmptyBaseUris
+
+    @Override
+    public int changeSitePrefix(String oldSitePrefix, String newSitePrefix) {
+        String sql =
+                "UPDATE VOCABULARY AS v SET v.BASE_URI = REPLACE(v.BASE_URI, :oldSitePrefix, :newSitePrefix) "
+                        + "WHERE v.BASE_URI IS NOT NULL AND v.BASE_URI LIKE :oldSitePrefixLike";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("oldSitePrefix", oldSitePrefix);
+        parameters.put("newSitePrefix", newSitePrefix);
+        parameters.put("oldSitePrefixLike", oldSitePrefix + "%");
+
+        return getNamedParameterJdbcTemplate().update(sql, parameters);
+    } // end of method changeSitePrefix
 }

@@ -694,4 +694,17 @@ public interface IVocabularyService {
      */
     int populateEmptyBaseUris(String prefix) throws ServiceException;
 
+    /**
+     * Changes site prefixes in vocabulary base uris.
+     *
+     * @param oldSitePrefix
+     *            old site prefix
+     * @param newSitePrefix
+     *            new site prefix
+     * @return number of affected rows
+     * @throws eionet.meta.service.ServiceException
+     *             if operation fails
+     */
+    int changeSitePrefix(String oldSitePrefix, String newSitePrefix) throws ServiceException;
+
 }

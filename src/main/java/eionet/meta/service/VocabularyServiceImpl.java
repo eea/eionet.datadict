@@ -1230,4 +1230,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
             throw new ServiceException(e.getMessage());
         }
     } // end of method populateEmptyBaseUris
+
+    @Override
+    public int changeSitePrefix(String oldSitePrefix, String newSitePrefix) throws ServiceException {
+        try {
+            return vocabularyFolderDAO.changeSitePrefix(oldSitePrefix, newSitePrefix);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
+        }
+    } //end of method changeSitePrefix
 }
