@@ -223,7 +223,6 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution maintain() throws ServiceException {
-        // todo add validation and user right control
         // TODO future enchancement: folderIds can be used for selection based updates.
         // i.e. page can have, update all, update selected, update exclusion of selected
         return new ForwardResolution(VOCABULARIES_MAINTENANCE_JSP);
@@ -250,6 +249,19 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
+     * Validation on maintenance.
+     *
+     * @throws ServiceException
+     *             if operation fails
+     */
+    @ValidationMethod(on = {"maintain"})
+    public void validateMaintain() throws ServiceException {
+        if (!isUpdateRight()) {
+            addGlobalValidationError("No permission to modify folders");
+        }
+    } //end of method validateMaintain
+
+   /**
      * Validates save folder.
      *
      * @throws ServiceException
@@ -414,7 +426,6 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution populate() throws ServiceException {
-        // TODO check for user permission
         String sitePrefix = getSitePrefix();
         if (!sitePrefix.endsWith("/")) {
             sitePrefix += "/";
@@ -433,7 +444,6 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution changeSitePrefix() throws ServiceException {
-        // TODO add validation
         if (!StringUtils.endsWith(oldSitePrefix, "/")) {
             oldSitePrefix += "/";
         }
