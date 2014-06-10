@@ -24,6 +24,7 @@ package eionet.meta.service;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -767,5 +768,37 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
                 .getDataElementValuesByName("skos:definition", concept.getElementAttributes()).size());
 
     } // end of test step testIfConceptsAddedAfterPurge
+
+    /**
+     * Check that no errors are generated when we send RDF with no properties.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testNoErrorIsGeneratedWhenSendingNothing() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+
+        // Create a string with just the top-level element. It has no data.
+        Reader reader = new StringReader("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"/>");
+
+        // import RDF into database
+        List<String> logMessages = vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, false);
+        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // Nothing seen, nothing updated, no error generated
+        for (String l: logMessages) {
+            if (l.startsWith("Number of predicates seen:")) {
+                Assert.assertEquals("Number of predicates seen: 0", l);
+            }
+            if (l.startsWith("Number of updated concepts:")) {
+                Assert.assertEquals("Number of updated concepts: 0", l);
+            }
+            if (l.startsWith("Number of errors received:")) {
+                Assert.assertEquals("Number of errors received: 0", l);
+            }
+        }
+    }
 
 }// end of test case RDFVocabularyImportServiceTest
