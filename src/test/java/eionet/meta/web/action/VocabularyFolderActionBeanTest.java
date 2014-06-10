@@ -33,8 +33,6 @@ import eionet.meta.ActionBeanUtils;
 import eionet.meta.DDUser;
 import eionet.meta.FakeUser;
 import eionet.meta.service.ServiceException;
-import eionet.util.Props;
-import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.web.action.ErrorActionBean;
 import eionet.web.action.VocabularyFolderActionBean;
@@ -45,6 +43,10 @@ import eionet.web.action.VocabularyFolderActionBean;
  * @author Kaido Laine
  */
 public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
+    /**
+     * Used instead of site prefix.
+     */
+    private static final String BASE_URL = "http://test.tripledev.ee/datadict";
 
     /**
      * Name for the request attribute via which we inject rich-type (e.g. file bean) request parameters for the action bean.
@@ -68,9 +70,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
         String output = trip.getOutputString();
 
-        String baseUri = Props.getRequiredProperty(PropsIF.DD_URL);
-
-        String expectedRelatedInternal = baseUri + "/vocabulary/wise/BWClosed/YP";
+        String expectedRelatedInternal = BASE_URL + "/vocabulary/wise/BWClosed/YP";
         // escapeIRI(contextRoot + elem.getRelatedConceptIdentifier()
 
         Assert.assertTrue("Incorrect size of bound elements",
@@ -110,9 +110,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         // remove bom
         String output = new String(outputBytes, 3, outputBytes.length - 3, CharEncoding.UTF_8);
 
-        String baseUri = Props.getRequiredProperty(PropsIF.DD_URL);
-
-        String expectedRelatedInternal = baseUri + "/vocabulary/csv_header_vs/csv_header_vocab/";
+        String expectedRelatedInternal = BASE_URL + "/vocabulary/csv_header_vs/csv_header_vocab/";
 
         // Construct each rows comma seperated items (columns)
         ArrayList<ArrayList<String>> allRows = new ArrayList<ArrayList<String>>();
@@ -275,8 +273,6 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         // remove bom
         String output = new String(outputBytes, 3, outputBytes.length - 3, CharEncoding.UTF_8);
 
-        String baseUri = Props.getRequiredProperty(PropsIF.DD_URL);
-
         String expectedRelatedInternal = "http://test.tripledev.ee/";
 
         // Construct each rows comma seperated items (columns)
@@ -328,7 +324,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
         // 8. column
         header.add("skos:relatedMatch");
-        concept1.add(baseUri + "/vocabulary/wise/BWClosed/YP");
+        concept1.add(BASE_URL + "/vocabulary/wise/BWClosed/YP");
         concept2.add("");
 
         // 9. column
@@ -367,7 +363,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         trip.addParameter("vocabularyFolder.folderName", "wise");
         trip.addParameter("vocabularyFolder.identifier", "BWaterCat");
         trip.execute("view");
-        Assert.assertTrue("Incorrect forward URL",
+        Assert.assertTrue("Incorrect forward BASE_URL",
                 StringUtils.equals(trip.getForwardUrl(), "/pages/vocabularies/viewVocabularyFolder.jsp"));
     }
 
@@ -385,7 +381,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         trip.addParameter("vocabularyFolder.identifier", "BWaterCat");
         trip.addParameter("vocabularyConcept.identifier", "1");
         trip.execute("view");
-        Assert.assertTrue("Incorrect forward URL",
+        Assert.assertTrue("Incorrect forward BASE_URL",
                 StringUtils.equals(trip.getForwardUrl(), "/pages/vocabularies/viewVocabularyFolder.jsp"));
     }
 

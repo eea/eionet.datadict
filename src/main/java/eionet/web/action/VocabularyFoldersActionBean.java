@@ -224,6 +224,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      */
     public Resolution maintain() throws ServiceException {
         // todo add validation and user right control
+        // TODO future enchancement: folderIds can be used for selection based updates.
+        // i.e. page can have, update all, update selected, update exclusion of selected
         return new ForwardResolution(VOCABULARIES_MAINTENANCE_JSP);
     }
 

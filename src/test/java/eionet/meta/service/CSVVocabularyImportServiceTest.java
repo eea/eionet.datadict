@@ -834,7 +834,6 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
                 element.getRelatedConceptIdentifier());
         Assert.assertEquals("Related Concept Label Doesn't Match", "csv_test_concept_label_3", element.getRelatedConceptLabel());
         Assert.assertEquals("Related Concept Vocabulary Doesn't Match", "csv_header_vocab", element.getRelatedConceptVocabulary());
-        Assert.assertEquals("Related Concept Vocabulary Set Doesn't Match", "csv_header_vs", element.getRelatedConceptVocSet());
         Assert.assertNull("Attribute Value is Not Null", element.getAttributeValue());
 
         elements = VocabularyCSVOutputHelper.getDataElementValuesByName("skos:related", concept.getElementAttributes());
@@ -847,7 +846,6 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Assert.assertEquals("Related Concept Label Doesn't Match", "csv_test_concept_label_2", element.getRelatedConceptLabel());
         Assert.assertEquals("Related Concept Vocabulary Doesn't Match", "csv_header_vocab_2",
                 element.getRelatedConceptVocabulary());
-        Assert.assertEquals("Related Concept Vocabulary Set Doesn't Match", "csv_header_vs", element.getRelatedConceptVocSet());
         Assert.assertNull("Attribute Value is Not Null", element.getAttributeValue());
 
         // Check for second concept
@@ -858,7 +856,6 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Assert.assertNull("Related Concept Identifier is Not Null", element.getRelatedConceptIdentifier());
         Assert.assertNull("Related Concept Label is Not Null", element.getRelatedConceptLabel());
         Assert.assertNull("Related Concept Vocabulary is Not Null", element.getRelatedConceptVocabulary());
-        Assert.assertNull("Related Concept Vocabulary Set is Not Null", element.getRelatedConceptVocSet());
         Assert.assertEquals("Attribute Value Doesn't Match",
                 "http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab_2/csv_test_concept_3",
                 element.getAttributeValue());
@@ -873,7 +870,6 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Assert.assertEquals("Related Concept Label Doesn't Match", "csv_test_concept_label_1", element.getRelatedConceptLabel());
         Assert.assertEquals("Related Concept Vocabulary Doesn't Match", "csv_header_vocab_2",
                 element.getRelatedConceptVocabulary());
-        Assert.assertEquals("Related Concept Vocabulary Set Doesn't Match", "csv_header_vs", element.getRelatedConceptVocSet());
         Assert.assertNull("Attribute Value is Not Null", element.getAttributeValue());
         Assert.assertNull("Attribute Value is Not Null", element.getAttributeValue());
 

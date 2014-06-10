@@ -82,6 +82,11 @@
                     return false;
                 });
 
+                $("#maintainLnk").click(function() {
+                    $( "#vocabulariesForm" ).attr('action', 'vocabularies/maintain').submit();
+                    return false;
+                });
+
                 <c:if test="${not empty actionBean.editDivId}">
                     $("#${actionBean.editDivId}").dialog('open');
                 </c:if>
@@ -104,7 +109,7 @@
                         <li><stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">Add vocabulary</stripes:link></li>
                     </c:if>
                     <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
-                        <li><stripes:link beanclass="eionet.web.action.VocabularyFoldersActionBean" event="maintain">Maintain vocabularies</stripes:link></li>
+                        <li><stripes:link id="maintainLnk"  href="#">Maintain vocabularies</stripes:link></li>
                     </c:if>
                 </ul>
             </div>

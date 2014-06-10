@@ -503,30 +503,24 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             if (copyId != 0) {
                 if (StringUtils.equals(FOLDER_CHOICE_EXISTING, folderChoice)) {
                     vocabularyService.createVocabularyFolderCopy(vocabularyFolder, copyId, getUserName(), null);
-                    vocabularyFolder.setFolderName(vocabularyService.getFolder(vocabularyFolder.getFolderId()).getIdentifier());
                 }
                 if (StringUtils.equals(FOLDER_CHOICE_NEW, folderChoice)) {
                     vocabularyService.createVocabularyFolderCopy(vocabularyFolder, copyId, getUserName(), folder);
-                    vocabularyFolder.setFolderName(folder.getIdentifier());
                 }
             } else {
                 if (StringUtils.equals(FOLDER_CHOICE_EXISTING, folderChoice)) {
                     vocabularyService.createVocabularyFolder(vocabularyFolder, null, getUserName());
-                    vocabularyFolder.setFolderName(vocabularyService.getFolder(vocabularyFolder.getFolderId()).getIdentifier());
                 }
                 if (StringUtils.equals(FOLDER_CHOICE_NEW, folderChoice)) {
                     vocabularyService.createVocabularyFolder(vocabularyFolder, folder, getUserName());
-                    vocabularyFolder.setFolderName(folder.getIdentifier());
                 }
             }
         } else {
             if (StringUtils.equals(FOLDER_CHOICE_EXISTING, folderChoice)) {
                 vocabularyService.updateVocabularyFolder(vocabularyFolder, null);
-                vocabularyFolder.setFolderName(vocabularyService.getFolder(vocabularyFolder.getFolderId()).getIdentifier());
             }
             if (StringUtils.equals(FOLDER_CHOICE_NEW, folderChoice)) {
                 vocabularyService.updateVocabularyFolder(vocabularyFolder, folder);
-                vocabularyFolder.setFolderName(folder.getIdentifier());
             }
         }
         origIdentifier = vocabularyFolder.getIdentifier();
