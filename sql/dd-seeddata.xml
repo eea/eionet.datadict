@@ -214,7 +214,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             ]]>
         </sql>
      </changeSet>
-	 
+
 	 <changeSet author="lainekai" id="seed-3">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0"><![CDATA[SELECT count(1) FROM DATAELEM]]></sqlCheck>
@@ -222,17 +222,17 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <comment>Common elements</comment>
         <sql>
             <![CDATA[
-			
+
 			INSERT INTO `T_RDF_NAMESPACE` (`URI`,`NAME_PREFIX`) VALUES ('http://xmlns.com/foaf/0.1/','foaf');
 			INSERT INTO `T_RDF_NAMESPACE` (`URI`,`NAME_PREFIX`) VALUES ('http://www.w3.org/2003/01/geo/wgs84_pos#','geo');
 			INSERT INTO `T_RDF_NAMESPACE` (`URI`,`NAME_PREFIX`) VALUES ('http://purl.org/dc/terms/','dct');
 
-			
+
 			INSERT INTO `M_ATTRIBUTE` (NAME, OBLIGATION, DEFINITION, SHORT_NAME, DISP_TYPE, DISP_ORDER, DISP_WHEN, DISP_WIDTH, DISP_HEIGHT, DISP_MULTIPLE, INHERIT, LANGUAGE_USED,  DATA_TYPE, RDF_PROPERTY_NAME, RDF_PROPERTY_NAMESPACE_ID) VALUES
                     ('Is language used','O','Indicates if the resource can have values in different languages','languageUsed','select',999,1,20,1,'0','0',0,'boolean',NULL, NULL),
                     ('Source','O','A related resource from which the described resource is derived.','Source','text',999,1024,60,4,'0','0',0,'string',NULL, (SELECT ID FROM T_RDF_NAMESPACE WHERE NAME_PREFIX = 'dct'));
-			
-			
+
+
 				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:altLabel',NULL,'N','Released',1,NULL,1379995792000,NULL,NULL,'skos:altLabel',NULL);
 				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:broader',NULL,'N','Released',1,'roug',1380531312598,NULL,NULL,'skos:broader',NULL);
 				INSERT INTO `DATAELEM` (`TYPE`,`NAMESPACE_ID`,`SHORT_NAME`,`WORKING_USER`,`WORKING_COPY`,`REG_STATUS`,`VERSION`,`USER`,`DATE`,`PARENT_NS`,`TOP_NS`,`IDENTIFIER`,`CHECKEDOUT_COPY_ID`) VALUES ('CH2',1,'skos:broadMatch',NULL,'N','Released',1,'roug',1380531529449,NULL,NULL,'skos:broadMatch',NULL);
@@ -389,8 +389,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
 				INSERT INTO COMPLEX_ATTR_FIELD (M_COMPLEX_ATTR_FIELD_ID,VALUE,ROW_ID) VALUES ((SELECT M_COMPLEX_ATTR_FIELD_ID FROM M_COMPLEX_ATTR_FIELD WHERE NAME = 'name' AND M_COMPLEX_ATTR_ID = (SELECT M_COMPLEX_ATTR_ID FROM M_COMPLEX_ATTR WHERE SHORT_NAME = 'SubmitOrganisation')), 'European Environment Agency', '77a90283113d55e02e5ccf3126d5dcd9');
 				INSERT INTO COMPLEX_ATTR_FIELD (M_COMPLEX_ATTR_FIELD_ID,VALUE,ROW_ID) VALUES ((SELECT M_COMPLEX_ATTR_FIELD_ID FROM M_COMPLEX_ATTR_FIELD WHERE NAME = 'name' AND M_COMPLEX_ATTR_ID = (SELECT M_COMPLEX_ATTR_ID FROM M_COMPLEX_ATTR WHERE SHORT_NAME = 'SubmitOrganisation')), 'European Environment Agency', 'aee3a173bb1491458a1cb15f3761eb34');
 
-				
-				
+
+
 				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:altLabel','/elements','admin','skos:altLabel');
 				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:broader','/elements','admin','skos:braoder');
 				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:broadMatch','/elements','admin','skos:broadMatch');
@@ -408,8 +408,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
 				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:relatedMatch','/elements','admin','skos:relatedMatch');
 				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('skos:scopeNote','/elements','admin','skos:scopeNote');
 				INSERT INTO `ACLS` (`ACL_NAME`,`PARENT_NAME`,`OWNER`,`DESCRIPTION`) VALUES ('owl:sameAs','/elements','admin','owl:sameAs');
-				
-				
+
+
 				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:altLabel' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
 				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:broader' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
 				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:broadMatch' AND PARENT_NAME='/elements'), 'object','owner','','d,c,w,u');
@@ -425,11 +425,37 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
 				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:prefLabel' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
 				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:related' AND PARENT_NAME='/elements'), 'object','owner','','u,d,w,c');
 				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:relatedMatch' AND PARENT_NAME='/elements'), 'object','owner','','d,c,w,u');
-				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:scopeNote' AND PARENT_NAME='/elements'), 'object','owner','','d,c,w,u');				
-				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'owl:sameAs' AND PARENT_NAME='/elements'), 'object','owner','','d,c,w,u');				
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'skos:scopeNote' AND PARENT_NAME='/elements'), 'object','owner','','d,c,w,u');
+				INSERT INTO `ACL_ROWS` (`ACL_ID`, `TYPE`, `ENTRY_TYPE`,`PRINCIPAL`,`PERMISSIONS`) VALUES ((SELECT ACL_ID FROM ACLS WHERE ACL_NAME = 'owl:sameAs' AND PARENT_NAME='/elements'), 'object','owner','','d,c,w,u');
 			]]>
 		</sql>
      </changeSet>
+     <changeSet author="lainekai" id="seed-4">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0"><![CDATA[SELECT count(1) FROM INFERENCE_RULE]]></sqlCheck>
+        </preConditions>
+        <comment>inference rules</comment>
+        <sql>
+            <![CDATA[
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'dct:replaces' AND te.SHORT_NAME = 'dct:isReplacedBy');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'dct:isReplacedBy' AND te.SHORT_NAME = 'dct:replaces');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'dct:hasPart' AND te.SHORT_NAME = 'dct:isPartOf');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'dct:isPartOf' AND te.SHORT_NAME = 'dct:hasPart');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'dct:hasVersion' AND te.SHORT_NAME = 'dct:isVersionOf');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'dct:isVersionOf' AND te.SHORT_NAME = 'dct:hasVersion');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'dct:requires' AND te.SHORT_NAME = 'dct:isRequiredBy');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'dct:isRequiredBy' AND te.SHORT_NAME = 'dct:requires');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'owl:sameAs' AND te.SHORT_NAME = 'owl:sameAs');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'skos:broader' AND te.SHORT_NAME = 'skos:narrower');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'skos:narrower' AND te.SHORT_NAME = 'skos:broader');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'skos:broadMatch' AND te.SHORT_NAME = 'skos:narrowMatch');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'skos:exactMatch' AND te.SHORT_NAME = 'skos:exactMatch');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'owl:inverseOf' AND te.SHORT_NAME = 'owl:inverseOf');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'foaf:isPrimaryTopicOf' AND te.SHORT_NAME = 'foaf:primaryTopic');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'foaf:primaryTopic' AND te.SHORT_NAME = 'foaf:isPrimaryTopicOf');
+				INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'skos:related' AND te.SHORT_NAME = 'skos:related');
+            ]]>
+        </sql>
+      </changeSet>
     </databaseChangeLog>
-	
-	
+

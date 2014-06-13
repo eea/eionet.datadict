@@ -1535,7 +1535,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <comment>Remove GIS column from DATAELEM table, as it's no longer needed.</comment>
         <dropColumn tableName="DATAELEM" columnName="GIS"/>
     </changeSet>
-    
+
     <changeSet author="enverveli" id="rev-124">
         <comment>Change data type of DATE_DELETED to DATE</comment>
         <addColumn tableName="T_SITE_CODE">
@@ -1548,12 +1548,12 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropColumn columnName="DATE_DELETED" tableName="T_SITE_CODE"/>
         <renameColumn newColumnName="DATE_DELETED" oldColumnName="DATE_DELETED_TEMP" tableName="T_SITE_CODE" columnDataType="DATE"/>
     </changeSet>
-    
+
     <changeSet author="lainekai" id="rev-125">
         <comment>New type CH3 for fixed value elements related to a vocabulary.</comment>
         <modifyDataType tableName="DATAELEM" columnName="TYPE" newDataType="enum('CH1','CH2','CH3') NOT NULL default 'CH2'"/>
     </changeSet>
-    
+
     <changeSet author="lainekai" id="rev-126">
         <comment>Add relation to vocabulary that can be used for Fixed values of the element. Boolean field to indicate if all concepts are legal or only
              the ones created before the element</comment>
@@ -1573,7 +1573,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <comment>Drop Column SITE_CODE_ID from T_SITE_CODE table since it's redundant</comment>
         <sql>ALTER TABLE T_SITE_CODE MODIFY SITE_CODE_ID INT NOT NULL</sql>
         <dropPrimaryKey tableName="T_SITE_CODE"/>
-        <dropColumn columnName="SITE_CODE_ID" tableName="T_SITE_CODE"/>		
+        <dropColumn columnName="SITE_CODE_ID" tableName="T_SITE_CODE"/>
         <addPrimaryKey columnNames="VOCABULARY_CONCEPT_ID" tableName="T_SITE_CODE"/>
 	</changeSet>
 
@@ -1605,4 +1605,26 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             UPDATE VOCABULARY_CONCEPT_ELEMENT SET DATAELEM_ID=DATAELEM_ID;
         </sql>
     </changeSet>
+    <changeSet author="lainekai" id="rev-130">
+        <comment>Create a table for inference rules</comment>
+        <createTable tableName="INFERENCE_RULE">
+			<column name="DATAELEM_ID" type="INT UNSIGNED"/>
+			<column name="RULE" type="VARCHAR(255)"/>
+			<column name="TARGET_ELEM_ID" type="INT UNSIGNED"/>
+		</createTable>
+        <addForeignKeyConstraint baseColumnNames="DATAELEM_ID" baseTableName="INFERENCE_RULE"
+        	constraintName="FK_DATAELEM_ID" deferrable="false" initiallyDeferred="false"
+        	onDelete="CASCADE" onUpdate="CASCADE"
+        	referencedColumnNames="DATAELEM_ID" referencedTableName="DATAELEM" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="TARGET_ELEM_ID" baseTableName="INFERENCE_RULE"
+        	constraintName="FK_TARGET_ELEM_ID" deferrable="false" initiallyDeferred="false"
+        	onDelete="CASCADE" onUpdate="CASCADE"
+        	referencedColumnNames="DATAELEM_ID" referencedTableName="DATAELEM" referencesUniqueColumn="false"/>
+    </changeSet>
+	<changeSet id="rev-131" author="lainekai" dbms="mysql">
+		<comment>Change inference rule type to enum in Mysql only</comment>
+		<sql>
+			ALTER TABLE INFERENCE_RULE MODIFY RULE ENUM('owl:inverseOf');
+		</sql>
+	</changeSet>
 </databaseChangeLog>
