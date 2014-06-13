@@ -149,7 +149,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         // shouldnt be updated because it has filled base uri
         result = vocabularyService.getVocabularyFolder(8);
         assertNotNull("Expected vocabulary folder", result);
-        baseUriExpected = "http://dd.eionet.europa.eu/vocabulary/common/countries/";
+        baseUriExpected = "http://test.dd.eionet.europa.eu/vocabulary/common/countries/";
         assertEquals("Base Uri updated!", baseUriExpected, result.getBaseUri());
 
         // now change base uri and see
@@ -170,11 +170,11 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         // shouldnt be updated because it has filled base uri
         result = vocabularyService.getVocabularyFolder(8);
         assertNotNull("Expected vocabulary folder", result);
-        baseUriExpected = "http://dd.eionet.europa.eu/vocabulary/common/countries/";
+        baseUriExpected = "http://test.dd.eionet.europa.eu/vocabulary/common/countries/";
         assertEquals("Base Uri updated!", baseUriExpected, result.getBaseUri());
 
         // now change another base uri and see
-        numberOfUpdatedRows = vocabularyService.changeSitePrefix("http://dd.eionet.europa.eu/vocabulary/", newSitePrefix);
+        numberOfUpdatedRows = vocabularyService.changeSitePrefix("http://test.dd.eionet.europa.eu/vocabulary/", newSitePrefix);
         assertEquals("Number of updated rows does not match", 1, numberOfUpdatedRows);
         // shouldnt be updated
         result = vocabularyService.getVocabularyFolder(6);

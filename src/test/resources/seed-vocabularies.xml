@@ -20,7 +20,7 @@
     <VOCABULARY VOCABULARY_ID="6" CONTINUITY_ID="125" IDENTIFIER="vocab_with_base_uri_pop1" LABEL="vocabulary with base uri" REG_STATUS="Draft" WORKING_COPY="1" WORKING_USER="testUser2" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="5" BASE_URI="[NULL]"/>
     <VOCABULARY VOCABULARY_ID="7" CONTINUITY_ID="125" IDENTIFIER="vocab_with_base_uri_pop2" LABEL="vocabulary with base uri" REG_STATUS="Draft" WORKING_COPY="0" WORKING_USER="testUser2" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="5" BASE_URI=""/>
 
-    <VOCABULARY VOCABULARY_ID="8" CONTINUITY_ID="125" IDENTIFIER="vocab_with_base_uri_change" LABEL="vocabulary with base uri" REG_STATUS="Draft" WORKING_COPY="0" WORKING_USER="testUser2" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="5" BASE_URI="http://dd.eionet.europa.eu/vocabulary/common/countries/"/>
+    <VOCABULARY VOCABULARY_ID="8" CONTINUITY_ID="125" IDENTIFIER="vocab_with_base_uri_change" LABEL="vocabulary with base uri" REG_STATUS="Draft" WORKING_COPY="0" WORKING_USER="testUser2" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="5" BASE_URI="http://test.dd.eionet.europa.eu/vocabulary/common/countries/"/>
 
 
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="1" VOCABULARY_ID="3" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="concept1" LABEL="concept1" />
