@@ -254,14 +254,14 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      * @throws ServiceException
      *             if operation fails
      */
-    @ValidationMethod(on = {"maintain"})
+    @ValidationMethod(on = {"maintain", "populate", "changeSitePrefix"})
     public void validateMaintain() throws ServiceException {
         if (!isUpdateRight()) {
             addGlobalValidationError("No permission to modify folders");
         }
-    } //end of method validateMaintain
+    } // end of method validateMaintain
 
-   /**
+    /**
      * Validates save folder.
      *
      * @throws ServiceException
@@ -431,7 +431,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
             sitePrefix += "/";
         }
         int numberOfRows = vocabularyService.populateEmptyBaseUris(sitePrefix);
-        addSystemMessage("Empty base URIs were populated. " + numberOfRows + " vocabularies were updated.");
+        addSystemMessage("Empty base URIs are populated. " + numberOfRows + " vocabularies updated.");
         RedirectResolution resolution = new RedirectResolution(VocabularyFoldersActionBean.class, "maintain");
         return resolution;
     } // end of method populate
@@ -444,12 +444,6 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution changeSitePrefix() throws ServiceException {
-        if (!StringUtils.endsWith(oldSitePrefix, "/")) {
-            oldSitePrefix += "/";
-        }
-        if (!StringUtils.endsWith(newSitePrefix, "/")) {
-            newSitePrefix += "/";
-        }
         int numberOfRows = vocabularyService.changeSitePrefix(oldSitePrefix, newSitePrefix);
         addSystemMessage("Site prefix changed. " + numberOfRows + " vocabularies were updated.");
         addSystemMessage("\"" + oldSitePrefix + "\" replaced by \"" + newSitePrefix + "\"");
@@ -506,18 +500,22 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      */
     @ValidationMethod(on = {"changeSitePrefix"})
     public void validateChangeSitePrefix() throws ServiceException {
-        if (StringUtils.isEmpty(newSitePrefix)) {
+        if (StringUtils.isBlank(newSitePrefix)) {
             addGlobalValidationError("New Site Prefix is missing");
         } else if (!Util.isValidUri(newSitePrefix)) {
             addGlobalValidationError("New Site prefix is not a valid URI. \n The allowed schemes are: "
-                    + "http, https, ftp, mailto, tel and urn. ");
+                    + "http, https, ftp, mailto, tel and urn.");
+        } else if (!StringUtils.endsWith(newSitePrefix, "/")) {
+            newSitePrefix += "/";
         }
 
         if (StringUtils.isBlank(oldSitePrefix)) {
             addGlobalValidationError("Old Site Prefix is missing");
         } else if (!Util.isValidUri(oldSitePrefix)) {
             addGlobalValidationError("Old Site prefix is not a valid URI. \n The allowed schemes are: "
-                    + "http, https, ftp, mailto, tel and urn. ");
+                    + "http, https, ftp, mailto, tel and urn.");
+        } else if (!StringUtils.endsWith(oldSitePrefix, "/")) {
+            oldSitePrefix += "/";
         }
 
         if (StringUtils.equals(oldSitePrefix, newSitePrefix)) {

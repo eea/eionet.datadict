@@ -21,6 +21,29 @@
 
 package eionet.meta.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.unitils.UnitilsJUnit4;
+import org.unitils.spring.annotation.SpringApplicationContext;
+import org.unitils.spring.annotation.SpringBeanByType;
+
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
@@ -32,29 +55,9 @@ import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.Triple;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.unitils.UnitilsJUnit4;
-import org.unitils.spring.annotation.SpringApplicationContext;
-import org.unitils.spring.annotation.SpringBeanByType;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * JUnit integration test with Unitils for vocabulary service.
@@ -69,6 +72,11 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
      * Logger.
      */
     protected static final Logger LOGGER = Logger.getLogger(VocabularyServiceTest.class);
+
+    /**
+     * Site prefix.
+     */
+    private final String SITE_PREFIX = Props.getProperty(PropsIF.DD_URL);
 
     @SpringBeanByType
     private IVocabularyService vocabularyService;
@@ -98,13 +106,13 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     @Test
     public void testGetVocabularyFoldersAnonymous() throws ServiceException {
         List<VocabularyFolder> result = vocabularyService.getVocabularyFolders(null);
-        assertEquals("Result size", 3, result.size());
+        assertEquals("Result size", 6, result.size());
     }
 
     @Test
     public void testGetVocabularyFoldersTestUser() throws ServiceException {
         List<VocabularyFolder> result = vocabularyService.getVocabularyFolders("testUser");
-        assertEquals("Result size", 4, result.size());
+        assertEquals("Result size", 7, result.size());
     }
 
     @Test
@@ -118,6 +126,71 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         int id = vocabularyService.createVocabularyFolder(vocabularyFolder, null, "testUser");
         VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
         assertNotNull("Expected vocabulary folder", result);
+        String baseUriExpected = SITE_PREFIX + "/vocabulary/common/test/";
+        assertEquals("Generated Base Uri is not correct!", baseUriExpected, vocabularyFolder.getBaseUri());
+    }
+
+    @Test
+    public void testPopulateAndChangeSitePrefix() throws ServiceException {
+        String sitePrefix = SITE_PREFIX + "/";
+        int numberOfUpdatedRows = vocabularyService.populateEmptyBaseUris(sitePrefix);
+        assertEquals("Number of updated rows does not match", 6, numberOfUpdatedRows);
+
+        // should be updated because it has null base uri
+        VocabularyFolder result = vocabularyService.getVocabularyFolder(6);
+        assertNotNull("Expected vocabulary folder", result);
+        String baseUriExpected = sitePrefix + "csv_header_vs/vocab_with_base_uri_pop1/";
+        assertEquals("Generated Base Uri is not correct!", baseUriExpected, result.getBaseUri());
+        // should be updated because it has empty base uri
+        result = vocabularyService.getVocabularyFolder(7);
+        assertNotNull("Expected vocabulary folder", result);
+        baseUriExpected = sitePrefix + "csv_header_vs/vocab_with_base_uri_pop2/";
+        assertEquals("Generated Base Uri is not correct!", baseUriExpected, result.getBaseUri());
+        // shouldnt be updated because it has filled base uri
+        result = vocabularyService.getVocabularyFolder(8);
+        assertNotNull("Expected vocabulary folder", result);
+        baseUriExpected = "http://dd.eionet.europa.eu/vocabulary/common/countries/";
+        assertEquals("Base Uri updated!", baseUriExpected, result.getBaseUri());
+
+        // now change base uri and see
+        String newSitePrefix = "http://test.tripledev.ee/datadict/";
+        numberOfUpdatedRows = vocabularyService.changeSitePrefix(sitePrefix, newSitePrefix);
+        assertEquals("Number of updated rows does not match", 6, numberOfUpdatedRows);
+
+        // should be updated
+        result = vocabularyService.getVocabularyFolder(6);
+        assertNotNull("Expected vocabulary folder", result);
+        baseUriExpected = newSitePrefix + "csv_header_vs/vocab_with_base_uri_pop1/";
+        assertEquals("Base Uri is not updated!", baseUriExpected, result.getBaseUri());
+        // should be updated
+        result = vocabularyService.getVocabularyFolder(7);
+        assertNotNull("Expected vocabulary folder", result);
+        baseUriExpected = newSitePrefix + "csv_header_vs/vocab_with_base_uri_pop2/";
+        assertEquals("Base Uri is not updated!", baseUriExpected, result.getBaseUri());
+        // shouldnt be updated because it has filled base uri
+        result = vocabularyService.getVocabularyFolder(8);
+        assertNotNull("Expected vocabulary folder", result);
+        baseUriExpected = "http://dd.eionet.europa.eu/vocabulary/common/countries/";
+        assertEquals("Base Uri updated!", baseUriExpected, result.getBaseUri());
+
+        // now change another base uri and see
+        numberOfUpdatedRows = vocabularyService.changeSitePrefix("http://dd.eionet.europa.eu/vocabulary/", newSitePrefix);
+        assertEquals("Number of updated rows does not match", 1, numberOfUpdatedRows);
+        // shouldnt be updated
+        result = vocabularyService.getVocabularyFolder(6);
+        assertNotNull("Expected vocabulary folder", result);
+        baseUriExpected = newSitePrefix + "csv_header_vs/vocab_with_base_uri_pop1/";
+        assertEquals("Base Uri is updated!", baseUriExpected, result.getBaseUri());
+        // should be updated
+        result = vocabularyService.getVocabularyFolder(7);
+        assertNotNull("Expected vocabulary folder", result);
+        baseUriExpected = newSitePrefix + "csv_header_vs/vocab_with_base_uri_pop2/";
+        assertEquals("Base Uri is updated!", baseUriExpected, result.getBaseUri());
+        // should be updated because it has filled base uri
+        result = vocabularyService.getVocabularyFolder(8);
+        assertNotNull("Expected vocabulary folder", result);
+        baseUriExpected = newSitePrefix + "common/countries/";
+        assertEquals("Base Uri is not updated!", baseUriExpected, result.getBaseUri());
     }
 
     @Test
@@ -134,6 +207,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         int id = vocabularyService.createVocabularyFolder(vocabularyFolder, newFolder, "testUser");
         VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
         assertNotNull("Expected vocabulary folder", result);
+        String baseUriExpected = SITE_PREFIX + "/vocabulary/new/test/";
+        assertEquals("Generated Base Uri is not correct!", baseUriExpected, vocabularyFolder.getBaseUri());
     }
 
     @Test
@@ -148,7 +223,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * full text identifier must work in filter.
      *
-     * @throws ServiceException if bad things happen
+     * @throws ServiceException
+     *             if bad things happen
      */
     @Test
     public void testSearchVocabularyConceptsByIdentifier() throws ServiceException {
@@ -180,7 +256,6 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         assertEquals("Modified label", "modified", result.getLabel());
     }
 
-
     @Test
     public void testupdatevocabularyconceptDate() throws ServiceException {
         VocabularyConcept result = vocabularyService.getVocabularyConcept(3, "concept1", true);
@@ -203,7 +278,6 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
         cal.setTime(result.getCreated());
         assertEquals("Modified created", cal.get(Calendar.MONTH), Calendar.APRIL);
-
     }
 
     @Test
@@ -213,6 +287,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         vocabularyService.updateVocabularyFolder(result, null);
         result = vocabularyService.getVocabularyFolder(1);
         assertEquals("Modified label", "modified", result.getLabel());
+        String baseUriExpected = SITE_PREFIX + "/vocabulary/common/test_vocabulary1/";
+        assertEquals("Generated Base Uri is not correct!", baseUriExpected, result.getBaseUri());
     }
 
     @Test
@@ -226,6 +302,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         vocabularyService.updateVocabularyFolder(result, newFolder);
         result = vocabularyService.getVocabularyFolder(1);
         assertEquals("Modified label", "modified", result.getLabel());
+        String baseUriExpected = SITE_PREFIX + "/vocabulary/new/test_vocabulary1/";
+        assertEquals("Generated Base Uri is not correct!", baseUriExpected, result.getBaseUri());
     }
 
     @Test
@@ -314,6 +392,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         int id = vocabularyService.createVocabularyFolderCopy(vocabularyFolder, 1, "testUser", null);
         VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
         assertNotNull("Expected vocabulary folder", result);
+        String baseUriExpected = SITE_PREFIX + "/vocabulary/common/copy/";
+        assertEquals("Generated Base Uri is not correct!", baseUriExpected, vocabularyFolder.getBaseUri());
 
         List<VocabularyConcept> concepts = vocabularyService.getValidConceptsWithAttributes(id);
 
@@ -356,6 +436,25 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         int id = vocabularyService.createVocabularyFolderCopy(vocabularyFolder, 1, "testUser", newFolder);
         VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
         assertNotNull("Expected vocabulary folder", result);
+        String baseUriExpected = SITE_PREFIX + "/vocabulary/new/copy/";
+        assertEquals("Generated Base Uri is not correct!", baseUriExpected, vocabularyFolder.getBaseUri());
+    }
+
+    @Test
+    public void testCreateVocabularyFolderCopyWithBaseUriWithNewFolder() throws ServiceException {
+        Folder newFolder = new Folder();
+        newFolder.setIdentifier("nepnew");
+        newFolder.setLabel("nepnew");
+
+        VocabularyFolder vocabularyFolder = new VocabularyFolder();
+        vocabularyFolder.setType(VocabularyType.COMMON);
+        vocabularyFolder.setLabel("copy5");
+        vocabularyFolder.setIdentifier("copy5");
+        int id = vocabularyService.createVocabularyFolderCopy(vocabularyFolder, 5, "testUser", newFolder);
+        VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
+        assertNotNull("Expected vocabulary folder", result);
+        String baseUriExpected = "http://test.tripledev.ee/datadict/vocabulary/csv_header_vs/vocab_with_base_uri/";
+        assertEquals("Base Uri is not correct!", baseUriExpected, vocabularyFolder.getBaseUri());
     }
 
     @Test
@@ -474,7 +573,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * The purpose is to test the {@link IVocabularyService#getReleasedVocabularyFolders(int)} function.
      *
-     * @throws ServiceException An error happens in the called service(s).
+     * @throws ServiceException
+     *             An error happens in the called service(s).
      */
     @Test
     public void testReleasedVocabularyFolders() throws ServiceException {
@@ -487,7 +587,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * The purpose is to test the vocabularies' "enforce concept notation equals concept identifier" functionality.
      *
-     * @throws ServiceException An error happens in the called services.
+     * @throws ServiceException
+     *             An error happens in the called services.
      */
     @Test
     public void testNotationEqualsIdentifier() throws ServiceException {
@@ -500,10 +601,13 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         vocabulary.setLabel("TestVoc1");
         vocabulary.setIdentifier("test_voc_1");
         vocabulary.setType(VocabularyType.COMMON);
+        String baseUriExpected = "http://test.tripledev.ee/datadict/vocabulary/test_voc_1/";
+        vocabulary.setBaseUri(baseUriExpected);
         int vocId = vocabularyService.createVocabularyFolder(vocabulary, null, userName);
         vocabulary = vocabularyService.getVocabularyFolder(vocId);
         assertNotNull("Expected a vocabulary folder", vocabulary);
         assertFalse("Expected the enforcement flag to be down", vocabulary.isNotationsEqualIdentifiers());
+        assertEquals("Base Uri is not correct!", baseUriExpected, vocabulary.getBaseUri());
 
         // Now lets check out the freshly created vocabulary, so that we can start adding concepts to it.
 
@@ -541,6 +645,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         vocabulary = vocabularyService.getVocabularyFolder(vocabulary.getId());
         assertNotNull("Expected an updated vocbulary", vocabulary);
         assertTrue("Expected the enforcement flag to be up", vocabulary.isNotationsEqualIdentifiers());
+        assertEquals("Base Uri is not correct!", baseUriExpected, vocabulary.getBaseUri());
 
         // Check that both concept notations have now been forcefully made equal to the identifiers.
 
@@ -564,7 +669,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * tests vocabularyHasDataElementBinding() method.
      *
-     * @throws ServiceException if bad things happen
+     * @throws ServiceException
+     *             if bad things happen
      */
     @Test
     public void vocabularyBindingExistsTest() throws ServiceException {
@@ -575,7 +681,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * test on getConceptsWithElementValue method.
      *
-     * @throws ServiceException if bad things happen
+     * @throws ServiceException
+     *             if bad things happen
      */
     @Test
     public void getValuedConceptsTest() throws ServiceException {
@@ -588,7 +695,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * test if namespaces of elements are generated correctly.
      *
-     * @throws ServiceException if error happens
+     * @throws ServiceException
+     *             if error happens
      */
     @Test
     public void getVocabularyNamespacesTest() throws ServiceException {
@@ -603,7 +711,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * tsest on relational elements.
      *
-     * @throws Exception if fail
+     * @throws Exception
+     *             if fail
      */
     @Test
     public void testRelationalElement() throws Exception {
@@ -614,12 +723,14 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * tests getvocabularyFolder meta.
      *
-     * @throws Exception if fail
+     * @throws Exception
+     *             if fail
      */
     @Test
     public void testFolderCSVInfo() throws Exception {
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(1);
-        List<Triple<String, String, Integer>> attributeNames = vocabularyService.getVocabularyBoundElementNamesByLanguage(vocabularyFolder);
+        List<Triple<String, String, Integer>> attributeNames =
+                vocabularyService.getVocabularyBoundElementNamesByLanguage(vocabularyFolder);
 
         assertTrue(attributeNames.size() == 2);
         Triple<String, String, Integer> dev = attributeNames.get(0);
@@ -633,12 +744,14 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * tests getvocabularyFolder meta.
      *
-     * @throws Exception if fail
+     * @throws Exception
+     *             if fail
      */
     @Test
     public void testFolderCSVInfo2() throws Exception {
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(4);
-        List<Triple<String, String, Integer>> attributeNames = vocabularyService.getVocabularyBoundElementNamesByLanguage(vocabularyFolder);
+        List<Triple<String, String, Integer>> attributeNames =
+                vocabularyService.getVocabularyBoundElementNamesByLanguage(vocabularyFolder);
 
         int numberOfElements = 9;
         assertTrue(attributeNames.size() == numberOfElements);
@@ -666,7 +779,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     /**
      * test on search vocabularies.
      *
-     * @throws Exception if fail
+     * @throws Exception
+     *             if fail
      */
     @Test
     public void testSearchVocabularies() throws Exception {
@@ -686,13 +800,13 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         filter.setText("test2");
 
         result = vocabularyService.searchVocabularies(filter);
-        assertTrue(result.getTotalItems() == 2);
+        assertEquals(result.getTotalItems(), 2);
 
         filter.setWorkingCopy(true);
         filter.setText(null);
 
         result = vocabularyService.searchVocabularies(filter);
-        assertTrue(result.getTotalItems() == 1);
+        assertEquals(result.getTotalItems(), 2);
 
         // related concepts search
         filter.setWorkingCopy(false);
@@ -700,14 +814,14 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         filter.setConceptText("XYZ1234");
 
         result = vocabularyService.searchVocabularies(filter);
-        assertTrue(result.getTotalItems() == 1);
+        assertEquals(result.getTotalItems(), 1);
 
         filter.setWorkingCopy(null);
         filter.setConceptText(null);
         filter.setStatus(RegStatus.DRAFT);
 
         result = vocabularyService.searchVocabularies(filter);
-        assertTrue(result.getTotalItems() == 1);
+        assertEquals(result.getTotalItems(), 4);
     }
 
     @Test
@@ -728,7 +842,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         filter.setVocabularyText("vocabulary1");
 
         result = vocabularyService.searchVocabularyConcepts(filter);
-        //has 4 concepts in seed
+        // has 4 concepts in seed
         assertEquals("Result size", 4, result.getFullListSize());
 
         filter.setExactMatch(true);
@@ -765,7 +879,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         assertTrue(result.getTotalItems() == 1);
 
         filter.setText("YZ");
-        //filter.setWordMatch(false);
+        // filter.setWordMatch(false);
         result = vocabularyService.searchVocabularyConcepts(filter);
         assertTrue(result.getTotalItems() == 0);
 

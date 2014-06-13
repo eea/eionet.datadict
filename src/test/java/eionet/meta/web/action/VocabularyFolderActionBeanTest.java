@@ -38,7 +38,7 @@ import eionet.web.action.ErrorActionBean;
 import eionet.web.action.VocabularyFolderActionBean;
 
 /**
- * Tests for VocabularyConteptActionBean.
+ * Tests for VocabularyFolderActionBean.
  *
  * @author Kaido Laine
  */
