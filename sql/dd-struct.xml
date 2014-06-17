@@ -1627,4 +1627,73 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
 			ALTER TABLE INFERENCE_RULE MODIFY RULE ENUM('owl:inverseOf');
 		</sql>
 	</changeSet>
+	<changeSet id="rev-132" author="lainekai">
+		<comment>Functions and procedure to create reverse links of referencial elements</comment>
+		<sql endDelimiter="#">
+			DROP FUNCTION IF EXISTS GetInverseElemId;
+			#
+			CREATE  FUNCTION `GetInverseElemId`(DataElementId int) RETURNS int(11)
+			BEGIN
+	    		DECLARE InvereseElementId int;
+
+			    SET InvereseElementId := (SELECT TARGET_ELEM_ID FROM INFERENCE_RULE WHERE DATAELEM_ID = DataElementId AND RULE = 'owl:inverseOf');
+	    		RETURN InvereseElementId;
+			END
+			#
+
+			DROP procedure IF EXISTS `CreateOrUpdateReverseLink`;
+
+			#
+			CREATE PROCEDURE `CreateOrUpdateReverseLink`(DataElemId INT, ConceptId INT,
+    			OldTargetConceptId INT, NewTargetConceptId INT)
+
+				BEGIN
+				    DECLARE InverseElemId int;
+				    DECLARE TargetVocabularyId int;
+				    DECLARE TargetCheckedOutVocabularyId int;
+				    DECLARE TargetCheckedOutConceptId int;
+				    DECLARE OldTargetCheckedOutConceptId int;
+
+    				SET InverseElemID := GetInverseElemId(DataElemId);
+
+				    IF InverseElemID IS NOT NULL THEN
+
+				        SET TargetVocabularyId := (SELECT VOCABULARY_ID FROM VOCABULARY_CONCEPT WHERE VOCABULARY_CONCEPT_ID = NewTargetConceptId);
+
+				        -- manipulate also checked out copy if such exists
+				        SET TargetCheckedOutVocabularyId := (SELECT VOCABULARY_ID FROM VOCABULARY WHERE CHECKEDOUT_COPY_ID = TargetVocabularyId);
+
+				        -- delete old possible relation:
+				        IF OldTargetConceptId IS NOT NULL THEN
+				            delete from VOCABULARY_CONCEPT_ELEMENT WHERE VOCABULARY_CONCEPT_ID = OldTargetConceptId AND DATAELEM_ID = InverseElemId;
+
+				            -- delete relations from the checkedout copy
+				            IF TargetCheckedOutVocabularyId is not null then
+				                SET OldTargetCheckedOutConceptId = (SELECT VOCABULARY_CONCEPT_ID FROM VOCABULARY_CONCEPT WHERE ORIGINAL_CONCEPT_ID = OldTargetConceptId);
+				                delete from VOCABULARY_CONCEPT_ELEMENT WHERE VOCABULARY_CONCEPT_ID = OldTargetCheckedOutConceptId AND DATAELEM_ID = InverseElemId;
+				            END IF;
+				        END IF;
+
+				        IF NewTargetConceptId IS NOT NULL THEN
+				            -- bind target element to the vocabulary if not bound yet
+				            insert ignore into VOCABULARY2ELEM (VOCABULARY_ID, DATAELEM_ID) values (TargetVocabularyId, InverseElemId);
+
+				            -- add the value of this concept to target concept:
+				            insert ignore into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, RELATED_CONCEPT_ID) VALUES (NewTargetConceptId, InverseElemId, ConceptId);
+
+				            -- if checkedout create relations also in checkedout copy
+				            IF TargetCheckedOutVocabularyId IS NOT NULL THEN
+				                SET TargetCheckedOutConceptId = (SELECT VOCABULARY_CONCEPT_ID FROM VOCABULARY_CONCEPT WHERE ORIGINAL_CONCEPT_ID = NewTargetConceptId);
+
+				                IF TargetCheckedOutConceptId is not null then
+				                    insert ignore into VOCABULARY2ELEM (VOCABULARY_ID, DATAELEM_ID) values (TargetCheckedOutVocabularyId, InverseElemId);
+				                    insert ignore into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, RELATED_CONCEPT_ID) VALUES (TargetCheckedOutConceptId, InverseElemId, ConceptId);
+				                END IF;
+				            END IF; -- checked out
+				        END IF; -- update or insert
+				    END IF;
+				END
+		</sql>
+	</changeSet>
+
 </databaseChangeLog>
