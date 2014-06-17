@@ -239,4 +239,14 @@ public interface IDataElementDAO {
      */
     void moveVocabularySources(int originalVocabularyId, int vocabularyId);
 
+    /**
+     * Calls stored procedure that fixes relational elements.
+     * @param dataElementId data element id
+     * @param conceptId vocabulary concept id
+     * @param oldRelationalConceptId previous value of concept ID - null if new record
+     * @param newRelationalConceptId new value of the relational concept ID - null if changed to empty
+     */
+    void updateRelationalElements(int dataElementId, int conceptId, Integer oldRelationalConceptId,
+            Integer newRelationalConceptId);
+
 }

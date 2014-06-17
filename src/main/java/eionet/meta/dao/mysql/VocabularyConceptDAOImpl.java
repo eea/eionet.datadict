@@ -527,7 +527,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("SET vce.RELATED_CONCEPT_ID = vcn.VOCABULARY_CONCEPT_ID WHERE vcn.VOCABULARY_ID = :newVocabularyId ");
         sql.append("AND vco.VOCABULARY_ID = :oldVocabularyId AND vco.IDENTIFIER=vcn.IDENTIFIER  ");
         sql.append("AND vce.RELATED_CONCEPT_ID=vco.VOCABULARY_CONCEPT_ID");
-
+      //TODO_20044 - check
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("newVocabularyId", newVocabularyId);
         parameters.put("oldVocabularyId", oldVocabularyId);

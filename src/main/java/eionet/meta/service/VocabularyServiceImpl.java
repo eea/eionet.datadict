@@ -379,9 +379,17 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     private void fixRelatedElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues) {
         try {
-            // delete all existing relations:
-            dataElementDAO.deleteRelatedElements(vocabularyConcept.getId());
 
+            for (DataElement elem : dataElementValues) {
+                if (elem.isRelationalElement()) {
+                    dataElementDAO.updateRelationalElements(elem.getId(), vocabularyConcept.getId(),
+                            null, elem.getRelatedConceptId());
+                }
+            }
+
+            // delete all existing relations:
+            /*
+            dataElementDAO.deleteRelatedElements(vocabularyConcept.getId());
             for (DataElement elem : dataElementValues) {
                 if (elem.isRelationalElement()) {
                     int relatedConceptId = elem.getRelatedConceptId();
@@ -414,7 +422,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
                     }
 
                 }
+
             }
+             */
         } catch (Exception e) {
             LOGGER.warn("Handling related element bindings failed " + e);
         }
