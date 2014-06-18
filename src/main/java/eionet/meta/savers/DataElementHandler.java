@@ -512,13 +512,14 @@ public class DataElementHandler extends BaseHandler {
         if (switchType != null && switchType.equalsIgnoreCase("true")) {
 
             String newType = "";
-            if (elmValuesType.equals("CH1")) {
-                newType = "CH2";
-            } else if (elmValuesType.equals("CH2")) {
+            if (StringUtils.isNotBlank(req.getParameter("newTypeCH1"))) {
                 newType = "CH1";
+            } else if (StringUtils.isNotBlank(req.getParameter("newTypeCH2"))) {
+                newType = "CH2";
+            } else if (StringUtils.isNotBlank(req.getParameter("newTypeCH3"))) {
+                newType = "CH3";
             } else {
-                //TODO analyze and implement for CH3 if needed
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("Could not detect the data element type to switch to!");
             }
 
             getDataService().switchDataElemType(NumberUtils.toInt(delem_id, -1), newType);
@@ -562,29 +563,6 @@ public class DataElementHandler extends BaseHandler {
 
         // handle datatype conversion
         handleDatatypeConversion(req.getParameter("datatype_conversion"));
-    }
-
-    private void switchType(String newType) throws SQLException {
-
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("DATAELEM");
-        gen.setField("TYPE", newType);
-        conn.createStatement().executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + delem_id);
-
-        if (newType.equals("CH1") && !ch1ProhibitedAttrs.isEmpty()) {
-
-            StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where PARENT_TYPE='E' and DATAELEM_ID=");
-            buf.append(delem_id).append(" and M_ATTRIBUTE_ID in (");
-            int i = 0;
-            for (Iterator iter = ch1ProhibitedAttrs.iterator(); iter.hasNext(); i++) {
-                if (i > 0) {
-                    buf.append(",");
-                }
-                buf.append(iter.next());
-            }
-            buf.append(")");
-            conn.createStatement().executeUpdate(buf.toString());
-        }
     }
 
     /**

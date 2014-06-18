@@ -87,7 +87,7 @@ public class DataServiceTest extends UnitilsJUnit4 {
         assertTrue(elem1.getElemAttributeValues().size() == 2);
         assertEquals(elem1.getName(), "Common element");
 
-        assertTrue(elem2.getElemAttributeValues().size() == 0);
+        assertTrue(elem2.getElemAttributeValues().size() == 2);
         assertTrue(elem3.getElemAttributeValues().size() == 1);
         assertEquals(elem3.getElemAttributeValues().get("Definition").get(0), "Third definition");
 
