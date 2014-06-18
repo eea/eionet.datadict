@@ -32,7 +32,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import eionet.util.VocabularyOutputHelper;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.FileBean;
@@ -54,6 +53,9 @@ import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.exports.VocabularyOutputHelper;
+import eionet.meta.exports.csv.VocabularyCSVOutputHelper;
+import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.meta.exports.rdf.InspireCodelistXmlWriter;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.ICSVVocabularyImportService;
@@ -74,8 +76,6 @@ import eionet.util.SecurityUtil;
 import eionet.util.StringEncoder;
 import eionet.util.Triple;
 import eionet.util.Util;
-import eionet.util.VocabularyCSVOutputHelper;
-import eionet.util.VocabularyJSONOutputHelper;
 
 /**
  * Edit vocabulary folder action bean.
@@ -151,6 +151,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Extension for RDF files.
      */
     private static final String RDF_FILE_EXTENSION = ".rdf";
+    public static final String JSON_CONTENT_TYPE = "application/json";
+    public static final String JSON_EXTENSION = ".json";
 
     /**
      * Vocabulary service.
@@ -1307,21 +1309,23 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 throw new RuntimeException("Vocabulary is not in released or public draft status.");
             }
 
+            jsonLanguage = StringUtils.trimToNull(jsonLanguage);
             final List<VocabularyConcept> concepts =
-                    vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), "skos:prefLabel", jsonLanguage);
+                    vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), null, jsonLanguage,
+                            VocabularyJSONOutputHelper.DEFAULT_LANGUAGE);
+            // vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), "skos:prefLabel", jsonLanguage);
 
-            StreamingResolution result = new StreamingResolution("application/json") {
+            StreamingResolution result = new StreamingResolution(JSON_CONTENT_TYPE) {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
-                    VocabularyJSONOutputHelper.writeJSON(response.getOutputStream(), vocabularyFolder.getIdentifier(), concepts,
-                            jsonLanguage);
+                    VocabularyJSONOutputHelper.writeJSON(response.getOutputStream(), vocabularyFolder, concepts, jsonLanguage);
                 }
             };
-            result.setFilename(vocabularyFolder.getIdentifier() + ".json");
+            result.setFilename(vocabularyFolder.getIdentifier() + JSON_EXTENSION);
 
             return result;
         } catch (Exception e) {
-            LOGGER.error("Failed to output vocabulary CSV data", e);
+            LOGGER.error("Failed to output vocabulary as JSON-LD", e);
             ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
             error.setErrorMessage(e.getMessage());
             return error;

@@ -538,7 +538,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
     @Override
     public List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String dataElementIdentifier,
-            String language) {
+            String language, String defaultLanguage) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyId", vocabularyId);
 
@@ -562,8 +562,9 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("dataElementIdentifier", StringUtils.trimToEmpty(dataElementIdentifier));
         }
         if (StringUtils.isNotBlank(language)) {
-            sql.append(" AND v.LANGUAGE like :language ");
+            sql.append(" AND v.LANGUAGE in (:language, :defaultLanguage) ");
             params.put("language", StringUtils.trimToEmpty(language));
+            params.put("defaultLanguage", defaultLanguage);
         }
 
         sql.append("ORDER by c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, d.IDENTIFIER, v.LANGUAGE, rcv.IDENTIFIER ");

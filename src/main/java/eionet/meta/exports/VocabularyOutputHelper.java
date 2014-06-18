@@ -19,14 +19,16 @@
  *        TripleDev
  */
 
-package eionet.util;
+package eionet.meta.exports;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.DataElement;
+import eionet.util.StringEncoder;
 
 /**
  * Vocabulary common output helper.
@@ -105,4 +107,94 @@ public final class VocabularyOutputHelper {
     public static byte[] getBomByteArray() {
         return new byte[] {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
     } // end of method getBomByteArray
+
+    /**
+     * Escapes IRI's reserved characters in the given URL string.
+     *
+     * @param url
+     *            is a string.
+     * @return escaped URI
+     */
+    public static String escapeIRI(String url) {
+        return StringEncoder.encodeToIRI(url);
+    }
+
+    /**
+     * Inner class to hold Linked Data related definitions.
+     */
+    public static final class LinkedDataNamespaces {
+
+        /**
+         * RDF namespace uri.
+         */
+        public static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+        /**
+         * RDFS namespace uri.
+         */
+        public static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
+        /**
+         * SKOS namespace uri.
+         */
+        public static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
+        /**
+         * XML namespace uri.
+         */
+        public static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
+        /**
+         * OWL namespace uri.
+         */
+        public static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
+        /**
+         * DCTYPE namespace prefix.
+         */
+        public static final String DCTYPE_NS = "http://purl.org/dc/dcmitype/";
+        /**
+         * DCTERMS namespace uri.
+         */
+        public static final String DCTERMS_NS = "http://purl.org/dc/terms/";
+        /**
+         * DD namespace uri.
+         */
+        public static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
+        /**
+         * RDF namespace prefix.
+         */
+        public static final String RDF = "rdf";
+        /**
+         * RDFS namespace prefix.
+         */
+        public static final String RDFS = "rdfs";
+        /**
+         * SKOS namespace prefix.
+         */
+        public static final String SKOS = "skos";
+        /**
+         * OWL namespace prefix.
+         */
+        public static final String OWL = "owl";
+        /**
+         * DCTYPE namespace prefix.
+         */
+        public static final String DCTYPE = "dctype";
+        /**
+         * DCTERMS namespace prefix.
+         */
+        public static final String DCTERMS = "dcterms";
+        /**
+         * default namespaces that are present in all vocabulary RDFs.
+         */
+        public static final HashMap<String, String> DEFAULT_NAMESPACES = new HashMap<String, String>();
+        /**
+         * inits default namespaces container.
+         */
+        static {
+            DEFAULT_NAMESPACES.put(RDF, RDF_NS);
+            DEFAULT_NAMESPACES.put(RDFS, RDFS_NS);
+            DEFAULT_NAMESPACES.put(SKOS, SKOS_NS);
+            DEFAULT_NAMESPACES.put(OWL, OWL_NS);
+            DEFAULT_NAMESPACES.put(DCTYPE, DCTYPE_NS);
+            DEFAULT_NAMESPACES.put(DCTERMS, DCTERMS_NS);
+        }
+    } // end of inner class LinkedDataNamespaces
+
 } // end of class VocabularyOutputHelper

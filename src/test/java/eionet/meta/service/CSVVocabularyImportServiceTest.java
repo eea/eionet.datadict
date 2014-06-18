@@ -24,7 +24,7 @@ package eionet.meta.service;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.util.VocabularyOutputHelper;
+import eionet.meta.exports.VocabularyOutputHelper;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;

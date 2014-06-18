@@ -86,7 +86,8 @@ public interface IVocabularyConceptDAO {
     /**
      * Updates vocabulary concept.
      *
-     * @param vocabularyConcept concept to be updated
+     * @param vocabularyConcept
+     *            concept to be updated
      */
     void updateVocabularyConcept(VocabularyConcept vocabularyConcept);
 
@@ -225,9 +226,12 @@ public interface IVocabularyConceptDAO {
      *            data element identifier as a filter, if null all data elements
      * @param language
      *            identifier as a filter, if null all languages
+     * @param defaultLanguage
+     *            default language (applicable when language is not null)
      *
      * @return elements with valued bound elements
      */
-    List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String dataElementIdentifier, String language);
+    List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String dataElementIdentifier, String language,
+            String defaultLanguage);
 
 }

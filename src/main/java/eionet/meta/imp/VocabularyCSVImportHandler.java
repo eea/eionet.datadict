@@ -28,7 +28,7 @@ import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 import eionet.util.Pair;
-import eionet.util.VocabularyCSVOutputHelper;
+import eionet.meta.exports.csv.VocabularyCSVOutputHelper;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;

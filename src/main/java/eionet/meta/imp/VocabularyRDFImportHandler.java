@@ -21,20 +21,6 @@
 
 package eionet.meta.imp;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.exports.rdf.VocabularyXmlWriter;
-import eionet.meta.service.ServiceException;
-import eionet.util.Pair;
-import org.apache.commons.lang.StringUtils;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.rio.RDFHandler;
-import org.openrdf.rio.RDFHandlerException;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -45,6 +31,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.rio.RDFHandler;
+import org.openrdf.rio.RDFHandlerException;
+
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.exports.VocabularyOutputHelper;
+import eionet.meta.service.ServiceException;
+import eionet.util.Pair;
 
 /**
  * Implementation of OpenRDF's {@link RDFHandler} that will be used by implementations of
@@ -101,9 +102,10 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         SKOS_CONCEPT_ATTRIBUTES.add("prefLabel");
         SKOS_CONCEPT_ATTRIBUTES.add("definition");
         PREDICATE_IGNORANCE_RULES = new HashMap<String, Pair<Class, String>>();
-        PREDICATE_IGNORANCE_RULES.put(VocabularyXmlWriter.SKOS_NS + "inScheme", new Pair<Class, String>(Object.class, "(.)*"));
-        PREDICATE_IGNORANCE_RULES.put(VocabularyXmlWriter.RDF_NS + "type", new Pair<Class, String>(URI.class,
-                VocabularyXmlWriter.SKOS_NS + "Concept"));
+        PREDICATE_IGNORANCE_RULES.put(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS + "inScheme", new Pair<Class, String>(
+                Object.class, "(.)*"));
+        PREDICATE_IGNORANCE_RULES.put(VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS + "type", new Pair<Class, String>(
+                URI.class, VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS + "Concept"));
     }
 
     /* member fields */
@@ -197,13 +199,20 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
     /**
      * Constructor for RDFHandler to import rdf into vocabulary.
      *
-     * @param folderContextRoot                  base uri for vocabulary.
-     * @param concepts                           concepts of vocabulary
-     * @param bindedElements                     binded elements to vocabulary.
-     * @param bindedElementsIds                  binded elements ids.
-     * @param workingLanguage                    working language
-     * @param createNewDataElementsForPredicates create new data elements for seen predicates
-     * @throws ServiceException when digest algorithm cannot be found
+     * @param folderContextRoot
+     *            base uri for vocabulary.
+     * @param concepts
+     *            concepts of vocabulary
+     * @param bindedElements
+     *            binded elements to vocabulary.
+     * @param bindedElementsIds
+     *            binded elements ids.
+     * @param workingLanguage
+     *            working language
+     * @param createNewDataElementsForPredicates
+     *            create new data elements for seen predicates
+     * @throws ServiceException
+     *             when digest algorithm cannot be found
      */
     public VocabularyRDFImportHandler(String folderContextRoot, List<VocabularyConcept> concepts,
             Map<String, Integer> bindedElementsIds, Map<String, List<String>> bindedElements,
@@ -305,8 +314,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         String predicateNS = null;
 
         boolean candidateForConceptAttribute = false;
-        if (StringUtils.startsWith(predicateUri, VocabularyXmlWriter.SKOS_NS)) {
-            attributeIdentifier = predicateUri.replace(VocabularyXmlWriter.SKOS_NS, "");
+        if (StringUtils.startsWith(predicateUri, VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS)) {
+            attributeIdentifier = predicateUri.replace(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "");
             candidateForConceptAttribute = SKOS_CONCEPT_ATTRIBUTES.contains(attributeIdentifier);
             if (candidateForConceptAttribute) {
                 predicateNS = SKOS_CONCEPT_ATTRIBUTE_NS;
