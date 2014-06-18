@@ -47,8 +47,6 @@ public class DataServiceImpl implements IDataService {
     @Autowired
     private IVocabularyConceptDAO vocabularyConceptDao;
 
-
-
     /**
      * {@inheritDoc}
      */
@@ -189,7 +187,7 @@ public class DataServiceImpl implements IDataService {
     }
 
     @Override
-    public void setDataElementAttributes(DataElement dataElement)  throws ServiceException {
+    public void setDataElementAttributes(DataElement dataElement) throws ServiceException {
         Map<String, List<String>> attributeValues = dataElementDao.getDataElementAttributeValues(dataElement.getId());
 
         dataElement.setElemAttributeValues(attributeValues);
@@ -202,7 +200,7 @@ public class DataServiceImpl implements IDataService {
         List<DataElement> datasetElements = dataElementDao.getDataSetElements(datasetId);
         List<DataElement> unreleasedElems = new ArrayList<DataElement>();
         for (DataElement elem : datasetElements) {
-            if (!elem.getStatus().equalsIgnoreCase("Released") && elem.isCommonElement() &&!elem.isWorkingCopy()) {
+            if (!elem.getStatus().equalsIgnoreCase("Released") && elem.isCommonElement() && !elem.isWorkingCopy()) {
                 unreleasedElems.add(elem);
             }
         }
@@ -227,12 +225,11 @@ public class DataServiceImpl implements IDataService {
             for (VocabularyConcept concept : concepts) {
                 boolean conceptDateValid = true;
                 if (!elem.getAllConceptsValid()) {
-                    //TODO - extra util method and unit tests
+                    // TODO - extra util method and unit tests
                     Date conceptDate = concept.getCreated();
                     Date conceptObsolete = concept.getObsolete();
                     Date elemCreated = new Date(Long.valueOf(elem.getDate()));
-                    if (!(conceptDate.before(elemCreated) &&
-                            (conceptObsolete == null || conceptObsolete.after(elemCreated)))) {
+                    if (!(conceptDate.before(elemCreated) && (conceptObsolete == null || conceptObsolete.after(elemCreated)))) {
                         conceptDateValid = false;
                     }
 
@@ -245,5 +242,14 @@ public class DataServiceImpl implements IDataService {
 
         }
         return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see eionet.meta.service.IDataService#switchDataElemType(int, java.lang.String)
+     */
+    @Override
+    public void switchDataElemType(int elemId, String newType) throws ServiceException {
     }
 }

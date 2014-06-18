@@ -520,25 +520,7 @@ public class DataElementHandler extends BaseHandler {
                 throw new UnsupportedOperationException();
             }
 
-            SQLGenerator gen = new SQLGenerator();
-            gen.setTable("DATAELEM");
-            gen.setField("TYPE", newType);
-            conn.createStatement().executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + delem_id);
-
-            if (newType.equals("CH1") && !ch1ProhibitedAttrs.isEmpty()) {
-
-                StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where PARENT_TYPE='E' and DATAELEM_ID=");
-                buf.append(delem_id).append(" and M_ATTRIBUTE_ID in (");
-                int i = 0;
-                for (Iterator iter = ch1ProhibitedAttrs.iterator(); iter.hasNext(); i++) {
-                    if (i > 0) {
-                        buf.append(",");
-                    }
-                    buf.append(iter.next());
-                }
-                buf.append(")");
-                conn.createStatement().executeUpdate(buf.toString());
-            }
+            switchType(newType);
 
             return;
         }
@@ -580,6 +562,29 @@ public class DataElementHandler extends BaseHandler {
 
         // handle datatype conversion
         handleDatatypeConversion(req.getParameter("datatype_conversion"));
+    }
+
+    private void switchType(String newType) throws SQLException {
+
+        SQLGenerator gen = new SQLGenerator();
+        gen.setTable("DATAELEM");
+        gen.setField("TYPE", newType);
+        conn.createStatement().executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + delem_id);
+
+        if (newType.equals("CH1") && !ch1ProhibitedAttrs.isEmpty()) {
+
+            StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where PARENT_TYPE='E' and DATAELEM_ID=");
+            buf.append(delem_id).append(" and M_ATTRIBUTE_ID in (");
+            int i = 0;
+            for (Iterator iter = ch1ProhibitedAttrs.iterator(); iter.hasNext(); i++) {
+                if (i > 0) {
+                    buf.append(",");
+                }
+                buf.append(iter.next());
+            }
+            buf.append(")");
+            conn.createStatement().executeUpdate(buf.toString());
+        }
     }
 
     /**

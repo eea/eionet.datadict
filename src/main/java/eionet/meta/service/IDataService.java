@@ -153,10 +153,19 @@ public interface IDataService {
     List<DataElement> getVocabularySourceElements(List<Integer> vocabularyIds);
 
     /**
-     * ist of ficxed values for element type = CH3 from vocalbulary
+     * List of fixed values for element type = CH3 from vocabulary.
+     *
      * @param elementId element ID
-     * releasing date
      * @return list of VocabularyConcepts
      */
     List<VocabularyConcept> getElementVocabularyConcepts(int elementId);
+
+    /**
+     * Switch the given data element's type to the given new type.
+     *
+     * @param elemId Given data element id.
+     * @param newType The new type's classifier.
+     * @throws ServiceException In case an error happens.
+     */
+    void switchDataElemType(int elemId, String newType) throws ServiceException;
 }
