@@ -110,18 +110,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Autowired
     private IRdfNamespaceDAO rdfNamespaceDAO;
 
-    /** special elements . */
-    private static EnumMap<RelationalElement, String> relationalElements;
-
-    static {
-        if (relationalElements == null) {
-            relationalElements = new EnumMap<RelationalElement, String>(RelationalElement.class);
-            relationalElements.put(RelationalElement.BROADER_CONCEPT, "skos:broader");
-            relationalElements.put(RelationalElement.NARROWER_CONCEPT, "skos:narrower");
-            relationalElements.put(RelationalElement.RELATED_CONCEPT, "skos:related");
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -387,44 +375,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 }
             }
 
-            // delete all existing relations:
-            /*
-            dataElementDAO.deleteRelatedElements(vocabularyConcept.getId());
-            for (DataElement elem : dataElementValues) {
-                if (elem.isRelationalElement()) {
-                    int relatedConceptId = elem.getRelatedConceptId();
-                    VocabularyConcept relatedConcept = vocabularyConceptDAO.getVocabularyConcept(relatedConceptId);
-                    List<DataElement> relatedElementValues = new ArrayList<DataElement>();
-                    DataElement relationalElement = null;
-
-                    try {
-                        if (elem.getIdentifier().equals(getRelationalElementPrefix(RelationalElement.RELATED_CONCEPT))) {
-                            relationalElement =
-                                    dataElementDAO.getDataElement(getRelationalElementPrefix(RelationalElement.RELATED_CONCEPT));
-                        } else if (elem.getIdentifier().equals(getRelationalElementPrefix(RelationalElement.BROADER_CONCEPT))) {
-                            relationalElement =
-                                    dataElementDAO.getDataElement(getRelationalElementPrefix(RelationalElement.NARROWER_CONCEPT));
-
-                        } else if (elem.getIdentifier().equals(getRelationalElementPrefix(RelationalElement.NARROWER_CONCEPT))) {
-                            relationalElement =
-                                    dataElementDAO.getDataElement(getRelationalElementPrefix(RelationalElement.BROADER_CONCEPT));
-                        }
-                    } catch (Exception e) {
-                        LOGGER.warn("Relational skos element not defined " + e);
-                    }
-
-                    if (relationalElement != null) {
-                        relationalElement.setAttributeLanguage(elem.getAttributeLanguage());
-                        relationalElement.setAttributeValue(elem.getAttributeValue());
-                        relationalElement.setRelatedConceptId(vocabularyConcept.getId());
-                        relatedElementValues.add(relationalElement);
-                        dataElementDAO.insertVocabularyConceptDataElementValues(relatedConcept.getId(), relatedElementValues);
-                    }
-
-                }
-
-            }
-             */
         } catch (Exception e) {
             LOGGER.warn("Handling related element bindings failed " + e);
         }
@@ -1116,9 +1066,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      *
      * @return collection of skos>relation prefixes
      */
-    public static Collection<String> getRelationalPrefixes() {
-        return relationalElements.values();
-    }
+//    public static Collection<String> getRelationalPrefixes() {
+//        return relationalElements.values();
+//    }
 
     /**
      * Checks if given element has some special behaviour.
@@ -1127,10 +1077,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
      *            special element
      * @return String prefix in RDF
      */
-    @Override
-    public String getRelationalElementPrefix(RelationalElement specialElement) {
-        return relationalElements.get(specialElement);
-    }
+//    @Override
+//    public String getRelationalElementPrefix(RelationalElement specialElement) {
+//        return relationalElements.get(specialElement);
+//    }
 
     @Override
     public boolean isReferenceElement(int elementId) {

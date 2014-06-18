@@ -609,15 +609,6 @@ public interface IVocabularyService {
     }
 
     /**
-     * Checks if given element has some special behaviour.
-     *
-     * @param relationalElement
-     *            special relational element
-     * @return String prefix in RDF
-     */
-    String getRelationalElementPrefix(RelationalElement relationalElement);
-
-    /**
      * Checks if the given element represents relation to an external resource.
      *
      * @param id
