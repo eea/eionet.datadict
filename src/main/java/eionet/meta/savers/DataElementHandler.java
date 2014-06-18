@@ -20,6 +20,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import com.tee.uit.security.AccessController;
@@ -520,8 +521,7 @@ public class DataElementHandler extends BaseHandler {
                 throw new UnsupportedOperationException();
             }
 
-            switchType(newType);
-
+            getDataService().switchDataElemType(NumberUtils.toInt(delem_id, -1), newType);
             return;
         }
 
@@ -532,7 +532,7 @@ public class DataElementHandler extends BaseHandler {
             gen.setField("SHORT_NAME", elmShortName);
         }
 
-        // if common element, set regisration status
+        // if common element, set registration status
         if (elmCommon) {
             String elmRegStatus = req.getParameter("reg_status");
             if (!Util.isEmpty(elmRegStatus)) {

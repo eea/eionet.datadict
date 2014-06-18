@@ -40,16 +40,17 @@ public class IrrelevantAttributes extends Hashtable<String, Set<String>> {
             if (propName.trim().startsWith(PropsIF.IRRELEVANT_ATTRS_PREFIX)) {
                 int i = propName.indexOf(PropsIF.IRRELEVANT_ATTRS_PREFIX) + PropsIF.IRRELEVANT_ATTRS_PREFIX.length();
                 if (i < propName.length()) {
-                    String dataType = propName.substring(i).trim().toLowerCase();
+                    String dataType = propName.substring(i).trim();
                     if (dataType.length() > 0) {
                         String skipAttrs = Props.getProperty(propName);
                         if (skipAttrs != null && skipAttrs.length() > 0) {
                             StringTokenizer st = new StringTokenizer(skipAttrs, ",");
                             while (st.hasMoreTokens()) {
-                                String attrName = st.nextToken().trim().toLowerCase();
+                                String attrName = st.nextToken().trim();
                                 if (attrName.length() > 0) {
                                     addMapping(dataType, attrName);
-                                };
+                                }
+                                ;
                             }
                         }
                     }
@@ -95,7 +96,7 @@ public class IrrelevantAttributes extends Hashtable<String, Set<String>> {
      */
     public boolean isIrrelevant(String type, String attrName) {
 
-        Set<String> set = this.get(type.toLowerCase());
-        return set != null && set.contains(attrName.toLowerCase());
+        Set<String> set = this.get(type);
+        return set != null && set.contains(attrName);
     }
 }
