@@ -71,7 +71,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     /**
      * {@inheritDoc}
      */
-    @Override
     protected Reader getReaderFromResource(String resourceLoc) throws Exception {
         InputStream is = getClass().getClassLoader().getResourceAsStream(resourceLoc);
         InputStreamReader reader = new InputStreamReader(is);
@@ -746,7 +745,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // manually compare updated objects values
         // Concept 1
         VocabularyConcept concept = findVocabularyConceptByIdentifier(updatedConcepts, "rdf_test_concept_1");
-        Assert.assertEquals("Label does not match for concept.", "bg_rdf_test_concept_1", concept.getLabel());
+        Assert.assertEquals("Label does not match for concept.", "en_rdf_test_concept_1", concept.getLabel());
         Assert.assertEquals("skos:prefLabel should have 3 elements for concept.", 3, VocabularyImportBaseHandler
                 .getDataElementValuesByName("skos:prefLabel", concept.getElementAttributes()).size());
 
@@ -762,7 +761,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // Concept 3
         concept = findVocabularyConceptByIdentifier(updatedConcepts, "rdf_test_concept_3");
         Assert.assertEquals("Label does not match for concept.", "bg_rdf_test_concept_3", concept.getLabel());
-        Assert.assertEquals("Definition does not match for concept.", "de_rdf_test_concept_3", concept.getDefinition());
+        Assert.assertEquals("Definition does not match for concept.", "en_rdf_test_concept_3", concept.getDefinition());
         Assert.assertEquals("skos:prefLabel should have 2 elements for concept.", 2, VocabularyImportBaseHandler
                 .getDataElementValuesByName("skos:prefLabel", concept.getElementAttributes()).size());
         Assert.assertEquals("skos:definition should have 2 elements for concept.", 2, VocabularyImportBaseHandler
