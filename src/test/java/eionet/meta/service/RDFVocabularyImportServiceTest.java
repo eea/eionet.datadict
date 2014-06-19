@@ -71,6 +71,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     /**
      * {@inheritDoc}
      */
+    @Override
     protected Reader getReaderFromResource(String resourceLoc) throws Exception {
         InputStream is = getClass().getClassLoader().getResourceAsStream(resourceLoc);
         InputStreamReader reader = new InputStreamReader(is);
