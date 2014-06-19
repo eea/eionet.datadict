@@ -158,7 +158,7 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         try {
             parser.parse(contents, folderCtxRoot);
             this.logMessages.addAll(rdfHandler.getLogMessages());
-            this.logMessages.add("Number of errors received: " + errorLogMessages.size());
+            this.logMessages.add("Number of (uploaded) RDF File errors received from RDF Parser: " + errorLogMessages.size());
             importIntoDb(vocabularyFolder.getId(), rdfHandler.getToBeUpdatedConcepts(), new ArrayList<DataElement>(),
                     rdfHandler.getElementsRelatedToNotCreatedConcepts());
         } catch (Exception e) {
