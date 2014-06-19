@@ -222,6 +222,10 @@ public interface IVocabularyConceptDAO {
      *
      * @param vocabularyId
      *            vocabulary ID
+     * @param conceptIdentifier
+     *            concept identifier
+     * @param label
+     *            concept label
      * @param dataElementIdentifier
      *            data element identifier as a filter, if null all data elements
      * @param language
@@ -231,7 +235,7 @@ public interface IVocabularyConceptDAO {
      *
      * @return elements with valued bound elements
      */
-    List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String dataElementIdentifier, String language,
-            String defaultLanguage);
+    List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
+            String dataElementIdentifier, String language, String defaultLanguage);
 
 }

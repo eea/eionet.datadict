@@ -537,8 +537,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     }
 
     @Override
-    public List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String dataElementIdentifier,
-            String language, String defaultLanguage) {
+    public List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
+            String dataElementIdentifier, String language, String defaultLanguage) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyId", vocabularyId);
 
@@ -557,10 +557,25 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("left join (ATTRIBUTE a, M_ATTRIBUTE ma)  on (a.DATAELEM_ID = d.DATAELEM_ID ");
         sql.append("and PARENT_TYPE = 'E' and a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME='Datatype') ");
         sql.append("where c.VOCABULARY_ID = :vocabularyId AND c.OBSOLETE_DATE IS NULL ");
+        if (StringUtils.isNotBlank(conceptIdentifier)) {
+            sql.append(" AND LOWER(c.IDENTIFIER) LIKE LOWER(:conceptIdentifier)");
+            params.put("conceptIdentifier", conceptIdentifier + "%");
+        }
+        if (StringUtils.isNotBlank(label)) {
+            sql.append(" AND (LOWER(c.LABEL) LIKE LOWER(:label) OR ");
+            sql.append(" (d.IDENTIFIER LIKE :skosPrefLabel AND LOWER(ELEMENT_VALUE) LIKE LOWER(:label))) ");
+            params.put("label", label + "%");
+            params.put("skosPrefLabel", "skos:prefLabel");
+        }
         if (StringUtils.isNotBlank(dataElementIdentifier)) {
-            sql.append(" AND d.IDENTIFIER like :dataElementIdentifier ");
+            sql.append(" AND (d.IDENTIFIER LIKE :dataElementIdentifier ");
+            if (StringUtils.isNotBlank(label)) {
+                sql.append("OR d.IDENTIFIER LIKE :skosPrefLabel");
+            }
+            sql.append(" ) ");
             params.put("dataElementIdentifier", StringUtils.trimToEmpty(dataElementIdentifier));
         }
+
         if (StringUtils.isNotBlank(language)) {
             sql.append(" AND v.LANGUAGE in (:language, :defaultLanguage) ");
             params.put("language", StringUtils.trimToEmpty(language));

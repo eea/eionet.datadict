@@ -139,7 +139,7 @@
                         <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="json" title="Export JSON">
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                            <stripes:param name="jsonLanguage" value="en" />
+                            <stripes:param name="lang" value="en" />
                             <img src="${jsonIconUrl}" alt="" />
                         </stripes:link>
                     </td>

@@ -126,6 +126,9 @@ public final class VocabularyJSONOutputHelper {
 
     /**
      * Writes JSON to output stream.
+     * <p>
+     * NOTE: For readability purposes, nested blocks are used in this method while generating json contents.
+     * </p>
      *
      * @param out
      *            output stream
@@ -140,7 +143,6 @@ public final class VocabularyJSONOutputHelper {
      */
     public static void writeJSON(OutputStream out, VocabularyFolder vocabulary, List<VocabularyConcept> concepts, String language)
             throws IOException {
-
         OutputStreamWriter osw = new OutputStreamWriter(out, "UTF-8");
 
         JsonFactory f = new JsonFactory();
@@ -153,9 +155,6 @@ public final class VocabularyJSONOutputHelper {
         List<String> relationalDataElemIdentifiers = new ArrayList<String>();
         relationalDataElemIdentifiers.add(BROADER);
         relationalDataElemIdentifiers.add(NARROWER);
-
-        // TODO for performance tuning check bounded elements and languages, so no need to query every time!!
-        // TODO or maybe a special query on database level for languages
 
         // start json object
         generator.writeStartObject();

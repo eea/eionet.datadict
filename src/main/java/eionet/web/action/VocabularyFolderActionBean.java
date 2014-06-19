@@ -151,7 +151,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Extension for RDF files.
      */
     private static final String RDF_FILE_EXTENSION = ".rdf";
-    public static final String JSON_CONTENT_TYPE = "application/json";
+    /**
+     * JSON contept type.
+     */
+    public static final String JSON_DEFAULT_OUTPUT_FORMAT = "application/json";
+    /**
+     * JSON file extension.
+     */
     public static final String JSON_EXTENSION = ".json";
 
     /**
@@ -289,9 +295,28 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     private int rdfPurgeOption;
     /**
-     * Json language.
+     * Language for search.
      */
-    private String jsonLanguage;
+    private String lang;
+    /**
+     * Pref label for search.
+     */
+    private String label;
+    /**
+     * Identifier for search.
+     */
+    private String id;
+    /**
+     * Format for output type.
+     */
+    private String format;
+    /**
+     * JSON-LD supported output formats.
+     */
+    private static final List<String> SUPPORTED_JSON_FORMATS = new ArrayList<String>();
+    static {
+        SUPPORTED_JSON_FORMATS.add(JSON_DEFAULT_OUTPUT_FORMAT);
+    }
 
     /**
      * Navigates to view vocabulary folder page.
@@ -622,8 +647,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution undoCheckOut() throws ServiceException {
-        int id = vocabularyService.undoCheckOut(vocabularyFolder.getId(), getUserName());
-        vocabularyFolder = vocabularyService.getVocabularyFolder(id);
+        int originalId = vocabularyService.undoCheckOut(vocabularyFolder.getId(), getUserName());
+        vocabularyFolder = vocabularyService.getVocabularyFolder(originalId);
         addSystemMessage("Checked out version successfully deleted");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
@@ -1309,16 +1334,26 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 throw new RuntimeException("Vocabulary is not in released or public draft status.");
             }
 
-            jsonLanguage = StringUtils.trimToNull(jsonLanguage);
-            final List<VocabularyConcept> concepts =
-                    vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), null, jsonLanguage,
-                            VocabularyJSONOutputHelper.DEFAULT_LANGUAGE);
-            // vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), "skos:prefLabel", jsonLanguage);
+            if (StringUtils.isBlank(format)) {
+                format = JSON_DEFAULT_OUTPUT_FORMAT;
+            }
 
-            StreamingResolution result = new StreamingResolution(JSON_CONTENT_TYPE) {
+            if (!SUPPORTED_JSON_FORMATS.contains(format)) {
+                throw new RuntimeException("Unsupported JSON output format");
+            }
+
+            lang = StringUtils.trimToNull(lang);
+            id = StringUtils.trimToNull(id);
+            label = StringUtils.trimToNull(label);
+            final List<VocabularyConcept> concepts =
+                    vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), id, label, null, lang,
+                            VocabularyJSONOutputHelper.DEFAULT_LANGUAGE);
+            // vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), "skos:prefLabel", lang);
+
+            StreamingResolution result = new StreamingResolution(format) {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
-                    VocabularyJSONOutputHelper.writeJSON(response.getOutputStream(), vocabularyFolder, concepts, jsonLanguage);
+                    VocabularyJSONOutputHelper.writeJSON(response.getOutputStream(), vocabularyFolder, concepts, lang);
                 }
             };
             result.setFilename(vocabularyFolder.getIdentifier() + JSON_EXTENSION);
@@ -1691,7 +1726,19 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         return rdfPurgeOption;
     }
 
-    public void setJsonLanguage(String jsonLanguage) {
-        this.jsonLanguage = jsonLanguage;
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
     }
 }
