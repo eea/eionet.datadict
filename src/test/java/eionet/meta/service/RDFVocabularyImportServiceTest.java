@@ -71,6 +71,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     /**
      * {@inheritDoc}
      */
+    @Override
     protected Reader getReaderFromResource(String resourceLoc) throws Exception {
         InputStream is = getClass().getClassLoader().getResourceAsStream(resourceLoc);
         InputStreamReader reader = new InputStreamReader(is);
@@ -794,9 +795,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
             }
             if (l.startsWith("Number of updated concepts:")) {
                 Assert.assertEquals("Number of updated concepts: 0", l);
-            }
-            if (l.startsWith("Number of errors received:")) {
-                Assert.assertEquals("Number of errors received: 0", l);
             }
         }
     }

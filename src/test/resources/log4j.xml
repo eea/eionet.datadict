@@ -34,6 +34,10 @@
         <level value="warn" />
     </logger>
 
+    <logger name="net.sourceforge.stripes.controller.StripesFilter">
+        <level value="fatal" />
+    </logger>
+
     <root>
         <priority value="info" />
         <appender-ref ref="console" />
