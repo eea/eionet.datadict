@@ -24,6 +24,7 @@ package eionet.meta.dao.mysql;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.IDataElementDAO;
+
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
@@ -84,7 +85,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * finds Common elements.
      *
-     * @param filter search filter
+     * @param filter
+     *            search filter
      * @return list of data elements
      */
     private List<DataElement> executeCommonElementQuery(final DataElementsFilter filter) {
@@ -156,7 +158,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                //int elmID = rs.getInt("de.DATAELEM_ID");
+                // int elmID = rs.getInt("de.DATAELEM_ID");
                 String elmIdf = rs.getString("de.IDENTIFIER");
                 // skip non-existing elements, ie trash from some erroneous situation
                 if (elmIdf == null) {
@@ -192,7 +194,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * finds non-Common elements.
      *
-     * @param filter search filter
+     * @param filter
+     *            search filter
      * @return list of data elements
      */
     private List<DataElement> executeNonCommonElementQuery(final DataElementsFilter filter) {
@@ -277,7 +280,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                     return;
                 }
 
-                //int elmID = rs.getInt("de.DATAELEM_ID");
+                // int elmID = rs.getInt("de.DATAELEM_ID");
                 String elmIdf = rs.getString("de.IDENTIFIER");
                 // skip non-existing elements, ie trash from some erroneous situation
                 if (elmIdf == null) {
@@ -537,17 +540,25 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void deleteVocabularyConceptDataElementValues(int vocabularyConceptId) {
         String sql = "delete from VOCABULARY_CONCEPT_ELEMENT where VOCABULARY_CONCEPT_ID = :vocabularyConceptId";
-        //TODO_20044
+        // TODO_20044
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyConceptId", vocabularyConceptId);
 
         getNamedParameterJdbcTemplate().update(sql, params);
+        LOGGER.debug(" ---------------------------------------------------------------- ");
+        LOGGER.debug(sql + "vocabularyConceptId = " + vocabularyConceptId);
+        LOGGER.debug(" ---------------------------------------------------------------- ");
 
-        //delete the ones where this concept is marked as target
-        sql = "delete from VOCABULARY_CONCEPT_ELEMENT where RELATED_CONCEPT_ID = :relatedConceptId";
-        params.clear();
-        params.put("relatedConceptId", vocabularyConceptId);
-        getNamedParameterJdbcTemplate().update(sql, params);
+        // FIXME
+        // delete the ones where this concept is marked as target
+        // sql = "delete from VOCABULARY_CONCEPT_ELEMENT where RELATED_CONCEPT_ID = :relatedConceptId";
+        // params.clear();
+        // params.put("relatedConceptId", vocabularyConceptId);
+        // getNamedParameterJdbcTemplate().update(sql, params);
+
+        // LOGGER.debug(" ---------------------------------------------------------------- ");
+        // LOGGER.debug(sql + "relatedConceptId = " + vocabularyConceptId);
+        // LOGGER.debug(" ---------------------------------------------------------------- ");
     }
 
     /**
@@ -645,6 +656,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setRelatedConceptVocSet(rs.getString("rcvs.IDENTIFIER"));
                 de.setVocabularyId(rs.getInt("d.VOCABULARY_ID"));
 
+                de.setRelatedConceptOriginalId(rs.getInt("rc.ORIGINAL_CONCEPT_ID"));
+                de.setRelatedVocabularyStatus(rs.getString("rcv.REG_STATUS"));
+                de.setRelatedVocabularyWorkingCopy(rs.getInt("rcv.WORKING_COPY") == 1);
+
                 List<FixedValue> fxvs = getFixedValues(de.getId());
 
                 de.setFixedValues(fxvs);
@@ -681,9 +696,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[dataElementValues.size()];
 
-        //List<Map<String, Object>> inverseRelations = new ArrayList<Map<String,Object>>();
-
-
+        // List<Map<String, Object>> inverseRelations = new ArrayList<Map<String,Object>>();
 
         for (int i = 0; i < batchValues.length; i++) {
             Map<String, Object> params = new HashMap<String, Object>();
@@ -694,29 +707,29 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             Integer relatedConceptID = dataElementValues.get(i).getRelatedConceptId();
             params.put("relatedConceptId", relatedConceptID);
             batchValues[i] = params;
-//SimpleJdbcCall jdbcCall = new SimpleJdbcCall(getJdbcTemplate().b
-            //TODO_20044
+            // SimpleJdbcCall jdbcCall = new SimpleJdbcCall(getJdbcTemplate().b
+            // TODO_20044
 
-//            if (relatedConceptID != null && relatedConceptID != 0) {
-////                Map<String, Object> inverseRelationsParams = new HashMap<String, Object>();
-////                inverseRelationsParams.put("dataElementId", dataElementValues.get(i).getId());
-////                inverseRelationsParams.put("conceptId", vocabularyConceptId);
-////                inverseRelationsParams.put("oldTargetConceptId", null);
-////                inverseRelationsParams.put("newTargetConceptId", relatedConceptID);
-////                inverseRelations.add(inverseRelationsParams);
-//                //TODO - batch?
-//                getJdbcTemplate().update("call CreateOrUpdateReverseLink(?, ?, ?, ?)", dataElementValues.get(i).getId(),
-//                        vocabularyConceptId, null, relatedConceptID);
-//                LOGGER.debug("CreateOrUpdateReverseLink(" + dataElementValues.get(i).getId()  + ","
-//                        + vocabularyConceptId + ", null, " + relatedConceptID + ")");
-//            }
+            // if (relatedConceptID != null && relatedConceptID != 0) {
+            // // Map<String, Object> inverseRelationsParams = new HashMap<String, Object>();
+            // // inverseRelationsParams.put("dataElementId", dataElementValues.get(i).getId());
+            // // inverseRelationsParams.put("conceptId", vocabularyConceptId);
+            // // inverseRelationsParams.put("oldTargetConceptId", null);
+            // // inverseRelationsParams.put("newTargetConceptId", relatedConceptID);
+            // // inverseRelations.add(inverseRelationsParams);
+            // //TODO - batch?
+            // getJdbcTemplate().update("call CreateOrUpdateReverseLink(?, ?, ?, ?)", dataElementValues.get(i).getId(),
+            // vocabularyConceptId, null, relatedConceptID);
+            // LOGGER.debug("CreateOrUpdateReverseLink(" + dataElementValues.get(i).getId() + ","
+            // + vocabularyConceptId + ", null, " + relatedConceptID + ")");
+            // }
         }
 
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
 
-//        if (!inverseRelations.isEmpty()) {
-//
-//        }
+        // if (!inverseRelations.isEmpty()) {
+        //
+        // }
     }
 
     /**
@@ -766,8 +779,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * After copying localref type element IDs have to be changed.
      *
-     * @param oldVocabularyId old vocabulary ID
-     * @param newVocabularyId new vocabulary ID
+     * @param oldVocabularyId
+     *            old vocabulary ID
+     * @param newVocabularyId
+     *            new vocabulary ID
      */
     private void updateCopiedRelatedConceptIds(int oldVocabularyId, int newVocabularyId) {
         StringBuilder sql = new StringBuilder();
@@ -811,7 +826,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * updates localref IDs to the new concept ones.
      *
-     * @param newVocabularyId new vocabulary ID
+     * @param newVocabularyId
+     *            new vocabulary ID
      */
     private void updateCheckedoutRelatedConceptIds(int newVocabularyId) {
         StringBuilder sql = new StringBuilder();
@@ -837,7 +853,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("relatedConceptId", vocabularyConceptId);
-      //TODO_20044
+        // TODO_20044
         getNamedParameterJdbcTemplate().update(sql, params);
     }
 
@@ -970,8 +986,43 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     }
 
     @Override
-    public void updateRelationalElements(int dataElementId, int conceptId, Integer oldRelationalConceptId, Integer newRelationalConceptId) {
-        getJdbcTemplate().update("call CreateorupdateReverseLink(?, ?, ?, ?)", dataElementId, conceptId,
-                oldRelationalConceptId, newRelationalConceptId);
+    public void updateRelationalElements(int dataElementId, int conceptId, Integer oldRelationalConceptId,
+            Integer newRelationalConceptId) {
+
+        LOGGER.debug(" ---------------------------------------------------------------- ");
+        LOGGER.debug(oldRelationalConceptId == null ? "== INSERT ==" : "== DELETE ==");
+        LOGGER.debug(" ---------------------------------------------------------------- ");
+        LOGGER.debug(" CreateOrupdateReverseLink(" + dataElementId + ", " + conceptId + ", " + oldRelationalConceptId + ", "
+                + newRelationalConceptId + "?");
+        LOGGER.debug(" ---------------------------------------------------------------- ");
+        getJdbcTemplate().update("call CreateOrupdateReverseLink(?, ?, ?, ?)", dataElementId, conceptId, oldRelationalConceptId,
+                newRelationalConceptId);
+    }
+
+    @Override
+    public void deleteReferringLocalRefElems(int conceptId) {
+        String sql = "delete vce.* FROM datadict.vocabulary_concept_element vce, VOCABULARY_CONCEPT vsource, VOCABULARY_CONCEPT "
+                + "vtarget where vce.RELATED_CONCEPT_ID = :conceptId "
+                + " AND vce.VOCABULARY_CONCEPT_ID = vsource.VOCABULARY_CONCEPT_ID  "
+                + " AND vtarget.VOCABULARY_CONCEPT_ID = vce.RELATED_CONCEPT_ID  AND vsource.VOCABULARY_ID = vtarget.VOCABULARY_ID";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        //params.put("vocabularyId", vocabularyId);
+        params.put("conceptId", conceptId);
+        //params.put("dataElementId", dataElemId);
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+
+    @Override
+    public Integer getInverseElementID(int dataElementId) {
+        String sql = "select GetInverseElemId(:elemId)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("elemId", dataElementId);
+
+        Integer result = getNamedParameterJdbcTemplate().queryForInt(sql, params);
+
+        return result;
     }
 }

@@ -125,7 +125,7 @@ public interface IDataElementDAO {
     /**
      * Deletes all vocabulary concept's data element values.
      *
-     * @param vocabularyConceptId
+     * @param vocabularyConceptId concept ID
      */
     void deleteVocabularyConceptDataElementValues(int vocabularyConceptId);
 
@@ -249,4 +249,18 @@ public interface IDataElementDAO {
     void updateRelationalElements(int dataElementId, int conceptId, Integer oldRelationalConceptId,
             Integer newRelationalConceptId);
 
+    /**
+     * Delete element values in this vocabulary where this concept is referred as related element.
+     * @param conceptId concept id
+     * @param dataElemId data element id
+     */
+    void deleteReferringLocalRefElems(int conceptId);
+
+    /**
+     * Returns inverse element ID if exists.
+     *
+     * @param dataElementId element id
+     * @return data element id or null if no inverse element
+     */
+    Integer getInverseElementID(int dataElementId);
 }

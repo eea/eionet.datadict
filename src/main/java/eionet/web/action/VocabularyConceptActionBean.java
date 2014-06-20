@@ -749,6 +749,12 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         referenceElement.setRelatedConceptVocabulary(relatedFolder.getIdentifier());
         referenceElement.setRelatedConceptVocSet(relatedVocSet.getIdentifier());
         referenceElement.setRelatedConceptLabel(relatedConcept.getLabel());
+
+        //referenceElement.setRelatedVocabularyStatus(relatedFolder.getRegStatus().getLabel());
+        //referenceElement.setRelatedVocabularyWorkingCopy(relatedFolder.isWorkingCopy());
+
+
+
     }
 
     public VocabularyFolder getRelatedVocabulary() {

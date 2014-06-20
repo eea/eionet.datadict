@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Vocabulary folder.
+ * Vocabulary DAO class.
  *
  * @author Juhan Voolaid
  */

@@ -125,12 +125,22 @@
                 <c:choose>
                     <c:when test="${attr.relationalElement}">
                         <stripes:hidden name="${fieldName}[${innerLoop.index}].relatedConceptId" value="${attr.relatedConceptId}" />
-
-                        <a href="${actionBean.conceptViewPrefix}${attr.relatedConceptRelativePath}/view"><c:out value="${attr.relatedConceptIdentifier}" />
-                            <c:if test="${not empty attr.relatedConceptLabel}">
-                                (<c:out value="${attr.relatedConceptLabel}" />)
-                            </c:if>
-                        </a>
+						<c:choose>
+							<c:when test="${not attr.relatedConceptVisibleByUri}">
+								<!--  if relational element created automatically do not show it for working copies -->
+									<c:out value="${attr.relatedConceptIdentifier}" />
+									<c:if test="${not empty attr.relatedConceptLabel}">
+		                                (<c:out value="${attr.relatedConceptLabel}" />)
+		                            </c:if>
+	                        </c:when>
+		                    <c:otherwise>
+			                	<a href="${actionBean.conceptViewPrefix}${attr.relatedConceptRelativePath}/view"><c:out value="${attr.relatedConceptIdentifier}" />
+			                    	<c:if test="${not empty attr.relatedConceptLabel}">
+			                        	(<c:out value="${attr.relatedConceptLabel}" />)
+									</c:if>
+								</a>
+							</c:otherwise>
+                        </c:choose>
                     </c:when>
                     <c:otherwise>
                         <input name="${fieldName}[${innerLoop.index}].attributeValue" value="${attr.attributeValue}" class="${fieldClass}" size="${fieldSize}" type="text"/>

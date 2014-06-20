@@ -330,13 +330,15 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 }
             }
         }
+        //fix relations in inverse elems
+        //fixDeletedRelatedElems(vocabularyConcept);
 
         dataElementDAO.deleteVocabularyConceptDataElementValues(vocabularyConcept.getId());
         if (dataElementValues.size() > 0) {
             dataElementDAO.insertVocabularyConceptDataElementValues(vocabularyConcept.getId(), dataElementValues);
         }
 
-        fixRelatedElements(vocabularyConcept, dataElementValues);
+        fixRelatedLocalRefElements(vocabularyConcept, dataElementValues);
     }
 
     /**
@@ -356,7 +358,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     /**
-     * As a last step when updating vocabulary concept, this method checks all the bound elements that represent relations and
+     * As a last step when updating vocabulary concept, this method checks all the bound
+     * localref elements that represent relations and
      * makes sure that the concepts are related in both sides (A related with B -> B related with A). Also when relation gets
      * deleted from one side, then we make sure to deleted it also from the other side of the relation.
      *
@@ -365,22 +368,41 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * @param dataElementValues
      *            bound data elements with values
      */
-    private void fixRelatedElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues) {
+    private void fixRelatedLocalRefElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues) {
         try {
-
+            dataElementDAO.deleteReferringLocalRefElems(vocabularyConcept.getId());
             for (DataElement elem : dataElementValues) {
-                if (elem.isRelationalElement()) {
-                    dataElementDAO.updateRelationalElements(elem.getId(), vocabularyConcept.getId(),
-                            null, elem.getRelatedConceptId());
-                }
+                //if it is not "reference" elem it is localref
+                if (dataElementDAO.getDataElementDataType(elem.getId()).equals("localref")) {
+                    //Integer inverseElementId = dataElementDAO.getInverseElementID(elem.getId());
+                    //if (inverseElementId != null) {
+                        dataElementDAO.updateRelationalElements(elem.getId(), vocabularyConcept.getId(),
+                                null, elem.getRelatedConceptId());
+                    }
+                //}
             }
-
         } catch (Exception e) {
             LOGGER.warn("Handling related element bindings failed " + e);
         }
-
     }
 
+    private void fixDeletedRelatedElems(VocabularyConcept vocabularyConcept) {
+        //List<List<DataElement>> elems = vocabularyConcept.getElementAttributes();
+        //take the values stored in the database
+        List<List<DataElement>> elems = dataElementDAO.getVocabularyConceptDataElementValues(vocabularyConcept.getVocabularyId(),
+                vocabularyConcept.getId(), false);
+        for (List<DataElement> values : elems) {
+            if (values != null) {
+                for (DataElement value : values) {
+                    if (value != null
+                            && value.getRelatedConceptId() != null) {
+                            dataElementDAO.updateRelationalElements(value.getId(),
+                                    vocabularyConcept.getId(), value.getRelatedConceptId(), null);
+                        }
+                    }
+            }
+        }
+    }
     /**
      * {@inheritDoc}
      */
@@ -1060,27 +1082,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
             throw new ServiceException("Failed to get vocabulary namespaces " + daoe.getMessage(), daoe);
         }
     }
-
-    /**
-     * all relational prefixes.
-     *
-     * @return collection of skos>relation prefixes
-     */
-//    public static Collection<String> getRelationalPrefixes() {
-//        return relationalElements.values();
-//    }
-
-    /**
-     * Checks if given element has some special behaviour.
-     *
-     * @param specialElement
-     *            special element
-     * @return String prefix in RDF
-     */
-//    @Override
-//    public String getRelationalElementPrefix(RelationalElement specialElement) {
-//        return relationalElements.get(specialElement);
-//    }
 
     @Override
     public boolean isReferenceElement(int elementId) {
