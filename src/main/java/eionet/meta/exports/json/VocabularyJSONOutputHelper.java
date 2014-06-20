@@ -169,7 +169,7 @@ public final class VocabularyJSONOutputHelper {
             for (String dataElemShortIdentifier : relationalDataElemIdentifiers) {
                 generator.writeStringField(dataElemShortIdentifier, DATA_ELEM_MAP.get(dataElemShortIdentifier));
             }
-            generator.writeStringField(JSON_LD_LANGUAGE, language);
+            generator.writeStringField(JSON_LD_LANGUAGE, StringUtils.isNotBlank(language) ? language : DEFAULT_LANGUAGE);
         }
         generator.writeEndObject();
         // start writing concepts...
@@ -212,7 +212,7 @@ public final class VocabularyJSONOutputHelper {
                     } else {
                         generator.writeStartObject();
                         {
-                            generator.writeStringField(JSON_LD_VALUE, vocabulary.getLabel());
+                            generator.writeStringField(JSON_LD_VALUE, concept.getLabel());
                             generator.writeStringField(JSON_LD_LANGUAGE, DEFAULT_LANGUAGE);
                         }
                         generator.writeEndObject();

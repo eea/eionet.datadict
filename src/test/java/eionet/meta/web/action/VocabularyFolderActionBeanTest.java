@@ -28,10 +28,16 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.web.context.ContextLoaderListener;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+
 import eionet.DDDatabaseTestCase;
 import eionet.meta.ActionBeanUtils;
 import eionet.meta.DDUser;
 import eionet.meta.FakeUser;
+import eionet.meta.exports.VocabularyOutputHelper;
+import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
@@ -858,6 +864,161 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         springContextLoader.contextInitialized(new ServletContextEvent(ctx));
         return ctx;
     }// end of method getServletContextWithProperyBinder
+
+    /**
+     * test if JSON output format is correct. Main purpose of this step is to test output format of json.
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testJsonOutputFormat() throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        trip.addParameter("vocabularyFolder.folderName", "wise");
+        trip.addParameter("vocabularyFolder.identifier", "BWClosed");
+        trip.execute("json");
+
+        String output = trip.getOutputString();
+
+        String[] conceptIdentifiers = new String[] {"N", "YP", "YT"};
+        String[] conceptLabels = new String[] {"Not Closed", "Yes - permanently", "Yes - temporarily"};
+
+        JsonFactory jsonFactory = new JsonFactory();
+        JsonParser parser = jsonFactory.createParser(output);
+
+        Assert.assertEquals(JsonToken.START_OBJECT, parser.nextToken()); // first value is : JsonToken.START_OBJECT
+        {
+            parser.nextToken(); // context item start
+            String val = parser.getCurrentName();
+            Assert.assertEquals("Context key", VocabularyJSONOutputHelper.JSON_LD_CONTEXT, val);
+            Assert.assertEquals(JsonToken.START_OBJECT, parser.nextToken()); // JsonToken.START_OBJECT
+            {
+                // move to base
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Base", VocabularyJSONOutputHelper.JSON_LD_BASE, val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                String baseUri = Props.getRequiredProperty(PropsIF.DD_URL);
+                String expectedRelatedInternal = baseUri + "/vocabulary/wise/BWClosed/";
+                Assert.assertEquals("Base Uri", expectedRelatedInternal, val);
+                // move to skos namespace def
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Skos", VocabularyOutputHelper.LinkedDataNamespaces.SKOS, val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Skos Ns", VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, val);
+                // move to concept def
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Concepts", VocabularyJSONOutputHelper.JSON_LD_CONCEPTS, val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Skos Concept", VocabularyJSONOutputHelper.SKOS_CONCEPT, val);
+                // move to pref Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Pref Label", VocabularyJSONOutputHelper.PREF_LABEL, val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Skos Pref Label", VocabularyJSONOutputHelper.SKOS_PREF_LABEL, val);
+                // move to data element identifier, broader first
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Broader", VocabularyJSONOutputHelper.BROADER, val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Skos Broader", VocabularyJSONOutputHelper.SKOS_BROADER, val);
+                // move to data element identifier, narrower
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Narrower", VocabularyJSONOutputHelper.NARROWER, val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Skos Narrower", VocabularyJSONOutputHelper.SKOS_NARROWER, val);
+                // move to language
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Language", VocabularyJSONOutputHelper.JSON_LD_LANGUAGE, val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Language Value", VocabularyJSONOutputHelper.DEFAULT_LANGUAGE, val);
+            }
+            Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
+            // move to concepts array
+            parser.nextToken();
+            val = parser.getCurrentName();
+            Assert.assertEquals("Concepts array", VocabularyJSONOutputHelper.JSON_LD_CONCEPTS, val);
+            Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+            // iterate on concepts
+            for (int i = 0; i < 3; i++) {
+                Assert.assertEquals(JsonToken.START_OBJECT, parser.nextToken()); // JsonToken.START_OBJECT
+                // move to field id
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Id", VocabularyJSONOutputHelper.JSON_LD_ID, val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Id Value", conceptIdentifiers[i], val);
+                // move to field type
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Type", VocabularyJSONOutputHelper.JSON_LD_TYPE, val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Type Value", VocabularyJSONOutputHelper.SKOS_CONCEPT, val);
+                // pref labels array
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Pref Label", VocabularyJSONOutputHelper.PREF_LABEL, val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                {
+                    Assert.assertEquals(JsonToken.START_OBJECT, parser.nextToken()); // JsonToken.START_OBJECT
+                    // move to field value
+                    parser.nextToken();
+                    val = parser.getCurrentName();
+                    Assert.assertEquals("Value", VocabularyJSONOutputHelper.JSON_LD_VALUE, val);
+                    parser.nextToken(); // move to value
+                    val = parser.getText();
+                    Assert.assertEquals("Value Value", conceptLabels[i], val);
+                    // move to field language
+                    parser.nextToken();
+                    val = parser.getCurrentName();
+                    Assert.assertEquals("Language", VocabularyJSONOutputHelper.JSON_LD_LANGUAGE, val);
+                    parser.nextToken(); // move to value
+                    val = parser.getText();
+                    Assert.assertEquals("Language Value", VocabularyJSONOutputHelper.DEFAULT_LANGUAGE, val);
+                    Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+                Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
+            }
+            Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+        }
+        Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
+    } // end of test step testJsonOutputFormat
+
+    /**
+     * test when an unsupported json output format requested.
+     *
+     * @throws Exception
+     *             if test fails
+     */
+    @Test
+    public void testJsonUnsupportedFormat() throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderActionBean.class);
+        trip.addParameter("vocabularyFolder.folderName", "wise");
+        trip.addParameter("vocabularyFolder.identifier", "BWClosed");
+        trip.addParameter("format", "unsupportedformat");
+        trip.execute("json");
+        String outputString = trip.getOutputString();
+        Assert.assertTrue("Output string is not empty", StringUtils.isBlank(outputString));
+    }// end of test step testJsonUnsupportedFormat
+
+
 
     /**
      * Extension of {@link DefaultActionBeanPropertyBinder} in order to directly inject the proper file bean.
