@@ -3,14 +3,15 @@
  */
 package eionet.util;
 
-import eionet.meta.DDRuntimeException;
-import org.apache.commons.lang.math.NumberUtils;
-import org.apache.log4j.Logger;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.log4j.Logger;
+
+import eionet.meta.DDRuntimeException;
 
 /**
  * Utility class for retrieving the configured properties of this application.
@@ -136,13 +137,22 @@ public class Props implements PropsIF {
             try {
                 value = bundle.getString(name);
             } catch (MissingResourceException mre) {
-                // Ignore deliberately.
-                mre.printStackTrace();
+                // Missing property is not considered a problem.
+                // If a property is mandatory, use getRequiredProperty() that throws proper exception.
             }
         }
 
         if (value == null) {
             value = (String) defaults.get(name);
+        } else {
+            value = value.trim();
+
+            // If the value looks like a property placeholder, then use default.
+            if (value.startsWith("${") && value.endsWith("}")) {
+                if (defaults.containsKey(name)) {
+                    value = (String) defaults.get(name);
+                }
+            }
         }
 
         return value;

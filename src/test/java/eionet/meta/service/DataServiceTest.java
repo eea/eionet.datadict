@@ -1,7 +1,14 @@
 package eionet.meta.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -20,7 +27,7 @@ import eionet.meta.dao.domain.VocabularyConcept;
  * @author Kaido Laine
  */
 @SpringApplicationContext("mock-spring-context.xml")
-public class DataServiceTest extends UnitilsJUnit4  {
+public class DataServiceTest extends UnitilsJUnit4 {
 
     /**
      * Service instance.
@@ -30,6 +37,7 @@ public class DataServiceTest extends UnitilsJUnit4  {
 
     /**
      * Load seed data file.
+     *
      * @throws Exception if loading fails
      */
     @BeforeClass
@@ -39,6 +47,7 @@ public class DataServiceTest extends UnitilsJUnit4  {
 
     /**
      * Delete helper data.
+     *
      * @throws Exception if delete fails
      */
     @AfterClass
@@ -48,18 +57,20 @@ public class DataServiceTest extends UnitilsJUnit4  {
 
     /**
      * Test on getting common data elements.
+     *
      * @throws Exception if fail
      */
     @Test
     public void testGetCommonElements() throws Exception {
         List<DataElement> elements = dataService.getReleasedCommonDataElements();
 
-        Assert.assertTrue(elements.size() == 7);
+        assertTrue(elements.size() == 7);
 
     }
 
     /**
      * test set element attribute values.
+     *
      * @throws Exception if fail
      */
     @Test
@@ -73,17 +84,18 @@ public class DataServiceTest extends UnitilsJUnit4  {
         DataElement elem3 = dataService.getDataElement(3);
         dataService.setDataElementAttributes(elem3);
 
-        Assert.assertTrue(elem1.getElemAttributeValues().size() == 2);
-        Assert.assertEquals(elem1.getName(), "Common element");
+        assertTrue(elem1.getElemAttributeValues().size() == 2);
+        assertEquals(elem1.getName(), "Common element");
 
-        Assert.assertTrue(elem2.getElemAttributeValues().size() == 0);
-        Assert.assertTrue(elem3.getElemAttributeValues().size() == 1);
-        Assert.assertEquals(elem3.getElemAttributeValues().get("Definition").get(0), "Third definition");
+        assertTrue(elem2.getElemAttributeValues().size() == 2);
+        assertTrue(elem3.getElemAttributeValues().size() == 1);
+        assertEquals(elem3.getElemAttributeValues().get("Definition").get(0), "Third definition");
 
     }
 
     /**
      * tests if datasets contain only released elements.
+     *
      * @throws Exception if fail
      */
     @Test
@@ -91,12 +103,13 @@ public class DataServiceTest extends UnitilsJUnit4  {
         List<DataElement> elems1 = dataService.getUnreleasedCommonElements(1);
         List<DataElement> elems2 = dataService.getUnreleasedCommonElements(2);
 
-        Assert.assertTrue("Dataset1 contains an unreleased element", elems1.size() == 1);
-        Assert.assertTrue("Dataset2 contains released elements", elems2.size() == 0);
+        assertTrue("Dataset1 contains an unreleased element", elems1.size() == 1);
+        assertTrue("Dataset2 contains released elements", elems2.size() == 0);
     }
 
     /**
      * test method receiving elements having a vocabulary as source.
+     *
      * @throws Exception if fail
      */
     @Test
@@ -109,20 +122,18 @@ public class DataServiceTest extends UnitilsJUnit4  {
         p2.add(1);
         p2.add(2);
 
-        List <DataElement> elems1 = dataService.getVocabularySourceElements(p1);
-        List <DataElement> elems2 = dataService.getVocabularySourceElements(p2);
+        List<DataElement> elems1 = dataService.getVocabularySourceElements(p1);
+        List<DataElement> elems2 = dataService.getVocabularySourceElements(p2);
 
-        Assert.assertTrue("Vocabulary1 is source for 2 elements ", elems1.size() == 2);
-        Assert.assertTrue("Vocabularies 1 and 2 are source for 3 elements ", elems2.size() == 3);
-
-
+        assertTrue("Vocabulary1 is source for 2 elements ", elems1.size() == 2);
+        assertTrue("Vocabularies 1 and 2 are source for 3 elements ", elems2.size() == 3);
     }
 
-
     /**
-     * test if correct count of concepts are bound to element.
+     * Test if correct count of concepts are bound to element.
      * Especially important is obsolete date check functionality if
      * element type is not all concepts valid
+     *
      * @throws Exception if error
      */
     @Test
@@ -130,14 +141,74 @@ public class DataServiceTest extends UnitilsJUnit4  {
 
         List<VocabularyConcept> concepts1 = dataService.getElementVocabularyConcepts(301);
 
-        //this element does not have 2 concepts one marked obsolete before releasing and the other created after
-        //releasing of the element:
+        // this element does not have 2 concepts one marked obsolete before releasing and the other created after
+        // releasing of the element:
         List<VocabularyConcept> concepts2 = dataService.getElementVocabularyConcepts(302);
 
-        Assert.assertEquals("Element ID=301 has to have 5 concepts in fxvs ", 5, concepts1.size());
-        Assert.assertEquals("Element ID=302 has to have 3 concepts in fxvs ", 3, concepts2.size());
-
+        assertEquals("Element ID=301 has to have 5 concepts in fxvs ", 5, concepts1.size());
+        assertEquals("Element ID=302 has to have 3 concepts in fxvs ", 3, concepts2.size());
     }
 
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testSwitchDataElementType1() throws Exception {
 
+        int elemId = 2;
+        String oldType = "CH2";
+        String newType = "CH1";
+        List<String> newTypeIrrelAttrs = Arrays.asList("MinSize", "MaxSize");
+        testSwitchDataElementType(elemId, oldType, newType, newTypeIrrelAttrs);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testSwitchDataElementType2() throws Exception {
+
+        int elemId = 2;
+        String oldType = "CH2";
+        String newType = "CH3";
+        List<String> newTypeIrrelAttrs = Arrays.asList("MinSize", "MaxSize");
+        testSwitchDataElementType(elemId, oldType, newType, newTypeIrrelAttrs);
+    }
+
+    /**
+     *
+     * @param elemId
+     * @param oldType
+     * @param newType
+     * @param newTypeIrrelAttrs
+     * @throws ServiceException
+     */
+    private void testSwitchDataElementType(int elemId, String oldType, String newType, List<String> newTypeIrrelAttrs)
+            throws ServiceException {
+        DataElement dataElement = dataService.getDataElement(elemId);
+        assertNotNull("Expected data element with id = " + elemId, dataElement);
+        assertEquals("Unexpected current type of data element with id = " + elemId, oldType, dataElement.getType());
+
+        Map<String, List<String>> attrsMap = dataService.getDataElementSimpleAttributeValues(elemId);
+        assertNotNull("Expected simple attribute values for data element with id = " + elemId, attrsMap);
+
+        for (String attrShortName : newTypeIrrelAttrs) {
+            assertTrue("Expected attribute: " + attrShortName, attrsMap.containsKey(attrShortName));
+        }
+
+        try {
+            dataService.switchDataElemType(elemId, newType);
+        } catch (Exception e) {
+            Assert.fail("Unexpected exception: " + e);
+        }
+
+        dataElement = dataService.getDataElement(elemId);
+        assertNotNull("Expected data element with id = " + elemId, dataElement);
+        assertEquals("Unexpected new type of data element with id = " + elemId, newType, dataElement.getType());
+
+        attrsMap = dataService.getDataElementSimpleAttributeValues(elemId);
+        for (String attrShortName : newTypeIrrelAttrs) {
+            assertFalse("Unexpected attribute: " + attrShortName, attrsMap.containsKey(attrShortName));
+        }
+    }
 }

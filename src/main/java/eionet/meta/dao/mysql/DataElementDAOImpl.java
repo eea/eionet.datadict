@@ -21,6 +21,23 @@
 
 package eionet.meta.dao.mysql;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.IDataElementDAO;
@@ -30,21 +47,6 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 /**
  * Data element DAO.
@@ -154,7 +156,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                //int elmID = rs.getInt("de.DATAELEM_ID");
+                // int elmID = rs.getInt("de.DATAELEM_ID");
                 String elmIdf = rs.getString("de.IDENTIFIER");
                 // skip non-existing elements, ie trash from some erroneous situation
                 if (elmIdf == null) {
@@ -275,7 +277,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                     return;
                 }
 
-                //int elmID = rs.getInt("de.DATAELEM_ID");
+                // int elmID = rs.getInt("de.DATAELEM_ID");
                 String elmIdf = rs.getString("de.IDENTIFIER");
                 // skip non-existing elements, ie trash from some erroneous situation
                 if (elmIdf == null) {
@@ -934,5 +936,45 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         getNamedParameterJdbcTemplate().update(sql, params);
 
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see eionet.meta.dao.IDataElementDAO#changeDataElemType(int, java.lang.String)
+     */
+    @Override
+    public void changeDataElemType(int elemId, String newType) {
+
+        String sql = "update DATAELEM set TYPE = :newType WHERE DATAELEM_ID = :elemId";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("elemId", elemId);
+        params.put("newType", newType);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see eionet.meta.dao.IDataElementDAO#removeSimpleAttrsByShortName(int, java.lang.String[])
+     */
+    @Override
+    public void removeSimpleAttrsByShortName(int elemId, String... attrShortNames) {
+
+        if (attrShortNames == null || attrShortNames.length == 0) {
+            return;
+        }
+
+        String sql =
+                "delete from ATTRIBUTE where DATAELEM_ID = :elemId and PARENT_TYPE='E' and M_ATTRIBUTE_ID in ("
+                        + "select distinct M_ATTRIBUTE_ID from M_ATTRIBUTE where SHORT_NAME in (:names))";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("elemId", elemId);
+        params.put("names", Arrays.asList(attrShortNames));
+
+        getNamedParameterJdbcTemplate().update(sql, params);
     }
 }

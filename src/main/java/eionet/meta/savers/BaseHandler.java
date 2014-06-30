@@ -1,4 +1,3 @@
-
 package eionet.meta.savers;
 
 import java.sql.Connection;
@@ -7,9 +6,12 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import eionet.meta.DDUser;
 import eionet.meta.MrProper;
+import eionet.meta.service.IDataService;
 import eionet.util.Util;
 import eionet.util.sql.SQLTransaction;
 
@@ -17,6 +19,9 @@ import eionet.util.sql.SQLTransaction;
  * @author Jaanus Heinlaid
  */
 public abstract class BaseHandler {
+
+    /** Name of Spring context file. */
+    private static final String SPRING_CONTEXT_XML = "spring-context.xml";
 
     /** */
     private static final Logger LOGGER = Logger.getLogger(BaseHandler.class);
@@ -29,6 +34,9 @@ public abstract class BaseHandler {
 
     /** */
     protected DDUser user = null;
+
+    /** Lazily initialized. */
+    private IDataService dataService;
 
     /**
      *
@@ -95,4 +103,20 @@ public abstract class BaseHandler {
      * @throws Exception
      */
     public abstract void execute_() throws Exception;
+
+    /**
+     * Lazily initialize and return the data service instance.
+     *
+     * @return the dataService
+     */
+    protected IDataService getDataService() {
+
+        if (dataService == null) {
+
+            ApplicationContext appContext = new ClassPathXmlApplicationContext(SPRING_CONTEXT_XML);
+            dataService = appContext.getBean(IDataService.class);
+        }
+
+        return dataService;
+    }
 }

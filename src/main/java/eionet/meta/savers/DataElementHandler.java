@@ -20,6 +20,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import com.tee.uit.security.AccessController;
@@ -511,35 +512,17 @@ public class DataElementHandler extends BaseHandler {
         if (switchType != null && switchType.equalsIgnoreCase("true")) {
 
             String newType = "";
-            if (elmValuesType.equals("CH1")) {
-                newType = "CH2";
-            } else if (elmValuesType.equals("CH2")) {
+            if (StringUtils.isNotBlank(req.getParameter("newTypeCH1"))) {
                 newType = "CH1";
+            } else if (StringUtils.isNotBlank(req.getParameter("newTypeCH2"))) {
+                newType = "CH2";
+            } else if (StringUtils.isNotBlank(req.getParameter("newTypeCH3"))) {
+                newType = "CH3";
             } else {
-                //TODO analyze and implement for CH3 if needed
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("Could not detect the data element type to switch to!");
             }
 
-            SQLGenerator gen = new SQLGenerator();
-            gen.setTable("DATAELEM");
-            gen.setField("TYPE", newType);
-            conn.createStatement().executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + delem_id);
-
-            if (newType.equals("CH1") && !ch1ProhibitedAttrs.isEmpty()) {
-
-                StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where PARENT_TYPE='E' and DATAELEM_ID=");
-                buf.append(delem_id).append(" and M_ATTRIBUTE_ID in (");
-                int i = 0;
-                for (Iterator iter = ch1ProhibitedAttrs.iterator(); iter.hasNext(); i++) {
-                    if (i > 0) {
-                        buf.append(",");
-                    }
-                    buf.append(iter.next());
-                }
-                buf.append(")");
-                conn.createStatement().executeUpdate(buf.toString());
-            }
-
+            getDataService().switchDataElemType(NumberUtils.toInt(delem_id, -1), newType);
             return;
         }
 
@@ -550,7 +533,7 @@ public class DataElementHandler extends BaseHandler {
             gen.setField("SHORT_NAME", elmShortName);
         }
 
-        // if common element, set regisration status
+        // if common element, set registration status
         if (elmCommon) {
             String elmRegStatus = req.getParameter("reg_status");
             if (!Util.isEmpty(elmRegStatus)) {

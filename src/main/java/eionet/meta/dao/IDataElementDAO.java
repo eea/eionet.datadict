@@ -239,4 +239,19 @@ public interface IDataElementDAO {
      */
     void moveVocabularySources(int originalVocabularyId, int vocabularyId);
 
+    /**
+     * Change the given data element's type to the given value.
+     *
+     * @param elemId Element id.
+     * @param newType The new type's identifier.
+     */
+    void changeDataElemType(int elemId, String newType);
+
+    /**
+     * Removes the given data element's simple attributes by the given short names.
+     *
+     * @param elemId Data element id.
+     * @param attrShortNames Short names of simple attributes to remove.
+     */
+    void removeSimpleAttrsByShortName(int elemId, String... attrShortNames);
 }

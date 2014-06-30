@@ -1318,8 +1318,10 @@
                                     if (!elmCommon && editDstPrm) {
                                 %>
                                     <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
-                                    <% if (!type.equals("CH3")) { %>
-                                        <li><a href="javascript:switchType()">Switch type</a></li>
+                                    <% if (!type.equals("CH3")) {
+                                        request.setAttribute("includeSwitchTypeDialog", "true");
+                                        %>
+                                        <li><a href="#" id="switchTypeLink">Switch type</a></li>
                                     <% } %>
                                 <%
                                     }
@@ -1342,8 +1344,10 @@
                                  // view case
                                 %>
                                     <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
-                                    <% if (!type.equals("CH3")) { %>
-                                        <li><a href="javascript:switchType()">Switch type</a></li>
+                                    <% if (!type.equals("CH3")) {
+                                        request.setAttribute("includeSwitchTypeDialog", "true");
+                                        %>
+                                        <li><a href="#" id="switchTypeLink">Switch type</a></li>
                                     <% } %>
                                     <li><a href="javascript:checkIn()">Check in</a></li>
                                     <li><a href="javascript:submitForm('delete')">Undo checkout</a></li>
@@ -2827,7 +2831,19 @@ String helpAreaName = "";
                 </div>
             </form>
             <%@ include file="bindVocabularyInc.jsp" %>
+
+            <%
+            if (request.getAttribute("includeSwitchTypeDialog") != null) {
+                %>
+                <jsp:include page="switchDataElemType.jsp" flush="true">
+                    <jsp:param name="elemId" value="<%= (dataElement == null) ? null : dataElement.getID()%>"/>
+                    <jsp:param name="curType" value="<%= (dataElement == null) ? null : dataElement.getType()%>"/>
+                </jsp:include>
+                <%
+            }
+            %>
             </div> <!-- workarea -->
+
             <%
                 if (!popup) {
             %>

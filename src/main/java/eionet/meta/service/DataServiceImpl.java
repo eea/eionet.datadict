@@ -1,10 +1,13 @@
 package eionet.meta.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
+import eionet.util.IrrelevantAttributes;
 
 /**
  * Data Service implementation.
@@ -46,8 +50,6 @@ public class DataServiceImpl implements IDataService {
     /** Vocabulary concept DAO. */
     @Autowired
     private IVocabularyConceptDAO vocabularyConceptDao;
-
-
 
     /**
      * {@inheritDoc}
@@ -189,7 +191,7 @@ public class DataServiceImpl implements IDataService {
     }
 
     @Override
-    public void setDataElementAttributes(DataElement dataElement)  throws ServiceException {
+    public void setDataElementAttributes(DataElement dataElement) throws ServiceException {
         Map<String, List<String>> attributeValues = dataElementDao.getDataElementAttributeValues(dataElement.getId());
 
         dataElement.setElemAttributeValues(attributeValues);
@@ -202,7 +204,7 @@ public class DataServiceImpl implements IDataService {
         List<DataElement> datasetElements = dataElementDao.getDataSetElements(datasetId);
         List<DataElement> unreleasedElems = new ArrayList<DataElement>();
         for (DataElement elem : datasetElements) {
-            if (!elem.getStatus().equalsIgnoreCase("Released") && elem.isCommonElement() &&!elem.isWorkingCopy()) {
+            if (!elem.getStatus().equalsIgnoreCase("Released") && elem.isCommonElement() && !elem.isWorkingCopy()) {
                 unreleasedElems.add(elem);
             }
         }
@@ -227,12 +229,11 @@ public class DataServiceImpl implements IDataService {
             for (VocabularyConcept concept : concepts) {
                 boolean conceptDateValid = true;
                 if (!elem.getAllConceptsValid()) {
-                    //TODO - extra util method and unit tests
+                    // TODO - extra util method and unit tests
                     Date conceptDate = concept.getCreated();
                     Date conceptObsolete = concept.getObsolete();
                     Date elemCreated = new Date(Long.valueOf(elem.getDate()));
-                    if (!(conceptDate.before(elemCreated) &&
-                            (conceptObsolete == null || conceptObsolete.after(elemCreated)))) {
+                    if (!(conceptDate.before(elemCreated) && (conceptObsolete == null || conceptObsolete.after(elemCreated)))) {
                         conceptDateValid = false;
                     }
 
@@ -245,5 +246,39 @@ public class DataServiceImpl implements IDataService {
 
         }
         return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see eionet.meta.service.IDataService#switchDataElemType(int, java.lang.String)
+     */
+    @Override
+    public void switchDataElemType(int elemId, String newType) throws ServiceException {
+
+        // Check if the new type is at all known.
+        if (!Arrays.asList("CH1", "CH2", "CH3").contains(newType)) {
+            throw new ServiceException("Unknown data element type: " + newType);
+        }
+
+        // Load the data element and compare to its current type.
+        DataElement dataElement = dataElementDao.getDataElement(elemId);
+        if (dataElement == null) {
+            throw new ServiceException("Found no data element with this id: " + elemId);
+        } else {
+            if (newType.equals(dataElement.getType())) {
+                throw new ServiceException("Data element (id=" + elemId + ") already has this type: " + newType);
+            }
+        }
+
+        // Change type in database.
+        dataElementDao.changeDataElemType(elemId, newType);
+
+        // Remove simple attributes that are considered irrelevant for the new type.
+        IrrelevantAttributes instance = IrrelevantAttributes.getInstance();
+        Set<String> irrelevantAttrs = instance.get(newType);
+        if (CollectionUtils.isNotEmpty(irrelevantAttrs)) {
+            dataElementDao.removeSimpleAttrsByShortName(elemId, irrelevantAttrs.toArray(new String[irrelevantAttrs.size()]));
+        }
     }
 }
