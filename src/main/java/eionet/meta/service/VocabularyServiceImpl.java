@@ -59,6 +59,7 @@ import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -874,9 +875,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             VocabularyConcept result = vocabularyConceptDAO.getVocabularyConcept(vocabularyFolderId, conceptIdentifier);
 
-            List<List<DataElement>> elementAttributes =
-                    dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId, result.getId(), emptyAttributes);
-            result.setElementAttributes(elementAttributes);
+            int conceptId = result.getId();
+            Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
+                    dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolderId, new int[] {conceptId},
+                            emptyAttributes);
+            result.setElementAttributes(vocabularyConceptsDataElementValues.get(conceptId));
 
             return result;
 
@@ -911,7 +914,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                     vocabularyConceptDAO.getValidConceptsWithValuedElements(vocabularyFolderId, null, null, null, null, null);
             return result;
         } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get vocabulary concepts: " + e.getMessage(), e);
         }
     }
 
@@ -925,6 +928,48 @@ public class VocabularyServiceImpl implements IVocabularyService {
             List<VocabularyConcept> result =
                     vocabularyConceptDAO.getValidConceptsWithValuedElements(vocabularyFolderId, conceptIdentifier, label,
                             elementIdentifier, language, defaultLanguage);
+
+            if (StringUtils.isNotBlank(language)) {
+                // when language is not empty, some concepts are filtered, so add an additional query!!! to get filtered concepts!!
+                VocabularyConceptFilter filter = new VocabularyConceptFilter();
+                filter.setVocabularyFolderId(vocabularyFolderId);
+                filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
+                filter.setUsePaging(false);
+                filter.setIdentifier(conceptIdentifier);
+                filter.setLabel(label);
+                List<Integer> excludedIds = new ArrayList<Integer>();
+                int listSize = result.size();
+                for (int i = 0; i < listSize; i++) {
+                    excludedIds.add(result.get(i).getId());
+                }
+                filter.setExcludedIds(excludedIds);
+                filter.setOrderByConceptId(true);
+
+                VocabularyConceptResult vocabularyConceptResult = vocabularyConceptDAO.searchVocabularyConcepts(filter);
+                List<VocabularyConcept> conceptList = vocabularyConceptResult.getList();
+
+                listSize = conceptList.size();
+                int[] conceptListIds = new int[listSize];
+
+                for (int i = 0; i < listSize; i++) {
+                    conceptListIds[i] = conceptList.get(i).getId();
+                }
+
+                // TODO: This will return with all dataelements. Method should be updated not to return all identifier for future
+                // usage.
+                Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
+                        dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolderId, conceptListIds, false);
+
+                int resultListSize = result.size();
+                for (int i = 0, j = 0; i < listSize; i++, j++) {
+                    VocabularyConcept concept = conceptList.get(i);
+                    int conceptId = concept.getId();
+                    concept.setElementAttributes(vocabularyConceptsDataElementValues.get(conceptId));
+                    for (; j < resultListSize && result.get(j).getId() < conceptId; j++) {
+                    }
+                    result.add(j, concept);
+                }
+            }
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);

@@ -21,6 +21,23 @@
 
 package eionet.meta.dao.mysql;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.stereotype.Repository;
+
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.IDataElementDAO;
@@ -30,21 +47,6 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 /**
  * Data element DAO.
@@ -82,7 +84,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * finds Common elements.
      *
-     * @param filter search filter
+     * @param filter
+     *            search filter
      * @return list of data elements
      */
     private List<DataElement> executeCommonElementQuery(final DataElementsFilter filter) {
@@ -154,7 +157,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                //int elmID = rs.getInt("de.DATAELEM_ID");
+                // int elmID = rs.getInt("de.DATAELEM_ID");
                 String elmIdf = rs.getString("de.IDENTIFIER");
                 // skip non-existing elements, ie trash from some erroneous situation
                 if (elmIdf == null) {
@@ -190,7 +193,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * finds non-Common elements.
      *
-     * @param filter search filter
+     * @param filter
+     *            search filter
      * @return list of data elements
      */
     private List<DataElement> executeNonCommonElementQuery(final DataElementsFilter filter) {
@@ -275,7 +279,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                     return;
                 }
 
-                //int elmID = rs.getInt("de.DATAELEM_ID");
+                // int elmID = rs.getInt("de.DATAELEM_ID");
                 String elmIdf = rs.getString("de.IDENTIFIER");
                 // skip non-existing elements, ie trash from some erroneous situation
                 if (elmIdf == null) {
@@ -580,11 +584,14 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      * {@inheritDoc}
      */
     @Override
-    public List<List<DataElement>> getVocabularyConceptDataElementValues(int vocabularyFolderId, int vocabularyConceptId,
-            boolean emptyAttributes) {
-        final Map<String, Object> params = new HashMap<String, Object>();
-        params.put("vocabularyFolderId", vocabularyFolderId);
-        params.put("vocabularyConceptId", vocabularyConceptId);
+    public Map<Integer, List<List<DataElement>>>
+            getVocabularyConceptsDataElementValues(int vocabularyFolderId, int[] vocabularyConceptIds, boolean emptyAttributes
+) {
+
+        final MapSqlParameterSource params = new MapSqlParameterSource();
+
+        params.addValue("vocabularyFolderId", vocabularyFolderId);
+        params.addValue("vocabularyConceptIds", vocabularyConceptIds);
 
         StringBuilder sql = new StringBuilder();
         sql.append("select * from VOCABULARY_CONCEPT_ELEMENT v ");
@@ -593,31 +600,44 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         } else {
             sql.append("LEFT JOIN DATAELEM d ");
         }
-        sql.append("ON (v.DATAELEM_ID = d.DATAELEM_ID and v.VOCABULARY_CONCEPT_ID = :vocabularyConceptId) ");
+        sql.append("ON (v.DATAELEM_ID = d.DATAELEM_ID and v.VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds)) ");
         sql.append("LEFT JOIN VOCABULARY2ELEM ve on ve.DATAELEM_ID = d.DATAELEM_ID ");
         sql.append("LEFT JOIN VOCABULARY_CONCEPT rc on v.RELATED_CONCEPT_ID = rc.VOCABULARY_CONCEPT_ID ");
         sql.append("LEFT JOIN VOCABULARY rcv ON rc.VOCABULARY_ID = rcv.VOCABULARY_ID ");
         sql.append("LEFT JOIN VOCABULARY_SET rcvs ON rcv.FOLDER_ID = rcvs.ID ");
         sql.append("where ve.VOCABULARY_ID = :vocabularyFolderId ");
-        sql.append("order by ve.DATAELEM_ID, v.ELEMENT_VALUE, rc.IDENTIFIER");
+        sql.append("order by v.VOCABULARY_CONCEPT_ID, ve.DATAELEM_ID, v.ELEMENT_VALUE, rc.IDENTIFIER");
 
-        final List<List<DataElement>> result = new ArrayList<List<DataElement>>();
+        final Map<Integer, List<List<DataElement>>> result = new HashMap<Integer, List<List<DataElement>>>();
 
         getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
 
+            List<List<DataElement>> listOfValues = null;
             List<DataElement> values = null;
-            int previousDataElemId = 0;
+            int previousDataElemId = -1;
+            int previousConceptId = -1;
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
 
-                if (values == null) {
+                int conceptId = rs.getInt("rc.VOCABULARY_CONCEPT_ID");
+                int dataElemId = rs.getInt("d.DATAELEM_ID");
+
+                if (previousConceptId != conceptId) {
+                    listOfValues = new ArrayList<List<DataElement>>();
+                    result.put(conceptId, listOfValues);
                     values = new ArrayList<DataElement>();
-                    previousDataElemId = rs.getInt("d.DATAELEM_ID");
+                    listOfValues.add(values);
+                } else if (previousDataElemId != dataElemId) {
+                    values = new ArrayList<DataElement>();
+                    listOfValues.add(values);
                 }
 
+                previousConceptId = conceptId;
+                previousDataElemId = dataElemId;
+
                 DataElement de = new DataElement();
-                de.setId(rs.getInt("d.DATAELEM_ID"));
+                de.setId(dataElemId);
                 de.setShortName(rs.getString("d.SHORT_NAME"));
                 de.setStatus(rs.getString("d.REG_STATUS"));
                 de.setType(rs.getString("d.TYPE"));
@@ -638,22 +658,11 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setVocabularyId(rs.getInt("d.VOCABULARY_ID"));
 
                 List<FixedValue> fxvs = getFixedValues(de.getId());
-
                 de.setFixedValues(fxvs);
-
-                if (previousDataElemId != rs.getInt("d.DATAELEM_ID")) {
-                    result.add(values);
-                    values = new ArrayList<DataElement>();
-                }
-
                 de.setElemAttributeValues(getDataElementAttributeValues(rs.getInt("d.DATAELEM_ID")));
 
                 values.add(de);
                 previousDataElemId = rs.getInt("d.DATAELEM_ID");
-
-                if (rs.isLast()) {
-                    result.add(values);
-                }
             }
         });
 
@@ -733,8 +742,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * After copying localref type element IDs have to be changed.
      *
-     * @param oldVocabularyId old vocabulary ID
-     * @param newVocabularyId new vocabulary ID
+     * @param oldVocabularyId
+     *            old vocabulary ID
+     * @param newVocabularyId
+     *            new vocabulary ID
      */
     private void updateCopiedRelatedConceptIds(int oldVocabularyId, int newVocabularyId) {
         StringBuilder sql = new StringBuilder();
@@ -778,7 +789,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * updates localref IDs to the new concept ones.
      *
-     * @param newVocabularyId new vocabulary ID
+     * @param newVocabularyId
+     *            new vocabulary ID
      */
     private void updateCheckedoutRelatedConceptIds(int newVocabularyId) {
         StringBuilder sql = new StringBuilder();

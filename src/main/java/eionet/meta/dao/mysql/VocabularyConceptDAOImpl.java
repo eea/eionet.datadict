@@ -166,7 +166,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("excludedVocSetIds", filter.getExcludedVocabularySetIds());
             sql.append("AND s.ID NOT IN (:excludedVocSetIds) ");
         }
-        if (filter.isNumericIdentifierSorting()) {
+
+        if (filter.isOrderByConceptId()) {
+            sql.append("order by c.VOCABULARY_CONCEPT_ID");
+        } else if (filter.isNumericIdentifierSorting()) {
             sql.append("order by c.IDENTIFIER + 0 ");
         } else {
             sql.append("order by c.IDENTIFIER ");

@@ -57,11 +57,13 @@ public final class VocabularyOutputHelper {
      * @return list of dataelement objects containing values
      */
     public static List<DataElement> getDataElementValuesByName(String elemName, List<List<DataElement>> elems) {
-        for (List<DataElement> elem : elems) {
-            if (elem != null && elem.size() > 0) {
-                DataElement elemMeta = elem.get(0);
-                if (elemMeta != null && StringUtils.equals(elemMeta.getIdentifier(), elemName)) {
-                    return elem;
+        if (elems != null) {
+            for (List<DataElement> elem : elems) {
+                if (elem != null && elem.size() > 0) {
+                    DataElement elemMeta = elem.get(0);
+                    if (elemMeta != null && StringUtils.equals(elemMeta.getIdentifier(), elemName)) {
+                        return elem;
+                    }
                 }
             }
         }
@@ -82,19 +84,22 @@ public final class VocabularyOutputHelper {
     public static List<DataElement> getDataElementValuesByNameAndLang(String elemName, String lang, List<List<DataElement>> elems) {
         boolean isLangEmpty = StringUtils.isEmpty(lang);
         ArrayList<DataElement> elements = new ArrayList<DataElement>();
-        for (List<DataElement> elem : elems) {
-            if (elem == null || elem.size() < 1 || !StringUtils.equals(elem.get(0).getIdentifier(), elemName)) { // check first one
-                continue;
-            }
-            for (DataElement elemMeta : elem) {
-                String elemLang = elemMeta.getAttributeLanguage();
-                if ((isLangEmpty && StringUtils.isEmpty(elemLang)) || StringUtils.equals(lang, elemLang)) {
-                    elements.add(elemMeta);
-                } else if (elements.size() > 0) {
-                    break;
+        if (elems != null) {
+            for (List<DataElement> elem : elems) {
+                if (elem == null || elem.size() < 1 || !StringUtils.equals(elem.get(0).getIdentifier(), elemName)) { // check first
+                                                                                                                     // one
+                    continue;
                 }
+                for (DataElement elemMeta : elem) {
+                    String elemLang = elemMeta.getAttributeLanguage();
+                    if ((isLangEmpty && StringUtils.isEmpty(elemLang)) || StringUtils.equals(lang, elemLang)) {
+                        elements.add(elemMeta);
+                    } else if (elements.size() > 0) {
+                        break;
+                    }
+                }
+                // return elements;
             }
-            // return elements;
         }
         return elements;
     } // end of method getDataElementValuesByNameAndLang

@@ -71,7 +71,8 @@ public interface IDataElementDAO {
     /**
      * Returns latest version of the data element.
      *
-     * @param identifier data element identifier
+     * @param identifier
+     *            data element identifier
      * @return element
      */
     DataElement getDataElement(String identifier);
@@ -79,7 +80,8 @@ public interface IDataElementDAO {
     /**
      * Returns latest version of the COMMON data element id.
      *
-     * @param identifier common element identifier
+     * @param identifier
+     *            common element identifier
      * @return ID in DATAELEM table
      */
     int getCommonDataElementId(String identifier);
@@ -110,7 +112,8 @@ public interface IDataElementDAO {
     /**
      * Returns data elements bound with vocabulary folder.
      *
-     * @param vocabularyFolderId folder ID
+     * @param vocabularyFolderId
+     *            folder ID
      * @return list of data elements for the Vocabulary
      */
     List<DataElement> getVocabularyDataElements(int vocabularyFolderId);
@@ -154,36 +157,44 @@ public interface IDataElementDAO {
     void copyVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId);
 
     /**
-     * Returns data element attributes for vocabulary concept.
+     * Returns data element attributes for vocabulary concepts in a folder.
      *
-     * @param vocabularyFolderId vocabularyID
-     * @param vocabularyConceptId concept ID
+     * @param vocabularyFolderId
+     *            vocabularyID
+     * @param vocabularyConceptIds
+     *            concept IDs
      * @param emptyAttributes
      *            when true, then attributes that are not valued are also included
-     * @return list of lists where each list contains element values of one bound element
+     * @return map of list of lists where each list contains element values of one bound element
      */
-    List<List<DataElement>> getVocabularyConceptDataElementValues(int vocabularyFolderId, int vocabularyConceptId,
-            boolean emptyAttributes);
+    Map<Integer, List<List<DataElement>>> getVocabularyConceptsDataElementValues(int vocabularyFolderId,
+            int[] vocabularyConceptIds, boolean emptyAttributes);
 
     /**
-     * Copies data element values from old concepts to new concepts.
-     * Can be used when checking out the vocabulary
+     * Copies data element values from old concepts to new concepts. Can be used when checking out the vocabulary
      *
-     * @param newVocabularyFolderId new vocabulary Folder ID
+     * @param newVocabularyFolderId
+     *            new vocabulary Folder ID
      */
     void checkoutVocabularyConceptDataElementValues(int newVocabularyFolderId);
 
     /**
      * Copies data element values from old vocabulary concepts to new vocabulary concepts.
-     * @param oldVocabularyFolderId old vocabulary Folder ID
-     * @param newVocabularyFolderId new vocabulary Folder ID
+     *
+     * @param oldVocabularyFolderId
+     *            old vocabulary Folder ID
+     * @param newVocabularyFolderId
+     *            new vocabulary Folder ID
      */
     void copyVocabularyConceptDataElementValues(int oldVocabularyFolderId, int newVocabularyFolderId);
 
     /**
      * Checks if the vocabulary has binding of this element.
-     * @param vocabularyFolderId vocabulary Id
-     * @param elementId element id
+     *
+     * @param vocabularyFolderId
+     *            vocabulary Id
+     * @param elementId
+     *            element id
      * @return true if binding exists
      */
     boolean vocabularyHasElemendBinding(int vocabularyFolderId, int elementId);
@@ -193,11 +204,13 @@ public interface IDataElementDAO {
      *
      * @param newVocabularyFolderId
      */
-    //void updateRelatedConceptIds(int newVocabularyFolderId);
+    // void updateRelatedConceptIds(int newVocabularyFolderId);
 
     /**
      * Deletes related concept elements of this concept.
-     * @param vocabularyConceptId  concept Id
+     *
+     * @param vocabularyConceptId
+     *            concept Id
      */
     void deleteRelatedElements(int vocabularyConceptId);
 
@@ -210,32 +223,41 @@ public interface IDataElementDAO {
      */
     Map<String, List<String>> getDataElementAttributeValues(int elementId);
 
-
     /**
      * Finds unique set of elements used in all dataset tables.
-     * @param datasetId dataset id
+     *
+     * @param datasetId
+     *            dataset id
      * @return distinct collection of data elements
      */
     List<DataElement> getDataSetElements(int datasetId);
 
     /**
      * Sets relation to an external vocabulary.
-     * @param elementId data element id
-     * @param vocabularyId vocabulary Id
+     *
+     * @param elementId
+     *            data element id
+     * @param vocabularyId
+     *            vocabulary Id
      */
     void bindVocabulary(int elementId, int vocabularyId);
 
     /**
      * Finds list of elements where given vocabularies is used as source for values.
-     * @param vocabularyIds vocabulary ids
+     *
+     * @param vocabularyIds
+     *            vocabulary ids
      * @return collection of data elements
      */
-    List<DataElement> getVocabularySourceElements(List<Integer>vocabularyIds);
+    List<DataElement> getVocabularySourceElements(List<Integer> vocabularyIds);
 
     /**
      * changes vocabulary reference in CH3 - fxv vocabulary elements.
-     * @param originalVocabularyId old vocabulary ID
-     * @param vocabularyId new vocabulary ID
+     *
+     * @param originalVocabularyId
+     *            old vocabulary ID
+     * @param vocabularyId
+     *            new vocabulary ID
      */
     void moveVocabularySources(int originalVocabularyId, int vocabularyId);
 

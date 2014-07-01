@@ -1345,10 +1345,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             lang = StringUtils.trimToNull(lang);
             id = StringUtils.trimToNull(id);
             label = StringUtils.trimToNull(label);
+
             final List<VocabularyConcept> concepts =
-                    vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), id, label, null, lang,
+                    vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), id, label, null, null,
                             VocabularyJSONOutputHelper.DEFAULT_LANGUAGE);
-            // vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), "skos:prefLabel", lang);
 
             StreamingResolution result = new StreamingResolution(format) {
                 @Override
@@ -1741,4 +1741,5 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public void setFormat(String format) {
         this.format = format;
     }
+
 }
