@@ -338,6 +338,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         fixRelatedLocalRefElements(vocabularyConcept, dataElementValues);
         dataElementDAO.deleteVocabularyConceptDataElementValues(vocabularyConcept.getId());
         if (dataElementValues.size() > 0) {
+System.out.println(vocabularyConcept.getId() + " >>>>>>>>>> SIZE > 0 = " +  dataElementValues.size());
             dataElementDAO.insertVocabularyConceptDataElementValues(vocabularyConcept.getId(), dataElementValues);
         }
 
@@ -377,8 +378,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 dataElementDAO.deleteReferringInverseElems(vocabularyConcept.getId(), dataElementValues);
                    System.out.println(" ** delete Referring " +  vocabularyConcept.getId());
                 for (DataElement elem : dataElementValues) {
-                    if ("localref".equals(dataElementDAO.getDataElementDataType(elem.getId())) &&
-                            elem.getRelatedConceptId() != null && elem.getRelatedConceptId() != 0) {
+                    if ("localref".equals(dataElementDAO.getDataElementDataType(elem.getId()))
+                            && elem.getRelatedConceptId() != null && elem.getRelatedConceptId() != 0) {
                         System.out.println(" HERE WE GO> elem " +  elem.getIdentifier());
                         dataElementDAO.createInverseElements(elem.getId(), vocabularyConcept.getId(), elem.getRelatedConceptId());
                     }
@@ -595,7 +596,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                     }
                 }
 
-                // referenced attribtue values in this vocabulary must get new id's
+                // referenced attribute values in this vocabulary must get new id's
                 vocabularyConceptDAO.updateReferringReferenceConcepts(originalVocabularyFolderId);
 
                 // Remove old vocabulary concepts
@@ -627,23 +628,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 // -----
                 List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(originalVocabularyFolderId);
                 fixRelatedReferenceElements(vocabularyFolderId, concepts);
-
-//                for (VocabularyConcept concept : concepts) {
-//                    List<List<DataElement>> elems =
-//                            dataElementDAO
-//                                    .getVocabularyConceptDataElementValues(originalVocabularyFolderId, concept.getId(), true);
-//                    for (List<DataElement> elemMeta : elems) {
-//                        if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
-//                            for (DataElement elem : elemMeta) {
-//                                if (elem.getRelatedConceptId() != null && elem.getRelatedConceptId() != 0) {
-//                                    dataElementDAO
-//                                            .createInverseElements(elem.getId(), concept.getId(), elem.getRelatedConceptId());
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-                // ----
 
             }
 

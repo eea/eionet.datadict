@@ -230,7 +230,7 @@ public interface IDataElementDAO {
      * @param vocabularyIds vocabulary ids
      * @return collection of data elements
      */
-    List<DataElement> getVocabularySourceElements(List<Integer>vocabularyIds);
+    List<DataElement> getVocabularySourceElements(List<Integer> vocabularyIds);
 
     /**
      * changes vocabulary reference in CH3 - fxv vocabulary elements.

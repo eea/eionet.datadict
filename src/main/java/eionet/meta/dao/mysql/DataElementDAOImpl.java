@@ -707,29 +707,9 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             Integer relatedConceptID = dataElementValues.get(i).getRelatedConceptId();
             params.put("relatedConceptId", relatedConceptID);
             batchValues[i] = params;
-            // SimpleJdbcCall jdbcCall = new SimpleJdbcCall(getJdbcTemplate().b
-            // TODO_20044
-
-            // if (relatedConceptID != null && relatedConceptID != 0) {
-            // // Map<String, Object> inverseRelationsParams = new HashMap<String, Object>();
-            // // inverseRelationsParams.put("dataElementId", dataElementValues.get(i).getId());
-            // // inverseRelationsParams.put("conceptId", vocabularyConceptId);
-            // // inverseRelationsParams.put("oldTargetConceptId", null);
-            // // inverseRelationsParams.put("newTargetConceptId", relatedConceptID);
-            // // inverseRelations.add(inverseRelationsParams);
-            // //TODO - batch?
-            // getJdbcTemplate().update("call CreateOrUpdateReverseLink(?, ?, ?, ?)", dataElementValues.get(i).getId(),
-            // vocabularyConceptId, null, relatedConceptID);
-            // LOGGER.debug("CreateOrUpdateReverseLink(" + dataElementValues.get(i).getId() + ","
-            // + vocabularyConceptId + ", null, " + relatedConceptID + ")");
-            // }
         }
 
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
-
-        // if (!inverseRelations.isEmpty()) {
-        //
-        // }
     }
 
     /**
@@ -996,11 +976,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
     @Override
     public void deleteReferringInverseElems(int conceptId, List<DataElement> dataElements) {
-//        String sql = "delete vce.* FROM datadict.vocabulary_concept_element vce, VOCABULARY_CONCEPT vsource, VOCABULARY_CONCEPT "
-//                + "vtarget, INFERENCE_RULE rule where vce.DATAELEM_ID = rule.DATAELEM_ID AND vce.RELATED_CONCEPT_ID = :conceptId "
-//                + " AND vce.VOCABULARY_CONCEPT_ID = vsource.VOCABULARY_CONCEPT_ID  "
-//                + " AND vtarget.VOCABULARY_CONCEPT_ID = vce.RELATED_CONCEPT_ID  AND vsource.VOCABULARY_ID = vtarget.VOCABULARY_ID";
-
         for (DataElement elem : dataElements) {
             if (elem.getRelatedConceptId() != null) {
                 getJdbcTemplate().update("call DeleteReverseLink(?, ?)", elem.getId(), conceptId);

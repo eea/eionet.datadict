@@ -22,6 +22,7 @@
 
 package eionet.meta.service;
 
+import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -41,6 +42,8 @@ import org.unitils.spring.annotation.SpringBeanByType;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyImportBaseHandler;
 import eionet.meta.service.data.ObsoleteStatus;
 import eionet.util.Props;
 import eionet.util.PropsIF;
@@ -51,14 +54,17 @@ import eionet.util.PropsIF;
  * @author Kaido Laine
  */
 @SpringApplicationContext("spring-context.xml")
-public class VocabularyInverseTest extends UnitilsJUnit4 {
+public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
 
     /** Logger. */
-    protected static final Logger LOGGER = Logger.getLogger(VocabularyServiceTest.class);
+    //protected static final Logger LOGGER = Logger.getLogger(VocabularyServiceTest.class);
 
 
     @SpringBeanByType
     private IVocabularyService vocabularyService;
+
+    @SpringBeanByType
+    private IDataService dataService;
 
     @BeforeClass
     public static void loadData() throws Exception {
@@ -80,7 +86,6 @@ public class VocabularyInverseTest extends UnitilsJUnit4 {
                         Props.getProperty(PropsIF.DBPSW));
 
         Statement st = conn.createStatement();
-
         ResultSet rs = st.executeQuery("SELECT GetInverseElemId(1) as X FROM dual");
 
         rs.next();
@@ -91,6 +96,82 @@ public class VocabularyInverseTest extends UnitilsJUnit4 {
         rs.next();
 
         Assert.assertTrue("ID 3 should have no inverse element", rs.getObject("X") == null);
+
+        rs = st.executeQuery("SELECT GetInverseElemId(5) as X FROM dual");
+        rs.next();
+        reverseId = rs.getInt("X");
+
+        Assert.assertTrue("ID 5 should have inverse element id=4", 4 == reverseId);
+
+        rs.close();
+        conn.close();
+    }
+
+
+    @Test
+    public void testAddLocalrefElemToInverseConcept() throws Exception {
+
+        int checkedOutID = vocabularyService.checkOutVocabularyFolder(1, "julius");
+
+        VocabularyConcept concept1 =
+                vocabularyService.getVocabularyConcept(checkedOutID, "concept1", false);
+
+        VocabularyConcept concept2 =
+                vocabularyService.getVocabularyConcept(checkedOutID, "concept2", false);
+
+        int concept2IdAfter = concept2.getId();
+        int concept1IdAfter = concept1.getId();
+
+        DataElement skosNarrower = dataService.getDataElement(5);
+        skosNarrower.setRelatedConceptId(concept2.getId());
+
+        List<List<DataElement>> elemAttrs = new ArrayList<List<DataElement>>();
+        List<DataElement> skosNarrowElems = new ArrayList<DataElement>();
+        skosNarrowElems.add(skosNarrower);
+        elemAttrs.add(skosNarrowElems);
+
+        concept1.setElementAttributes(elemAttrs);
+
+        vocabularyService.updateVocabularyConcept(concept1);
+        //vocabularyService.updateVocabularyConcept(concept2);
+
+        //for localref elems relations are created after save:
+        concept2 =  vocabularyService.getVocabularyConcept(checkedOutID, "concept2", false);
+        List<List<DataElement>> dataElements =  concept2.getElementAttributes();
+
+
+        List<DataElement> skosBroaderElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", dataElements);
+
+        Assert.assertEquals(1, concept2.getElementAttributes().size());
+        Assert.assertEquals(1, skosBroaderElements.size());
+        //id has to be correct
+        Assert.assertEquals(Integer.valueOf(concept1IdAfter), skosBroaderElements.get(0).getRelatedConceptId());
+        concept1 =  vocabularyService.getVocabularyConcept(checkedOutID, "concept1", false);
+
+        //related IDs should stay alive after check-in as well:
+        vocabularyService.checkInVocabularyFolder(checkedOutID, "julius");
+
+        VocabularyConcept concept2CheckedIn = vocabularyService.getVocabularyConcept(1, "concept2", false);
+        VocabularyConcept concept1CheckedIn = vocabularyService.getVocabularyConcept(1, "concept1", false);
+        dataElements =  concept1CheckedIn.getElementAttributes();
+
+        List<DataElement> skosNarrowerElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", dataElements);
+
+
+        Assert.assertEquals(Integer.valueOf(concept2IdAfter), skosNarrowerElements.get(0).getRelatedConceptId());
+
+        dataElements =  concept2CheckedIn.getElementAttributes();
+        skosBroaderElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", dataElements);
+
+        Assert.assertEquals(Integer.valueOf(concept1IdAfter), skosBroaderElements.get(0).getRelatedConceptId());
+    }
+
+    @Override
+    protected Reader getReaderFromResource(String resourceLoc) throws Exception {
+        return null;
     }
 
 }
