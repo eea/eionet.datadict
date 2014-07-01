@@ -246,15 +246,14 @@ public interface IDataElementDAO {
      * @param oldRelationalConceptId previous value of concept ID - null if new record
      * @param newRelationalConceptId new value of the relational concept ID - null if changed to empty
      */
-    void updateRelationalElements(int dataElementId, int conceptId, Integer oldRelationalConceptId,
-            Integer newRelationalConceptId);
+    void createInverseElements(int dataElementId, int conceptId,  Integer newRelationalConceptId);
 
     /**
      * Delete element values in this vocabulary where this concept is referred as related element.
      * @param conceptId concept id
      * @param dataElemId data element id
      */
-    void deleteReferringLocalRefElems(int conceptId);
+    void deleteReferringInverseElems(int conceptId, List<DataElement> dataElements);
 
     /**
      * Returns inverse element ID if exists.
@@ -263,4 +262,12 @@ public interface IDataElementDAO {
      * @return data element id or null if no inverse element
      */
     Integer getInverseElementID(int dataElementId);
+
+    /**
+     * deletes references in other vocabularies for this vocabulary concepts.
+     * @param vocabularyId vocabulary id
+     */
+    void deleteReferringReferenceElems(int vocabularyId);
+
+
 }

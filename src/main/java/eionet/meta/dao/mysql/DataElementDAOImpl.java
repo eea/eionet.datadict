@@ -986,31 +986,27 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     }
 
     @Override
-    public void updateRelationalElements(int dataElementId, int conceptId, Integer oldRelationalConceptId,
-            Integer newRelationalConceptId) {
-
+    public void createInverseElements(int dataElementId, int conceptId,  Integer newRelationalConceptId) {
         LOGGER.debug(" ---------------------------------------------------------------- ");
-        LOGGER.debug(oldRelationalConceptId == null ? "== INSERT ==" : "== DELETE ==");
+        LOGGER.debug(" CreateOrupdateReverseLink(" + dataElementId + ", " + conceptId + ", "
+                + newRelationalConceptId + ")");
         LOGGER.debug(" ---------------------------------------------------------------- ");
-        LOGGER.debug(" CreateOrupdateReverseLink(" + dataElementId + ", " + conceptId + ", " + oldRelationalConceptId + ", "
-                + newRelationalConceptId + "?");
-        LOGGER.debug(" ---------------------------------------------------------------- ");
-        getJdbcTemplate().update("call CreateOrupdateReverseLink(?, ?, ?, ?)", dataElementId, conceptId, oldRelationalConceptId,
-                newRelationalConceptId);
+        getJdbcTemplate().update("call CreateReverseLink(?, ?, ?)", dataElementId, conceptId, newRelationalConceptId);
     }
 
     @Override
-    public void deleteReferringLocalRefElems(int conceptId) {
-        String sql = "delete vce.* FROM datadict.vocabulary_concept_element vce, VOCABULARY_CONCEPT vsource, VOCABULARY_CONCEPT "
-                + "vtarget where vce.RELATED_CONCEPT_ID = :conceptId "
-                + " AND vce.VOCABULARY_CONCEPT_ID = vsource.VOCABULARY_CONCEPT_ID  "
-                + " AND vtarget.VOCABULARY_CONCEPT_ID = vce.RELATED_CONCEPT_ID  AND vsource.VOCABULARY_ID = vtarget.VOCABULARY_ID";
+    public void deleteReferringInverseElems(int conceptId, List<DataElement> dataElements) {
+//        String sql = "delete vce.* FROM datadict.vocabulary_concept_element vce, VOCABULARY_CONCEPT vsource, VOCABULARY_CONCEPT "
+//                + "vtarget, INFERENCE_RULE rule where vce.DATAELEM_ID = rule.DATAELEM_ID AND vce.RELATED_CONCEPT_ID = :conceptId "
+//                + " AND vce.VOCABULARY_CONCEPT_ID = vsource.VOCABULARY_CONCEPT_ID  "
+//                + " AND vtarget.VOCABULARY_CONCEPT_ID = vce.RELATED_CONCEPT_ID  AND vsource.VOCABULARY_ID = vtarget.VOCABULARY_ID";
 
-        Map<String, Object> params = new HashMap<String, Object>();
-        //params.put("vocabularyId", vocabularyId);
-        params.put("conceptId", conceptId);
-        //params.put("dataElementId", dataElemId);
-        getNamedParameterJdbcTemplate().update(sql, params);
+        for (DataElement elem : dataElements) {
+            if (elem.getRelatedConceptId() != null) {
+                getJdbcTemplate().update("call DeleteReverseLink(?, ?)", elem.getId(), conceptId);
+            }
+        }
+
     }
 
 
@@ -1025,4 +1021,20 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         return result;
     }
+
+    @Override
+    public void deleteReferringReferenceElems(int vocabularyId) {
+
+        String sql = "delete vce.* FROM datadict.vocabulary_concept_element vce, VOCABULARY_CONCEPT vsource, VOCABULARY_CONCEPT, "
+                + "VOCABULARY v "
+                + "vtarget where vce.RELATED_CONCEPT_ID = :conceptId "
+                + "AND vce.VOCABULARY_CONCEPT_ID = vsource.VOCABULARY_CONCEPT_ID  "
+                + "AND vtarget.VOCABULARY_CONCEPT_ID = vce.RELATED_CONCEPT_ID  "
+                + "AND vsource.VOCABULARY_ID <> vtarget.VOCABULARY_ID";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyId", vocabularyId);
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
 }

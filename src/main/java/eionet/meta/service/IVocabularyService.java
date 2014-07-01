@@ -672,4 +672,10 @@ public interface IVocabularyService {
      */
     VocabularyFolder getVocabularyWithConcepts(String identifier, String vocabularySet);
 
+    /**
+     * fix inverse relations in other concepts.
+     * @param vocabularyId this vocabulary ID
+     * @param concepts concepts of the vocabulary
+     */
+    void fixRelatedReferenceElements(int vocabularyId, List<VocabularyConcept> concepts);
 }
