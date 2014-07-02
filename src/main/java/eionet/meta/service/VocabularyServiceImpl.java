@@ -333,12 +333,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
         }
         // fix relations in inverse elems
-        // fixDeletedRelatedElems(vocabularyConcept);
 
         fixRelatedLocalRefElements(vocabularyConcept, dataElementValues);
         dataElementDAO.deleteVocabularyConceptDataElementValues(vocabularyConcept.getId());
         if (dataElementValues.size() > 0) {
-System.out.println(vocabularyConcept.getId() + " >>>>>>>>>> SIZE > 0 = " +  dataElementValues.size());
             dataElementDAO.insertVocabularyConceptDataElementValues(vocabularyConcept.getId(), dataElementValues);
         }
 
@@ -373,14 +371,21 @@ System.out.println(vocabularyConcept.getId() + " >>>>>>>>>> SIZE > 0 = " +  data
     private void fixRelatedLocalRefElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues)
             throws ServiceException {
         try {
+
+            //delet all element inversions existing in old copy as well:
+            List<DataElement> originalElementValues =
+                    dataElementDAO.getVocabularyDataElements(vocabularyConcept.getVocabularyId());
+
+            for (DataElement elem : originalElementValues) {
+                dataElementDAO.deleteInverseElemsOfConcept(vocabularyConcept.getId(), elem);
+            }
+
             if (dataElementValues != null) {
-                System.out.println(" ################################################################# ");
                 dataElementDAO.deleteReferringInverseElems(vocabularyConcept.getId(), dataElementValues);
-                   System.out.println(" ** delete Referring " +  vocabularyConcept.getId());
+
                 for (DataElement elem : dataElementValues) {
                     if ("localref".equals(dataElementDAO.getDataElementDataType(elem.getId()))
                             && elem.getRelatedConceptId() != null && elem.getRelatedConceptId() != 0) {
-                        System.out.println(" HERE WE GO> elem " +  elem.getIdentifier());
                         dataElementDAO.createInverseElements(elem.getId(), vocabularyConcept.getId(), elem.getRelatedConceptId());
                     }
                 }
@@ -581,7 +586,6 @@ System.out.println(vocabularyConcept.getId() + " >>>>>>>>>> SIZE > 0 = " +  data
             int originalVocabularyFolderId = vocabularyFolder.getCheckedOutCopyId();
 
             if (!vocabularyFolder.isSiteCodeType()) {
-                // deleteInverseRelations(originalVocabularyFolderId);
 
                 List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(originalVocabularyFolderId);
 
@@ -589,6 +593,7 @@ System.out.println(vocabularyConcept.getId() + " >>>>>>>>>> SIZE > 0 = " +  data
                     List<List<DataElement>> elems =
                             dataElementDAO
                                     .getVocabularyConceptDataElementValues(originalVocabularyFolderId, concept.getId(), true);
+
                     for (List<DataElement> elemMeta : elems) {
                         if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
                             dataElementDAO.deleteReferringInverseElems(concept.getId(), elemMeta);
@@ -619,14 +624,22 @@ System.out.println(vocabularyConcept.getId() + " >>>>>>>>>> SIZE > 0 = " +  data
             vocabularyFolderDAO.updateVocabularyFolder(vocabularyFolder);
 
             if (!vocabularyFolder.isSiteCodeType()) {
+
                 // Move new vocabulary concepts to folder
                 vocabularyConceptDAO.moveVocabularyConcepts(vocabularyFolderId, originalVocabularyFolderId);
 
-                // Move data element relations to folder
+                // Move bound data elements to new vocabulary
                 dataElementDAO.moveVocabularyDataElements(vocabularyFolderId, originalVocabularyFolderId);
 
-                // -----
                 List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(originalVocabularyFolderId);
+                for (VocabularyConcept concept : concepts) {
+                    List<List<DataElement>> elems =
+                            dataElementDAO
+                                    .getVocabularyConceptDataElementValues(originalVocabularyFolderId, concept.getId(), true);
+
+                    concept.setElementAttributes(elems);
+
+                }
                 fixRelatedReferenceElements(vocabularyFolderId, concepts);
 
             }
@@ -1218,11 +1231,11 @@ System.out.println(vocabularyConcept.getId() + " >>>>>>>>>> SIZE > 0 = " +  data
     @Override
     public void fixRelatedReferenceElements(int vocabularyId, List<VocabularyConcept> concepts) {
         for (VocabularyConcept concept : concepts) {
-            List<List<DataElement>> elems =
-                    dataElementDAO
-                            .getVocabularyConceptDataElementValues(vocabularyId, concept.getId(), true);
+            List<List<DataElement>> elems = concept.getElementAttributes();
+//                    dataElementDAO
+//                            .getVocabularyConceptDataElementValues(vocabularyId, concept.getId(), true);
             for (List<DataElement> elemMeta : elems) {
-                if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
+                if (!elemMeta.isEmpty() && "reference".equals(elemMeta.get(0).getDatatype())) {
                     for (DataElement elem : elemMeta) {
                         if (elem.getRelatedConceptId() != null && elem.getRelatedConceptId() != 0) {
                             dataElementDAO

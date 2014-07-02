@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -145,7 +146,8 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
 
         Assert.assertEquals(1, concept2.getElementAttributes().size());
         Assert.assertEquals(1, skosBroaderElements.size());
-        //id has to be correct
+
+        //skos:broader of C2 has to be C1 after C1 save
         Assert.assertEquals(Integer.valueOf(concept1IdAfter), skosBroaderElements.get(0).getRelatedConceptId());
         concept1 =  vocabularyService.getVocabularyConcept(checkedOutID, "concept1", false);
 
@@ -154,20 +156,80 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
 
         VocabularyConcept concept2CheckedIn = vocabularyService.getVocabularyConcept(1, "concept2", false);
         VocabularyConcept concept1CheckedIn = vocabularyService.getVocabularyConcept(1, "concept1", false);
-        dataElements =  concept1CheckedIn.getElementAttributes();
 
+
+        //skos:narrower of C1 has still to be C2.ID after check in
+        dataElements =  concept1CheckedIn.getElementAttributes();
         List<DataElement> skosNarrowerElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", dataElements);
 
-
         Assert.assertEquals(Integer.valueOf(concept2IdAfter), skosNarrowerElements.get(0).getRelatedConceptId());
 
+        //skos:broader of C2 has to be C1.ID after checkin
         dataElements =  concept2CheckedIn.getElementAttributes();
         skosBroaderElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", dataElements);
 
         Assert.assertEquals(Integer.valueOf(concept1IdAfter), skosBroaderElements.get(0).getRelatedConceptId());
+
+
+        //check if skos:broader was bound (was not in seed data)
+        boolean skosBroaderBound = false;
+        List<DataElement> boundElems = vocabularyService.getVocabularyDataElements(1);
+        for (DataElement elem : boundElems) {
+            if ("skos:broader".equals(elem.getIdentifier())) {
+                skosBroaderBound = true;
+            }
+        }
+        Assert.assertTrue("skos:broader was not bound ", skosBroaderBound);
+
     }
+
+
+    @Test
+    public void testAddReferenceElemToInverseConcept() throws Exception {
+        int checkedOutID = vocabularyService.checkOutVocabularyFolder(1, "julius");
+        VocabularyConcept concept2 =
+                vocabularyService.getVocabularyConcept(checkedOutID, "concept2", false);
+
+        //concept gets this ID after checkin
+        int concept2IdAfter = concept2.getId();
+
+        //add narrower match in another vocabulary to concept 2:
+        DataElement skosNarrowerMatch = dataService.getDataElement(2);
+        skosNarrowerMatch.setRelatedConceptId(4);
+
+        List<List<DataElement>> elemAttrs = new ArrayList<List<DataElement>>();
+        List<DataElement> skosNarrowMatchElems = new ArrayList<DataElement>();
+        skosNarrowMatchElems .add(skosNarrowerMatch);
+        elemAttrs.add(skosNarrowMatchElems);
+
+        concept2.setElementAttributes(elemAttrs);
+
+        //nothing should happen in the referenced concept after save:
+        vocabularyService.updateVocabularyConcept(concept2);
+
+        VocabularyConcept referencedConcept4 = vocabularyService.getVocabularyConcept(2, "concept4", false);
+        Assert.assertTrue(referencedConcept4.getElementAttributes().size() == 0);
+
+        //nothing is bound in seed data:
+        List<DataElement> boundElems = vocabularyService.getVocabularyDataElements(2);
+        Assert.assertTrue("No elems should be bound to vocabulary 2", boundElems.size() == 0);
+
+        vocabularyService.checkInVocabularyFolder(checkedOutID, "julius");
+        referencedConcept4 = vocabularyService.getVocabularyConcept(2, "concept4", false);
+
+        //now concept2 has to be in c4 attributes as skos:broaderMatch
+        List<List<DataElement>> dataElements =  referencedConcept4.getElementAttributes();
+System.out.println(" ******************* sizq " + dataElements.size());
+        List<DataElement> skosBroaderMatchElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:broaderMatch", dataElements);
+
+        Assert.assertEquals("cocnept4 has to have braoderMatch concept 2 new ID ",
+                Integer.valueOf(concept2IdAfter), skosBroaderMatchElements.get(0).getRelatedConceptId());
+
+    }
+
 
     @Override
     protected Reader getReaderFromResource(String resourceLoc) throws Exception {

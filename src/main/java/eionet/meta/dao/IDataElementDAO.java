@@ -256,6 +256,12 @@ public interface IDataElementDAO {
     void deleteReferringInverseElems(int conceptId, List<DataElement> dataElements);
 
     /**
+     * deletes inverse elements of the element where this concept id is referred.
+     * @param conceptId concept id
+     * @param dataElement data element
+     */
+    void deleteInverseElemsOfConcept(int conceptId, DataElement dataElement);
+    /**
      * Returns inverse element ID if exists.
      *
      * @param dataElementId element id

@@ -148,8 +148,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         sql.append("order by de.IDENTIFIER asc, de.DATAELEM_ID desc");
 
-        // LOGGER.debug("SQL: " + sql.toString());
-
         final List<DataElement> dataElements = new ArrayList<DataElement>();
 
         getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
@@ -540,25 +538,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void deleteVocabularyConceptDataElementValues(int vocabularyConceptId) {
         String sql = "delete from VOCABULARY_CONCEPT_ELEMENT where VOCABULARY_CONCEPT_ID = :vocabularyConceptId";
-        // TODO_20044
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyConceptId", vocabularyConceptId);
 
         getNamedParameterJdbcTemplate().update(sql, params);
-        LOGGER.debug(" ---------------------------------------------------------------- ");
-        LOGGER.debug(sql + "vocabularyConceptId = " + vocabularyConceptId);
-        LOGGER.debug(" ---------------------------------------------------------------- ");
-
-        // FIXME
-        // delete the ones where this concept is marked as target
-        // sql = "delete from VOCABULARY_CONCEPT_ELEMENT where RELATED_CONCEPT_ID = :relatedConceptId";
-        // params.clear();
-        // params.put("relatedConceptId", vocabularyConceptId);
-        // getNamedParameterJdbcTemplate().update(sql, params);
-
-        // LOGGER.debug(" ---------------------------------------------------------------- ");
-        // LOGGER.debug(sql + "relatedConceptId = " + vocabularyConceptId);
-        // LOGGER.debug(" ---------------------------------------------------------------- ");
     }
 
     /**
@@ -833,7 +816,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("relatedConceptId", vocabularyConceptId);
-        // TODO_20044
+
         getNamedParameterJdbcTemplate().update(sql, params);
     }
 
@@ -967,10 +950,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
     @Override
     public void createInverseElements(int dataElementId, int conceptId,  Integer newRelationalConceptId) {
-        LOGGER.debug(" ---------------------------------------------------------------- ");
-        LOGGER.debug(" CreateOrupdateReverseLink(" + dataElementId + ", " + conceptId + ", "
-                + newRelationalConceptId + ")");
-        LOGGER.debug(" ---------------------------------------------------------------- ");
         getJdbcTemplate().update("call CreateReverseLink(?, ?, ?)", dataElementId, conceptId, newRelationalConceptId);
     }
 
@@ -978,10 +957,15 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     public void deleteReferringInverseElems(int conceptId, List<DataElement> dataElements) {
         for (DataElement elem : dataElements) {
             if (elem.getRelatedConceptId() != null) {
-                getJdbcTemplate().update("call DeleteReverseLink(?, ?)", elem.getId(), conceptId);
+                deleteInverseElemsOfConcept(conceptId, elem);
             }
         }
 
+    }
+
+    @Override
+    public void deleteInverseElemsOfConcept(int conceptId, DataElement dataElement) {
+        getJdbcTemplate().update("call DeleteReverseLink(?, ?)", dataElement.getId(), conceptId);
     }
 
 
