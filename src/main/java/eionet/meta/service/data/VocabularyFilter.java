@@ -21,6 +21,8 @@
 
 package eionet.meta.service.data;
 
+import org.apache.commons.lang.StringUtils;
+
 import eionet.meta.dao.domain.RegStatus;
 
 /**
@@ -59,6 +61,11 @@ public class VocabularyFilter extends PagedRequest {
      * if true results are search where one or more fields contain the text as a separate word.
      */
     private boolean wordMatch = false;
+
+    /**
+     * base uri.
+     */
+    private String baseUri;
 
     /**
      * filter by identifier.
@@ -123,5 +130,13 @@ public class VocabularyFilter extends PagedRequest {
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    public String getBaseUri() {
+        return baseUri;
+    }
+
+    public void setBaseUri(String baseUri) {
+        this.baseUri = StringUtils.trimToNull(baseUri);
     }
 }

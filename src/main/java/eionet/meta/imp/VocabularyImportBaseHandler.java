@@ -238,56 +238,80 @@ public abstract class VocabularyImportBaseHandler {
             return foundRelatedConcept;
         }
 
-        int lastSlashIndex = relatedConceptUri.lastIndexOf("/") + 1;
-        relatedConceptIdentifier = relatedConceptUri.substring(lastSlashIndex);
-        String relatedConceptBaseUri = relatedConceptUri.substring(0, lastSlashIndex);
-        if (StringUtils.isNotEmpty(relatedConceptBaseUri) && StringUtils.isNotEmpty(relatedConceptIdentifier)) {
-            // check cache first
-            foundRelatedConcept = this.relatedConceptCache.get(relatedConceptUri);
-            // && !this.notFoundRelatedConceptCache.contains(relatedConceptUri)
-            if (foundRelatedConcept == null) {
-                // not found in cache search in database
-                String temp = relatedConceptBaseUri.substring(0, relatedConceptBaseUri.length() - 1);
-                String relatedConceptVocabularyIdentifier = temp.substring(temp.lastIndexOf("/") + 1);
-                if (StringUtils.isNotEmpty(relatedConceptVocabularyIdentifier)) {
-                    try {
-                        VocabularyFolder foundVocabularyFolder = null;
-                        // create vocabulary filter
-                        VocabularyFilter vocabularyFilter = new VocabularyFilter();
-                        vocabularyFilter.setIdentifier(relatedConceptVocabularyIdentifier);
-                        vocabularyFilter.setWorkingCopy(false);
-                        // first search for vocabularies, to find correct concept and to make searching faster for concepts
-                        VocabularyResult vocabularyResult = this.vocabularyService.searchVocabularies(vocabularyFilter);
-                        if (vocabularyResult != null) {
-                            for (VocabularyFolder vocabularyFolder : vocabularyResult.getList()) {
-                                // if it matches with base uri then we found it! this is an costly operation
-                                // but to satisfy consistency we need it.
-                                if (StringUtils.equals(relatedConceptBaseUri, VocabularyFolder.getBaseUri(vocabularyFolder))) {
-                                    foundVocabularyFolder = vocabularyFolder;
-                                    break;
+        try {
+            // extract related concept base uri and related concept identifier
+            int lastSlashIndex = relatedConceptUri.lastIndexOf("/") + 1;
+            String relatedConceptBaseUri = relatedConceptUri.substring(0, lastSlashIndex);
+            relatedConceptIdentifier = relatedConceptUri.substring(lastSlashIndex);
+            if (StringUtils.isNotEmpty(relatedConceptBaseUri) && StringUtils.isNotEmpty(relatedConceptIdentifier)) {
+                // check cache first
+                foundRelatedConcept = this.relatedConceptCache.get(relatedConceptUri);
+                // && !this.notFoundRelatedConceptCache.contains(relatedConceptUri)
+                if (foundRelatedConcept == null) {
+                    // not found in cache search in database
+                    // 1.
+                    // first search for vocabularies with base uri. if cannot find search with vocabulary identifier. because
+                    // extracted
+                    // vocabulary identifier may not be correct. e.g. http://publications.europa.eu/resource/authority/country/
+                    // vocabulary
+                    // identifier found as country but it actually countries
+                    // TODO: second step (searching vocabulary folder with identifier) can be removed after base uri population
+                    // solution is
+                    // merged to master
+                    VocabularyFolder foundVocabularyFolder = null;
+                    VocabularyFilter vocabularyFilter = new VocabularyFilter();
+                    vocabularyFilter.setWorkingCopy(false);
+                    vocabularyFilter.setUsePaging(false);
+                    vocabularyFilter.setBaseUri(relatedConceptBaseUri);
+                    // first search for vocabularies, to find correct concept and to make searching faster for concepts
+                    VocabularyResult vocabularyResult = this.vocabularyService.searchVocabularies(vocabularyFilter);
+                    if (vocabularyResult != null && vocabularyResult.getTotalItems() > 0) {
+                        // get the first found item, since base uri kinda unique
+                        foundVocabularyFolder = vocabularyResult.getList().get(0);
+                    } else {
+                        // 2. TODO: can be removed after base uri branch merged to master
+                        String temp = relatedConceptBaseUri.substring(0, relatedConceptBaseUri.length() - 1);
+                        String relatedConceptVocabularyIdentifier = temp.substring(temp.lastIndexOf("/") + 1);
+                        if (StringUtils.isNotBlank(relatedConceptVocabularyIdentifier)) {
+                            // create vocabulary filter
+                            vocabularyFilter.setBaseUri(null);
+                            vocabularyFilter.setIdentifier(relatedConceptVocabularyIdentifier);
+
+                            // first search for vocabularies, to find correct concept and to make searching faster for concepts
+                            vocabularyResult = this.vocabularyService.searchVocabularies(vocabularyFilter);
+                            if (vocabularyResult != null) {
+                                for (VocabularyFolder vocabularyFolder : vocabularyResult.getList()) {
+                                    // if it matches with base uri then we found it! this is an costly operation
+                                    // but to satisfy consistency we need it.
+                                    if (StringUtils.equals(relatedConceptBaseUri, VocabularyFolder.getBaseUri(vocabularyFolder))) {
+                                        foundVocabularyFolder = vocabularyFolder;
+                                        break;
+                                    }
                                 }
                             }
                         }
-                        // if a vocabulary not found don't go on!
-                        if (foundVocabularyFolder != null) {
-                            VocabularyConceptFilter filter = new VocabularyConceptFilter();
-                            filter.setUsePaging(false);
-                            filter.setIdentifier(relatedConceptIdentifier);
-                            filter.setVocabularyFolderId(foundVocabularyFolder.getId());
-                            // search for concepts now
-                            VocabularyConceptResult results = this.vocabularyService.searchVocabularyConcepts(filter);
-                            // if found more than one, how can system detect which one is searched for!
-                            if (results != null && results.getFullListSize() == 1) {
-                                foundRelatedConcept = results.getList().get(0);
-                                this.relatedConceptCache.put(relatedConceptUri, foundRelatedConcept);
-                            }
+                    }
+
+                    // if a vocabulary not found don't go on!
+                    if (foundVocabularyFolder != null) {
+                        VocabularyConceptFilter filter = new VocabularyConceptFilter();
+                        filter.setUsePaging(false);
+                        filter.setIdentifier(relatedConceptIdentifier);
+                        filter.setVocabularyFolderId(foundVocabularyFolder.getId());
+                        // search for concepts now
+                        VocabularyConceptResult results = this.vocabularyService.searchVocabularyConcepts(filter);
+                        // if found more than one, how can system detect which one is searched for!
+                        if (results != null && results.getFullListSize() == 1) {
+                            foundRelatedConcept = results.getList().get(0);
+                            this.relatedConceptCache.put(relatedConceptUri, foundRelatedConcept);
                         }
-                    } catch (ServiceException e) {
-                        e.printStackTrace();
                     }
                 }
             }
+        } catch (ServiceException e) {
+            e.printStackTrace();
         }
+
         return foundRelatedConcept;
     } // end of method findRelatedConcept
 

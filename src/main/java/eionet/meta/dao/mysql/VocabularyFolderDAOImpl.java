@@ -21,17 +21,6 @@
 
 package eionet.meta.dao.mysql;
 
-import eionet.meta.dao.IVocabularyFolderDAO;
-import eionet.meta.dao.domain.RegStatus;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.dao.domain.VocabularyType;
-import eionet.meta.service.data.VocabularyFilter;
-import eionet.meta.service.data.VocabularyResult;
-import eionet.util.Triple;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -39,6 +28,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import eionet.meta.dao.IVocabularyFolderDAO;
+import eionet.meta.dao.domain.RegStatus;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.dao.domain.VocabularyType;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
+import eionet.util.Triple;
 
 /**
  * Vocabualary folder DAO.
@@ -681,7 +682,8 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
             if (filter.isWordMatch()) {
                 params.put("text", "[[:<:]]" + filter.getConceptText() + "[[:>:]]");
                 sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ");
-                sql.append(" AND (vc.LABEL REGEXP :conceptText OR vc.IDENTIFIER REGEXP :conceptText OR vc.DEFINITION REGEXP :conceptText)) ");
+                sql.append(" AND (vc.LABEL REGEXP :conceptText OR vc.IDENTIFIER REGEXP :conceptText ");
+                sql.append(" OR vc.DEFINITION REGEXP :conceptText)) ");
             } else if (filter.isExactMatch()) {
                 params.put("conceptText", filter.getConceptText());
                 sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ");
@@ -689,8 +691,14 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
             } else {
                 params.put("conceptText", "%" + filter.getConceptText() + "%");
                 sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ");
-                sql.append(" AND (vc.LABEL like :conceptText OR vc.IDENTIFIER like :conceptText OR vc.DEFINITION like :conceptText) ) ");
+                sql.append(" AND (vc.LABEL like :conceptText ");
+                sql.append(" OR vc.IDENTIFIER like :conceptText OR vc.DEFINITION like :conceptText) ) ");
             }
+        }
+
+        if (StringUtils.isNotBlank(filter.getBaseUri())) {
+            params.put("baseUri", filter.getBaseUri());
+            sql.append(" AND v.BASE_URI like :baseUri ");
         }
         sql.append(" ORDER BY v.IDENTIFIER");
 

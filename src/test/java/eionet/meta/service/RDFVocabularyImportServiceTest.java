@@ -644,7 +644,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         dataElemId = 9;
         identifier = "skos:definition";
-        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier , dataElements);
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
         element = new DataElement();
         element.setAttributeValue("de_rdf_test_concept_3_updated");
         element.setIdentifier(identifier);
@@ -789,7 +789,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // Nothing seen, nothing updated, no error generated
-        for (String l: logMessages) {
+        for (String l : logMessages) {
             if (l.startsWith("Number of predicates seen:")) {
                 Assert.assertEquals("Number of predicates seen: 0", l);
             }
@@ -797,6 +797,50 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
                 Assert.assertEquals("Number of updated concepts: 0", l);
             }
         }
-    }
+    } // end of testNoErrorIsGeneratedWhenSendingNothing
 
+    /**
+     * In this test, a related element added with different type of base uri. i.e. base uri is NOT like:
+     * http://<dd_host>/<vocabulary_folder_identifier>/<vocabulary_identifier>/
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfRelatedElementAddedCorrectly() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_10.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, false);
+        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // query updated concept
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // manually update initial values of concepts for comparison
+        VocabularyConcept vc9 = findVocabularyConceptById(concepts, 9);
+
+        String identifier = "skos:exactMatch";
+        List<List<DataElement>> dataElements = vc9.getElementAttributes();
+        List<DataElement> elems = null;
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        Assert.assertEquals("Number of elements", 1, elems.size());
+        DataElement element = elems.get(0);
+
+        Assert.assertEquals("Identifier", identifier, element.getIdentifier());
+        Assert.assertEquals("Id", 16, element.getId());
+        Assert.assertEquals("Related Concept Id", 12, (long) element.getRelatedConceptId());
+        Assert.assertEquals("Related Concept Identifier", "rdf_test_concept_777", element.getRelatedConceptIdentifier());
+        Assert.assertEquals("Related Concept Label", "rdf_test_concept_label_777", element.getRelatedConceptLabel());
+        Assert.assertEquals("Related Concept Vocabulary", "rdf_header_vocab_3", element.getRelatedConceptVocabulary());
+        Assert.assertEquals("Related Concept Vocabulary Set", "rdf_header_vs_2", element.getRelatedConceptVocSet());
+        Assert.assertEquals("Related Concept Base Uri", "http://tripledev.ee/vocabulary/a_vocabulary_folder/a_vocabulary_name/",
+                element.getRelatedConceptBaseURI());
+        Assert.assertNull("Element value", element.getAttributeValue());
+        Assert.assertNull("Element language", element.getAttributeLanguage());
+    }// end of test step testIfConceptAndElementsUpdated
 }// end of test case RDFVocabularyImportServiceTest
