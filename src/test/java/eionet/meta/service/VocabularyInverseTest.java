@@ -221,13 +221,104 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
 
         //now concept2 has to be in c4 attributes as skos:broaderMatch
         List<List<DataElement>> dataElements =  referencedConcept4.getElementAttributes();
-System.out.println(" ******************* sizq " + dataElements.size());
         List<DataElement> skosBroaderMatchElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:broaderMatch", dataElements);
 
         Assert.assertEquals("cocnept4 has to have braoderMatch concept 2 new ID ",
                 Integer.valueOf(concept2IdAfter), skosBroaderMatchElements.get(0).getRelatedConceptId());
 
+    }
+
+
+    /**
+     * tests if after deletgin an element it is deleted from the oither side as well.
+     * @throws Exception
+     */
+    @Test
+    public void testDeleteLocalrefElemFromInverseConcept() throws Exception {
+
+        int checkedOutID = vocabularyService.checkOutVocabularyFolder(3, "taburet");
+
+        VocabularyConcept concept5 =
+                vocabularyService.getVocabularyConcept(checkedOutID, "concept5", false);
+
+        List<List<DataElement>> dataElements =  concept5.getElementAttributes();
+        List<DataElement> skosBroaderElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", dataElements);
+
+        //remove broader relateion:
+        skosBroaderElements.clear();
+        vocabularyService.updateVocabularyConcept(concept5);
+
+        //localref elems have to disappear after delete
+
+        VocabularyConcept concept6 =
+                vocabularyService.getVocabularyConcept(checkedOutID, "concept6", false);
+
+        dataElements =  concept6.getElementAttributes();
+        List<DataElement> skosNarrowElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", dataElements);
+
+        Assert.assertNull("Referred localref must not be present before checkin", skosNarrowElements);
+
+        //should remain after checkin
+        vocabularyService.checkInVocabularyFolder(checkedOutID, "taburet");
+
+        VocabularyConcept concept6After =
+                vocabularyService.getVocabularyConcept(3, "concept6", false);
+
+        dataElements =  concept6After.getElementAttributes();
+        skosNarrowElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", dataElements);
+
+
+        Assert.assertNull("Referred localref must not be present after checkin", skosNarrowElements);
+    }
+
+
+    /**
+     * tests if after deletgin an element it is deleted from the oither side as well.
+     * @throws Exception
+     */
+    @Test
+    public void testDeleteReferenceElemFromInverseConcept() throws Exception {
+
+        int checkedOutID = vocabularyService.checkOutVocabularyFolder(4, "taburet");
+
+        VocabularyConcept concept7 =
+                vocabularyService.getVocabularyConcept(checkedOutID, "concept7", false);
+
+        List<List<DataElement>> dataElements =  concept7.getElementAttributes();
+        List<DataElement> skosRelatedMatch =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:relatedMatch", dataElements);
+
+        //remove relation:
+        skosRelatedMatch.clear();
+        vocabularyService.updateVocabularyConcept(concept7);
+
+        //reference elems should not disappear after delete
+
+        VocabularyConcept concept6 =
+                vocabularyService.getVocabularyConcept(3, "concept6", false);
+
+        dataElements =  concept6.getElementAttributes();
+        List<DataElement> skosNarrowElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:relatedMatch", dataElements);
+
+        Assert.assertEquals("Referred reference elem must still be present after save ", 1, skosNarrowElements.size());
+
+        //should remain after checkin
+        vocabularyService.checkInVocabularyFolder(checkedOutID, "taburet");
+
+        VocabularyConcept concept6After =
+                vocabularyService.getVocabularyConcept(3, "concept6", false);
+
+        dataElements =  concept6After.getElementAttributes();
+        skosNarrowElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:relatedMatch", dataElements);
+
+
+        Assert.assertNull("Referred reference must not be present after checkin", skosNarrowElements);
     }
 
 
