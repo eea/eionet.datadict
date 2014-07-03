@@ -448,6 +448,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'owl:inverseOf' AND te.SHORT_NAME = 'owl:inverseOf');
         INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'foaf:isPrimaryTopicOf' AND te.SHORT_NAME = 'foaf:primaryTopic');
         INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'skos:related' AND te.SHORT_NAME = 'skos:related');
+		INSERT INTO INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) (SELECT e.DATAELEM_ID, 'owl:inverseOf', te.DATAELEM_ID FROM DATAELEM e, DATAELEM te WHERE e.SHORT_NAME = 'skos:relatedMatch' AND te.SHORT_NAME = 'skos:relatedMatch');
             ]]>
         </sql>
       </changeSet>
