@@ -36,6 +36,8 @@ import org.unitils.spring.annotation.SpringBeanByType;
 
 import java.io.InputStream;
 import eionet.meta.imp.VocabularyImportBaseHandler;
+
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

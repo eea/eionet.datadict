@@ -37,6 +37,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -794,7 +795,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testNoErrorIsGeneratedWhenSendingNothing() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // Create a string with just the top-level element. It has no data.
         Reader reader = new StringReader("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"/>");
@@ -824,7 +825,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testIfRelatedElementAddedCorrectly() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get reader for RDF file
         Reader reader = getReaderFromResource("rdf_import/rdf_import_test_10.rdf");
@@ -852,7 +853,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Assert.assertEquals("Related Concept Identifier", "rdf_test_concept_777", element.getRelatedConceptIdentifier());
         Assert.assertEquals("Related Concept Label", "rdf_test_concept_label_777", element.getRelatedConceptLabel());
         Assert.assertEquals("Related Concept Vocabulary", "rdf_header_vocab_3", element.getRelatedConceptVocabulary());
-        Assert.assertEquals("Related Concept Vocabulary Set", "rdf_header_vs_2", element.getRelatedConceptVocSet());
         Assert.assertEquals("Related Concept Base Uri", "http://tripledev.ee/vocabulary/a_vocabulary_folder/a_vocabulary_name/",
                 element.getRelatedConceptBaseURI());
         Assert.assertNull("Element value", element.getAttributeValue());

@@ -40,6 +40,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -978,7 +979,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         getNamedParameterJdbcTemplate().update(sql, params);
     }
-	
+
     @Override
     public List<DataElement> getPotentialReferringVocabularyConceptsElements() {
         StringBuilder sql = new StringBuilder();
