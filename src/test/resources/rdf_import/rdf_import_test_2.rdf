@@ -38,6 +38,7 @@
       <geo:lat>HCO3_rdf_test_concept_3</geo:lat>
       <skos:relatedMatch>http://test.tripledev.ee/datadict/vocabulary/test/test_another_source/another1</skos:relatedMatch>
       <skos:related rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_2"/>
+      <skos:related rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_1"/>
       <skos:prefLabel xml:lang="bg">bg_rdf_test_concept_3_updated</skos:prefLabel>
       <skos:prefLabel xml:lang="en">en_rdf_test_concept_3</skos:prefLabel>
       <skos:prefLabel xml:lang="pl">pl_rdf_test_concept_3</skos:prefLabel>

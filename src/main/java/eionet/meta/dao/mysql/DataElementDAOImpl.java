@@ -41,12 +41,15 @@ import org.springframework.stereotype.Repository;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.IDataElementDAO;
+
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.jndi.support.SimpleJndiBeanFactory;
 
 /**
  * Data element DAO.
@@ -84,7 +87,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * finds Common elements.
      *
-     * @param filter search filter
+     * @param filter
+     *            search filter
      * @return list of data elements
      */
     private List<DataElement> executeCommonElementQuery(final DataElementsFilter filter) {
@@ -192,7 +196,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * finds non-Common elements.
      *
-     * @param filter search filter
+     * @param filter
+     *            search filter
      * @return list of data elements
      */
     private List<DataElement> executeNonCommonElementQuery(final DataElementsFilter filter) {
@@ -537,7 +542,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void deleteVocabularyConceptDataElementValues(int vocabularyConceptId) {
         String sql = "delete from VOCABULARY_CONCEPT_ELEMENT where VOCABULARY_CONCEPT_ID = :vocabularyConceptId";
-
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyConceptId", vocabularyConceptId);
 
@@ -639,6 +643,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setRelatedConceptVocSet(rs.getString("rcvs.IDENTIFIER"));
                 de.setVocabularyId(rs.getInt("d.VOCABULARY_ID"));
 
+                de.setRelatedConceptOriginalId(rs.getInt("rc.ORIGINAL_CONCEPT_ID"));
+                de.setRelatedVocabularyStatus(rs.getString("rcv.REG_STATUS"));
+                de.setRelatedVocabularyWorkingCopy(rs.getInt("rcv.WORKING_COPY") == 1);
+
                 List<FixedValue> fxvs = getFixedValues(de.getId());
 
                 de.setFixedValues(fxvs);
@@ -675,13 +683,16 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[dataElementValues.size()];
 
+        // List<Map<String, Object>> inverseRelations = new ArrayList<Map<String,Object>>();
+
         for (int i = 0; i < batchValues.length; i++) {
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("vocabularyConceptId", vocabularyConceptId);
             params.put("dataElementId", dataElementValues.get(i).getId());
             params.put("elementValue", dataElementValues.get(i).getAttributeValue());
             params.put("language", dataElementValues.get(i).getAttributeLanguage());
-            params.put("relatedConceptId", dataElementValues.get(i).getRelatedConceptId());
+            Integer relatedConceptID = dataElementValues.get(i).getRelatedConceptId();
+            params.put("relatedConceptId", relatedConceptID);
             batchValues[i] = params;
         }
 
@@ -735,8 +746,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * After copying localref type element IDs have to be changed.
      *
-     * @param oldVocabularyId old vocabulary ID
-     * @param newVocabularyId new vocabulary ID
+     * @param oldVocabularyId
+     *            old vocabulary ID
+     * @param newVocabularyId
+     *            new vocabulary ID
      */
     private void updateCopiedRelatedConceptIds(int oldVocabularyId, int newVocabularyId) {
         StringBuilder sql = new StringBuilder();
@@ -780,7 +793,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * updates localref IDs to the new concept ones.
      *
-     * @param newVocabularyId new vocabulary ID
+     * @param newVocabularyId
+     *            new vocabulary ID
      */
     private void updateCheckedoutRelatedConceptIds(int newVocabularyId) {
         StringBuilder sql = new StringBuilder();
@@ -977,4 +991,53 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         getNamedParameterJdbcTemplate().update(sql, params);
     }
+
+    @Override
+    public void createInverseElements(int dataElementId, int conceptId,  Integer newRelationalConceptId) {
+        getJdbcTemplate().update("call CreateReverseLink(?, ?, ?)", dataElementId, conceptId, newRelationalConceptId);
+    }
+
+    @Override
+    public void deleteReferringInverseElems(int conceptId, List<DataElement> dataElements) {
+        for (DataElement elem : dataElements) {
+            if (elem.getRelatedConceptId() != null) {
+                deleteInverseElemsOfConcept(conceptId, elem);
+            }
+        }
+
+    }
+
+    @Override
+    public void deleteInverseElemsOfConcept(int conceptId, DataElement dataElement) {
+        getJdbcTemplate().update("call DeleteReverseLink(?, ?)", dataElement.getId(), conceptId);
+    }
+
+
+    @Override
+    public Integer getInverseElementID(int dataElementId) {
+        String sql = "select GetInverseElemId(:elemId)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("elemId", dataElementId);
+
+        Integer result = getNamedParameterJdbcTemplate().queryForInt(sql, params);
+
+        return result;
+    }
+
+    @Override
+    public void deleteReferringReferenceElems(int vocabularyId) {
+
+        String sql = "delete vce.* FROM datadict.vocabulary_concept_element vce, VOCABULARY_CONCEPT vsource, VOCABULARY_CONCEPT, "
+                + "VOCABULARY v "
+                + "vtarget where vce.RELATED_CONCEPT_ID = :conceptId "
+                + "AND vce.VOCABULARY_CONCEPT_ID = vsource.VOCABULARY_CONCEPT_ID  "
+                + "AND vtarget.VOCABULARY_CONCEPT_ID = vce.RELATED_CONCEPT_ID  "
+                + "AND vsource.VOCABULARY_ID <> vtarget.VOCABULARY_ID";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyId", vocabularyId);
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
 }

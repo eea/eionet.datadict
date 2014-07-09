@@ -521,17 +521,17 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     }
 
     @Override
-    public void moveReferenceConcepts(int oldVocabularyId, int newVocabularyId) {
+    public void updateReferringReferenceConcepts(int oldVocabularyId) {
         StringBuilder sql = new StringBuilder();
         sql.append("update VOCABULARY_CONCEPT_ELEMENT vce, VOCABULARY_CONCEPT vco, VOCABULARY_CONCEPT vcn  ");
-        sql.append("SET vce.RELATED_CONCEPT_ID = vcn.VOCABULARY_CONCEPT_ID WHERE vcn.VOCABULARY_ID = :newVocabularyId ");
-        sql.append("AND vco.VOCABULARY_ID = :oldVocabularyId AND vco.IDENTIFIER=vcn.IDENTIFIER  ");
+        sql.append("SET vce.RELATED_CONCEPT_ID = vcn.VOCABULARY_CONCEPT_ID WHERE ");
+        sql.append("vcn.ORIGINAL_CONCEPT_ID = vco.VOCABULARY_CONCEPT_ID ");
+        sql.append("AND vco.VOCABULARY_ID = :oldVocabularyId ");
         sql.append("AND vce.RELATED_CONCEPT_ID=vco.VOCABULARY_CONCEPT_ID");
-
+      //TODO_20044 - check
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("newVocabularyId", newVocabularyId);
         parameters.put("oldVocabularyId", oldVocabularyId);
-
+LOGGER.debug(StringUtils.replace(sql.toString(), ":oldVocabularyId", String.valueOf(oldVocabularyId)));
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 

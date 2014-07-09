@@ -125,7 +125,7 @@ public interface IDataElementDAO {
     /**
      * Deletes all vocabulary concept's data element values.
      *
-     * @param vocabularyConceptId
+     * @param vocabularyConceptId concept ID
      */
     void deleteVocabularyConceptDataElementValues(int vocabularyConceptId);
 
@@ -230,7 +230,7 @@ public interface IDataElementDAO {
      * @param vocabularyIds vocabulary ids
      * @return collection of data elements
      */
-    List<DataElement> getVocabularySourceElements(List<Integer>vocabularyIds);
+    List<DataElement> getVocabularySourceElements(List<Integer> vocabularyIds);
 
     /**
      * changes vocabulary reference in CH3 - fxv vocabulary elements.
@@ -238,6 +238,43 @@ public interface IDataElementDAO {
      * @param vocabularyId new vocabulary ID
      */
     void moveVocabularySources(int originalVocabularyId, int vocabularyId);
+
+    /**
+     * Calls stored procedure that fixes relational elements.
+     * @param dataElementId data element id
+     * @param conceptId vocabulary concept id
+     * @param oldRelationalConceptId previous value of concept ID - null if new record
+     * @param newRelationalConceptId new value of the relational concept ID - null if changed to empty
+     */
+    void createInverseElements(int dataElementId, int conceptId,  Integer newRelationalConceptId);
+
+    /**
+     * Delete element values in this vocabulary where this concept is referred as related element.
+     * @param conceptId concept id
+     * @param dataElemId data element id
+     */
+    void deleteReferringInverseElems(int conceptId, List<DataElement> dataElements);
+
+    /**
+     * deletes inverse elements of the element where this concept id is referred.
+     * @param conceptId concept id
+     * @param dataElement data element
+     */
+    void deleteInverseElemsOfConcept(int conceptId, DataElement dataElement);
+    /**
+     * Returns inverse element ID if exists.
+     *
+     * @param dataElementId element id
+     * @return data element id or null if no inverse element
+     */
+    Integer getInverseElementID(int dataElementId);
+
+    /**
+     * deletes references in other vocabularies for this vocabulary concepts.
+     * @param vocabularyId vocabulary id
+     */
+    void deleteReferringReferenceElems(int vocabularyId);
+
 
     /**
      * Change the given data element's type to the given value.

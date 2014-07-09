@@ -1535,7 +1535,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <comment>Remove GIS column from DATAELEM table, as it's no longer needed.</comment>
         <dropColumn tableName="DATAELEM" columnName="GIS"/>
     </changeSet>
-    
+
     <changeSet author="enverveli" id="rev-124">
         <comment>Change data type of DATE_DELETED to DATE</comment>
         <addColumn tableName="T_SITE_CODE">
@@ -1548,12 +1548,12 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropColumn columnName="DATE_DELETED" tableName="T_SITE_CODE"/>
         <renameColumn newColumnName="DATE_DELETED" oldColumnName="DATE_DELETED_TEMP" tableName="T_SITE_CODE" columnDataType="DATE"/>
     </changeSet>
-    
+
     <changeSet author="lainekai" id="rev-125">
         <comment>New type CH3 for fixed value elements related to a vocabulary.</comment>
         <modifyDataType tableName="DATAELEM" columnName="TYPE" newDataType="enum('CH1','CH2','CH3') NOT NULL default 'CH2'"/>
     </changeSet>
-    
+
     <changeSet author="lainekai" id="rev-126">
         <comment>Add relation to vocabulary that can be used for Fixed values of the element. Boolean field to indicate if all concepts are legal or only
              the ones created before the element</comment>
@@ -1573,9 +1573,9 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <comment>Drop Column SITE_CODE_ID from T_SITE_CODE table since it's redundant</comment>
         <sql>ALTER TABLE T_SITE_CODE MODIFY SITE_CODE_ID INT NOT NULL</sql>
         <dropPrimaryKey tableName="T_SITE_CODE"/>
-        <dropColumn columnName="SITE_CODE_ID" tableName="T_SITE_CODE"/>		
+        <dropColumn columnName="SITE_CODE_ID" tableName="T_SITE_CODE"/>
         <addPrimaryKey columnNames="VOCABULARY_CONCEPT_ID" tableName="T_SITE_CODE"/>
-	</changeSet>
+  </changeSet>
 
     <changeSet author="lainekai" id="rev-128">
         <comment>Add unique hashed key value to avoid duplicate concept element values</comment>
@@ -1605,4 +1605,98 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             UPDATE VOCABULARY_CONCEPT_ELEMENT SET DATAELEM_ID=DATAELEM_ID;
         </sql>
     </changeSet>
+    <changeSet author="lainekai" id="rev-130">
+        <comment>Create a table for inference rules</comment>
+        <createTable tableName="INFERENCE_RULE">
+            <column name="DATAELEM_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="RULE" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="TARGET_ELEM_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="DATAELEM_ID" baseTableName="INFERENCE_RULE"
+          constraintName="FK_DATAELEM_ID" deferrable="false" initiallyDeferred="false"
+          onDelete="CASCADE" onUpdate="CASCADE"
+          referencedColumnNames="DATAELEM_ID" referencedTableName="DATAELEM" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="TARGET_ELEM_ID" baseTableName="INFERENCE_RULE"
+          constraintName="FK_TARGET_ELEM_ID" deferrable="false" initiallyDeferred="false"
+          onDelete="CASCADE" onUpdate="CASCADE"
+          referencedColumnNames="DATAELEM_ID" referencedTableName="DATAELEM" referencesUniqueColumn="false"/>
+    </changeSet>
+  <changeSet id="rev-131" author="lainekai" dbms="mysql">
+    <comment>Change inference rule type to enum in Mysql only</comment>
+    <sql>
+      ALTER TABLE INFERENCE_RULE MODIFY RULE ENUM('owl:inverseOf');
+    </sql>
+  </changeSet>
+  <changeSet id="rev-132" author="lainekai">
+    <comment>Functions and procedure to create reverse links of referencial elements</comment>
+    <sql endDelimiter="#">
+      DROP FUNCTION IF EXISTS GetInverseElemId;
+      #
+      CREATE  FUNCTION `GetInverseElemId`(DataElementId int) RETURNS INT(11)
+      BEGIN
+          DECLARE InvereseElementId INT;
+          SET InvereseElementId := (SELECT TARGET_ELEM_ID FROM INFERENCE_RULE WHERE DATAELEM_ID = DataElementId AND RULE = 'owl:inverseOf');
+
+              -- not found try commutative
+              IF InvereseElementId IS NULL THEN
+                SET InvereseElementId := (SELECT DATAELEM_ID FROM INFERENCE_RULE WHERE TARGET_ELEM_ID = DataElementId AND RULE = 'owl:inverseOf');
+              END IF;
+          RETURN InvereseElementId;
+      END
+      #
+      DROP PROCEDURE IF EXISTS DeleteReverseLink;
+      #
+      CREATE PROCEDURE `DeleteReverseLink`(DataElemId INT, ConceptId int)
+      BEGIN
+          DECLARE InverseElemId int;
+          SET InverseElemID := GetInverseElemId(DataElemId);
+
+          IF InverseElemID IS NOT NULL THEN
+              delete from VOCABULARY_CONCEPT_ELEMENT WHERE DATAELEM_ID = InverseElemId AND RELATED_CONCEPT_ID = ConceptId;
+          END IF;
+      END
+      #
+      DROP PROCEDURE IF EXISTS CreateReverseLink;
+      #
+      CREATE PROCEDURE `CreateReverseLink`(DataElemId INT, ConceptId INT, TargetConceptId INT)
+      BEGIN
+          DECLARE InverseElemId int;
+          DECLARE TargetVocabularyId int;
+          DECLARE TargetCheckedOutVocabularyId int;
+          DECLARE TargetCheckedOutConceptId int;
+
+          SET InverseElemID := GetInverseElemId(DataElemId);
+
+          IF InverseElemID IS NOT NULL THEN
+
+          SET TargetVocabularyId := (SELECT VOCABULARY_ID FROM VOCABULARY_CONCEPT WHERE VOCABULARY_CONCEPT_ID = TargetConceptId);
+
+               -- manipulate also checked out copy if such exists
+               SET TargetCheckedOutVocabularyId := (SELECT VOCABULARY_ID FROM VOCABULARY WHERE CHECKEDOUT_COPY_ID = TargetVocabularyId);
+
+               -- bind target element to the vocabulary if not bound yet
+               insert ignore into VOCABULARY2ELEM (VOCABULARY_ID, DATAELEM_ID) values (TargetVocabularyId, InverseElemId);
+
+                    -- add the value of this concept to target concept:
+                    insert ignore into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, RELATED_CONCEPT_ID) VALUES (TargetConceptId, InverseElemId, ConceptId);
+
+              -- if checkedout create relations also in checkedout copy
+              IF TargetCheckedOutVocabularyId IS NOT NULL THEN
+                  SET TargetCheckedOutConceptId = (SELECT VOCABULARY_CONCEPT_ID FROM VOCABULARY_CONCEPT WHERE ORIGINAL_CONCEPT_ID = TargetConceptId);
+                  IF TargetCheckedOutConceptId is not null then
+                      insert ignore into VOCABULARY2ELEM (VOCABULARY_ID, DATAELEM_ID) values (TargetCheckedOutVocabularyId, InverseElemId);
+                      insert ignore into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, RELATED_CONCEPT_ID) VALUES (TargetCheckedOutConceptId, InverseElemId, ConceptId);
+                  END IF;
+              END IF; -- checked out
+                END IF; -- inverse rule exists
+            END
+    </sql>
+  </changeSet>
+
 </databaseChangeLog>

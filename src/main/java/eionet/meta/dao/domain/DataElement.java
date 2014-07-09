@@ -117,6 +117,25 @@ public class DataElement {
      * Related concept vocabulary base URI.
      */
     private String relatedConceptBaseURI;
+
+    /**
+     * Related Vocabulary Status.
+     * used in displaying automatically created inverse values.
+     */
+    private String relatedVocabularyStatus;
+
+    /**
+     * Related Vocabulary working copy.
+     * used in displaying automatically created inverse values.
+     */
+    private boolean relatedVocabularyWorkingCopy;
+
+    /**
+     * Related concept original ID.
+     * used in displaying automatically created inverse values.
+     */
+    private Integer relatedConceptOriginalId;
+
     /**
      * attribute metadata in M_ATTRIBUTE.
      */
@@ -500,4 +519,33 @@ public class DataElement {
                 ? StringUtils.trimToEmpty(getRelatedConceptLabel()) : StringUtils.trimToEmpty(getAttributeValue())
                 + (getAttributeLanguage() != null ? " [" + getAttributeLanguage() + "]" : "");
     }
+
+    public String getRelatedVocabularyStatus() {
+        return relatedVocabularyStatus;
+    }
+
+    public void setRelatedVocabularyStatus(String relatedVocabularyStatus) {
+        this.relatedVocabularyStatus = relatedVocabularyStatus;
+    }
+
+    public boolean isRelatedVocabularyWorkingCopy() {
+        return relatedVocabularyWorkingCopy;
+    }
+
+    public void setRelatedVocabularyWorkingCopy(boolean relatedVocabularyWorkingCopy) {
+        this.relatedVocabularyWorkingCopy = relatedVocabularyWorkingCopy;
+    }
+
+    public void setRelatedConceptOriginalId(Integer relatedConceptOriginalId) {
+        this.relatedConceptOriginalId = relatedConceptOriginalId;
+    }
+
+    /**
+     * If inverse elements are created the concept can be not visible by regular url.
+     * URL does not work is just created and does not have checked in copy.
+     */
+    public boolean isRelatedConceptVisibleByUri() {
+        return !relatedVocabularyWorkingCopy || (relatedVocabularyWorkingCopy && relatedConceptOriginalId == null);
+    }
+
 }

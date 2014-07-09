@@ -609,15 +609,6 @@ public interface IVocabularyService {
     }
 
     /**
-     * Checks if given element has some special behaviour.
-     *
-     * @param relationalElement
-     *            special relational element
-     * @return String prefix in RDF
-     */
-    String getRelationalElementPrefix(RelationalElement relationalElement);
-
-    /**
      * Checks if the given element represents relation to an external resource.
      *
      * @param id
@@ -681,4 +672,10 @@ public interface IVocabularyService {
      */
     VocabularyFolder getVocabularyWithConcepts(String identifier, String vocabularySet);
 
+    /**
+     * fix inverse relations in other concepts.
+     * @param vocabularyId this vocabulary ID
+     * @param concepts concepts of the vocabulary
+     */
+    void fixRelatedReferenceElements(int vocabularyId, List<VocabularyConcept> concepts);
 }

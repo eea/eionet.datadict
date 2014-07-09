@@ -128,6 +128,9 @@ public abstract class VocabularyImportServiceBaseImpl {
             // STEP 2. UPDATE VOCABULARY CONCEPT
             this.vocabularyService.updateVocabularyConceptNonTransactional(vc);
         }
+
+        this.vocabularyService.fixRelatedReferenceElements(vocabularyId, vocabularyConcepts);
+
     } // end of method importIntoDb
 
 } // end of abstract class VocabularyImportServiceBaseImpl
