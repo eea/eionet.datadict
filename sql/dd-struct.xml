@@ -1608,10 +1608,16 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     <changeSet author="lainekai" id="rev-130">
         <comment>Create a table for inference rules</comment>
         <createTable tableName="INFERENCE_RULE">
-      <column name="DATAELEM_ID" type="INT UNSIGNED"/>
-      <column name="RULE" type="VARCHAR(255)"/>
-      <column name="TARGET_ELEM_ID" type="INT UNSIGNED"/>
-    </createTable>
+            <column name="DATAELEM_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="RULE" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="TARGET_ELEM_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
         <addForeignKeyConstraint baseColumnNames="DATAELEM_ID" baseTableName="INFERENCE_RULE"
           constraintName="FK_DATAELEM_ID" deferrable="false" initiallyDeferred="false"
           onDelete="CASCADE" onUpdate="CASCADE"
