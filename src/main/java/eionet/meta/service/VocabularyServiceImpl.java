@@ -234,7 +234,17 @@ public class VocabularyServiceImpl implements IVocabularyService {
             if (newFolder != null) {
                 int newFolderId = folderDAO.createFolder(newFolder);
                 vocabularyFolder.setFolderId(newFolderId);
+                vocabularyFolder.setFolderName(newFolder.getIdentifier());
+            } else {
+                Folder folder = folderDAO.getFolder(vocabularyFolder.getFolderId());
+                vocabularyFolder.setFolderName(folder.getIdentifier());
             }
+
+            String baseUri = vocabularyFolder.getBaseUri();
+            if (StringUtils.isBlank(baseUri)) {
+                baseUri = VocabularyFolder.getBaseUri(vocabularyFolder);
+            }
+            vocabularyFolder.setBaseUri(baseUri);
 
             vocabularyFolder.setUserModified(userName);
             return vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
@@ -436,14 +446,29 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vf.setNumericConceptIdentifiers(vocabularyFolder.isNumericConceptIdentifiers());
             vf.setNotationsEqualIdentifiers(vocabularyFolder.isNotationsEqualIdentifiers());
             vf.setBaseUri(vocabularyFolder.getBaseUri());
-            vf.setFolderId(vocabularyFolder.getFolderId());
 
             if (newFolder != null) {
                 int newFolderId = folderDAO.createFolder(newFolder);
+                newFolder.setId(newFolderId);
                 vf.setFolderId(newFolderId);
+                vf.setFolderName(newFolder.getIdentifier());
+            } else if (vf.getFolderId() != vocabularyFolder.getFolderId()) {
+                vf.setFolderId(vocabularyFolder.getFolderId());
+                Folder folder = folderDAO.getFolder(vocabularyFolder.getFolderId());
+                vf.setFolderName(folder.getIdentifier());
             }
 
+            // vf.setBaseUri(vocabularyFolder.getBaseUri());
+            String baseUri = vocabularyFolder.getBaseUri();
+            if (StringUtils.isBlank(baseUri)) {
+                baseUri = VocabularyFolder.getBaseUri(vf);
+            }
+            vf.setBaseUri(baseUri);
+
             vocabularyFolderDAO.updateVocabularyFolder(vf);
+            vocabularyFolder.setBaseUri(vf.getBaseUri());
+            vocabularyFolder.setFolderName(vf.getFolderName());
+            vocabularyFolder.setFolderId(vf.getFolderId());
 
             attributeDAO.updateSimpleAttributes(vocabularyFolder.getId(), DElemAttribute.ParentType.VOCABULARY_FOLDER.toString(),
                     vocabularyFolder.getAttributes());
@@ -672,7 +697,20 @@ public class VocabularyServiceImpl implements IVocabularyService {
             if (newFolder != null) {
                 int newFolderId = folderDAO.createFolder(newFolder);
                 vocabularyFolder.setFolderId(newFolderId);
+                vocabularyFolder.setFolderName(newFolder.getIdentifier());
+            } else if (originalVocabularyFolder.getFolderId() != vocabularyFolder.getFolderId()) {
+                Folder folder = folderDAO.getFolder(vocabularyFolder.getFolderId());
+                vocabularyFolder.setFolderName(folder.getIdentifier());
+            } else {
+                vocabularyFolder.setFolderName(originalVocabularyFolder.getFolderName());
             }
+
+            // vf.setBaseUri(vocabularyFolder.getBaseUri());
+            String baseUri = originalVocabularyFolder.getBaseUri();
+            if (StringUtils.isBlank(baseUri)) {
+                baseUri = VocabularyFolder.getBaseUri(vocabularyFolder);
+            }
+            vocabularyFolder.setBaseUri(baseUri);
 
             vocabularyFolder.setContinuityId(originalVocabularyFolder.getContinuityId());
             vocabularyFolder.setUserModified(userName);
@@ -1221,4 +1259,22 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
         return vocabulary;
     }
+
+    @Override
+    public int populateEmptyBaseUris(String prefix) throws ServiceException {
+        try {
+            return vocabularyFolderDAO.populateEmptyBaseUris(prefix);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
+        }
+    } // end of method populateEmptyBaseUris
+
+    @Override
+    public int changeSitePrefix(String oldSitePrefix, String newSitePrefix) throws ServiceException {
+        try {
+            return vocabularyFolderDAO.changeSitePrefix(oldSitePrefix, newSitePrefix);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
+        }
+    } // end of method changeSitePrefix
 }

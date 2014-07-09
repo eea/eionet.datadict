@@ -46,6 +46,7 @@ import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
+import eionet.util.Util;
 
 /**
  * Action bean for listing vocabulary folders.
@@ -63,6 +64,9 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
 
     /** Vocabulary concept search results page. */
     private static final String CONCEPT_SEARCH_RESULT_JSP = "/pages/vocabularies/vocabularyConceptResult.jsp";
+
+    /** Vocabularies maintenance page. */
+    private static final String VOCABULARIES_MAINTENANCE_JSP = "/pages/vocabularies/vocabulariesMaintenance.jsp";
 
     /** Vocabulary service. */
     @SpringBean
@@ -132,12 +136,21 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      * normal, and show the status only when it is different from the normal.
      */
     private RegStatus[] statusTextsToDisplay = {RegStatus.DRAFT, RegStatus.PUBLIC_DRAFT};
+    /**
+     * Old site prefix.
+     */
+    private String oldSitePrefix = null;
+    /**
+     * New site prefix.
+     */
+    private String newSitePrefix = null;
 
     /**
      * View vocabulary folders list action.
      *
      * @return Default Resolution.
-     * @throws ServiceException if retrieving folder data fails.
+     * @throws ServiceException
+     *             if retrieving folder data fails.
      */
     @DefaultHandler
     public Resolution viewList() throws ServiceException {
@@ -151,9 +164,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
                         if (vocabulary instanceof VocabularyFolder && ((VocabularyFolder) vocabulary).getBaseUri() != null) {
                             vocabulariesWithBaseUri.add(((VocabularyFolder) vocabulary).getId());
                         }
-                        if (vocabulary instanceof VocabularyFolder
-                                && !((VocabularyFolder) vocabulary).isWorkingCopy()
-                                    && StringUtils.isEmpty(((VocabularyFolder) vocabulary).getWorkingUser())) {
+                        if (vocabulary instanceof VocabularyFolder && !((VocabularyFolder) vocabulary).isWorkingCopy()
+                                && StringUtils.isEmpty(((VocabularyFolder) vocabulary).getWorkingUser())) {
                             setVisibleEditableVocabularies(true);
                         }
                     }
@@ -179,7 +191,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      * Action for updating folder.
      *
      * @return resolution
-     * @throws ServiceException if operation fails
+     * @throws ServiceException
+     *             if operation fails
      */
     public Resolution saveFolder() throws ServiceException {
         LOGGER.debug("Saving folder: " + getSubmittedFolder().getIdentifier());
@@ -192,7 +205,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      * Action for deleting folder.
      *
      * @return resolution
-     * @throws ServiceException if operation fails
+     * @throws ServiceException
+     *             if operation fails
      */
     public Resolution deleteFolder() throws ServiceException {
         LOGGER.debug("Deleting folder: " + getSubmittedFolder().getIdentifier());
@@ -202,16 +216,30 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
+     * Action for maintaining folders.
+     *
+     * @return resolution
+     * @throws ServiceException
+     *             if operation fails
+     */
+    public Resolution maintain() throws ServiceException {
+        // TODO future enchancement: folderIds can be used for selection based updates.
+        // i.e. page can have, update all, update selected, update exclusion of selected
+        return new ForwardResolution(VOCABULARIES_MAINTENANCE_JSP);
+    }
+
+    /**
      * Validation on search concepts. Checks if text is entered
      *
-     * @throws ServiceException if databaes call fails
+     * @throws ServiceException
+     *             if databaes call fails
      */
     @ValidationMethod(on = {"searchConcepts"})
     public void validateSearchConcepts() throws ServiceException {
         if (vocabularyConceptFilter == null || StringUtils.isEmpty(vocabularyConceptFilter.getText())) {
             addGlobalValidationError("Search text cannot be empty.");
         } else if (vocabularyConceptFilter != null && !StringUtils.isEmpty(vocabularyConceptFilter.getText())
-                   && vocabularyConceptFilter.getText().length() < 2) {
+                && vocabularyConceptFilter.getText().length() < 2) {
             addGlobalValidationError("Search text must be at least two characters.");
         }
 
@@ -221,9 +249,23 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
+     * Validation on maintenance.
+     *
+     * @throws ServiceException
+     *             if operation fails
+     */
+    @ValidationMethod(on = {"maintain", "populate", "changeSitePrefix"})
+    public void validateMaintain() throws ServiceException {
+        if (!isUpdateRight()) {
+            addGlobalValidationError("No permission to modify folders");
+        }
+    } // end of method validateMaintain
+
+    /**
      * Validates save folder.
      *
-     * @throws ServiceException if user does not have update rights.
+     * @throws ServiceException
+     *             if user does not have update rights.
      */
     @ValidationMethod(on = {"saveFolder"})
     public void validateSaveFolder() throws ServiceException {
@@ -254,7 +296,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /**
      * Validates delete folder.
      *
-     * @throws ServiceException if user does not have delete rights.
+     * @throws ServiceException
+     *             if user does not have delete rights.
      */
     @ValidationMethod(on = {"deleteFolder"})
     public void validateDeleteFolder() throws ServiceException {
@@ -277,7 +320,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /**
      * Validates delete vocabulary.
      *
-     * @throws ServiceException if user does not have delete rights.
+     * @throws ServiceException
+     *             if user does not have delete rights.
      */
     @ValidationMethod(on = {"delete"})
     public void validateDeleteVocabulary() throws ServiceException {
@@ -364,7 +408,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      * Deletes vocabulary folders.
      *
      * @return resolution
-     * @throws ServiceException if operation fails
+     * @throws ServiceException
+     *             if operation fails
      */
     public Resolution delete() throws ServiceException {
         vocabularyService.deleteVocabularyFolders(folderIds, keepRelationsOnDelete);
@@ -374,10 +419,44 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
+     * Populates empty base uris.
+     *
+     * @return resolution
+     * @throws ServiceException
+     *             if operation fails
+     */
+    public Resolution populate() throws ServiceException {
+        String sitePrefix = getSitePrefix();
+        if (!sitePrefix.endsWith("/")) {
+            sitePrefix += "/";
+        }
+        int numberOfRows = vocabularyService.populateEmptyBaseUris(sitePrefix);
+        addSystemMessage("Empty base URIs are populated. " + numberOfRows + " vocabularies updated.");
+        RedirectResolution resolution = new RedirectResolution(VocabularyFoldersActionBean.class, "maintain");
+        return resolution;
+    } // end of method populate
+
+    /**
+     * Changes site prefix for base uris.
+     *
+     * @return resolution
+     * @throws ServiceException
+     *             if operation fails
+     */
+    public Resolution changeSitePrefix() throws ServiceException {
+        int numberOfRows = vocabularyService.changeSitePrefix(oldSitePrefix, newSitePrefix);
+        addSystemMessage("Site prefix changed. " + numberOfRows + " vocabularies were updated.");
+        addSystemMessage("\"" + oldSitePrefix + "\" replaced by \"" + newSitePrefix + "\"");
+        RedirectResolution resolution = new RedirectResolution(VocabularyFoldersActionBean.class, "maintain");
+        return resolution;
+    } // end of method changeSitePrefix
+
+    /**
      * search vocabulary folders.
      *
      * @return Stripes resolution
-     * @throws ServiceException if search fails
+     * @throws ServiceException
+     *             if search fails
      */
     public Resolution search() throws ServiceException {
         if (vocabularyFilter == null) {
@@ -391,14 +470,14 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         vocabularyResult = vocabularyService.searchVocabularies(vocabularyFilter);
 
         return new ForwardResolution(VOCABULARY_SEARCH_RESULT_JSP);
-
     }
 
     /**
      * search concepts folders.
      *
      * @return Stripes resolution
-     * @throws ServiceException if search fails
+     * @throws ServiceException
+     *             if search fails
      */
     public Resolution searchConcepts() throws ServiceException {
         if (vocabularyConceptFilter == null) {
@@ -411,15 +490,38 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         vocabularyConceptResult = vocabularyService.searchAllVocabularyConcept(vocabularyConceptFilter);
 
         return new ForwardResolution(CONCEPT_SEARCH_RESULT_JSP);
-
     }
 
     /**
-     * @param vocabularyService the vocabularyService to set
+     * Validates changing site prefix.
+     *
+     * @throws ServiceException
+     *             if an error occurs
      */
-    public void setVocabularyService(IVocabularyService vocabularyService) {
-        this.vocabularyService = vocabularyService;
-    }
+    @ValidationMethod(on = {"changeSitePrefix"})
+    public void validateChangeSitePrefix() throws ServiceException {
+        if (StringUtils.isBlank(newSitePrefix)) {
+            addGlobalValidationError("New Site Prefix is missing");
+        } else if (!Util.isValidUri(newSitePrefix)) {
+            addGlobalValidationError("New Site prefix is not a valid URI. \n The allowed schemes are: "
+                    + "http, https, ftp, mailto, tel and urn.");
+        } else if (!StringUtils.endsWith(newSitePrefix, "/")) {
+            newSitePrefix += "/";
+        }
+
+        if (StringUtils.isBlank(oldSitePrefix)) {
+            addGlobalValidationError("Old Site Prefix is missing");
+        } else if (!Util.isValidUri(oldSitePrefix)) {
+            addGlobalValidationError("Old Site prefix is not a valid URI. \n The allowed schemes are: "
+                    + "http, https, ftp, mailto, tel and urn.");
+        } else if (!StringUtils.endsWith(oldSitePrefix, "/")) {
+            oldSitePrefix += "/";
+        }
+
+        if (StringUtils.equals(oldSitePrefix, newSitePrefix)) {
+            addGlobalValidationError("Old and New Site Prefixes are the same.");
+        }
+    } // end of method validateChangeSitePrefix
 
     /**
      * @return the folderIds
@@ -429,7 +531,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folderIds the folderIds to set
+     * @param folderIds
+     *            the folderIds to set
      */
     public void setFolderIds(List<Integer> folderIds) {
         this.folderIds = folderIds;
@@ -443,7 +546,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folderId the folderId to set
+     * @param folderId
+     *            the folderId to set
      */
     public void setFolderId(int folderId) {
         this.folderId = folderId;
@@ -457,7 +561,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param expand the expand to set
+     * @param expand
+     *            the expand to set
      */
     public void setExpand(boolean expand) {
         this.expand = expand;
@@ -471,7 +576,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param expanded the expanded to set
+     * @param expanded
+     *            the expanded to set
      */
     public void setExpanded(String expanded) {
         this.expanded = expanded;
@@ -485,7 +591,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folders the folders to set
+     * @param folders
+     *            the folders to set
      */
     public void setFolders(List<Folder> folders) {
         this.folders = folders;
@@ -499,7 +606,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param editDivId the editDivId to set
+     * @param editDivId
+     *            the editDivId to set
      */
     public void setEditDivId(String editDivId) {
         this.editDivId = editDivId;
@@ -513,7 +621,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param visibleEditableVocabularies the visibleEditableVocabularies to set
+     * @param visibleEditableVocabularies
+     *            the visibleEditableVocabularies to set
      */
     public void setVisibleEditableVocabularies(boolean visibleEditableVocabularies) {
         this.visibleEditableVocabularies = visibleEditableVocabularies;
@@ -527,7 +636,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param folderIdentifier the folderIdentifier to set
+     * @param folderIdentifier
+     *            the folderIdentifier to set
      */
     public void setIdentifier(String folderIdentifier) {
         this.identifier = folderIdentifier;
@@ -576,4 +686,27 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         return statusTextsToDisplay;
     }
 
+    public String getOldSitePrefix() {
+        return oldSitePrefix;
+    }
+
+    public void setOldSitePrefix(String oldSitePrefix) {
+        this.oldSitePrefix = StringUtils.trimToNull(oldSitePrefix);
+    }
+
+    /**
+     * Returns site prefix.
+     *
+     * @return new site prefix or default
+     */
+    public String getNewSitePrefix() {
+        if (StringUtils.isEmpty(newSitePrefix)) {
+            return getSitePrefix();
+        }
+        return newSitePrefix;
+    }
+
+    public void setNewSitePrefix(String newSitePrefix) {
+        this.newSitePrefix = StringUtils.trimToNull(newSitePrefix);
+    }
 }

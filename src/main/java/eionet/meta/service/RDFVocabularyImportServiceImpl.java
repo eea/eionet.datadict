@@ -70,6 +70,11 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         this.logMessages = new ArrayList<String>();
 
         final String folderCtxRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
+		
+		//check for valid base uri
+        if (!Util.isValidUri(folderCtxRoot)) {
+            throw new ServiceException("Vocabulary does not have a valid base URI");
+        }
 
         List<VocabularyConcept> concepts = vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
 

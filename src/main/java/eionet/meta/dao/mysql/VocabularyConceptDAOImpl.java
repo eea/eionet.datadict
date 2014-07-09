@@ -21,24 +21,25 @@
 
 package eionet.meta.dao.mysql;
 
-import eionet.meta.dao.IVocabularyConceptDAO;
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.service.data.ObsoleteStatus;
-import eionet.meta.service.data.VocabularyConceptFilter;
-import eionet.meta.service.data.VocabularyConceptResult;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import eionet.meta.dao.IVocabularyConceptDAO;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.data.ObsoleteStatus;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
 
 /**
  * Vocabulary concept DAO.
@@ -89,7 +90,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         StringBuilder sql = new StringBuilder();
         sql.append("select SQL_CALC_FOUND_ROWS c.VOCABULARY_CONCEPT_ID, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, c.DEFINITION, ");
         sql.append("c.NOTATION, c.CREATION_DATE, c.OBSOLETE_DATE, v.LABEL AS VOCABULARY_LABEL, ");
-        sql.append("v.IDENTIFIER as VOCABULARY_IDENTIFIER, s.ID AS VOCSET_ID, s.LABEL as VOCSET_LABEL ");
+        sql.append("v.IDENTIFIER AS VOCABULARY_IDENTIFIER, s.ID AS VOCSET_ID, s.LABEL as VOCSET_LABEL, ");
+        sql.append("s.IDENTIFIER as VOCSET_IDENTIFIER ");
         sql.append("from VOCABULARY_CONCEPT c, VOCABULARY v, VOCABULARY_SET s ");
         sql.append("where v.VOCABULARY_ID = c.VOCABULARY_ID AND v.FOLDER_ID = s.ID ");
         if (filter.getVocabularyFolderId() > 0) {
@@ -103,7 +105,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 sql.append("or c.LABEL REGEXP :text ");
                 sql.append("or c.DEFINITION REGEXP :text ");
                 sql.append("or c.IDENTIFIER REGEXP :text) ");
-                //word match overrides exactmatch as it contains also exact matches
+                // word match overrides exactmatch as it contains also exact matches
             } else if (filter.isExactMatch()) {
                 params.put("text", filter.getText());
                 sql.append("and (c.NOTATION = :text ");
@@ -188,9 +190,11 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setNotation(rs.getString("NOTATION"));
                         vc.setCreated(rs.getDate("CREATION_DATE"));
                         vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
+                        vc.setVocabularyIdentifier(rs.getString("VOCABULARY_IDENTIFIER"));
                         vc.setVocabularyLabel(rs.getString("VOCABULARY_LABEL"));
                         vc.setVocabularySetLabel(rs.getString("VOCSET_LABEL"));
                         vc.setVocabularySetId(rs.getInt("VOCSET_ID"));
+                        vc.setVocabularySetIdentifier("VOCSET_IDENTIFIER");
                         return vc;
                     }
                 });
@@ -544,14 +548,13 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("select distinct c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID, ");
         sql.append("d.IDENTIFIER AS ELEMIDENTIFIER, a.VALUE as DATATYPE, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, ");
         sql.append("c.DEFINITION, c.NOTATION, c.CREATION_DATE, c.OBSOLETE_DATE, ");
-        sql.append("rcvs.IDENTIFIER as RVOCSETIDENTIFIER, rcv.IDENTIFIER as RVOCIDENTIFIER, rcv.BASE_URI as RVOCBASE_URI, ");
+        sql.append("rcv.IDENTIFIER as RVOCIDENTIFIER, rcv.BASE_URI as RVOCBASE_URI, ");
         sql.append("rc.IDENTIFIER AS RCONCEPTIDENTIFIER, rc.LABEL as RCONCEPTLABEL ");
         sql.append("from VOCABULARY_CONCEPT c ");
         sql.append("left join VOCABULARY_CONCEPT_ELEMENT v on v.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID ");
         sql.append("LEFT JOIN DATAELEM d ON (v.DATAELEM_ID = d.DATAELEM_ID) ");
         sql.append("LEFT JOIN VOCABULARY_CONCEPT rc on v.RELATED_CONCEPT_ID = rc.VOCABULARY_CONCEPT_ID ");
         sql.append("LEFT JOIN VOCABULARY rcv ON rc.VOCABULARY_ID = rcv.VOCABULARY_ID ");
-        sql.append("LEFT JOIN VOCABULARY_SET rcvs ON (rcv.FOLDER_ID = rcvs.ID ) ");
         sql.append("left join (ATTRIBUTE a, M_ATTRIBUTE ma)  on (a.DATAELEM_ID = d.DATAELEM_ID ");
         sql.append("and PARENT_TYPE = 'E' and a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME='Datatype') ");
         sql.append("where c.VOCABULARY_ID = :vocabularyId AND c.OBSOLETE_DATE IS NULL ");
@@ -603,7 +606,6 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
                     if (relatedConceptId != 0) {
                         elem.setRelatedConceptId(relatedConceptId);
-                        elem.setRelatedConceptVocSet(rs.getString("RVOCSETIDENTIFIER"));
                         elem.setRelatedConceptVocabulary(rs.getString("RVOCIDENTIFIER"));
                         elem.setRelatedConceptIdentifier(rs.getString("RCONCEPTIDENTIFIER"));
                         elem.setRelatedConceptLabel(rs.getString("RCONCEPTLABEL"));

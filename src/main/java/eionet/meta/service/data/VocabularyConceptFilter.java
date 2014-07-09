@@ -59,24 +59,18 @@ public class VocabularyConceptFilter extends PagedRequest {
 
     /** Obsolete Date. */
     private String obsoleteDate;
-
     /**
      * if true only exact match is searched in textual fields.
      */
     private boolean exactMatch = false;
-
     /**
      * if true results are search where one or more fields contain the text as a separate word.
      */
     private boolean wordMatch = false;
-
-
     /**
      * search from vocabulary label or identifier.
      */
     private String vocabularyText;
-
-
     /** vocabulary sets to not search from. */
     private List<Integer> excludedVocabularySetIds;
 
