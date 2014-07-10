@@ -132,6 +132,21 @@
         * require user confirmation if noattions equal identifier is set to tru during this edit session
         */
         function doSaveFolder() {
+            //TODO this can be added also for vocabulary set changes as a future enhancement!!!
+           var initialFolderIdentifier = "${actionBean.vocabularyFolder.identifier}";
+           var initialBaseUri = "${actionBean.vocabularyFolder.baseUri}";
+
+           var currentFolderIdentifier = document.getElementById("vocabularyFolderIdentifier").value;
+           var currentBaseUri = document.getElementById("vocabularyFolderBaseUri").value;
+
+           if (initialFolderIdentifier != currentFolderIdentifier && initialBaseUri.indexOf(initialFolderIdentifier) > 0 && currentBaseUri.indexOf(initialFolderIdentifier) > 0){
+               var proposalBaseUri = currentBaseUri.replace(initialFolderIdentifier, currentFolderIdentifier);
+               var result = confirm("You have changed folder identifier but not Base Uri. In this case, import operations may fail to match references with this vocabulary concepts.\nDo you want to change '"+ currentBaseUri + "' with '" + proposalBaseUri + "' ?");
+               if (result){
+                   document.getElementById("vocabularyFolderBaseUri").value = proposalBaseUri;
+               }
+           }
+
           var chkNotationEqualsIdentifiersValue = document.getElementById("chkNotationsEqualIdentifiers").checked;
           var prevNotationsEqualIdentifiersValue = document.getElementById("prevNotationsEqualIdentifiers").value == 'true';
             if (chkNotationEqualsIdentifiersValue && !prevNotationsEqualIdentifiersValue) {
@@ -244,7 +259,7 @@
                         <dd:mandatoryIcon />
                     </td>
                     <td class="simple_attr_value">
-                        <stripes:text class="smalltext" size="30" name="vocabularyFolder.identifier"/>
+                        <stripes:text class="smalltext" size="30" name="vocabularyFolder.identifier" id="vocabularyFolderIdentifier"/>
                     </td>
                 </tr>
                 <tr>
@@ -266,7 +281,7 @@
                         <dd:optionalIcon />
                     </td>
                     <td class="simple_attr_value">
-                        <stripes:text name="vocabularyFolder.baseUri" style="width: 500px;" class="smalltext"/>
+                        <stripes:text name="vocabularyFolder.baseUri" style="width: 500px;" class="smalltext" id="vocabularyFolderBaseUri"/>
                     </td>
                 </tr>
                 <tr>

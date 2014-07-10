@@ -296,7 +296,8 @@ public interface IVocabularyService {
     /**
      * Updates vocabulary concept in non-transactional.
      *
-     * @param vocabularyConcept concept
+     * @param vocabularyConcept
+     *            concept
      * @throws ServiceException
      *             if operation fails
      */
@@ -305,7 +306,8 @@ public interface IVocabularyService {
     /**
      * Updates vocabulary concept without updating attributes.
      *
-     * @param vocabularyConcept concept
+     * @param vocabularyConcept
+     *            concept
      * @throws ServiceException
      *             if operation fails
      */
@@ -671,6 +673,30 @@ public interface IVocabularyService {
      * @return vocabulary entity with all concepts assigned
      */
     VocabularyFolder getVocabularyWithConcepts(String identifier, String vocabularySet);
+
+    /**
+     * Populates empty base uri values in vocabulary table.
+     *
+     * @param prefix
+     *            base uri prefix
+     * @return number of affected rows
+     * @throws eionet.meta.service.ServiceException
+     *             if operation fails
+     */
+    int populateEmptyBaseUris(String prefix) throws ServiceException;
+
+    /**
+     * Changes site prefixes in vocabulary base uris.
+     *
+     * @param oldSitePrefix
+     *            old site prefix
+     * @param newSitePrefix
+     *            new site prefix
+     * @return number of affected rows
+     * @throws eionet.meta.service.ServiceException
+     *             if operation fails
+     */
+    int changeSitePrefix(String oldSitePrefix, String newSitePrefix) throws ServiceException;
 
     /**
      * fix inverse relations in other concepts.

@@ -21,12 +21,12 @@
 
 package eionet.meta.dao.domain;
 
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * Vocabulary concept.
@@ -35,29 +35,64 @@ import java.util.List;
  */
 public class VocabularyConcept {
 
-    /** Properties. */
+    /**
+     * ID.
+     */
     private int id;
+    /**
+     * Identifier.
+     */
     private String identifier;
+    /**
+     * Label.
+     */
     private String label;
+    /**
+     * Definition.
+     */
     private String definition;
+    /**
+     * Notation.
+     */
     private String notation;
+    /**
+     * Created date.
+     */
     private Date created;
+    /**
+     * Obsolete date.
+     */
     private Date obsolete;
 
-    /** parent vocabulary identifier. */
+    /**
+     * parent vocabulary identifier.
+     */
     private int vocabularyId;
-
-    /** Attributes. */
+    /**
+     * Attributes.
+     */
     private List<List<DataElement>> elementAttributes;
-
-    /** vocabulary Label. */
+    /**
+     * Vocabulary identifier.
+     */
+    private String vocabularyIdentifier;
+    /**
+     * vocabulary Label.
+     */
     private String vocabularyLabel;
-
-    /** vocabulary Set id. */
+    /**
+     * vocabulary Set id.
+     */
     private int vocabularySetId;
-
-    /** vocabulary Set label. */
+    /**
+     * vocabulary Set label.
+     */
     private String vocabularySetLabel;
+    /**
+     * Vocabulary set identifier.
+     */
+    private String vocabularySetIdentifier;
+
     /**
      * @return the id
      */
@@ -219,6 +254,22 @@ public class VocabularyConcept {
 
     public void setVocabularySetId(int vocabularySetId) {
         this.vocabularySetId = vocabularySetId;
+    }
+
+    public String getVocabularySetIdentifier() {
+        return vocabularySetIdentifier;
+    }
+
+    public void setVocabularySetIdentifier(String vocabularySetIdentifier) {
+        this.vocabularySetIdentifier = vocabularySetIdentifier;
+    }
+
+    public String getVocabularyIdentifier() {
+        return vocabularyIdentifier;
+    }
+
+    public void setVocabularyIdentifier(String vocabularyIdentifier) {
+        this.vocabularyIdentifier = vocabularyIdentifier;
     }
 
     /*

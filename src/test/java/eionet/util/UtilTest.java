@@ -1,15 +1,10 @@
 package eionet.util;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.commons.validator.routines.UrlValidator;
+import org.junit.Test;
 
 /**
  *
@@ -25,7 +20,7 @@ public class UtilTest {
     @Test
     public void test_replaceTags() {
         assertEquals(Util.processForDisplay("http://cdr.eionet.europa.eu/search?y=1&z=2"),
-        "<a href=\"http://cdr.eionet.europa.eu/search?y=1&amp;z=2\">http://cdr.eionet.europa.eu/search?y=1&amp;z=2</a>");
+                "<a href=\"http://cdr.eionet.europa.eu/search?y=1&amp;z=2\">http://cdr.eionet.europa.eu/search?y=1&amp;z=2</a>");
 
         // Test simple &
         assertEquals(Util.processForDisplay("Fruit & Vegetables"), "Fruit &amp; Vegetables");
@@ -35,7 +30,7 @@ public class UtilTest {
 
         // Don't create anchors = true
         assertEquals(Util.processForDisplay("http://cdr.eionet.europa.eu/search?y=1&z=7", true),
-        "http://cdr.eionet.europa.eu/search?y=1&amp;z=7");
+                "http://cdr.eionet.europa.eu/search?y=1&amp;z=7");
 
         // Test Unicode char
         assertEquals(Util.processForDisplay("€"), "&#8364;");
@@ -50,20 +45,22 @@ public class UtilTest {
      */
     @Test
     public void test_replaceTagsMultiLine() {
-        String input = "The templates (XML schema) and the reporting manual are available"
-           + " at: http://www.eionet.europa.eu/schemas/eprtr\n\nTemplate for resubmissions is"
-           + " available at: http://circa.europa.eu/Public/irc/env/e_prtr/library?l=/e-prtr_r"
-           + "e-delivery/resubmissionxls/_EN_1.0_&a=i";
+        String input =
+                "The templates (XML schema) and the reporting manual are available"
+                        + " at: http://www.eionet.europa.eu/schemas/eprtr\n\nTemplate for resubmissions is"
+                        + " available at: http://circa.europa.eu/Public/irc/env/e_prtr/library?l=/e-prtr_r"
+                        + "e-delivery/resubmissionxls/_EN_1.0_&a=i";
 
-        String expected = "The templates (XML schema) and the reporting manual are available"
-           + " at: <a href=\"http://www.eionet.europa.eu/schemas/eprtr\">http://www.eionet.e"
-           + "uropa.eu/schemas/eprtr</a><br/><br/>Template for resubmissions is"
-           + " available at: <a href=\"http://circa.europa.eu/Public/irc/env/e_prtr/library?"
-           + "l=/e-prtr_re-delivery/resubmissionxls/_EN_1.0_&amp;a=i\">http://circa.europa.eu"
-           + "/Public/irc/env/e_prtr/libra...</a>";
+        String expected =
+                "The templates (XML schema) and the reporting manual are available"
+                        + " at: <a href=\"http://www.eionet.europa.eu/schemas/eprtr\">http://www.eionet.e"
+                        + "uropa.eu/schemas/eprtr</a><br/><br/>Template for resubmissions is"
+                        + " available at: <a href=\"http://circa.europa.eu/Public/irc/env/e_prtr/library?"
+                        + "l=/e-prtr_re-delivery/resubmissionxls/_EN_1.0_&amp;a=i\">http://circa.europa.eu"
+                        + "/Public/irc/env/e_prtr/libra...</a>";
 
         String result = Util.processForDisplay(input);
-        //System.out.println(result);
+        // System.out.println(result);
         assertEquals(expected, result);
     }
 
@@ -106,25 +103,25 @@ public class UtilTest {
 
     @Test
     public void testvalidUrl() {
-
         assertTrue(Util.isValidUri("http://java.sun.com"));
         assertFalse(Util.isValidUri("http://www. spacein.there.dk"));
-
         assertFalse(Util.isValidUri("appi"));
         assertFalse(Util.isValidUri("http://"));
+        assertFalse(Util.isValidUri("ftp://someftp.outthere.org//"));
+        assertFalse(Util.isValidUri("ftp://someftp.outthere.org.."));
+        assertFalse(Util.isValidUri("ftp://someftp.outthere.org\\"));
+        assertFalse(Util.isValidUri("http://www.spacein.there.dk/there is  something.html"));
+        assertTrue(Util.isValidUri("http://www.spacein.there.dk/thereissomething/"));
         assertTrue(Util.isValidUri("ftp://someftp.outthere.org"));
-
         assertTrue(Util.isValidUri("urn:aa:lv"));
-
         assertTrue(Util.isValidUri("mailto:juhan@hot.ee"));
-
+        assertTrue(Util.isValidUri("http://tripledev.ee/"));
+        assertFalse(Util.isValidUri("http://test.tripledev.ee//"));
     }
 
-/*
-    private static boolean isValid(String str, UrlValidator val) {
-        System.out.println(str + " " + val.isValid(str));
-            return Util.isURI(str);
-    }
-*/
+    /*
+     * private static boolean isValid(String str, UrlValidator val) { System.out.println(str + " " + val.isValid(str)); return
+     * Util.isURI(str); }
+     */
 
 }
