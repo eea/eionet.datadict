@@ -111,6 +111,10 @@ public class DataElement {
      */
     private String relatedConceptVocabulary;
     /**
+     * Related concept vocabulary set identifier.
+     */
+    private String relatedConceptVocSet;
+    /**
      * Related concept vocabulary base URI.
      */
     private String relatedConceptBaseURI;
@@ -331,6 +335,16 @@ public class DataElement {
     }
 
     /**
+     * Generate the relative path to a concept in a different vocabulary in the same data dictionary. The path looks like
+     * "common/nuts/AT111".
+     *
+     * @return the path
+     */
+    public String getRelatedConceptRelativePath() {
+        return relatedConceptVocSet + "/" + relatedConceptVocabulary + "/" + relatedConceptIdentifier;
+    }
+
+    /**
      * Generate the full URI to a related concept. The concept can be specified as a foreign key reference to another concept in the
      * database or it can be specified as a text string.
      *
@@ -351,6 +365,14 @@ public class DataElement {
 
     public void setRelatedConceptVocabulary(String relatedConceptVocabulary) {
         this.relatedConceptVocabulary = relatedConceptVocabulary;
+    }
+
+    public String getRelatedConceptVocSet() {
+        return relatedConceptVocSet;
+    }
+
+    public void setRelatedConceptVocSet(String relatedConceptVocSet) {
+        this.relatedConceptVocSet = relatedConceptVocSet;
     }
 
     public String getRelatedConceptBaseURI() {
@@ -466,8 +488,9 @@ public class DataElement {
      * @return md5 hash of element values.
      */
     public String getUniqueValueHash() {
-        return Util.md5((getId() + "," + (getRelatedConceptId() != null ? getRelatedConceptId()
-                : getAttributeValue()) + "@" + StringUtils.defaultString(getAttributeLanguage())));
+        return Util
+                .md5((getId() + "," + (getRelatedConceptId() != null ? getRelatedConceptId() : getAttributeValue()) + "@" + StringUtils
+                        .defaultString(getAttributeLanguage())));
     }
 
     /**

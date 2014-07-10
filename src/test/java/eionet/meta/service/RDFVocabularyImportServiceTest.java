@@ -427,6 +427,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element.setRelatedConceptLabel(null);
         element.setRelatedConceptId(null);
         element.setRelatedConceptIdentifier(null);
+        element.setRelatedConceptVocSet(null);
         element.setRelatedConceptBaseURI(null);
         element.setRelatedConceptVocabulary(null);
         element.setAttributeValue(VocabularyFolder.getBaseUri(vocabularyFolder) + "rdf_test_concept_2");
@@ -453,6 +454,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element.setRelatedConceptLabel(null);
         element.setRelatedConceptId(null);
         element.setRelatedConceptIdentifier(null);
+        element.setRelatedConceptVocSet(null);
         element.setRelatedConceptBaseURI(null);
         element.setRelatedConceptVocabulary(null);
         element.setAttributeValue(VocabularyFolder.getBaseUri(vocabularyFolder) + "rdf_test_concept_2");
@@ -527,6 +529,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element.setRelatedConceptLabel(null);
         element.setRelatedConceptId(null);
         element.setRelatedConceptIdentifier(null);
+        element.setRelatedConceptVocSet(null);
         element.setRelatedConceptBaseURI(null);
         element.setRelatedConceptVocabulary(null);
         element.setAttributeValue(VocabularyFolder.getBaseUri(vocabularyFolder) + "rdf_test_concept_3");
@@ -701,6 +704,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         elem.setRelatedConceptIdentifier("rdf_test_concept_555");
         elem.setRelatedConceptLabel("rdf_test_concept_label_555");
         elem.setRelatedConceptVocabulary("rdf_header_vocab_2");
+        elem.setRelatedConceptVocSet("rdf_header_vs");
         elem.setRelatedConceptBaseURI("http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab_2/");
         elems.add(elem);
 
