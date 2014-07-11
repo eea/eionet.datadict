@@ -1636,8 +1636,6 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
   <changeSet id="rev-132" author="lainekai">
     <comment>Functions and procedure to create reverse links of referencial elements</comment>
     <sql endDelimiter="#">
-      DROP FUNCTION IF EXISTS GetInverseElemId;
-      #
       CREATE  FUNCTION `GetInverseElemId`(DataElementId int) RETURNS INT(11)
       BEGIN
           DECLARE InvereseElementId INT;
@@ -1650,8 +1648,6 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
           RETURN InvereseElementId;
       END
       #
-      DROP PROCEDURE IF EXISTS DeleteReverseLink;
-      #
       CREATE PROCEDURE `DeleteReverseLink`(DataElemId INT, ConceptId int)
       BEGIN
           DECLARE InverseElemId int;
@@ -1661,8 +1657,6 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
               delete from VOCABULARY_CONCEPT_ELEMENT WHERE DATAELEM_ID = InverseElemId AND RELATED_CONCEPT_ID = ConceptId;
           END IF;
       END
-      #
-      DROP PROCEDURE IF EXISTS CreateReverseLink;
       #
       CREATE PROCEDURE `CreateReverseLink`(DataElemId INT, ConceptId INT, TargetConceptId INT)
       BEGIN
@@ -1696,6 +1690,78 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
               END IF; -- checked out
                 END IF; -- inverse rule exists
             END
+    </sql>
+  </changeSet>
+  <changeSet id="rev-133" author="lainekai">
+   <sql endDelimiter="#">
+        <![CDATA[
+        -- helper procedure to debug status in mysql prompt
+        CREATE PROCEDURE `PrintLog`(str VARCHAR(255))
+        BEGIN
+            SELECT concat('[', DATE_FORMAT(NOW(), '%h:%m:%s - %d.%m.%Y'), '] - ', str) AS info FROM dual;
+        END
+        #
+        CREATE PROCEDURE CreateMissingInverseElements()
+            BEGIN
+          DECLARE tStartTime TIMESTAMP;
+          DECLARE tEndTime TIMESTAMP;
+
+                DECLARE intConceptID INT(20);
+                DECLARE intRelatedConceptID INT(20);
+                DECLARE intDataElemID INT(20);
+
+                DECLARE done INT DEFAULT FALSE;
+
+          -- declare cursor for missing inverse relations
+          -- only checked in copies
+          DECLARE cur CURSOR FOR
+          SELECT ve_source.VOCABULARY_CONCEPT_ID, ve_source.DATAELEM_ID, ve_source.RELATED_CONCEPT_ID
+          from VOCABULARY_CONCEPT_ELEMENT ve_source, INFERENCE_RULE ir1, VOCABULARY_CONCEPT vc, VOCABULARY v
+              where
+              ve_source.VOCABULARY_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID and vc.VOCABULARY_ID = v.VOCABULARY_ID and
+                  v.WORKING_COPY = 0 AND
+              ve_source.DATAELEM_ID = ir1.DATAELEM_ID
+              and ve_source.RELATED_CONCEPT_ID is not null and ve_source.RELATED_CONCEPT_ID <> 0
+              AND NOT EXISTS (
+              SELECT 1 FROM VOCABULARY_CONCEPT_ELEMENT ve_target WHERE
+              ve_target.DATAELEM_ID = ir1.TARGET_ELEM_ID AND ve_target.RELATED_CONCEPT_ID = ve_source.VOCABULARY_CONCEPT_ID)
+          union SELECT ve_source.VOCABULARY_CONCEPT_ID, ve_source.DATAELEM_ID, ve_source.RELATED_CONCEPT_ID
+          from VOCABULARY_CONCEPT_ELEMENT ve_source, INFERENCE_RULE ir1 , VOCABULARY_CONCEPT vc, VOCABULARY v
+              where
+              ve_source.VOCABULARY_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID and vc.VOCABULARY_ID = v.VOCABULARY_ID and
+                  v.WORKING_COPY = 0 AND
+              ve_source.DATAELEM_ID = ir1.TARGET_ELEM_ID
+              and ve_source.RELATED_CONCEPT_ID is not null and ve_source.RELATED_CONCEPT_ID != 0
+              AND NOT EXISTS (
+              SELECT 1 FROM vocabulary_concept_element ve_target WHERE
+              ve_target.DATAELEM_ID = ir1.DATAELEM_ID AND ve_target.RELATED_CONCEPT_ID = ve_source.VOCABULARY_CONCEPT_ID)
+          ;
+
+          -- declare handle
+          DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+          set tStartTime := current_timestamp;
+          -- open cursor
+          OPEN cur;
+
+          -- starts the loop
+          the_loop: LOOP
+
+          -- get the values of each column into our variables
+              FETCH cur INTO intConceptID, intDataElemID, intRelatedConceptID;
+              IF done THEN
+                  LEAVE the_loop;
+              END IF;
+
+              call PrintLog(concat('Creating reverse reference for Concept ID=', intConceptID, ' DataElem ID=', intDataElemID, ' Related Concept ID=', intRelatedConceptID));
+              call CreateReverseLink(intDataElemID, intConceptID, intRelatedConceptID);
+          END LOOP the_loop;
+
+          CLOSE cur;
+          set tEndTime := current_timestamp;
+                call PrintLog(concat('Total duration: ', TIME_TO_SEC(timediff(tEndTime, tStartTime)), 's') );
+            END ;
+        ]]>
     </sql>
   </changeSet>
 
