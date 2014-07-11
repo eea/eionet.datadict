@@ -132,6 +132,7 @@ public class ReferenceMatchServiceTest extends UnitilsJUnit4 {
         element.setRelatedConceptVocabulary("match_vocab_2");
         element.setRelatedConceptBaseURI("http://test.tripledev.ee/match_vocab_2/");
         element.setRelatedVocabularyStatus("Released");
+        element.setRelatedConceptVocSet("match_references");
 
         element =
                 VocabularyImportServiceTestBase.findDataElemByAttrValue(elems, "http://test.eea.eu/matchvocab3/vocab_3_concept_1");
@@ -142,6 +143,7 @@ public class ReferenceMatchServiceTest extends UnitilsJUnit4 {
         element.setRelatedConceptVocabulary("match_vocab_3");
         element.setRelatedConceptBaseURI("http://test.eea.eu/matchvocab3/");
         element.setRelatedVocabularyStatus("Released");
+        element.setRelatedConceptVocSet("match_references_2");
 
         element =
                 VocabularyImportServiceTestBase.findDataElemByAttrValue(elems,
@@ -153,6 +155,7 @@ public class ReferenceMatchServiceTest extends UnitilsJUnit4 {
         element.setRelatedConceptVocabulary("match_vocab_2");
         element.setRelatedConceptBaseURI("http://test.tripledev.ee/match_vocab_2/");
         element.setRelatedVocabularyStatus("Released");
+        element.setRelatedConceptVocSet("match_references");
 
         // remove for comparison
         dataElements.remove(elems);

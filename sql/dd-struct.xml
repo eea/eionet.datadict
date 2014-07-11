@@ -1636,6 +1636,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
   <changeSet id="rev-132" author="lainekai">
     <comment>Functions and procedure to create reverse links of referencial elements</comment>
     <sql endDelimiter="#">
+      DROP FUNCTION IF EXISTS `GetInverseElemId`;
+      #
       CREATE  FUNCTION `GetInverseElemId`(DataElementId int) RETURNS INT(11)
       BEGIN
           DECLARE InvereseElementId INT;
@@ -1648,6 +1650,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
           RETURN InvereseElementId;
       END
       #
+      DROP PROCEDURE IF EXISTS `DeleteReverseLink`;
+      #
       CREATE PROCEDURE `DeleteReverseLink`(DataElemId INT, ConceptId int)
       BEGIN
           DECLARE InverseElemId int;
@@ -1657,6 +1661,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
               delete from VOCABULARY_CONCEPT_ELEMENT WHERE DATAELEM_ID = InverseElemId AND RELATED_CONCEPT_ID = ConceptId;
           END IF;
       END
+      #
+      DROP PROCEDURE IF EXISTS `CreateReverseLink`;
       #
       CREATE PROCEDURE `CreateReverseLink`(DataElemId INT, ConceptId INT, TargetConceptId INT)
       BEGIN
@@ -1695,13 +1701,17 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
   <changeSet id="rev-133" author="lainekai">
    <sql endDelimiter="#">
         <![CDATA[
+        DROP PROCEDURE IF EXISTS `PrintLog`;
+        #
         -- helper procedure to debug status in mysql prompt
         CREATE PROCEDURE `PrintLog`(str VARCHAR(255))
         BEGIN
             SELECT concat('[', DATE_FORMAT(NOW(), '%h:%m:%s - %d.%m.%Y'), '] - ', str) AS info FROM dual;
         END
         #
-        CREATE PROCEDURE CreateMissingInverseElements()
+        DROP PROCEDURE IF EXISTS `CreateMissingInverseElements`;
+        #
+        CREATE PROCEDURE `CreateMissingInverseElements`()
             BEGIN
           DECLARE tStartTime TIMESTAMP;
           DECLARE tEndTime TIMESTAMP;

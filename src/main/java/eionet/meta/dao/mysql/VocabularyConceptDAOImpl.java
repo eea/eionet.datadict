@@ -548,13 +548,14 @@ LOGGER.debug(StringUtils.replace(sql.toString(), ":oldVocabularyId", String.valu
         sql.append("select distinct c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID, ");
         sql.append("d.IDENTIFIER AS ELEMIDENTIFIER, a.VALUE as DATATYPE, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, ");
         sql.append("c.DEFINITION, c.NOTATION, c.CREATION_DATE, c.OBSOLETE_DATE, ");
-        sql.append("rcv.IDENTIFIER as RVOCIDENTIFIER, rcv.BASE_URI as RVOCBASE_URI, ");
+        sql.append("rcvs.IDENTIFIER as RVOCSETIDENTIFIER, rcv.IDENTIFIER as RVOCIDENTIFIER, rcv.BASE_URI as RVOCBASE_URI, ");
         sql.append("rc.IDENTIFIER AS RCONCEPTIDENTIFIER, rc.LABEL as RCONCEPTLABEL ");
         sql.append("from VOCABULARY_CONCEPT c ");
         sql.append("left join VOCABULARY_CONCEPT_ELEMENT v on v.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID ");
         sql.append("LEFT JOIN DATAELEM d ON (v.DATAELEM_ID = d.DATAELEM_ID) ");
         sql.append("LEFT JOIN VOCABULARY_CONCEPT rc on v.RELATED_CONCEPT_ID = rc.VOCABULARY_CONCEPT_ID ");
         sql.append("LEFT JOIN VOCABULARY rcv ON rc.VOCABULARY_ID = rcv.VOCABULARY_ID ");
+        sql.append("LEFT JOIN VOCABULARY_SET rcvs ON (rcv.FOLDER_ID = rcvs.ID ) ");
         sql.append("left join (ATTRIBUTE a, M_ATTRIBUTE ma)  on (a.DATAELEM_ID = d.DATAELEM_ID ");
         sql.append("and PARENT_TYPE = 'E' and a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME='Datatype') ");
         sql.append("where c.VOCABULARY_ID = :vocabularyId AND c.OBSOLETE_DATE IS NULL ");
@@ -606,6 +607,7 @@ LOGGER.debug(StringUtils.replace(sql.toString(), ":oldVocabularyId", String.valu
 
                     if (relatedConceptId != 0) {
                         elem.setRelatedConceptId(relatedConceptId);
+                        elem.setRelatedConceptVocSet(rs.getString("RVOCSETIDENTIFIER"));
                         elem.setRelatedConceptVocabulary(rs.getString("RVOCIDENTIFIER"));
                         elem.setRelatedConceptIdentifier(rs.getString("RCONCEPTIDENTIFIER"));
                         elem.setRelatedConceptLabel(rs.getString("RCONCEPTLABEL"));
