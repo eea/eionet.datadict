@@ -1698,7 +1698,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             END
     </sql>
   </changeSet>
-  <changeSet id="rev-133" author="lainekai">
+  <changeSet id="rev-133" author="lainekai" runOnChange="true">
    <sql endDelimiter="#">
         <![CDATA[
         DROP PROCEDURE IF EXISTS `PrintLog`;
@@ -1743,7 +1743,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
               ve_source.DATAELEM_ID = ir1.TARGET_ELEM_ID
               and ve_source.RELATED_CONCEPT_ID is not null and ve_source.RELATED_CONCEPT_ID != 0
               AND NOT EXISTS (
-              SELECT 1 FROM vocabulary_concept_element ve_target WHERE
+              SELECT 1 FROM VOCABULARY_CONCEPT_ELEMENT ve_target WHERE
               ve_target.DATAELEM_ID = ir1.DATAELEM_ID AND ve_target.RELATED_CONCEPT_ID = ve_source.VOCABULARY_CONCEPT_ID)
           ;
 
