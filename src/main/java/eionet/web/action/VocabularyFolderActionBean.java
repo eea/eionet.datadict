@@ -1346,6 +1346,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             id = StringUtils.trimToNull(id);
             label = StringUtils.trimToNull(label);
 
+            LOGGER.info("JSON CALL RECEIVED FOR: " + vocabularyFolder.getIdentifier() + ", with parameters: lang = " + lang);
+
             final List<VocabularyConcept> concepts =
                     vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), id, label, null, null,
                             VocabularyJSONOutputHelper.DEFAULT_LANGUAGE);
