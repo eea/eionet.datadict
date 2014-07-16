@@ -43,6 +43,7 @@ import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Pair;
+import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
 
 /**
@@ -209,7 +210,7 @@ public abstract class VocabularyImportBaseHandler {
             // it is a self reference to a concept in this vocabulary.
             // if it is in found concept then we are lucky. but it may be not created yet... and also wont be created at all...
             relatedConceptIdentifier = relatedConceptUri.replace(this.folderContextRoot, "");
-            if (StringUtils.contains(relatedConceptIdentifier, "/")) {
+            if (StringUtils.contains(relatedConceptIdentifier, "/") || !Util.isValidIdentifier(relatedConceptIdentifier)) {
                 return null;
             }
             int index = getPositionIn(this.concepts, relatedConceptIdentifier);
@@ -240,24 +241,18 @@ public abstract class VocabularyImportBaseHandler {
 
         try {
             // extract related concept base uri and related concept identifier
-            int lastSlashIndex = relatedConceptUri.lastIndexOf("/") + 1;
-            String relatedConceptBaseUri = relatedConceptUri.substring(0, lastSlashIndex);
-            relatedConceptIdentifier = relatedConceptUri.substring(lastSlashIndex);
+            int lastDelimiterIndex =
+                    Math.max(relatedConceptUri.lastIndexOf("/"),
+                            Math.max(relatedConceptUri.lastIndexOf("#"), relatedConceptUri.lastIndexOf(":"))) + 1;
+            String relatedConceptBaseUri = relatedConceptUri.substring(0, lastDelimiterIndex);
+            relatedConceptIdentifier = relatedConceptUri.substring(lastDelimiterIndex);
             if (StringUtils.isNotEmpty(relatedConceptBaseUri) && StringUtils.isNotEmpty(relatedConceptIdentifier)) {
                 // check cache first
                 foundRelatedConcept = this.relatedConceptCache.get(relatedConceptUri);
                 // && !this.notFoundRelatedConceptCache.contains(relatedConceptUri)
                 if (foundRelatedConcept == null) {
                     // not found in cache search in database
-                    // 1.
-                    // first search for vocabularies with base uri. if cannot find search with vocabulary identifier. because
-                    // extracted
-                    // vocabulary identifier may not be correct. e.g. http://publications.europa.eu/resource/authority/country/
-                    // vocabulary
-                    // identifier found as country but it actually countries
-                    // TODO: second step (searching vocabulary folder with identifier) can be removed after base uri population
-                    // solution is
-                    // merged to master
+                    // search for vocabularies with base uri.
                     VocabularyFolder foundVocabularyFolder = null;
                     VocabularyFilter vocabularyFilter = new VocabularyFilter();
                     vocabularyFilter.setWorkingCopy(false);
@@ -268,32 +263,7 @@ public abstract class VocabularyImportBaseHandler {
                     if (vocabularyResult != null && vocabularyResult.getTotalItems() > 0) {
                         // get the first found item, since base uri kinda unique
                         foundVocabularyFolder = vocabularyResult.getList().get(0);
-                    } else {
-                        // 2. TODO: can be removed after base uri branch merged to master
-                        String temp = relatedConceptBaseUri.substring(0, relatedConceptBaseUri.length() - 1);
-                        String relatedConceptVocabularyIdentifier = temp.substring(temp.lastIndexOf("/") + 1);
-                        if (StringUtils.isNotBlank(relatedConceptVocabularyIdentifier)) {
-                            // create vocabulary filter
-                            vocabularyFilter.setBaseUri(null);
-                            vocabularyFilter.setIdentifier(relatedConceptVocabularyIdentifier);
-
-                            // first search for vocabularies, to find correct concept and to make searching faster for concepts
-                            vocabularyResult = this.vocabularyService.searchVocabularies(vocabularyFilter);
-                            if (vocabularyResult != null) {
-                                for (VocabularyFolder vocabularyFolder : vocabularyResult.getList()) {
-                                    // if it matches with base uri then we found it! this is an costly operation
-                                    // but to satisfy consistency we need it.
-                                    if (StringUtils.equals(relatedConceptBaseUri, VocabularyFolder.getBaseUri(vocabularyFolder))) {
-                                        foundVocabularyFolder = vocabularyFolder;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // if a vocabulary not found don't go on!
-                    if (foundVocabularyFolder != null) {
+                        // folder found, so go on for concept search
                         VocabularyConceptFilter filter = new VocabularyConceptFilter();
                         filter.setUsePaging(false);
                         filter.setIdentifier(relatedConceptIdentifier);

@@ -1774,5 +1774,9 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         ]]>
     </sql>
   </changeSet>
+   <changeSet author="enverveli" id="rev-134">
+      <comment>Add not-null constraint for BASE_URI column in VOCABULARY table.</comment>
+      <addNotNullConstraint tableName="VOCABULARY" columnName="BASE_URI" columnDataType="VARCHAR(255)"/>
+   </changeSet>
 
 </databaseChangeLog>

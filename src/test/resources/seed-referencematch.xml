@@ -11,7 +11,7 @@
     <VOCABULARY VOCABULARY_ID="3" CONTINUITY_ID="124" IDENTIFIER="match_vocab_1" LABEL="match_vocab_test_1" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="http://test.tripledev.ee/match_vocab_1/" FOLDER_ID="5"/>
     <VOCABULARY VOCABULARY_ID="4" CONTINUITY_ID="125" IDENTIFIER="match_vocab_2" LABEL="match_vocab_test_2" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="http://test.tripledev.ee/match_vocab_2/" FOLDER_ID="5"/>
     <VOCABULARY VOCABULARY_ID="5" CONTINUITY_ID="126" IDENTIFIER="match_vocab_3" LABEL="match_vocab_test_3" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="http://test.eea.eu/matchvocab3/" FOLDER_ID="6"/>
-    <VOCABULARY VOCABULARY_ID="6" CONTINUITY_ID="127" IDENTIFIER="match_vocab_4" LABEL="match_vocab_test_4" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="[NULL]" FOLDER_ID="5"/>
+    <VOCABULARY VOCABULARY_ID="6" CONTINUITY_ID="127" IDENTIFIER="match_vocab_4" LABEL="match_vocab_test_4" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="" FOLDER_ID="5"/>
 
     <DATAELEM DATAELEM_ID="3" NAMESPACE_ID="1" SHORT_NAME="definition" REG_STATUS="Released" IDENTIFIER="skos:definition"/>
     <DATAELEM DATAELEM_ID="6" NAMESPACE_ID="1" SHORT_NAME="SKOSRelatedMatch" REG_STATUS="Released" IDENTIFIER="skos:relatedMatch"/>

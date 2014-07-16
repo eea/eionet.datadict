@@ -43,6 +43,7 @@ import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 import eionet.util.Pair;
+import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
 
 /**
@@ -182,7 +183,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 }
 
                 String conceptIdentifier = uri.replace(this.folderContextRoot, "");
-                if (StringUtils.contains(conceptIdentifier, "/")) {
+                if (StringUtils.contains(conceptIdentifier, "/") || !Util.isValidIdentifier(conceptIdentifier)) {
                     this.logMessages.add("Row (" + rowNumber + ") did not contain a valid concept identifier.");
                     continue;
                 }
@@ -285,13 +286,13 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                         continue;
                     }
 
-                    //create VCE
+                    // create VCE
                     DataElement elem = new DataElement();
                     elementsOfConcept.add(elem);
                     elem.setAttributeLanguage(lang);
                     elem.setIdentifier(elementHeader);
                     elem.setId(this.boundElementsIds.get(elementHeader));
-                    //check if there is a found related concept
+                    // check if there is a found related concept
                     if (foundRelatedConcept != null) {
                         elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
                         int id = foundRelatedConcept.getId();

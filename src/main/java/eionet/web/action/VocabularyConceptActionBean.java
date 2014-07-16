@@ -612,7 +612,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     public String getUriPrefix() {
         String baseUri = VocabularyFolder.getBaseUri(vocabularyFolder);
 
-        if (!baseUri.endsWith("/")) {
+        if (!baseUri.endsWith("/") && !baseUri.endsWith("#") && !baseUri.endsWith(":")) {
             baseUri += "/";
         }
 
