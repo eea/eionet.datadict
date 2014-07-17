@@ -11,6 +11,13 @@
 
     <h1>Edit schema set</h1>
 
+    <c:if test="${actionBean.schemaSet.deprecatedStatus}">
+        <div class="note-msg">
+            <strong>Note</strong>
+            <p>This schema set is deprecated. It is not valid anymore!</p>
+        </div>
+    </c:if>
+
     <stripes:form id="form1" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
         <div id="outerframe">
             <table class="datatable">

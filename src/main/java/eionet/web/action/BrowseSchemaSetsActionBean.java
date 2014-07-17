@@ -80,14 +80,19 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     private Set<Integer> deletableSchemas;
 
     /**
+     * List of schema status texts to be displayed in the list of schemas after schema name. Released status is the normal, and show
+     * the status only when it is different from the normal.
+     */
+    private RegStatus[] statusTextsToDisplay = {RegStatus.DRAFT, RegStatus.PUBLIC_DRAFT, RegStatus.DEPRECATED};
+
+    /**
      * View list action.
      *
-     * @return
-     * @throws ServiceException
+     * @return resolution
+     * @throws ServiceException if operation fails
      */
     @DefaultHandler
     public Resolution viewList() throws ServiceException {
-
         schemaSets = schemaService.getSchemaSets(getUserName());
         schemas = schemaService.getRootLevelSchemas(getUserName());
         return new ForwardResolution(BROWSE_SCHEMA_SETS_JSP);
@@ -96,11 +101,10 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     /**
      * View working copies action.
      *
-     * @return
-     * @throws ServiceException
+     * @return resolution
+     * @throws ServiceException if operation fails
      */
     public Resolution workingCopies() throws ServiceException {
-
         if (isUserLoggedIn()) {
             schemaSets = schemaService.getSchemaSetWorkingCopiesOf(getUserName());
             schemas = schemaService.getSchemaWorkingCopiesOf(getUserName());
@@ -113,11 +117,10 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     /**
      * Deletes schema sets.
      *
-     * @return
-     * @throws ServiceException
+     * @return resolution
+     * @throws ServiceException if operation fails
      */
     public Resolution delete() throws ServiceException {
-
         if (!isDeletePermission()) {
             addGlobalValidationError("Cannot delete. No permission.");
             return viewList();
@@ -149,7 +152,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
 
     /**
      *
-     * @return
+     * @return permission
      */
     public boolean isDeletePermission() {
         if (getUser() != null) {
@@ -166,7 +169,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     /**
      * Sets the ids of selected schema sets.
      *
-     * @param The
+     * @param selectedSchemaSets
      *            list of ids in question.
      */
     public void setSelectedSchemaSets(List<Integer> selectedSchemaSets) {
@@ -192,10 +195,9 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
      * Returns the set of ids of schema sets that the current user can delete.
      *
      * @return The set of ids.
-     * @throws Exception
+     * @throws Exception if operation fails
      */
     public Set<Integer> getDeletableSchemaSets() throws Exception {
-
         if (deletableSchemaSets == null) {
             deletableSchemaSets = new HashSet<Integer>();
             String userName = getUserName();
@@ -216,10 +218,9 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
 
     /**
      * @return the deletableSchemas
-     * @throws Exception
+     * @throws Exception if operation fails
      */
     public Set<Integer> getDeletableSchemas() throws Exception {
-
         if (deletableSchemas == null) {
             deletableSchemas = new HashSet<Integer>();
             String userName = getUserName();
@@ -259,5 +260,9 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
      */
     public void setSelectedSchemas(List<Integer> selectedSchemas) {
         this.selectedSchemas = selectedSchemas;
+    }
+
+    public RegStatus[] getStatusTextsToDisplay() {
+        return statusTextsToDisplay;
     }
 }

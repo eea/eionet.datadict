@@ -2,8 +2,6 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<%@page import="eionet.meta.dao.domain.RegStatus"%>
-
 <stripes:layout-render name="/pages/common/template.jsp"
     pageTitle="Edit vocabulary">
 
@@ -292,7 +290,7 @@
                         <dd:mandatoryIcon />
                     </td>
                     <td class="simple_attr_value">
-                        <c:set var="regStatuses" value="<%=RegStatus.values()%>"/>
+                        <c:set var="regStatuses" value="${actionBean.vocabularyFolder.validRegStatusForVocabulary}"/>
                         <stripes:select name="vocabularyFolder.regStatus" value="${actionBean.vocabularyFolder.regStatus}">
                             <c:forEach items="${regStatuses}" var="aRegStatus">
                                 <stripes:option value="${aRegStatus}" label="${aRegStatus.label}"/>

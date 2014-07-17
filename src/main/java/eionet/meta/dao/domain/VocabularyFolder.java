@@ -56,6 +56,11 @@ public class VocabularyFolder {
     private boolean notationsEqualIdentifiers;
 
     /**
+     * Includes valid reg status values for a vocabulary.
+     */
+    public static final RegStatus[] VALID_REG_STATUS = new RegStatus[] {RegStatus.DRAFT, RegStatus.PUBLIC_DRAFT, RegStatus.RELEASED};
+
+    /**
      * Joined property - folder identifier.
      */
     private String folderName;
@@ -392,5 +397,14 @@ public class VocabularyFolder {
         return StringUtils.isNotEmpty(vf.getBaseUri()) ? vf.getBaseUri() : Props.getRequiredProperty(PropsIF.DD_URL)
                 + "/vocabulary/" + vf.getFolderName() + "/" + vf.getIdentifier() + "/";
     } // end of static method getBaseUri
+
+    /**
+     * Returns valid reg status enum values for a vocabulary
+     *
+     * @return array of RegStatus enum
+     */
+    public RegStatus[] getValidRegStatusForVocabulary() {
+        return VALID_REG_STATUS;
+    }
 
 }

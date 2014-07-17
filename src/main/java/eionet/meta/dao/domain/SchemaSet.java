@@ -34,7 +34,7 @@ public class SchemaSet {
     /**
      * Helper method for checking, if SchemaSet is in "DRAFT" status.
      *
-     * @return
+     * @return boolean
      */
     public boolean isDraftStatus() {
         return RegStatus.DRAFT.equals(regStatus);
@@ -213,16 +213,17 @@ public class SchemaSet {
 
     /**
      *
-     * @return
+     * @return boolean
      */
     public boolean isCheckedOut() {
-        return isWorkingCopy == false && (workingUser != null && !workingUser.isEmpty());
+        return !isWorkingCopy && (workingUser != null && !workingUser.isEmpty());
     }
 
     /**
      *
      * @param userName
-     * @return
+     *            user name
+     * @return boolean
      */
     public boolean isWorkingCopyOf(String userName) {
         return isWorkingCopy && workingUser != null && workingUser.equals(userName);
@@ -231,15 +232,16 @@ public class SchemaSet {
     /**
      *
      * @param userName
-     * @return
+     *            user name
+     * @return boolean
      */
     public boolean isCheckedOutBy(String userName) {
-        return isWorkingCopy == false && workingUser != null && workingUser.equals(userName);
+        return !isWorkingCopy && workingUser != null && workingUser.equals(userName);
     }
 
     /**
      *
-     * @return
+     * @return boolean
      */
     public boolean isReleased() {
         return regStatus != null && regStatus.equals(RegStatus.RELEASED);
@@ -258,6 +260,15 @@ public class SchemaSet {
      */
     public void setNameAttribute(String nameAttribute) {
         this.nameAttribute = nameAttribute;
+    }
+
+    /**
+     * Helper method for checking, if SchemaSet is in "Deprecated" status.
+     *
+     * @return boolean
+     */
+    public boolean isDeprecatedStatus() {
+        return RegStatus.DEPRECATED.equals(regStatus);
     }
 
 }

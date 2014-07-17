@@ -77,7 +77,8 @@
                         <c:choose>
                             <c:when test="${schemaSet.draftStatus && empty actionBean.user}">
                                 <span class="link-folder" style="color:gray;">
-                                    <c:out value="${schemaSet.identifier}"/> (<c:out value="${schemaSetName}"/>)&nbsp;<sup style="font-size:0.7em"><c:out value="${schemaSet.regStatus}" /></sup>
+                                    <c:out value="${schemaSet.identifier}"/> (<c:out value="${schemaSetName}"/>)
+                                    <sup style="font-size:0.7em"><c:out value="${schemaSet.regStatus}" /></sup>
                                 </span>
                             </c:when>
                             <c:otherwise>
@@ -87,6 +88,9 @@
                                     <c:out value="${schemaSet.identifier}"/>
                                 </stripes:link>
                                 (<c:out value="${schemaSetName}"/>)
+                                <c:if test="${ddfn:contains(actionBean.statusTextsToDisplay, schemaSet.regStatus)}">
+                                    <sup style="font-size:0.7em"><c:out value="${schemaSet.regStatus}" /></sup>
+                                </c:if>
                             </c:otherwise>
                         </c:choose>
                         <c:if test="${not empty actionBean.userName && schemaSet.workingCopy && actionBean.userName==schemaSet.workingUser}">

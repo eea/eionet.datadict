@@ -1775,4 +1775,9 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </sql>
   </changeSet>
 
+   <changeSet author="enverveli" id="rev-135">
+      <comment>New type Deprecated for released status of schema set.</comment>
+      <modifyDataType tableName="T_SCHEMA_SET" columnName="REG_STATUS" newDataType="enum('Draft','Public draft','Released','Deprecated') default 'Draft'"/>
+    </changeSet>
+
 </databaseChangeLog>

@@ -182,6 +182,13 @@
         </div>
     </c:if>
 
+    <c:if test="${actionBean.schemaSet.deprecatedStatus}">
+        <div class="note-msg">
+            <strong>Note</strong>
+            <p>This schema set is deprecated. It is not valid anymore!</p>
+        </div>
+    </c:if>
+
     <%-- Attributes div --%>
 
     <div id="outerframe" style="padding-top:20px">

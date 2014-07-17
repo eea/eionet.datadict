@@ -32,14 +32,14 @@ import java.util.List;
 public enum RegStatus {
 
     /** */
-    DRAFT("Draft"), PUBLIC_DRAFT("Public draft"), RELEASED("Released");
+    DRAFT("Draft"), PUBLIC_DRAFT("Public draft"), RELEASED("Released"), DEPRECATED("Deprecated");
 
     /** */
     String s;
 
     /**
      *
-     * @param s
+     * @param s initial value for s
      */
     RegStatus(String s) {
         this.s = s;
@@ -58,7 +58,7 @@ public enum RegStatus {
     /**
      * Returns label.
      *
-     * @return
+     * @return label of enum
      */
     public String getLabel() {
         return s;
@@ -66,8 +66,8 @@ public enum RegStatus {
 
     /**
      *
-     * @param s
-     * @return
+     * @param s string value
+     * @return RegStatus
      */
     public static RegStatus fromString(String s) {
         for (RegStatus regStatus : RegStatus.values()) {
@@ -80,7 +80,7 @@ public enum RegStatus {
 
     /**
      *
-     * @return
+     * @return default value
      */
     public static RegStatus getDefault() {
         return RegStatus.DRAFT;
@@ -92,6 +92,6 @@ public enum RegStatus {
      * @return List of RegStatues objects converted to String.
      */
     public static List<String> getPublicStatuses() {
-        return Arrays.asList(RegStatus.RELEASED.toString(), RegStatus.PUBLIC_DRAFT.toString());
+        return Arrays.asList(RegStatus.RELEASED.toString(), RegStatus.PUBLIC_DRAFT.toString(), RegStatus.DEPRECATED.toString());
     }
 }
