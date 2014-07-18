@@ -223,7 +223,9 @@
                 <td class="simple_attr_value">
                     <fmt:setLocale value="en_GB" />
                     <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schemaSet.dateModified}" var="dateFormatted"/>
+                    <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schemaSet.statusModified}" var="statusDateFormatted"/>
                     <c:out value="${actionBean.schemaSet.regStatus}"/>
+                    <span> - [Status Changed: ${statusDateFormatted}] - </span>
                     <c:if test="${not empty actionBean.userName && actionBean.userWorkingCopy}">
                         <span class="caution" title="Checked out on ${dateFormatted}">(Working copy)</span>
                     </c:if>

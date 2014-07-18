@@ -219,7 +219,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution save() throws ServiceException {
-
         schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema set successfully updated!");
 

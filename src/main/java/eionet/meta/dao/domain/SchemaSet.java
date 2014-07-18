@@ -1,5 +1,6 @@
 package eionet.meta.dao.domain;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,14 @@ public class SchemaSet {
     private String userModified;
     private String comment;
     private int checkedOutCopyId;
+    /**
+     * Status modification date.
+     */
+    private Date statusModified;
+    /**
+     * Status modification flag. Set true when status is changed.
+     */
+    private boolean isStatusModified = false;
 
     /** Name attribute value. */
     private String nameAttribute;
@@ -114,10 +123,15 @@ public class SchemaSet {
     }
 
     /**
+     * Set the registration status. If status changed, it updates modified date as well.
+     *
      * @param regStatus
      *            the regStatus to set
      */
     public void setRegStatus(RegStatus regStatus) {
+        if (this.regStatus != null && !this.regStatus.equals(regStatus)) {
+            setStatusModified(new Timestamp(System.currentTimeMillis()));
+        }
         this.regStatus = regStatus;
     }
 
@@ -271,4 +285,11 @@ public class SchemaSet {
         return RegStatus.DEPRECATED.equals(regStatus);
     }
 
+    public Date getStatusModified() {
+        return statusModified;
+    }
+
+    public void setStatusModified(Date statusModified) {
+        this.statusModified = statusModified;
+    }
 }

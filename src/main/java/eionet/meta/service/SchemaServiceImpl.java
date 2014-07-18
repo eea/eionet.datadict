@@ -61,11 +61,11 @@ import eionet.util.SecurityUtil;
 @Transactional
 public class SchemaServiceImpl implements ISchemaService {
 
-    /** The DAO for operations with attributes */
+    /** The DAO for operations with attributes. */
     @Autowired
     private IAttributeDAO attributeDAO;
 
-    /** The DAO for operations with schemas */
+    /** The DAO for operations with schemas. */
     @Autowired
     private ISchemaDAO schemaDAO;
 
@@ -866,7 +866,7 @@ public class SchemaServiceImpl implements ISchemaService {
             throw new ServiceException(e.getMessage(), e);
         }
     }
-    
+
     @Override
     public List<Schema> getSchemasForObligation(String obligationId, boolean releasedOnly) throws ServiceException {
         try {
@@ -874,7 +874,7 @@ public class SchemaServiceImpl implements ISchemaService {
             if (releasedOnly) {
                 schemasetFilter.setRegStatuses(Arrays.asList(RegStatus.RELEASED.toString()));
             } else {
-                schemasetFilter.setRegStatuses(RegStatus.getPublicStatuses());
+                schemasetFilter.setRegStatuses(RegStatus.getPublicStatusesForObligations());
             }
             //Set up ROD url attribute value
             ComplexAttribute rodAttr = attributeDAO.getComplexAttributeByName("ROD");
@@ -892,7 +892,7 @@ public class SchemaServiceImpl implements ISchemaService {
             //search schemasets
             SchemaSetsResult schemasetsResult = schemaSetDAO.searchSchemaSets(schemasetFilter);
 
-            if (schemasetsResult != null && schemasetsResult.getList().size()>0) {
+            if (schemasetsResult != null && schemasetsResult.getList().size() > 0) {
                 return schemaDAO.listForSchemaSets(schemasetsResult.getList());
             } else {
                 return new ArrayList<Schema>();

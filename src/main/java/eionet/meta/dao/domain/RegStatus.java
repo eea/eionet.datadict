@@ -94,4 +94,13 @@ public enum RegStatus {
     public static List<String> getPublicStatuses() {
         return Arrays.asList(RegStatus.RELEASED.toString(), RegStatus.PUBLIC_DRAFT.toString(), RegStatus.DEPRECATED.toString());
     }
+
+    /**
+     * Returns the list of public statuses that can be displayed obligations.
+     *
+     * @return List of RegStatues objects converted to String.
+     */
+    public static List<String> getPublicStatusesForObligations() {
+        return Arrays.asList(RegStatus.RELEASED.toString(), RegStatus.PUBLIC_DRAFT.toString());
+    }
 }
