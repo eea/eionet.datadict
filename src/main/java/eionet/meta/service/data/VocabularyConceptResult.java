@@ -36,24 +36,24 @@ import eionet.meta.dao.domain.VocabularySetSearchItem;
  * @author Juhan Voolaid
  */
 public class VocabularyConceptResult extends PagedResult<VocabularyConcept> {
-
-    /** distinct list of vocabulary sets. */
-    private List<Folder> vocabularySets;
-
-    private static VocabularySetComparator comparator = new VocabularySetComparator();
-
     /**
-     * Class constructor.
+     * distinct list of vocabulary sets.
      */
-    public VocabularyConceptResult() {
-    }
+    private List<Folder> vocabularySets;
+    /**
+     * Static comparator instance for Vocabulary sets. Used in sorting.
+     */
+    private static VocabularySetComparator comparator = new VocabularySetComparator();
 
     /**
      * Class constructor.
      *
      * @param items
+     *            list of concepts
      * @param totalItems
+     *            total found items
      * @param pagedRequest
+     *            if it is paged request or not
      */
     public VocabularyConceptResult(List<VocabularyConcept> items, int totalItems, PagedRequest pagedRequest) {
         super(items, totalItems, pagedRequest);
@@ -64,19 +64,17 @@ public class VocabularyConceptResult extends PagedResult<VocabularyConcept> {
             vocSet.setId(concept.getVocabularySetId());
             vocSet.setLabel(concept.getVocabularySetLabel());
 
-            //FIXME - contains is wrong
+            // FIXME - contains is wrong
             if (!vocabularySets.contains(vocSet)) {
                 vocabularySets.add(vocSet);
             }
         }
         Collections.sort(vocabularySets, comparator);
-
     }
 
     public List<Folder> getVocabularySets() {
         return vocabularySets;
     }
-
 
     /**
      * helper class for sorting vocabulary sets.

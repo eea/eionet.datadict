@@ -289,6 +289,7 @@
                 <c:choose>
                     <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
                         <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view" title="${concept.label}">
+														<stripes:param name="facet" value="HTML Representation"/> <!-- Discourage people from copy-paste of the link -->
                             <dd:attributeValue attrValue="${concept.label}" attrLen="40"/>
                         </stripes:link>
                     </c:when>

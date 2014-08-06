@@ -178,11 +178,10 @@ public interface IVocabularyConceptDAO {
 
     /**
      * When vocabulary is checked in this vocabulary concepts get new IDs.
-     * If they are used in foreign concepts as refence elements the relations have to be changed to the new ID
+     * If they are referred in other concepts the relations have to be changed to the new ID
      * @param oldVocabularyId old vocabulary record ID
-     * @param newVocabularyId new record ID
      */
-    void moveReferenceConcepts(int oldVocabularyId, int newVocabularyId);
+    void updateReferringReferenceConcepts(int oldVocabularyId);
 
 
     /**

@@ -296,7 +296,8 @@ public interface IVocabularyService {
     /**
      * Updates vocabulary concept in non-transactional.
      *
-     * @param vocabularyConcept concept
+     * @param vocabularyConcept
+     *            concept
      * @throws ServiceException
      *             if operation fails
      */
@@ -305,7 +306,8 @@ public interface IVocabularyService {
     /**
      * Updates vocabulary concept without updating attributes.
      *
-     * @param vocabularyConcept concept
+     * @param vocabularyConcept
+     *            concept
      * @throws ServiceException
      *             if operation fails
      */
@@ -609,15 +611,6 @@ public interface IVocabularyService {
     }
 
     /**
-     * Checks if given element has some special behaviour.
-     *
-     * @param relationalElement
-     *            special relational element
-     * @return String prefix in RDF
-     */
-    String getRelationalElementPrefix(RelationalElement relationalElement);
-
-    /**
      * Checks if the given element represents relation to an external resource.
      *
      * @param id
@@ -681,4 +674,34 @@ public interface IVocabularyService {
      */
     VocabularyFolder getVocabularyWithConcepts(String identifier, String vocabularySet);
 
+    /**
+     * Populates empty base uri values in vocabulary table.
+     *
+     * @param prefix
+     *            base uri prefix
+     * @return number of affected rows
+     * @throws eionet.meta.service.ServiceException
+     *             if operation fails
+     */
+    int populateEmptyBaseUris(String prefix) throws ServiceException;
+
+    /**
+     * Changes site prefixes in vocabulary base uris.
+     *
+     * @param oldSitePrefix
+     *            old site prefix
+     * @param newSitePrefix
+     *            new site prefix
+     * @return number of affected rows
+     * @throws eionet.meta.service.ServiceException
+     *             if operation fails
+     */
+    int changeSitePrefix(String oldSitePrefix, String newSitePrefix) throws ServiceException;
+
+    /**
+     * fix inverse relations in other concepts.
+     * @param vocabularyId this vocabulary ID
+     * @param concepts concepts of the vocabulary
+     */
+    void fixRelatedReferenceElements(int vocabularyId, List<VocabularyConcept> concepts);
 }

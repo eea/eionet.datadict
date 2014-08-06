@@ -21,12 +21,13 @@
 
 package eionet.meta.dao;
 
+import java.util.List;
+
+import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
-
-import java.util.List;
 
 /**
  * Vocabulary DAO interface.
@@ -39,7 +40,8 @@ public interface IVocabularyFolderDAO {
      * Returns released vocabulary folders.
      *
      * @param folderId
-     * @return
+     *            folder id.
+     * @return list of vocabulary folders.
      */
     List<VocabularyFolder> getReleasedVocabularyFolders(int folderId);
 
@@ -47,7 +49,8 @@ public interface IVocabularyFolderDAO {
      * Returns vocabulary folders.
      *
      * @param userName
-     * @return
+     *            user of folder
+     * @return list of vocabulary folders.
      */
     List<VocabularyFolder> getVocabularyFolders(String userName);
 
@@ -55,8 +58,10 @@ public interface IVocabularyFolderDAO {
      * Returns vocabulary folders.
      *
      * @param folderId
+     *            vocabulary folder id.
      * @param userName
-     * @return
+     *            user of folder.
+     * @return list of vocabulary folders.
      */
     List<VocabularyFolder> getVocabularyFolders(int folderId, String userName);
 
@@ -64,9 +69,12 @@ public interface IVocabularyFolderDAO {
      * Returns versions of the vocabulary folders.
      *
      * @param continuityId
-     * @param vocabularyFolderId folder to exclude
+     *            continuity id
+     * @param vocabularyFolderId
+     *            folder to exclude
      * @param userName
-     * @return
+     *            user of folder
+     * @return list of vocabulary folders.
      */
     List<VocabularyFolder> getVocabularyFolderVersions(String continuityId, int vocabularyFolderId, String userName);
 
@@ -74,7 +82,8 @@ public interface IVocabularyFolderDAO {
      * Returns working copies.
      *
      * @param userName
-     * @return
+     *            user of folder
+     * @return list of vocabulary folders.
      */
     List<VocabularyFolder> getWorkingCopies(String userName);
 
@@ -82,7 +91,8 @@ public interface IVocabularyFolderDAO {
      * Creates vocabulary folder.
      *
      * @param vocabularyFolder
-     * @return
+     *            vocabulary folder.
+     * @return id of new folder
      */
     int createVocabularyFolder(VocabularyFolder vocabularyFolder);
 
@@ -90,15 +100,19 @@ public interface IVocabularyFolderDAO {
      * Updates vocabulary folder.
      *
      * @param vocabularyFolder
+     *            vocabulary folder.
      */
     void updateVocabularyFolder(VocabularyFolder vocabularyFolder);
 
     /**
      * Returns vocabulary folder.
      *
-     * @param folderName vocabulary set
-     * @param identifier vocabulary identifier
-     * @param workingCopy if to return working copy
+     * @param folderName
+     *            vocabulary set
+     * @param identifier
+     *            vocabulary identifier
+     * @param workingCopy
+     *            if to return working copy
      * @return Vocabulary folder
      */
     VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy);
@@ -106,7 +120,8 @@ public interface IVocabularyFolderDAO {
     /**
      * Returns vocabulary folder WITHOUT concepts.
      *
-     * @param vocabularyFolderId vocabulary ID
+     * @param vocabularyFolderId
+     *            vocabulary ID
      * @return vocabulary domain entity
      */
     VocabularyFolder getVocabularyFolder(int vocabularyFolderId);
@@ -114,7 +129,8 @@ public interface IVocabularyFolderDAO {
     /**
      * Returns the checked out version of the given vocabulary folder.
      *
-     * @param checkedOutCopyId  vocabulary ID
+     * @param checkedOutCopyId
+     *            vocabulary ID
      * @return Checked out Vocabulary
      */
     VocabularyFolder getVocabularyWorkingCopy(int checkedOutCopyId);
@@ -122,17 +138,22 @@ public interface IVocabularyFolderDAO {
     /**
      * Deletes vocabulary folders.
      *
-     * @param ids IDs of folders to be deleted
-     * @param keepRelatedValues if flagged relations are kept as uris in values instead of IDs
+     * @param ids
+     *            IDs of folders to be deleted
+     * @param keepRelatedValues
+     *            if flagged relations are kept as uris in values instead of IDs
      */
     void deleteVocabularyFolders(List<Integer> ids, boolean keepRelatedValues);
 
     /**
      * True, if identifier is unique.
      *
-     * @param folderId                    folder id
-     * @param identifier                  new identifier to check
-     * @param excludedVocabularyFolderIds folder ids not to be checked
+     * @param folderId
+     *            folder id
+     * @param identifier
+     *            new identifier to check
+     * @param excludedVocabularyFolderIds
+     *            folder ids not to be checked
      * @return true if folder is unique
      */
     boolean isUniqueVocabularyFolderIdentifier(int folderId, String identifier, int... excludedVocabularyFolderIds);
@@ -140,7 +161,8 @@ public interface IVocabularyFolderDAO {
     /**
      * Forcefully sets notations to identifiers in all concepts within the vocabulary with the given id.
      *
-     * @param vocabularyId The given vocabulary id.
+     * @param vocabularyId
+     *            The given vocabulary id.
      * @return The number of concepts where the notation was different from identifier.
      */
     int forceNotationsToIdentifiers(int vocabularyId);
@@ -148,7 +170,8 @@ public interface IVocabularyFolderDAO {
     /**
      * Returns the vocabulary by the vocabulary id of the given concept.
      *
-     * @param conceptId Id of the concept whose parent vocabulary is to be returned.
+     * @param conceptId
+     *            Id of the concept whose parent vocabulary is to be returned.
      * @return The vocabulary object as described above.
      */
     VocabularyFolder getVocabularyFolderOfConcept(int conceptId);
@@ -156,33 +179,65 @@ public interface IVocabularyFolderDAO {
     /**
      * returns list of bound element names used in CSV header.
      *
-     * @param vocabularyFolderId vocabulary ID
+     * @param vocabularyFolderId
+     *            vocabulary ID
      * @return list of Pairs where Left = element name and Right=max count of elements in a concept in this vocabulary folder
      */
     List<Triple<String, String, Integer>> getVocabularyFolderBoundElementsMeta(int vocabularyFolderId);
 
-
     /**
      * Search vocabularies by the given parameters. No concepts assigned to DAO objects.
      *
-     * @param filter container object for filtering parameters
+     * @param filter
+     *            container object for filtering parameters
      * @return Result containing values for the paged request
      */
     VocabularyResult searchVocabularies(VocabularyFilter filter);
 
     /**
-     * Updates concept element values where concepts of this vocabulary are marked as related concepts.
-     * element value is updated with base URI + concept identifier.
+     * Updates concept element values where concepts of this vocabulary are marked as related concepts. element value is updated
+     * with base URI + concept identifier.
      *
-     * @param vocabularyIds list of vocabulary IDs to be checked and handled
+     * @param vocabularyIds
+     *            list of vocabulary IDs to be checked and handled
      */
     void updateRelatedConceptValueToUri(List<Integer> vocabularyIds);
 
     /**
+     * Updates a vocabulary concept element to set related concept id field to a new value and and element value field to NULL.
+     *
+     * @param element
+     *            to be updated element (!!! ATTENTION: id field of this object should be set as VOCABULARY_CONCEPT_ELEMENT Table ID
+     *            Column)
+     */
+    void updateRelatedConceptValueToId(DataElement element);
+
+    /**
      * checks if any of the folders have base uri entered.
      *
-     * @param ids list of vocabularies
+     * @param ids
+     *            list of vocabularies
      * @return true if at least one base uri exists in vocabularies of the given IDs
      */
     boolean vocabularyHasBaseUri(List<Integer> ids);
+
+    /**
+     * Populates empty base uri values in vocabulary table.
+     *
+     * @param prefix
+     *            base uri prefix
+     * @return number of affected rows
+     */
+    int populateEmptyBaseUris(String prefix);
+
+    /**
+     * Changes site prefixes in vocabulary base uris.
+     *
+     * @param oldSitePrefix
+     *            old site prefix
+     * @param newSitePrefix
+     *            new site prefix
+     * @return number of affected rows
+     */
+    int changeSitePrefix(String oldSitePrefix, String newSitePrefix);
 }

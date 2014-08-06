@@ -21,24 +21,25 @@
 
 package eionet.meta.dao.mysql;
 
-import eionet.meta.dao.IVocabularyConceptDAO;
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.service.data.ObsoleteStatus;
-import eionet.meta.service.data.VocabularyConceptFilter;
-import eionet.meta.service.data.VocabularyConceptResult;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import eionet.meta.dao.IVocabularyConceptDAO;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.data.ObsoleteStatus;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
 
 /**
  * Vocabulary concept DAO.
@@ -89,7 +90,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         StringBuilder sql = new StringBuilder();
         sql.append("select SQL_CALC_FOUND_ROWS c.VOCABULARY_CONCEPT_ID, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, c.DEFINITION, ");
         sql.append("c.NOTATION, c.CREATION_DATE, c.OBSOLETE_DATE, v.LABEL AS VOCABULARY_LABEL, ");
-        sql.append("v.IDENTIFIER as VOCABULARY_IDENTIFIER, s.ID AS VOCSET_ID, s.LABEL as VOCSET_LABEL ");
+        sql.append("v.IDENTIFIER AS VOCABULARY_IDENTIFIER, s.ID AS VOCSET_ID, s.LABEL as VOCSET_LABEL, ");
+        sql.append("s.IDENTIFIER as VOCSET_IDENTIFIER ");
         sql.append("from VOCABULARY_CONCEPT c, VOCABULARY v, VOCABULARY_SET s ");
         sql.append("where v.VOCABULARY_ID = c.VOCABULARY_ID AND v.FOLDER_ID = s.ID ");
         if (filter.getVocabularyFolderId() > 0) {
@@ -103,7 +105,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 sql.append("or c.LABEL REGEXP :text ");
                 sql.append("or c.DEFINITION REGEXP :text ");
                 sql.append("or c.IDENTIFIER REGEXP :text) ");
-                //word match overrides exactmatch as it contains also exact matches
+                // word match overrides exactmatch as it contains also exact matches
             } else if (filter.isExactMatch()) {
                 params.put("text", filter.getText());
                 sql.append("and (c.NOTATION = :text ");
@@ -188,9 +190,11 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setNotation(rs.getString("NOTATION"));
                         vc.setCreated(rs.getDate("CREATION_DATE"));
                         vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
+                        vc.setVocabularyIdentifier(rs.getString("VOCABULARY_IDENTIFIER"));
                         vc.setVocabularyLabel(rs.getString("VOCABULARY_LABEL"));
                         vc.setVocabularySetLabel(rs.getString("VOCSET_LABEL"));
                         vc.setVocabularySetId(rs.getInt("VOCSET_ID"));
+                        vc.setVocabularySetIdentifier("VOCSET_IDENTIFIER");
                         return vc;
                     }
                 });
@@ -521,17 +525,17 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     }
 
     @Override
-    public void moveReferenceConcepts(int oldVocabularyId, int newVocabularyId) {
+    public void updateReferringReferenceConcepts(int oldVocabularyId) {
         StringBuilder sql = new StringBuilder();
         sql.append("update VOCABULARY_CONCEPT_ELEMENT vce, VOCABULARY_CONCEPT vco, VOCABULARY_CONCEPT vcn  ");
-        sql.append("SET vce.RELATED_CONCEPT_ID = vcn.VOCABULARY_CONCEPT_ID WHERE vcn.VOCABULARY_ID = :newVocabularyId ");
-        sql.append("AND vco.VOCABULARY_ID = :oldVocabularyId AND vco.IDENTIFIER=vcn.IDENTIFIER  ");
+        sql.append("SET vce.RELATED_CONCEPT_ID = vcn.VOCABULARY_CONCEPT_ID WHERE ");
+        sql.append("vcn.ORIGINAL_CONCEPT_ID = vco.VOCABULARY_CONCEPT_ID ");
+        sql.append("AND vco.VOCABULARY_ID = :oldVocabularyId ");
         sql.append("AND vce.RELATED_CONCEPT_ID=vco.VOCABULARY_CONCEPT_ID");
-
+      //TODO_20044 - check
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("newVocabularyId", newVocabularyId);
         parameters.put("oldVocabularyId", oldVocabularyId);
-
+LOGGER.debug(StringUtils.replace(sql.toString(), ":oldVocabularyId", String.valueOf(oldVocabularyId)));
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 

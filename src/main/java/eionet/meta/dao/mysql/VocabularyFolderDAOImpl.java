@@ -22,6 +22,7 @@
 package eionet.meta.dao.mysql;
 
 import eionet.meta.dao.IVocabularyFolderDAO;
+import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
@@ -681,7 +682,8 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
             if (filter.isWordMatch()) {
                 params.put("text", "[[:<:]]" + filter.getConceptText() + "[[:>:]]");
                 sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ");
-                sql.append(" AND (vc.LABEL REGEXP :conceptText OR vc.IDENTIFIER REGEXP :conceptText OR vc.DEFINITION REGEXP :conceptText)) ");
+                sql.append(" AND (vc.LABEL REGEXP :conceptText OR vc.IDENTIFIER REGEXP :conceptText ");
+                sql.append(" OR vc.DEFINITION REGEXP :conceptText)) ");
             } else if (filter.isExactMatch()) {
                 params.put("conceptText", filter.getConceptText());
                 sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ");
@@ -689,8 +691,14 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
             } else {
                 params.put("conceptText", "%" + filter.getConceptText() + "%");
                 sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ");
-                sql.append(" AND (vc.LABEL like :conceptText OR vc.IDENTIFIER like :conceptText OR vc.DEFINITION like :conceptText) ) ");
+                sql.append(" AND (vc.LABEL like :conceptText ");
+                sql.append(" OR vc.IDENTIFIER like :conceptText OR vc.DEFINITION like :conceptText) ) ");
             }
+        }
+
+        if (StringUtils.isNotBlank(filter.getBaseUri())) {
+            params.put("baseUri", filter.getBaseUri());
+            sql.append(" AND v.BASE_URI like :baseUri ");
         }
         sql.append(" ORDER BY v.IDENTIFIER");
 
@@ -731,7 +739,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
     public void updateRelatedConceptValueToUri(List<Integer> vocabularyIds) {
         String sql =
                 "UPDATE VOCABULARY_CONCEPT_ELEMENT ce, VOCABULARY v, VOCABULARY_CONCEPT c "
-                        + "SET ce.ELEMENT_VALUE = concat(v.BASE_URI, '/', c.IDENTIFIER), ce.RELATED_CONCEPT_ID = null "
+                        + "SET ce.ELEMENT_VALUE = concat(v.BASE_URI, c.IDENTIFIER), ce.RELATED_CONCEPT_ID = null "
                         + "WHERE c.VOCABULARY_ID = v.VOCABULARY_ID AND v.VOCABULARY_ID IN (:vocabularyIds) "
                         + "and ce.RELATED_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID";
 
@@ -739,8 +747,20 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         parameters.put("vocabularyIds", vocabularyIds);
 
         getNamedParameterJdbcTemplate().update(sql, parameters);
-
     }
+
+    @Override
+    public void updateRelatedConceptValueToId(DataElement element) {
+        String sql =
+                "UPDATE VOCABULARY_CONCEPT_ELEMENT ce SET ce.ELEMENT_VALUE = null, ce.RELATED_CONCEPT_ID = :relatedConceptId "
+                        + "WHERE ce.ID = :vocabularyConceptElementId ";
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("relatedConceptId", element.getRelatedConceptId());
+        parameters.put("vocabularyConceptElementId", element.getId());
+
+        getNamedParameterJdbcTemplate().update(sql, parameters);
+    } // end of method updateRelatedConceptValueToId
 
     @Override
     public boolean vocabularyHasBaseUri(List<Integer> ids) {
@@ -755,4 +775,30 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
         return result > 0;
     }
+
+    @Override
+    public int populateEmptyBaseUris(String prefix) {
+        String sql =
+                "UPDATE VOCABULARY AS v INNER JOIN VOCABULARY_SET AS vs ON v.FOLDER_ID = vs.ID "
+                        + "SET v.BASE_URI = CONCAT(:sitePrefix, vs.IDENTIFIER, :separator, v.IDENTIFIER, :separator) "
+                        + "WHERE v.BASE_URI IS NULL OR v.BASE_URI = ''";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("sitePrefix", prefix);
+        parameters.put("separator", "/");
+
+        return getNamedParameterJdbcTemplate().update(sql, parameters);
+    } // end of method populateEmptyBaseUris
+
+    @Override
+    public int changeSitePrefix(String oldSitePrefix, String newSitePrefix) {
+        String sql =
+                "UPDATE VOCABULARY AS v SET v.BASE_URI = REPLACE(v.BASE_URI, :oldSitePrefix, :newSitePrefix) "
+                        + "WHERE v.BASE_URI IS NOT NULL AND v.BASE_URI LIKE :oldSitePrefixLike";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("oldSitePrefix", oldSitePrefix);
+        parameters.put("newSitePrefix", newSitePrefix);
+        parameters.put("oldSitePrefixLike", oldSitePrefix + "%");
+
+        return getNamedParameterJdbcTemplate().update(sql, parameters);
+    } // end of method changeSitePrefix
 }

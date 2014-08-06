@@ -1,10 +1,10 @@
 package eionet.meta;
 
-
 import java.sql.Connection;
 
-import eionet.util.sql.ConnectionUtil;
+import org.apache.commons.lang.StringUtils;
 
+import eionet.util.sql.ConnectionUtil;
 
 public class FakeUser extends DDUser {
 
@@ -16,7 +16,8 @@ public class FakeUser extends DDUser {
     }
 
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
+     *
      * @see eionet.meta.DDuser#authenticate(java.lang.String, java.lang.String)
      */
     public boolean authenticate(String userName, String userPws) {
@@ -28,7 +29,8 @@ public class FakeUser extends DDUser {
     }
 
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
+     *
      * @see eionet.meta.DDuser#isAuthentic()
      */
     public boolean isAuthentic() {
@@ -36,21 +38,22 @@ public class FakeUser extends DDUser {
     }
 
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
+     *
      * @see eionet.meta.DDUser#getConnection()
      */
     public Connection getConnection() {
 
         try {
             return ConnectionUtil.getConnection();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DDRuntimeException(e);
         }
     }
 
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
+     *
      * @see eionet.meta.DDuser#getUserRoles()
      */
     public String[] getUserRoles() {
@@ -59,9 +62,22 @@ public class FakeUser extends DDUser {
     }
 
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
+     *
      * @see eionet.meta.DDuser#invalidate()
      */
     public void invalidate() {
+    }
+
+    /**
+     * Gives every permission to testUser
+     *
+     */
+    @Override
+    public boolean hasPermission(String aclPath, String permission) {
+        if (StringUtils.equals("testUser", username)) {
+            return true;
+        }
+        return super.hasPermission(aclPath, permission);
     }
 }

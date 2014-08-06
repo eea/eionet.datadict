@@ -1,5 +1,7 @@
 package eionet.meta.exports.rdf;
 
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import net.sourceforge.stripes.mock.MockRoundtrip;
 import net.sourceforge.stripes.mock.MockServletContext;
 
@@ -9,8 +11,6 @@ import org.junit.Test;
 
 import eionet.DDDatabaseTestCase;
 import eionet.meta.ActionBeanUtils;
-import eionet.util.Props;
-import eionet.util.PropsIF;
 import eionet.web.action.FolderActionBean;
 
 /**
@@ -19,8 +19,10 @@ import eionet.web.action.FolderActionBean;
  * @author kaido
  */
 public class VocabularyRdfTest extends DDDatabaseTestCase   {
-
-    private String url = Props.getProperty(PropsIF.DD_URL);
+    /**
+     * Used instead of site prefix.
+     */
+    private static final String BASE_URL = "http://test.tripledev.ee/datadict";
 
     /**
      * test if RDF output contains collection resource for a folder.
@@ -34,14 +36,16 @@ public class VocabularyRdfTest extends DDDatabaseTestCase   {
         trip.addParameter("folder.identifier", "wise");
         trip.execute("rdf");
 
-        String dcTypeCollection = "<dctype:Collection rdf:about=\"" + url + "/vocabulary/wise/\">";
+        String base = Props.getRequiredProperty(PropsIF.DD_URL);
+
+        String dcTypeCollection = "<dctype:Collection rdf:about=\"" + base + "/vocabulary/wise/\">";
 
         String skosNotation = "<skos:notation>wise</skos:notation>";
 
-        String isPartOf = "<dcterms:isPartOf rdf:resource=\"" + url + "/vocabulary/wise/\"/>";
-        String hasPart = "<dcterms:hasPart rdf:resource=\"" + url + "/vocabulary/wise/BWClosed/\"/>";
+        String isPartOf = "<dcterms:isPartOf rdf:resource=\"" + base + "/vocabulary/wise/\"/>";
+        String hasPart = "<dcterms:hasPart rdf:resource=\"" + base + "/vocabulary/wise/BWClosed/\"/>";
 
-        String conceptScheme = "<skos:ConceptScheme rdf:about=\"" + url +  "/vocabulary/wise/BWClosed/\">";
+        String conceptScheme = "<skos:ConceptScheme rdf:about=\"" + BASE_URL +  "/vocabulary/wise/BWClosed/\">";
         String conceptNotation = "<skos:notation>BWClosed</skos:notation>";
 
         String output = trip.getOutputString();
@@ -54,7 +58,7 @@ public class VocabularyRdfTest extends DDDatabaseTestCase   {
         Assert.assertTrue(StringUtils.contains(output, skosNotation));
         Assert.assertTrue(StringUtils.contains(output, conceptNotation));
 
-        String ddSchema = "xmlns=\"" + url + "/property/\"";
+        String ddSchema = "xmlns=\"" + base + "/property/\"";
         String skosSchema = "xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"";
 
         String anotherCodeElem = "<AnotherCode>";
@@ -81,9 +85,9 @@ public class VocabularyRdfTest extends DDDatabaseTestCase   {
         // Reference as plain string value
         assertTrue(StringUtils.contains(output, "<skos:relatedMatch rdf:resource=\"http://en.wikipedia.org/wiki/Semantic%20Web\"/>"));
         // Reference via RELATED_CONCEPT_ID
-        assertTrue(StringUtils.contains(output, "<skos:relatedMatch rdf:resource=\"" + url + "/vocabulary/wise/BWClosed/YP\"/>"));
+        assertTrue(StringUtils.contains(output, "<skos:relatedMatch rdf:resource=\"" + BASE_URL + "/vocabulary/wise/BWClosed/YP\"/>"));
         // Localref via RELATED_CONCEPT_ID
-        assertTrue(StringUtils.contains(output, "<skos:related rdf:resource=\"" + url + "/vocabulary/wise/BWClosed/YT\"/>"));
+        assertTrue(StringUtils.contains(output, "<skos:related rdf:resource=\"" + BASE_URL + "/vocabulary/wise/BWClosed/YT\"/>"));
     }
 
 

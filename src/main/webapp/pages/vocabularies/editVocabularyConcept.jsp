@@ -86,6 +86,7 @@
             <stripes:hidden name="vocabularyFolder.id" />
             <stripes:hidden name="vocabularyFolder.numericConceptIdentifiers" />
             <stripes:hidden name="vocabularyConcept.id" />
+            <stripes:hidden name="vocabularyConcept.vocabularyId" />
             <stripes:hidden name="vocabularyConcept.identifier" />
             <stripes:hidden id="txtEditDivId" name="editDivId" />
 

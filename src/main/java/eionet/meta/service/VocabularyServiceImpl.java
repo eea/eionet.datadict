@@ -110,18 +110,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Autowired
     private IRdfNamespaceDAO rdfNamespaceDAO;
 
-    /** special elements . */
-    private static EnumMap<RelationalElement, String> relationalElements;
-
-    static {
-        if (relationalElements == null) {
-            relationalElements = new EnumMap<RelationalElement, String>(RelationalElement.class);
-            relationalElements.put(RelationalElement.BROADER_CONCEPT, "skos:broader");
-            relationalElements.put(RelationalElement.NARROWER_CONCEPT, "skos:narrower");
-            relationalElements.put(RelationalElement.RELATED_CONCEPT, "skos:related");
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -234,7 +222,17 @@ public class VocabularyServiceImpl implements IVocabularyService {
             if (newFolder != null) {
                 int newFolderId = folderDAO.createFolder(newFolder);
                 vocabularyFolder.setFolderId(newFolderId);
+                vocabularyFolder.setFolderName(newFolder.getIdentifier());
+            } else {
+                Folder folder = folderDAO.getFolder(vocabularyFolder.getFolderId());
+                vocabularyFolder.setFolderName(folder.getIdentifier());
             }
+
+            String baseUri = vocabularyFolder.getBaseUri();
+            if (StringUtils.isBlank(baseUri)) {
+                baseUri = VocabularyFolder.getBaseUri(vocabularyFolder);
+            }
+            vocabularyFolder.setBaseUri(baseUri);
 
             vocabularyFolder.setUserModified(userName);
             return vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
@@ -327,28 +325,31 @@ public class VocabularyServiceImpl implements IVocabularyService {
      *
      * @param vocabularyConcept
      *            concept
+     * @throws ServiceException if update of attributes fails
      */
-    private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept) {
+    private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept) throws ServiceException {
         List<DataElement> dataElementValues = new ArrayList<DataElement>();
         if (vocabularyConcept.getElementAttributes() != null) {
             for (List<DataElement> values : vocabularyConcept.getElementAttributes()) {
                 if (values != null) {
                     for (DataElement value : values) {
                         if (value != null
-                                && (StringUtils.isNotEmpty(value.getAttributeValue()) || value.getRelatedConceptId() != null)) {
+                                && (StringUtils.isNotEmpty(value.getAttributeValue())
+                                        || (value.getRelatedConceptId() != null && value.getRelatedConceptId() != 0))) {
                             dataElementValues.add(value);
                         }
                     }
                 }
             }
         }
+        // fix relations in inverse elems
 
+        fixRelatedLocalRefElements(vocabularyConcept, dataElementValues);
         dataElementDAO.deleteVocabularyConceptDataElementValues(vocabularyConcept.getId());
         if (dataElementValues.size() > 0) {
             dataElementDAO.insertVocabularyConceptDataElementValues(vocabularyConcept.getId(), dataElementValues);
         }
 
-        fixRelatedElements(vocabularyConcept, dataElementValues);
     }
 
     /**
@@ -368,8 +369,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     /**
-     * As a last step when updating vocabulary concept, this method checks all the bound elements that represent relations and
-     * makes sure that the concepts are related in both sides (A related with B -> B related with A). Also when relation gets
+     * As a last step when updating vocabulary concept, this method checks all the bound localref elements that represent relations
+     * and makes sure that the concepts are related in both sides (A related with B -> B related with A). Also when relation gets
      * deleted from one side, then we make sure to deleted it also from the other side of the relation.
      *
      * @param vocabularyConcept
@@ -377,48 +378,32 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * @param dataElementValues
      *            bound data elements with values
      */
-    private void fixRelatedElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues) {
+    private void fixRelatedLocalRefElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues)
+            throws ServiceException {
         try {
-            // delete all existing relations:
-            dataElementDAO.deleteRelatedElements(vocabularyConcept.getId());
 
-            for (DataElement elem : dataElementValues) {
-                if (elem.isRelationalElement()) {
-                    int relatedConceptId = elem.getRelatedConceptId();
-                    VocabularyConcept relatedConcept = vocabularyConceptDAO.getVocabularyConcept(relatedConceptId);
-                    List<DataElement> relatedElementValues = new ArrayList<DataElement>();
-                    DataElement relationalElement = null;
+            //delet all element inversions existing in old copy as well:
+            List<DataElement> originalElementValues =
+                    dataElementDAO.getVocabularyDataElements(vocabularyConcept.getVocabularyId());
 
-                    try {
-                        if (elem.getIdentifier().equals(getRelationalElementPrefix(RelationalElement.RELATED_CONCEPT))) {
-                            relationalElement =
-                                    dataElementDAO.getDataElement(getRelationalElementPrefix(RelationalElement.RELATED_CONCEPT));
-                        } else if (elem.getIdentifier().equals(getRelationalElementPrefix(RelationalElement.BROADER_CONCEPT))) {
-                            relationalElement =
-                                    dataElementDAO.getDataElement(getRelationalElementPrefix(RelationalElement.NARROWER_CONCEPT));
+            for (DataElement elem : originalElementValues) {
+                dataElementDAO.deleteInverseElemsOfConcept(vocabularyConcept.getId(), elem);
+            }
 
-                        } else if (elem.getIdentifier().equals(getRelationalElementPrefix(RelationalElement.NARROWER_CONCEPT))) {
-                            relationalElement =
-                                    dataElementDAO.getDataElement(getRelationalElementPrefix(RelationalElement.BROADER_CONCEPT));
-                        }
-                    } catch (Exception e) {
-                        LOGGER.warn("Relational skos element not defined " + e);
+            if (dataElementValues != null) {
+                dataElementDAO.deleteReferringInverseElems(vocabularyConcept.getId(), dataElementValues);
+
+                for (DataElement elem : dataElementValues) {
+                    if ("localref".equals(dataElementDAO.getDataElementDataType(elem.getId()))
+                            && elem.getRelatedConceptId() != null && elem.getRelatedConceptId() != 0) {
+                        dataElementDAO.createInverseElements(elem.getId(), vocabularyConcept.getId(), elem.getRelatedConceptId());
                     }
-
-                    if (relationalElement != null) {
-                        relationalElement.setAttributeLanguage(elem.getAttributeLanguage());
-                        relationalElement.setAttributeValue(elem.getAttributeValue());
-                        relationalElement.setRelatedConceptId(vocabularyConcept.getId());
-                        relatedElementValues.add(relationalElement);
-                        dataElementDAO.insertVocabularyConceptDataElementValues(relatedConcept.getId(), relatedElementValues);
-                    }
-
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn("Handling related element bindings failed " + e);
+            e.printStackTrace();
+            throw new ServiceException("Handling related element bindings failed " + e);
         }
-
     }
 
     /**
@@ -436,14 +421,29 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vf.setNumericConceptIdentifiers(vocabularyFolder.isNumericConceptIdentifiers());
             vf.setNotationsEqualIdentifiers(vocabularyFolder.isNotationsEqualIdentifiers());
             vf.setBaseUri(vocabularyFolder.getBaseUri());
-            vf.setFolderId(vocabularyFolder.getFolderId());
 
             if (newFolder != null) {
                 int newFolderId = folderDAO.createFolder(newFolder);
+                newFolder.setId(newFolderId);
                 vf.setFolderId(newFolderId);
+                vf.setFolderName(newFolder.getIdentifier());
+            } else if (vf.getFolderId() != vocabularyFolder.getFolderId()) {
+                vf.setFolderId(vocabularyFolder.getFolderId());
+                Folder folder = folderDAO.getFolder(vocabularyFolder.getFolderId());
+                vf.setFolderName(folder.getIdentifier());
             }
 
+            // vf.setBaseUri(vocabularyFolder.getBaseUri());
+            String baseUri = vocabularyFolder.getBaseUri();
+            if (StringUtils.isBlank(baseUri)) {
+                baseUri = VocabularyFolder.getBaseUri(vf);
+            }
+            vf.setBaseUri(baseUri);
+
             vocabularyFolderDAO.updateVocabularyFolder(vf);
+            vocabularyFolder.setBaseUri(vf.getBaseUri());
+            vocabularyFolder.setFolderName(vf.getFolderName());
+            vocabularyFolder.setFolderId(vf.getFolderId());
 
             attributeDAO.updateSimpleAttributes(vocabularyFolder.getId(), DElemAttribute.ParentType.VOCABULARY_FOLDER.toString(),
                     vocabularyFolder.getAttributes());
@@ -611,10 +611,27 @@ public class VocabularyServiceImpl implements IVocabularyService {
             int originalVocabularyFolderId = vocabularyFolder.getCheckedOutCopyId();
 
             if (!vocabularyFolder.isSiteCodeType()) {
-                // reference type relations in other vocabularies must get new id's
-                vocabularyConceptDAO.moveReferenceConcepts(originalVocabularyFolderId, vocabularyFolderId);
+
+                List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(originalVocabularyFolderId);
+
+                for (VocabularyConcept concept : concepts) {
+                    List<List<DataElement>> elems =
+                            dataElementDAO
+                                    .getVocabularyConceptDataElementValues(originalVocabularyFolderId, concept.getId(), true);
+
+                    for (List<DataElement> elemMeta : elems) {
+                        if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
+                            dataElementDAO.deleteReferringInverseElems(concept.getId(), elemMeta);
+                        }
+                    }
+                }
+
+                // referenced attribute values in this vocabulary must get new id's
+                vocabularyConceptDAO.updateReferringReferenceConcepts(originalVocabularyFolderId);
+
                 // Remove old vocabulary concepts
                 vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
+
                 // Remove old data element relations
                 dataElementDAO.deleteVocabularyDataElements(originalVocabularyFolderId);
                 // update ch3 element reference
@@ -632,10 +649,24 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolderDAO.updateVocabularyFolder(vocabularyFolder);
 
             if (!vocabularyFolder.isSiteCodeType()) {
+
                 // Move new vocabulary concepts to folder
                 vocabularyConceptDAO.moveVocabularyConcepts(vocabularyFolderId, originalVocabularyFolderId);
-                // Move data element relations to folder
+
+                // Move bound data elements to new vocabulary
                 dataElementDAO.moveVocabularyDataElements(vocabularyFolderId, originalVocabularyFolderId);
+
+                List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(originalVocabularyFolderId);
+                for (VocabularyConcept concept : concepts) {
+                    List<List<DataElement>> elems =
+                            dataElementDAO
+                                    .getVocabularyConceptDataElementValues(originalVocabularyFolderId, concept.getId(), true);
+
+                    concept.setElementAttributes(elems);
+
+                }
+                fixRelatedReferenceElements(vocabularyFolderId, concepts);
+
             }
 
             // Delete old attributes first and then change the parent ID of the new ones
@@ -672,7 +703,20 @@ public class VocabularyServiceImpl implements IVocabularyService {
             if (newFolder != null) {
                 int newFolderId = folderDAO.createFolder(newFolder);
                 vocabularyFolder.setFolderId(newFolderId);
+                vocabularyFolder.setFolderName(newFolder.getIdentifier());
+            } else if (originalVocabularyFolder.getFolderId() != vocabularyFolder.getFolderId()) {
+                Folder folder = folderDAO.getFolder(vocabularyFolder.getFolderId());
+                vocabularyFolder.setFolderName(folder.getIdentifier());
+            } else {
+                vocabularyFolder.setFolderName(originalVocabularyFolder.getFolderName());
             }
+
+            // vf.setBaseUri(vocabularyFolder.getBaseUri());
+            String baseUri = originalVocabularyFolder.getBaseUri();
+            if (StringUtils.isBlank(baseUri)) {
+                baseUri = VocabularyFolder.getBaseUri(vocabularyFolder);
+            }
+            vocabularyFolder.setBaseUri(baseUri);
 
             vocabularyFolder.setContinuityId(originalVocabularyFolder.getContinuityId());
             vocabularyFolder.setUserModified(userName);
@@ -1101,27 +1145,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
     }
 
-    /**
-     * all relational prefixes.
-     *
-     * @return collection of skos>relation prefixes
-     */
-    public static Collection<String> getRelationalPrefixes() {
-        return relationalElements.values();
-    }
-
-    /**
-     * Checks if given element has some special behaviour.
-     *
-     * @param specialElement
-     *            special element
-     * @return String prefix in RDF
-     */
-    @Override
-    public String getRelationalElementPrefix(RelationalElement specialElement) {
-        return relationalElements.get(specialElement);
-    }
-
     @Override
     public boolean isReferenceElement(int elementId) {
 
@@ -1221,4 +1244,62 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
         return vocabulary;
     }
+
+    /**
+     * delete referecnes.
+     *
+     * @param vocabularyId
+     */
+    private void deleteInverseRelations(int vocabularyId) {
+        // set relation to this concept to null
+        List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyId);
+
+        for (VocabularyConcept concept : concepts) {
+            List<List<DataElement>> elems =
+                    dataElementDAO.getVocabularyConceptDataElementValues(vocabularyId, concept.getId(), true);
+            for (List<DataElement> elemMeta : elems) {
+                if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
+                    dataElementDAO.deleteReferringInverseElems(concept.getId(), elemMeta);
+                }
+            }
+        }
+
+    }
+
+    @Override
+    public void fixRelatedReferenceElements(int vocabularyId, List<VocabularyConcept> concepts) {
+        for (VocabularyConcept concept : concepts) {
+            List<List<DataElement>> elems = concept.getElementAttributes();
+//                    dataElementDAO
+//                            .getVocabularyConceptDataElementValues(vocabularyId, concept.getId(), true);
+            for (List<DataElement> elemMeta : elems) {
+                if (!elemMeta.isEmpty() && "reference".equals(elemMeta.get(0).getDatatype())) {
+                    for (DataElement elem : elemMeta) {
+                        if (elem.getRelatedConceptId() != null && elem.getRelatedConceptId() != 0) {
+                            dataElementDAO
+                                    .createInverseElements(elem.getId(), concept.getId(), elem.getRelatedConceptId());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public int populateEmptyBaseUris(String prefix) throws ServiceException {
+        try {
+            return vocabularyFolderDAO.populateEmptyBaseUris(prefix);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
+        }
+    } // end of method populateEmptyBaseUris
+
+    @Override
+    public int changeSitePrefix(String oldSitePrefix, String newSitePrefix) throws ServiceException {
+        try {
+            return vocabularyFolderDAO.changeSitePrefix(oldSitePrefix, newSitePrefix);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
+        }
+    } // end of method changeSitePrefix
 }

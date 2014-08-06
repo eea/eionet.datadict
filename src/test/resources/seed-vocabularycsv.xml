@@ -8,11 +8,11 @@
     <VOCABULARY_SET ID="10" IDENTIFIER="wise" LABEL="10, wise, WISE - Water Information System for Europe"/>
     <VOCABULARY_SET ID="5" IDENTIFIER="csv_header_vs" LABEL="csv_header_vs_test" />
 
-    <VOCABULARY VOCABULARY_ID="1" CONTINUITY_ID="123" IDENTIFIER="BWaterCat" LABEL="Bathing Water Category" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser"  FOLDER_ID="10"/>
-    <VOCABULARY VOCABULARY_ID="2" CONTINUITY_ID="123" IDENTIFIER="BWClosed" LABEL="Bathing Water Closed status" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="10"/>
-    <VOCABULARY VOCABULARY_ID="4" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="5"/>
-    <VOCABULARY VOCABULARY_ID="5" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" FOLDER_ID="5"/>
-    <VOCABULARY VOCABULARY_ID="8" CONTINUITY_ID="125" IDENTIFIER="another" LABEL="Another_Vocabulary" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" BASE_URI="http://test.tripledev.ee/" FOLDER_ID="5" />
+    <VOCABULARY VOCABULARY_ID="1" CONTINUITY_ID="123" IDENTIFIER="BWaterCat" LABEL="Bathing Water Category" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="10" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/wise/BWaterCat/"/>
+    <VOCABULARY VOCABULARY_ID="2" CONTINUITY_ID="123" IDENTIFIER="BWClosed" LABEL="Bathing Water Closed status" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="10" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/wise/BWClosed/"/>
+    <VOCABULARY VOCABULARY_ID="4" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="5" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/csv_header_vs/csv_header_vocab/"/>
+    <VOCABULARY VOCABULARY_ID="5" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" FOLDER_ID="5" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/csv_header_vs/csv_header_vocab/"/>
+    <VOCABULARY VOCABULARY_ID="8" CONTINUITY_ID="125" IDENTIFIER="another" LABEL="Another_Vocabulary" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="5" BASE_URI="http://test.tripledev.ee/"/>
 
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="1" VOCABULARY_ID="1" IDENTIFIER="C" LABEL="Coastal Water" DEFINITION="Coastal water = surface water on the landward side of a line, every point of which is at a distance of one nautical mile on the seaward side from the nearest point of the baseline from which the breadth of territorial waters is measured, extending where appropriate up to the outer limit of transitional waters"/>
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="2" VOCABULARY_ID="1" IDENTIFIER="L" LABEL="Lake" DEFINITION="Lake = body of standing inland surface water" />
@@ -23,16 +23,16 @@
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="6" VOCABULARY_ID="2" IDENTIFIER="YP" LABEL="Yes - permanently" DEFINITION="Bathing water is permanently closed if classified as “poor” for five consecutive years or Member State released permanent bathing prohibition or advice against bathing" />
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="7" VOCABULARY_ID="2" IDENTIFIER="YT" LABEL="Yes - temporarily" DEFINITION="Bathing water is temporarily closed for a part of one season or the entire season, but not yet permanently closed" />
 
-    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="8" VOCABULARY_ID="4" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="csv_test_concept_1" LABEL="csv_test_concept_label_1" />
-    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="9" VOCABULARY_ID="4" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="csv_test_concept_2" LABEL="csv_test_concept_label_2" />
-    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="10" VOCABULARY_ID="4" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="csv_test_concept_3" LABEL="csv_test_concept_label_3" DEFINITION="csv_test_concept_def_3" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="8" VOCABULARY_ID="4" IDENTIFIER="csv_test_concept_1" LABEL="csv_test_concept_label_1" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="9" VOCABULARY_ID="4" IDENTIFIER="csv_test_concept_2" LABEL="csv_test_concept_label_2" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="10" VOCABULARY_ID="4" IDENTIFIER="csv_test_concept_3" LABEL="csv_test_concept_label_3" DEFINITION="csv_test_concept_def_3" />
 
-    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="11" VOCABULARY_ID="8" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="destination" LABEL="referenced" DEFINITION="referenced concept" />
-    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="12" VOCABULARY_ID="8" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="base" LABEL="referring" DEFINITION="referring concept" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="11" VOCABULARY_ID="8" IDENTIFIER="destination" LABEL="referenced" DEFINITION="referenced concept" />
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="12" VOCABULARY_ID="8" IDENTIFIER="base" LABEL="referring" DEFINITION="referring concept" />
 
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="11" NAME="Definition" OBLIGATION="O" DEFINITION="Name" SHORT_NAME="multiLangDefinition" NAMESPACE_ID="44" DISP_TYPE="text" DISP_ORDER="1" DISP_WHEN="512" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="1" DATA_TYPE="string" RDF_PROPERTY_NAMESPACE_ID="1" RDF_PROPERTY_NAME="definition"/>
     <M_ATTRIBUTE M_ATTRIBUTE_ID="1" NAME="Name" OBLIGATION="O" DEFINITION="Name" SHORT_NAME="Name" NAMESPACE_ID="2" DISP_TYPE="text" DISP_ORDER="1" DISP_WHEN="75" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="1"/>
     <M_ATTRIBUTE M_ATTRIBUTE_ID="2" NAME="Datatype" OBLIGATION="O" DEFINITION="Data type" SHORT_NAME="Datatype" NAMESPACE_ID="2" DISP_TYPE="select" DISP_ORDER="1" DISP_WHEN="75" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="1"/>
-    <M_ATTRIBUTE M_ATTRIBUTE_ID="11" NAME="Definition" OBLIGATION="O" DEFINITION="Name" SHORT_NAME="multiLangDefinition" NAMESPACE_ID="44" DISP_TYPE="text" DISP_ORDER="1" DISP_WHEN="512" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="1" DATA_TYPE="string" RDF_PROPERTY_NAMESPACE_ID="1" RDF_PROPERTY_NAME="definition"/>
 
     <ATTRIBUTE M_ATTRIBUTE_ID="1" DATAELEM_ID="1" VALUE="Bathing Water Category" PARENT_TYPE="VCF"/>
 
@@ -71,7 +71,7 @@
 
     <VOCABULARY2ELEM VOCABULARY_ID="8" DATAELEM_ID="6"/>
 
-    <VOCABULARY_CONCEPT_ELEMENT ID="5" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="4" ELEMENT_VALUE="1.1"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="5" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="4" ELEMENT_VALUE="1.1" RELATED_CONCEPT_ID="[NULL]" LANGUAGE="[NULL]"/>
 
     <VOCABULARY_CONCEPT_ELEMENT ID="6" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="5" ELEMENT_VALUE="2.2" LANGUAGE="[NULL]"/>
     <VOCABULARY_CONCEPT_ELEMENT ID="7" VOCABULARY_CONCEPT_ID="5" DATAELEM_ID="5" ELEMENT_VALUE="3" LANGUAGE="[NULL]"/>

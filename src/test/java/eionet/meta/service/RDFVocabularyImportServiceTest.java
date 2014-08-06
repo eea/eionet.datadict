@@ -21,16 +21,12 @@
 
 package eionet.meta.service;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyImportBaseHandler;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -40,10 +36,15 @@ import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyImportBaseHandler;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * JUnit integration test with Unitils for RDF Vocabulary Import Service.
@@ -71,7 +72,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     /**
      * {@inheritDoc}
      */
-    @Override
     protected Reader getReaderFromResource(String resourceLoc) throws Exception {
         InputStream is = getClass().getClassLoader().getResourceAsStream(resourceLoc);
         InputStreamReader reader = new InputStreamReader(is);
@@ -89,7 +89,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testIfConceptAndElementsUpdated() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -151,7 +151,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testIfConceptsAndElementsUpdated() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -186,10 +186,30 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element.setAttributeLanguage("en");
         elems.add(element);
 
+        //skos:related will be created as well, see #18140
+        dataElemId = 7;
+        elems = new ArrayList<DataElement>();
+        dataElements.add(elems);
+
+        element = new DataElement();
+        element.setIdentifier("skos:related");
+        element.setId(dataElemId);
+        element.setRelatedConceptLabel("rdf_test_concept_label_3_updated");
+        element.setRelatedConceptId(10);
+        element.setRelatedConceptIdentifier("rdf_test_concept_3");
+        element.setRelatedConceptVocSet("rdf_header_vs");
+        element.setRelatedConceptBaseURI("http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/");
+        element.setRelatedConceptVocabulary("rdf_header_vocab");
+        element.setAttributeValue(null);
+
+        element.setElemAttributeValues(getDatatypeElemAttrs("localref"));
+        elems.add(element);
+
         VocabularyConcept vc10 = findVocabularyConceptById(concepts, 10);
         vc10.setLabel("rdf_test_concept_label_3_updated");
         vc10.setDefinition("rdf_test_concept_def_3_updated");
 
+        dataElemId = 8;
         dataElements = vc10.getElementAttributes();
         elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
         element = new DataElement();
@@ -207,6 +227,23 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element.setIdentifier(identifier);
         element.setId(dataElemId);
         element.setAttributeLanguage("pl");
+        elems.add(element);
+
+        dataElemId = 7;
+        identifier = "skos:related";
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+
+        element = new DataElement();
+        element.setId(dataElemId);
+        element.setIdentifier(identifier);
+        element.setRelatedConceptLabel("rdf_test_concept_label_1_lets_get_sure");
+        element.setRelatedConceptId(8);
+        element.setRelatedConceptIdentifier("rdf_test_concept_1");
+        element.setRelatedConceptVocSet("rdf_header_vs");
+        element.setRelatedConceptBaseURI("http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/");
+        element.setRelatedConceptVocabulary("rdf_header_vocab");
+        element.setAttributeValue(null);
+        element.setElemAttributeValues(getDatatypeElemAttrs("localref"));
         elems.add(element);
 
         VocabularyConcept vc9 = findVocabularyConceptById(concepts, 9);
@@ -235,7 +272,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testIfNewConceptAdded() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -316,7 +353,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testIfNewConceptAddedAfterPurge() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -398,7 +435,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testIfConceptsAndElementsUpdatedAfterPurge() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -434,6 +471,29 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element.setRelatedConceptVocabulary(null);
         element.setAttributeValue(VocabularyFolder.getBaseUri(vocabularyFolder) + "rdf_test_concept_2");
 
+        // the rdf contains a triple [concept1 skos:related concetp3] but no vice versa.
+        // Both relations will be created if RDF has such error?
+        elems = new ArrayList<DataElement>();
+        dataElements.add(elems);
+
+        Map<String, List<String>> elemAttrValues = new HashMap<String, List<String>>();
+        List<String> aValues = new ArrayList<String>();
+        aValues.add("localref");
+        elemAttrValues.put("Datatype", aValues);
+
+        element = new DataElement();
+        element.setIdentifier("skos:related");
+        element.setId(7);
+        element.setRelatedConceptLabel("rdf_test_concept_label_3_updated");
+        element.setRelatedConceptId(null);
+        element.setRelatedConceptIdentifier("rdf_test_concept_3");
+        element.setRelatedConceptVocSet("rdf_header_vs");
+        element.setRelatedConceptBaseURI("http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/");
+        element.setRelatedConceptVocabulary("rdf_header_vocab");
+        element.setAttributeValue(null);
+        element.setElemAttributeValues(elemAttrValues);
+        elems.add(element);
+
         VocabularyConcept vc10 = findVocabularyConceptById(concepts, 10);
         vc10.setLabel("rdf_test_concept_label_3_updated");
         vc10.setDefinition("rdf_test_concept_def_3_updated");
@@ -461,13 +521,38 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element.setRelatedConceptVocabulary(null);
         element.setAttributeValue(VocabularyFolder.getBaseUri(vocabularyFolder) + "rdf_test_concept_2");
 
+        element = new DataElement();
+        element.setIdentifier("skos:related");
+
+        element.setId(7);
+
+        element.setElemAttributeValues(elemAttrValues);
+
+        element.setElemAttributeValues(elemAttrValues);
+        element.setRelatedConceptLabel("rdf_test_concept_label_1_lets_get_sure");
+        element.setRelatedConceptId(null);
+        element.setRelatedConceptIdentifier("rdf_test_concept_1");
+        element.setRelatedConceptVocSet("rdf_header_vs");
+        element.setRelatedConceptBaseURI("http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/");
+        element.setRelatedConceptVocabulary("rdf_header_vocab");
+        element.setAttributeValue(null);
+        elems.add(element);
+
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
         Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
 
         VocabularyConcept vc8Updated = findVocabularyConceptByIdentifier(updatedConcepts, vc8.getIdentifier());
-        vc8.setId(vc8Updated.getId());
         VocabularyConcept vc10Updated = findVocabularyConceptByIdentifier(updatedConcepts, vc10.getIdentifier());
+
+        vc8.setId(vc8Updated.getId());
+        dataElements = vc8.getElementAttributes();
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", dataElements);
+        elems.get(0).setRelatedConceptId(vc10Updated.getId());
+
+        dataElements = vc10.getElementAttributes();
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", dataElements);
+        elems.get(1).setRelatedConceptId(vc8Updated.getId());
         vc10.setId(vc10Updated.getId());
         concepts = new ArrayList<VocabularyConcept>();
         concepts.add(vc8);
@@ -488,7 +573,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testIfConceptsAddedAfterPurge() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -550,7 +635,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testIfConceptsUpdatedAddedAfterPerPredicatePurge() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -597,7 +682,9 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // SEE: fixRelatedElements method in dao
         dataElementValuesByName =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", vc3.getElementAttributes());
-        vc3.getElementAttributes().remove(dataElementValuesByName);
+
+        //TODO - check how inverse should work :
+        //vc3.getElementAttributes().remove(dataElementValuesByName);
 
         // compare manually updated objects with queried ones (after import operation)
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
@@ -613,7 +700,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testIfConceptsAreSkipped() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -644,7 +731,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         dataElemId = 9;
         identifier = "skos:definition";
-        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier , dataElements);
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
         element = new DataElement();
         element.setAttributeValue("de_rdf_test_concept_3_updated");
         element.setIdentifier(identifier);
@@ -669,7 +756,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testIfConceptsSetRelatedInOtherVocabularies() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -691,12 +778,14 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         elem.setId(6);
         elem.setIdentifier("skos:relatedMatch");
         elem.setAttributeValue("http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab_2/rdf_test_concept_556");
+        elem.setElemAttributeValues(getDatatypeElemAttrs("reference"));
         elems.add(elem);
 
         elem = new DataElement();
         elem.setId(6);
         elem.setIdentifier("skos:relatedMatch");
         elem.setAttributeValue("http://test.tripledev.ee/datadict/vocabulary/test/test_another_source/another1");
+        elem.setElemAttributeValues(getDatatypeElemAttrs("reference"));
         elems.add(elem);
 
         elem = new DataElement();
@@ -708,6 +797,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         elem.setRelatedConceptVocabulary("rdf_header_vocab_2");
         elem.setRelatedConceptVocSet("rdf_header_vs");
         elem.setRelatedConceptBaseURI("http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab_2/");
+        elem.setElemAttributeValues(getDatatypeElemAttrs("reference"));
         elems.add(elem);
 
         dataElements.add(elems);
@@ -730,7 +820,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testIfConceptsAddedWithCorrectLabelsAfterPurge() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get reader for RDF file
         Reader reader = getReaderFromResource("rdf_import/rdf_import_test_9.rdf");
@@ -771,6 +861,28 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     } // end of test step testIfConceptsAddedAfterPurge
 
     /**
+     * In this test, vocabulary have an invalid base uri. An exception should be received.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testExceptionWhenVocabularyDoesNotHaveAValidBaseUri() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_INVALID_VOCABULARY_ID);
+        // get reader for CSV file
+        Reader reader = getReaderFromResource("csv_import/csv_import_test_1.csv");
+        try {
+            // import CSV into database
+            vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, true, true);
+            Assert.fail("Exception is not received");
+        } catch (ServiceException e) {
+            Assert.assertEquals("Exception Message is not correct", "Vocabulary does not have a valid base URI", e.getMessage());
+            Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
+        }
+    }// end of test step testExceptionWhenVocabularyDoesNotHaveAValidBaseUri
+
+    /**
      * Check that no errors are generated when we send RDF with no properties.
      *
      * @throws Exception
@@ -779,7 +891,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testNoErrorIsGeneratedWhenSendingNothing() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // Create a string with just the top-level element. It has no data.
         Reader reader = new StringReader("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"/>");
@@ -789,7 +901,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // Nothing seen, nothing updated, no error generated
-        for (String l: logMessages) {
+        for (String l : logMessages) {
             if (l.startsWith("Number of predicates seen:")) {
                 Assert.assertEquals("Number of predicates seen: 0", l);
             }
@@ -797,6 +909,59 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
                 Assert.assertEquals("Number of updated concepts: 0", l);
             }
         }
+    } // end of testNoErrorIsGeneratedWhenSendingNothing
+
+    /**
+     * In this test, a related element added with different type of base uri. i.e. base uri is NOT like:
+     * http://<dd_host>/<vocabulary_folder_identifier>/<vocabulary_identifier>/
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfRelatedElementAddedCorrectly() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_10.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, false);
+        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // query updated concept
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // manually update initial values of concepts for comparison
+        VocabularyConcept vc9 = findVocabularyConceptById(concepts, 9);
+
+        String identifier = "skos:exactMatch";
+        List<List<DataElement>> dataElements = vc9.getElementAttributes();
+        List<DataElement> elems = null;
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        Assert.assertEquals("Number of elements", 1, elems.size());
+        DataElement element = elems.get(0);
+
+        Assert.assertEquals("Identifier", identifier, element.getIdentifier());
+        Assert.assertEquals("Id", 16, element.getId());
+        Assert.assertEquals("Related Concept Id", 12, (long) element.getRelatedConceptId());
+        Assert.assertEquals("Related Concept Identifier", "rdf_test_concept_777", element.getRelatedConceptIdentifier());
+        Assert.assertEquals("Related Concept Label", "rdf_test_concept_label_777", element.getRelatedConceptLabel());
+        Assert.assertEquals("Related Concept Vocabulary", "rdf_header_vocab_3", element.getRelatedConceptVocabulary());
+        Assert.assertEquals("Related Concept Base Uri", "http://tripledev.ee/vocabulary/a_vocabulary_folder/a_vocabulary_name/",
+                element.getRelatedConceptBaseURI());
+        Assert.assertNull("Element value", element.getAttributeValue());
+        Assert.assertNull("Element language", element.getAttributeLanguage());
+    }// end of test step testIfConceptAndElementsUpdated
+
+    private Map<String, List<String>>  getDatatypeElemAttrs(String type) {
+        Map<String, List<String>> elemAttrValues = new HashMap<String, List<String>>();
+        List<String> aValues = new ArrayList<String>();
+        aValues.add(type);
+        elemAttrValues.put("Datatype", aValues);
+
+        return elemAttrValues;
     }
 
 }// end of test case RDFVocabularyImportServiceTest
