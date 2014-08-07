@@ -586,7 +586,7 @@
                     <br>A concept can be ignored by prepending a double-slash '//' to the concept row in the CSV
                     <ul>
                         Notes:
-                        <li>If the header row contains unknown elements the import will aborted and data will be roll-backed</li>
+                        <li>If the header row contains unknown elements the import will aborted and data will be rolled back</li>
                         <li>Erroneous concept rows are ignored, valid data rows are still imported</li>
                         <li>Successful import cannot be undone (unless "undo checkout" is performed)</li>
                         <li>If a concept with the same identifier already exists in the vocabulary it will be overwritten</li>
@@ -621,7 +621,7 @@
 				          <li>Only a working copy can be updated with a RDF file upload.</li>
                           <li>If user select "Purge Per Predicate" option. All seen predicates will be removed from vocabulary.</li>
                           <li>If user select "Purge All Vocabulary Data" option. All data will be removed from vocabulary.</li>
-                          <li>Once import is successful, operation cannot be undone. If an error occurs during import, then all data will be roll-backed.</li>
+                          <li>Once import is successful, operation cannot be undone. If an error occurs during import, then all data will be rolled back.</li>
 				       </ul>
 				</div>
 
