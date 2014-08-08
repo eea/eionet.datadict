@@ -134,7 +134,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td style="width:73%">Get JSON output of this vocabulary</td>
+                    <td style="width:73%">Get JSON-LD output of this vocabulary</td>
                     <td style="width:27%">
                         <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="json" title="Export JSON">
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
