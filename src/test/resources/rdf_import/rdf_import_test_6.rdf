@@ -42,11 +42,9 @@
       <skos:prefLabel>rdf_test_concept_label_3</skos:prefLabel>
       <skos:definition>rdf_test_concept_def_3_updated</skos:definition>
       <skos:inScheme rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
-      <AnotherCode>HCO2_rdf_test_concept_3_updated</AnotherCode>
-      <AnotherCode>HCO2_2_rdf_test_concept_3_updated</AnotherCode>
-      <geo:lat>HCO3_rdf_test_concept_3</geo:lat>      
+      <geo:lat>HCO3_rdf_test_concept_3</geo:lat>
       <skos:related rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_2"/>
-      <skos:prefLabel xml:lang="bg">bg_rdf_test_concept_3_updated</skos:prefLabel>      
-      <skos:definition xml:lang="de">de_rdf_test_concept_3_updated</skos:definition>      
+      <skos:prefLabel xml:lang="bg">bg_rdf_test_concept_3_updated</skos:prefLabel>
+      <skos:definition xml:lang="de">de_rdf_test_concept_3_updated</skos:definition>
    </skos:Concept>
 </rdf:RDF>

@@ -179,6 +179,10 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      */
     private String workingLanguage = null;
     /**
+     * Local instance namespace.
+     */
+    private final String ddNamespace;
+    /**
      * Number of duplicated triples.
      */
     private int numberOfDuplicatedTriples = 0;
@@ -212,12 +216,14 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      *            working language
      * @param createNewDataElementsForPredicates
      *            create new data elements for seen predicates
+     * @param ddNamespace
+     *            dd instance namespace
      * @throws ServiceException
      *             when digest algorithm cannot be found
      */
     public VocabularyRDFImportHandler(String folderContextRoot, List<VocabularyConcept> concepts,
             Map<String, Integer> boundElementsToIds, Map<String, List<String>> boundElements, Map<String, String> boundURIs,
-            boolean createNewDataElementsForPredicates, String workingLanguage) throws ServiceException {
+            boolean createNewDataElementsForPredicates, String workingLanguage, String ddNamespace) throws ServiceException {
         super(folderContextRoot, concepts, boundElementsToIds);
         this.boundElements = boundElements;
         this.createNewDataElementsForPredicates = createNewDataElementsForPredicates;
@@ -232,6 +238,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + NOTATION, new HashSet<Integer>());
         this.lastCandidateForConceptAttribute = new HashMap<String, Literal>();
         this.workingLanguage = workingLanguage;
+        this.ddNamespace = ddNamespace;
         this.seenStatementsHashCodes = new HashSet<BigInteger>();
         try {
             this.messageDigestInstance = MessageDigest.getInstance(HASHING_ALGORITHM);
@@ -368,6 +375,10 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         }
 
         String dataElemIdentifier = predicateNS + ":" + attributeIdentifier;
+        if (StringUtils.equals(this.ddNamespace, predicateNS)) {
+            dataElemIdentifier = attributeIdentifier;
+        }
+
         // TODO code below can be refactored
         if (candidateForConceptAttribute
                 && !this.conceptsUpdatedForAttributes.get(dataElemIdentifier).contains(this.lastFoundConcept.getId())) {
