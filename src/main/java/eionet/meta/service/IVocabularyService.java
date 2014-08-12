@@ -284,6 +284,19 @@ public interface IVocabularyService {
     int createVocabularyConcept(int vocabularyFolderId, VocabularyConcept vocabularyConcept) throws ServiceException;
 
     /**
+     * Creates new vocabulary concept into database.
+     *
+     * @param vocabularyFolderId
+     *            vocabulary id
+     * @param vocabularyConcept
+     *            concept
+     * @return
+     * @throws ServiceException
+     *             if operation fails
+     */
+    int createVocabularyConceptNonTransactional(int vocabularyFolderId, VocabularyConcept vocabularyConcept) throws ServiceException;
+
+    /**
      * Updates vocabulary concept.
      *
      * @param vocabularyConcept
