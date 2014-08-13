@@ -3,15 +3,18 @@
  */
 package eionet.util;
 
-import eionet.meta.DDRuntimeException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import eionet.meta.DDRuntimeException;
 
 /**
  * Utility class for retrieving the configured properties of this application.
@@ -49,6 +52,21 @@ public class Props implements PropsIF {
             LOGGER.warn("Properties file " + getBundleName() + ".properties not found. Using defaults.");
         }
 
+        String workingLanguage = StringUtils.trimToNull(getPropertyInternal(DD_WORKING_LANGUAGE_KEY));
+        boolean isValidWorkingLanguage = false;
+        try {
+            Locale locale = LocaleUtils.toLocale(workingLanguage);
+            if (locale != null) {
+                isValidWorkingLanguage = StringUtils.isNotBlank(locale.getLanguage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (!isValidWorkingLanguage) {
+            LOGGER.warn("Working language is not valid: '" + workingLanguage + "'");
+        }
+
     }
 
     /**
@@ -75,10 +93,11 @@ public class Props implements PropsIF {
     }
 
     /**
-     * Returns the value of the given property. If no property is found, the default is returned if one exists.
-     * If no default is found either, returns null.
+     * Returns the value of the given property. If no property is found, the default is returned if one exists. If no default is
+     * found either, returns null.
      *
-     * @param name Given property name.
+     * @param name
+     *            Given property name.
      * @return The value.
      */
     public static synchronized String getProperty(String name) {
@@ -86,10 +105,11 @@ public class Props implements PropsIF {
     }
 
     /**
-     * Returns the value of the given property as integer. If no property is found, the default is returned if one exists.
-     * If no default is found either, returns 0.
+     * Returns the value of the given property as integer. If no property is found, the default is returned if one exists. If no
+     * default is found either, returns 0.
      *
-     * @param name Given property name.
+     * @param name
+     *            Given property name.
      * @return The value.
      */
     public static synchronized int getIntProperty(String name) {
@@ -108,7 +128,8 @@ public class Props implements PropsIF {
     /**
      * Returns the value of the given property. If no value is found, an no default either, then throws {@link DDRuntimeException}.
      *
-     * @param name Given property name.
+     * @param name
+     *            Given property name.
      * @return The value.
      */
     public static String getRequiredProperty(String name) {
@@ -123,7 +144,8 @@ public class Props implements PropsIF {
     /**
      * Internal worker method for the public property getter methods in this class.
      *
-     * @param name Given property name.
+     * @param name
+     *            Given property name.
      * @return The value.
      */
     protected final String getPropertyInternal(String name) {
@@ -154,7 +176,7 @@ public class Props implements PropsIF {
 
         return value;
     }
-	
+
     /**
      * Get property value of time in milliseconds presented by time value and unit suffix (1h, 30m, 15s etc).
      *
@@ -205,9 +227,10 @@ public class Props implements PropsIF {
     /**
      * Sets the default properties.
      *
-     * @param defaults The hash-table of defaults to populate.
+     * @param defaults
+     *            The hash-table of defaults to populate.
      */
-    @SuppressWarnings( {"rawtypes", "unchecked"} )
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected void setDefaults(Hashtable defaults) {
         defaults.put(XFORM_TEMPLATE_URL, "http://cdr-ewn.eionet.europa.eu/webq/GetXFormTemplate");
         defaults.put(INSERV_ROD_RA_URLPATTERN, "http://rod.eionet.europa.eu/obligations/<RA_ID>");

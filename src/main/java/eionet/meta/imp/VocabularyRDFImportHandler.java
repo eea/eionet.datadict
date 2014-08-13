@@ -213,7 +213,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      * @param boundURIs
      *            rdf namespaces for bound elements
      * @param workingLanguage
-     *            working language
+     *            working language, only first two letters are used
      * @param createNewDataElementsForPredicates
      *            create new data elements for seen predicates
      * @param ddNamespace
@@ -237,7 +237,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + DEFINITION, new HashSet<Integer>());
         this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + NOTATION, new HashSet<Integer>());
         this.lastCandidateForConceptAttribute = new HashMap<String, Literal>();
-        this.workingLanguage = workingLanguage;
+        // get first two letters of working language since, it can be like en-US
+        this.workingLanguage = StringUtils.substring(workingLanguage, 0, 2);
         this.ddNamespace = ddNamespace;
         this.seenStatementsHashCodes = new HashSet<BigInteger>();
         try {
@@ -393,8 +394,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 } else if (StringUtils.equals(attributeIdentifier, PREF_LABEL)) {
                     this.lastFoundConcept.setLabel(val);
                 }
-                String elemLang = ((Literal) object).getLanguage();
-                if (StringUtils.isNotEmpty(elemLang)) {
+                String elemLang = StringUtils.substring(((Literal) object).getLanguage(), 0, 2);
+                if (StringUtils.isNotBlank(elemLang)) {
                     this.lastCandidateForConceptAttribute
                             .put(this.lastFoundConcept.getId() + dataElemIdentifier, (Literal) object);
                     candidateForConceptAttribute = false;
@@ -406,12 +407,12 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             Literal previousCandidate =
                     this.lastCandidateForConceptAttribute.remove(this.lastFoundConcept.getId() + dataElemIdentifier);
 
-            String elemLang = ((Literal) object).getLanguage();
+            String elemLang = StringUtils.substring(((Literal) object).getLanguage(), 0, 2);
             boolean updateValue = false;
             if (StringUtils.isEmpty(elemLang)) {
                 updateValue = true;
             } else if (StringUtils.equals(elemLang, this.workingLanguage)
-                    && !StringUtils.equals(previousCandidate.getLanguage(), this.workingLanguage)) {
+                    && !StringUtils.equals(StringUtils.substring(previousCandidate.getLanguage(), 0, 2), this.workingLanguage)) {
                 updateValue = true;
                 candidateForConceptAttribute = false;
                 this.lastCandidateForConceptAttribute.put(this.lastFoundConcept.getId() + dataElemIdentifier, (Literal) object);
@@ -474,7 +475,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 foundRelatedConcept = findRelatedConcept(elementValue);
             } else if (object instanceof Literal) {
                 // it is literal
-                elemLang = ((Literal) object).getLanguage();
+                elemLang = StringUtils.substring(((Literal) object).getLanguage(), 0, 2);
             }
 
             if (!StringUtils.equals(dataElemIdentifier, prevDataElemIdentifier) || !StringUtils.equals(elemLang, prevLang)) {
