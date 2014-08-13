@@ -112,7 +112,7 @@ public abstract class VocabularyImportServiceBaseImpl {
             int id = vc.getId();
             if (id <= 0) {
                 // INSERT VOCABULARY CONCEPT
-                int insertedId = this.vocabularyService.createVocabularyConcept(vocabularyId, vc);
+                int insertedId = this.vocabularyService.createVocabularyConceptNonTransactional(vocabularyId, vc);
                 // after insert operation get id of the vocabulary and set it!
                 vc.setId(insertedId);
                 Set<DataElement> elementsRelatedToConcept = elementsRelatedToNotCreatedConcepts.get(id);

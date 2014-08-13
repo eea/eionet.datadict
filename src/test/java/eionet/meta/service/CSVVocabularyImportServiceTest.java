@@ -369,7 +369,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        Assert.assertEquals("Updated Concepts does not include 1 vocabulary concept", updatedConcepts.size(), 1);
+        Assert.assertEquals("Updated Concepts does not include 1 vocabulary concept", 1, updatedConcepts.size());
 
         // last object should be the inserted one, so use it is id to set (all other fields are updated manually)
         vc11.setId(updatedConcepts.get(0).getId());
@@ -429,7 +429,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
+        Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", 2, updatedConcepts.size());
 
         VocabularyConcept vc8Updated = findVocabularyConceptByIdentifier(updatedConcepts, vc8.getIdentifier());
         vc8.setId(vc8Updated.getId());
@@ -474,7 +474,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
+        Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", 2, updatedConcepts.size());
 
         // concepts should be inserted in the same order as they are in csv file, get ids from updated beans
         concepts.get(0).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(0).getIdentifier()).getId());
@@ -515,7 +515,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
+        Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", 2, updatedConcepts.size());
 
         // concepts should be inserted in the same order as they are in csv file, get ids from updated beans
         concepts.get(0).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(0).getIdentifier()).getId());
@@ -750,7 +750,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
+        Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", 2, updatedConcepts.size());
 
         // concepts should be inserted in the same order as they are in csv file, get ids from updated beans
         concepts.get(0).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(0).getIdentifier()).getId());
@@ -855,7 +855,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        Assert.assertEquals("Updated concepts does not include 2 items", updatedConcepts.size(), 2);
+        Assert.assertEquals("Updated concepts does not include 2 items", 2, updatedConcepts.size());
 
         // Check for first concept
         VocabularyConcept concept = findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_1");
@@ -932,7 +932,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         } catch (ServiceException e) {
             Assert.assertEquals(
                     "Exception Message is not correct",
-                    "Missing headers! CSV file should contain following headers: [URI, Label, Definition, Notation, StartDate, EndDate]",
+                    "Missing header! CSV file should start with header: 'URI'",
                     e.getMessage());
             Assert.assertTrue("Transaction wasn't rolled back", transactionManager.getTransaction(null).isRollbackOnly());
         }

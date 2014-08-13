@@ -46,6 +46,30 @@ public final class VocabularyCSVOutputHelper {
      */
     public static final int CONCEPT_ENTRIES_COUNT = 6;
     /**
+     * index of URI in header list.
+     */
+    public static final int URI_INDEX = 0;
+    /**
+     * index of label in header list.
+     */
+    public static final int LABEL_INDEX = 1;
+    /**
+     * index of definition in header list.
+     */
+    public static final int DEFINITION_INDEX = 2;
+    /**
+     * index of notation in header list.
+     */
+    public static final int NOTATION_INDEX = 3;
+    /**
+     * index of start date in header list.
+     */
+    public static final int START_DATE_INDEX = 4;
+    /**
+     * index of end date in header list.
+     */
+    public static final int END_DATE_INDEX = 5;
+    /**
      * BOM byte array length.
      */
     public static final int BOM_BYTE_ARRAY_LENGTH = 3;
@@ -104,12 +128,12 @@ public final class VocabularyCSVOutputHelper {
 
             // add fixed entries
             entries = new String[CONCEPT_ENTRIES_COUNT + toBeAddedToHeader.size()];
-            entries[0] = uriPrefix + c.getIdentifier();
-            entries[1] = c.getLabel();
-            entries[2] = c.getDefinition();
-            entries[3] = c.getNotation();
-            entries[4] = c.getCreated() != null ? dateFormatter.format(c.getCreated()) : "";
-            entries[5] = c.getObsolete() != null ? dateFormatter.format(c.getObsolete()) : "";
+            entries[URI_INDEX] = uriPrefix + c.getIdentifier();
+            entries[LABEL_INDEX] = c.getLabel();
+            entries[DEFINITION_INDEX] = c.getDefinition();
+            entries[NOTATION_INDEX] = c.getNotation();
+            entries[START_DATE_INDEX] = c.getCreated() != null ? dateFormatter.format(c.getCreated()) : "";
+            entries[END_DATE_INDEX] = c.getObsolete() != null ? dateFormatter.format(c.getObsolete()) : "";
 
             // add extra fields
             for (Triple<String, String, Integer> row : attributesMeta) {
@@ -216,12 +240,12 @@ public final class VocabularyCSVOutputHelper {
      * @param entries array for CSV output
      */
     public static void addFixedEntryHeaders(String[] entries) {
-        entries[0] = "URI";
-        entries[1] = "Label";
-        entries[2] = "Definition";
-        entries[3] = "Notation";
-        entries[4] = "StartDate";
-        entries[5] = "EndDate";
+        entries[URI_INDEX] = "URI";
+        entries[LABEL_INDEX] = "Label";
+        entries[DEFINITION_INDEX] = "Definition";
+        entries[NOTATION_INDEX] = "Notation";
+        entries[START_DATE_INDEX] = "StartDate";
+        entries[END_DATE_INDEX] = "EndDate";
     }
 
     /**
