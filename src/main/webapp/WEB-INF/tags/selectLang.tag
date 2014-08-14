@@ -25,7 +25,7 @@
  </c:otherwise>
 </c:choose>
 </c:forEach>
-<c:if test="${languageNotRecognizedByDD}">
+<c:if test="${languageNotRecognizedByDD and not empty value}">
     <option value="${value}" selected="selected">${value}</option>
 </c:if>
 
