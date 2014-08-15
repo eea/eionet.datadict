@@ -312,22 +312,32 @@
                         </display:column>
                     </c:if>
                     <display:column title="Concept" sortable="true" sortProperty="identifier">
-                        <stripes:link beanclass="${actionBean.class.name}" event="addRelatedConcept" title="Select the concept">
-                            <stripes:param name="conceptId" value="${item.id}" />
-                            <c:if test="${not empty actionBean.elementId}">
-                                <stripes:param name="elementId" value="${actionBean.elementId}" />
-                            </c:if>
-                            <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
-                            <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                            <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                            <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                            <stripes:param name="vocabularyConcept.identifier" value="${actionBean.vocabularyConcept.identifier}" />
-                            ${item.identifier}
-                        </stripes:link>
+
+                            <stripes:link beanclass="${actionBean.class.name}" event="addRelatedConcept" title="Select the concept">
+                                <stripes:param name="conceptId" value="${item.id}" />
+                                <c:if test="${not empty actionBean.elementId}">
+                                    <stripes:param name="elementId" value="${actionBean.elementId}" />
+                                </c:if>
+                                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                                <stripes:param name="vocabularyConcept.identifier" value="${actionBean.vocabularyConcept.identifier}" />
+
+                                ${item.identifier}
+                            </stripes:link>
                     </display:column>
                     <display:column title="Label" sortable="true" sortProperty="label">
-                        <span title="${item.definition}">${item.label}</span>
+                        <c:choose>
+                            <c:when test="${not empty item.obsolete}">
+                                <span style="text-decoration:line-through"><span title="${item.definition} (Obsolete)">${item.label}</span></span>
+                            </c:when>
+                            <c:otherwise>
+                                <span title="${item.definition}">${item.label}</span>
+                            </c:otherwise>
+                        </c:choose>
                     </display:column>
+
                 </display:table>
             </c:if>
         </div>
