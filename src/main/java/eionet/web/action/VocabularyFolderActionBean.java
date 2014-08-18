@@ -63,7 +63,6 @@ import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
-import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -1021,7 +1020,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             initFilter();
             filter.setUsePaging(false);
-            filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
+            //TODO: update
+            //filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
             final List<? extends VocabularyConcept> concepts;
             if (vocabularyFolder.isSiteCodeType()) {
                 String countryCode = getContext().getRequestParameter("countryCode");

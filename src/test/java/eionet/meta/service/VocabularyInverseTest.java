@@ -45,7 +45,6 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.imp.VocabularyImportBaseHandler;
-import eionet.meta.service.data.ObsoleteStatus;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 

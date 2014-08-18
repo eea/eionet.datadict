@@ -21,6 +21,7 @@
 
 package eionet.meta.dao.mysql;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -36,8 +37,8 @@ import org.springframework.stereotype.Repository;
 
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 
@@ -58,7 +59,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         params.put("vocabularyFolderId", vocabularyFolderId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, OBSOLETE_DATE ");
+        sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, STATUS, ACCEPTED_DATE, ");
+        sql.append("NOT_ACCEPTED_DATE, STATUS_MODIFIED ");
         sql.append("from VOCABULARY_CONCEPT where VOCABULARY_ID=:vocabularyFolderId order by IDENTIFIER + 0");
 
         List<VocabularyConcept> resultList =
@@ -71,8 +73,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
-                        vc.setCreated(rs.getTimestamp("CREATION_DATE"));
-                        vc.setObsolete(rs.getTimestamp("OBSOLETE_DATE"));
+                        vc.setStatus(rs.getInt("STATUS"));
+                        vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
+                        vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
+                        vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
                         return vc;
                     }
                 });
@@ -89,7 +93,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         StringBuilder sql = new StringBuilder();
         sql.append("select SQL_CALC_FOUND_ROWS c.VOCABULARY_CONCEPT_ID, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, c.DEFINITION, ");
-        sql.append("c.NOTATION, c.CREATION_DATE, c.OBSOLETE_DATE, v.LABEL AS VOCABULARY_LABEL, ");
+        sql.append("c.NOTATION, c.STATUS, c.ACCEPTED_DATE, c.NOT_ACCEPTED_DATE, c.STATUS_MODIFIED, v.LABEL AS VOCABULARY_LABEL, ");
         sql.append("v.IDENTIFIER AS VOCABULARY_IDENTIFIER, s.ID AS VOCSET_ID, s.LABEL as VOCSET_LABEL, ");
         sql.append("s.IDENTIFIER as VOCSET_IDENTIFIER ");
         sql.append("from VOCABULARY_CONCEPT c, VOCABULARY v, VOCABULARY_SET s ");
@@ -141,14 +145,15 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("includedIds", filter.getIncludedIds());
             sql.append("and c.VOCABULARY_CONCEPT_ID in (:includedIds) ");
         }
-        if (filter.getObsoleteStatus() != null) {
-            if (ObsoleteStatus.VALID_ONLY.equals(filter.getObsoleteStatus())) {
-                sql.append("and c.OBSOLETE_DATE IS NULL ");
-            }
-            if (ObsoleteStatus.OBSOLETE_ONLY.equals(filter.getObsoleteStatus())) {
-                sql.append("and c.OBSOLETE_DATE IS NOT NULL ");
-            }
-        }
+        // TODO: update
+        // if (filter.getObsoleteStatus() != null) {
+        // if (ObsoleteStatus.VALID_ONLY.equals(filter.getObsoleteStatus())) {
+        // sql.append("and c.OBSOLETE_DATE IS NULL ");
+        // }
+        // if (ObsoleteStatus.OBSOLETE_ONLY.equals(filter.getObsoleteStatus())) {
+        // sql.append("and c.OBSOLETE_DATE IS NOT NULL ");
+        // }
+        // }
 
         if (StringUtils.isNotEmpty(filter.getVocabularyText())) {
             if (filter.isExactMatch()) {
@@ -188,8 +193,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
-                        vc.setCreated(rs.getDate("CREATION_DATE"));
-                        vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
+                        vc.setStatus(rs.getInt("STATUS"));
+                        vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
+                        vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
+                        vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
                         vc.setVocabularyIdentifier(rs.getString("VOCABULARY_IDENTIFIER"));
                         vc.setVocabularyLabel(rs.getString("VOCABULARY_LABEL"));
                         vc.setVocabularySetLabel(rs.getString("VOCSET_LABEL"));
@@ -214,9 +221,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     public void copyVocabularyConcepts(int oldVocabularyFolderId, int newVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT ");
-        sql.append("(VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ORIGINAL_CONCEPT_ID, OBSOLETE_DATE, CREATION_DATE) ");
-        sql.append("select :newVocabularyFolderId, IDENTIFIER, LABEL, DEFINITION, NOTATION, VOCABULARY_CONCEPT_ID, ");
-        sql.append("OBSOLETE_DATE, CREATION_DATE ");
+        sql.append("(VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ORIGINAL_CONCEPT_ID, STATUS, ");
+        sql.append("ACCEPTED_DATE, NOT_ACCEPTED_DATE, STATUS_MODIFIED) ");
+        sql.append("select :newVocabularyFolderId, IDENTIFIER, LABEL, DEFINITION, NOTATION, VOCABULARY_CONCEPT_ID, STATUS, ");
+        sql.append("ACCEPTED_DATE, NOT_ACCEPTED_DATE, STATUS_MODIFIED ");
         sql.append("from VOCABULARY_CONCEPT where VOCABULARY_ID = :oldVocabularyFolderId");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -232,8 +240,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public int createVocabularyConcept(int vocabularyFolderId, VocabularyConcept vocabularyConcept) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION) ");
-        sql.append("values (:vocabularyFolderId, :identifier, :label, :definition, :notation)");
+        sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, STATUS, ");
+        sql.append("ACCEPTED_DATE, NOT_ACCEPTED_DATE, STATUS_MODIFIED) ");
+        sql.append("values (:vocabularyFolderId, :identifier, :label, :definition, :notation, :status, ");
+        sql.append(":acceptedDate, :notAcceptedDate, :statusModified)");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("vocabularyFolderId", vocabularyFolderId);
@@ -244,6 +254,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             vocabularyConcept.setNotation(vocabularyConcept.getNotation().trim());
         }
         parameters.put("notation", vocabularyConcept.getNotation());
+        parameters.put("status", vocabularyConcept.getStatusValue());
+        parameters.put("acceptedDate", vocabularyConcept.getAcceptedDate());
+        parameters.put("notAcceptedDate", vocabularyConcept.getNotAcceptedDate());
+        parameters.put("statusModified", vocabularyConcept.getStatusModified());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
         return getLastInsertId();
@@ -256,7 +270,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     public void updateVocabularyConcept(VocabularyConcept vocabularyConcept) {
         StringBuilder sql = new StringBuilder();
         sql.append("update VOCABULARY_CONCEPT set IDENTIFIER = :identifier, LABEL = :label, ");
-        sql.append("DEFINITION = :definition, NOTATION = :notation, CREATION_DATE = :created, OBSOLETE_DATE = :obsolete  ");
+        sql.append("DEFINITION = :definition, NOTATION = :notation, STATUS = :status, ACCEPTED_DATE = :acceptedDate, ");
+        sql.append("NOT_ACCEPTED_DATE= :notAcceptedDate, STATUS_MODIFIED = :statusModified");
         sql.append("where VOCABULARY_CONCEPT_ID = :vocabularyConceptId");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -268,8 +283,11 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             vocabularyConcept.setNotation(vocabularyConcept.getNotation().trim());
         }
         parameters.put("notation", vocabularyConcept.getNotation());
-        parameters.put("created", vocabularyConcept.getCreated());
-        parameters.put("obsolete", vocabularyConcept.getObsolete());
+        parameters.put("status", vocabularyConcept.getStatusValue());
+        parameters.put("acceptedDate", vocabularyConcept.getAcceptedDate());
+        parameters.put("notAcceptedDate", vocabularyConcept.getNotAcceptedDate());
+        //TODO: update - automatic update on column ??
+        parameters.put("statusModified", vocabularyConcept.getStatusModified());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
@@ -291,6 +309,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
      */
     @Override
     public void markConceptsObsolete(List<Integer> ids) {
+        // TODO: update
         String sql = "update VOCABULARY_CONCEPT set OBSOLETE_DATE = now() where VOCABULARY_CONCEPT_ID in (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
@@ -303,6 +322,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
      */
     @Override
     public void unMarkConceptsObsolete(List<Integer> ids) {
+        // TODO: update
         String sql = "update VOCABULARY_CONCEPT set OBSOLETE_DATE = NULL where VOCABULARY_CONCEPT_ID in (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
@@ -386,8 +406,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void insertEmptyConcepts(int vocabularyFolderId, int amount, int identifier, String label, String definition) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION) ");
-        sql.append("values (:vocabularyFolderId, :identifier, :label, :definition, :notation)");
+        sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, STATUS, ");
+        sql.append("NOT_ACCEPTED_DATE, STATUS_MODIFIED) ");
+        sql.append("values (:vocabularyFolderId, :identifier, :label, :definition, :notation, :status, ");
+        sql.append(":notAcceptedDate, :statusModified)");
 
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[amount];
@@ -399,6 +421,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("label", label);
             params.put("definition", definition);
             params.put("notation", Integer.toString(identifier));
+            params.put("status", StandardGenericStatus.INVALID.getValue());
+            Date now = new Date(System.currentTimeMillis());
+            params.put("notAcceptedDate", now);
+            params.put("statusModified", now);
             identifier++;
             batchValues[i] = params;
         }
@@ -440,8 +466,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         params.put("identifier", conceptIdentifier);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ");
-        sql.append("CREATION_DATE, OBSOLETE_DATE ");
+        sql.append("select VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, STATUS, ");
+        sql.append("ACCEPTED_DATE, NOT_ACCEPTED_DATE, STATUS_MODIFIED ");
         sql.append("from VOCABULARY_CONCEPT where VOCABULARY_ID=:vocabularyFolderId and IDENTIFIER=:identifier");
 
         VocabularyConcept result =
@@ -455,8 +481,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
-                        vc.setCreated(rs.getDate("CREATION_DATE"));
-                        vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
+                        vc.setStatus(rs.getInt("STATUS"));
+                        vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
+                        vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
+                        vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
                         return vc;
                     }
                 });
@@ -473,8 +501,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         params.put("vocabularyConceptId", vocabularyConceptId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, ");
-        sql.append("OBSOLETE_DATE ");
+        sql.append("select VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, STATUS, ");
+        sql.append("ACCEPTED_DATE, NOT_ACCEPTED_DATE, STATUS_MODIFIED ");
         sql.append("from VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID=:vocabularyConceptId");
 
         VocabularyConcept result =
@@ -488,8 +516,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
-                        vc.setCreated(rs.getDate("CREATION_DATE"));
-                        vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
+                        vc.setStatus(rs.getInt("STATUS"));
+                        vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
+                        vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
+                        vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
                         return vc;
                     }
                 });
@@ -532,22 +562,19 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("vcn.ORIGINAL_CONCEPT_ID = vco.VOCABULARY_CONCEPT_ID ");
         sql.append("AND vco.VOCABULARY_ID = :oldVocabularyId ");
         sql.append("AND vce.RELATED_CONCEPT_ID=vco.VOCABULARY_CONCEPT_ID");
-      //TODO_20044 - check
+        // TODO_20044 - check
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("oldVocabularyId", oldVocabularyId);
-LOGGER.debug(StringUtils.replace(sql.toString(), ":oldVocabularyId", String.valueOf(oldVocabularyId)));
+        LOGGER.debug(StringUtils.replace(sql.toString(), ":oldVocabularyId", String.valueOf(oldVocabularyId)));
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 
     @Override
     public List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("vocabularyId", vocabularyId);
-
         StringBuilder sql = new StringBuilder();
         sql.append("select distinct c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID, ");
         sql.append("d.IDENTIFIER AS ELEMIDENTIFIER, a.VALUE as DATATYPE, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, ");
-        sql.append("c.DEFINITION, c.NOTATION, c.CREATION_DATE, c.OBSOLETE_DATE, ");
+        sql.append("c.DEFINITION, c.NOTATION, c.STATUS, c.ACCEPTED_DATE, c.NOT_ACCEPTED_DATE, c.STATUS_MODIFIED, ");
         sql.append("rcvs.IDENTIFIER as RVOCSETIDENTIFIER, rcv.IDENTIFIER as RVOCIDENTIFIER, rcv.BASE_URI as RVOCBASE_URI, ");
         sql.append("rc.IDENTIFIER AS RCONCEPTIDENTIFIER, rc.LABEL as RCONCEPTLABEL ");
         sql.append("from VOCABULARY_CONCEPT c ");
@@ -558,8 +585,12 @@ LOGGER.debug(StringUtils.replace(sql.toString(), ":oldVocabularyId", String.valu
         sql.append("LEFT JOIN VOCABULARY_SET rcvs ON (rcv.FOLDER_ID = rcvs.ID ) ");
         sql.append("left join (ATTRIBUTE a, M_ATTRIBUTE ma)  on (a.DATAELEM_ID = d.DATAELEM_ID ");
         sql.append("and PARENT_TYPE = 'E' and a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME='Datatype') ");
-        sql.append("where c.VOCABULARY_ID = :vocabularyId AND c.OBSOLETE_DATE IS NULL ");
+        sql.append("where c.VOCABULARY_ID = :vocabularyId AND c.STATUS & :validStatus = :validStatus ");
         sql.append("ORDER by c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, d.IDENTIFIER, v.LANGUAGE, rcv.IDENTIFIER ");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyId", vocabularyId);
+        params.put("validStatus", StandardGenericStatus.VALID.getValue());
 
         final List<VocabularyConcept> resultList = new ArrayList<VocabularyConcept>();
         getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
@@ -581,9 +612,10 @@ LOGGER.debug(StringUtils.replace(sql.toString(), ":oldVocabularyId", String.valu
                     vc.setIdentifier(rs.getString("IDENTIFIER"));
                     vc.setDefinition(rs.getString("DEFINITION"));
                     vc.setNotation(rs.getString("NOTATION"));
-                    vc.setCreated(rs.getDate("CREATION_DATE"));
-                    vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
-
+                    vc.setStatus(rs.getInt("STATUS"));
+                    vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
+                    vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
+                    vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
                     elementValues = new ArrayList<List<DataElement>>();
                     vc.setElementAttributes(elementValues);
                     resultList.add(vc);

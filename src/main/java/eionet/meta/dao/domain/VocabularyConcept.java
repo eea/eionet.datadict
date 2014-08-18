@@ -55,14 +55,6 @@ public class VocabularyConcept {
      * Notation.
      */
     private String notation;
-    /**
-     * Created date.
-     */
-    private Date created;
-    /**
-     * Obsolete date.
-     */
-    private Date obsolete;
 
     /**
      * parent vocabulary identifier.
@@ -92,6 +84,22 @@ public class VocabularyConcept {
      * Vocabulary set identifier.
      */
     private String vocabularySetIdentifier;
+    /**
+     * Status of vocabulary concept.
+     */
+    private StandardGenericStatus status;
+    /**
+     * Accepted date.
+     */
+    private Date acceptedDate;
+    /**
+     * Not accepted date.
+     */
+    private Date notAcceptedDate;
+    /**
+     * Status modified.
+     */
+    private Date statusModified;
 
     /**
      * @return the id
@@ -169,36 +177,6 @@ public class VocabularyConcept {
     }
 
     /**
-     * @return the created
-     */
-    public Date getCreated() {
-        return created;
-    }
-
-    /**
-     * @param created
-     *            the created to set
-     */
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    /**
-     * @return the obsolete
-     */
-    public Date getObsolete() {
-        return obsolete;
-    }
-
-    /**
-     * @param obsolete
-     *            the obsolete to set
-     */
-    public void setObsolete(Date obsolete) {
-        this.obsolete = obsolete;
-    }
-
-    /**
      * @return the elementAttributes
      */
     public List<List<DataElement>> getElementAttributes() {
@@ -270,6 +248,57 @@ public class VocabularyConcept {
 
     public void setVocabularyIdentifier(String vocabularyIdentifier) {
         this.vocabularyIdentifier = vocabularyIdentifier;
+    }
+
+    public StandardGenericStatus getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(StandardGenericStatus status) {
+        this.status = status;
+    }
+
+    /**
+     * Sets status from it is integer value.
+     *
+     * @param value
+     *            integer value of status enum
+     */
+    public void setStatus(int value) {
+        this.status = StandardGenericStatus.fromValue(value);
+    }
+
+    /**
+     * Returns integer value of status enum.
+     *
+     * @return integer value of status enum
+     */
+    public int getStatusValue() {
+        return this.status.getValue();
+    }
+
+    public Date getAcceptedDate() {
+        return acceptedDate;
+    }
+
+    public void setAcceptedDate(Date acceptedDate) {
+        this.acceptedDate = acceptedDate;
+    }
+
+    public Date getNotAcceptedDate() {
+        return notAcceptedDate;
+    }
+
+    public void setNotAcceptedDate(Date notAcceptedDate) {
+        this.notAcceptedDate = notAcceptedDate;
+    }
+
+    public Date getStatusModified() {
+        return statusModified;
+    }
+
+    public void setStatusModified(Date statusModified) {
+        this.statusModified = statusModified;
     }
 
     /*

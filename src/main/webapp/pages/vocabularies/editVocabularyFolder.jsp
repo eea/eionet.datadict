@@ -399,12 +399,12 @@
                         <td class="simple_attr_value">
                             <stripes:text class="smalltext" size="30" name="filter.text" id="filterText"/>
                         </td>
-                        <th scope="row" class="scope-row simple_attr_title" title="Concept's obsolete status">
-                            <label for="obsoleteStatus"><span style="white-space:nowrap;">Obsolete status</span></label>
+                        <th scope="row" class="scope-row simple_attr_title" title="Concept's status">
+                            <label for="status"><span style="white-space:nowrap;">Status</span></label>
                         </th>
                         <td class="simple_attr_value" style="padding-right: 5em;">
-                            <stripes:select name="filter.obsoleteStatus" id="obsoleteStatus">
-                                <stripes:options-enumeration enum="eionet.meta.service.data.ObsoleteStatus" label="label"/>
+                            <stripes:select name="filter.conceptStatus" id="status">
+                                <stripes:options-enumeration enum="eionet.meta.dao.domain.StandardGenericStatus" label="label"/>
                             </stripes:select>
                         </td>
                         <td>
@@ -450,9 +450,9 @@
                 <display:column title="Definition" escapeXml="true" property="definition" />
                 <display:column title="Notation" escapeXml="true" property="notation" />
 
-                <c:if test="${actionBean.filter.obsoleteStatus != 'VALID_ONLY'}">
-                    <display:column title="Obsolete from">
-                        <fmt:formatDate value="${concept.obsolete}" pattern="dd.MM.yyyy"/>
+                <c:if test="${!actionBean.filter.conceptStatus.valid}">
+                    <display:column title="Not Accepted from">
+                        <fmt:formatDate value="${concept.notAcceptedDate}" pattern="dd.MM.yyyy"/>
                     </display:column>
                 </c:if>
             </display:table>

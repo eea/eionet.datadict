@@ -67,8 +67,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 sc.setIdentifier(rs.getString("vc.IDENTIFIER"));
                 sc.setLabel(rs.getString("vc.LABEL"));
                 sc.setDefinition(rs.getString("vc.DEFINITION"));
-                sc.setNotation(rs.getString("vc.NOTATION"));                
-                sc.setStatus(SiteCodeStatus.valueOf(rs.getString("sc.STATUS")));
+                sc.setNotation(rs.getString("vc.NOTATION"));
+                sc.setSiteCodeStatus(SiteCodeStatus.valueOf(rs.getString("sc.STATUS")));
                 sc.setCountryCode(rs.getString("sc.CC_ISO2"));
                 sc.setDateCreated(rs.getTimestamp("sc.DATE_CREATED"));
                 sc.setUserCreated(rs.getString("sc.USER_CREATED"));
@@ -92,8 +92,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     /**
      * Returns SiteCode search SQL and also populates the parameters map.
      *
-     * @param filter
-     * @param params
+     * @param filter filtering
+     * @param params params map
      * @return
      */
     private String getSiteCodesSql(SiteCodeFilter filter, Map<String, Object> params) {

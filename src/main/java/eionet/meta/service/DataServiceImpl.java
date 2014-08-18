@@ -2,7 +2,6 @@ package eionet.meta.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -229,14 +228,8 @@ public class DataServiceImpl implements IDataService {
             for (VocabularyConcept concept : concepts) {
                 boolean conceptDateValid = true;
                 if (!elem.getAllConceptsValid()) {
-                    // TODO - extra util method and unit tests
-                    Date conceptDate = concept.getCreated();
-                    Date conceptObsolete = concept.getObsolete();
-                    Date elemCreated = new Date(Long.valueOf(elem.getDate()));
-                    if (!(conceptDate.before(elemCreated) && (conceptObsolete == null || conceptObsolete.after(elemCreated)))) {
-                        conceptDateValid = false;
-                    }
-
+                    // TODO: update - check
+                    conceptDateValid = concept.getStatus().isValid();
                 }
                 if (conceptDateValid) {
                     result.add(concept);

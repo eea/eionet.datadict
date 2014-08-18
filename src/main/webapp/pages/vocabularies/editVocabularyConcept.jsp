@@ -41,7 +41,7 @@
             });
             new JsDatePick({
                 useMode:2,
-                target:"txtCreatedDate",
+                target:"txtStatusModified",
                 dateFormat:"%d.%m.%Y",
                 cellColorScheme:"eea",
                 imgPath:"<c:url value='/css/jscalendar/img/'/>"
@@ -158,21 +158,20 @@
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
-                        Created</th>
+                        Status</th>
                     <td class="simple_attr_help"></td>
                     <td class="simple_attr_value">
-                        <stripes:text id="txtCreatedDate" formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.created" class="smalltext" size="12"/>
+                        <stripes:text id="txtStatus" name="vocabularyConcept.status.label" class="smalltext" size="12"/>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
-                        Obsolete</th>
+                        Status Modified</th>
                     <td class="simple_attr_help"></td>
                     <td class="simple_attr_value">
-                        <stripes:text id="txtObsoleteDate" formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.obsolete" class="smalltext" size="12"/>
+                        <stripes:text id="txtStatusModified" formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.statusModified" class="smalltext" size="12"/>
                     </td>
                 </tr>
-
                     <%-- Additional attributes --%>
                 <!-- Data element attributes -->
                 <c:forEach var="elementValues" items="${actionBean.vocabularyConcept.elementAttributes}" varStatus="outerLoop">
@@ -231,7 +230,7 @@
                     <td colspan="2">
                         <stripes:submit id="saveButton" name="saveConcept" value="Save" class="mediumbuttonb"/>
                         <c:choose>
-                            <c:when test="${actionBean.vocabularyConcept.obsolete != null}">
+                            <c:when test="${!actionBean.vocabularyConcept.status.valid != null}">
                                 <stripes:submit name="unMarkConceptObsolete" value="Remove obsolete status" class="mediumbuttonb"/>
                             </c:when>
                             <c:otherwise>

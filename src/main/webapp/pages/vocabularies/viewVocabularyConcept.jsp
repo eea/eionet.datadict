@@ -65,15 +65,15 @@
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
-                        Created</th>
-                    <td class="simple_attr_value">
-                        <fmt:formatDate pattern="dd.MM.yyyy" value="${actionBean.vocabularyConcept.created}" />
+                        Status</th>
+                    <td class="simple_attr_value"><c:out value="${actionBean.vocabularyConcept.status.label}" />
                     </td>
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
-                        Obsolete</th>
-                    <td class="simple_attr_value"><fmt:formatDate pattern="dd.MM.yyyy" value="${actionBean.vocabularyConcept.obsolete}" />
+                        Status Modified</th>
+                    <td class="simple_attr_value">
+                        <fmt:formatDate pattern="dd.MM.yyyy" value="${actionBean.vocabularyConcept.statusModified}" />
                     </td>
                 </tr>
                 <!-- Data element attributes -->

@@ -108,8 +108,9 @@ public final class VocabularyCSVOutputHelper {
             entries[1] = c.getLabel();
             entries[2] = c.getDefinition();
             entries[3] = c.getNotation();
-            entries[4] = c.getCreated() != null ? dateFormatter.format(c.getCreated()) : "";
-            entries[5] = c.getObsolete() != null ? dateFormatter.format(c.getObsolete()) : "";
+            //TODO: update
+            //entries[4] = c.getCreated() != null ? dateFormatter.format(c.getCreated()) : "";
+            //entries[5] = c.getObsolete() != null ? dateFormatter.format(c.getObsolete()) : "";
 
             // add extra fields
             for (Triple<String, String, Integer> row : attributesMeta) {

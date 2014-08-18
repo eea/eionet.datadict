@@ -26,7 +26,6 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -203,12 +202,13 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 lastFoundConcept.setDefinition(StringUtils.trimToNull(lineParams[2]));
                 lastFoundConcept.setNotation(StringUtils.trimToNull(lineParams[3]));
 
-                if (StringUtils.isNotEmpty(lineParams[4])) {
-                    lastFoundConcept.setCreated(dateFormatter.parse(lineParams[4]));
-                }
-                if (StringUtils.isNotEmpty(lineParams[5])) {
-                    lastFoundConcept.setObsolete(dateFormatter.parse(lineParams[5]));
-                }
+                // TODO: update
+                // if (StringUtils.isNotEmpty(lineParams[4])) {
+                // lastFoundConcept.setCreated(dateFormatter.parse(lineParams[4]));
+                // }
+                // if (StringUtils.isNotEmpty(lineParams[5])) {
+                // lastFoundConcept.setObsolete(dateFormatter.parse(lineParams[5]));
+                // }
 
                 // now it is time iterate on rest of the columns, here is the tricky part
                 Map<String, Integer> attributePosition = new HashMap<String, Integer>();
@@ -285,13 +285,13 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                         continue;
                     }
 
-                    //create VCE
+                    // create VCE
                     DataElement elem = new DataElement();
                     elementsOfConcept.add(elem);
                     elem.setAttributeLanguage(lang);
                     elem.setIdentifier(elementHeader);
                     elem.setId(this.boundElementsIds.get(elementHeader));
-                    //check if there is a found related concept
+                    // check if there is a found related concept
                     if (foundRelatedConcept != null) {
                         elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
                         int id = foundRelatedConcept.getId();
@@ -307,9 +307,6 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 } // end of for loop iterating on rest of the columns (for data elements)
             } // end of row iterator (while loop on rows)
             processUnseenConceptsForRelatedElements();
-        } catch (ParseException e) {
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
             throw new ServiceException(e.getMessage());

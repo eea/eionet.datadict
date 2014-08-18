@@ -5,7 +5,6 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.DBUnitHelper;
 import eionet.meta.service.IVocabularyService;
 
-import eionet.meta.service.data.ObsoleteStatus;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;

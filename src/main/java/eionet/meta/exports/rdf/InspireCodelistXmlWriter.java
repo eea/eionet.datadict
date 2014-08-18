@@ -21,19 +21,20 @@
 
 package eionet.meta.exports.rdf;
 
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.DAOUtils;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import org.apache.commons.lang.StringUtils;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Vocabulary XML Writer in INSPIRE codelist format.
@@ -82,7 +83,6 @@ public class InspireCodelistXmlWriter {
      */
     private static final String INSPIRE_STATUS_PUBLICDRAFT = "http://inspire.ec.europa.eu/registry/status/submitted";
 
-
     /**
      * INSPIRE XSD location.
      */
@@ -110,10 +110,14 @@ public class InspireCodelistXmlWriter {
     /**
      * Inits INSPIRE XML writer.
      *
-     * @param out output stream
-     * @param voc Vocabulary
-     * @param ctx context URL for DD
-     * @throws XMLStreamException if streaming fails
+     * @param out
+     *            output stream
+     * @param voc
+     *            Vocabulary
+     * @param ctx
+     *            context URL for DD
+     * @throws XMLStreamException
+     *             if streaming fails
      */
     public InspireCodelistXmlWriter(OutputStream out, VocabularyFolder voc, String ctx) throws XMLStreamException {
         writer = XMLOutputFactory.newInstance().createXMLStreamWriter(out, ENCODING);
@@ -123,7 +127,9 @@ public class InspireCodelistXmlWriter {
 
     /**
      * Writes xml output.
-     * @throws XMLStreamException if writing does not succeed
+     *
+     * @throws XMLStreamException
+     *             if writing does not succeed
      */
     public void writeXml() throws XMLStreamException {
         writeXmlStart();
@@ -133,13 +139,15 @@ public class InspireCodelistXmlWriter {
 
     /**
      * Writes vocabulary in xml format.
-     * @throws XMLStreamException if wirting fails
+     *
+     * @throws XMLStreamException
+     *             if wirting fails
      */
     public void writeVocabularyXml() throws XMLStreamException {
 
         writeLabelEN(vocabulary.getLabel());
 
-        //definition not required
+        // definition not required
         String definition = DAOUtils.getVocabularyAttributeByName(vocabulary, "definition");
         if (StringUtils.isNotBlank(definition)) {
             writer.writeCharacters("\n");
@@ -150,7 +158,7 @@ public class InspireCodelistXmlWriter {
             writer.writeEndElement();
         }
 
-        //description
+        // description
         RegStatus status = vocabulary.getRegStatus();
         String statusLabel = "";
         writer.writeCharacters("\n");
@@ -159,7 +167,7 @@ public class InspireCodelistXmlWriter {
             writer.writeAttribute("id", INSPIRE_STATUS_PUBLICDRAFT);
             statusLabel = "Submitted";
         } else if (status.equals(RegStatus.RELEASED)) {
-            //if it has all concepts obsolete then it is not valid:
+            // if it has all concepts obsolete then it is not valid:
             if (!DAOUtils.anyConceptValid(vocabulary)) {
                 writer.writeAttribute("id", INSPIRE_STATUS_OBSOLETE);
                 statusLabel = "Retired";
@@ -170,41 +178,33 @@ public class InspireCodelistXmlWriter {
         }
 
         writeLabelEN(statusLabel);
-        writer.writeEndElement(); //status
+        writer.writeEndElement(); // status
 
-        //extensiblity (default NONE)
+        // extensiblity (default NONE)
         writer.writeCharacters("\n");
         writer.writeStartElement("extensibility");
         writer.writeAttribute("id", INSPIRE_EXTENSIBILITY_NONE);
         writeLabelEN("None");
-        writer.writeEndElement(); //extensibility
+        writer.writeEndElement(); // extensibility
 
         writeRegisterElement();
 
-        //TODO - add theme and applicationschema
+        // TODO - add theme and applicationschema
         /*
-        //theme
-        writer.writeCharacters("\n");
-        writer.writeStartElement("theme");
-        writer.writeAttribute("id", generateVocabularyID());
-        writeLabelEN(vocabulary.getLabel());
-        writer.writeCharacters("\n");
-        writer.writeEndElement(); //theme
-        //applicationschema
-        writer.writeCharacters("\n");
-        writer.writeStartElement("applicationschema");
-        writer.writeAttribute("id", generateVocabularySetID());
-        writeLabelEN(vocabulary.getFolderLabel());
-        writer.writeCharacters("\n");
-        writer.writeEndElement(); //applicationschema
-        */
+         * //theme writer.writeCharacters("\n"); writer.writeStartElement("theme"); writer.writeAttribute("id",
+         * generateVocabularyID()); writeLabelEN(vocabulary.getLabel()); writer.writeCharacters("\n"); writer.writeEndElement();
+         * //theme //applicationschema writer.writeCharacters("\n"); writer.writeStartElement("applicationschema");
+         * writer.writeAttribute("id", generateVocabularySetID()); writeLabelEN(vocabulary.getFolderLabel());
+         * writer.writeCharacters("\n"); writer.writeEndElement(); //applicationschema
+         */
         writeConcepts();
     }
 
-
     /**
      * writes XML start element.
-     * @throws XMLStreamException if writing fails
+     *
+     * @throws XMLStreamException
+     *             if writing fails
      */
     public void writeXmlStart() throws XMLStreamException {
         writer.writeStartDocument(ENCODING, "1.0");
@@ -225,14 +225,14 @@ public class InspireCodelistXmlWriter {
     /**
      * Writes closing tags of XML.
      *
-     * @throws XMLStreamException if writing fails
+     * @throws XMLStreamException
+     *             if writing fails
      */
     public void writeXmlEnd() throws XMLStreamException {
         writer.writeCharacters("\n");
         writer.writeEndElement();
         writer.writeCharacters("\n");
     }
-
 
     /**
      * ID attribute value.
@@ -255,8 +255,10 @@ public class InspireCodelistXmlWriter {
     /**
      * Writes label element in xml:lang = "EN".
      *
-     * @param labelText text to write
-     * @throws javax.xml.stream.XMLStreamException if writing fails
+     * @param labelText
+     *            text to write
+     * @throws javax.xml.stream.XMLStreamException
+     *             if writing fails
      */
     private void writeLabelEN(String labelText) throws XMLStreamException {
         writer.writeCharacters("\n");
@@ -268,7 +270,9 @@ public class InspireCodelistXmlWriter {
 
     /**
      * Writes concepts array.
-     * @throws XMLStreamException if writing fails
+     *
+     * @throws XMLStreamException
+     *             if writing fails
      */
     private void writeConcepts() throws XMLStreamException {
         List<VocabularyConcept> concepts = vocabulary.getConcepts();
@@ -288,13 +292,13 @@ public class InspireCodelistXmlWriter {
                     writer.writeStartElement("definition");
                     writer.writeAttribute("xml:lang", "en");
                     writer.writeCharacters(concept.getDefinition());
-                    writer.writeEndElement(); //definition
+                    writer.writeEndElement(); // definition
                 }
 
                 writer.writeCharacters("\n");
                 writer.writeStartElement("status");
 
-                if (concept.getObsolete() == null) {
+                if (concept.getStatus().isValid()) {
                     writer.writeAttribute("id", INSPIRE_STATUS_VALID);
                     writeLabelEN("Valid");
                 } else {
@@ -302,51 +306,44 @@ public class InspireCodelistXmlWriter {
                     writeLabelEN("Invalid");
                 }
                 writer.writeCharacters("\n");
-                writer.writeEndElement(); //status
+                writer.writeEndElement(); // status
 
                 writeRegisterElement();
 
-                //TODO theme and applicationschema if complex attrs are implemented
+                // TODO theme and applicationschema if complex attrs are implemented
                 /*
-                //theme
-                writer.writeCharacters("\n");
-                writer.writeStartElement("theme");
-                writer.writeAttribute("id", generateVocabularyID());
-                writeLabelEN(vocabulary.getLabel());
-                writer.writeCharacters("\n");
-                writer.writeEndElement(); //theme
-
-                //applicationschema
-                writer.writeCharacters("\n");
-                writer.writeStartElement("applicationschema");
-                writer.writeAttribute("id", generateVocabularySetID());
-                writeLabelEN(vocabulary.getFolderLabel());
-                writer.writeCharacters("\n");
-                writer.writeEndElement(); //applicationschema
-                */
+                 * //theme writer.writeCharacters("\n"); writer.writeStartElement("theme"); writer.writeAttribute("id",
+                 * generateVocabularyID()); writeLabelEN(vocabulary.getLabel()); writer.writeCharacters("\n");
+                 * writer.writeEndElement(); //theme
+                 *
+                 * //applicationschema writer.writeCharacters("\n"); writer.writeStartElement("applicationschema");
+                 * writer.writeAttribute("id", generateVocabularySetID()); writeLabelEN(vocabulary.getFolderLabel());
+                 * writer.writeCharacters("\n"); writer.writeEndElement(); //applicationschema
+                 */
                 writer.writeCharacters("\n");
                 writer.writeStartElement("codelist");
                 writer.writeAttribute("id", generateVocabularyID());
                 writeLabelEN(vocabulary.getLabel());
                 writer.writeCharacters("\n");
-                writer.writeEndElement(); //codelist
+                writer.writeEndElement(); // codelist
 
                 writer.writeCharacters("\n");
                 writer.writeEndElement();
             }
 
             writer.writeCharacters("\n");
-            writer.writeEndElement(); //containeditems
+            writer.writeEndElement(); // containeditems
         }
     }
 
     /**
      * Register element is same for all entities vocabulary and concepts.
      *
-     * @throws XMLStreamException if streaming fails
+     * @throws XMLStreamException
+     *             if streaming fails
      */
     private void writeRegisterElement() throws XMLStreamException {
-        //register
+        // register
         writer.writeCharacters("\n");
         writer.writeStartElement("register");
         writer.writeAttribute("id", this.contextRoot + "/vocabularies");
@@ -357,9 +354,9 @@ public class InspireCodelistXmlWriter {
         writeLabelEN("Eionet Data Dictionary");
 
         writer.writeCharacters("\n");
-        writer.writeEndElement(); //registry
+        writer.writeEndElement(); // registry
 
         writer.writeCharacters("\n");
-        writer.writeEndElement(); //register
+        writer.writeEndElement(); // register
     }
 }

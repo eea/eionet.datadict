@@ -1,11 +1,10 @@
-
 package eionet.meta.dao;
+
+import java.util.List;
 
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-
-import java.util.List;
 
 /**
  * Util methods for handling domain objects.
@@ -13,12 +12,16 @@ import java.util.List;
 public final class DAOUtils {
 
     /** prevent initialization ot util class. */
-    private  DAOUtils() {    }
+    private DAOUtils() {
+    }
 
     /**
      * Finds vocabulary simple attribute by name, returns first value.
-     * @param  voc Vocabulary
-     * @param attrName attribute name
+     *
+     * @param voc
+     *            Vocabulary
+     * @param attrName
+     *            attribute name
      * @return Attribute value
      */
     public static String getVocabularyAttributeByName(VocabularyFolder voc, String attrName) {
@@ -37,14 +40,16 @@ public final class DAOUtils {
 
     /**
      * Checks vocabulary concepts status.
-     * @param vocabulary Vocabulary
+     *
+     * @param vocabulary
+     *            Vocabulary
      * @return true if at least one concept is valid
      */
-    public  static boolean anyConceptValid(VocabularyFolder vocabulary) {
+    public static boolean anyConceptValid(VocabularyFolder vocabulary) {
         List<VocabularyConcept> concepts = vocabulary.getConcepts();
         if (concepts != null && concepts.size() > 0) {
             for (VocabularyConcept concept : vocabulary.getConcepts()) {
-                if (concept.getObsolete() == null) {
+                if (concept.getStatus().isValid()) {
                     return true;
                 }
             }

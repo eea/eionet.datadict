@@ -311,7 +311,7 @@
             <display:column title="Site code" property="identifier" escapeXml="true" class="number" style="width: 1%" sortable="true" sortProperty="identifier" />
             <display:column title="Site name" escapeXml="true" property="label" sortable="true" sortProperty="label" />
             <display:column title="Status" sortable="true" sortProperty="status">
-                <c:out value="${siteCode.status.label}" />
+                <c:out value="${siteCode.siteCodeStatus.label}" />
             </display:column>
             <display:column title="Country" escapeXml="true" property="countryCode" sortable="true" sortProperty="cc_iso2" />
             <display:column title="Allocated" sortable="true" sortProperty="date_allocated">

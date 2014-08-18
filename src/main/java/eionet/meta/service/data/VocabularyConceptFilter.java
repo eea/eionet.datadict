@@ -23,6 +23,8 @@ package eionet.meta.service.data;
 
 import java.util.List;
 
+import eionet.meta.dao.domain.StandardGenericStatus;
+
 /**
  * Vocabulary concept search filter.
  *
@@ -53,12 +55,7 @@ public class VocabularyConceptFilter extends PagedRequest {
 
     /** Concept id's that get returned. */
     private List<Integer> includedIds;
-
-    /** Obsolete status. */
-    private ObsoleteStatus obsoleteStatus = ObsoleteStatus.VALID_ONLY;
-
-    /** Obsolete Date. */
-    private String obsoleteDate;
+    
     /**
      * if true only exact match is searched in textual fields.
      */
@@ -73,6 +70,15 @@ public class VocabularyConceptFilter extends PagedRequest {
     private String vocabularyText;
     /** vocabulary sets to not search from. */
     private List<Integer> excludedVocabularySetIds;
+
+    /**
+     * Status of concept.
+     */
+    private StandardGenericStatus conceptStatus;
+    /**
+     * Status exact match.
+     */
+    private boolean statusExactMatch = false;
 
     /**
      * @return the vocabularyFolderId
@@ -194,36 +200,6 @@ public class VocabularyConceptFilter extends PagedRequest {
         this.includedIds = includedIds;
     }
 
-    /**
-     * @return the obsoleteStatus
-     */
-    public ObsoleteStatus getObsoleteStatus() {
-        return obsoleteStatus;
-    }
-
-    /**
-     * @param obsoleteStatus
-     *            the obsoleteStatus to set
-     */
-    public void setObsoleteStatus(ObsoleteStatus obsoleteStatus) {
-        this.obsoleteStatus = obsoleteStatus;
-    }
-
-    /**
-     * @return the obsoleteDate
-     */
-    public String getObsoleteDate() {
-        return obsoleteDate;
-    }
-
-    /**
-     * @param obsoleteDate
-     *            the obsoleteDate to set
-     */
-    public void setObsoleteDate(String obsoleteDate) {
-        this.obsoleteDate = obsoleteDate;
-    }
-
     public boolean isExactMatch() {
         return exactMatch;
     }
@@ -256,4 +232,19 @@ public class VocabularyConceptFilter extends PagedRequest {
         return excludedVocabularySetIds;
     }
 
+    public StandardGenericStatus getConceptStatus() {
+        return conceptStatus;
+    }
+
+    public void setConceptStatus(StandardGenericStatus conceptStatus) {
+        this.conceptStatus = conceptStatus;
+    }
+
+    public boolean isStatusExactMatch() {
+        return statusExactMatch;
+    }
+
+    public void setStatusExactMatch(boolean statusExactMatch) {
+        this.statusExactMatch = statusExactMatch;
+    }
 }
