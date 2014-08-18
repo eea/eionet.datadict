@@ -21,7 +21,8 @@
 
                     $('#switchTypeDialog').dialog({
                         autoOpen: false,
-                        width: 500
+                        width: 500,
+                        modal:true
                     });
 
                     $("#closeSwitchTypeDialog").click(function() {

@@ -99,7 +99,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import RDF into database
         vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
@@ -161,7 +161,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import RDF into database
         vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
@@ -282,7 +282,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import RDF into database
         vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually create values of new concept for comparison
         VocabularyConcept vc11 = new VocabularyConcept();
@@ -363,7 +363,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import RDF into database
         vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, true, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually create values of new concept for comparison
         VocabularyConcept vc11 = new VocabularyConcept();
@@ -445,7 +445,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import RDF into database
         vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, true, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
@@ -583,7 +583,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import RDF into database
         vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, true, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually create values of new concept for comparison
         concepts.remove(2);// remove last object
@@ -645,7 +645,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import RDF into database
         vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, true);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -710,7 +710,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import RDF into database
         List<String> logMessages = vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
         // only vocabulary concept 3 should change
@@ -766,7 +766,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import RDF into database
         vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
         // only vocabulary concept 1 should change
@@ -827,7 +827,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import RDF into database
         vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, true, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -878,7 +878,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
             Assert.fail("Exception is not received");
         } catch (ServiceException e) {
             Assert.assertEquals("Exception Message is not correct", "Vocabulary does not have a valid base URI", e.getMessage());
-            Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
+            Assert.assertTrue("Transaction wasn't rolled back", transactionManager.getTransaction(null).isRollbackOnly());
         }
     }// end of test step testExceptionWhenVocabularyDoesNotHaveAValidBaseUri
 
@@ -898,7 +898,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import RDF into database
         List<String> logMessages = vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // Nothing seen, nothing updated, no error generated
         for (String l : logMessages) {
@@ -928,7 +928,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import RDF into database
         vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // query updated concept
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);

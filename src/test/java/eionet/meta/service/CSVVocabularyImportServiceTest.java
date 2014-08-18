@@ -108,7 +108,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
         // transactionManager.getTransaction(null).flush();
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
@@ -161,7 +161,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
@@ -235,7 +235,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually create values of new concept for comparison
         VocabularyConcept vc11 = new VocabularyConcept();
@@ -316,7 +316,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually create values of new concept for comparison
         VocabularyConcept vc11 = new VocabularyConcept();
@@ -399,7 +399,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
@@ -464,7 +464,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually create values of new concept for comparison
         concepts.remove(2);// remove last object
@@ -505,7 +505,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually create values of new concept for comparison
         concepts.remove(2);// remove last object
@@ -546,7 +546,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import CSV into database
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually create values for data elements
         String[] boundElementIdentifiers =
@@ -789,7 +789,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // import CSV into database
         List<String> logMessages = vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, true);
-        Assert.assertFalse("Transaction rollbacked (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
         // manually update initial values of concepts for comparison
         // only vocabulary concept 1 should change
@@ -912,7 +912,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
     /**
      * In this test, three line CSV is imported. All rows includes updated values. But there should be no update performed since it
-     * does not have valid headers (invalid fixed header). All transaction should be rollbacked
+     * does not have valid headers (invalid fixed header). All transaction should be rolled back
      *
      * @throws Exception
      */
@@ -934,13 +934,13 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
                     "Exception Message is not correct",
                     "Missing headers! CSV file should contain following headers: [URI, Label, Definition, Notation, StartDate, EndDate]",
                     e.getMessage());
-            Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
+            Assert.assertTrue("Transaction wasn't rolled back", transactionManager.getTransaction(null).isRollbackOnly());
         }
     }// end of test step testExceptionAndRollbackWhenFixedHeadersAreMissing
 
     /**
      * In this test, three line CSV is imported. All rows includes updated values. But there should be no update performed since it
-     * does not have valid headers (empty header column). All transaction should be rollbacked
+     * does not have valid headers (empty header column). All transaction should be rolled back
      *
      * @throws Exception
      */
@@ -959,13 +959,13 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
             Assert.fail("Exception is not received");
         } catch (ServiceException e) {
             Assert.assertEquals("Exception Message is not correct", "Header for column (8) is empty!", e.getMessage());
-            Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
+            Assert.assertTrue("Transaction wasn't rolled back", transactionManager.getTransaction(null).isRollbackOnly());
         }
     }// end of test step testExceptionAndRollbackWhenAHeaderColumnIsEmpty
 
     /**
      * In this test, three line CSV is imported. All rows includes updated values. But there should be no update performed since it
-     * does not have valid headers (not found element to bind). All transaction should be rollbacked
+     * does not have valid headers (not found element to bind). All transaction should be rolled back
      *
      * @throws Exception
      */
@@ -987,13 +987,13 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
                     "Exception Message is not correct",
                     "Cannot find any data element for column: skos:prefLabelllllllll. Please bind element manually then upload CSV.",
                     e.getMessage());
-            Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
+            Assert.assertTrue("Transaction wasn't rolled back", transactionManager.getTransaction(null).isRollbackOnly());
         }
     }// end of test step testExceptionAndRollbackWhenAHeaderColumnIsNotFoundElement
 
     /**
      * In this test, three line CSV is imported. All rows includes updated values. But there should be no update performed since it
-     * does not have valid headers (more than one found element to bind). All transaction should be rollbacked
+     * does not have valid headers (more than one found element to bind). All transaction should be rolled back
      *
      * @throws Exception
      */
@@ -1014,13 +1014,13 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
             Assert.assertEquals("Exception Message is not correct",
                     "Cannot find any data element for column: env:de. Please bind element manually then upload CSV.",
                     e.getMessage());
-            Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
+            Assert.assertTrue("Transaction wasn't rolled back", transactionManager.getTransaction(null).isRollbackOnly());
         }
     }// end of test step testExceptionAndRollbackWhenAHeaderColumnIsFoundMoreThanOne
 
     /**
      * In this test, three line CSV is imported. All rows includes updated values. But there should be no update performed since it
-     * does not have valid headers (one found element to bind but does not match exactly). All transaction should be rollbacked
+     * does not have valid headers (one found element to bind but does not match exactly). All transaction should be rolled back
      *
      * @throws Exception
      */
@@ -1041,7 +1041,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
             Assert.assertEquals("Exception Message is not correct",
                     "Cannot find any data element for column: env:dec. Please bind element manually then upload CSV.",
                     e.getMessage());
-            Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
+            Assert.assertTrue("Transaction wasn't rolled back", transactionManager.getTransaction(null).isRollbackOnly());
         }
     }// end of test step testExceptionAndRollbackWhenAHeaderColumnDoesNotExactlyMatch
 
@@ -1063,7 +1063,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
             Assert.fail("Exception is not received");
         } catch (ServiceException e) {
             Assert.assertEquals("Exception Message is not correct", "Vocabulary does not have a valid base URI", e.getMessage());
-            Assert.assertTrue("Transaction didn't rollbacked", transactionManager.getTransaction(null).isRollbackOnly());
+            Assert.assertTrue("Transaction wasn't rolled back", transactionManager.getTransaction(null).isRollbackOnly());
         }
     }// end of test step testExceptionWhenVocabularyDoesNotHaveAValidBaseUri
 
