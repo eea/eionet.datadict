@@ -284,6 +284,20 @@ public interface IVocabularyService {
     int createVocabularyConcept(int vocabularyFolderId, VocabularyConcept vocabularyConcept) throws ServiceException;
 
     /**
+     * Creates new vocabulary concept into database.
+     *
+     * @param vocabularyFolderId
+     *            vocabulary id
+     * @param vocabularyConcept
+     *            concept
+     * @return
+     * @throws ServiceException
+     *             if operation fails
+     */
+    int createVocabularyConceptNonTransactional(int vocabularyFolderId, VocabularyConcept vocabularyConcept)
+            throws ServiceException;
+
+    /**
      * Updates vocabulary concept.
      *
      * @param vocabularyConcept
@@ -586,8 +600,8 @@ public interface IVocabularyService {
     List<VocabularyConcept> getConceptsWithElementValue(int dataElementId, int vocabularyId) throws ServiceException;
 
     /**
-     * Returns all namespaces that are used by the bound elements. Both external and internal. Internal namespaces are composed
-     * with prefix dd[element.idand uri BASE_URI/dataelement/[element.id]
+     * Returns all namespaces that are used by the bound elements. Both external and internal. Internal namespaces are composed with
+     * prefix dd[element.idand uri BASE_URI/dataelement/[element.id]
      *
      * @param vocabularyFolders
      *            vocabularies
@@ -700,8 +714,11 @@ public interface IVocabularyService {
 
     /**
      * fix inverse relations in other concepts.
-     * @param vocabularyId this vocabulary ID
-     * @param concepts concepts of the vocabulary
+     *
+     * @param vocabularyId
+     *            this vocabulary ID
+     * @param concepts
+     *            concepts of the vocabulary
      */
     void fixRelatedReferenceElements(int vocabularyId, List<VocabularyConcept> concepts);
 }
