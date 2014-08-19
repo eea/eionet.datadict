@@ -27,10 +27,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -293,6 +291,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
             return vocabularyConceptDAO.createVocabularyConcept(vocabularyFolderId, vocabularyConcept);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ServiceException("Failed to create vocabulary concept: " + e.getMessage(), e);
         }
     }
@@ -473,9 +472,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public void markConceptsObsolete(List<Integer> ids) throws ServiceException {
+    public void markConceptsInvalid(List<Integer> ids) throws ServiceException {
         try {
-            vocabularyConceptDAO.markConceptsObsolete(ids);
+            vocabularyConceptDAO.markConceptsInvalid(ids);
         } catch (Exception e) {
             throw new ServiceException("Failed to mark the concepts obsolete: " + e.getMessage(), e);
         }
@@ -485,9 +484,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public void unMarkConceptsObsolete(List<Integer> ids) throws ServiceException {
+    public void markConceptsValid(List<Integer> ids) throws ServiceException {
         try {
-            vocabularyConceptDAO.unMarkConceptsObsolete(ids);
+            vocabularyConceptDAO.markConceptsValid(ids);
         } catch (Exception e) {
             throw new ServiceException("Failed to delete remove obsolete status: " + e.getMessage(), e);
         }

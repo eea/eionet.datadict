@@ -257,7 +257,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     public Resolution markConceptObsolete() throws ServiceException {
         vocabularyConcept.setIdentifier(getConceptIdentifier());
-        vocabularyService.markConceptsObsolete(Collections.singletonList(vocabularyConcept.getId()));
+        vocabularyService.markConceptsInvalid(Collections.singletonList(vocabularyConcept.getId()));
 
         addSystemMessage("Vocabulary concept marked obsolete");
 
@@ -277,7 +277,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     public Resolution unMarkConceptObsolete() throws ServiceException {
         vocabularyConcept.setIdentifier(getConceptIdentifier());
-        vocabularyService.unMarkConceptsObsolete(Collections.singletonList(vocabularyConcept.getId()));
+        vocabularyService.markConceptsValid(Collections.singletonList(vocabularyConcept.getId()));
 
         addSystemMessage("Obsolete status removed from vocabulary concept");
 

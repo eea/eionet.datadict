@@ -228,7 +228,6 @@ public class DataServiceImpl implements IDataService {
             for (VocabularyConcept concept : concepts) {
                 boolean conceptDateValid = true;
                 if (!elem.getAllConceptsValid()) {
-                    // TODO: update - check
                     conceptDateValid = concept.getStatus().isValid();
                 }
                 if (conceptDateValid) {

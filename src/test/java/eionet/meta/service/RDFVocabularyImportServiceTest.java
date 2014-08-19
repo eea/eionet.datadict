@@ -22,6 +22,7 @@
 package eionet.meta.service;
 
 import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.imp.VocabularyImportBaseHandler;
@@ -290,6 +291,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setIdentifier("rdf_test_concept_4");
         vc11.setLabel("rdf_test_concept_label_4");
         vc11.setDefinition("rdf_test_concept_def_4");
+        vc11.setStatus(StandardGenericStatus.VALID);
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         //TODO: update
         //vc11.setCreated(dateFormatter.parse(dateFormatter.format(Calendar.getInstance().getTime())));
@@ -372,6 +374,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setIdentifier("rdf_test_concept_4");
         vc11.setLabel("rdf_test_concept_label_4");
         vc11.setDefinition("rdf_test_concept_def_4");
+        vc11.setStatus(StandardGenericStatus.VALID);
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         //TODO: update
         //vc11.setCreated(dateFormatter.parse(dateFormatter.format(Calendar.getInstance().getTime())));

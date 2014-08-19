@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import eionet.meta.dao.domain.StandardGenericStatus;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -186,6 +187,7 @@ public abstract class VocabularyImportBaseHandler {
             VocabularyConcept lastFoundConcept = new VocabularyConcept();
             lastFoundConcept.setId(--this.numberOfCreatedConcepts);
             lastFoundConcept.setIdentifier(conceptIdentifier);
+            lastFoundConcept.setStatus(StandardGenericStatus.VALID);
             List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
             lastFoundConcept.setElementAttributes(newConceptElementAttributes);
             return new Pair<VocabularyConcept, Boolean>(lastFoundConcept, false);
@@ -232,6 +234,7 @@ public abstract class VocabularyImportBaseHandler {
             foundRelatedConcept = new VocabularyConcept();
             foundRelatedConcept.setId(--this.numberOfCreatedConcepts);
             foundRelatedConcept.setIdentifier(relatedConceptIdentifier);
+            foundRelatedConcept.setStatus(StandardGenericStatus.VALID);
             List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
             foundRelatedConcept.setElementAttributes(newConceptElementAttributes);
             this.notSeenConceptsYet.add(foundRelatedConcept);

@@ -22,6 +22,7 @@ package eionet.meta.service;
 
 import java.util.List;
 
+import eionet.meta.dao.domain.StandardGenericStatus;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -103,6 +104,7 @@ public class ReferenceMatchServiceTest extends UnitilsJUnit4 {
         VocabularyConcept newConceptInVocabulary2 = new VocabularyConcept();
         newConceptInVocabulary2.setIdentifier(CONCEPT_2_IN_VOCABULARY_2);
         newConceptInVocabulary2.setLabel(CONCEPT_2_IN_VOCABULARY_2);
+        newConceptInVocabulary2.setStatus(StandardGenericStatus.VALID);
         int lastInserted = this.vocabularyService.createVocabularyConcept(VOCABULARY_2_ID, newConceptInVocabulary2);
         newConceptInVocabulary2.setId(lastInserted);
 

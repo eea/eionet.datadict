@@ -95,14 +95,14 @@ public interface IVocabularyConceptDAO {
      *
      * @param ids
      */
-    void markConceptsObsolete(List<Integer> ids);
+    void markConceptsInvalid(List<Integer> ids);
 
     /**
      * Remove obsolete date from concepts.
      *
      * @param ids
      */
-    void unMarkConceptsObsolete(List<Integer> ids);
+    void markConceptsValid(List<Integer> ids);
 
     /**
      * Deletes vocabulary concepts.

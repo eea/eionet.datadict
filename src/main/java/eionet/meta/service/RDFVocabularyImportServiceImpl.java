@@ -169,6 +169,7 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
                     rdfHandler.getElementsRelatedToNotCreatedConcepts());
         } catch (Exception e) {
             // all exceptions should cause rollback operation
+            e.printStackTrace();
             throw new ServiceException(e.getMessage());
         }
 

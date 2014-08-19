@@ -23,6 +23,7 @@ package eionet.web.action;
 
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
@@ -95,8 +96,7 @@ public class FolderActionBean extends AbstractActionBean {
                     for (VocabularyFolder vocabularyFolder : vocabularyFolders) {
                         VocabularyConceptFilter filter = new VocabularyConceptFilter();
                         filter.setUsePaging(false);
-                        //TODO: update
-                        //filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
+                        filter.setConceptStatus(StandardGenericStatus.VALID);
                         List<? extends VocabularyConcept> concepts = null;
                         if (vocabularyFolder.isSiteCodeType()) {
                             String countryCode = getContext().getRequestParameter("countryCode");

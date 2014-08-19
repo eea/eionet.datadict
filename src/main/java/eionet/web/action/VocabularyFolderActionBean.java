@@ -32,6 +32,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import eionet.meta.dao.domain.StandardGenericStatus;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.FileBean;
@@ -545,6 +546,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
         if (vocabularyConcept != null) {
             // Save new concept
+            //TODO: update - default status type
             vocabularyService.createVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept);
         } else {
             // Update existing concept
@@ -637,7 +639,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution markConceptsObsolete() throws ServiceException {
-        vocabularyService.markConceptsObsolete(conceptIds);
+        vocabularyService.markConceptsInvalid(conceptIds);
         addSystemMessage("Vocabulary concepts marked obsolete");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
@@ -654,7 +656,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution unMarkConceptsObsolete() throws ServiceException {
-        vocabularyService.unMarkConceptsObsolete(conceptIds);
+        vocabularyService.markConceptsValid(conceptIds);
         addSystemMessage("Obsolete status removed from vocabulary concepts");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
@@ -1020,8 +1022,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             initFilter();
             filter.setUsePaging(false);
-            //TODO: update
-            //filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
+            filter.setConceptStatus(StandardGenericStatus.VALID);
             final List<? extends VocabularyConcept> concepts;
             if (vocabularyFolder.isSiteCodeType()) {
                 String countryCode = getContext().getRequestParameter("countryCode");

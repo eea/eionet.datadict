@@ -22,6 +22,7 @@
 package eionet.meta.service;
 
 import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.util.VocabularyCSVOutputHelper;
@@ -243,6 +244,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setIdentifier("csv_test_concept_4");
         vc11.setLabel("csv_test_concept_label_4");
         vc11.setDefinition("csv_test_concept_def_4");
+        vc11.setStatus(StandardGenericStatus.VALID);
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         //TODO: update
         //vc11.setCreated(dateFormatter.parse("2014-02-17"));
@@ -325,6 +327,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setIdentifier("csv_test_concept_4");
         vc11.setLabel("csv_test_concept_label_4");
         vc11.setDefinition("csv_test_concept_def_4");
+        vc11.setStatus(StandardGenericStatus.VALID);
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         //TODO: update
         //vc11.setCreated(dateFormatter.parse("2014-02-17"));
@@ -932,9 +935,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
             vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
             Assert.fail("Exception is not received");
         } catch (ServiceException e) {
-            Assert.assertEquals(
-                    "Exception Message is not correct",
-                    "Missing headers! CSV file should contain following headers: [URI, Label, Definition, Notation, StartDate, EndDate]",
+            Assert.assertEquals("Exception Message is not correct", "Missing header! CSV file should start with header: 'URI'",
                     e.getMessage());
             Assert.assertTrue("Transaction wasn't rolled back", transactionManager.getTransaction(null).isRollbackOnly());
         }

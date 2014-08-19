@@ -48,6 +48,7 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.RegStatus;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
@@ -240,6 +241,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         VocabularyConcept concept = new VocabularyConcept();
         concept.setIdentifier("test3");
         concept.setLabel("test3");
+        concept.setStatus(StandardGenericStatus.VALID);
 
         vocabularyService.createVocabularyConcept(3, concept);
 
@@ -256,8 +258,9 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         assertEquals("Modified label", "modified", result.getLabel());
     }
 
+    // TODO: update - to test modified and accepted and not accepted dates
     @Test
-    public void testupdatevocabularyconceptDate() throws ServiceException {
+    public void testUpdateVocabularyConceptDate() throws ServiceException {
         VocabularyConcept result = vocabularyService.getVocabularyConcept(3, "concept1", true);
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(0);
@@ -324,16 +327,16 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     @Test
     public void testMarkConceptsObsolete() throws ServiceException {
-        vocabularyService.markConceptsObsolete(Collections.singletonList(1));
+        vocabularyService.markConceptsInvalid(Collections.singletonList(1));
         VocabularyConcept concept = vocabularyService.getVocabularyConcept(3, "concept1", true);
         // TODO: update
-        //assertNotNull("Obsolete date", concept.getObsolete());
+        // assertNotNull("Obsolete date", concept.getObsolete());
     }
 
     @Test
     public void testUnMarkConceptsObsolete() throws ServiceException {
-        vocabularyService.markConceptsObsolete(Collections.singletonList(1));
-        vocabularyService.unMarkConceptsObsolete(Collections.singletonList(1));
+        vocabularyService.markConceptsInvalid(Collections.singletonList(1));
+        vocabularyService.markConceptsValid(Collections.singletonList(1));
         VocabularyConcept concept = vocabularyService.getVocabularyConcept(3, "concept1", true);
         // TODO: update
         // assertNull("Obsolete date", concept.getObsolete());
@@ -627,6 +630,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept1.setIdentifier("conc1");
         concept1.setLabel("Concept 1");
         concept1.setNotation("Conc_1");
+        concept1.setStatus(StandardGenericStatus.VALID);
         vocabularyService.createVocabularyConcept(vocId, concept1);
         concept1 = vocabularyService.getVocabularyConcept(vocId, "conc1", true);
         assertNotNull("Expected a concept", concept1);
@@ -636,6 +640,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept2.setIdentifier("conc2");
         concept2.setLabel("Concept 2");
         concept2.setNotation("Conc_2");
+        concept2.setStatus(StandardGenericStatus.VALID);
         vocabularyService.createVocabularyConcept(vocId, concept2);
         concept2 = vocabularyService.getVocabularyConcept(vocId, "conc2", true);
         assertNotNull("Expected a concept", concept2);
@@ -663,6 +668,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept3.setIdentifier("conc3");
         concept3.setLabel("Concept 3");
         concept3.setNotation("Conc_3");
+        concept3.setStatus(StandardGenericStatus.VALID);
         vocabularyService.createVocabularyConcept(vocId, concept3);
         concept3 = vocabularyService.getVocabularyConcept(vocId, "conc3", true);
         assertNotNull("Expected a concept", concept3);

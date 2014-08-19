@@ -145,15 +145,11 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("includedIds", filter.getIncludedIds());
             sql.append("and c.VOCABULARY_CONCEPT_ID in (:includedIds) ");
         }
-        // TODO: update
-        // if (filter.getObsoleteStatus() != null) {
-        // if (ObsoleteStatus.VALID_ONLY.equals(filter.getObsoleteStatus())) {
-        // sql.append("and c.OBSOLETE_DATE IS NULL ");
-        // }
-        // if (ObsoleteStatus.OBSOLETE_ONLY.equals(filter.getObsoleteStatus())) {
-        // sql.append("and c.OBSOLETE_DATE IS NOT NULL ");
-        // }
-        // }
+
+        if (filter.getConceptStatus() != null){
+            params.put("conceptStatus", filter.getConceptStatus().getValue());
+            sql.append("and c.STATUS & :conceptStatus = :conceptStatus ");
+        }
 
         if (StringUtils.isNotEmpty(filter.getVocabularyText())) {
             if (filter.isExactMatch()) {
@@ -271,7 +267,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         StringBuilder sql = new StringBuilder();
         sql.append("update VOCABULARY_CONCEPT set IDENTIFIER = :identifier, LABEL = :label, ");
         sql.append("DEFINITION = :definition, NOTATION = :notation, STATUS = :status, ACCEPTED_DATE = :acceptedDate, ");
-        sql.append("NOT_ACCEPTED_DATE= :notAcceptedDate, STATUS_MODIFIED = :statusModified");
+        sql.append("NOT_ACCEPTED_DATE= :notAcceptedDate, STATUS_MODIFIED = :statusModified ");
         sql.append("where VOCABULARY_CONCEPT_ID = :vocabularyConceptId");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -286,7 +282,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         parameters.put("status", vocabularyConcept.getStatusValue());
         parameters.put("acceptedDate", vocabularyConcept.getAcceptedDate());
         parameters.put("notAcceptedDate", vocabularyConcept.getNotAcceptedDate());
-        //TODO: update - automatic update on column ??
+        // TODO: update - automatic update on column or not??
         parameters.put("statusModified", vocabularyConcept.getStatusModified());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
@@ -308,11 +304,13 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
      * {@inheritDoc}
      */
     @Override
-    public void markConceptsObsolete(List<Integer> ids) {
-        // TODO: update
-        String sql = "update VOCABULARY_CONCEPT set OBSOLETE_DATE = now() where VOCABULARY_CONCEPT_ID in (:ids)";
+    public void markConceptsInvalid(List<Integer> ids) {
+        String sql =
+                "update VOCABULARY_CONCEPT set STATUS = :invalid, NOT_ACCEPTED_DATE = now(), STATUS_MODIFIED = now() " +
+                        "where VOCABULARY_CONCEPT_ID in (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
+        parameters.put("invalid", StandardGenericStatus.INVALID.getValue());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
@@ -321,11 +319,13 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
      * {@inheritDoc}
      */
     @Override
-    public void unMarkConceptsObsolete(List<Integer> ids) {
-        // TODO: update
-        String sql = "update VOCABULARY_CONCEPT set OBSOLETE_DATE = NULL where VOCABULARY_CONCEPT_ID in (:ids)";
+    public void markConceptsValid(List<Integer> ids) {
+        String sql =
+                "update VOCABULARY_CONCEPT set STATUS = :valid, ACCEPTED_DATE = now(), STATUS_MODIFIED = now() " +
+                        "where VOCABULARY_CONCEPT_ID in (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
+        parameters.put("valid", StandardGenericStatus.VALID.getValue());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
@@ -585,12 +585,12 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("LEFT JOIN VOCABULARY_SET rcvs ON (rcv.FOLDER_ID = rcvs.ID ) ");
         sql.append("left join (ATTRIBUTE a, M_ATTRIBUTE ma)  on (a.DATAELEM_ID = d.DATAELEM_ID ");
         sql.append("and PARENT_TYPE = 'E' and a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME='Datatype') ");
-        sql.append("where c.VOCABULARY_ID = :vocabularyId AND c.STATUS & :validStatus = :validStatus ");
+        sql.append("where c.VOCABULARY_ID = :vocabularyId AND c.STATUS & :acceptedStatus = :acceptedStatus ");
         sql.append("ORDER by c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, d.IDENTIFIER, v.LANGUAGE, rcv.IDENTIFIER ");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyId", vocabularyId);
-        params.put("validStatus", StandardGenericStatus.VALID.getValue());
+        params.put("acceptedStatus", StandardGenericStatus.ACCEPTED.getValue());
 
         final List<VocabularyConcept> resultList = new ArrayList<VocabularyConcept>();
         getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {

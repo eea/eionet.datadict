@@ -478,7 +478,6 @@ public class DataElement {
         return allConceptsValid;
     }
 
-    // TODO: update - check
     public void setAllConceptsValid(Boolean allConceptsValid) {
         this.allConceptsValid = allConceptsValid;
     }
