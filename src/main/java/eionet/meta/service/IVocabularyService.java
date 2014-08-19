@@ -600,8 +600,8 @@ public interface IVocabularyService {
     List<VocabularyConcept> getConceptsWithElementValue(int dataElementId, int vocabularyId) throws ServiceException;
 
     /**
-     * Returns all namespaces that are used by the bound elements. Both external and internal. Internal namespaces are composed with
-     * prefix dd[element.idand uri BASE_URI/dataelement/[element.id]
+     * Returns all namespaces that are used by the bound elements. Both external and internal. Internal namespaces are composed
+     * with prefix dd[element.idand uri BASE_URI/dataelement/[element.id]
      *
      * @param vocabularyFolders
      *            vocabularies
@@ -714,11 +714,8 @@ public interface IVocabularyService {
 
     /**
      * fix inverse relations in other concepts.
-     *
-     * @param vocabularyId
-     *            this vocabulary ID
-     * @param concepts
-     *            concepts of the vocabulary
+     * @param vocabularyId this vocabulary ID
+     * @param concepts concepts of the vocabulary
      */
     void fixRelatedReferenceElements(int vocabularyId, List<VocabularyConcept> concepts);
 }

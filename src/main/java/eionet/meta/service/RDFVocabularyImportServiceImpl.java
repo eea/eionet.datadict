@@ -59,6 +59,10 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
      */
     @Autowired
     private INamespaceService namespaceService;
+    /**
+     * DD Namespace.
+     */
+    public static final String DD_NAME_SPACE = Props.getRequiredProperty(PropsIF.DD_URL) + "/property/";
 
     /**
      * {@inheritDoc}
@@ -72,7 +76,7 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
 
         final String folderCtxRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
-		//check for valid base uri
+        //check for valid base uri
         if (!Util.isValidUri(folderCtxRoot)) {
             throw new ServiceException("Vocabulary does not have a valid base URI");
         }
@@ -94,29 +98,35 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         Map<String, String> boundURIs = new HashMap<String, String>();
         Map<String, Integer> elemToId = new HashMap<String, Integer>();
         Map<String, List<String>> boundElementsByNS = new HashMap<String, List<String>>();
+        //add default DD namespace to lists
+        boundURIs.put(DD_NAME_SPACE, DD_NAME_SPACE);
+        boundElementsByNS.put(DD_NAME_SPACE, new ArrayList<String>());
         for (DataElement elem : boundElements) {
             String identifier = elem.getIdentifier();
 
             // TODO use dataelem getNameSpacePrefix and isExternalElement
             String[] temp = identifier.split("[:]");
 
-            if (temp.length != 2) {
-                continue;
+            String namespace = DD_NAME_SPACE;
+            String namespacePrefix = identifier;
+            if (temp.length == 2) {
+                namespace = temp[0];
+                namespacePrefix = temp[1];
             }
 
             if (StringUtils.isNotEmpty(identifier)) {
                 elemToId.put(identifier, elem.getId());
             }
 
-            List<String> domainElements = boundElementsByNS.get(temp[0]);
+            List<String> domainElements = boundElementsByNS.get(namespace);
             if (domainElements == null) {
                 domainElements = new ArrayList<String>();
-                boundElementsByNS.put(temp[0], domainElements);
+                boundElementsByNS.put(namespace, domainElements);
 
                 RdfNamespace rns = null;
                 for (int i = 0; i < rdfNamespaceList.size(); i++) {
                     rns = rdfNamespaceList.get(i);
-                    if (StringUtils.equals(rns.getPrefix(), temp[0])) {
+                    if (StringUtils.equals(rns.getPrefix(), namespace)) {
                         break;
                     }
                 }
@@ -125,13 +135,13 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
                     boundURIs.put(rns.getUri(), rns.getPrefix());
                 }
             }
-            domainElements.add(temp[1]);
+            domainElements.add(namespacePrefix);
         }
 
         RDFParser parser = new RDFXMLParser();
         VocabularyRDFImportHandler rdfHandler =
                 new VocabularyRDFImportHandler(folderCtxRoot, concepts, elemToId, boundElementsByNS, boundURIs,
-                        purgePredicateBasis, Props.getProperty(PropsIF.DD_WORKING_LANGUAGE_KEY));
+                        purgePredicateBasis, Props.getProperty(PropsIF.DD_WORKING_LANGUAGE_KEY), DD_NAME_SPACE);
         parser.setRDFHandler(rdfHandler);
         // parser.setStopAtFirstError(false);
         ParserConfig config = parser.getParserConfig();
