@@ -91,14 +91,14 @@ public interface IVocabularyConceptDAO {
     void deleteVocabularyConcepts(List<Integer> ids);
 
     /**
-     * Mark concepts obsolete.
+     * Mark concepts invalid.
      *
      * @param ids
      */
     void markConceptsInvalid(List<Integer> ids);
 
     /**
-     * Remove obsolete date from concepts.
+     * Mark concepts invalid.
      *
      * @param ids
      */
@@ -185,7 +185,7 @@ public interface IVocabularyConceptDAO {
 
 
     /**
-     * finds vocabulary concepts of the vocabulary that are not obsolete.
+     * finds vocabulary concepts of the vocabulary that are accepted.
      * Expects an element to have datatype attribute otherwise not included to the result
      * @param vocabularyId vocabulary ID
      * @return elements with valued bound elements

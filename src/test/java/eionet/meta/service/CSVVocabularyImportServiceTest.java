@@ -40,6 +40,7 @@ import eionet.meta.imp.VocabularyImportBaseHandler;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -245,9 +246,8 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setLabel("csv_test_concept_label_4");
         vc11.setDefinition("csv_test_concept_def_4");
         vc11.setStatus(StandardGenericStatus.VALID);
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-        //TODO: update
-        //vc11.setCreated(dateFormatter.parse("2014-02-17"));
+        vc11.setAcceptedDate(new Date(System.currentTimeMillis()));
+        vc11.setStatusModified(new Date(System.currentTimeMillis()));
 
         // create element attributes (there is only one concept)
         List<List<DataElement>> elementAttributes = new ArrayList<List<DataElement>>();
@@ -328,9 +328,8 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setLabel("csv_test_concept_label_4");
         vc11.setDefinition("csv_test_concept_def_4");
         vc11.setStatus(StandardGenericStatus.VALID);
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-        //TODO: update
-        //vc11.setCreated(dateFormatter.parse("2014-02-17"));
+        vc11.setAcceptedDate(new Date(System.currentTimeMillis()));
+        vc11.setStatusModified(new Date(System.currentTimeMillis()));
 
         // create element attributes (there is only one concept)
         List<List<DataElement>> elementAttributes = new ArrayList<List<DataElement>>();
@@ -409,6 +408,9 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
         vc8.setDefinition("csv_test_concept_def_1_updated");
+        vc8.setStatus(StandardGenericStatus.VALID);
+        vc8.setAcceptedDate(new Date(System.currentTimeMillis()));
+        vc8.setStatusModified(new Date(System.currentTimeMillis()));
 
         List<List<DataElement>> dataElements = vc8.getElementAttributes();
         List<DataElement> elems = null;
@@ -422,6 +424,9 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         VocabularyConcept vc10 = findVocabularyConceptById(concepts, 10);
         vc10.setLabel("csv_test_concept_label_3_updated");
+        vc10.setStatus(StandardGenericStatus.VALID);
+        vc10.setAcceptedDate(new Date(System.currentTimeMillis()));
+        vc10.setStatusModified(new Date(System.currentTimeMillis()));
 
         dataElements = vc10.getElementAttributes();
         elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
@@ -475,7 +480,13 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concepts.remove(2);// remove last object
         // there is not much object just update, no need to iterate
         concepts.get(0).setIdentifier("csv_test_concept_1_after_purge");
+        concepts.get(0).setStatus(StandardGenericStatus.VALID);
+        concepts.get(0).setAcceptedDate(new Date(System.currentTimeMillis()));
+        concepts.get(0).setStatusModified(new Date(System.currentTimeMillis()));
         concepts.get(1).setIdentifier("csv_test_concept_2_after_purge");
+        concepts.get(1).setStatus(StandardGenericStatus.VALID);
+        concepts.get(1).setAcceptedDate(new Date(System.currentTimeMillis()));
+        concepts.get(1).setStatusModified(new Date(System.currentTimeMillis()));
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -516,7 +527,13 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concepts.remove(2);// remove last object
         // there is not much object just update, no need to iterate
         concepts.get(0).setIdentifier("csv_test_concept_1_after_purge");
+        concepts.get(0).setStatus(StandardGenericStatus.VALID);
+        concepts.get(0).setAcceptedDate(new Date(System.currentTimeMillis()));
+        concepts.get(0).setStatusModified(new Date(System.currentTimeMillis()));
         concepts.get(1).setIdentifier("csv_test_concept_2_after_purge");
+        concepts.get(1).setStatus(StandardGenericStatus.VALID);
+        concepts.get(1).setAcceptedDate(new Date(System.currentTimeMillis()));
+        concepts.get(1).setStatusModified(new Date(System.currentTimeMillis()));
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -574,7 +591,13 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // manually create values of new concepts for comparison
         concepts.remove(2);// remove last object
         concepts.get(0).setIdentifier("csv_test_concept_1_after_purge_2");
+        concepts.get(0).setStatus(StandardGenericStatus.VALID);
+        concepts.get(0).setAcceptedDate(new Date(System.currentTimeMillis()));
+        concepts.get(0).setStatusModified(new Date(System.currentTimeMillis()));
         concepts.get(1).setIdentifier("csv_test_concept_2_after_purge_2");
+        concepts.get(1).setStatus(StandardGenericStatus.VALID);
+        concepts.get(1).setAcceptedDate(new Date(System.currentTimeMillis()));
+        concepts.get(1).setStatusModified(new Date(System.currentTimeMillis()));
 
         // create element attributes
         List<List<DataElement>> elementAttributes = null;

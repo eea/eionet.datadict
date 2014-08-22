@@ -1786,10 +1786,10 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
       <addColumn tableName="VOCABULARY_CONCEPT">
           <column name="STATUS" defaultValueNumeric="145" type="TINYINT UNSIGNED"
                   remarks="Enum Values are as follows:
-                  NOT_ACCEPTED('Not accepted', 0),
-                  SUBMITTED('Submitted', 17),
-                  RESERVED('Reserved', 33),
-                  INVALID('Invalid', 49),.
+                  NOT_ACCEPTED('Not accepted', 64),
+                  SUBMITTED('Submitted', 81),
+                  RESERVED('Reserved', 97),
+                  INVALID('Invalid', 113),
                   ACCEPTED('Accepted', 128),
                   VALID('Valid', 145),
                   VALID_STABLE('Valid - stable', 147),
@@ -1805,8 +1805,19 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
           <column name="NOT_ACCEPTED_DATE" defaultValue="NULL" type="DATETIME"/>
       </addColumn>
       <update tableName="VOCABULARY_CONCEPT">
-          <column name="STATUS" valueNumeric="49"/>
+          <column name="STATUS" valueNumeric="113"/>
           <where>OBSOLETE_DATE IS NOT NULL</where>
+      </update>
+      <update tableName="VOCABULARY_CONCEPT">
+          <column name="NOT_ACCEPTED_DATE" valueComputed="CURRENT_TIMESTAMP"/>
+          <where>OBSOLETE_DATE IS NOT NULL</where>
+      </update>
+      <update tableName="VOCABULARY_CONCEPT">
+          <column name="ACCEPTED_DATE" valueComputed="CURRENT_TIMESTAMP"/>
+          <where>OBSOLETE_DATE IS NULL</where>
+      </update>
+      <update tableName="VOCABULARY_CONCEPT">
+          <column name="STATUS_MODIFIED" valueComputed="CURRENT_TIMESTAMP"/>
       </update>
       <dropColumn tableName="VOCABULARY_CONCEPT" columnName="OBSOLETE_DATE"/>
       <dropColumn tableName="VOCABULARY_CONCEPT" columnName="CREATION_DATE"/>

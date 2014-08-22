@@ -21,7 +21,7 @@
 
 package eionet.meta.dao.domain;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -99,7 +99,7 @@ public class VocabularyConcept {
     /**
      * Status modified.
      */
-    private Date statusModified;
+    private java.util.Date statusModified;
 
     /**
      * @return the id
@@ -254,7 +254,22 @@ public class VocabularyConcept {
         return this.status;
     }
 
+    /**
+     * Sets status and updates accepted or notAccepted date when status is switched. NOTE: This method automatically updates
+     * accepted or not accepted dates.
+     *
+     * @param status
+     *            new status.
+     */
     public void setStatus(StandardGenericStatus status) {
+        if (this.status == null || (this.status.getValue() & status.getValue()) == StandardGenericStatus.STATE_CHANGED_MASK) {
+            Date statusChangeDate = new Date(System.currentTimeMillis());
+            if (status.isSubStatus(StandardGenericStatus.ACCEPTED)) {
+                setAcceptedDate(statusChangeDate);
+            } else {
+                setNotAcceptedDate(statusChangeDate);
+            }
+        }
         this.status = status;
     }
 
@@ -263,9 +278,16 @@ public class VocabularyConcept {
      *
      * @param value
      *            integer value of status enum
+     * @param loadingFromDb
+     *            when loading from db do not set accepted and not accepted dates
      */
-    public void setStatus(int value) {
-        this.status = StandardGenericStatus.fromValue(value);
+    public void setStatus(int value, boolean loadingFromDb) {
+        StandardGenericStatus newStatus = StandardGenericStatus.fromValue(value);
+        if (loadingFromDb) {
+            this.status = newStatus;
+        } else {
+            setStatus(StandardGenericStatus.fromValue(value));
+        }
     }
 
     /**
@@ -293,11 +315,11 @@ public class VocabularyConcept {
         this.notAcceptedDate = notAcceptedDate;
     }
 
-    public Date getStatusModified() {
+    public java.util.Date getStatusModified() {
         return statusModified;
     }
 
-    public void setStatusModified(Date statusModified) {
+    public void setStatusModified(java.util.Date statusModified) {
         this.statusModified = statusModified;
     }
 
@@ -322,5 +344,18 @@ public class VocabularyConcept {
         VocabularyConcept rhs = (VocabularyConcept) obj;
         return new EqualsBuilder().append(id, rhs.id).append(identifier, rhs.identifier).append(label, rhs.label)
                 .append(definition, rhs.definition).append(notation, rhs.notation).isEquals();
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + id;
+        return result;
     }
 }

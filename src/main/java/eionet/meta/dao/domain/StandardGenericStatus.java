@@ -21,6 +21,9 @@
 
 package eionet.meta.dao.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Standard generic status which is compatible with: http://inspire.ec.europa.eu/registry/status/ and based on the principles in ISO
  * 19135. The specification operates with two base states: Accepted and Not accepted, and all selectable statuses are refinements of
@@ -43,14 +46,16 @@ public enum StandardGenericStatus {
     // @formatter:off
     /**
      * Enum declarations.
+     * Every state should be greater than 0 (at least one bit "1") for "and" (&) bit masking operation.
+     * Because, "0" will consume everything.
      *
      * <pre>
      *      128 | 64 | 32 | 16 | 8 | 4 | 2 | 1 | Dec | Code
      *      -----------------------------------------------
-     *        0 |  0 |  0 |  0 | 0 | 0 | 0 | 0 |   0 | Not accepted
-     *        0 |  0 |  0 |  1 | 0 | 0 | 0 | 1 |  17 | Submitted
-     *        0 |  0 |  1 |  0 | 0 | 0 | 0 | 1 |  33 | Reserved
-     *        0 |  0 |  1 |  1 | 0 | 0 | 0 | 1 |  49 | Invalid
+     *        0 |  1 |  0 |  0 | 0 | 0 | 0 | 0 |  64 | Not accepted
+     *        0 |  1 |  0 |  1 | 0 | 0 | 0 | 1 |  81 | Submitted
+     *        0 |  1 |  1 |  0 | 0 | 0 | 0 | 1 |  97 | Reserved
+     *        0 |  1 |  1 |  1 | 0 | 0 | 0 | 1 | 113 | Invalid
      *        1 |  0 |  0 |  0 | 0 | 0 | 0 | 0 | 128 | Accepted
      *        1 |  0 |  0 |  1 | 0 | 0 | 0 | 1 | 145 | Valid
      *        1 |  0 |  0 |  1 | 0 | 0 | 1 | 1 | 147 | Valid - stable
@@ -61,10 +66,10 @@ public enum StandardGenericStatus {
      * </pre>
      *
      */
-    NOT_ACCEPTED("Not accepted", 0),
-    SUBMITTED("Submitted", 17),
-    RESERVED("Reserved", 33),
-    INVALID("Invalid", 49),
+    NOT_ACCEPTED("Not accepted", 64),
+    SUBMITTED("Submitted", 81),
+    RESERVED("Reserved", 97),
+    INVALID("Invalid", 113),
     ACCEPTED("Accepted", 128),
     VALID("Valid", 145),
     VALID_STABLE("Valid - stable", 147),
@@ -73,6 +78,15 @@ public enum StandardGenericStatus {
     DEPRECATED_RETIRED("Deprecated - retired", 163),
     DEPRECATED_SUPERSEDED("Deprecated - superseded", 165);
     // @formatter:on
+
+    /**
+     * Bit mask for UI status types (LSB is 1).
+     */
+    public static final int UI_ELEMENTS_MASK = 1;
+    /**
+     * Bit mask when a status is changed from accepted to not accepted (or vice versa). Basically all bits = 0.
+     */
+    public static final int STATE_CHANGED_MASK = 0;
 
     /**
      * Label for enum.
@@ -136,9 +150,18 @@ public enum StandardGenericStatus {
      *
      * @return if status is valid or not
      */
-    public boolean isValid(){
+    public boolean isValid() {
         return this.isSubStatus(StandardGenericStatus.VALID);
-    } //end of method isValid
+    } // end of method isValid
+
+    /**
+     * Utility method to check a status is accepted.
+     *
+     * @return if status is accepted or not
+     */
+    public boolean isAccepted() {
+        return this.isSubStatus(StandardGenericStatus.ACCEPTED);
+    } // end of method isAccepted
 
     /**
      * Static method to query enum from integer value.
@@ -155,5 +178,22 @@ public enum StandardGenericStatus {
         }
         return null;
     } // end of static method StandardGenericStatus
+
+    /**
+     * Apply UI mask and returns statuses.
+     *
+     * @return list of statuses which user can set from ui.
+     */
+    public static StandardGenericStatus[] uiValues() {
+        StandardGenericStatus[] values = StandardGenericStatus.values();
+        List<StandardGenericStatus> uiValues = new ArrayList<StandardGenericStatus>();
+        for (StandardGenericStatus status : values) {
+            if ((status.getValue() & UI_ELEMENTS_MASK) == UI_ELEMENTS_MASK) {
+                uiValues.add(status);
+            }
+        }
+
+        return uiValues.toArray(new StandardGenericStatus[uiValues.size()]);
+    } // end of static method uiValues
 
 } // end of enum StandardGenericStatus

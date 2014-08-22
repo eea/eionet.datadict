@@ -20,6 +20,7 @@
  */
 package eionet.meta.imp;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -188,6 +189,7 @@ public abstract class VocabularyImportBaseHandler {
             lastFoundConcept.setId(--this.numberOfCreatedConcepts);
             lastFoundConcept.setIdentifier(conceptIdentifier);
             lastFoundConcept.setStatus(StandardGenericStatus.VALID);
+            lastFoundConcept.setStatusModified(new Date(System.currentTimeMillis()));
             List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
             lastFoundConcept.setElementAttributes(newConceptElementAttributes);
             return new Pair<VocabularyConcept, Boolean>(lastFoundConcept, false);
@@ -235,6 +237,7 @@ public abstract class VocabularyImportBaseHandler {
             foundRelatedConcept.setId(--this.numberOfCreatedConcepts);
             foundRelatedConcept.setIdentifier(relatedConceptIdentifier);
             foundRelatedConcept.setStatus(StandardGenericStatus.VALID);
+            foundRelatedConcept.setStatusModified(new Date(System.currentTimeMillis()));
             List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
             foundRelatedConcept.setElementAttributes(newConceptElementAttributes);
             this.notSeenConceptsYet.add(foundRelatedConcept);

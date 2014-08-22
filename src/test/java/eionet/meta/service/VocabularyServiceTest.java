@@ -326,7 +326,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     }
 
     @Test
-    public void testMarkConceptsObsolete() throws ServiceException {
+    public void testMarkConceptsInvalid() throws ServiceException {
         vocabularyService.markConceptsInvalid(Collections.singletonList(1));
         VocabularyConcept concept = vocabularyService.getVocabularyConcept(3, "concept1", true);
         // TODO: update
@@ -334,7 +334,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     }
 
     @Test
-    public void testUnMarkConceptsObsolete() throws ServiceException {
+    public void testMarkConceptsValid() throws ServiceException {
         vocabularyService.markConceptsInvalid(Collections.singletonList(1));
         vocabularyService.markConceptsValid(Collections.singletonList(1));
         VocabularyConcept concept = vocabularyService.getVocabularyConcept(3, "concept1", true);

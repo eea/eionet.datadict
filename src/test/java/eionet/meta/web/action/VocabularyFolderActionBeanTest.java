@@ -1,8 +1,6 @@
 package eionet.meta.web.action;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -147,14 +145,18 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         concept2.add("");
         concept3.add("");
 
+        // TODO: update
         // 5. column
         header.add("StartDate");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar cal = Calendar.getInstance();
-        String date = dateFormat.format(cal.getTime());
-        concept1.add(date);
-        concept2.add(date);
-        concept3.add(date);
+        // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        // Calendar cal = Calendar.getInstance();
+        // String date = dateFormat.format(cal.getTime());
+        // concept1.add(date);
+        // concept2.add(date);
+        // concept3.add(date);
+        concept1.add("");
+        concept2.add("");
+        concept3.add("");
 
         // 6. column
         header.add("EndDate");
@@ -304,13 +306,16 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         concept1.add("");
         concept2.add("");
 
+        // TODO: update
         // 5. column
         header.add("StartDate");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar cal = Calendar.getInstance();
-        String date = dateFormat.format(cal.getTime());
-        concept1.add(date);
-        concept2.add(date);
+        // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        // Calendar cal = Calendar.getInstance();
+        // String date = dateFormat.format(cal.getTime());
+        // concept1.add(date);
+        // concept2.add(date);
+        concept1.add("");
+        concept2.add("");
 
         // 6. column
         header.add("EndDate");

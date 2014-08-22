@@ -32,7 +32,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import eionet.meta.dao.domain.StandardGenericStatus;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.FileBean;
@@ -52,6 +51,7 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.InspireCodelistXmlWriter;
@@ -546,7 +546,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
         if (vocabularyConcept != null) {
             // Save new concept
-            //TODO: update - default status type
             vocabularyService.createVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept);
         } else {
             // Update existing concept
@@ -638,7 +637,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @throws ServiceException
      *             if an error occurs
      */
-    public Resolution markConceptsObsolete() throws ServiceException {
+    public Resolution markConceptsInvalid() throws ServiceException {
         vocabularyService.markConceptsInvalid(conceptIds);
         addSystemMessage("Vocabulary concepts marked obsolete");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
@@ -655,7 +654,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @throws ServiceException
      *             if an error occurs
      */
-    public Resolution unMarkConceptsObsolete() throws ServiceException {
+    public Resolution markConceptsValid() throws ServiceException {
         vocabularyService.markConceptsValid(conceptIds);
         addSystemMessage("Obsolete status removed from vocabulary concepts");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");

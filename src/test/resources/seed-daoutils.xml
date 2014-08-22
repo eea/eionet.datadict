@@ -31,13 +31,13 @@
     <!-- Concepts for vocabulary 2 -->
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="5" VOCABULARY_ID="2" IDENTIFIER="N"
                         LABEL="Not Closed" DEFINITION="Bathing water is not closed"
-                        STATUS="49"/>
+                        STATUS="113"/>
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="6" VOCABULARY_ID="2" IDENTIFIER="YP"
                         LABEL="Yes - permanently" DEFINITION="Bathing water is permanently closed if classified as “poor” for five consecutive years or Member State released permanent bathing prohibition or advice against bathing"
-                        STATUS="49"/>
+                        STATUS="113"/>
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="7" VOCABULARY_ID="2" IDENTIFIER="YT"
                         LABEL="Yes - temporarily" DEFINITION="Bathing water is temporarily closed for a part of one season or the entire season, but not yet permanently closed"
-                        STATUS="49"/>
+                        STATUS="113"/>
 
     <!-- Concepts for vocabulary 3 -->
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="8" VOCABULARY_ID="3" IDENTIFIER="1"

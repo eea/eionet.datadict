@@ -55,6 +55,7 @@ import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.VocabularyConceptData;
@@ -289,6 +290,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
             if (vocFolder != null && vocFolder.isNotationsEqualIdentifiers()) {
                 vocabularyConcept.setNotation(vocabularyConcept.getIdentifier());
             }
+            if (vocabularyConcept.getStatus() == null) {
+                vocabularyConcept.setStatus(StandardGenericStatus.VALID);
+                vocabularyConcept.setStatusModified(new java.sql.Date(System.currentTimeMillis()));
+            }
             return vocabularyConceptDAO.createVocabularyConcept(vocabularyFolderId, vocabularyConcept);
         } catch (Exception e) {
             e.printStackTrace();
@@ -324,7 +329,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      *
      * @param vocabularyConcept
      *            concept
-     * @throws ServiceException if update of attributes fails
+     * @throws ServiceException
+     *             if update of attributes fails
      */
     private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept) throws ServiceException {
         List<DataElement> dataElementValues = new ArrayList<DataElement>();
@@ -333,8 +339,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 if (values != null) {
                     for (DataElement value : values) {
                         if (value != null
-                                && (StringUtils.isNotEmpty(value.getAttributeValue())
-                                        || (value.getRelatedConceptId() != null && value.getRelatedConceptId() != 0))) {
+                                && (StringUtils.isNotEmpty(value.getAttributeValue()) || (value.getRelatedConceptId() != null
+                                && value.getRelatedConceptId() != 0))) {
                             dataElementValues.add(value);
                         }
                     }
@@ -381,7 +387,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             throws ServiceException {
         try {
 
-            //delet all element inversions existing in old copy as well:
+            // delete all element inversions existing in old copy as well:
             List<DataElement> originalElementValues =
                     dataElementDAO.getVocabularyDataElements(vocabularyConcept.getVocabularyId());
 
@@ -1269,14 +1275,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
     public void fixRelatedReferenceElements(int vocabularyId, List<VocabularyConcept> concepts) {
         for (VocabularyConcept concept : concepts) {
             List<List<DataElement>> elems = concept.getElementAttributes();
-//                    dataElementDAO
-//                            .getVocabularyConceptDataElementValues(vocabularyId, concept.getId(), true);
+            // dataElementDAO
+            // .getVocabularyConceptDataElementValues(vocabularyId, concept.getId(), true);
             for (List<DataElement> elemMeta : elems) {
                 if (!elemMeta.isEmpty() && "reference".equals(elemMeta.get(0).getDatatype())) {
                     for (DataElement elem : elemMeta) {
                         if (elem.getRelatedConceptId() != null && elem.getRelatedConceptId() != 0) {
-                            dataElementDAO
-                                    .createInverseElements(elem.getId(), concept.getId(), elem.getRelatedConceptId());
+                            dataElementDAO.createInverseElements(elem.getId(), concept.getId(), elem.getRelatedConceptId());
                         }
                     }
                 }

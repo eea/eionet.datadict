@@ -1,3 +1,4 @@
+<%@ page import="eionet.meta.dao.domain.StandardGenericStatus" %>
 <%@page contentType="text/html;charset=UTF-8"%>
 
 <%@ include file="/pages/common/taglibs.jsp"%>
@@ -32,13 +33,6 @@
         } ) ( jQuery );
 
         window.onload = function(){
-            new JsDatePick({
-                useMode:2,
-                target:"txtObsoleteDate",
-                dateFormat:"%d.%m.%Y",
-                cellColorScheme:"eea",
-                imgPath:"<c:url value='/css/jscalendar/img/'/>"
-            });
             new JsDatePick({
                 useMode:2,
                 target:"txtStatusModified",
@@ -161,7 +155,12 @@
                         Status</th>
                     <td class="simple_attr_help"></td>
                     <td class="simple_attr_value">
-                        <stripes:text id="txtStatus" name="vocabularyConcept.status.label" class="smalltext" size="12"/>
+                        <c:set var="statuses" value="<%=StandardGenericStatus.uiValues()%>"/>
+                        <stripes:select name="vocabularyConcept.status" value="${actionBean.vocabularyConcept.status}">
+                            <c:forEach items="${statuses}" var="aStatus">
+                                <stripes:option value="${aStatus}" label="${aStatus.label}"/>
+                            </c:forEach>
+                        </stripes:select>
                     </td>
                 </tr>
                 <tr>
@@ -229,14 +228,6 @@
                     <td>&nbsp;</td>
                     <td colspan="2">
                         <stripes:submit id="saveButton" name="saveConcept" value="Save" class="mediumbuttonb"/>
-                        <c:choose>
-                            <c:when test="${!actionBean.vocabularyConcept.status.valid != null}">
-                                <stripes:submit name="unMarkConceptObsolete" value="Remove obsolete status" class="mediumbuttonb"/>
-                            </c:when>
-                            <c:otherwise>
-                                <stripes:submit name="markConceptObsolete" value="Mark obsolete" class="mediumbuttonb"/>
-                            </c:otherwise>
-                        </c:choose>
                     </td>
                 </tr>
             </table>

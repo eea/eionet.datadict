@@ -73,7 +73,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
-                        vc.setStatus(rs.getInt("STATUS"));
+                        vc.setStatus(rs.getInt("STATUS"), true);
                         vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
                         vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
                         vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
@@ -146,7 +146,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             sql.append("and c.VOCABULARY_CONCEPT_ID in (:includedIds) ");
         }
 
-        if (filter.getConceptStatus() != null){
+        if (filter.getConceptStatus() != null) {
             params.put("conceptStatus", filter.getConceptStatus().getValue());
             sql.append("and c.STATUS & :conceptStatus = :conceptStatus ");
         }
@@ -189,7 +189,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
-                        vc.setStatus(rs.getInt("STATUS"));
+                        vc.setStatus(rs.getInt("STATUS"), true);
                         vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
                         vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
                         vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
@@ -282,7 +282,6 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         parameters.put("status", vocabularyConcept.getStatusValue());
         parameters.put("acceptedDate", vocabularyConcept.getAcceptedDate());
         parameters.put("notAcceptedDate", vocabularyConcept.getNotAcceptedDate());
-        // TODO: update - automatic update on column or not??
         parameters.put("statusModified", vocabularyConcept.getStatusModified());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
@@ -306,8 +305,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void markConceptsInvalid(List<Integer> ids) {
         String sql =
-                "update VOCABULARY_CONCEPT set STATUS = :invalid, NOT_ACCEPTED_DATE = now(), STATUS_MODIFIED = now() " +
-                        "where VOCABULARY_CONCEPT_ID in (:ids)";
+                "update VOCABULARY_CONCEPT set STATUS = :invalid, NOT_ACCEPTED_DATE = now(), STATUS_MODIFIED = now() "
+                        + "where VOCABULARY_CONCEPT_ID in (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
         parameters.put("invalid", StandardGenericStatus.INVALID.getValue());
@@ -321,8 +320,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void markConceptsValid(List<Integer> ids) {
         String sql =
-                "update VOCABULARY_CONCEPT set STATUS = :valid, ACCEPTED_DATE = now(), STATUS_MODIFIED = now() " +
-                        "where VOCABULARY_CONCEPT_ID in (:ids)";
+                "update VOCABULARY_CONCEPT set STATUS = :valid, ACCEPTED_DATE = now(), STATUS_MODIFIED = now() "
+                        + "where VOCABULARY_CONCEPT_ID in (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
         parameters.put("valid", StandardGenericStatus.VALID.getValue());
@@ -449,7 +448,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         List<Integer> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), parameters, new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new Integer(rs.getString("IDENTIFIER"));
+                return Integer.valueOf(rs.getString("IDENTIFIER"));
             }
         });
 
@@ -481,7 +480,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
-                        vc.setStatus(rs.getInt("STATUS"));
+                        vc.setStatus(rs.getInt("STATUS"), true);
                         vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
                         vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
                         vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
@@ -516,7 +515,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
-                        vc.setStatus(rs.getInt("STATUS"));
+                        vc.setStatus(rs.getInt("STATUS"), true);
                         vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
                         vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
                         vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
@@ -612,7 +611,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                     vc.setIdentifier(rs.getString("IDENTIFIER"));
                     vc.setDefinition(rs.getString("DEFINITION"));
                     vc.setNotation(rs.getString("NOTATION"));
-                    vc.setStatus(rs.getInt("STATUS"));
+                    vc.setStatus(rs.getInt("STATUS"), true);
                     vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
                     vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
                     vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));

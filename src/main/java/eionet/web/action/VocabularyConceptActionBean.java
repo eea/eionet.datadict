@@ -24,6 +24,7 @@ package eionet.web.action;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import net.sourceforge.stripes.action.DefaultHandler;
@@ -320,6 +321,11 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             addGlobalValidationError("Vocabulary concept label is missing");
         }
 
+        Date today = new Date(System.currentTimeMillis());
+        if (vocabularyConcept.getStatusModified() == null || today.before(vocabularyConcept.getStatusModified())) {
+            addGlobalValidationError("Vocabulary concept status modified cannot be later than today [" + today + "]");
+        }
+
         // Validate unique identifier
         if (!vocabularyService.isUniqueConceptIdentifier(getConceptIdentifier(), vocabularyFolder.getId(),
                 vocabularyConcept.getId())) {
@@ -401,9 +407,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         }
 
         if (!StringUtils.isBlank(vocabularyId)) {
-            int folderId = Integer.valueOf(vocabularyId);
+            int folderId = Integer.parseInt(vocabularyId);
             relatedConceptsFilter.setVocabularyFolderId(folderId);
-            relatedVocabulary = vocabularyService.getVocabularyFolder(Integer.valueOf(vocabularyId));
+            relatedVocabulary = vocabularyService.getVocabularyFolder(Integer.parseInt(vocabularyId));
         }
 
         // In case exclude voc set is clicked exclude another vocabulary set
@@ -442,8 +448,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                         vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
 
-        int conceptId = Integer.valueOf(getContext().getRequestParameter("conceptId"));
-        int refElementId = Integer.valueOf(getContext().getRequestParameter("elementId"));
+        int conceptId = Integer.parseInt(getContext().getRequestParameter("conceptId"));
+        int refElementId = Integer.parseInt(getContext().getRequestParameter("elementId"));
 
         // vocabularyService.
         List<List<DataElement>> allElements = vocabularyConcept.getElementAttributes();
@@ -754,10 +760,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         referenceElement.setRelatedConceptIdentifier(relatedConcept.getIdentifier());
         referenceElement.setRelatedConceptLabel(relatedConcept.getLabel());
 
-        //referenceElement.setRelatedVocabularyStatus(relatedFolder.getRegStatus().getLabel());
-        //referenceElement.setRelatedVocabularyWorkingCopy(relatedFolder.isWorkingCopy());
-
-
+        // referenceElement.setRelatedVocabularyStatus(relatedFolder.getRegStatus().getLabel());
+        // referenceElement.setRelatedVocabularyWorkingCopy(relatedFolder.isWorkingCopy());
 
     }
 
