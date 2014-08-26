@@ -145,7 +145,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         concept2.add("");
         concept3.add("");
 
-        // TODO: update
+        // TODO: update - with merging flexible csv import
         // 5. column
         header.add("StartDate");
         // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -306,7 +306,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         concept1.add("");
         concept2.add("");
 
-        // TODO: update
+        // TODO: update - with merging flexible csv import
         // 5. column
         header.add("StartDate");
         // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

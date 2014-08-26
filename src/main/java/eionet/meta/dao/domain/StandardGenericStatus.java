@@ -84,9 +84,11 @@ public enum StandardGenericStatus {
      */
     public static final int UI_ELEMENTS_MASK = 1;
     /**
-     * Bit mask when a status is changed from accepted to not accepted (or vice versa). Basically all bits = 0.
+     * Bit mask to determine when a status is changed from accepted to not accepted (or vice versa) or in same set. Value is
+     * 11000000. So it consumes all 6 least significant bits and preserves SET BITS (ACCEPTED and NOT_ACCEPTED). After anding with this
+     * mask, if result is greater than 0 then in same set.
      */
-    public static final int STATE_CHANGED_MASK = 0;
+    public static final int IN_SAME_SET_MASK = 192;
 
     /**
      * Label for enum.
@@ -162,6 +164,17 @@ public enum StandardGenericStatus {
     public boolean isAccepted() {
         return this.isSubStatus(StandardGenericStatus.ACCEPTED);
     } // end of method isAccepted
+
+    /**
+     * Returns if a status is opposite of another. This comparison is done in ACCEPTED and NOT_ACCEPTED sets.
+     *
+     * @param with
+     *            comparing status
+     * @return if they are in same set or not same set
+     */
+    public boolean isSameSet(StandardGenericStatus with) {
+        return (this.value & with.value & IN_SAME_SET_MASK) > 0;
+    } // end of method isSameSet
 
     /**
      * Static method to query enum from integer value.

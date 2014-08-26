@@ -262,7 +262,7 @@ public class VocabularyConcept {
      *            new status.
      */
     public void setStatus(StandardGenericStatus status) {
-        if (this.status == null || (this.status.getValue() & status.getValue()) == StandardGenericStatus.STATE_CHANGED_MASK) {
+        if (this.status == null || !this.status.isSameSet(status)) {
             Date statusChangeDate = new Date(System.currentTimeMillis());
             if (status.isSubStatus(StandardGenericStatus.ACCEPTED)) {
                 setAcceptedDate(statusChangeDate);

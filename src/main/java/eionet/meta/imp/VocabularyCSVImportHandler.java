@@ -242,7 +242,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     lastFoundConcept.setNotation(StringUtils.trimToNull(lineParams[conceptPropertyIndex]));
                 }
 
-                // TODO: update
+                // TODO: update - with merging flexible csv import
                 // check start date
                 // conceptPropertyIndex = fixedHeaderIndices.get(fixedHeaders[VocabularyCSVOutputHelper.START_DATE_INDEX]);
                 // if (conceptPropertyIndex != null && StringUtils.isNotBlank(lineParams[conceptPropertyIndex])) {
@@ -254,7 +254,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 // if (conceptPropertyIndex != null && StringUtils.isNotBlank(lineParams[conceptPropertyIndex])) {
                 //     lastFoundConcept.setObsolete(dateFormatter.parse(lineParams[conceptPropertyIndex]));
                 // }
-                // TODO: update
+                // TODO: update - with merging flexible csv import
                 // if (StringUtils.isNotEmpty(lineParams[4])) {
                 // lastFoundConcept.setCreated(dateFormatter.parse(lineParams[4]));
                 // }
