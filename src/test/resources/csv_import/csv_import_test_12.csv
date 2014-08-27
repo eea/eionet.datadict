@@ -1,3 +1,3 @@
-"URI","Label","Definition","Notation","StartDate","EndDate","skos:relatedMatch","skos:related"
+"URI","Label","Definition","Notation","Status","AcceptedDate","skos:relatedMatch","skos:related"
 "http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab_2/csv_test_concept_1","csv_test_concept_label_1",,,"2014-02-17",,"http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab/csv_test_concept_3","http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab_2/csv_test_concept_2"
 "http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab_2/csv_test_concept_2","csv_test_concept_label_2",,,"2014-02-17",,"http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab_2/csv_test_concept_3","http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab_2/csv_test_concept_1"

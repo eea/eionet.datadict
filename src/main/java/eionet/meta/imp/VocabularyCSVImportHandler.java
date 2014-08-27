@@ -244,23 +244,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
                 // TODO: update - with merging flexible csv import
                 // check start date
-                // conceptPropertyIndex = fixedHeaderIndices.get(fixedHeaders[VocabularyCSVOutputHelper.START_DATE_INDEX]);
-                // if (conceptPropertyIndex != null && StringUtils.isNotBlank(lineParams[conceptPropertyIndex])) {
-                //     lastFoundConcept.setCreated(dateFormatter.parse(lineParams[conceptPropertyIndex]));
-                // }
-
-                // check end date
-                // conceptPropertyIndex = fixedHeaderIndices.get(fixedHeaders[VocabularyCSVOutputHelper.END_DATE_INDEX]);
-                // if (conceptPropertyIndex != null && StringUtils.isNotBlank(lineParams[conceptPropertyIndex])) {
-                //     lastFoundConcept.setObsolete(dateFormatter.parse(lineParams[conceptPropertyIndex]));
-                // }
-                // TODO: update - with merging flexible csv import
-                // if (StringUtils.isNotEmpty(lineParams[4])) {
-                // lastFoundConcept.setCreated(dateFormatter.parse(lineParams[4]));
-                // }
-                // if (StringUtils.isNotEmpty(lineParams[5])) {
-                // lastFoundConcept.setObsolete(dateFormatter.parse(lineParams[5]));
-                // }
+                // ignore status and accepteddate changes
 
                 // now it is time iterate on rest of the columns, here is the tricky part
                 List<DataElement> elementsOfConcept = null;

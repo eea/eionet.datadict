@@ -64,11 +64,11 @@ public final class VocabularyCSVOutputHelper {
     /**
      * index of start date in header list.
      */
-    public static final int START_DATE_INDEX = 4;
+    public static final int STATUS_INDEX = 4;
     /**
      * index of end date in header list.
      */
-    public static final int END_DATE_INDEX = 5;
+    public static final int ACCEPTED_DATE_INDEX = 5;
     /**
      * BOM byte array length.
      */
@@ -132,9 +132,8 @@ public final class VocabularyCSVOutputHelper {
             entries[LABEL_INDEX] = c.getLabel();
             entries[DEFINITION_INDEX] = c.getDefinition();
             entries[NOTATION_INDEX] = c.getNotation();
-            //TODO: update
-            //entries[START_DATE_INDEX] = c.getCreated() != null ? dateFormatter.format(c.getCreated()) : "";
-            //entries[END_DATE_INDEX] = c.getObsolete() != null ? dateFormatter.format(c.getObsolete()) : "";
+            entries[STATUS_INDEX] = c.getStatus().getLabel();
+            entries[ACCEPTED_DATE_INDEX] = c.getAcceptedDate() != null ? dateFormatter.format(c.getAcceptedDate()) : "";
 
             // add extra fields
             for (Triple<String, String, Integer> row : attributesMeta) {
@@ -245,8 +244,8 @@ public final class VocabularyCSVOutputHelper {
         entries[LABEL_INDEX] = "Label";
         entries[DEFINITION_INDEX] = "Definition";
         entries[NOTATION_INDEX] = "Notation";
-        entries[START_DATE_INDEX] = "StartDate";
-        entries[END_DATE_INDEX] = "EndDate";
+        entries[STATUS_INDEX] = "Status";
+        entries[ACCEPTED_DATE_INDEX] = "AcceptedDate";
     }
 
     /**

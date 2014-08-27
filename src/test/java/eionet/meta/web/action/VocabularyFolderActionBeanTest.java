@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;
 
+import eionet.meta.dao.domain.StandardGenericStatus;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.FileBean;
@@ -145,21 +146,14 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         concept2.add("");
         concept3.add("");
 
-        // TODO: update - with merging flexible csv import
         // 5. column
-        header.add("StartDate");
-        // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        // Calendar cal = Calendar.getInstance();
-        // String date = dateFormat.format(cal.getTime());
-        // concept1.add(date);
-        // concept2.add(date);
-        // concept3.add(date);
-        concept1.add("");
-        concept2.add("");
-        concept3.add("");
+        header.add("Status");
+        concept1.add(StandardGenericStatus.VALID.getLabel());
+        concept2.add(StandardGenericStatus.VALID.getLabel());
+        concept3.add(StandardGenericStatus.VALID.getLabel());
 
         // 6. column
-        header.add("EndDate");
+        header.add("AcceptedDate");
         concept1.add("");
         concept2.add("");
         concept3.add("");
@@ -306,19 +300,13 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         concept1.add("");
         concept2.add("");
 
-        // TODO: update - with merging flexible csv import
         // 5. column
-        header.add("StartDate");
-        // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        // Calendar cal = Calendar.getInstance();
-        // String date = dateFormat.format(cal.getTime());
-        // concept1.add(date);
-        // concept2.add(date);
-        concept1.add("");
-        concept2.add("");
+        header.add("Status");
+        concept1.add(StandardGenericStatus.VALID.getLabel());
+        concept2.add(StandardGenericStatus.VALID.getLabel());
 
         // 6. column
-        header.add("EndDate");
+        header.add("AcceptedDate");
         concept1.add("");
         concept2.add("");
 
