@@ -106,22 +106,46 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
             String[] fixedHeaders = new String[VocabularyCSVOutputHelper.CONCEPT_ENTRIES_COUNT];
             VocabularyCSVOutputHelper.addFixedEntryHeaders(fixedHeaders);
 
-            // compare contents
-            boolean isEqual = Arrays.equals(fixedHeaders, Arrays.copyOf(header, VocabularyCSVOutputHelper.CONCEPT_ENTRIES_COUNT));
+            // compare if it has URI
+            boolean isEqual =
+                    StringUtils.equalsIgnoreCase(header[VocabularyCSVOutputHelper.URI_INDEX],
+                            fixedHeaders[VocabularyCSVOutputHelper.URI_INDEX]);
 
             if (!isEqual) {
                 reader.close();
-                throw new ServiceException("Missing headers! CSV file should contain following headers: "
-                        + Arrays.toString(fixedHeaders));
+                throw new ServiceException("Missing header! CSV file should start with header: '"
+                        + fixedHeaders[VocabularyCSVOutputHelper.URI_INDEX] + "'");
             }
 
-            for (int i = VocabularyCSVOutputHelper.CONCEPT_ENTRIES_COUNT; i < header.length; i++) {
-
-                String elementHeader = header[i];
-                if (StringUtils.isEmpty(elementHeader)) {
+            List<String> fixedHeadersList =
+                    new ArrayList<String>(Arrays.asList(Arrays.copyOf(fixedHeaders,
+                            VocabularyCSVOutputHelper.CONCEPT_ENTRIES_COUNT)));
+            // remove uri from header
+            fixedHeadersList.remove(VocabularyCSVOutputHelper.URI_INDEX);
+            Map<String, Integer> fixedHeaderIndices = new HashMap<String, Integer>();
+            for (int i = VocabularyCSVOutputHelper.URI_INDEX + 1; i < header.length; i++) {
+                String elementHeader = StringUtils.trimToNull(header[i]);
+                if (StringUtils.isBlank(elementHeader)) {
                     throw new ServiceException("Header for column (" + (i + 1) + ") is empty!");
                 }
 
+                int headerIndex = -1;
+                boolean headerFound = false;
+                for (headerIndex = 0; headerIndex < fixedHeadersList.size(); headerIndex++) {
+                    if (StringUtils.equalsIgnoreCase(elementHeader, fixedHeadersList.get(headerIndex))) {
+                        headerFound = true;
+                        break;
+                    }
+                }
+
+                // if it is a fixed header value (concept property), add to map and continue
+                if (headerFound) {
+                    String headerValue = fixedHeadersList.remove(headerIndex);
+                    fixedHeaderIndices.put(headerValue, i);
+                    continue;
+                }
+
+                // it is not a concept attribute and but a data element identifier
                 // if there is language appended, split it
                 String[] tempStrArray = elementHeader.split("[@]");
                 if (tempStrArray.length == 2) {
@@ -168,7 +192,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 }
 
                 // do line processing
-                String uri = lineParams[0];
+                String uri = lineParams[VocabularyCSVOutputHelper.URI_INDEX];
                 if (StringUtils.isEmpty(uri)) {
                     this.logMessages.add("Row (" + rowNumber + ") was skipped (Base URI was empty).");
                     continue;
@@ -199,28 +223,54 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 VocabularyConcept lastFoundConcept = foundConceptWithFlag.getLeft();
                 // vocabulary concept found or created
                 this.toBeUpdatedConcepts.add(lastFoundConcept);
-                lastFoundConcept.setLabel(StringUtils.trimToNull(lineParams[1]));
-                lastFoundConcept.setDefinition(StringUtils.trimToNull(lineParams[2]));
-                lastFoundConcept.setNotation(StringUtils.trimToNull(lineParams[3]));
 
-                if (StringUtils.isNotEmpty(lineParams[4])) {
-                    lastFoundConcept.setCreated(dateFormatter.parse(lineParams[4]));
+                Integer conceptPropertyIndex = null;
+                // check label
+                conceptPropertyIndex = fixedHeaderIndices.get(fixedHeaders[VocabularyCSVOutputHelper.LABEL_INDEX]);
+                if (conceptPropertyIndex != null) {
+                    lastFoundConcept.setLabel(StringUtils.trimToNull(lineParams[conceptPropertyIndex]));
                 }
-                if (StringUtils.isNotEmpty(lineParams[5])) {
-                    lastFoundConcept.setObsolete(dateFormatter.parse(lineParams[5]));
+
+                // check definition
+                conceptPropertyIndex = fixedHeaderIndices.get(fixedHeaders[VocabularyCSVOutputHelper.DEFINITION_INDEX]);
+                if (conceptPropertyIndex != null) {
+                    lastFoundConcept.setDefinition(StringUtils.trimToNull(lineParams[conceptPropertyIndex]));
+                }
+
+                // check notation
+                conceptPropertyIndex = fixedHeaderIndices.get(fixedHeaders[VocabularyCSVOutputHelper.NOTATION_INDEX]);
+                if (conceptPropertyIndex != null) {
+                    lastFoundConcept.setNotation(StringUtils.trimToNull(lineParams[conceptPropertyIndex]));
+                }
+
+                // check start date
+                conceptPropertyIndex = fixedHeaderIndices.get(fixedHeaders[VocabularyCSVOutputHelper.START_DATE_INDEX]);
+                if (conceptPropertyIndex != null && StringUtils.isNotBlank(lineParams[conceptPropertyIndex])) {
+                    lastFoundConcept.setCreated(dateFormatter.parse(lineParams[conceptPropertyIndex]));
+                }
+
+                // check end date
+                conceptPropertyIndex = fixedHeaderIndices.get(fixedHeaders[VocabularyCSVOutputHelper.END_DATE_INDEX]);
+                if (conceptPropertyIndex != null && StringUtils.isNotBlank(lineParams[conceptPropertyIndex])) {
+                    lastFoundConcept.setObsolete(dateFormatter.parse(lineParams[conceptPropertyIndex]));
                 }
 
                 // now it is time iterate on rest of the columns, here is the tricky part
-                Map<String, Integer> attributePosition = new HashMap<String, Integer>();
                 List<DataElement> elementsOfConcept = null;
                 List<DataElement> elementsOfConceptByLang = null;
                 String prevHeader = null;
                 String prevLang = null;
-                for (int k = VocabularyCSVOutputHelper.CONCEPT_ENTRIES_COUNT; k < lineParams.length; k++) {
+                for (int k = VocabularyCSVOutputHelper.URI_INDEX + 1; k < lineParams.length; k++) {
                     if (StringUtils.isEmpty(lineParams[k])) {
                         // value is empty, no need to proceed
                         continue;
                     }
+
+                    if (fixedHeaderIndices.containsValue(k)) {
+                        // concept property, already handled
+                        continue;
+                    }
+
                     String elementHeader = header[k];
                     String lang = null;
                     String[] tempStrArray = elementHeader.split("[@]");
@@ -285,13 +335,13 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                         continue;
                     }
 
-                    //create VCE
+                    // create VCE
                     DataElement elem = new DataElement();
                     elementsOfConcept.add(elem);
                     elem.setAttributeLanguage(lang);
                     elem.setIdentifier(elementHeader);
                     elem.setId(this.boundElementsIds.get(elementHeader));
-                    //check if there is a found related concept
+                    // check if there is a found related concept
                     if (foundRelatedConcept != null) {
                         elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
                         int id = foundRelatedConcept.getId();

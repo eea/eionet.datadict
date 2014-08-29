@@ -15,6 +15,6 @@
       <skos:definition>rdf_test_concept_def_3_updated</skos:definition>
       <skos:relatedMatch>http://test.tripledev.ee/datadict/vocabulary/test/test_another_source/another2</skos:relatedMatch>
       <skos:related rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_2"/>
-      <skos:prefLabel xml:lang="bg">bg_rdf_test_concept_3_updated</skos:prefLabel>      
+      <skos:prefLabel xml:lang="bg_BG">bg_rdf_test_concept_3_updated</skos:prefLabel>      
    </skos:Concept>
 </rdf:RDF>

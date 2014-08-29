@@ -37,7 +37,7 @@
       <skos:related rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_3"/>
       <skos:definition xml:lang="de">de_rdf_test_concept_2</skos:definition>
       <skos:definition xml:lang="de">de2_rdf_test_concept_2</skos:definition>
-      <skos:narrower rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_1"/>      
+      <skos:narrower rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_1"/>
    </skos:Concept>
 
    <!-- Concept 3 -->
@@ -54,7 +54,7 @@
       <skos:prefLabel xml:lang="en">en_rdf_test_concept_3</skos:prefLabel>
       <skos:prefLabel xml:lang="pl">pl_rdf_test_concept_3</skos:prefLabel>
       <skos:definition xml:lang="de">de_rdf_test_concept_3</skos:definition>
-      <skos:definition xml:lang="en">en_rdf_test_concept_3</skos:definition>
+      <skos:definition xml:lang="en_GB">en_rdf_test_concept_3</skos:definition>
       <skos:definition xml:lang="pl">pl_rdf_test_concept_3</skos:definition>
    </skos:Concept>
 </rdf:RDF>

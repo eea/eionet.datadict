@@ -21,12 +21,18 @@
 
 package eionet.meta.service;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyImportBaseHandler;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -36,15 +42,10 @@ import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyImportBaseHandler;
 
 /**
  * JUnit integration test with Unitils for RDF Vocabulary Import Service.
@@ -186,7 +187,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element.setAttributeLanguage("en");
         elems.add(element);
 
-        //skos:related will be created as well, see #18140
+        // skos:related will be created as well, see #18140
         dataElemId = 7;
         elems = new ArrayList<DataElement>();
         dataElements.add(elems);
@@ -507,10 +508,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element = findDataElemByAttrValue(elems, "pl_rdf_test_concept_3");
         element.setAttributeValue("pl_rdf_test_concept_3_updated");
 
-        // since all elements are purged and AnotherCode does not have a namespace, it is ignored. so remove it from elements
-        elems = VocabularyImportBaseHandler.getDataElementValuesByName("AnotherCode", dataElements);
-        dataElements.remove(elems);
-
         elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", dataElements);
         element = elems.get(0);
         element.setRelatedConceptLabel(null);
@@ -683,8 +680,8 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         dataElementValuesByName =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", vc3.getElementAttributes());
 
-        //TODO - check how inverse should work :
-        //vc3.getElementAttributes().remove(dataElementValuesByName);
+        // TODO - check how inverse should work :
+        // vc3.getElementAttributes().remove(dataElementValuesByName);
 
         // compare manually updated objects with queried ones (after import operation)
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
@@ -940,6 +937,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         List<List<DataElement>> dataElements = vc9.getElementAttributes();
         List<DataElement> elems = null;
         elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        Assert.assertNotNull("Element's shouldn't be null", elems);
         Assert.assertEquals("Number of elements", 1, elems.size());
         DataElement element = elems.get(0);
 
@@ -955,7 +953,117 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Assert.assertNull("Element language", element.getAttributeLanguage());
     }// end of test step testIfConceptAndElementsUpdated
 
-    private Map<String, List<String>>  getDatatypeElemAttrs(String type) {
+    /**
+     * In this test, single concept RDF is imported. concept is a non existing concept to be imported with data elements (both rdf
+     * and dd namespaces)
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfNewConceptAddedWithDDNamespace() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_11.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, false);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // manually create values of new concept for comparison
+        VocabularyConcept vc11 = new VocabularyConcept();
+        // vc11.setId(11); //this field will be updated after re-querying
+        vc11.setIdentifier("rdf_test_concept_5");
+        vc11.setLabel("rdf_test_concept_label_5");
+        vc11.setDefinition("rdf_test_concept_def_5");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        vc11.setCreated(dateFormatter.parse(dateFormatter.format(Calendar.getInstance().getTime())));
+
+        // create element attributes (there is only one concept)
+        List<List<DataElement>> elementAttributes = new ArrayList<List<DataElement>>();
+        DataElement elem = null;
+        String identifier = null;
+        int dataElemId = -1;
+        List<DataElement> elements = null;
+
+        // AnotherCode
+        identifier = "AnotherCode";
+        dataElemId = 2;
+        elements = new ArrayList<DataElement>();
+        elem = new DataElement();
+        elem.setId(dataElemId);
+        elem.setIdentifier(identifier);
+        elem.setAttributeValue("HCO2_rdf_test_concept_5");
+        elements.add(elem);
+        elem = new DataElement();
+        elem.setId(dataElemId);
+        elem.setIdentifier(identifier);
+        elem.setAttributeValue("2_HCO2_rdf_test_concept_5");
+        elements.add(elem);
+        elementAttributes.add(elements);
+
+        // geo:lat
+        identifier = "geo:lat";
+        dataElemId = 5;
+        elements = new ArrayList<DataElement>();
+        elem = new DataElement();
+        elem.setId(dataElemId);
+        elem.setIdentifier(identifier);
+        elem.setAttributeValue("geo_lat_concept_5");
+        elements.add(elem);
+        elementAttributes.add(elements);
+
+        // skos:prefLabel
+        identifier = "skos:prefLabel";
+        dataElemId = 8;
+        elements = new ArrayList<DataElement>();
+        elem = new DataElement();
+        elem.setId(dataElemId);
+        elem.setIdentifier(identifier);
+        elem.setAttributeValue("bg_rdf_test_concept_5");
+        elem.setAttributeLanguage("bg");
+        elements.add(elem);
+        elementAttributes.add(elements);
+
+        // skos:definition
+        identifier = "skos:definition";
+        dataElemId = 9;
+        elements = new ArrayList<DataElement>();
+        elem = new DataElement();
+        elem.setId(dataElemId);
+        elem.setIdentifier(identifier);
+        elem.setAttributeValue("de_rdf_test_concept_5");
+        elem.setAttributeLanguage("de");
+        elements.add(elem);
+        elem = new DataElement();
+        elem.setId(dataElemId);
+        elem.setIdentifier(identifier);
+        elem.setAttributeValue("en_rdf_test_concept_5");
+        elem.setAttributeLanguage("en");
+        elements.add(elem);
+        elementAttributes.add(elements);
+
+        vc11.setElementAttributes(elementAttributes);
+        concepts.add(vc11);
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Updated Concepts does not include 4 vocabulary concepts", updatedConcepts.size(), 4);
+
+        // last object should be the inserted one, so use it is id to set (all other fields are updated manually)
+        vc11.setId(updatedConcepts.get(3).getId());
+
+        // compare manually updated objects with queried ones (after import operation)
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
+                ReflectionComparatorMode.LENIENT_ORDER);
+    }// end of test step testIfNewConceptAddedWithDDNamespace
+
+    private Map<String, List<String>> getDatatypeElemAttrs(String type) {
         Map<String, List<String>> elemAttrValues = new HashMap<String, List<String>>();
         List<String> aValues = new ArrayList<String>();
         aValues.add(type);

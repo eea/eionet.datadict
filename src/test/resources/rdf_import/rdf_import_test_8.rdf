@@ -21,7 +21,7 @@
       <skos:inScheme rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
       <skos:prefLabel xml:lang="bg">bg_rdf_test_concept_1_updated</skos:prefLabel>
       <skos:prefLabel xml:lang="bg">bg2_rdf_test_concept_1_updated</skos:prefLabel>
-      <skos:prefLabel xml:lang="en">en_rdf_test_concept_1_updated</skos:prefLabel>
+      <skos:prefLabel xml:lang="en_US">en_rdf_test_concept_1_updated</skos:prefLabel>
       <skos:prefLabel xml:lang="et">et_rdf_test_concept_1_updated</skos:prefLabel>
       <skos:broader rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_2"/>
    </skos:Concept>
