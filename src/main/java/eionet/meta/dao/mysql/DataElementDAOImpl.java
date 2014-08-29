@@ -24,6 +24,7 @@ package eionet.meta.dao.mysql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -576,6 +577,76 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         params.put("targetVocabularyFolderId", targetVocabularyFolderId);
 
         getNamedParameterJdbcTemplate().update(sb.toString(), params);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<List<DataElement>> getVocabularyConceptDataElementValues(int vocabularyFolderId, int vocabularyConceptId,
+            boolean emptyAttributes) {
+        final Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyFolderId", vocabularyFolderId);
+        params.put("vocabularyConceptId", vocabularyConceptId);
+        StringBuilder sql = new StringBuilder();
+        sql.append("select * from VOCABULARY_CONCEPT_ELEMENT v ");
+        if (emptyAttributes) {
+            sql.append("RIGHT OUTER JOIN DATAELEM d ");
+        } else {
+            sql.append("LEFT JOIN DATAELEM d ");
+        }
+        sql.append("ON (v.DATAELEM_ID = d.DATAELEM_ID and v.VOCABULARY_CONCEPT_ID = :vocabularyConceptId) ");
+        sql.append("LEFT JOIN VOCABULARY2ELEM ve on ve.DATAELEM_ID = d.DATAELEM_ID ");
+        sql.append("LEFT JOIN VOCABULARY_CONCEPT rc on v.RELATED_CONCEPT_ID = rc.VOCABULARY_CONCEPT_ID ");
+        sql.append("LEFT JOIN VOCABULARY rcv ON rc.VOCABULARY_ID = rcv.VOCABULARY_ID ");
+        sql.append("LEFT JOIN VOCABULARY_SET rcvs ON rcv.FOLDER_ID = rcvs.ID ");
+        sql.append("where ve.VOCABULARY_ID = :vocabularyFolderId ");
+        sql.append("order by ve.DATAELEM_ID, v.ELEMENT_VALUE, rc.IDENTIFIER");
+        final List<List<DataElement>> result = new ArrayList<List<DataElement>>();
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
+            List<DataElement> values = null;
+            int previousDataElemId = 0;
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                if (values == null) {
+                    values = new ArrayList<DataElement>();
+                    previousDataElemId = rs.getInt("d.DATAELEM_ID");
+                }
+                DataElement de = new DataElement();
+                de.setId(rs.getInt("d.DATAELEM_ID"));
+                de.setShortName(rs.getString("d.SHORT_NAME"));
+                de.setStatus(rs.getString("d.REG_STATUS"));
+                de.setType(rs.getString("d.TYPE"));
+                de.setModified(new Date(rs.getLong("d.DATE")));
+                de.setWorkingUser(rs.getString("d.WORKING_USER"));
+                de.setIdentifier(rs.getString("d.identifier"));
+                de.setAttributeValue(rs.getString("v.ELEMENT_VALUE"));
+                de.setAttributeLanguage(rs.getString("v.LANGUAGE"));
+                de.setRelatedConceptId(rs.getInt("v.RELATED_CONCEPT_ID"));
+                de.setRelatedConceptIdentifier(rs.getString("rc.IDENTIFIER"));
+                de.setRelatedConceptLabel(rs.getString("rc.LABEL"));
+                de.setRelatedConceptVocabulary(rs.getString("rcv.IDENTIFIER"));
+                de.setRelatedConceptBaseURI(rs.getString("rcv.BASE_URI"));
+                de.setRelatedConceptVocSet(rs.getString("rcvs.IDENTIFIER"));
+                de.setVocabularyId(rs.getInt("d.VOCABULARY_ID"));
+                de.setRelatedConceptOriginalId(rs.getInt("rc.ORIGINAL_CONCEPT_ID"));
+                de.setRelatedVocabularyStatus(rs.getString("rcv.REG_STATUS"));
+                de.setRelatedVocabularyWorkingCopy(rs.getInt("rcv.WORKING_COPY") == 1);
+                List<FixedValue> fxvs = getFixedValues(de.getId());
+                de.setFixedValues(fxvs);
+                if (previousDataElemId != rs.getInt("d.DATAELEM_ID")) {
+                    result.add(values);
+                    values = new ArrayList<DataElement>();
+                }
+                de.setElemAttributeValues(getDataElementAttributeValues(rs.getInt("d.DATAELEM_ID")));
+                values.add(de);
+                previousDataElemId = rs.getInt("d.DATAELEM_ID");
+                if (rs.isLast()) {
+                    result.add(values);
+                }
+            }
+        });
+        return result;
     }
 
     /**

@@ -176,6 +176,20 @@ public interface IDataElementDAO {
     void copyVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId);
 
     /**
+     * Returns data element attributes for vocabulary concept.
+     *
+     * @param vocabularyFolderId
+     * vocabularyID
+     * @param vocabularyConceptId
+     * concept ID
+     * @param emptyAttributes
+     * when true, then attributes that are not valued are also included
+     * @return list of lists where each list contains element values of one bound element
+     */
+    List<List<DataElement>> getVocabularyConceptDataElementValues(int vocabularyFolderId, int vocabularyConceptId,
+            boolean emptyAttributes);
+
+    /**
      * Returns data element attributes for vocabulary concepts in a folder.
      *
      * @param vocabularyFolderId
@@ -332,7 +346,7 @@ public interface IDataElementDAO {
      * @param attrShortNames Short names of simple attributes to remove.
      */
     void removeSimpleAttrsByShortName(int elemId, String... attrShortNames);
-	
+
 	/**
      * Returns vocabulary concept elements if they may refer other concepts.
      * {@code

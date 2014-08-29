@@ -22,6 +22,7 @@ package eionet.meta.service;
 
 import java.util.List;
 
+import eionet.meta.exports.VocabularyOutputHelper;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -120,7 +121,7 @@ public class ReferenceMatchServiceTest extends UnitilsJUnit4 {
         List<List<DataElement>> dataElements = concept1.getElementAttributes();
         List<DataElement> elems;
         DataElement element;
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByName("skos:relatedMatch", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByName("skos:relatedMatch", dataElements);
 
         element =
                 VocabularyImportServiceTestBase.findDataElemByAttrValue(elems,
@@ -162,7 +163,7 @@ public class ReferenceMatchServiceTest extends UnitilsJUnit4 {
         // also remove from updated concept
         List<List<DataElement>> concept1UpdatedDataElements = concept1Updated.getElementAttributes();
         List<DataElement> concept1UpdatedElems =
-                VocabularyCSVOutputHelper.getDataElementValuesByName("skos:relatedMatch", concept1UpdatedDataElements);
+                VocabularyOutputHelper.getDataElementValuesByName("skos:relatedMatch", concept1UpdatedDataElements);
         concept1UpdatedDataElements.remove(concept1UpdatedElems);
 
         // order changes after second query so compare skos:relatedMatch items first

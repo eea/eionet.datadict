@@ -539,7 +539,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 elem.setAttributeValue(elementValue);
                 elem.setRelatedConceptId(null);
             }
-            attributePosition.put(dataElemIdentifierWithLang, ++index);
+
             conceptIdsUpdatedWithPredicate.add(this.lastFoundConcept.getId());
         }
         this.numberOfValidTriples++;

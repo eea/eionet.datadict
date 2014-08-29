@@ -10,6 +10,8 @@ import java.util.Map.Entry;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;
 
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.FileBean;

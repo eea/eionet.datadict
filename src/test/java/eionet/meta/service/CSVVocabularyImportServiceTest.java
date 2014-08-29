@@ -25,6 +25,7 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.VocabularyOutputHelper;
+import eionet.meta.imp.VocabularyImportBaseHandler;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -999,7 +1000,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testExceptionAndRollbackWhenFixedHeadersAreMissing() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get reader for CSV file
         Reader reader = getReaderFromResource("csv_import/csv_import_test_7.csv");

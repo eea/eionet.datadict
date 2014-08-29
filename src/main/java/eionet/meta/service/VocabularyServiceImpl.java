@@ -625,8 +625,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
                 for (VocabularyConcept concept : concepts) {
                     List<List<DataElement>> elems =
-                            dataElementDAO
-                                    .getVocabularyConceptDataElementValues(originalVocabularyFolderId, concept.getId(), true);
+                            dataElementDAO.getVocabularyConceptDataElementValues(originalVocabularyFolderId, concept.getId(), true);
 
                     for (List<DataElement> elemMeta : elems) {
                         if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
