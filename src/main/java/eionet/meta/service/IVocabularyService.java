@@ -48,7 +48,7 @@ public interface IVocabularyService {
      *
      * @param folderId
      *            folder id
-     * @return
+     * @return vocabulary set
      * @throws ServiceException
      *             if operation fails
      */
@@ -59,7 +59,7 @@ public interface IVocabularyService {
      *
      * @param folderId
      *            folder id
-     * @return
+     * @return is empty or not
      * @throws ServiceException
      *             if operation fails
      */
@@ -92,7 +92,7 @@ public interface IVocabularyService {
      *            user name
      * @param expandedFolders
      *            expanded folders
-     * @return
+     * @return list of folders (vocabulary sets)
      * @throws ServiceException
      *             if operation fails
      */
@@ -103,7 +103,7 @@ public interface IVocabularyService {
      *
      * @param folderId
      *            folder id
-     * @return
+     * @return list of vocabularies
      * @throws ServiceException
      *             if operation fails
      */
@@ -114,7 +114,7 @@ public interface IVocabularyService {
      *
      * @param userName
      *            user name
-     * @return
+     * @return list of vocabularies
      * @throws ServiceException
      *             if operation fails
      */
@@ -129,7 +129,7 @@ public interface IVocabularyService {
      *            folder to exclude
      * @param userName
      *            user name
-     * @return
+     * @return list of vocabularies
      * @throws ServiceException
      *             if operation fails
      */
@@ -145,7 +145,7 @@ public interface IVocabularyService {
      *            optional
      * @param userName
      *            user name
-     * @return
+     * @return created vocabulary id
      * @throws ServiceException
      *             if operation fails
      */
@@ -204,7 +204,7 @@ public interface IVocabularyService {
      *
      * @param checkedOutCopyId
      *            checked out copy id
-     * @return
+     * @return vocabulary
      * @throws ServiceException
      *             if operation fails
      */
@@ -215,7 +215,7 @@ public interface IVocabularyService {
      *
      * @param vocabularyFolderId
      *            vocabulary id
-     * @return
+     * @return vocabulary
      * @throws ServiceException
      *             if operation fails
      */
@@ -230,7 +230,7 @@ public interface IVocabularyService {
      *            concept identifier concept identifier
      * @param emptyAttributes
      *            when true, then attributes that are not valued are also included
-     * @return
+     * @return vocabulary concept
      * @throws ServiceException
      *             if operation fails
      */
@@ -253,7 +253,7 @@ public interface IVocabularyService {
      *
      * @param filter
      *            filter parameters
-     * @return
+     * @return vocabulary concepts as a result
      * @throws ServiceException
      *             if operation fails
      */
@@ -271,13 +271,36 @@ public interface IVocabularyService {
     List<VocabularyConcept> getValidConceptsWithAttributes(int vocabularyFolderId) throws ServiceException;
 
     /**
+     * Returns valid vocabulary concepts of a vocabulary with additional attributes for RDF.
+     * getValidConceptsWithAttributes(vocabularyId, null, null) equals to getValidConceptsWithAttributes(vocabularyId)
+     *
+     * @param vocabularyFolderId
+     *            vocabulary ID
+     * @param conceptIdentifier
+     *            concept identifier to search
+     * @param label
+     *            concept label or pref label to search
+     * @param elementIdentifier
+     *            data element identifier as a filter, if null all data elements
+     * @param language
+     *            if null all languages
+     * @param defaultLanguage
+     *            default language (only applicable when language is not null)
+     * @throws ServiceException
+     *             if operation fails
+     * @return list of concepts
+     */
+    List<VocabularyConcept> getValidConceptsWithAttributes(int vocabularyFolderId, String conceptIdentifier, String label,
+            String elementIdentifier, String language, String defaultLanguage) throws ServiceException;
+
+    /**
      * Creates new vocabulary concept into database.
      *
      * @param vocabularyFolderId
      *            vocabulary id
      * @param vocabularyConcept
      *            concept
-     * @return
+     * @return created concept id
      * @throws ServiceException
      *             if operation fails
      */
@@ -419,7 +442,7 @@ public interface IVocabularyService {
      *            folder identifier
      * @param excludedVocabularyFolderIds
      *            excluded folder ids
-     * @return
+     * @return is unique or not
      * @throws ServiceException
      *             if operation fails
      */
@@ -433,7 +456,7 @@ public interface IVocabularyService {
      *            folder identifier
      * @param excludedId
      *            excluded id
-     * @return
+     * @return is unique or not
      * @throws ServiceException
      *             if operation fails
      */
@@ -448,7 +471,7 @@ public interface IVocabularyService {
      *            vocabulary id
      * @param vocabularyConceptId
      *            concept id
-     * @return
+     * @return is unique or not
      * @throws ServiceException
      *             if operation fails
      */
@@ -475,7 +498,7 @@ public interface IVocabularyService {
      *
      * @param vocabularyFolderId
      *            vocabulary id
-     * @return
+     * @return next identifier value
      * @throws ServiceException
      *             if operation fails
      */
@@ -490,7 +513,7 @@ public interface IVocabularyService {
      *            number of reservations
      * @param startingIdentifier
      *            starting identifier for availaility
-     * @return
+     * @return list of integers as available identifiers
      * @throws ServiceException
      *             if operation fails
      */
@@ -512,7 +535,7 @@ public interface IVocabularyService {
      *
      * @param userName
      *            user name
-     * @return
+     * @return list of vocabularies
      * @throws ServiceException
      *             if operation fails
      */
@@ -521,7 +544,7 @@ public interface IVocabularyService {
     /**
      * Returns vocabulary folder attributes metadata (without values).
      *
-     * @return
+     * @return list of simple attributes
      * @throws ServiceException
      *             if operation fails
      */

@@ -176,18 +176,18 @@ public interface IDataElementDAO {
     void copyVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId);
 
     /**
-     * Returns data element attributes for vocabulary concept.
+     * Returns data element attributes for vocabulary concepts in a folder.
      *
      * @param vocabularyFolderId
      *            vocabularyID
-     * @param vocabularyConceptId
-     *            concept ID
+     * @param vocabularyConceptIds
+     *            concept IDs
      * @param emptyAttributes
      *            when true, then attributes that are not valued are also included
-     * @return list of lists where each list contains element values of one bound element
+     * @return map of list of lists where each list contains element values of one bound element
      */
-    List<List<DataElement>> getVocabularyConceptDataElementValues(int vocabularyFolderId, int vocabularyConceptId,
-            boolean emptyAttributes);
+    Map<Integer, List<List<DataElement>>> getVocabularyConceptsDataElementValues(int vocabularyFolderId,
+            int[] vocabularyConceptIds, boolean emptyAttributes);
 
     /**
      * Copies data element values from old concepts to new concepts. Can be used when checking out the vocabulary
@@ -223,7 +223,7 @@ public interface IDataElementDAO {
      *
      * @param newVocabularyFolderId
      */
-    // void updateRelatedConceptIds(int newVocabularyFolderId);
+    //void updateRelatedConceptIds(int newVocabularyFolderId);
 
     /**
      * Deletes related concept elements of this concept.
@@ -268,7 +268,7 @@ public interface IDataElementDAO {
      *            vocabulary ids
      * @return collection of data elements
      */
-    List<DataElement> getVocabularySourceElements(List<Integer> vocabularyIds);
+    List<DataElement> getVocabularySourceElements(List<Integer>vocabularyIds);
 
     /**
      * changes vocabulary reference in CH3 - fxv vocabulary elements.

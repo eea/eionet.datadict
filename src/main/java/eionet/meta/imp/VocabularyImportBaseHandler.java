@@ -20,18 +20,6 @@
  */
 package eionet.meta.imp;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -44,6 +32,17 @@ import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Pair;
 import eionet.util.VocabularyCSVOutputHelper;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Base abstract class used for vocabulary import handling from different sources (RDF or CSV).
@@ -412,7 +411,7 @@ public abstract class VocabularyImportBaseHandler {
      * @return list of dataelement objects containing values
      */
     public static List<DataElement> getDataElementValuesByName(String elemName, List<List<DataElement>> dataElements) {
-        return VocabularyCSVOutputHelper.getDataElementValuesByName(elemName, dataElements);
+        return VocabularyOutputHelper.getDataElementValuesByName(elemName, dataElements);
     } // end of method getDataElementValuesByName
 
     /**
@@ -428,7 +427,7 @@ public abstract class VocabularyImportBaseHandler {
      */
     public static List<DataElement> getDataElementValuesByNameAndLang(String elemName, String lang,
             List<List<DataElement>> dataElements) {
-        return VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang(elemName, lang, dataElements);
+        return VocabularyOutputHelper.getDataElementValuesByNameAndLang(elemName, lang, dataElements);
     } // end of method getDataElementValuesByNameAndLang
 
 } // end of class VocabularyImportBaseHandler

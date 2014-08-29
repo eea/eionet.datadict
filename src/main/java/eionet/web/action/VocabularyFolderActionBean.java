@@ -138,12 +138,25 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         RESERVED_VOCABULARY_EVENTS.add("csv");
         RESERVED_VOCABULARY_EVENTS.add("uploadCsv");
         RESERVED_VOCABULARY_EVENTS.add("uploadRdf");
+        RESERVED_VOCABULARY_EVENTS.add("json");
     }
 
     /**
      * Extension for CSV files.
      */
     private static final String CSV_FILE_EXTENSION = ".csv";
+    /**
+     * Extension for RDF files.
+     */
+    private static final String RDF_FILE_EXTENSION = ".rdf";
+    /**
+     * JSON contept type.
+     */
+    public static final String JSON_DEFAULT_OUTPUT_FORMAT = "application/json";
+    /**
+     * JSON file extension.
+     */
+    public static final String JSON_EXTENSION = ".json";
 
     /**
      * Vocabulary service.
@@ -279,6 +292,29 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Rdf purge option.
      */
     private int rdfPurgeOption;
+    /**
+     * Language for search.
+     */
+    private String lang;
+    /**
+     * Pref label for search.
+     */
+    private String label;
+    /**
+     * Identifier for search.
+     */
+    private String id;
+    /**
+     * Format for output type.
+     */
+    private String format;
+    /**
+     * JSON-LD supported output formats.
+     */
+    private static final List<String> SUPPORTED_JSON_FORMATS = new ArrayList<String>();
+    static {
+        SUPPORTED_JSON_FORMATS.add(JSON_DEFAULT_OUTPUT_FORMAT);
+    }
 
     /**
      * Navigates to view vocabulary folder page.
@@ -1156,14 +1192,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             // consume stupid bom first!! if it exists!
             InputStream is = this.uploadedFileToImport.getInputStream();
-            byte[] firstBomBytes = new byte[VocabularyCSVOutputHelper.BOM_BYTE_ARRAY_LENGTH];
+            byte[] firstBomBytes = new byte[VocabularyOutputHelper.BOM_BYTE_ARRAY_LENGTH];
             int readBytes = is.read(firstBomBytes);
-            if (readBytes != VocabularyCSVOutputHelper.BOM_BYTE_ARRAY_LENGTH) {
+            if (readBytes != VocabularyOutputHelper.BOM_BYTE_ARRAY_LENGTH) {
                 is.close();
                 throw new ServiceException("Input stream cannot be read");
             }
 
-            if (!Arrays.equals(firstBomBytes, VocabularyCSVOutputHelper.getBomByteArray())) {
+            if (!Arrays.equals(firstBomBytes, VocabularyOutputHelper.getBomByteArray())) {
                 is.close();
                 is = this.uploadedFileToImport.getInputStream();
             }
@@ -1215,7 +1251,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
 
             String fileName = this.uploadedFileToImport.getFileName();
-            if (StringUtils.isEmpty(fileName)) {
+            if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.RDF_FILE_EXTENSION)) {
                 throw new ServiceException("File should be a RDF file");
             }
 
@@ -1250,7 +1286,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     } // end of method uploadRDF
 
     /**
-     * Forwards to vocabulary concept page, if the url patter is: /vocabylary/folderIdentifier/conceptIdentifier.
+     * Forwards to vocabulary concept page, if the url patter is: /vocabulary/folderIdentifier/conceptIdentifier.
      *
      * @return resolution
      */
@@ -1275,6 +1311,55 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
         return null;
     }
+
+    /**
+     * Returns vocabulary concepts json.
+     *
+     * @return resolution
+     */
+    public Resolution json() {
+        try {
+            vocabularyFolder =
+                    vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                            vocabularyFolder.isWorkingCopy());
+
+            if (vocabularyFolder.isDraftStatus()) {
+                throw new RuntimeException("Vocabulary is not in released or public draft status.");
+            }
+
+            if (StringUtils.isBlank(format)) {
+                format = JSON_DEFAULT_OUTPUT_FORMAT;
+            }
+
+            if (!SUPPORTED_JSON_FORMATS.contains(format)) {
+                throw new RuntimeException("Unsupported JSON output format");
+            }
+
+            lang = StringUtils.trimToNull(lang);
+            id = StringUtils.trimToNull(id);
+            label = StringUtils.trimToNull(label);
+
+            LOGGER.info("JSON CALL RECEIVED FOR: " + vocabularyFolder.getIdentifier() + ", with parameters: lang = " + lang);
+
+            final List<VocabularyConcept> concepts =
+                    vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), id, label, null, null,
+                            VocabularyJSONOutputHelper.DEFAULT_LANGUAGE);
+
+            StreamingResolution result = new StreamingResolution(format) {
+                @Override
+                public void stream(HttpServletResponse response) throws Exception {
+                    VocabularyJSONOutputHelper.writeJSON(response.getOutputStream(), vocabularyFolder, concepts, lang);
+                }
+            };
+
+            return result;
+        } catch (Exception e) {
+            LOGGER.error("Failed to output vocabulary as JSON-LD", e);
+            ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            error.setErrorMessage(e.getMessage());
+            return error;
+        }
+    } // end of method json
 
     /**
      * Returns concept URI prefix.
@@ -1634,4 +1719,21 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public int getRdfPurgeOption() {
         return rdfPurgeOption;
     }
+
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
 }

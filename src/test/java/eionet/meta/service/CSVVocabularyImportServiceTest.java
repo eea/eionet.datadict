@@ -21,15 +21,10 @@
 
 package eionet.meta.service;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.exports.VocabularyOutputHelper;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -39,11 +34,14 @@ import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyImportBaseHandler;
-import eionet.util.VocabularyCSVOutputHelper;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * JUnit integration test with Unitils for CSV Vocabulary Import Service.
@@ -77,7 +75,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         byte[] firstThreeBytes = new byte[3];
         is.read(firstThreeBytes);
 
-        if (!Arrays.equals(firstThreeBytes, VocabularyCSVOutputHelper.getBomByteArray())) {
+        if (!Arrays.equals(firstThreeBytes, VocabularyOutputHelper.getBomByteArray())) {
             is.close();
             is = getClass().getClassLoader().getResourceAsStream(resourceLoc);
         }
@@ -489,11 +487,11 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         List<List<DataElement>> dataElements = vc8.getElementAttributes();
         List<DataElement> elems = null;
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
         DataElement element = findDataElemByAttrValue(elems, "bg2_csv_test_concept_1");
         element.setAttributeValue("bg2_csv_test_concept_1_updated");
 
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "en", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "en", dataElements);
         element = findDataElemByAttrValue(elems, "en_csv_test_concept_1");
         element.setAttributeValue("en_csv_test_concept_1_updated");
 
@@ -501,17 +499,17 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc10.setLabel("csv_test_concept_label_3_updated");
 
         dataElements = vc10.getElementAttributes();
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
         element = findDataElemByAttrValue(elems, "bg_csv_test_concept_3");
         element.setAttributeValue("bg_csv_test_concept_3_updated");
 
-        elems = VocabularyCSVOutputHelper.getDataElementValuesByNameAndLang("skos:definition", "pl", dataElements);
+        elems = VocabularyOutputHelper.getDataElementValuesByNameAndLang("skos:definition", "pl", dataElements);
         element = findDataElemByAttrValue(elems, "pl_csv_test_concept_3");
         element.setAttributeValue("pl_csv_test_concept_3_updated");
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
-        Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", 2, updatedConcepts.size());
+        Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
 
         VocabularyConcept vc8Updated = findVocabularyConceptByIdentifier(updatedConcepts, vc8.getIdentifier());
         vc8.setId(vc8Updated.getId());
@@ -942,7 +940,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // Check for first concept
         VocabularyConcept concept = findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_1");
         List<DataElement> elements =
-                VocabularyCSVOutputHelper.getDataElementValuesByName("skos:relatedMatch", concept.getElementAttributes());
+                VocabularyOutputHelper.getDataElementValuesByName("skos:relatedMatch", concept.getElementAttributes());
         DataElement element = elements.get(0);
         Assert.assertEquals("Related Concept Id Doesn't Match", 11, element.getRelatedConceptId().intValue());
         Assert.assertEquals("Related Concept Identifier Doesn't Match", "csv_test_concept_3",
@@ -951,7 +949,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Assert.assertEquals("Related Concept Vocabulary Doesn't Match", "csv_header_vocab", element.getRelatedConceptVocabulary());
         Assert.assertNull("Attribute Value is Not Null", element.getAttributeValue());
 
-        elements = VocabularyCSVOutputHelper.getDataElementValuesByName("skos:related", concept.getElementAttributes());
+        elements = VocabularyOutputHelper.getDataElementValuesByName("skos:related", concept.getElementAttributes());
         element = elements.get(0);
         Assert.assertEquals("Related Concept Id Doesn't Match",
                 findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_2").getId(), element.getRelatedConceptId()
@@ -965,7 +963,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // Check for second concept
         concept = findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_2");
-        elements = VocabularyCSVOutputHelper.getDataElementValuesByName("skos:relatedMatch", concept.getElementAttributes());
+        elements = VocabularyOutputHelper.getDataElementValuesByName("skos:relatedMatch", concept.getElementAttributes());
         element = elements.get(0);
         Assert.assertNull("Related Concept Id is Not Null", element.getRelatedConceptId());
         Assert.assertNull("Related Concept Identifier is Not Null", element.getRelatedConceptIdentifier());
@@ -975,11 +973,12 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
                 "http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab_2/csv_test_concept_3",
                 element.getAttributeValue());
 
-        elements = VocabularyCSVOutputHelper.getDataElementValuesByName("skos:related", concept.getElementAttributes());
+        elements = VocabularyOutputHelper.getDataElementValuesByName("skos:related", concept.getElementAttributes());
         element = elements.get(0);
         Assert.assertEquals("Related Concept Id Doesn't Match",
                 findVocabularyConceptByIdentifier(updatedConcepts, "csv_test_concept_1").getId(), element.getRelatedConceptId()
-                        .intValue());
+                        .intValue()
+        );
         Assert.assertEquals("Related Concept Identifier Doesn't Match", "csv_test_concept_1",
                 element.getRelatedConceptIdentifier());
         Assert.assertEquals("Related Concept Label Doesn't Match", "csv_test_concept_label_1", element.getRelatedConceptLabel());
@@ -992,7 +991,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
     /**
      * In this test, three line CSV is imported. All rows includes updated values. But there should be no update performed since it
-     * does not have valid headers (invalid fixed header). All transaction should be rolled back
+     * does not have valid headers (invalid fixed header). All transaction should be rollbacked
      *
      * @throws Exception
      */
@@ -1000,7 +999,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
     @Rollback
     public void testExceptionAndRollbackWhenFixedHeadersAreMissing() throws Exception {
         // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCAB_FOLDER_ID);
 
         // get reader for CSV file
         Reader reader = getReaderFromResource("csv_import/csv_import_test_7.csv");

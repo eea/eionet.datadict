@@ -571,6 +571,11 @@
             <artifactId>quartz</artifactId>
             <version>2.2.1</version>
         </dependency>
+	<dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.4.0</version>
+        </dependency>
         <!-- start org.openrdf.sesame dependencies -->
         <dependency>
             <groupId>org.openrdf.sesame</groupId>

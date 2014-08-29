@@ -21,6 +21,16 @@
 
 package eionet.meta.imp;
 
+import au.com.bytecode.opencsv.CSVReader;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.DataElementsFilter;
+import eionet.meta.service.data.DataElementsResult;
+import eionet.util.Pair;
+import eionet.util.VocabularyCSVOutputHelper;
+import org.apache.commons.lang.StringUtils;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -33,17 +43,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
-import au.com.bytecode.opencsv.CSVReader;
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.service.ServiceException;
-import eionet.meta.service.data.DataElementsFilter;
-import eionet.meta.service.data.DataElementsResult;
-import eionet.util.Pair;
-import eionet.util.VocabularyCSVOutputHelper;
 
 /**
  * Includes code for parsing and handling CSV lines.

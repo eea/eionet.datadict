@@ -123,6 +123,10 @@
         <filter-class>eionet.meta.filters.DatasetJspFilter</filter-class>
     </filter>
     <filter>
+        <filter-name>DDCORSFilter</filter-name>
+        <filter-class>eionet.meta.filters.DDCORSFilter</filter-class>
+    </filter>
+    <filter>
         <filter-name>DsTableJspFilter</filter-name>
         <filter-class>eionet.meta.filters.DsTableJspFilter</filter-class>
     </filter>
@@ -160,6 +164,10 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>ContentNegotiationFilter</filter-name>
+        <url-pattern>/vocabulary/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>DDCORSFilter</filter-name>
         <url-pattern>/vocabulary/*</url-pattern>
     </filter-mapping>
     <filter-mapping>

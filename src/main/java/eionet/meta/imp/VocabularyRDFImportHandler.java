@@ -21,6 +21,20 @@
 
 package eionet.meta.imp;
 
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.exports.rdf.VocabularyXmlWriter;
+import eionet.meta.service.ServiceException;
+import eionet.util.Pair;
+import org.apache.commons.lang.StringUtils;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.rio.RDFHandler;
+import org.openrdf.rio.RDFHandlerException;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -43,7 +57,7 @@ import org.openrdf.rio.RDFHandlerException;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.exports.rdf.VocabularyXmlWriter;
+import eionet.meta.exports.VocabularyOutputHelper;
 import eionet.meta.service.ServiceException;
 import eionet.util.Pair;
 
@@ -102,9 +116,10 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         SKOS_CONCEPT_ATTRIBUTES.add("prefLabel");
         SKOS_CONCEPT_ATTRIBUTES.add("definition");
         PREDICATE_IGNORANCE_RULES = new HashMap<String, Pair<Class, String>>();
-        PREDICATE_IGNORANCE_RULES.put(VocabularyXmlWriter.SKOS_NS + "inScheme", new Pair<Class, String>(Object.class, "(.)*"));
-        PREDICATE_IGNORANCE_RULES.put(VocabularyXmlWriter.RDF_NS + "type", new Pair<Class, String>(URI.class,
-                VocabularyXmlWriter.SKOS_NS + "Concept"));
+        PREDICATE_IGNORANCE_RULES.put(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS + "inScheme", new Pair<Class, String>(
+                Object.class, "(.)*"));
+        PREDICATE_IGNORANCE_RULES.put(VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS + "type", new Pair<Class, String>(
+                URI.class, VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS + "Concept"));
     }
 
     /* member fields */
@@ -320,8 +335,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         String predicateNS = null;
 
         boolean candidateForConceptAttribute = false;
-        if (StringUtils.startsWith(predicateUri, VocabularyXmlWriter.SKOS_NS)) {
-            attributeIdentifier = predicateUri.replace(VocabularyXmlWriter.SKOS_NS, "");
+        if (StringUtils.startsWith(predicateUri, VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS)) {
+            attributeIdentifier = predicateUri.replace(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "");
             candidateForConceptAttribute = SKOS_CONCEPT_ATTRIBUTES.contains(attributeIdentifier);
             if (candidateForConceptAttribute) {
                 predicateNS = SKOS_CONCEPT_ATTRIBUTE_NS;
@@ -524,7 +539,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 elem.setAttributeValue(elementValue);
                 elem.setRelatedConceptId(null);
             }
-
+            attributePosition.put(dataElemIdentifierWithLang, ++index);
             conceptIdsUpdatedWithPredicate.add(this.lastFoundConcept.getId());
         }
         this.numberOfValidTriples++;

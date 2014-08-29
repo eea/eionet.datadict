@@ -100,6 +100,7 @@
         <c:url var="rdfIconUrl" value="/images/rdf-icon.gif" />
         <c:url var="csvIconUrl" value="/images/csv_icon_sm.gif" />
         <c:url var="codelistIconUrl" value="/images/inspire_icon.gif" />
+        <c:url var="jsonIconUrl" value="/images/json_file_icon.gif" />
         <div id="createbox" style="clear:right">
             <table id="outputsmenu">
                 <tr>
@@ -129,6 +130,16 @@
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                             <img src="${codelistIconUrl}" alt="" />
+                        </stripes:link>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:73%">Get JSON-LD output of this vocabulary</td>
+                    <td style="width:27%">
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="json" title="Export JSON">
+                            <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                            <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                            <img src="${jsonIconUrl}" alt="" />
                         </stripes:link>
                     </td>
                 </tr>

@@ -48,6 +48,11 @@ public class VocabularyConceptFilter extends PagedRequest {
     /** If true, the identifier sorting is numeric. */
     private boolean numericIdentifierSorting;
 
+    /**
+     * If true, sorting will be on concept id.
+     */
+    private boolean orderByConceptId;
+
     /** Concept id's that don't get returned. */
     private List<Integer> excludedIds;
 
@@ -256,4 +261,11 @@ public class VocabularyConceptFilter extends PagedRequest {
         return excludedVocabularySetIds;
     }
 
+    public boolean isOrderByConceptId() {
+        return orderByConceptId;
+    }
+
+    public void setOrderByConceptId(boolean orderByConceptId) {
+        this.orderByConceptId = orderByConceptId;
+    }
 }
