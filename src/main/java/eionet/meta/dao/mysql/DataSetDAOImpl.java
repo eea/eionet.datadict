@@ -24,9 +24,12 @@ package eionet.meta.dao.mysql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -35,6 +38,7 @@ import org.springframework.stereotype.Repository;
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.IDataSetDAO;
 import eionet.meta.dao.domain.DataSet;
+import eionet.meta.dao.domain.DatasetRegStatus;
 import eionet.meta.service.data.DatasetFilter;
 
 /**
@@ -44,6 +48,11 @@ import eionet.meta.service.data.DatasetFilter;
  */
 @Repository
 public class DataSetDAOImpl extends GeneralDAOImpl implements IDataSetDAO {
+
+    /**
+     * Dataset full name column label when the value is queried.
+     */
+    private static final String DATASET_NAME_COLUMN_LABEL = "DATASET_NAME";
 
     /**
      * {@inheritDoc}
@@ -59,8 +68,9 @@ public class DataSetDAOImpl extends GeneralDAOImpl implements IDataSetDAO {
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        List<DataSet> result = executeGetDatasetsQuery(sql.toString(), params);
-        return result;
+        DataSetRowCallbackHandler dataSetRowCallbackHandler = new DataSetRowCallbackHandler();
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, dataSetRowCallbackHandler);
+        return dataSetRowCallbackHandler.getResult();
     }
 
     /**
@@ -104,34 +114,130 @@ public class DataSetDAOImpl extends GeneralDAOImpl implements IDataSetDAO {
 
         sql.append(" order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc");
 
-        List<DataSet> result = executeGetDatasetsQuery(sql.toString(), params);
-
-        return result;
+        DataSetRowCallbackHandler dataSetRowCallbackHandler = new DataSetRowCallbackHandler();
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, dataSetRowCallbackHandler);
+        return dataSetRowCallbackHandler.getResult();
     }
 
-    private List<DataSet> executeGetDatasetsQuery(String sql, Map<String, Object> params) {
-        final List<DataSet> result = new ArrayList<DataSet>();
+    @Override
+    public List<DataSet> getRecentlyReleasedDatasets(int limit) {
+        StringBuffer sql = new StringBuffer();
+        sql.append("select distinct DATASET.*, ATTRIBUTE.VALUE as ");
+        sql.append(DATASET_NAME_COLUMN_LABEL);
+        sql.append(" from DATASET ");
+        sql.append("left outer join ATTRIBUTE on DATASET.DATASET_ID = ATTRIBUTE.DATAELEM_ID ");
+        sql.append("left outer join M_ATTRIBUTE on ATTRIBUTE.M_ATTRIBUTE_ID = M_ATTRIBUTE.M_ATTRIBUTE_ID ");
+        sql.append("AND M_ATTRIBUTE.NAME LIKE :name ");
+        sql.append("where CORRESP_NS is not null and DATASET.DELETED is null ");
+        sql.append("and DATASET.WORKING_COPY='N' and REG_STATUS = :releasedRegStatus ");
+        sql.append("order by DATE desc, DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc ");
+        //if (limit > 0) {
+            //sql.append("limit :limit");
+            // params.put("limit", 5 * limit);
+        //}
 
-        getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
-            DataSet dataSet;
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("releasedRegStatus", DatasetRegStatus.RELEASED.toString());
+        params.put("name", "Name");
 
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                // make sure we get the latest version of the dataset
-                String identifier = rs.getString("IDENTIFIER");
+        DataSetRowCallbackHandler dataSetRowCallbackHandler =
+                new DataSetRowCallbackHandler(Arrays.asList(DATASET_NAME_COLUMN_LABEL), limit);
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, dataSetRowCallbackHandler);
+        return dataSetRowCallbackHandler.getResult();
+    }
 
-                if (dataSet != null && dataSet.getIdentifier().equals(identifier)) {
-                    return;
-                }
+    /**
+     * Inner class to process rows from dataset queries.
+     */
+    private static final class DataSetRowCallbackHandler implements RowCallbackHandler {
+        /**
+         * Result list.
+         */
+        private List<DataSet> result;
+        /**
+         * Flag for is full name queried.
+         */
+        private boolean fullNameQueried;
+        /**
+         * Row instance.
+         */
+        private DataSet dataSet = null;
+        /**
+         * Collections of seen identifier.
+         */
+        private Set<String> seenIdentifiers;
+        /**
+         * Limit for the list.
+         */
+        private int limit;
 
-                dataSet = new DataSet();
-                dataSet.setId(rs.getInt("DATASET_ID"));
-                dataSet.setIdentifier(rs.getString("IDENTIFIER"));
-                dataSet.setShortName(rs.getString("SHORT_NAME"));
+        /**
+         * Private constructor (since class is private inner class).
+         *
+         */
+        private DataSetRowCallbackHandler() {
+            this(new ArrayList<String>(), -1);
+        }
 
-                result.add(dataSet);
+        /**
+         * Private constructor (since class is private inner class).
+         *
+         * @param additionalFieldsToSet
+         *            additional fields to set.
+         */
+        private DataSetRowCallbackHandler(List<String> additionalFieldsToSet) {
+            this(additionalFieldsToSet, -1);
+        }
+
+        /**
+         * Private constructor (since class is private inner class).
+         *
+         * @param additionalFieldsToSet
+         *            additional fields to set.
+         * @param limit
+         *            limit of list
+         */
+        private DataSetRowCallbackHandler(List<String> additionalFieldsToSet, int limit) {
+            this.fullNameQueried = additionalFieldsToSet.contains(DATASET_NAME_COLUMN_LABEL);
+            this.limit = limit;
+            this.result = new ArrayList<DataSet>();
+            // HashSet has better performance for contains.
+            this.seenIdentifiers = new HashSet<String>();
+        }
+
+        @Override
+        public void processRow(ResultSet rs) throws SQLException {
+            // check for limit. negative values will never be reached so applying a negative value for limit means positive
+            // infinite.
+            if (this.result.size() == limit) {
+                return;
             }
-        });
-        return result;
-    }
+
+            // make sure we get the latest version of the dataset
+            String identifier = rs.getString("IDENTIFIER");
+
+            // checking for previous dataset id make it faster for ordered by identifier queries
+            if (this.dataSet != null
+                    && (this.dataSet.getIdentifier().equals(identifier) || this.seenIdentifiers.contains(identifier))) {
+                return;
+            }
+
+            this.dataSet = new DataSet();
+            this.dataSet.setId(rs.getInt("DATASET_ID"));
+            this.dataSet.setIdentifier(identifier);
+            this.dataSet.setShortName(rs.getString("SHORT_NAME"));
+            this.dataSet.setDate(rs.getLong("DATE"));
+            if (this.fullNameQueried) {
+                this.dataSet.setName(rs.getString(DATASET_NAME_COLUMN_LABEL));
+            }
+
+            this.result.add(this.dataSet);
+            this.seenIdentifiers.add(identifier);
+        }
+
+        public List<DataSet> getResult() {
+            return this.result;
+        }
+    } // end of inner class DataSetRowCallbackHandler
+
 }

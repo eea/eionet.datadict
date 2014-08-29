@@ -56,6 +56,16 @@ public interface IDataService {
     List<DataSet> getDataSets() throws ServiceException;
 
     /**
+     * Searches for recently released datasets.
+     *
+     * @param limit
+     *            maximum number of objects/
+     * @return List of DataSet objects.
+     * @throws ServiceException if operation fails.
+     */
+    List<DataSet> getRecentlyReleasedDatasets(int limit) throws ServiceException;
+
+    /**
      * Returns attribute by shortName.
      *
      * @param shortName
@@ -107,47 +117,61 @@ public interface IDataService {
 
     /**
      * Returns attribute values of the given data element.
-     * @param dataElementId element ID
+     *
+     * @param dataElementId
+     *            element ID
      * @return List of attributes
-     * @throws ServiceException if query fails
+     * @throws ServiceException
+     *             if query fails
      */
     Map<String, List<String>> getDataElementSimpleAttributeValues(int dataElementId) throws ServiceException;
 
     /**
      * Returns list of common data elements that are released.
+     *
      * @return list of data elements
-     * @throws ServiceException if query fails
+     * @throws ServiceException
+     *             if query fails
      */
     List<DataElement> getReleasedCommonDataElements() throws ServiceException;
 
     /**
      * returns ID of a common data element in DATAELEM table.
-     * @param identifier common element identifier
+     *
+     * @param identifier
+     *            common element identifier
      * @return ID
-     * @throws ServiceException if query fails
+     * @throws ServiceException
+     *             if query fails
      */
     int getCommonElementIdByIdentifier(String identifier) throws ServiceException;
 
     /**
-     * finds and sets attributes of an element.
-     * Would be too resource consuming to set automatically in each elements query
-     * @param dataElement data element
-     * @throws ServiceException if query fails
+     * finds and sets attributes of an element. Would be too resource consuming to set automatically in each elements query
+     *
+     * @param dataElement
+     *            data element
+     * @throws ServiceException
+     *             if query fails
      */
-    void setDataElementAttributes(DataElement dataElement)  throws ServiceException;
-
+    void setDataElementAttributes(DataElement dataElement) throws ServiceException;
 
     /**
      * Checks if dataset has all linked common elements released and returns them.
-     * @param datasetId datased ID
+     *
+     * @param datasetId
+     *            datased ID
      * @return linked elements of non-released status
-     * @throws ServiceException if database query fails
+     * @throws ServiceException
+     *             if database query fails
      */
     List<DataElement> getUnreleasedCommonElements(int datasetId) throws ServiceException;
 
     /**
-     * List of data elements (type  CH") where the vocabulary is used as a source for values.
-     * @param vocabularyIds vocabulary IDs
+     * List of data elements (type CH") where the vocabulary is used as a source for values.
+     *
+     * @param vocabularyIds
+     *            vocabulary IDs
      * @return list of elements
      */
     List<DataElement> getVocabularySourceElements(List<Integer> vocabularyIds);
@@ -155,7 +179,8 @@ public interface IDataService {
     /**
      * List of fixed values for element type = CH3 from vocabulary.
      *
-     * @param elementId element ID
+     * @param elementId
+     *            element ID
      * @return list of VocabularyConcepts
      */
     List<VocabularyConcept> getElementVocabularyConcepts(int elementId);
@@ -163,9 +188,12 @@ public interface IDataService {
     /**
      * Switch the given data element's type to the given new type.
      *
-     * @param elemId Given data element id.
-     * @param newType The new type's classifier.
-     * @throws ServiceException In case an error happens.
+     * @param elemId
+     *            Given data element id.
+     * @param newType
+     *            The new type's classifier.
+     * @throws ServiceException
+     *             In case an error happens.
      */
     void switchDataElemType(int elemId, String newType) throws ServiceException;
 }

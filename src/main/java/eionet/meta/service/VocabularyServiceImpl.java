@@ -342,8 +342,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 if (values != null) {
                     for (DataElement value : values) {
                         if (value != null
-                                && (StringUtils.isNotEmpty(value.getAttributeValue()) || (value.getRelatedConceptId() != null && value
-                                        .getRelatedConceptId() != 0))) {
+                                && (StringUtils.isNotEmpty(value.getAttributeValue()) || (value.getRelatedConceptId() != null
+                                && value.getRelatedConceptId() != 0))) {
                             dataElementValues.add(value);
                         }
                     }
@@ -1309,4 +1309,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
             throw new ServiceException(e.getMessage());
         }
     } // end of method changeSitePrefix
+
+    @Override
+    public List<VocabularyFolder> getRecentlyReleasedVocabularyFolders(int limit) throws ServiceException {
+        try {
+            return vocabularyFolderDAO.getRecentlyReleasedVocabularyFolders(limit);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
+        }
+    } // end of method getRecentlyReleasedVocabularyFolders
 }

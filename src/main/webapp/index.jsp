@@ -92,7 +92,7 @@ finally{
                     else{
                         %>
                         <div id="outerframe">
-                            <jsp:include page="released_datasets.jsp" flush="true" />
+                            <jsp:include page="/releasedItems.action" flush="true" />
                             <div>
                                 <h2>Documentation</h2>
                                 <%

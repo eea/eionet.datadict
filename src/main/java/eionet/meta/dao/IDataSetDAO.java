@@ -24,7 +24,6 @@ package eionet.meta.dao;
 import java.util.List;
 
 import eionet.meta.dao.domain.DataSet;
-import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DatasetFilter;
 
 /**
@@ -48,6 +47,14 @@ public interface IDataSetDAO {
      * @param datasetFilter DatasetFilter object defining search criteria
      * @return List of DataSet objects.
      */
-    public List<DataSet> searchDatasets(DatasetFilter datasetFilter);
+    List<DataSet> searchDatasets(DatasetFilter datasetFilter);
 
+    /**
+     * Searches for recently released datasets.
+     *
+     * @param limit
+     *            maximum number of objects/
+     * @return List of DataSet objects.
+     */
+    List<DataSet> getRecentlyReleasedDatasets(int limit);
 }

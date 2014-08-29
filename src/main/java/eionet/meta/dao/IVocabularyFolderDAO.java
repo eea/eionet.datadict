@@ -240,4 +240,14 @@ public interface IVocabularyFolderDAO {
      * @return number of affected rows
      */
     int changeSitePrefix(String oldSitePrefix, String newSitePrefix);
+
+    /**
+     * Returns list of recently released vocabulary folders. Performs a query to sort vocabulary folders based on descending date
+     * modified field.
+     *
+     * @param limit
+     *            maximum number of vocabulary folders
+     * @return list of vocabulary folders
+     */
+    List<VocabularyFolder> getRecentlyReleasedVocabularyFolders(int limit);
 }

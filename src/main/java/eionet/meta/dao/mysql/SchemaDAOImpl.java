@@ -340,6 +340,10 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
             }
         }
 
+        if (searchFilter.isUsePaging()) {
+            sql.append(" LIMIT ").append(searchFilter.getOffset()).append(",").append(searchFilter.getPageSize());
+        }
+
         // LOGGER.debug("SQL: " + sql.toString());
 
         List<Schema> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Schema>() {

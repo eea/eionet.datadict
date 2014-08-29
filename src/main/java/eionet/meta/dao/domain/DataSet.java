@@ -21,6 +21,8 @@
 
 package eionet.meta.dao.domain;
 
+import eionet.util.Util;
+
 /**
  * Data set.
  *
@@ -36,6 +38,16 @@ public class DataSet {
 
     /** Short name. */
     private String shortName;
+
+    /**
+     * Date.
+     */
+    private long date;
+
+    /**
+     * Longer name.
+     */
+    private String name;
 
     /**
      * @return the id
@@ -82,4 +94,23 @@ public class DataSet {
         this.shortName = shortName;
     }
 
+    public long getDate() {
+        return date;
+    }
+
+    public String getDateString() {
+        return Util.releasedDate(date);
+    }
+
+    public void setDate(long date) {
+        this.date = date;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
