@@ -634,10 +634,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
                             dataElementDAO.getVocabularyConceptsDataElementValues(originalVocabularyFolderId,
                                     new int[] {conceptId}, true);
                     List<List<DataElement>> elems = vocabularyConceptsDataElementValues.get(conceptId);
-                    // List<List<DataElement>> elems =
-                    // dataElementDAO
-                    // .getVocabularyConceptDataElementValues(originalVocabularyFolderId, concept.getId(), true);
-
                     for (List<DataElement> elemMeta : elems) {
                         if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
                             dataElementDAO.deleteReferringInverseElems(concept.getId(), elemMeta);
@@ -682,11 +678,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                             dataElementDAO.getVocabularyConceptsDataElementValues(originalVocabularyFolderId,
                                     new int[] {conceptId}, true);
                     List<List<DataElement>> elems = vocabularyConceptsDataElementValues.get(conceptId);
-                    // List<List<DataElement>> elems =
-                    // dataElementDAO
-                    // .getVocabularyConceptDataElementValues(originalVocabularyFolderId, concept.getId(), true);
                     concept.setElementAttributes(elems);
-
                 }
                 fixRelatedReferenceElements(vocabularyFolderId, concepts);
 
@@ -946,12 +938,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                     dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolderId, new int[] {conceptId},
                             emptyAttributes);
             result.setElementAttributes(vocabularyConceptsDataElementValues.get(conceptId));
-            // List<List<DataElement>> elementAttributes =
-            // dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId, result.getId(), emptyAttributes);
-            // result.setElementAttributes(elementAttributes);
-
             return result;
-
         } catch (IncorrectResultSizeDataAccessException e) {
             ServiceException se = new ServiceException("Vocabulary concept \"" + conceptIdentifier + "\" not found!", e);
             se.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.NOT_FOUND_404);
@@ -1347,8 +1334,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
             Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
                     dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyId, new int[] {conceptId}, true);
             List<List<DataElement>> elems = vocabularyConceptsDataElementValues.get(conceptId);
-            // List<List<DataElement>> elems =
-            // dataElementDAO.getVocabularyConceptDataElementValues(vocabularyId, concept.getId(), true);
             for (List<DataElement> elemMeta : elems) {
                 if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
                     dataElementDAO.deleteReferringInverseElems(concept.getId(), elemMeta);
