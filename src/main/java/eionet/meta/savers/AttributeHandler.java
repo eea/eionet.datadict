@@ -328,12 +328,14 @@ public class AttributeHandler extends BaseHandler {
         for (int i = 0; simpleAttrs != null && i < simpleAttrs.length; i++) {
             try {
                 AccessController.removeAcl("/attributes/s" + simpleAttrs[i]);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
         for (int i = 0; complexAttrs != null && i < complexAttrs.length; i++) {
             try {
                 AccessController.removeAcl("/attributes/c" + complexAttrs[i]);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -504,19 +506,19 @@ public class AttributeHandler extends BaseHandler {
     }
 
     /**
+     * Construct bit set from "dispWhen" parameters. It is entirely possible to
+     * want to create an attribute that won't be displayed if there are plans
+     * to display in the future.
+     * Note: an earlier version of this method used Math.pow(2, x). That returns a
+     * floating point. Integer operation is 1 &lt;&lt; x
      *
-     * @return
+     * @return the int-value of the bit-set as string
      */
     private String getDisplayWhen() {
 
-        // the default here is 2^typeWeights.size(), because if no
-        // "dispWhen" has been set there is no point in storing an
-        // attribute that wouldn't be displayed anyway, so we rather
-        // display it for all then
-
         String[] dispWhen = req.getParameterValues("dispWhen");
         if (dispWhen == null || dispWhen.length == 0) {
-            return String.valueOf(Math.pow(2, DElemAttribute.typeWeights.size()) - 1);
+            return "0";
         }
 
         int k = 0;
@@ -526,11 +528,6 @@ public class AttributeHandler extends BaseHandler {
                 k = k + weight.intValue();
             }
         }
-
-        if (k == 0) {
-            k = (int)Math.pow(2, DElemAttribute.typeWeights.size()) - 1;
-        }
-
         return String.valueOf(k);
     }
 

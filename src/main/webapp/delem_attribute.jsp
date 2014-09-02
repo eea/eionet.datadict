@@ -221,17 +221,6 @@
                     return;
                 }
 
-                <%
-                if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
-                    %>
-                    if (!checkDisplayFor()){
-                        alert("You have to specify 'Display for' !");
-                        return;
-                    }
-                    <%
-                }
-                %>
-
                 if (hasWhiteSpace("short_name")){
                     alert("Short name cannot contain any white space!");
                     return;
@@ -273,21 +262,6 @@
             if (shortn == null || shortn.length==0) return false;
 
             return true;
-        }
-
-        function checkDisplayFor(){
-
-            var i;
-            var b = false;
-
-            var checks = document.forms["form1"].elements["dispWhen"];
-            if (checks!=null && checks.length!=0){
-                for (i=0; i<checks.length; i++){
-                    if (checks[i].checked) return true;
-                }
-            }
-
-            return false;
         }
 
         function hasWhiteSpace(input_name){
