@@ -201,7 +201,7 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
 
         List<List<DataElement>> elemAttrs = new ArrayList<List<DataElement>>();
         List<DataElement> skosNarrowMatchElems = new ArrayList<DataElement>();
-        skosNarrowMatchElems .add(skosNarrowerMatch);
+        skosNarrowMatchElems.add(skosNarrowerMatch);
         elemAttrs.add(skosNarrowMatchElems);
 
         concept2.setElementAttributes(elemAttrs);

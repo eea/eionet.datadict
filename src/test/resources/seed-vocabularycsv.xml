@@ -9,11 +9,11 @@
     <VOCABULARY_SET ID="5" IDENTIFIER="csv_header_vs" LABEL="csv_header_vs_test" />
     <VOCABULARY_SET ID="15" IDENTIFIER="json_hierarchical" LABEL="json_hierarchical_test" />
 
-    <VOCABULARY VOCABULARY_ID="1" CONTINUITY_ID="123" IDENTIFIER="BWaterCat" LABEL="Bathing Water Category" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser"  FOLDER_ID="10"/>
-    <VOCABULARY VOCABULARY_ID="2" CONTINUITY_ID="123" IDENTIFIER="BWClosed" LABEL="Bathing Water Closed status" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="10"/>
-    <VOCABULARY VOCABULARY_ID="4" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="5"/>
-    <VOCABULARY VOCABULARY_ID="5" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" FOLDER_ID="5"/>
-    <VOCABULARY VOCABULARY_ID="8" CONTINUITY_ID="125" IDENTIFIER="another" LABEL="Another_Vocabulary" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" BASE_URI="http://test.tripledev.ee/" FOLDER_ID="5" />
+    <VOCABULARY VOCABULARY_ID="1" CONTINUITY_ID="123" IDENTIFIER="BWaterCat" LABEL="Bathing Water Category" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="10" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/wise/BWaterCat/"/>
+    <VOCABULARY VOCABULARY_ID="2" CONTINUITY_ID="123" IDENTIFIER="BWClosed" LABEL="Bathing Water Closed status" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="10" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/wise/BWClosed/"/>
+    <VOCABULARY VOCABULARY_ID="4" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="5" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/csv_header_vs/csv_header_vocab/"/>
+    <VOCABULARY VOCABULARY_ID="5" CONTINUITY_ID="124" IDENTIFIER="csv_header_vocab" LABEL="csv_header_vocab_test" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" FOLDER_ID="5" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/csv_header_vs/csv_header_vocab/"/>
+    <VOCABULARY VOCABULARY_ID="8" CONTINUITY_ID="125" IDENTIFIER="another" LABEL="Another_Vocabulary" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="5" BASE_URI="http://test.tripledev.ee/"/>
 
     <VOCABULARY VOCABULARY_ID="10" CONTINUITY_ID="126" IDENTIFIER="hierarchical" LABEL="hierarchical vocabulary" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="15"/>
 

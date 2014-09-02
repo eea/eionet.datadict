@@ -140,8 +140,8 @@ public interface IDataElementDAO {
     /**
      * Deletes all vocabulary concept's data element values.
      *
-     * @param vocabularyConceptId concept ID
-     *            concept ID
+     * @param vocabularyConceptId
+     *            concept ID concept ID
      */
     void deleteVocabularyConceptDataElementValues(int vocabularyConceptId);
 
@@ -174,20 +174,6 @@ public interface IDataElementDAO {
      *            target vocabulary id
      */
     void copyVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId);
-
-    /**
-     * Returns data element attributes for vocabulary concept.
-     *
-     * @param vocabularyFolderId
-     * vocabularyID
-     * @param vocabularyConceptId
-     * concept ID
-     * @param emptyAttributes
-     * when true, then attributes that are not valued are also included
-     * @return list of lists where each list contains element values of one bound element
-     */
-    List<List<DataElement>> getVocabularyConceptDataElementValues(int vocabularyFolderId, int vocabularyConceptId,
-            boolean emptyAttributes);
 
     /**
      * Returns data element attributes for vocabulary concepts in a folder.
@@ -237,7 +223,7 @@ public interface IDataElementDAO {
      *
      * @param newVocabularyFolderId
      */
-    //void updateRelatedConceptIds(int newVocabularyFolderId);
+    // void updateRelatedConceptIds(int newVocabularyFolderId);
 
     /**
      * Deletes related concept elements of this concept.
@@ -282,7 +268,7 @@ public interface IDataElementDAO {
      *            vocabulary ids
      * @return collection of data elements
      */
-    List<DataElement> getVocabularySourceElements(List<Integer>vocabularyIds);
+    List<DataElement> getVocabularySourceElements(List<Integer> vocabularyIds);
 
     /**
      * changes vocabulary reference in CH3 - fxv vocabulary elements.
@@ -296,58 +282,74 @@ public interface IDataElementDAO {
 
     /**
      * Calls stored procedure that fixes relational elements.
-     * @param dataElementId data element id
-     * @param conceptId vocabulary concept id
-     * @param oldRelationalConceptId previous value of concept ID - null if new record
-     * @param newRelationalConceptId new value of the relational concept ID - null if changed to empty
+     *
+     * @param dataElementId
+     *            data element id
+     * @param conceptId
+     *            vocabulary concept id
+     * @param newRelationalConceptId
+     *            new value of the relational concept ID - null if changed to empty
      */
-    void createInverseElements(int dataElementId, int conceptId,  Integer newRelationalConceptId);
+    void createInverseElements(int dataElementId, int conceptId, Integer newRelationalConceptId);
 
     /**
      * Delete element values in this vocabulary where this concept is referred as related element.
-     * @param conceptId concept id
-     * @param dataElemId data element id
+     *
+     * @param conceptId
+     *            concept id
+     * @param dataElements
+     *            list of data elements
      */
     void deleteReferringInverseElems(int conceptId, List<DataElement> dataElements);
 
     /**
      * deletes inverse elements of the element where this concept id is referred.
-     * @param conceptId concept id
-     * @param dataElement data element
+     *
+     * @param conceptId
+     *            concept id
+     * @param dataElement
+     *            data element
      */
     void deleteInverseElemsOfConcept(int conceptId, DataElement dataElement);
+
     /**
      * Returns inverse element ID if exists.
      *
-     * @param dataElementId element id
+     * @param dataElementId
+     *            element id
      * @return data element id or null if no inverse element
      */
     Integer getInverseElementID(int dataElementId);
 
     /**
      * deletes references in other vocabularies for this vocabulary concepts.
-     * @param vocabularyId vocabulary id
+     *
+     * @param vocabularyId
+     *            vocabulary id
      */
     void deleteReferringReferenceElems(int vocabularyId);
 
-
-/**
+    /**
      * Change the given data element's type to the given value.
      *
-     * @param elemId Element id.
-     * @param newType The new type's identifier.
+     * @param elemId
+     *            Element id.
+     * @param newType
+     *            The new type's identifier.
      */
     void changeDataElemType(int elemId, String newType);
 
     /**
      * Removes the given data element's simple attributes by the given short names.
      *
-     * @param elemId Data element id.
-     * @param attrShortNames Short names of simple attributes to remove.
+     * @param elemId
+     *            Data element id.
+     * @param attrShortNames
+     *            Short names of simple attributes to remove.
      */
     void removeSimpleAttrsByShortName(int elemId, String... attrShortNames);
 
-	/**
+    /**
      * Returns vocabulary concept elements if they may refer other concepts.
      * {@code
      * //!!! ATTENTION: related concept id field is used to store vocabulary id temporarily.

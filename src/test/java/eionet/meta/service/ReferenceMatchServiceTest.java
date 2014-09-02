@@ -22,7 +22,6 @@ package eionet.meta.service;
 
 import java.util.List;
 
-import eionet.meta.exports.VocabularyOutputHelper;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,7 +34,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.util.VocabularyCSVOutputHelper;
+import eionet.meta.exports.VocabularyOutputHelper;
 
 /**
  * JUnit integration test with Unitils for Reference Match Service.

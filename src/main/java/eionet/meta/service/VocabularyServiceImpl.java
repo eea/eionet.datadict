@@ -342,11 +342,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
             for (List<DataElement> values : vocabularyConcept.getElementAttributes()) {
                 if (values != null) {
                     for (DataElement value : values) {
-                        if (value != null
-                                && (StringUtils.isNotEmpty(value.getAttributeValue()) || (value.getRelatedConceptId() != null && value
-                                        .getRelatedConceptId() != 0))) {
+                        // @formatter:off
+                        if (value != null && (StringUtils.isNotEmpty(value.getAttributeValue())
+                                || (value.getRelatedConceptId() != null && value.getRelatedConceptId() != 0))) {
                             dataElementValues.add(value);
                         }
+                        // @formatter:on
                     }
                 }
             }
@@ -386,6 +387,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      *            Concept to be updated
      * @param dataElementValues
      *            bound data elements with values
+     * @throws eionet.meta.service.ServiceException
+     *             if fails
      */
     private void fixRelatedLocalRefElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues)
             throws ServiceException {
@@ -623,9 +626,17 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
                 List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(originalVocabularyFolderId);
 
+                // TODO all elements can be queried in once with getVocabularyConceptsDataElementValues
                 for (VocabularyConcept concept : concepts) {
-                    List<List<DataElement>> elems =
-                            dataElementDAO.getVocabularyConceptDataElementValues(originalVocabularyFolderId, concept.getId(), true);
+
+                    int conceptId = concept.getId();
+                    Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
+                            dataElementDAO.getVocabularyConceptsDataElementValues(originalVocabularyFolderId,
+                                    new int[] {conceptId}, true);
+                    List<List<DataElement>> elems = vocabularyConceptsDataElementValues.get(conceptId);
+                    // List<List<DataElement>> elems =
+                    // dataElementDAO
+                    // .getVocabularyConceptDataElementValues(originalVocabularyFolderId, concept.getId(), true);
 
                     for (List<DataElement> elemMeta : elems) {
                         if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
@@ -666,10 +677,14 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
                 List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(originalVocabularyFolderId);
                 for (VocabularyConcept concept : concepts) {
-                    List<List<DataElement>> elems =
-                            dataElementDAO
-                                    .getVocabularyConceptDataElementValues(originalVocabularyFolderId, concept.getId(), true);
-
+                    int conceptId = concept.getId();
+                    Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
+                            dataElementDAO.getVocabularyConceptsDataElementValues(originalVocabularyFolderId,
+                                    new int[] {conceptId}, true);
+                    List<List<DataElement>> elems = vocabularyConceptsDataElementValues.get(conceptId);
+                    // List<List<DataElement>> elems =
+                    // dataElementDAO
+                    // .getVocabularyConceptDataElementValues(originalVocabularyFolderId, concept.getId(), true);
                     concept.setElementAttributes(elems);
 
                 }
@@ -931,6 +946,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
                     dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolderId, new int[] {conceptId},
                             emptyAttributes);
             result.setElementAttributes(vocabularyConceptsDataElementValues.get(conceptId));
+            // List<List<DataElement>> elementAttributes =
+            // dataElementDAO.getVocabularyConceptDataElementValues(vocabularyFolderId, result.getId(), emptyAttributes);
+            // result.setElementAttributes(elementAttributes);
 
             return result;
 
@@ -1318,14 +1336,19 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * delete referecnes.
      *
      * @param vocabularyId
+     *            vocabulary id
      */
     private void deleteInverseRelations(int vocabularyId) {
         // set relation to this concept to null
         List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyId);
-
+        // TODO all elements can be queried in once with getVocabularyConceptsDataElementValues
         for (VocabularyConcept concept : concepts) {
-            List<List<DataElement>> elems =
-                    dataElementDAO.getVocabularyConceptDataElementValues(vocabularyId, concept.getId(), true);
+            int conceptId = concept.getId();
+            Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
+                    dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyId, new int[] {conceptId}, true);
+            List<List<DataElement>> elems = vocabularyConceptsDataElementValues.get(conceptId);
+            // List<List<DataElement>> elems =
+            // dataElementDAO.getVocabularyConceptDataElementValues(vocabularyId, concept.getId(), true);
             for (List<DataElement> elemMeta : elems) {
                 if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
                     dataElementDAO.deleteReferringInverseElems(concept.getId(), elemMeta);
@@ -1339,8 +1362,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
     public void fixRelatedReferenceElements(int vocabularyId, List<VocabularyConcept> concepts) {
         for (VocabularyConcept concept : concepts) {
             List<List<DataElement>> elems = concept.getElementAttributes();
-            // dataElementDAO
-            // .getVocabularyConceptDataElementValues(vocabularyId, concept.getId(), true);
             for (List<DataElement> elemMeta : elems) {
                 if (!elemMeta.isEmpty() && "reference".equals(elemMeta.get(0).getDatatype())) {
                     for (DataElement elem : elemMeta) {
