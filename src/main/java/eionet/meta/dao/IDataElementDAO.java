@@ -178,12 +178,14 @@ public interface IDataElementDAO {
     /**
      * Returns data element attributes for vocabulary concepts in a folder.
      *
+     * @precondition if emptyAttributes true then this method should be called with a single concept id, i.e.
+     *               vocabularyConceptIds.length should be 1.
      * @param vocabularyFolderId
      *            vocabularyID
      * @param vocabularyConceptIds
      *            concept IDs
      * @param emptyAttributes
-     *            when true, then attributes that are not valued are also included
+     *            when true, then attributes that are not valued are also included.
      * @return map of list of lists where each list contains element values of one bound element
      */
     Map<Integer, List<List<DataElement>>> getVocabularyConceptsDataElementValues(int vocabularyFolderId,

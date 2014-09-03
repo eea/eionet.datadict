@@ -666,11 +666,19 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setRelatedVocabularyWorkingCopy(rs.getInt("rcv.WORKING_COPY") == 1);
                 List<FixedValue> fxvs = getFixedValues(de.getId());
                 de.setFixedValues(fxvs);
-                de.setElemAttributeValues(getDataElementAttributeValues(rs.getInt("d.DATAELEM_ID")));
+                de.setElemAttributeValues(getDataElementAttributeValues(dataElemId));
 
                 values.add(de);
             }
         });
+
+        if (emptyAttributes && result.get(0) != null) {
+            if (result.containsKey(vocabularyConceptIds[0])) {
+                result.get(vocabularyConceptIds[0]).addAll(result.get(0));
+            } else {
+                result.put(vocabularyConceptIds[0], result.get(0));
+            }
+        }
 
         // fill empty lists for not found concepts
         for (int conceptId : vocabularyConceptIds) {
