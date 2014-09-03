@@ -20,22 +20,6 @@
  */
 package eionet.web.action;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sourceforge.stripes.action.ErrorResolution;
-import net.sourceforge.stripes.action.HandlesEvent;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-
 import eionet.meta.DownloadServlet;
 import eionet.meta.dao.domain.DataSetTable;
 import eionet.meta.dao.domain.Schema;
@@ -45,6 +29,15 @@ import eionet.meta.service.ITableService;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sourceforge.stripes.action.*;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Action bean for serving RESTful API methods for retrieving information related to XML Schemas.
@@ -126,15 +119,15 @@ public class SchemasJsonApiActionBean extends AbstractActionBean {
     private String convertToJson(List<DataSetTable> datasetTables, List<Schema> schemas) {
 
         String webAppUrl = Props.getRequiredProperty(PropsIF.DD_URL);
-        if (!webAppUrl.endsWith("/")) {
-            webAppUrl += "/";
+        if (webAppUrl.endsWith("/")) {
+            webAppUrl =webAppUrl.substring(0, webAppUrl.lastIndexOf("/"));
         }
 
         JSONArray itemList = new JSONArray();
         if (CollectionUtils.isNotEmpty(datasetTables)) {
             for (DataSetTable dsTable : datasetTables) {
                 JSONObject ci = new JSONObject();
-                ci.put("url", webAppUrl + "GetSchema?id=TBL" + dsTable.getId());
+                ci.put("url", webAppUrl + "/GetSchema?id=TBL" + dsTable.getId());
                 ci.put("identifier", dsTable.getIdentifier());
                 ci.put("name", dsTable.getName());
                 ci.put("status", dsTable.getDataSetStatus());

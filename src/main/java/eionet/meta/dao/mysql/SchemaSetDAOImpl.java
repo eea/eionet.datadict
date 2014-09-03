@@ -21,16 +21,13 @@
 
 package eionet.meta.dao.mysql;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import eionet.meta.DElemAttribute;
+import eionet.meta.dao.ISchemaSetDAO;
+import eionet.meta.dao.domain.RegStatus;
+import eionet.meta.dao.domain.SchemaSet;
+import eionet.meta.service.data.SchemaSetFilter;
+import eionet.meta.service.data.SchemaSetsResult;
+import eionet.util.Util;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -40,13 +37,10 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import eionet.meta.DElemAttribute;
-import eionet.meta.dao.ISchemaSetDAO;
-import eionet.meta.dao.domain.RegStatus;
-import eionet.meta.dao.domain.SchemaSet;
-import eionet.meta.service.data.SchemaSetFilter;
-import eionet.meta.service.data.SchemaSetsResult;
-import eionet.util.Util;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.*;
 
 /**
  * SchemaSet DAO implementation.
@@ -69,7 +63,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     private static final String COPY_SCHEMA_SET_ROW =
             "insert into T_SCHEMA_SET "
                     + "(IDENTIFIER, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID, REG_STATUS, STATUS_MODIFIED)"
-                    + " select ifnull(:identifier,IDENTIFIER), CONTINUITY_ID, true, :userName, :userName, :checkedOutCopyId, REG_STATUS "
+                    + " select ifnull(:identifier,IDENTIFIER), CONTINUITY_ID, true, :userName, :userName, :checkedOutCopyId, REG_STATUS, STATUS_MODIFIED "
                     + "from T_SCHEMA_SET where SCHEMA_SET_ID=:schemaSetId";
 
     /** */
@@ -182,7 +176,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
                 ss.setNameAttribute(rs.getString("NAME_ATTR"));
-                ss.setStatusModified(rs.getDate("STATUS_MODIFIED"));
+                ss.setStatusModified(rs.getTimestamp("STATUS_MODIFIED"));
                 return ss;
             }
         });
@@ -261,7 +255,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 if (StringUtils.isNotBlank(name)) {
                     ss.setAttributeValues(Collections.singletonMap("Name", Collections.singletonList(name)));
                 }
-                ss.setStatusModified(rs.getDate("STATUS_MODIFIED"));
+                ss.setStatusModified(rs.getTimestamp("STATUS_MODIFIED"));
                 return ss;
             }
         });
@@ -289,7 +283,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 ss.setUserModified(rs.getString("USER_MODIFIED"));
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
-                ss.setStatusModified(rs.getDate("STATUS_MODIFIED"));
+                ss.setStatusModified(rs.getTimestamp("STATUS_MODIFIED"));
                 return ss;
             }
         });
@@ -326,7 +320,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 ss.setUserModified(rs.getString("USER_MODIFIED"));
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
-                ss.setStatusModified(rs.getDate("STATUS_MODIFIED"));
+                ss.setStatusModified(rs.getTimestamp("STATUS_MODIFIED"));
                 return ss;
             }
         });
@@ -354,7 +348,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 ss.setUserModified(rs.getString("USER_MODIFIED"));
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
-                ss.setStatusModified(rs.getDate("STATUS_MODIFIED"));
+                ss.setStatusModified(rs.getTimestamp("STATUS_MODIFIED"));
                 return ss;
             }
         });
@@ -368,9 +362,9 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     public int createSchemaSet(SchemaSet schemaSet) {
         String insertSql =
                 "insert into T_SCHEMA_SET (IDENTIFIER, CONTINUITY_ID, REG_STATUS, "
-                        + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID, STATUS_MODIFIED) "
+                        + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID) "
                         + "values (:identifier,  :continuityId, :regStatus, :workingCopy, :workingUser, now(), :userModified, "
-                        + ":comment, :checkedOutCopyId, :statusModified)";
+                        + ":comment, :checkedOutCopyId)";
 
         String continuityId = schemaSet.getContinuityId();
         if (StringUtils.isBlank(continuityId)) {
@@ -517,7 +511,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                         ss.setUserModified(rs.getString("USER_MODIFIED"));
                         ss.setComment(rs.getString("COMMENT"));
                         ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
-                        ss.setStatusModified(rs.getDate("STATUS_MODIFIED"));
+                        ss.setStatusModified(rs.getTimestamp("STATUS_MODIFIED"));
                         return ss;
                     }
                 });
@@ -548,7 +542,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                         ss.setUserModified(rs.getString("USER_MODIFIED"));
                         ss.setComment(rs.getString("COMMENT"));
                         ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
-                        ss.setStatusModified(rs.getDate("STATUS_MODIFIED"));
+                        ss.setStatusModified(rs.getTimestamp("STATUS_MODIFIED"));
                         return ss;
                     }
                 });
@@ -672,7 +666,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 ss.setUserModified(rs.getString("USER_MODIFIED"));
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
-                ss.setStatusModified(rs.getDate("STATUS_MODIFIED"));
+                ss.setStatusModified(rs.getTimestamp("STATUS_MODIFIED"));
                 return ss;
             }
         });

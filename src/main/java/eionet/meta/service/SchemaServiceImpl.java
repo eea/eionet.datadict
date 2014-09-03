@@ -21,36 +21,24 @@
 
 package eionet.meta.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import net.sourceforge.stripes.action.FileBean;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.ISchemaDAO;
 import eionet.meta.dao.ISchemaSetDAO;
-import eionet.meta.dao.domain.Attribute;
-import eionet.meta.dao.domain.ComplexAttribute;
-import eionet.meta.dao.domain.ComplexAttributeField;
-import eionet.meta.dao.domain.RegStatus;
-import eionet.meta.dao.domain.Schema;
-import eionet.meta.dao.domain.SchemaSet;
+import eionet.meta.dao.domain.*;
 import eionet.meta.schemas.SchemaRepository;
 import eionet.meta.service.data.SchemaFilter;
 import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
 import eionet.meta.service.data.SchemasResult;
 import eionet.util.SecurityUtil;
+import net.sourceforge.stripes.action.FileBean;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
 
 /**
  * Schema service implementation.
@@ -415,9 +403,9 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     *
-     * @param oldId
-     * @param substituteId
+     * Replace schema identifier.
+     * @param replacedId previous identifier
+     * @param substituteId new identifier
      */
     private void replaceSchemaId(int replacedId, int substituteId) {
         attributeDAO.replaceParentId(replacedId, substituteId, DElemAttribute.ParentType.SCHEMA);
@@ -744,6 +732,12 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Copy schema set row, get the new row's ID.
             int newSchemaSetId = schemaSetDAO.copySchemaSetRow(schemaSetId, userName, identifier);
+
+            // reset the status of new schema set to DRAFT
+            SchemaSet newSchemaSet = schemaSetDAO.getSchemaSet(newSchemaSetId);
+            newSchemaSet.setRegStatus(RegStatus.DRAFT);
+            newSchemaSet.setStatusModified(null);
+            schemaSetDAO.updateSchemaSet(newSchemaSet);
 
             // Copy the schema set's simple attributes.
             attributeDAO.copySimpleAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET.toString(), newSchemaSetId);

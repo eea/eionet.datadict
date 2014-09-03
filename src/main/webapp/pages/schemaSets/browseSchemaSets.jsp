@@ -103,7 +103,7 @@
                         </c:if>
                     </c:forEach>
                     <c:if test="${outerLoop.index == 0}">
-                        <h3>Deprecated Schema Sets</h3>
+                        <h3>Deprecated schema sets</h3>
                         <div class="advice-msg" style="margin-top:1em;font-size:0.8em">
                             Hint: Following schema sets are deprecated. They are not valid anymore!
                         </div>
@@ -111,7 +111,7 @@
                 </c:forEach>
                <!-- ROOT LEVEL SCHEMAS -->
                 <c:if test="${fn:length(actionBean.schemas) > 0}">
-                    <h3>Root Level Schemas</h3>
+                    <h3>Root level schemas</h3>
                 </c:if>
                 <c:forEach var="schema" items="${actionBean.schemas}">
                     <c:set var="schemaName" value="${schema.attributeValues!=null ? ddfn:join(schema.attributeValues['Name'],'') : ''}"/>
