@@ -1,10 +1,8 @@
 package eionet.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -117,15 +115,27 @@ public class UtilTest {
         assertTrue(Util.isValidUri("ftp://someftp.outthere.org"));
         assertTrue(Util.isValidUri("urn:aa:lv"));
         assertTrue(Util.isValidUri("urn:aa:lv:"));
+        assertTrue(Util.isValidUri("urn:aa:lv::"));
         assertTrue(Util.isValidUri("urn:ogc:def:crs:EPSG::4258"));
         assertTrue(Util.isValidUri("mailto:juhan@hot.ee"));
         assertTrue(Util.isValidUri("http://tripledev.ee/"));
         assertFalse(Util.isValidUri("http://test.tripledev.ee//"));
     }
 
-    /*
-     * private static boolean isValid(String str, UrlValidator val) { System.out.println(str + " " + val.isValid(str)); return
-     * Util.isURI(str); }
-     */
+    @Test
+    public void testValidIdentifiers() {
+        assertTrue(Util.isValidIdentifier("id"));
+        assertTrue(Util.isValidIdentifier("id123IDž"));
+        assertTrue(Util.isValidIdentifier("id--2"));
+    }
+    @Test
+    public void testInvalidIdentifiers() {
+        assertFalse(Util.isValidIdentifier("id:id"));
+        assertFalse(Util.isValidIdentifier("id#id"));
+        assertFalse(Util.isValidIdentifier("id+id"));
+        assertFalse(Util.isValidIdentifier("id?id"));
+        assertFalse(Util.isValidIdentifier("id id"));
+        assertFalse(Util.isValidIdentifier(" "));
+    }
 
 }

@@ -21,13 +21,12 @@
 
 package eionet.meta.dao.domain;
 
+import eionet.util.Util;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
-import eionet.util.Util;
 
 /**
  * Data element.
@@ -406,7 +405,9 @@ public class DataElement {
      */
     public void setRelatedConceptBaseURI(String relatedConceptBaseURI) {
         this.relatedConceptBaseURI = StringUtils.trimToNull(relatedConceptBaseURI);
-        if (StringUtils.isNotEmpty(this.relatedConceptBaseURI) && !StringUtils.endsWith(this.relatedConceptBaseURI, "/")) {
+        if (StringUtils.isNotBlank(this.relatedConceptBaseURI) && !StringUtils.endsWith(this.relatedConceptBaseURI, "/")
+                && !StringUtils.endsWith(this.relatedConceptBaseURI, ":")
+                && !StringUtils.endsWith(this.relatedConceptBaseURI, "#")) {
             this.relatedConceptBaseURI += "/";
         }
     }

@@ -1,7 +1,8 @@
 package eionet.meta.dao.domain;
 
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Data element test.
@@ -15,7 +16,7 @@ public class DataElementTest {
         elem.setAttributeLanguage("en");
         elem.setAttributeValue("This is the value");
 
-        Assert.assertEquals("782fb9c4ce6fc639352db595b603384d", elem.getUniqueValueHash());
+        assertEquals("782fb9c4ce6fc639352db595b603384d", elem.getUniqueValueHash());
 
     }
 
@@ -28,8 +29,27 @@ public class DataElementTest {
         elem.setAttributeValue("This is a pointless value");
         elem.setRelatedConceptId(13);
 
-        Assert.assertEquals("a6964cac032ad015273a5b1d7b3e7500", elem.getUniqueValueHash());
+        assertEquals("a6964cac032ad015273a5b1d7b3e7500", elem.getUniqueValueHash());
 
+    }
+    @Test
+    public void testSetRelatedConceptBaseURI() {
+        DataElement elem = new DataElement();
+        String baseUri = "base/";
+        elem.setRelatedConceptBaseURI(baseUri);
+        assertEquals("base/", elem.getRelatedConceptBaseURI());
+
+        baseUri = "base";
+        elem.setRelatedConceptBaseURI(baseUri);
+        assertEquals("base/", elem.getRelatedConceptBaseURI());
+
+        baseUri = "urn::";
+        elem.setRelatedConceptBaseURI(baseUri);
+        assertEquals("urn::", elem.getRelatedConceptBaseURI());
+
+        baseUri = "base#";
+        elem.setRelatedConceptBaseURI(baseUri);
+        assertEquals("base#", elem.getRelatedConceptBaseURI());
     }
 
 
