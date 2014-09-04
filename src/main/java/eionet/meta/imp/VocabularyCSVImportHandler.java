@@ -21,21 +21,6 @@
 
 package eionet.meta.imp;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
 import au.com.bytecode.opencsv.CSVReader;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -45,6 +30,14 @@ import eionet.meta.service.data.DataElementsResult;
 import eionet.util.Pair;
 import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Includes code for parsing and handling CSV lines.
@@ -247,15 +240,8 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     prevHeader = elementHeader;
 
                     VocabularyConcept foundRelatedConcept = null;
-                    if (StringUtils.startsWith(lineParams[k], URI_PREFIX)) {
-                        // it can be a related concept
-                        try {
-                            URL relatedConceptURL = new URL(lineParams[k]);
-                            foundRelatedConcept = findRelatedConcept(relatedConceptURL.toString());
-                        } catch (MalformedURLException e) {
-                            // it is not a valid url so we don't accept it as a related concept identifier
-                            e.printStackTrace();
-                        }
+                    if (Util.isValidUri(lineParams[k])){
+                        foundRelatedConcept = findRelatedConcept(lineParams[k]);
                     }
 
                     // check for pre-existence of the VCE by attribute value or related concept id

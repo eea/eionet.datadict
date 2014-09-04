@@ -132,9 +132,7 @@ public class UtilTest {
     public void testInvalidIdentifiers() {
         assertFalse(Util.isValidIdentifier("id:id"));
         assertFalse(Util.isValidIdentifier("id#id"));
-        assertFalse(Util.isValidIdentifier("id+id"));
         assertFalse(Util.isValidIdentifier("id?id"));
-        assertFalse(Util.isValidIdentifier("id id"));
         assertFalse(Util.isValidIdentifier(" "));
     }
 
