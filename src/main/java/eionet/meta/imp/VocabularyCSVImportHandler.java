@@ -28,13 +28,12 @@ import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 import eionet.util.Pair;
+import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -205,7 +204,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 }
 
                 String conceptIdentifier = uri.replace(this.folderContextRoot, "");
-                if (StringUtils.contains(conceptIdentifier, "/")) {
+                if (StringUtils.contains(conceptIdentifier, "/") || !Util.isValidIdentifier(conceptIdentifier)) {
                     this.logMessages.add("Row (" + rowNumber + ") did not contain a valid concept identifier.");
                     continue;
                 }
@@ -295,15 +294,8 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     prevHeader = elementHeader;
 
                     VocabularyConcept foundRelatedConcept = null;
-                    if (StringUtils.startsWith(lineParams[k], URI_PREFIX)) {
-                        // it can be a related concept
-                        try {
-                            URL relatedConceptURL = new URL(lineParams[k]);
-                            foundRelatedConcept = findRelatedConcept(relatedConceptURL.toString());
-                        } catch (MalformedURLException e) {
-                            // it is not a valid url so we don't accept it as a related concept identifier
-                            e.printStackTrace();
-                        }
+                    if (Util.isValidUri(lineParams[k])) {
+                        foundRelatedConcept = findRelatedConcept(lineParams[k]);
                     }
 
                     // check for pre-existence of the VCE by attribute value or related concept id
@@ -334,13 +326,13 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                         continue;
                     }
 
-                    // create VCE
+                    //create VCE
                     DataElement elem = new DataElement();
                     elementsOfConcept.add(elem);
                     elem.setAttributeLanguage(lang);
                     elem.setIdentifier(elementHeader);
                     elem.setId(this.boundElementsIds.get(elementHeader));
-                    // check if there is a found related concept
+                    //check if there is a found related concept
                     if (foundRelatedConcept != null) {
                         elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
                         int id = foundRelatedConcept.getId();

@@ -23,7 +23,6 @@ package eionet.meta.imp;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.ServiceException;
 import eionet.util.Pair;
 import org.apache.commons.lang.StringUtils;
@@ -46,20 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.rio.RDFHandler;
-import org.openrdf.rio.RDFHandlerException;
-
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.util.Util;
 import eionet.meta.exports.VocabularyOutputHelper;
-import eionet.meta.service.ServiceException;
-import eionet.util.Pair;
 
 /**
  * Implementation of OpenRDF's {@link RDFHandler} that will be used by implementations of
@@ -316,7 +303,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
         // if it does not a have conceptIdentifier than it may be an attribute for vocabulary or a wrong record, so just ignore it
         String conceptIdentifier = conceptUri.replace(this.folderContextRoot, "");
-        if (StringUtils.isEmpty(conceptIdentifier) || StringUtils.contains(conceptIdentifier, "/")) {
+        if (StringUtils.contains(conceptIdentifier, "/") || !Util.isValidIdentifier(conceptIdentifier)) {
             // this.logMessages.add(st.toString() + " NOT imported, contains a / in concept identifier or empty");
             return;
         }

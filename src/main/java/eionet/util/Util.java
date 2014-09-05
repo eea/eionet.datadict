@@ -1370,7 +1370,7 @@ public final class Util {
      * @return - the true/false result.
      */
     public static boolean isValidIdentifier(String identifier) {
-        if (StringUtils.isNotEmpty(identifier)) {
+        if (StringUtils.isNotBlank(identifier)) {
             String regex = "^[^/\\?\\%\\\\#:]+$";
             return identifier.matches(regex);
         }

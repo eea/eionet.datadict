@@ -10,11 +10,11 @@
                     LABEL="10, wise, WISE - Water Information System for Europe"/>
 
     <VOCABULARY VOCABULARY_ID="1" CONTINUITY_ID="123" IDENTIFIER="BWaterCat"
-                LABEL="Bathing Water Category" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser"  FOLDER_ID="10"/>
+                LABEL="Bathing Water Category" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser"  FOLDER_ID="10"  BASE_URI="http://test.tripledev.ee/datadict/wise/BWaterCat/"/>
     <VOCABULARY VOCABULARY_ID="2" CONTINUITY_ID="123" IDENTIFIER="BWClosed"
-                LABEL="Bathing Water Closed status" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="10"/>
+                LABEL="Bathing Water Closed status" REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="10"  BASE_URI="http://test.tripledev.ee/datadict/wise/BWClosed/"/>
     <VOCABULARY VOCABULARY_ID="3" CONTINUITY_ID="123" IDENTIFIER="BWType"
-                LABEL="Type of bathing water." REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser"  FOLDER_ID="10"/>
+                LABEL="Type of bathing water." REG_STATUS="Public Draft" WORKING_COPY="0" WORKING_USER="testUser"  FOLDER_ID="10"  BASE_URI="http://test.tripledev.ee/datadict/wise/BWType/"/>
 
 
     <!-- Concepts for vocabulary 1 -->

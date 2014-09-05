@@ -27,12 +27,20 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
-import eionet.meta.service.data.*;
+import eionet.meta.service.data.ObsoleteStatus;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.StringEncoder;
 import eionet.util.Util;
-import net.sourceforge.stripes.action.*;
+import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
+import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.lang.StringUtils;
@@ -604,7 +612,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     public String getUriPrefix() {
         String baseUri = VocabularyFolder.getBaseUri(vocabularyFolder);
 
-        if (!baseUri.endsWith("/")) {
+        if (!baseUri.endsWith("/") && !baseUri.endsWith("#") && !baseUri.endsWith(":")) {
             baseUri += "/";
         }
 

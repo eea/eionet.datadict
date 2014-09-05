@@ -287,7 +287,8 @@ public class VocabularyFolder {
      */
     public void setBaseUri(String baseUri) {
         this.baseUri = StringUtils.trimToNull(baseUri);
-        if (StringUtils.isNotBlank(this.baseUri) && !StringUtils.endsWith(this.baseUri, "/")) {
+        if (StringUtils.isNotBlank(this.baseUri) && !StringUtils.endsWith(this.baseUri, "/")
+                && !StringUtils.endsWith(this.baseUri, ":") && !StringUtils.endsWith(this.baseUri, "#")) {
             this.baseUri = this.baseUri + "/";
         }
     }

@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -137,7 +138,7 @@ public class VocabularyReferenceMatchServiceImpl implements IVocabularyReference
                 String elemValue = elem.getAttributeValue();
                 String baseUri = elem.getRelatedConceptBaseURI();
                 String conceptIdentifier = StringUtils.trimToEmpty(StringUtils.replace(elemValue, baseUri, ""));
-                if (StringUtils.isNotEmpty(conceptIdentifier) && !StringUtils.contains(conceptIdentifier, "/")) {
+                if (Util.isValidIdentifier(conceptIdentifier) && !StringUtils.contains(conceptIdentifier, "/")) {
                     // now hope we have a valid concept here, search for it.
                     VocabularyConceptFilter filter = new VocabularyConceptFilter();
                     // !!! ATTENTION: this is really dependent to implementation of getPotentialReferringVocabularyConceptsElements

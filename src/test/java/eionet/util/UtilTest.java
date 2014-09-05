@@ -104,6 +104,8 @@ public class UtilTest {
     @Test
     public void testvalidUrl() {
         assertTrue(Util.isValidUri("http://java.sun.com"));
+        assertTrue(Util.isValidUri("http://java.sun.com/"));
+        assertTrue(Util.isValidUri("http://test.tripledev.ee#"));
         assertFalse(Util.isValidUri("http://www. spacein.there.dk"));
         assertFalse(Util.isValidUri("appi"));
         assertFalse(Util.isValidUri("http://"));
@@ -114,14 +116,26 @@ public class UtilTest {
         assertTrue(Util.isValidUri("http://www.spacein.there.dk/thereissomething/"));
         assertTrue(Util.isValidUri("ftp://someftp.outthere.org"));
         assertTrue(Util.isValidUri("urn:aa:lv"));
+        assertTrue(Util.isValidUri("urn:aa:lv:"));
+        assertTrue(Util.isValidUri("urn:aa:lv::"));
+        assertTrue(Util.isValidUri("urn:ogc:def:crs:EPSG::4258"));
         assertTrue(Util.isValidUri("mailto:juhan@hot.ee"));
         assertTrue(Util.isValidUri("http://tripledev.ee/"));
         assertFalse(Util.isValidUri("http://test.tripledev.ee//"));
     }
 
-    /*
-     * private static boolean isValid(String str, UrlValidator val) { System.out.println(str + " " + val.isValid(str)); return
-     * Util.isURI(str); }
-     */
+    @Test
+    public void testValidIdentifiers() {
+        assertTrue(Util.isValidIdentifier("id"));
+        assertTrue(Util.isValidIdentifier("id123IDž"));
+        assertTrue(Util.isValidIdentifier("id--2"));
+    }
+    @Test
+    public void testInvalidIdentifiers() {
+        assertFalse(Util.isValidIdentifier("id:id"));
+        assertFalse(Util.isValidIdentifier("id#id"));
+        assertFalse(Util.isValidIdentifier("id?id"));
+        assertFalse(Util.isValidIdentifier(" "));
+    }
 
 }
