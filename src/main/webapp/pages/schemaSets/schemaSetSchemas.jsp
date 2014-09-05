@@ -55,6 +55,13 @@
 
         <h1>Edit schemas of schema set <a href="${fn:escapeXml(schemaSetUrl)}">${actionBean.schemaSet.identifier}</a></h1>
 
+        <c:if test="${actionBean.schemaSet.deprecatedStatus}">
+            <div class="note-msg">
+                <strong>Note</strong>
+                <p>This schema set is deprecated. It is not valid anymore!</p>
+            </div>
+        </c:if>
+
         <c:if test="${not empty actionBean.schemas}">
             <stripes:form id="schemasForm" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
                 <stripes:hidden name="schemaSet.id"/>

@@ -63,6 +63,9 @@
     <listener>
         <listener-class>eionet.meta.scheduled.VocabularyReferenceMatchJob</listener-class>
     </listener>
+    <listener>
+        <listener-class>eionet.meta.ContainerContextClosedHandler</listener-class>
+    </listener>
 
     <!-- filters -->
     <filter>

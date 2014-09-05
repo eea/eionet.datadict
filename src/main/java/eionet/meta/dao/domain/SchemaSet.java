@@ -1,5 +1,6 @@
 package eionet.meta.dao.domain;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,14 @@ public class SchemaSet {
     private String userModified;
     private String comment;
     private int checkedOutCopyId;
+    /**
+     * Status modification date.
+     */
+    private Date statusModified;
+    /**
+     * Status modification flag. Set true when status is changed.
+     */
+    private boolean isStatusModified = false;
 
     /** Name attribute value. */
     private String nameAttribute;
@@ -34,7 +43,7 @@ public class SchemaSet {
     /**
      * Helper method for checking, if SchemaSet is in "DRAFT" status.
      *
-     * @return
+     * @return boolean
      */
     public boolean isDraftStatus() {
         return RegStatus.DRAFT.equals(regStatus);
@@ -114,10 +123,15 @@ public class SchemaSet {
     }
 
     /**
+     * Set the registration status. If status changed, it updates modified date as well.
+     *
      * @param regStatus
      *            the regStatus to set
      */
     public void setRegStatus(RegStatus regStatus) {
+        if (this.regStatus != null && !this.regStatus.equals(regStatus)) {
+            setStatusModified(new Timestamp(System.currentTimeMillis()));
+        }
         this.regStatus = regStatus;
     }
 
@@ -213,16 +227,17 @@ public class SchemaSet {
 
     /**
      *
-     * @return
+     * @return boolean
      */
     public boolean isCheckedOut() {
-        return isWorkingCopy == false && (workingUser != null && !workingUser.isEmpty());
+        return !isWorkingCopy && (workingUser != null && !workingUser.isEmpty());
     }
 
     /**
      *
      * @param userName
-     * @return
+     *            user name
+     * @return boolean
      */
     public boolean isWorkingCopyOf(String userName) {
         return isWorkingCopy && workingUser != null && workingUser.equals(userName);
@@ -231,15 +246,16 @@ public class SchemaSet {
     /**
      *
      * @param userName
-     * @return
+     *            user name
+     * @return boolean
      */
     public boolean isCheckedOutBy(String userName) {
-        return isWorkingCopy == false && workingUser != null && workingUser.equals(userName);
+        return !isWorkingCopy && workingUser != null && workingUser.equals(userName);
     }
 
     /**
      *
-     * @return
+     * @return boolean
      */
     public boolean isReleased() {
         return regStatus != null && regStatus.equals(RegStatus.RELEASED);
@@ -260,4 +276,20 @@ public class SchemaSet {
         this.nameAttribute = nameAttribute;
     }
 
+    /**
+     * Helper method for checking, if SchemaSet is in "Deprecated" status.
+     *
+     * @return boolean
+     */
+    public boolean isDeprecatedStatus() {
+        return RegStatus.DEPRECATED.equals(regStatus);
+    }
+
+    public Date getStatusModified() {
+        return statusModified;
+    }
+
+    public void setStatusModified(Date statusModified) {
+        this.statusModified = statusModified;
+    }
 }

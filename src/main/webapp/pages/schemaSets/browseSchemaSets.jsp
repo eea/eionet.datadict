@@ -60,40 +60,59 @@
 
         <stripes:form id="schemaSetsForm" action="/schemasets/browse/" method="post" style="margin-top:1em">
             <ul class="menu">
-                <c:forEach var="schemaSet" items="${actionBean.schemaSets}">
-                    <c:set var="schemaSetName" value="${schemaSet.attributeValues!=null ? ddfn:join(schemaSet.attributeValues['Name'],'') : ''}"/>
-                    <c:set var="displayName" value="${not empty schemaSetName ? schemaSetName : schemaSet.identifier}"/>
-                    <li>
-                        <c:if test="${not empty actionBean.user}">
-                            <c:choose>
-                                <c:when test="${ddfn:contains(actionBean.deletableSchemaSets,schemaSet.id)}">
-                                    <stripes:checkbox name="selectedSchemaSets" value="${schemaSet.id}" />
-                                </c:when>
-                                <c:otherwise>
-                                    <input type="checkbox" disabled="disabled" title="Schema set in registered status or currently checked out"/>
-                                </c:otherwise>
-                            </c:choose>
+                <!-- SCHEMA SETS LOOP, first it iterates on non-deprecated ones and then deprecated ones -->
+                <c:forEach begin="0" end ="1" varStatus="outerLoop">
+                    <c:forEach var="schemaSet" items="${actionBean.schemaSets}">
+                        <c:if test="${schemaSet.deprecatedStatus eq (outerLoop.index eq 1)}">
+                            <c:set var="schemaSetName" value="${schemaSet.attributeValues!=null ? ddfn:join(schemaSet.attributeValues['Name'],'') : ''}"/>
+                            <c:set var="displayName" value="${not empty schemaSetName ? schemaSetName : schemaSet.identifier}"/>
+                            <li>
+                                <c:if test="${not empty actionBean.user}">
+                                    <c:choose>
+                                        <c:when test="${ddfn:contains(actionBean.deletableSchemaSets,schemaSet.id)}">
+                                            <stripes:checkbox name="selectedSchemaSets" value="${schemaSet.id}" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <input type="checkbox" disabled="disabled" title="Schema set in registered status or currently checked out"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:if>
+                                <c:choose>
+                                    <c:when test="${schemaSet.draftStatus && empty actionBean.user}">
+                                        <span class="link-folder" style="color:gray;">
+                                            <c:out value="${schemaSet.identifier}"/> (<c:out value="${schemaSetName}"/>)
+                                            <sup style="font-size:0.7em"><c:out value="${schemaSet.regStatus}" /></sup>
+                                        </span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" class="link-folder">
+                                            <stripes:param name="schemaSet.identifier" value="${schemaSet.identifier}" />
+                                            <c:if test="${schemaSet.workingCopy}"><stripes:param name="workingCopy" value="true" /></c:if>
+                                            <c:out value="${schemaSet.identifier}"/>
+                                        </stripes:link>
+                                        (<c:out value="${schemaSetName}"/>)
+                                        <c:if test="${ddfn:contains(actionBean.statusTextsToDisplay, schemaSet.regStatus)}">
+                                            <sup style="font-size:0.7em"><c:out value="${schemaSet.regStatus}" /></sup>
+                                        </c:if>
+                                    </c:otherwise>
+                                </c:choose>
+                                <c:if test="${not empty actionBean.userName && schemaSet.workingCopy && actionBean.userName==schemaSet.workingUser}">
+                                    <span title="Your working copy" class="checkedout"><strong>*</strong></span>
+                                </c:if>
+                            </li>
                         </c:if>
-                        <c:choose>
-                            <c:when test="${schemaSet.draftStatus && empty actionBean.user}">
-                                <span class="link-folder" style="color:gray;">
-                                    <c:out value="${schemaSet.identifier}"/> (<c:out value="${schemaSetName}"/>)&nbsp;<sup style="font-size:0.7em"><c:out value="${schemaSet.regStatus}" /></sup>
-                                </span>
-                            </c:when>
-                            <c:otherwise>
-                                <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" class="link-folder">
-                                    <stripes:param name="schemaSet.identifier" value="${schemaSet.identifier}" />
-                                    <c:if test="${schemaSet.workingCopy}"><stripes:param name="workingCopy" value="true" /></c:if>
-                                    <c:out value="${schemaSet.identifier}"/>
-                                </stripes:link>
-                                (<c:out value="${schemaSetName}"/>)
-                            </c:otherwise>
-                        </c:choose>
-                        <c:if test="${not empty actionBean.userName && schemaSet.workingCopy && actionBean.userName==schemaSet.workingUser}">
-                            <span title="Your working copy" class="checkedout"><strong>*</strong></span>
-                        </c:if>
-                    </li>
+                    </c:forEach>
+                    <c:if test="${outerLoop.index == 0}">
+                        <h3>Deprecated schema sets</h3>
+                        <div class="advice-msg" style="margin-top:1em;font-size:0.8em">
+                            Hint: Following schema sets are deprecated. They are not valid anymore!
+                        </div>
+                    </c:if>
                 </c:forEach>
+               <!-- ROOT LEVEL SCHEMAS -->
+                <c:if test="${fn:length(actionBean.schemas) > 0}">
+                    <h3>Root level schemas</h3>
+                </c:if>
                 <c:forEach var="schema" items="${actionBean.schemas}">
                     <c:set var="schemaName" value="${schema.attributeValues!=null ? ddfn:join(schema.attributeValues['Name'],'') : ''}"/>
                     <c:set var="displayName" value="${not empty schemaName ? schemaName : schema.fileName}"/>

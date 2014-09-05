@@ -61,11 +61,11 @@ import eionet.util.SecurityUtil;
 @Transactional
 public class SchemaServiceImpl implements ISchemaService {
 
-    /** The DAO for operations with attributes */
+    /** The DAO for operations with attributes. */
     @Autowired
     private IAttributeDAO attributeDAO;
 
-    /** The DAO for operations with schemas */
+    /** The DAO for operations with schemas. */
     @Autowired
     private ISchemaDAO schemaDAO;
 
@@ -127,7 +127,7 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ServiceException
      */
     private void doDeleteSchemaSets(List<Integer> schemaSetIds, String username, boolean includingContents)
-    throws ServiceException {
+            throws ServiceException {
         try {
             // Validate permissions
             boolean deletePerm = username != null && SecurityUtil.hasPerm(username, "/schemasets", "d");
@@ -166,7 +166,7 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ValidationException
      */
     private void ensureDeleteAllowed(String username, boolean deleteReleasedPerm, List<SchemaSet> schemaSets)
-    throws ValidationException {
+            throws ValidationException {
         for (SchemaSet schemaSet : schemaSets) {
             if (schemaSet.isCheckedOut()) {
                 throw new ValidationException("Cannot delete a checked-out schema set: " + schemaSet.getIdentifier());
@@ -272,7 +272,7 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String username)
-    throws ServiceException {
+            throws ServiceException {
         try {
             schemaSetDAO.updateSchemaSet(schemaSet);
             if (attributes != null && !attributes.isEmpty()) {
@@ -415,9 +415,12 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
+     * Replace schema identifier.
      *
-     * @param oldId
+     * @param replacedId
+     *            previous identifier
      * @param substituteId
+     *            new identifier
      */
     private void replaceSchemaId(int replacedId, int substituteId) {
         attributeDAO.replaceParentId(replacedId, substituteId, DElemAttribute.ParentType.SCHEMA);
@@ -745,6 +748,12 @@ public class SchemaServiceImpl implements ISchemaService {
             // Copy schema set row, get the new row's ID.
             int newSchemaSetId = schemaSetDAO.copySchemaSetRow(schemaSetId, userName, identifier);
 
+            // reset the status of new schema set to DRAFT
+            SchemaSet newSchemaSet = schemaSetDAO.getSchemaSet(newSchemaSetId);
+            newSchemaSet.setRegStatus(RegStatus.DRAFT);
+            newSchemaSet.setStatusModified(null);
+            schemaSetDAO.updateSchemaSet(newSchemaSet);
+
             // Copy the schema set's simple attributes.
             attributeDAO.copySimpleAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET.toString(), newSchemaSetId);
 
@@ -866,7 +875,7 @@ public class SchemaServiceImpl implements ISchemaService {
             throw new ServiceException(e.getMessage(), e);
         }
     }
-    
+
     @Override
     public List<Schema> getSchemasForObligation(String obligationId, boolean releasedOnly) throws ServiceException {
         try {
@@ -874,12 +883,12 @@ public class SchemaServiceImpl implements ISchemaService {
             if (releasedOnly) {
                 schemasetFilter.setRegStatuses(Arrays.asList(RegStatus.RELEASED.toString()));
             } else {
-                schemasetFilter.setRegStatuses(RegStatus.getPublicStatuses());
+                schemasetFilter.setRegStatuses(RegStatus.getPublicStatusesForObligations());
             }
-            //Set up ROD url attribute value
+            // Set up ROD url attribute value
             ComplexAttribute rodAttr = attributeDAO.getComplexAttributeByName("ROD");
             ComplexAttributeField field = rodAttr.getField("url");
-            if (field  != null) {
+            if (field != null) {
                 field.setValue(obligationId);
                 field.setExactMatchInSearch(true);
             }
@@ -889,10 +898,10 @@ public class SchemaServiceImpl implements ISchemaService {
 
             schemasetFilter.setUsePaging(false);
 
-            //search schemasets
+            // search schemasets
             SchemaSetsResult schemasetsResult = schemaSetDAO.searchSchemaSets(schemasetFilter);
 
-            if (schemasetsResult != null && schemasetsResult.getList().size()>0) {
+            if (schemasetsResult != null && schemasetsResult.getList().size() > 0) {
                 return schemaDAO.listForSchemaSets(schemasetsResult.getList());
             } else {
                 return new ArrayList<Schema>();

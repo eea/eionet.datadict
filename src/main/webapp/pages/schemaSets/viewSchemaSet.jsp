@@ -182,6 +182,13 @@
         </div>
     </c:if>
 
+    <c:if test="${actionBean.schemaSet.deprecatedStatus}">
+        <div class="note-msg">
+            <strong>Note</strong>
+            <p>This schema set is deprecated. It is not valid anymore!</p>
+        </div>
+    </c:if>
+
     <%-- Attributes div --%>
 
     <div id="outerframe" style="padding-top:20px">
@@ -216,7 +223,8 @@
                 <td class="simple_attr_value">
                     <fmt:setLocale value="en_GB" />
                     <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schemaSet.dateModified}" var="dateFormatted"/>
-                    <c:out value="${actionBean.schemaSet.regStatus}"/>
+                    <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schemaSet.statusModified}" var="statusDateFormatted"/>
+                    <span><c:out value="${actionBean.schemaSet.regStatus}"/></span>
                     <c:if test="${not empty actionBean.userName && actionBean.userWorkingCopy}">
                         <span class="caution" title="Checked out on ${dateFormatted}">(Working copy)</span>
                     </c:if>
@@ -229,6 +237,16 @@
                     <c:if test="${empty actionBean.userName}">
                         <span>${dateFormatted}</span>
                     </c:if>
+                </td>
+            </tr>
+            <tr style="font-size:0.8em">
+                <th scope="row" class="scope-row simple_attr_title">
+                    Status changed
+                </th>
+                <td class="simple_attr_help">
+                </td>
+                <td class="simple_attr_value">
+                    ${statusDateFormatted}
                 </td>
             </tr>
             <c:forEach items="${actionBean.attributes}" var="attributesEntry">

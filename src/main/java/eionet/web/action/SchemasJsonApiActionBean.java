@@ -20,6 +20,22 @@
  */
 package eionet.web.action;
 
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sourceforge.stripes.action.ErrorResolution;
+import net.sourceforge.stripes.action.HandlesEvent;
+import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.StreamingResolution;
+import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+
 import eionet.meta.DownloadServlet;
 import eionet.meta.dao.domain.DataSetTable;
 import eionet.meta.dao.domain.Schema;
@@ -29,15 +45,6 @@ import eionet.meta.service.ITableService;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sourceforge.stripes.action.*;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * Action bean for serving RESTful API methods for retrieving information related to XML Schemas.
@@ -66,22 +73,18 @@ public class SchemasJsonApiActionBean extends AbstractActionBean {
     private boolean releasedOnly;
 
     /**
-     * Returns information on released/public schemas associated with the given obligation in DD. Both generated schemas
-     * (e.g. http://dd.eionet.europa.eu/GetSchema?id=TBL8286) and manually uploaded schemas
-     * (e.g. http://dd.eionet.europa.eu/schemas/fgases/FGasesReporting.xsd) are to be included in the response.
+     * Returns information on released/public schemas associated with the given obligation in DD. Both generated schemas (e.g.
+     * http://dd.eionet.europa.eu/GetSchema?id=TBL8286) and manually uploaded schemas (e.g.
+     * http://dd.eionet.europa.eu/schemas/fgases/FGasesReporting.xsd) are to be included in the response.
      *
-     * The response of the method is to be sent as JSON objects (application/json) representing each schema.
-     * Every object shall have the following attributes:
-     *      url
-     *      identifier (for generated schemas it's the table's Identifier)
-     *      name (for generated schemas it's the table's Short name).
-     *      status - Dataset/Schemaset status eg. Released, Recorded or  Public draft.
+     * The response of the method is to be sent as JSON objects (application/json) representing each schema. Every object shall have
+     * the following attributes: url identifier (for generated schemas it's the table's Identifier) name (for generated schemas it's
+     * the table's Short name). status - Dataset/Schemaset status eg. Released, Recorded or Public draft.
      *
      * If no schemas are found for the requested obligation ID, the method shall return HTTP 404.
      *
-     * Parameters:
-     *      obligationId - Obligation Identifier. Eg, ROD URL: http://rod.eionet.europa.eu/obligations/28
-     *      releasedOnly - if true, then returns only released schemas. Otherwise all public schemas will be returned
+     * Parameters: obligationId - Obligation Identifier. Eg, ROD URL: http://rod.eionet.europa.eu/obligations/28 releasedOnly - if
+     * true, then returns only released schemas. Otherwise all public schemas will be returned
      *
      * @return Stripes StreamingResolution or ErrorResolution
      */
@@ -112,15 +115,18 @@ public class SchemasJsonApiActionBean extends AbstractActionBean {
 
     /**
      * Converts business objects to JSON result.
-     * @param datasetTables List of DataSetTable objects.
-     * @param schemas List of Schema objects.
+     *
+     * @param datasetTables
+     *            List of DataSetTable objects.
+     * @param schemas
+     *            List of Schema objects.
      * @return JSON string
      */
     private String convertToJson(List<DataSetTable> datasetTables, List<Schema> schemas) {
 
         String webAppUrl = Props.getRequiredProperty(PropsIF.DD_URL);
         if (webAppUrl.endsWith("/")) {
-            StringUtils.substringBeforeLast(webAppUrl, "/");
+            webAppUrl = StringUtils.substringBeforeLast(webAppUrl, "/");
         }
 
         JSONArray itemList = new JSONArray();
@@ -138,7 +144,7 @@ public class SchemasJsonApiActionBean extends AbstractActionBean {
             for (Schema schema : schemas) {
                 JSONObject ci = new JSONObject();
                 String relPath =
-                    schemaRepository.getSchemaRelativePath(schema.getFileName(), schema.getSchemaSetIdentifier(), false);
+                        schemaRepository.getSchemaRelativePath(schema.getFileName(), schema.getSchemaSetIdentifier(), false);
                 ci.put("url", webAppUrl + DownloadServlet.SCHEMAS_PATH + "/" + relPath);
                 ci.put("identifier", schema.getSchemaSetIdentifier());
                 ci.put("name", schema.getNameAttribute());
@@ -157,7 +163,8 @@ public class SchemasJsonApiActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param obligationId the obligationId to set
+     * @param obligationId
+     *            the obligationId to set
      */
     public void setObligationId(String obligationId) {
         this.obligationId = obligationId;
@@ -171,7 +178,8 @@ public class SchemasJsonApiActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param releasedOnly the releasedOnly to set
+     * @param releasedOnly
+     *            the releasedOnly to set
      */
     public void setReleasedOnly(boolean releasedOnly) {
         this.releasedOnly = releasedOnly;

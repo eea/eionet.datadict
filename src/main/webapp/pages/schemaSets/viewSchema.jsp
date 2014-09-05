@@ -159,6 +159,13 @@
 
     <h1>View schema</h1>
 
+    <c:if test="${actionBean.schemaSet.deprecatedStatus}">
+        <div class="note-msg">
+            <strong>Note</strong>
+            <p>This schema set is deprecated. It is not valid anymore!</p>
+        </div>
+    </c:if>
+
     <c:set var="schemaWorkingCopy" value="${actionBean.schemaWorkingCopy}"/>
     <c:if test="${not empty schemaWorkingCopy}">
         <div class="note-msg">

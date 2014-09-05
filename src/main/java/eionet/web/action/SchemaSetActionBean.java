@@ -124,8 +124,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      * View action.
      *
-     * @return
+     * @return resolution
      * @throws ServiceException
+     *             if operation fails
      */
     @DefaultHandler
     @HandlesEvent(value = "view")
@@ -134,7 +135,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         loadSchemaSetByIdentifier();
 
         if (!isUserLoggedIn()) {
-            if (!Util.enumEquals(schemaSet.getRegStatus(), RegStatus.RELEASED, RegStatus.PUBLIC_DRAFT)) {
+            if (!Util.enumEquals(schemaSet.getRegStatus(), RegStatus.RELEASED, RegStatus.PUBLIC_DRAFT, RegStatus.DEPRECATED)) {
                 throw new ServiceException("Un-authenticated users can only see definitions in Released status!");
             }
         }
@@ -145,8 +146,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      * Edit action.
      *
-     * @return
+     * @return resolution
      * @throws ServiceException
+     *             if operation fails
      */
     @HandlesEvent(value = "edit")
     public Resolution edit() throws ServiceException {
@@ -166,8 +168,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      *
-     * @return
+     * @return resolution
      * @throws ServiceException
+     *             if operation fails
      */
     public Resolution editSchemas() throws ServiceException {
         workingCopy = true;
@@ -187,8 +190,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      * Add action.
      *
-     * @return
+     * @return resolution
      * @throws ServiceException
+     *             if operation fails
      */
     public Resolution add() throws ServiceException {
 
@@ -201,7 +205,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             schemaService.addSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
             resolution =
                     new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier())
-                    .addParameter("workingCopy", true);
+                            .addParameter("workingCopy", true);
             addSystemMessage("Working copy successfully created!");
         }
         return resolution;
@@ -210,11 +214,11 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      * Save action.
      *
-     * @return
+     * @return resolution
      * @throws ServiceException
+     *             if operation fails
      */
     public Resolution save() throws ServiceException {
-
         schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema set successfully updated!");
 
@@ -224,8 +228,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      * Save and close action.
      *
-     * @return
+     * @return resolution
      * @throws ServiceException
+     *             if operation fails
      */
     public Resolution saveAndClose() throws ServiceException {
 
@@ -238,8 +243,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      * Cancel action.
      *
-     * @return
+     * @return resolution
      * @throws DAOException
+     *             if operation fails
      */
     public Resolution cancelEdit() throws DAOException {
         return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter(
@@ -248,8 +254,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      *
-     * @return
+     * @return resolution
      * @throws DAOException
+     *             if operation fails
      */
     public Resolution cancelAdd() throws DAOException {
         return new RedirectResolution(BrowseSchemaSetsActionBean.class);
@@ -258,8 +265,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      * Check in action.
      *
-     * @return
+     * @return resolution
      * @throws ServiceException
+     *             if operation fails
      */
     public Resolution checkIn() throws ServiceException {
 
@@ -276,8 +284,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      *
-     * @return
+     * @return resolution
      * @throws ServiceException
+     *             if operation fails
      */
     public Resolution checkOut() throws ServiceException {
 
@@ -294,8 +303,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      *
-     * @return
+     * @return resolution
      * @throws ServiceException
+     *             if operation fails
      */
     public Resolution newVersion() throws ServiceException {
 
@@ -312,8 +322,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      * Action for deleting the schema set.
      *
-     * @return
+     * @return resolution
      * @throws ServiceException
+     *             if operation fails
      */
     public Resolution delete() throws ServiceException {
 
@@ -329,8 +340,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      *
-     * @return
+     * @return resolution
      * @throws ServiceException
+     *             if operation fails
      */
     public Resolution undoCheckout() throws ServiceException {
 
@@ -351,8 +363,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      *
-     * @return
+     * @return resolution
      * @throws ServiceException
+     *             if operation fails
      */
     public Resolution deleteSchemas() throws ServiceException {
 
@@ -376,8 +389,12 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      * Uploads schema.
      *
+     * @return resolution
+     *
      * @throws ServiceException
+     *             if operation fails
      * @throws IOException
+     *             if operation fails
      */
     public Resolution uploadSchema() throws ServiceException, IOException {
 
@@ -406,8 +423,12 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      * Uploads other document.
      *
+     * @return resolution
+     *
      * @throws ServiceException
+     *             if operation fails
      * @throws IOException
+     *             if operation fails
      */
     public Resolution uploadOtherDocument() throws ServiceException, IOException {
 
@@ -437,7 +458,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      *
      * @throws DAOException
+     *             if operation fails
      * @throws ServiceException
+     *             if operation fails
      */
     @ValidationMethod(on = {"add", "save", "saveAndClose"})
     public void validateAddSave() throws DAOException, ServiceException {
@@ -475,6 +498,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * @throws ServiceException
+     *             if operation fails
      *
      */
     @ValidationMethod(on = {"checkIn"})
@@ -492,7 +516,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      *
      * @throws DAOException
+     *             if operation fails
      * @throws ServiceException
+     *             if operation fails
      */
     @ValidationMethod(on = {"newVersion"})
     public void validateNewVersion() throws DAOException, ServiceException {
@@ -521,7 +547,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     @ValidationMethod(on = {"uploadSchema"})
     public void validateFileUpload() throws IOException, ServiceException, DAOException, ParserConfigurationException,
-    SAXException {
+            SAXException {
 
         if (uploadedFile == null) {
             addGlobalValidationError("No file uploaded!");
@@ -571,7 +597,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     @ValidationMethod(on = {"uploadOtherDocument"})
     public void validateOtherDocumentUpload() throws IOException, ServiceException, DAOException, ParserConfigurationException,
-    SAXException {
+            SAXException {
 
         if (uploadedFile == null) {
             addGlobalValidationError("No file uploaded!");
@@ -862,7 +888,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * @return the fixedValuedAttributeValues
-     * @throws DDException if database query fails
+     * @throws DDException
+     *             if database query fails
      */
     public Map<String, Set<String>> getFixedValuedAttributeValues() throws DDException {
 
@@ -1091,12 +1118,12 @@ public class SchemaSetActionBean extends AbstractActionBean {
                         schemaSet == null ? new Vector() : searchEngine.getComplexAttributes(String.valueOf(schemaSet.getId()),
                                 DElemAttribute.ParentType.SCHEMA_SET.toString());
 
-                        complexAttributeFields = new HashMap<String, Vector>();
-                        for (Iterator iter = complexAttributes.iterator(); iter.hasNext();) {
-                            DElemAttribute attr = (DElemAttribute) iter.next();
-                            String attrId = attr.getID();
-                            complexAttributeFields.put(attrId, searchEngine.getAttrFields(attrId, DElemAttribute.FIELD_PRIORITY_HIGH));
-                        }
+                complexAttributeFields = new HashMap<String, Vector>();
+                for (Iterator iter = complexAttributes.iterator(); iter.hasNext();) {
+                    DElemAttribute attr = (DElemAttribute) iter.next();
+                    String attrId = attr.getID();
+                    complexAttributeFields.put(attrId, searchEngine.getAttrFields(attrId, DElemAttribute.FIELD_PRIORITY_HIGH));
+                }
             } catch (SQLException e) {
                 throw new DAOException(e.getMessage(), e);
             } finally {
