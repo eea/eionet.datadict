@@ -320,6 +320,58 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
         Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
 
+        // manually create values of new concept for comparison
+        VocabularyConcept vc11 = new VocabularyConcept();
+        // vc11.setId(11); //this field will be updated after re-querying
+        vc11.setIdentifier("csv_test_concept_4");
+        vc11.setLabel("csv_test_concept_label_4");
+        vc11.setDefinition("csv_test_concept_def_4");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        vc11.setCreated(dateFormatter.parse("2014-02-17"));
+
+        // create element attributes (there is only one concept)
+        List<List<DataElement>> elementAttributes = new ArrayList<List<DataElement>>();
+        DataElement elem = null;
+        String identifier = null;
+        int dataElemId = -1;
+
+        // skos:prefLabel
+        identifier = "skos:prefLabel";
+        dataElemId = 8;
+        List<DataElement> elements = new ArrayList<DataElement>();
+        elem = new DataElement();
+        elem.setId(dataElemId);
+        elem.setIdentifier(identifier);
+        elem.setAttributeValue("bg_csv_test_concept_4");
+        elem.setAttributeLanguage("bg");
+        elements.add(elem);
+        elem = new DataElement();
+        elem.setId(dataElemId);
+        elem.setIdentifier(identifier);
+        elem.setAttributeValue("bg2_csv_test_concept_4");
+        elem.setAttributeLanguage("bg");
+        elements.add(elem);
+        elementAttributes.add(elements);
+
+        // skos:definition
+        identifier = "skos:definition";
+        dataElemId = 9;
+        elements = new ArrayList<DataElement>();
+        elem = new DataElement();
+        elem.setId(dataElemId);
+        elem.setIdentifier(identifier);
+        elem.setAttributeValue("de_csv_test_concept_4");
+        elem.setAttributeLanguage("de");
+        elements.add(elem);
+        elementAttributes.add(elements);
+
+        vc11.setElementAttributes(elementAttributes);
+        concepts.add(vc11);
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Updated Concepts does not include 4 vocabulary concepts", updatedConcepts.size(), 4);
+
         // last object should be the inserted one, so use it is id to set (all other fields are updated manually)
         vc11.setId(updatedConcepts.get(3).getId());
 

@@ -1686,7 +1686,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
                 Assert.assertEquals("Base", VocabularyJSONOutputHelper.JSON_LD_BASE, val);
                 parser.nextToken(); // move to value
                 val = parser.getText();
-                String baseUri = Props.getRequiredProperty(PropsIF.DD_URL);
+                String baseUri = VocabularyFolderActionBeanTest.BASE_URL;
                 String expectedRelatedInternal = baseUri + "/vocabulary/json_hierarchical/hierarchical/";
                 Assert.assertEquals("Base Uri", expectedRelatedInternal, val);
                 // move to skos namespace def
