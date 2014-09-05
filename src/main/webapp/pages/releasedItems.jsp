@@ -4,32 +4,32 @@
 
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
-    <h2>RECENTLY RELEASED ITEMS</h2>
+    <h2>Recently Released Items</h2>
 
-    <display:table name="${actionBean.dataSets}" class="sortable" id="recenltyReleased" sort="list" >
-        <display:column title="Shortname">
-            <c:out value="${recenltyReleased.name}" />
+    <!-- TODO make icon looks nicer -->
+    <c:url var="datasetIconUrl" value="/images/pdf.png" />
+    <c:url var="vocabularyIconUrl" value="/images/rdf-icon.gif" />
+    <c:url var="schemaIconUrl" value="/images/xsl.png" />
+    <display:table name="${actionBean.results}" class="datatable" id="recentlyReleased" style="width:100%" >
+        <display:column style="width:5%">
+            <!-- TODO add actions -->
+            <c:choose>
+                <c:when test="${recentlyReleased.type eq 'VOCABULARY'}">
+                    <img src="${vocabularyIconUrl}" alt="" />
+                </c:when>
+                <c:when test="${recentlyReleased.type eq 'DATASET'}">
+                    <img src="${datasetIconUrl}" alt="" />
+                </c:when>
+                <c:when test="${recentlyReleased.type eq 'SCHEMA'}">
+                    <img src="${schemaIconUrl}" alt="" />
+                </c:when>
+            </c:choose>
         </display:column>
-        <display:column title="Released Date">
-            <c:out value="${recenltyReleased.dateString}"/>
+        <display:column style="width:70%">
+            <!-- TODO Add links -->
+            <c:out value="${recentlyReleased.name}" />
         </display:column>
-    </display:table>
-
-
-    <display:table name="${actionBean.schemas}" class="sortable" id="recenltyReleased" sort="list" >
-        <display:column title="Shortname">
-            <c:out value="${recenltyReleased.nameAttribute}"/>
-        </display:column>
-        <display:column title="Released Date">
-            <fmt:formatDate value="${recenltyReleased.dateModified}" type="DATE" dateStyle="LONG"/>
-        </display:column>
-    </display:table>
-
-    <display:table name="${actionBean.vocabularies}" class="sortable" id="recenltyReleased" sort="list" >
-        <display:column title="Shortname">
-            <c:out value="${recenltyReleased.label}"/>
-        </display:column>
-        <display:column title="Released Date">
-            <fmt:formatDate value="${recenltyReleased.dateModified}" type="DATE" dateStyle="LONG"/>
+        <display:column style="width:25%">
+            <fmt:formatDate value="${recentlyReleased.releasedDate}" type="DATE" dateStyle="LONG"/>
         </display:column>
     </display:table>

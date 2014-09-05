@@ -20,24 +20,31 @@
  */
 package eionet.web.action;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import eionet.meta.dao.domain.RegStatus;
-import eionet.meta.dao.domain.Schema;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.ISchemaService;
-import eionet.meta.service.IVocabularyService;
-import eionet.meta.service.data.SchemaFilter;
-import eionet.meta.service.data.SchemasResult;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
-import eionet.meta.dao.domain.DataSet;
-import eionet.meta.service.IDataService;
-import eionet.meta.service.ServiceException;
+
 import org.displaytag.properties.SortOrderEnum;
+
+import eionet.meta.RecentlyReleased;
+import eionet.meta.dao.domain.DataSet;
+import eionet.meta.dao.domain.RegStatus;
+import eionet.meta.dao.domain.Schema;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.IDataService;
+import eionet.meta.service.ISchemaService;
+import eionet.meta.service.IVocabularyService;
+import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.SchemaFilter;
+import eionet.meta.service.data.SchemasResult;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 
 /**
  * Released items action bean.
@@ -46,7 +53,10 @@ import org.displaytag.properties.SortOrderEnum;
  */
 @UrlBinding("/releasedItems.action")
 public class ReleasedItemsActionBean extends AbstractActionBean {
-
+    /**
+     * Default view jsp.
+     */
+    private static final String RELEASED_ITEMS_JSP = "/pages/releasedItems.jsp";
     /**
      * Data service.
      */
@@ -58,17 +68,9 @@ public class ReleasedItemsActionBean extends AbstractActionBean {
     @SpringBean
     private IVocabularyService vocabularyService;
     /**
-     * List of recently released data sets.
+     * List of combined results.
      */
-    private List<DataSet> dataSets;
-    /**
-     * List of recently released vocabularies.
-     */
-    private List<VocabularyFolder> vocabularies;
-    /**
-     * List of recently released schemas.
-     */
-    private List<Schema> schemas;
+    private List<RecentlyReleased> results;
     /**
      * Schema service.
      */
@@ -84,33 +86,98 @@ public class ReleasedItemsActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution view() throws ServiceException {
-        this.dataSets = this.dataService.getRecentlyReleasedDatasets(7);
-        this.vocabularies = this.vocabularyService.getRecentlyReleasedVocabularyFolders(7);
+        List<DataSet> dataSets =
+                this.dataService.getRecentlyReleasedDatasets(Props.getIntProperty(PropsIF.DD_RECENTLY_RELEASED_DATASETS_KEY));
+        List<VocabularyFolder> vocabularies =
+                this.vocabularyService.getRecentlyReleasedVocabularyFolders(Props
+                        .getIntProperty(PropsIF.DD_RECENTLY_RELEASED_VOCABULARIES_KEY));
         SchemaFilter filter = new SchemaFilter();
         filter.setRegStatus(RegStatus.RELEASED.toString());
         filter.setUsePaging(true);
         filter.setPageNumber(1);
-        filter.setPageSize(7);
+        filter.setPageSize(Props.getIntProperty(PropsIF.DD_RECENTLY_RELEASED_SCHEMAS_KEY));
+        // TODO sort property can be added to filter and be queried from there
         filter.setSortProperty("S.DATE_MODIFIED");
         filter.setSortOrder(SortOrderEnum.DESCENDING);
         SchemasResult schemasResult = this.schemaService.searchSchemas(filter);
-        this.schemas = schemasResult.getList();
-        return new ForwardResolution("/pages/releasedItems.jsp");
-    }
+        List<Schema> schemas = schemasResult.getList();
+        mergeAndSort(dataSets, vocabularies, schemas);
+        return new ForwardResolution(RELEASED_ITEMS_JSP);
+    } // end of default handler - view
+
+    /**
+     * Merges and sorts all recently released item into a single list of RecentlyReleased objects.
+     *
+     * @param dataSets
+     *            list of data sets.
+     * @param vocabularies
+     *            list of vocabularies.
+     * @param schemas
+     *            list of schemas.
+     */
+    private void mergeAndSort(List<DataSet> dataSets, List<VocabularyFolder> vocabularies, List<Schema> schemas) {
+        // create empty list
+        this.results = new ArrayList<RecentlyReleased>();
+        try {
+            int iDataset = 0;
+            int iVocabulary = 0;
+            int iSchema = 0;
+
+            // set a minimum date, luckily it is sunday: i.e. Sun, 2 Dec 292269055 BC 16:47:04 +0000
+            Date permianPeriod = new Date(Long.MIN_VALUE);
+            int schemaSize = schemas.size();
+            int vocabulariesSize = vocabularies.size();
+            int datasetsSize = dataSets.size();
+            while (iDataset < datasetsSize || iVocabulary < vocabulariesSize || iSchema < schemaSize) {
+                DataSet dataSet = null;
+                Date dataSetDate = permianPeriod;
+                if (iDataset < datasetsSize) {
+                    dataSet = dataSets.get(iDataset);
+                    dataSetDate = dataSet.getAdjustedDate();
+                }
+                VocabularyFolder vocabularyFolder = null;
+                Date vocabularyDate = permianPeriod;
+                if (iVocabulary < vocabulariesSize) {
+                    vocabularyFolder = vocabularies.get(iVocabulary);
+                    vocabularyDate = vocabularyFolder.getDateModified();
+                }
+                Schema schema = null;
+                Date schemaDate = permianPeriod;
+                if (iSchema < schemaSize) {
+                    schema = schemas.get(iSchema);
+                    schemaDate = schema.getDateModified();
+                }
+
+                if (dataSetDate.compareTo(vocabularyDate) > 0) {
+                    if (dataSetDate.compareTo(schemaDate) > 0) {
+                        this.results.add(new RecentlyReleased(dataSet.getName(), dataSetDate, RecentlyReleased.Type.DATASET));
+                        iDataset++;
+                    } else {
+                        this.results
+                                .add(new RecentlyReleased(schema.getNameAttribute(), schemaDate, RecentlyReleased.Type.SCHEMA));
+                        iSchema++;
+                    }
+                } else if (vocabularyDate.compareTo(schemaDate) > 0) {
+                    this.results.add(new RecentlyReleased(vocabularyFolder.getLabel(), vocabularyDate,
+                            RecentlyReleased.Type.VOCABULARY));
+                    iVocabulary++;
+                } else {
+                    this.results.add(new RecentlyReleased(schema.getNameAttribute(), schemaDate, RecentlyReleased.Type.SCHEMA));
+                    iSchema++;
+                }
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Cannot create list for recently released items.");
+            e.printStackTrace();
+        }
+    } // end of method mergeAndSort
 
     public String getTitle() {
         return "Header from action bean";
     }
 
-    public List<DataSet> getDataSets() {
-        return dataSets;
-    }
-
-    public List<VocabularyFolder> getVocabularies() {
-        return vocabularies;
-    }
-
-    public List<Schema> getSchemas() {
-        return schemas;
+    public List<RecentlyReleased> getResults() {
+        return results;
     }
 } // end of class ReleasedItemsActionBean

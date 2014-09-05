@@ -23,6 +23,9 @@ package eionet.meta.dao.domain;
 
 import eionet.util.Util;
 
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Data set.
  *
@@ -96,6 +99,18 @@ public class DataSet {
 
     public long getDate() {
         return date;
+    }
+
+    /**
+     * Calculates and returns adjusted date for dataset.
+     *
+     * @return adjusted date.
+     */
+    public Date getAdjustedDate(){
+        Calendar adjusted = Calendar.getInstance();
+        adjusted.setTimeInMillis(this.date);
+        adjusted.add(Calendar.YEAR, 1900);
+        return adjusted.getTime();
     }
 
     public String getDateString() {
