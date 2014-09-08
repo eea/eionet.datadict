@@ -109,7 +109,6 @@ public class DataSet {
     public Date getAdjustedDate(){
         Calendar adjusted = Calendar.getInstance();
         adjusted.setTimeInMillis(this.date);
-        adjusted.add(Calendar.YEAR, 1900);
         return adjusted.getTime();
     }
 

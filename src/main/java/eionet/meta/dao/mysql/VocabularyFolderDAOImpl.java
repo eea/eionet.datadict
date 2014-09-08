@@ -808,8 +808,9 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         StringBuilder sql = new StringBuilder();
         sql.append("select v.VOCABULARY_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
         sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, ");
-        sql.append("v.CONCEPT_IDENTIFIER_NUMERIC, v.NOTATIONS_EQUAL_IDENTIFIERS ");
+        sql.append("v.CONCEPT_IDENTIFIER_NUMERIC, v.NOTATIONS_EQUAL_IDENTIFIERS, f.ID, f.IDENTIFIER, f.LABEL ");
         sql.append("from VOCABULARY v ");
+        sql.append("left join VOCABULARY_SET f on f.ID=v.FOLDER_ID ");
         sql.append("where v.WORKING_COPY=FALSE and v.REG_STATUS like :releasedStatus ");
         sql.append("order by v.DATE_MODIFIED desc, v.IDENTIFIER asc ");
         sql.append("limit :limit");
@@ -837,6 +838,9 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setNumericConceptIdentifiers(rs.getBoolean("v.CONCEPT_IDENTIFIER_NUMERIC"));
                         vf.setNotationsEqualIdentifiers(rs.getBoolean("NOTATIONS_EQUAL_IDENTIFIERS"));
                         vf.setBaseUri(rs.getString("v.BASE_URI"));
+                        vf.setFolderId(rs.getShort("f.ID"));
+                        vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                        vf.setFolderLabel(rs.getString("f.LABEL"));
                         return vf;
                     }
                 });

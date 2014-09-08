@@ -148,23 +148,33 @@ public class ReleasedItemsActionBean extends AbstractActionBean {
                     schemaDate = schema.getDateModified();
                 }
 
+                RecentlyReleased recentlyReleased;
                 if (dataSetDate.compareTo(vocabularyDate) > 0) {
                     if (dataSetDate.compareTo(schemaDate) > 0) {
-                        this.results.add(new RecentlyReleased(dataSet.getName(), dataSetDate, RecentlyReleased.Type.DATASET));
+                        recentlyReleased = new RecentlyReleased(dataSet.getName(), dataSetDate, RecentlyReleased.Type.DATASET);
+                        recentlyReleased.addParameter("datasetId", dataSet.getId());
                         iDataset++;
                     } else {
-                        this.results
-                                .add(new RecentlyReleased(schema.getNameAttribute(), schemaDate, RecentlyReleased.Type.SCHEMA));
+                        recentlyReleased =
+                                new RecentlyReleased(schema.getNameAttribute(), schemaDate, RecentlyReleased.Type.SCHEMA);
+                        recentlyReleased.addParameter("schemaSetIdentifier", schema.getSchemaSetIdentifier());
+                        recentlyReleased.addParameter("fileName", schema.getFileName());
                         iSchema++;
                     }
                 } else if (vocabularyDate.compareTo(schemaDate) > 0) {
-                    this.results.add(new RecentlyReleased(vocabularyFolder.getLabel(), vocabularyDate,
-                            RecentlyReleased.Type.VOCABULARY));
+                    recentlyReleased = new RecentlyReleased(vocabularyFolder.getLabel(), vocabularyDate,
+                            RecentlyReleased.Type.VOCABULARY);
+                    recentlyReleased.addParameter("folderName", vocabularyFolder.getFolderName());
+                    recentlyReleased.addParameter("identifier", vocabularyFolder.getIdentifier());
                     iVocabulary++;
                 } else {
-                    this.results.add(new RecentlyReleased(schema.getNameAttribute(), schemaDate, RecentlyReleased.Type.SCHEMA));
+                    recentlyReleased =
+                            new RecentlyReleased(schema.getNameAttribute(), schemaDate, RecentlyReleased.Type.SCHEMA);
+                    recentlyReleased.addParameter("schemaSetIdentifier", schema.getSchemaSetIdentifier());
+                    recentlyReleased.addParameter("fileName", schema.getFileName());
                     iSchema++;
                 }
+                this.results.add(recentlyReleased);
             }
 
         } catch (Exception e) {

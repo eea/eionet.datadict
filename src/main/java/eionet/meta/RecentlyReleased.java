@@ -21,6 +21,8 @@
 package eionet.meta;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Released item bean.
@@ -47,6 +49,10 @@ public class RecentlyReleased {
      * Type of current item.
      */
     Type type;
+    /**
+     * Additional parameters for links.
+     */
+    private Map<String, Object> parameters;
 
     /**
      * Default constructor without any parameters.
@@ -68,7 +74,20 @@ public class RecentlyReleased {
         this.name = name;
         this.releasedDate = releasedDate;
         this.type = type;
+        this.parameters = new HashMap<String, Object>();
     } // end of constructor
+
+    /**
+     * Adds additional parameters to map.
+     *
+     * @param key
+     *            key
+     * @param value
+     *            value
+     */
+    public void addParameter(String key, Object value) {
+        this.parameters.put(key, value);
+    } // end of method addParameter
 
     public String getName() {
         return name;
@@ -92,5 +111,9 @@ public class RecentlyReleased {
 
     public void setType(Type type) {
         this.type = type;
+    }
+
+    public Map<String, Object> getParameters() {
+        return parameters;
     }
 } // end of class RecentlyReleased
