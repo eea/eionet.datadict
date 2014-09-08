@@ -994,7 +994,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
     /**
      * In this test, three line CSV is imported. All rows includes updated values. But there should be no update performed since it
-     * does not have valid headers (invalid fixed header). All transaction should be rollbacked
+     * does not have valid headers (invalid fixed header). All transaction should be rolled back.
      *
      * @throws Exception
      */
@@ -1045,7 +1045,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
     /**
      * In this test, three line CSV is imported. All rows includes updated values. But there should be no update performed since it
-     * does not have valid headers (not found element to bind). All transaction should be rollbacked
+     * does not have valid headers (not found element to bind). All transaction should be rolled back.
      *
      * @throws Exception
      */
