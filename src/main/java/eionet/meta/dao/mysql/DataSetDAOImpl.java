@@ -125,10 +125,10 @@ public class DataSetDAOImpl extends GeneralDAOImpl implements IDataSetDAO {
         sql.append("select distinct DATASET.*, ATTRIBUTE.VALUE as ");
         sql.append(DATASET_NAME_COLUMN_LABEL);
         sql.append(" from DATASET ");
-        sql.append("left outer join ATTRIBUTE on DATASET.DATASET_ID = ATTRIBUTE.DATAELEM_ID ");
+        sql.append("left outer join ATTRIBUTE on DATASET.DATASET_ID = ATTRIBUTE.DATAELEM_ID AND ATTRIBUTE.PARENT_TYPE = :parent ");
         sql.append("left outer join M_ATTRIBUTE on ATTRIBUTE.M_ATTRIBUTE_ID = M_ATTRIBUTE.M_ATTRIBUTE_ID ");
         sql.append("AND M_ATTRIBUTE.NAME LIKE :name ");
-        sql.append("where CORRESP_NS is not null and DATASET.DELETED is null ");
+        sql.append("where DATASET.DELETED is null ");
         sql.append("and DATASET.WORKING_COPY='N' and REG_STATUS = :releasedRegStatus ");
         sql.append("order by DATE desc, DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc ");
         //if (limit > 0) {
@@ -139,6 +139,7 @@ public class DataSetDAOImpl extends GeneralDAOImpl implements IDataSetDAO {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("releasedRegStatus", DatasetRegStatus.RELEASED.toString());
         params.put("name", "Name");
+        params.put("parent", DElemAttribute.ParentType.DATASET.toString());
 
         DataSetRowCallbackHandler dataSetRowCallbackHandler =
                 new DataSetRowCallbackHandler(Arrays.asList(DATASET_NAME_COLUMN_LABEL), limit);

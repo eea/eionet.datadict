@@ -29,6 +29,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -914,5 +916,32 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         assertTrue(result.getTotalItems() == 1);
 
     }
+
+    @Test
+    public void testRecentlyReleasedVocabularyFolders() throws Exception {
+        int limit = 2;
+        List<VocabularyFolder> recentlyReleasedVocabularyFolders =
+                this.vocabularyService.getRecentlyReleasedVocabularyFolders(limit);
+        assertEquals("Returned vocabulary number does not match limit", limit, recentlyReleasedVocabularyFolders.size());
+
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        // now check if correct values return
+        VocabularyFolder vocabularyFolder = recentlyReleasedVocabularyFolders.get(0);
+        assertEquals("ID does not match", 4, vocabularyFolder.getId());
+        assertEquals("Identifier does not match", "csv_header_vocab", vocabularyFolder.getIdentifier());
+        assertEquals("Label does not match", "csv header thisisit test", vocabularyFolder.getLabel());
+        assertEquals("Date does not match", "2014-07-02 07:40:00", dateFormatter.format(vocabularyFolder.getDateModified()));
+        assertEquals("Reg status does not match", RegStatus.RELEASED, vocabularyFolder.getRegStatus());
+        assertEquals("Folder name does not match", "csv_header_vs", vocabularyFolder.getFolderName());
+
+        vocabularyFolder = recentlyReleasedVocabularyFolders.get(1);
+        assertEquals("ID does not match", 2, vocabularyFolder.getId());
+        assertEquals("Identifier does not match", "test_vocabulary2", vocabularyFolder.getIdentifier());
+        assertEquals("Label does not match", "test2", vocabularyFolder.getLabel());
+        assertEquals("Date does not match", "2014-05-15 20:46:40", dateFormatter.format(vocabularyFolder.getDateModified()));
+        assertEquals("Reg status does not match", RegStatus.RELEASED, vocabularyFolder.getRegStatus());
+        assertEquals("Folder name does not match", "common", vocabularyFolder.getFolderName());
+
+    } // end of test step testRecentlyReleasedVocabularyFolders
 
 }
