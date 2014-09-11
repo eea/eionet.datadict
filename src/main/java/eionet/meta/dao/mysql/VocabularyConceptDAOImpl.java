@@ -21,25 +21,24 @@
 
 package eionet.meta.dao.mysql;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Vocabulary concept DAO.
@@ -535,10 +534,11 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("vcn.ORIGINAL_CONCEPT_ID = vco.VOCABULARY_CONCEPT_ID ");
         sql.append("AND vco.VOCABULARY_ID = :oldVocabularyId ");
         sql.append("AND vce.RELATED_CONCEPT_ID=vco.VOCABULARY_CONCEPT_ID");
-      //TODO_20044 - check
+        //TODO_20044 - check
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("oldVocabularyId", oldVocabularyId);
-LOGGER.debug(StringUtils.replace(sql.toString(), ":oldVocabularyId", String.valueOf(oldVocabularyId)));
+
+        LOGGER.debug(StringUtils.replace(sql.toString(), ":oldVocabularyId", String.valueOf(oldVocabularyId)));
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 

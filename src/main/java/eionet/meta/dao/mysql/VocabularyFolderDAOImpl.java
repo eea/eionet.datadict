@@ -29,17 +29,14 @@ import eionet.meta.dao.domain.VocabularyType;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Vocabualary folder DAO.
@@ -667,7 +664,13 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
             sql.append("AND v.IDENTIFIER like :identifier ");
         }
 
-        if (filter.isWorkingCopy() != null) {
+        if (filter.getVocabularyWorkingCopyId() != null) {
+            if (BooleanUtils.isFalse(filter.isWorkingCopy())) {
+                params.put("workingCopyVocabularyId", filter.getVocabularyWorkingCopyId());
+                sql.append("AND ((WORKING_COPY = 0 AND CHECKEDOUT_COPY_ID <> :workingCopyVocabularyId) OR (WORKING_COPY = 1 AND VOCABULARY_ID = :workingCopyVocabularyId)) ");
+            }
+
+        } else if (filter.isWorkingCopy() != null) {
             params.put("workingCopy", filter.isWorkingCopy() ? 1 : 0);
             sql.append("AND WORKING_COPY = :workingCopy");
         }

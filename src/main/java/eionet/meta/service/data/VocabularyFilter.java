@@ -21,9 +21,8 @@
 
 package eionet.meta.service.data;
 
-import org.apache.commons.lang.StringUtils;
-
 import eionet.meta.dao.domain.RegStatus;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Filter for searching vocabularies.
@@ -66,11 +65,17 @@ public class VocabularyFilter extends PagedRequest {
      * base uri.
      */
     private String baseUri;
-
     /**
      * filter by identifier.
      */
     private String identifier;
+
+
+    /**
+     * this is a vocabulary ID.
+     * If assigned this vocabulary working copy is searched even if workingCopy property is set to false
+     */
+    private Integer vocabularyWorkingCopyId;
 
     public String getText() {
         return text;
@@ -138,5 +143,12 @@ public class VocabularyFilter extends PagedRequest {
 
     public void setBaseUri(String baseUri) {
         this.baseUri = StringUtils.trimToNull(baseUri);
+    }
+
+    public Integer getVocabularyWorkingCopyId() {        return vocabularyWorkingCopyId;
+    }
+
+    public void setVocabularyWorkingCopyId(Integer vocabularyWorkingCopyId) {
+        this.vocabularyWorkingCopyId = vocabularyWorkingCopyId;
     }
 }
