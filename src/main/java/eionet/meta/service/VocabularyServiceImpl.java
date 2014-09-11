@@ -21,17 +21,16 @@
 
 package eionet.meta.service;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
+import eionet.meta.DElemAttribute;
+import eionet.meta.DElemAttribute.ParentType;
+import eionet.meta.dao.*;
+import eionet.meta.dao.domain.*;
+import eionet.meta.service.data.*;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.Triple;
+import eionet.util.Util;
+import eionet.web.action.ErrorActionBean;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
@@ -40,34 +39,12 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import eionet.meta.DElemAttribute;
-import eionet.meta.DElemAttribute.ParentType;
-import eionet.meta.dao.DAOException;
-import eionet.meta.dao.IAttributeDAO;
-import eionet.meta.dao.IDataElementDAO;
-import eionet.meta.dao.IFolderDAO;
-import eionet.meta.dao.IRdfNamespaceDAO;
-import eionet.meta.dao.ISiteCodeDAO;
-import eionet.meta.dao.IVocabularyConceptDAO;
-import eionet.meta.dao.IVocabularyFolderDAO;
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.Folder;
-import eionet.meta.dao.domain.RdfNamespace;
-import eionet.meta.dao.domain.SimpleAttribute;
-import eionet.meta.dao.domain.SiteCodeStatus;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.data.ObsoleteStatus;
-import eionet.meta.service.data.VocabularyConceptData;
-import eionet.meta.service.data.VocabularyConceptFilter;
-import eionet.meta.service.data.VocabularyConceptResult;
-import eionet.meta.service.data.VocabularyFilter;
-import eionet.meta.service.data.VocabularyResult;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.util.Triple;
-import eionet.util.Util;
-import eionet.web.action.ErrorActionBean;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.*;
 
 /**
  * Vocabulary service.
@@ -78,34 +55,50 @@ import eionet.web.action.ErrorActionBean;
 @Transactional
 public class VocabularyServiceImpl implements IVocabularyService {
 
-    /** Logger. */
+    /**
+     * Logger.
+     */
     protected static final Logger LOGGER = Logger.getLogger(VocabularyServiceImpl.class);
 
-    /** Vocabulary folder DAO. */
+    /**
+     * Vocabulary folder DAO.
+     */
     @Autowired
     private IVocabularyFolderDAO vocabularyFolderDAO;
 
-    /** Vocabulary concept DAO. */
+    /**
+     * Vocabulary concept DAO.
+     */
     @Autowired
     private IVocabularyConceptDAO vocabularyConceptDAO;
 
-    /** Site Code DAO. */
+    /**
+     * Site Code DAO.
+     */
     @Autowired
     private ISiteCodeDAO siteCodeDAO;
 
-    /** Attribute DAO. */
+    /**
+     * Attribute DAO.
+     */
     @Autowired
     private IAttributeDAO attributeDAO;
 
-    /** Folder DAO. */
+    /**
+     * Folder DAO.
+     */
     @Autowired
     private IFolderDAO folderDAO;
 
-    /** Data element DAO. */
+    /**
+     * Data element DAO.
+     */
     @Autowired
     private IDataElementDAO dataElementDAO;
 
-    /** Rdf namespace DAO. */
+    /**
+     * Rdf namespace DAO.
+     */
     @Autowired
     private IRdfNamespaceDAO rdfNamespaceDAO;
 
@@ -331,10 +324,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
     /**
      * updates bound element values included related bound elements.
      *
-     * @param vocabularyConcept
-     *            concept
-     * @throws ServiceException
-     *             if update of attributes fails
+     * @param vocabularyConcept concept
+     * @throws ServiceException if update of attributes fails
      */
     private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept) throws ServiceException {
         List<DataElement> dataElementValues = new ArrayList<DataElement>();
@@ -383,12 +374,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * and makes sure that the concepts are related in both sides (A related with B -> B related with A). Also when relation gets
      * deleted from one side, then we make sure to deleted it also from the other side of the relation.
      *
-     * @param vocabularyConcept
-     *            Concept to be updated
-     * @param dataElementValues
-     *            bound data elements with values
-     * @throws eionet.meta.service.ServiceException
-     *             if fails
+     * @param vocabularyConcept Concept to be updated
+     * @param dataElementValues bound data elements with values
+     * @throws eionet.meta.service.ServiceException if fails
      */
     private void fixRelatedLocalRefElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues)
             throws ServiceException {
@@ -406,9 +394,18 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 dataElementDAO.deleteReferringInverseElems(vocabularyConcept.getId(), dataElementValues);
 
                 for (DataElement elem : dataElementValues) {
-                    if ("localref".equals(dataElementDAO.getDataElementDataType(elem.getId()))
-                            && elem.getRelatedConceptId() != null && elem.getRelatedConceptId() != 0) {
-                        dataElementDAO.createInverseElements(elem.getId(), vocabularyConcept.getId(), elem.getRelatedConceptId());
+
+                    //for localref elements and reference elements which reside in the same vocabulary , create inverse links immediately
+                    //to show them in the working copy as well:
+                    Integer relatedConceptId = elem.getRelatedConceptId();
+                    if (elem.getRelatedConceptId() != null && elem.getRelatedConceptId() != 0) {
+
+                        String elemType = dataElementDAO.getDataElementDataType(elem.getId());
+                        if ("localref".equals(elemType)
+                                || ("reference".equals(elemType) &&
+                                getVocabularyConcept(relatedConceptId).getVocabularyId() == vocabularyConcept.getVocabularyId())) {
+                            dataElementDAO.createInverseElements(elem.getId(), vocabularyConcept.getId(), elem.getRelatedConceptId());
+                        }
                     }
                 }
             }
@@ -1322,8 +1319,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     /**
      * delete referecnes.
      *
-     * @param vocabularyId
-     *            vocabulary id
+     * @param vocabularyId vocabulary id
      */
     private void deleteInverseRelations(int vocabularyId) {
         // set relation to this concept to null

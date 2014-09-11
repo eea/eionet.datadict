@@ -22,6 +22,18 @@
 
 package eionet.meta.service;
 
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.imp.VocabularyImportBaseHandler;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.unitils.spring.annotation.SpringApplicationContext;
+import org.unitils.spring.annotation.SpringBeanByType;
+
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -30,24 +42,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Logger;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.unitils.UnitilsJUnit4;
-import org.unitils.spring.annotation.SpringApplicationContext;
-import org.unitils.spring.annotation.SpringBeanByType;
-
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyImportBaseHandler;
-import eionet.meta.service.data.ObsoleteStatus;
-import eionet.util.Props;
-import eionet.util.PropsIF;
 
 /**
  * JUnit integration test with Unitils for testing automatic inversions.
@@ -277,7 +271,7 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
 
 
     /**
-     * tests if after deletgin an element it is deleted from the oither side as well.
+     * tests if after deleting an element it is deleted from the other side as well.
      * @throws Exception
      */
     @Test
@@ -321,6 +315,52 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
         Assert.assertNull("Referred reference must not be present after checkin", skosNarrowElements);
     }
 
+    /**
+     * test if localref relations remain if a concept is updated.
+     */
+    @Test
+    public void testIfLocalRefRelationsRemainAfterUpdate() throws  Exception {
+        int checkedOutID = vocabularyService.checkOutVocabularyFolder(3, "taburet");
+
+        VocabularyConcept concept5 =
+                vocabularyService.getVocabularyConcept(checkedOutID, "concept5", false);
+
+
+        VocabularyConcept concept6 =
+                vocabularyService.getVocabularyConcept(checkedOutID, "concept6", false);
+
+        List<List<DataElement>> c6Elements =  concept6.getElementAttributes();
+
+
+        List<DataElement> skosNarrowerElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", c6Elements);
+        Assert.assertEquals(1, skosNarrowerElements.size());
+
+        concept5.setDefinition("update def");
+        vocabularyService.updateVocabularyConcept(concept5);
+
+        List<List<DataElement>> c5Elements =  concept5.getElementAttributes();
+
+
+        List<DataElement> skosBroaderElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", c5Elements);
+
+        Assert.assertEquals(2, skosBroaderElements.size());
+
+
+        //other element must have also narrower remaining
+        concept6 =
+                vocabularyService.getVocabularyConcept(checkedOutID, "concept6", false);
+
+        c6Elements =  concept6.getElementAttributes();
+
+
+        skosNarrowerElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", c6Elements);
+
+        Assert.assertEquals(1, skosNarrowerElements.size());
+
+    }
 
     @Override
     protected Reader getReaderFromResource(String resourceLoc) throws Exception {
