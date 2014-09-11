@@ -51,9 +51,10 @@ import java.util.Properties;
 @SpringApplicationContext("spring-context.xml")
 public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
 
-    /** Logger. */
+    /**
+     * Logger.
+     */
     //protected static final Logger LOGGER = Logger.getLogger(VocabularyServiceTest.class);
-
 
     @SpringBeanByType
     private IVocabularyService vocabularyService;
@@ -70,6 +71,7 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
     public static void deleteData() throws Exception {
         DBUnitHelper.deleteData("seed-vocabularyinverse.xml");
     }
+
     @Test
     public void testGetInverseElem() throws Exception {
 
@@ -131,9 +133,8 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
         //vocabularyService.updateVocabularyConcept(concept2);
 
         //for localref elems relations are created after save:
-        concept2 =  vocabularyService.getVocabularyConcept(checkedOutID, "concept2", false);
-        List<List<DataElement>> dataElements =  concept2.getElementAttributes();
-
+        concept2 = vocabularyService.getVocabularyConcept(checkedOutID, "concept2", false);
+        List<List<DataElement>> dataElements = concept2.getElementAttributes();
 
         List<DataElement> skosBroaderElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", dataElements);
@@ -143,7 +144,7 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
 
         //skos:broader of C2 has to be C1 after C1 save
         Assert.assertEquals(Integer.valueOf(concept1IdAfter), skosBroaderElements.get(0).getRelatedConceptId());
-        concept1 =  vocabularyService.getVocabularyConcept(checkedOutID, "concept1", false);
+        concept1 = vocabularyService.getVocabularyConcept(checkedOutID, "concept1", false);
 
         //related IDs should stay alive after check-in as well:
         vocabularyService.checkInVocabularyFolder(checkedOutID, "julius");
@@ -151,21 +152,19 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
         VocabularyConcept concept2CheckedIn = vocabularyService.getVocabularyConcept(1, "concept2", false);
         VocabularyConcept concept1CheckedIn = vocabularyService.getVocabularyConcept(1, "concept1", false);
 
-
         //skos:narrower of C1 has still to be C2.ID after check in
-        dataElements =  concept1CheckedIn.getElementAttributes();
+        dataElements = concept1CheckedIn.getElementAttributes();
         List<DataElement> skosNarrowerElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", dataElements);
 
         Assert.assertEquals(Integer.valueOf(concept2IdAfter), skosNarrowerElements.get(0).getRelatedConceptId());
 
         //skos:broader of C2 has to be C1.ID after checkin
-        dataElements =  concept2CheckedIn.getElementAttributes();
+        dataElements = concept2CheckedIn.getElementAttributes();
         skosBroaderElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", dataElements);
 
         Assert.assertEquals(Integer.valueOf(concept1IdAfter), skosBroaderElements.get(0).getRelatedConceptId());
-
 
         //check if skos:broader was bound (was not in seed data)
         boolean skosBroaderBound = false;
@@ -214,7 +213,7 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
         referencedConcept4 = vocabularyService.getVocabularyConcept(2, "concept4", false);
 
         //now concept2 has to be in c4 attributes as skos:broaderMatch
-        List<List<DataElement>> dataElements =  referencedConcept4.getElementAttributes();
+        List<List<DataElement>> dataElements = referencedConcept4.getElementAttributes();
         List<DataElement> skosBroaderMatchElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:broaderMatch", dataElements);
 
@@ -226,6 +225,7 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
 
     /**
      * tests if after deletgin an element it is deleted from the oither side as well.
+     *
      * @throws Exception
      */
     @Test
@@ -236,7 +236,7 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
         VocabularyConcept concept5 =
                 vocabularyService.getVocabularyConcept(checkedOutID, "concept5", false);
 
-        List<List<DataElement>> dataElements =  concept5.getElementAttributes();
+        List<List<DataElement>> dataElements = concept5.getElementAttributes();
         List<DataElement> skosBroaderElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", dataElements);
 
@@ -249,7 +249,7 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
         VocabularyConcept concept6 =
                 vocabularyService.getVocabularyConcept(checkedOutID, "concept6", false);
 
-        dataElements =  concept6.getElementAttributes();
+        dataElements = concept6.getElementAttributes();
         List<DataElement> skosNarrowElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", dataElements);
 
@@ -261,10 +261,9 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
         VocabularyConcept concept6After =
                 vocabularyService.getVocabularyConcept(3, "concept6", false);
 
-        dataElements =  concept6After.getElementAttributes();
+        dataElements = concept6After.getElementAttributes();
         skosNarrowElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", dataElements);
-
 
         Assert.assertNull("Referred localref must not be present after checkin", skosNarrowElements);
     }
@@ -272,6 +271,7 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
 
     /**
      * tests if after deleting an element it is deleted from the other side as well.
+     *
      * @throws Exception
      */
     @Test
@@ -282,7 +282,7 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
         VocabularyConcept concept7 =
                 vocabularyService.getVocabularyConcept(checkedOutID, "concept7", false);
 
-        List<List<DataElement>> dataElements =  concept7.getElementAttributes();
+        List<List<DataElement>> dataElements = concept7.getElementAttributes();
         List<DataElement> skosRelatedMatch =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:relatedMatch", dataElements);
 
@@ -295,7 +295,7 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
         VocabularyConcept concept6 =
                 vocabularyService.getVocabularyConcept(3, "concept6", false);
 
-        dataElements =  concept6.getElementAttributes();
+        dataElements = concept6.getElementAttributes();
         List<DataElement> skosNarrowElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:relatedMatch", dataElements);
 
@@ -307,10 +307,9 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
         VocabularyConcept concept6After =
                 vocabularyService.getVocabularyConcept(3, "concept6", false);
 
-        dataElements =  concept6After.getElementAttributes();
+        dataElements = concept6After.getElementAttributes();
         skosNarrowElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:relatedMatch", dataElements);
-
 
         Assert.assertNull("Referred reference must not be present after checkin", skosNarrowElements);
     }
@@ -319,18 +318,16 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
      * test if localref relations remain if a concept is updated.
      */
     @Test
-    public void testIfLocalRefRelationsRemainAfterUpdate() throws  Exception {
+    public void testIfLocalRefRelationsRemainAfterUpdate() throws Exception {
         int checkedOutID = vocabularyService.checkOutVocabularyFolder(3, "taburet");
 
         VocabularyConcept concept5 =
                 vocabularyService.getVocabularyConcept(checkedOutID, "concept5", false);
 
-
         VocabularyConcept concept6 =
                 vocabularyService.getVocabularyConcept(checkedOutID, "concept6", false);
 
-        List<List<DataElement>> c6Elements =  concept6.getElementAttributes();
-
+        List<List<DataElement>> c6Elements = concept6.getElementAttributes();
 
         List<DataElement> skosNarrowerElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", c6Elements);
@@ -339,21 +336,18 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
         concept5.setDefinition("update def");
         vocabularyService.updateVocabularyConcept(concept5);
 
-        List<List<DataElement>> c5Elements =  concept5.getElementAttributes();
-
+        List<List<DataElement>> c5Elements = concept5.getElementAttributes();
 
         List<DataElement> skosBroaderElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", c5Elements);
 
         Assert.assertEquals(2, skosBroaderElements.size());
 
-
         //other element must have also narrower remaining
         concept6 =
                 vocabularyService.getVocabularyConcept(checkedOutID, "concept6", false);
 
-        c6Elements =  concept6.getElementAttributes();
-
+        c6Elements = concept6.getElementAttributes();
 
         skosNarrowerElements =
                 VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", c6Elements);
@@ -361,6 +355,48 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
         Assert.assertEquals(1, skosNarrowerElements.size());
 
     }
+
+
+    /**
+     * Special behaviour for reference elements if related to concepts in the same  Vocabulary.
+     * @throws Exception
+     */
+    @Test
+    public void testIfReferenceElemSameVocabulary() throws Exception {
+        int checkedOutID = vocabularyService.checkOutVocabularyFolder(5, "taburet");
+        //elements: 1=skos:broaderMatch, 2=skos:narrowerMatch
+        // in seed concept 51 has narrower's 52 and 53
+
+        VocabularyConcept concept51 = vocabularyService.getVocabularyConcept(checkedOutID, "concept51", false);
+        VocabularyConcept concept52 = vocabularyService.getVocabularyConcept(checkedOutID, "concept52", false);
+
+
+
+        concept51.setDefinition("update def");
+        vocabularyService.updateVocabularyConcept(concept51);
+
+        List<List<DataElement>> concept52Elements = concept52.getElementAttributes();
+
+        List<DataElement> skosBroaderElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:broaderMatch", concept52Elements);
+
+        Assert.assertEquals(1, skosBroaderElements.size());
+
+        //element 51 must have also 2 narrowers remaining
+        concept52 =
+                vocabularyService.getVocabularyConcept(checkedOutID, "concept52", false);
+
+        List<List<DataElement>> concept51Elements = concept51.getElementAttributes();
+
+        List<DataElement> skosNarrowerElements =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrowerMatch", concept51Elements);
+
+        Assert.assertEquals(2, skosNarrowerElements.size());
+
+    }
+
+
+
 
     @Override
     protected Reader getReaderFromResource(String resourceLoc) throws Exception {
