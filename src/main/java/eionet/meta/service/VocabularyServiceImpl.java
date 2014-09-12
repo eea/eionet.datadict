@@ -304,30 +304,39 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException {
-        updateVocabularyConceptNonTransactional(vocabularyConcept);
+        updateVocabularyConceptNonTransactional(vocabularyConcept, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void updateVocabularyConceptNonTransactional(VocabularyConcept vocabularyConcept) throws ServiceException {
+    public void updateVocabularyConceptNonTransactional(VocabularyConcept vocabularyConcept, boolean handleInverse) throws ServiceException {
         try {
             quickUpdateVocabularyConcept(vocabularyConcept);
             // updateVocabularyConceptAttributes(vocabularyConcept);
-            updateVocabularyConceptDataElementValues(vocabularyConcept);
+            updateVocabularyConceptDataElementValues(vocabularyConcept, handleInverse);
         } catch (Exception e) {
             throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
         }
     }
 
     /**
+     * {@inheritDoc}
+     */
+
+
+
+    @Override
+    public void updateVocabularyConceptNonTransactional(VocabularyConcept vocabularyConcept) throws ServiceException {
+        updateVocabularyConceptNonTransactional(vocabularyConcept, false);
+    }
+
+    /**
      * updates bound element values included related bound elements.
      *
      * @param vocabularyConcept concept
+     * @param  handleInverse if to handle inverse automatically
      * @throws ServiceException if update of attributes fails
      */
-    private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept) throws ServiceException {
+    private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept, boolean handleInverse) throws ServiceException {
         List<DataElement> dataElementValues = new ArrayList<DataElement>();
         if (vocabularyConcept.getElementAttributes() != null) {
             for (List<DataElement> values : vocabularyConcept.getElementAttributes()) {
@@ -344,8 +353,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
         }
         // fix relations in inverse elems
-
-        fixRelatedLocalRefElements(vocabularyConcept, dataElementValues);
+        //avoid this in importer
+        if (handleInverse) {
+            fixRelatedLocalRefElements(vocabularyConcept, dataElementValues);
+        }
         dataElementDAO.deleteVocabularyConceptDataElementValues(vocabularyConcept.getId());
         if (dataElementValues.size() > 0) {
             dataElementDAO.insertVocabularyConceptDataElementValues(vocabularyConcept.getId(), dataElementValues);
@@ -382,7 +393,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             throws ServiceException {
         try {
 
-            // delet all element inversions existing in old copy as well:
+            // delete all element inversions existing in old copy as well:
             List<DataElement> originalElementValues =
                     dataElementDAO.getVocabularyDataElements(vocabularyConcept.getVocabularyId());
 
