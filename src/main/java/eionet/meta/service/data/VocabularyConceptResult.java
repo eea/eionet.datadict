@@ -21,14 +21,14 @@
 
 package eionet.meta.service.data;
 
+import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularySetSearchItem;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import eionet.meta.dao.domain.Folder;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularySetSearchItem;
 
 /**
  * Vocabulary concept search result.
@@ -44,6 +44,11 @@ public class VocabularyConceptResult extends PagedResult<VocabularyConcept> {
      * Static comparator instance for Vocabulary sets. Used in sorting.
      */
     private static VocabularySetComparator comparator = new VocabularySetComparator();
+
+    /**
+     * default constructor to make possible to use the class in the bean.
+     */
+    public VocabularyConceptResult() {    }
 
     /**
      * Class constructor.
