@@ -21,9 +21,9 @@
 
 package eionet.meta.service;
 
-import java.io.Reader;
-import java.util.List;
-
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -32,9 +32,8 @@ import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
+import java.io.Reader;
+import java.util.List;
 
 /**
  * JUnit integration test with Unitils for Vocabulary Import Services.
@@ -48,6 +47,12 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
      * Valid vocabulary id.
      */
     protected static final int TEST_VALID_VOCABULARY_ID = 4;
+
+    /**
+     * tst references.
+     */
+    protected static final int TEST_REFERENCES_ID = 8;
+
     /**
      * Invalid vocabulary id.
      */

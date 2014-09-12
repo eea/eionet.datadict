@@ -21,18 +21,10 @@
 
 package eionet.meta.service;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyImportBaseHandler;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -42,10 +34,13 @@ import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyImportBaseHandler;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * JUnit integration test with Unitils for RDF Vocabulary Import Service.
@@ -1072,4 +1067,49 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         return elemAttrValues;
     }
 
-}// end of test case RDFVocabularyImportServiceTest
+    @Test
+    public void testIfRelationsCreatedAfterImport() throws Exception {
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_REFERENCES_ID);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_12.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, true, false);
+
+        vocabularyFolder = vocabularyService.getVocabularyWithConcepts("reftest", "reftest");
+
+        Assert.assertEquals( "3 concepts have to be imported", 3, vocabularyFolder.getConcepts().size());
+
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        VocabularyConcept c1001 = findVocabularyConceptByIdentifier(updatedConcepts, "1001");
+        VocabularyConcept c1002 = findVocabularyConceptByIdentifier(updatedConcepts, "1002");
+        VocabularyConcept c1003 = findVocabularyConceptByIdentifier(updatedConcepts, "1003");
+
+        List<List<DataElement>> c1001Attrs = c1001.getElementAttributes();
+        List<List<DataElement>> c1002Attrs = c1002.getElementAttributes();
+        List<List<DataElement>> c1003Attrs = c1003.getElementAttributes();
+
+        Assert.assertEquals( "concept 1001 should have 2 elements dct:replaces and skos:exactMatch", 2, c1001Attrs.size());
+        List<DataElement> dctReplacesElems = VocabularyImportBaseHandler.getDataElementValuesByName("dct:replaces", c1001Attrs);
+
+        Assert.assertEquals( "concept 1001 should have references of type dct:replaces", 2, c1001Attrs.size());
+
+        boolean foundRefTo1003 = false;
+        for (DataElement de : dctReplacesElems) {
+            if ("1003".equals(de.getRelatedConceptIdentifier())) {
+                foundRefTo1003 = true;
+            }
+        }
+        Assert.assertTrue("Not found dct:replaces relation from 1001 to 1003", foundRefTo1003);
+
+        List<DataElement> dctIsReplacedByElems = VocabularyImportBaseHandler.getDataElementValuesByName("dct:isReplacedBy", c1002Attrs);
+        Assert.assertEquals( "concept 1002 should have 1 elements dct:isReplacedBy", 1, dctIsReplacedByElems.size());
+
+        boolean foundRefTo1001 = c1001.getId() == dctIsReplacedByElems.get(0).getRelatedConceptId();
+        Assert.assertTrue("Not found dct:isReplacedBy relation from 1002 to 1001", foundRefTo1001);
+
+    }
+
+}
