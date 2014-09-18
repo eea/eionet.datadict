@@ -2,11 +2,11 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<h2>Recently Released Items</h2>
+<h2>Latest released data definitions</h2>
 
 <c:url var="datasetIconUrl" value="/images/pdfLarger.gif" />
     <c:url var="vocabularyIconUrl" value="/images/rdf-icon.gif" />
-    <c:url var="schemaIconUrl" value="/images/xsdLarger.png" />
+    <c:url var="schemaIconUrl" value="/images/xsd.png" />
     <display:table name="${actionBean.results}" class="datatable" id="recentlyReleased" style="width:100%" >
         <display:column style="width:5%">
             <c:choose>
