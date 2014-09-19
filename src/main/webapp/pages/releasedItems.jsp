@@ -2,11 +2,11 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<h2>Latest released data definitions</h2>
+<h1>Latest released definitions</h1>
 
-<c:url var="datasetIconUrl" value="/images/pdfLarger.gif" />
-    <c:url var="vocabularyIconUrl" value="/images/rdf-icon.gif" />
-    <c:url var="schemaIconUrl" value="/images/xsd.png" />
+<c:url var="datasetIconUrl" value="/images/pdf.png" />
+    <c:url var="vocabularyIconUrl" value="/images/tar.png" />
+    <c:url var="schemaIconUrl" value="/images/txt.png" />
     <display:table name="${actionBean.results}" class="datatable" id="recentlyReleased" style="width:100%" >
         <display:column style="width:5%">
             <c:choose>
@@ -55,6 +55,6 @@
             </c:choose>
         </display:column>
         <display:column style="width:25%">
-            <fmt:formatDate value="${recentlyReleased.releasedDate}" type="DATE" dateStyle="LONG"/>
+            <fmt:formatDate value="${recentlyReleased.releasedDate}" type="DATE" pattern="dd MMMMMMMMM yyyy"/>
         </display:column>
     </display:table>
