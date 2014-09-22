@@ -1795,4 +1795,10 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         </update>
     </changeSet>
 
+    <changeSet author="roug" id="rev-137">
+        <comment>Identifiers are case sensitive</comment>
+        <modifyDataType tableName="VOCABULARY_CONCEPT" columnName="IDENTIFIER"
+            newDataType="VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL"/>
+    </changeSet>
+
 </databaseChangeLog>
