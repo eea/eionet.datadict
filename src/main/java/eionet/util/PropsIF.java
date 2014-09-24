@@ -176,7 +176,7 @@ public interface PropsIF {
     /**
      * Recently released vocabularies count to be displayed, default value.
      */
-    String DD_DEFAULT_RECENTLY_RELEASED_VOCABULARIES_VALUE = "7";
+    String DD_DEFAULT_RECENTLY_RELEASED_VOCABULARIES_VALUE = "4";
     /**
      * Recently released schemas count to be displayed, key.
      */
@@ -184,7 +184,7 @@ public interface PropsIF {
     /**
      * Recently released schemas count to be displayed, default value.
      */
-    String DD_DEFAULT_RECENTLY_RELEASED_SCHEMAS_VALUE = "7";
+    String DD_DEFAULT_RECENTLY_RELEASED_SCHEMAS_VALUE = "4";
     /**
      * Recently released datasets count to be displayed, key.
      */
@@ -192,6 +192,6 @@ public interface PropsIF {
     /**
      * Recently released datasets count to be displayed, default value.
      */
-    String DD_DEFAULT_RECENTLY_RELEASED_DATASETS_VALUE = "7";
+    String DD_DEFAULT_RECENTLY_RELEASED_DATASETS_VALUE = "4";
 
 }

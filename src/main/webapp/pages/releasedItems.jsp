@@ -4,31 +4,20 @@
 
 <h1>Latest released definitions</h1>
 
-<c:url var="datasetIconUrl" value="/images/pdf.png" />
-    <c:url var="vocabularyIconUrl" value="/images/tar.png" />
-    <c:url var="schemaIconUrl" value="/images/txt.png" />
+<c:url var="datasetIconUrl" value="/images/tar.png" />
+    <c:url var="vocabularyIconUrl" value="/images/txt.png" />
+    <c:url var="schemaIconUrl" value="/images/xsd.png" />
     <display:table name="${actionBean.results}" class="datatable" id="recentlyReleased" style="width:100%" >
         <display:column style="width:5%">
             <c:choose>
                 <c:when test="${recentlyReleased.type eq 'VOCABULARY'}">
-                    <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="rdf" title="Export RDF">
-                        <stripes:param name="vocabularyFolder.folderName" value="${recentlyReleased.parameters['folderName']}" />
-                        <stripes:param name="vocabularyFolder.identifier" value="${recentlyReleased.parameters['identifier']}" />
-                        <img src="${vocabularyIconUrl}" alt="" />
-                    </stripes:link>
+                    <img src="${vocabularyIconUrl}" alt="Vocabulary" />
                 </c:when>
                 <c:when test="${recentlyReleased.type eq 'DATASET'}">
-                    <a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=${recentlyReleased.parameters['datasetId']}&amp;out_type=GDLN"
-                       title="Definition as PDF file">
-                        <img src="${datasetIconUrl}" alt="" />
-                    </a>
+                    <img src="${datasetIconUrl}" alt="Dataset definition" />
                 </c:when>
                 <c:when test="${recentlyReleased.type eq 'SCHEMA'}">
-                    <stripes:link beanclass="eionet.web.action.SchemaActionBean" title="View Schema">
-                        <stripes:param name="schemaSet.identifier" value="${recentlyReleased.parameters['schemaSetIdentifier']}"/>
-                        <stripes:param name="schema.fileName" value="${recentlyReleased.parameters['fileName']}"/>
-                        <img src="${schemaIconUrl}" alt="" />
-                    </stripes:link>
+                    <img src="${schemaIconUrl}" alt="XML schema" />
                 </c:when>
             </c:choose>
         </display:column>
