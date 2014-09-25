@@ -148,7 +148,7 @@ public class ReleasedItemsActionBean extends AbstractActionBean {
                     schemaDate = schema.getDateModified();
                 }
 
-                RecentlyReleased recentlyReleased;
+                RecentlyReleased recentlyReleased = null;
                 if (dataSetDate.compareTo(vocabularyDate) > 0) {
                     if (dataSetDate.compareTo(schemaDate) > 0) {
                         recentlyReleased = new RecentlyReleased(dataSet.getName(), dataSetDate, RecentlyReleased.Type.DATASET);
@@ -174,7 +174,10 @@ public class ReleasedItemsActionBean extends AbstractActionBean {
                     recentlyReleased.addParameter("fileName", schema.getFileName());
                     iSchema++;
                 }
-                this.results.add(recentlyReleased);
+
+                if (recentlyReleased != null) {
+                    this.results.add(recentlyReleased);
+                }
             }
 
         } catch (Exception e) {
