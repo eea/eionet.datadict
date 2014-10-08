@@ -21,7 +21,7 @@
 package eionet.web.action;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
 
 import net.sourceforge.stripes.action.DefaultHandler;
@@ -101,7 +101,7 @@ public class ReleasedItemsActionBean extends AbstractActionBean {
         filter.setSortOrder(SortOrderEnum.DESCENDING);
         SchemasResult schemasResult = this.schemaService.searchSchemas(filter);
         List<Schema> schemas = schemasResult.getList();
-        mergeAndSort(dataSets, vocabularies, schemas);
+        convertAndSort(dataSets, vocabularies, schemas);
         return new ForwardResolution(RELEASED_ITEMS_JSP);
     } // end of default handler - view
 
@@ -115,76 +115,43 @@ public class ReleasedItemsActionBean extends AbstractActionBean {
      * @param schemas
      *            list of schemas.
      */
-    private void mergeAndSort(List<DataSet> dataSets, List<VocabularyFolder> vocabularies, List<Schema> schemas) {
+    private void convertAndSort(List<DataSet> dataSets, List<VocabularyFolder> vocabularies, List<Schema> schemas) {
         // create empty list
         this.results = new ArrayList<RecentlyReleased>();
-        try {
-            int iDataset = 0;
-            int iVocabulary = 0;
-            int iSchema = 0;
+        RecentlyReleased rr;
 
-            // set a minimum date, luckily it is sunday: i.e. Sun, 2 Dec 292269055 BC 16:47:04 +0000
-            Date permianPeriod = new Date(Long.MIN_VALUE);
-            int schemaSize = schemas.size();
-            int vocabulariesSize = vocabularies.size();
-            int datasetsSize = dataSets.size();
-            while (iDataset < datasetsSize || iVocabulary < vocabulariesSize || iSchema < schemaSize) {
-                DataSet dataSet = null;
-                Date dataSetDate = permianPeriod;
-                if (iDataset < datasetsSize) {
-                    dataSet = dataSets.get(iDataset);
-                    dataSetDate = dataSet.getAdjustedDate();
-                }
-                VocabularyFolder vocabularyFolder = null;
-                Date vocabularyDate = permianPeriod;
-                if (iVocabulary < vocabulariesSize) {
-                    vocabularyFolder = vocabularies.get(iVocabulary);
-                    vocabularyDate = vocabularyFolder.getDateModified();
-                }
-                Schema schema = null;
-                Date schemaDate = permianPeriod;
-                if (iSchema < schemaSize) {
-                    schema = schemas.get(iSchema);
-                    schemaDate = schema.getDateModified();
-                }
-
-                RecentlyReleased recentlyReleased = null;
-                if (dataSetDate.compareTo(vocabularyDate) > 0) {
-                    if (dataSetDate.compareTo(schemaDate) > 0) {
-                        recentlyReleased = new RecentlyReleased(dataSet.getName(), dataSetDate, RecentlyReleased.Type.DATASET);
-                        recentlyReleased.addParameter("datasetId", dataSet.getId());
-                        iDataset++;
-                    } else {
-                        recentlyReleased =
-                                new RecentlyReleased(schema.getNameAttribute(), schemaDate, RecentlyReleased.Type.SCHEMA);
-                        recentlyReleased.addParameter("schemaSetIdentifier", schema.getSchemaSetIdentifier());
-                        recentlyReleased.addParameter("fileName", schema.getFileName());
-                        iSchema++;
-                    }
-                } else if (vocabularyDate.compareTo(schemaDate) > 0) {
-                    recentlyReleased = new RecentlyReleased(vocabularyFolder.getLabel(), vocabularyDate,
-                            RecentlyReleased.Type.VOCABULARY);
-                    recentlyReleased.addParameter("folderName", vocabularyFolder.getFolderName());
-                    recentlyReleased.addParameter("identifier", vocabularyFolder.getIdentifier());
-                    iVocabulary++;
-                } else {
-                    recentlyReleased =
-                            new RecentlyReleased(schema.getNameAttribute(), schemaDate, RecentlyReleased.Type.SCHEMA);
-                    recentlyReleased.addParameter("schemaSetIdentifier", schema.getSchemaSetIdentifier());
-                    recentlyReleased.addParameter("fileName", schema.getFileName());
-                    iSchema++;
-                }
-
-                if (recentlyReleased != null) {
-                    this.results.add(recentlyReleased);
-                }
+        // add datasets to list
+        if (dataSets != null) {
+            for (DataSet ds : dataSets) {
+                rr = new RecentlyReleased(ds.getName(), ds.getAdjustedDate(), RecentlyReleased.Type.DATASET);
+                rr.addParameter("datasetId", ds.getId());
+                this.results.add(rr);
             }
-
-        } catch (Exception e) {
-            LOGGER.error("Cannot create list for recently released items.");
-            e.printStackTrace();
         }
-    } // end of method mergeAndSort
+
+        // add vocabularies to list
+        if (vocabularies != null) {
+            for (VocabularyFolder vf : vocabularies) {
+                rr = new RecentlyReleased(vf.getLabel(), vf.getDateModified(), RecentlyReleased.Type.VOCABULARY);
+                rr.addParameter("folderName", vf.getFolderName());
+                rr.addParameter("identifier", vf.getIdentifier());
+                this.results.add(rr);
+            }
+        }
+
+        // add schemas to list
+        if (schemas != null) {
+            for (Schema s : schemas) {
+                rr = new RecentlyReleased(s.getNameAttribute(), s.getDateModified(), RecentlyReleased.Type.SCHEMA);
+                rr.addParameter("schemaSetIdentifier", s.getSchemaSetIdentifier());
+                rr.addParameter("fileName", s.getFileName());
+                this.results.add(rr);
+            }
+        }
+
+        // sort list of objects
+        Collections.sort(this.results, Collections.reverseOrder());
+    } // end of method convertAndSort
 
     public String getTitle() {
         return "Header from action bean";

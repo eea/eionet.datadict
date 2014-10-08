@@ -26,10 +26,11 @@ import java.util.Map;
 
 /**
  * Released item bean.
+ * Implements Comparable interface for sorting.
  *
  * @author enver
  */
-public class RecentlyReleased {
+public class RecentlyReleased implements Comparable<RecentlyReleased> {
     /**
      * Type enum for current item.
      */
@@ -116,4 +117,21 @@ public class RecentlyReleased {
     public Map<String, Object> getParameters() {
         return parameters;
     }
+
+    /**
+     * Compare to method to sort collections. Comparison is done based on released date.
+     *
+     * @param that
+     *            object to compare
+     * @return result
+     */
+    @Override
+    public int compareTo(RecentlyReleased that) {
+        if (this == that) {
+            return 0;
+        }
+
+        return this.releasedDate.compareTo(that.releasedDate);
+    } // end of method compareTo
+
 } // end of class RecentlyReleased
