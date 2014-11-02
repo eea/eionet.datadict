@@ -157,7 +157,7 @@ public class Props implements PropsIF {
             } catch (MissingResourceException mre) {
                 // Missing property is not considered a problem.
                 // If a property is mandatory, use getRequiredProperty() that throws proper exception.
-                mre.printStackTrace();
+                LOGGER.info("Could not find property " + name + " in " + getBundleName());
             }
         }
 
@@ -274,5 +274,17 @@ public class Props implements PropsIF {
     @SuppressWarnings("rawtypes")
     protected Hashtable getDefaults() {
         return defaults;
+    }
+
+    /**
+     * Returns true if the application is configured to use Central Authentication Service (CAS).
+     * See {@link PropsIF#USE_CENTRAL_AUTHENTICATION_SERVICE} for further description.
+     *
+     * @return true/false as indicated.
+     */
+    public static synchronized boolean isUseCentralAuthenticationService() {
+
+        String useCentralAuthenticationService = getProperty(USE_CENTRAL_AUTHENTICATION_SERVICE);
+        return StringUtils.isBlank(useCentralAuthenticationService) || !useCentralAuthenticationService.equals("false");
     }
 }

@@ -13,6 +13,9 @@ import eionet.util.SecurityUtil;
  */
 public abstract class LoginLogoutServlet extends HttpServlet {
 
+    /** Needed for serialization. */
+    private static final long serialVersionUID = 4288598165302451489L;
+
     /**
      * If needed, creates new HttpSession and adds authenticated user object to it.
      * This method will be called anly by login servlet (<CODE>eionet.meta.LoginServlet</CODE>).

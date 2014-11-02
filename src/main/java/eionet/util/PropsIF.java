@@ -170,4 +170,10 @@ public interface PropsIF {
      * Data Dictionary Default Working Language Values (used when working language is not defined in local.properties).
      */
     String DD_DEFAULT_WORKING_LANGUAGE_VALUE = "en";
+
+    /**
+     * If false, the Central Authentication Service (CAS) is not used.
+     * Instead, the mechanism provided by the eionetdir.properties and the local users file defined in uit.properties is used.
+     */
+    String USE_CENTRAL_AUTHENTICATION_SERVICE = "useCentralAuthenticationService";
 }

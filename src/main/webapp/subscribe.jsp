@@ -108,7 +108,7 @@ finally {
         if (user==null){
             %>
             <div class="error-msg">
-                You must <a href="javascript:login()">log in</a> to be able to subscribe to any notifications!
+                You must <a href="<%=SecurityUtil.getLoginURL(request)%>">log in</a> to be able to subscribe to any notifications!
             </div>
             <%
         }

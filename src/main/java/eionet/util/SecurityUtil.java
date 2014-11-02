@@ -44,6 +44,7 @@ import eionet.meta.AfterCASLoginServlet;
 import eionet.meta.DDCASUser;
 import eionet.meta.DDRuntimeException;
 import eionet.meta.DDUser;
+import eionet.meta.LoginServlet;
 import eionet.meta.filters.CASFilterConfig;
 
 /**
@@ -59,7 +60,6 @@ public final class SecurityUtil {
     /** */
     private static String casLoginUrl;
     private static String casServerName;
-
 
     /** logger. */
     private static final Logger LOGGER = Logger.getLogger(SecurityUtil.class);
@@ -120,10 +120,10 @@ public final class SecurityUtil {
         return SecurityUtil.hasPerm(user == null ? null : user.getUserName(), aclPath, prm);
     }
 
-
     /**
      * Checks if the user has permission for the ACl.
      * NB If user has permission to the parent ACL *and parent ACL is not root ACL* - no children ACL is checked!
+     *
      * @param usr user name
      * @param aclPath full acl path
      * @param prm permission
@@ -200,36 +200,50 @@ public final class SecurityUtil {
      */
     public static String getLoginURL(HttpServletRequest request) {
 
-        String result = "javascript:login()";
+        // Legacy login mechanism. Used if the application is configured to not use Central Authentication Service (CAS).
+        //String result = "javascript:login('" + request.getContextPath() + "')";
+        String result = request.getContextPath() + "/" + LoginServlet.LOGIN_JSP;
 
-        CASFilterConfig casFilterConfig = CASFilterConfig.getInstance();
-        if (casFilterConfig != null) {
+        boolean rememberAfterLoginUrl = false;
+        if (Props.isUseCentralAuthenticationService()) {
 
-            String casLoginUrl = casFilterConfig.getInitParameter(CASFilter.LOGIN_INIT_PARAM);
-            if (casLoginUrl != null) {
+            CASFilterConfig casFilterConfig = CASFilterConfig.getInstance();
+            if (casFilterConfig != null) {
 
-                String casServerName = casFilterConfig.getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
-                if (casServerName == null) {
-                    throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
-                            + " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
+                String casLoginUrl = casFilterConfig.getInitParameter(CASFilter.LOGIN_INIT_PARAM);
+                if (casLoginUrl != null) {
+
+                    String casServerName = casFilterConfig.getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
+                    if (casServerName == null) {
+                        throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
+                                + " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
+                    }
+
+                    rememberAfterLoginUrl = true;
+                    try {
+                        result =
+                                casLoginUrl
+                                        + "?service="
+                                        + URLEncoder.encode(request.getScheme() + "://" + casServerName + request.getContextPath()
+                                                + "/login", "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        throw new DDRuntimeException(e.toString(), e);
+                    }
                 }
+            }
+        } else {
+            String servletPath = request.getServletPath();
+            if (servletPath == null || !servletPath.endsWith(LoginServlet.LOGIN_JSP)) {
+                rememberAfterLoginUrl = true;
+            }
+        }
 
-                // set the after-login-url
-                String requestURL = request.getRequestURL().toString();
-                if (requestURL != null && !AfterCASLoginServlet.isSkipUrl(requestURL)) {
+        if (rememberAfterLoginUrl) {
 
-                    request.getSession().setAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME, buildAfterLoginURL(request));
-                }
+            String requestURL = request.getRequestURL().toString();
+            if (requestURL != null && !AfterCASLoginServlet.isSkipUrl(requestURL)) {
 
-                try {
-                    result =
-                        casLoginUrl
-                        + "?service="
-                        + URLEncoder.encode(request.getScheme() + "://" + casServerName + request.getContextPath()
-                                + "/login", "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    throw new DDRuntimeException(e.toString(), e);
-                }
+                request.getSession().setAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME, buildAfterLoginURL(request));
             }
         }
 
@@ -243,27 +257,32 @@ public final class SecurityUtil {
      */
     public static String getLogoutURL(HttpServletRequest request) {
 
+        // The default result used when the application is configured to not use Central Authentication Service (CAS).
         String result = "index.jsp";
 
-        CASFilterConfig casFilterConfig = CASFilterConfig.getInstance();
-        if (casFilterConfig != null) {
+        if (Props.isUseCentralAuthenticationService()) {
 
-            String casLoginUrl = casFilterConfig.getInitParameter(CASFilter.LOGIN_INIT_PARAM);
-            if (casLoginUrl != null) {
+            CASFilterConfig casFilterConfig = CASFilterConfig.getInstance();
+            if (casFilterConfig != null) {
 
-                String casServerName = casFilterConfig.getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
-                if (casServerName == null) {
-                    throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
-                            + " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
-                }
+                String casLoginUrl = casFilterConfig.getInitParameter(CASFilter.LOGIN_INIT_PARAM);
+                if (casLoginUrl != null) {
 
-                try {
-                    result =
-                        casLoginUrl.replaceFirst("/login", "/logout")
-                        + "?url="
-                        + URLEncoder.encode(request.getScheme() + "://" + casServerName + request.getContextPath(), "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    throw new DDRuntimeException(e.toString(), e);
+                    String casServerName = casFilterConfig.getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
+                    if (casServerName == null) {
+                        throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
+                                + " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
+                    }
+
+                    try {
+                        result =
+                                casLoginUrl.replaceFirst("/login", "/logout")
+                                        + "?url="
+                                        + URLEncoder.encode(
+                                                request.getScheme() + "://" + casServerName + request.getContextPath(), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        throw new DDRuntimeException(e.toString(), e);
+                    }
                 }
             }
         }
@@ -317,6 +336,7 @@ public final class SecurityUtil {
      * Returns the list of countries the logged in user represents detected from the roles assigned for the user in LDAP.
      * The country code is last 2 digits on role name. The country codes are detected only for the parent roles given as method
      * argument.
+     *
      * @param dduser Logged in user object.
      * @param parentRoles List of parent roles, where country code will be detected as last 2 digits.
      * @return List of ISO2 country codes in upper codes. Null if user object or parentRoles are null.

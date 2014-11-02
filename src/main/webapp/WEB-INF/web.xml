@@ -18,8 +18,8 @@
     </context-param>
 
     <context-param>
-        <param-name>login-error-page</param-name>
-        <param-value>error.html</param-value>
+        <param-name>useCentralAuthenticationService</param-name>
+        <param-value>${useCentralAuthenticationService}</param-value>
     </context-param>
 
     <!-- Spring configuration -->
@@ -192,26 +192,6 @@
     <filter-mapping>
         <filter-name>CAS Filter</filter-name>
         <url-pattern>/login</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>CAS Filter</filter-name>
-        <url-pattern>/eionetCookieLogin/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>CAS Filter</filter-name>
-        <url-pattern>/attributes.jsp</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>CAS Filter</filter-name>
-        <url-pattern>/subscribe.jsp</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>CAS Filter</filter-name>
-        <url-pattern>/import.jsp</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>CAS Filter</filter-name>
-        <url-pattern>/clean.jsp</url-pattern>
     </filter-mapping>
 
     <filter-mapping>

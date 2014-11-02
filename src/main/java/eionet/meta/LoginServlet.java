@@ -1,7 +1,6 @@
 package eionet.meta;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,13 +13,18 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class LoginServlet extends LoginLogoutServlet {
 
-    /** */
-    private static final String INITPAR_LOGIN_ERROR_PAGE = "login-error-page";
+    /** Serial ID. */
+    private static final long serialVersionUID = 1L;
+
+    /** The path to local login page */
+    public static final String LOGIN_JSP = "login.jsp";
 
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
+     *
      * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         String username = req.getParameter("j_username");
@@ -31,29 +35,16 @@ public class LoginServlet extends LoginLogoutServlet {
 
             allocSession(req, user);
 
-            res.setContentType("text/html");
-            PrintWriter out = res.getWriter();
-            out.print(responseText(req));
-            out.close();
+            String afterLogin = (String) req.getSession().getAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME);
+            if (afterLogin != null) {
+                res.sendRedirect(afterLogin);
+            } else {
+                req.getRequestDispatcher("/").forward(req, res);
+            }
+
         } else {
-            String loginErrorPage = getServletContext().getInitParameter(INITPAR_LOGIN_ERROR_PAGE);
             freeSession(req);
-            res.sendRedirect(loginErrorPage);
+            res.sendRedirect(req.getContextPath() + "/" + LOGIN_JSP + "?err=");
         }
-    }
-
-    /**
-     *
-     * @param req
-     * @return
-     */
-    private String responseText(HttpServletRequest req) {
-
-        String target = req.getParameter("target");
-        StringBuffer buf = new StringBuffer("<html><script>");
-        if (target != null && target.equals("blank"))
-            buf.append("window.opener.location.reload(true);");
-        buf.append("window.close();</script></html>");
-        return buf.toString();
     }
 }
