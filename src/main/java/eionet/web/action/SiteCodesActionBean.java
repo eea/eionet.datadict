@@ -308,8 +308,9 @@ public class SiteCodesActionBean extends AbstractActionBean {
                             + " or IDs in the dedicated textarea. In this case you are able to allocate up to "
                             + MAX_ALLOCATE_AMOUNT
                             + " site codes. If you need more site codes allocated than this criteria allows, "
-                            + "then please contact ETC/BD with explanation of why you need more codes. "
-                            + "ETC/BD then can allocate the codes for your country if the explanation is valid.)");
+                            + "then please contact <a href=\"cdda.helpdesk@eionet.europa.eu\">cdda.helpdesk@eionet.europa.eu</a> "
+                            + "with explanation of why you need more codes. "
+                            + "If the explanation is valid the CDDA helpdesk will allocate the codes for your country.");
                 }
             }
             if (CHOICE_LABEL.equals(choice)) {
@@ -318,8 +319,9 @@ public class SiteCodesActionBean extends AbstractActionBean {
                             + " you would have more than "
                             + MAX_ALLOCATE_AMOUNT
                             + " site codes, yet unassigned, allocated. If you need more site codes allocated than this criteria allows, "
-                            + "then please contact ETC/BD with explanation of why you need more codes. "
-                            + "ETC/BD then can allocate the codes for your country if the explanation is valid.)");
+                            + "then please contact <a href=\"cdda.helpdesk@eionet.europa.eu\">cdda.helpdesk@eionet.europa.eu</a> "
+                            + "with explanation of why you need more codes. "
+                            + "If the explanation is valid the CDDA helpdesk will allocate the codes for your country.");
                 }
             }
         }
