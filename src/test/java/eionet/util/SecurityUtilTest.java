@@ -1,9 +1,7 @@
 package eionet.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
+import eionet.meta.DDUser;
+import eionet.meta.service.DBUnitHelper;
 import org.easymock.EasyMock;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -12,8 +10,9 @@ import org.springframework.util.CollectionUtils;
 import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 
-import eionet.meta.DDUser;
-import eionet.meta.service.DBUnitHelper;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @SpringApplicationContext("mock-spring-context.xml")
 public class SecurityUtilTest extends UnitilsJUnit4  {
@@ -42,18 +41,18 @@ public class SecurityUtilTest extends UnitilsJUnit4  {
         DDUser dduser = EasyMock.createMock(DDUser.class);
         String[] roles =
         { "eionet", "eionet-nrc", "eionet-nrc-energy", "eea", "eionet-nfp", "eionet-nfp-mc-ee", "eea-epa", "eea-epa-members",
-                "eionet-nrc-soil", "eionet-nrc-energy-mc", "eionet-nrc-soil-mc, eionet-nrc-soil-mc-ee", "eionet-nrc-nature-mc-ee" };
+                "eionet-nrc-soil", "eionet-nrc-energy-mc", "eionet-nrc-soil-mc, eionet-nrc-soil-mc-ee", "eionet-nrc-biodivdata-mc-ee" };
         EasyMock.expect(dduser.getUserRoles()).andReturn(roles).anyTimes();
         EasyMock.replay(dduser);
 
-        String[] parentRoles = {"eionet-nrc-nature-mc", "eionet-nfp-mc"};
+        String[] parentRoles = {"eionet-nrc-biodivdata-mc", "eionet-nfp-mc"};
         String[] countries = {"EE"};
         assertEquals(SecurityUtil.getUserCountriesFromRoles(dduser, parentRoles), CollectionUtils.arrayToList(countries));
 
         EasyMock.reset(dduser);
         String[] roles2 =
         { "eionet", "eionet-nrc", "eionet-nrc-energy", "eea", "eionet-nfp", "eionet-nfp-mc-ee", "eea-epa", "eea-epa-members",
-                "eionet-nrc-soil", "eionet-nrc-energy-mc", "eionet-nrc-soil-mc", "eionet-nrc-soil-mc-ee", "eionet-nrc-nature-mc-fi" };
+                "eionet-nrc-soil", "eionet-nrc-energy-mc", "eionet-nrc-soil-mc", "eionet-nrc-soil-mc-ee", "eionet-nrc-biodivdata-mc-fi" };
         EasyMock.expect(dduser.getUserRoles()).andReturn(roles2).anyTimes();
         EasyMock.replay(dduser);
 

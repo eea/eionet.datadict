@@ -1,13 +1,13 @@
 package eionet.meta.service;
 
-import java.util.List;
-
 import eionet.meta.DDUser;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.service.data.AllocationResult;
 import eionet.meta.service.data.CountryAllocations;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
+
+import java.util.List;
 
 /**
  * Services for site codes.
@@ -17,8 +17,8 @@ import eionet.meta.service.data.SiteCodeResult;
 public interface ISiteCodeService {
 
     /** List of roles which is used for calculating users permissions on country level */
-    public static final String[] COUNTRY_USER_ROLES = {"eionet-nfp-cc", "eionet-nfp-mc", "eionet-nrc-nature-cc",
-            "eionet-nrc-nature-mc"};
+    public static final String[] COUNTRY_USER_ROLES = {"eionet-nfp-cc", "eionet-nfp-mc", "eionet-nrc-biodivdata-cc",
+            "eionet-nrc-biodivdata-mc"};
 
     /**
      * Returns all site code countries.
