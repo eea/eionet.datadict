@@ -22,9 +22,9 @@ Please download all of these software and install them according to the instruct
 Java, Tomcat, Maven and GIT client.
 
 The necessary versions are as follows:
-* Java 1.5 or higher
-* Maven 2.0.4 or higher
-* Tomcat 5.5 or higher
+* Java 1.6 or higher
+* Maven 3.0.2 or higher
+* Tomcat 6 or higher
 * GIT 1.8.4 or higher
 * MySql 5.1.71 or higher
 

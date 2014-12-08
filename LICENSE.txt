@@ -11,10 +11,12 @@ rights and limitations under the License.
 The Original Code is "Data Dictionary (DD)"
 
 The Initial Owner of the Original Code is European Environment
-Agency (EEA).  Portions created by TietoEnator are
+Agency (EEA).  Portions created by TietoEnator, TripleDev OÜ and Eworx S.A are
 Copyright (C) by European Environment Agency.  All
 Rights Reserved.
 
-Contributor(s): Jaanus Heinlaid (TietoEnator),
-                Enriko Käsper (TietoEnator),
+Contributor(s): Jaanus Heinlaid (TripleDev),
+                Enriko Käsper (TripleDev),
+                Juhan Voolaid (TripleDev)
+                Enver Atabek (TripleDev)
                 Søren Roug (European Environment Agency)
