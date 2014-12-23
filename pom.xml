@@ -465,7 +465,7 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>eionet</groupId>
+            <groupId>eionet.doc</groupId>
             <artifactId>documentation</artifactId>
             <version>1.5</version>
         </dependency>
