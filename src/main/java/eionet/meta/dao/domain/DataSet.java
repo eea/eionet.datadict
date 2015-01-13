@@ -21,6 +21,11 @@
 
 package eionet.meta.dao.domain;
 
+import eionet.util.Util;
+
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Data set.
  *
@@ -36,6 +41,16 @@ public class DataSet {
 
     /** Short name. */
     private String shortName;
+
+    /**
+     * Date.
+     */
+    private long date;
+
+    /**
+     * Longer name.
+     */
+    private String name;
 
     /**
      * @return the id
@@ -82,4 +97,34 @@ public class DataSet {
         this.shortName = shortName;
     }
 
+    public long getDate() {
+        return date;
+    }
+
+    /**
+     * Calculates and returns adjusted date for dataset.
+     *
+     * @return adjusted date.
+     */
+    public Date getAdjustedDate(){
+        Calendar adjusted = Calendar.getInstance();
+        adjusted.setTimeInMillis(this.date);
+        return adjusted.getTime();
+    }
+
+    public String getDateString() {
+        return Util.releasedDate(date);
+    }
+
+    public void setDate(long date) {
+        this.date = date;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

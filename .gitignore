@@ -13,3 +13,4 @@ Makefile
 /.idea
 /datadict.iml
 /*.bat
+local copy.properties

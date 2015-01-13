@@ -804,4 +804,51 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
         return getNamedParameterJdbcTemplate().update(sql, parameters);
     } // end of method changeSitePrefix
+
+    @Override
+    public List<VocabularyFolder> getRecentlyReleasedVocabularyFolders(int limit) {
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select v.VOCABULARY_ID, v.IDENTIFIER, v.LABEL, v.REG_STATUS, v.WORKING_COPY, v.BASE_URI, v.VOCABULARY_TYPE, ");
+        sql.append("v.WORKING_USER, v.DATE_MODIFIED, v.USER_MODIFIED, v.CHECKEDOUT_COPY_ID, v.CONTINUITY_ID, ");
+        sql.append("v.CONCEPT_IDENTIFIER_NUMERIC, v.NOTATIONS_EQUAL_IDENTIFIERS, f.ID, f.IDENTIFIER, f.LABEL ");
+        sql.append("from VOCABULARY v ");
+        sql.append("left join VOCABULARY_SET f on f.ID=v.FOLDER_ID ");
+        sql.append("where v.WORKING_COPY=FALSE and v.REG_STATUS like :releasedStatus ");
+        sql.append("order by v.DATE_MODIFIED desc, v.IDENTIFIER asc ");
+        sql.append("limit :limit");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("releasedStatus", RegStatus.RELEASED.toString());
+        params.put("limit", limit);
+
+        List<VocabularyFolder> items =
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyFolder>() {
+                    @Override
+                    public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyFolder vf = new VocabularyFolder();
+                        vf.setId(rs.getInt("v.VOCABULARY_ID"));
+                        vf.setIdentifier(rs.getString("v.IDENTIFIER"));
+                        vf.setLabel(rs.getString("v.LABEL"));
+                        vf.setRegStatus(RegStatus.fromString(rs.getString("v.REG_STATUS")));
+                        vf.setType(VocabularyType.valueOf(rs.getString("v.VOCABULARY_TYPE")));
+                        vf.setWorkingCopy(rs.getBoolean("v.WORKING_COPY"));
+                        vf.setWorkingUser(rs.getString("v.WORKING_USER"));
+                        vf.setDateModified(rs.getTimestamp("v.DATE_MODIFIED"));
+                        vf.setUserModified(rs.getString("v.USER_MODIFIED"));
+                        vf.setCheckedOutCopyId(rs.getInt("v.CHECKEDOUT_COPY_ID"));
+                        vf.setContinuityId(rs.getString("v.CONTINUITY_ID"));
+                        vf.setNumericConceptIdentifiers(rs.getBoolean("v.CONCEPT_IDENTIFIER_NUMERIC"));
+                        vf.setNotationsEqualIdentifiers(rs.getBoolean("NOTATIONS_EQUAL_IDENTIFIERS"));
+                        vf.setBaseUri(rs.getString("v.BASE_URI"));
+                        vf.setFolderId(rs.getShort("f.ID"));
+                        vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                        vf.setFolderLabel(rs.getString("f.LABEL"));
+                        return vf;
+                    }
+                });
+
+        return items;
+
+    } //end of method getRecentlyReleasedVocabularyFolders
 }

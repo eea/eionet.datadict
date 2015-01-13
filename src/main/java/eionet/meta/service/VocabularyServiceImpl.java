@@ -21,16 +21,17 @@
 
 package eionet.meta.service;
 
-import eionet.meta.DElemAttribute;
-import eionet.meta.DElemAttribute.ParentType;
-import eionet.meta.dao.*;
-import eionet.meta.dao.domain.*;
-import eionet.meta.service.data.*;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.util.Triple;
-import eionet.util.Util;
-import eionet.web.action.ErrorActionBean;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
@@ -39,12 +40,33 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.*;
+import eionet.meta.DElemAttribute;
+import eionet.meta.DElemAttribute.ParentType;
+import eionet.meta.dao.DAOException;
+import eionet.meta.dao.IAttributeDAO;
+import eionet.meta.dao.IDataElementDAO;
+import eionet.meta.dao.IFolderDAO;
+import eionet.meta.dao.IRdfNamespaceDAO;
+import eionet.meta.dao.ISiteCodeDAO;
+import eionet.meta.dao.IVocabularyConceptDAO;
+import eionet.meta.dao.IVocabularyFolderDAO;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.RdfNamespace;
+import eionet.meta.dao.domain.SimpleAttribute;
+import eionet.meta.dao.domain.SiteCodeStatus;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.VocabularyConceptData;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.Triple;
+import eionet.util.Util;
+import eionet.web.action.ErrorActionBean;
 
 /**
  * Vocabulary service.
@@ -307,6 +329,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
         updateVocabularyConceptNonTransactional(vocabularyConcept, true);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateVocabularyConceptNonTransactional(VocabularyConcept vocabularyConcept, boolean handleInverse) throws ServiceException {
         try {
@@ -385,8 +410,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * and makes sure that the concepts are related in both sides (A related with B -> B related with A). Also when relation gets
      * deleted from one side, then we make sure to deleted it also from the other side of the relation.
      *
-     * @param vocabularyConcept Concept to be updated
-     * @param dataElementValues bound data elements with values
+     * @param vocabularyConcept
+     *            Concept to be updated
+     * @param dataElementValues
+     *            bound data elements with values
      * @throws eionet.meta.service.ServiceException if fails
      */
     private void fixRelatedLocalRefElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues)
@@ -1383,4 +1410,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
             throw new ServiceException(e.getMessage());
         }
     } // end of method changeSitePrefix
+
+    @Override
+    public List<VocabularyFolder> getRecentlyReleasedVocabularyFolders(int limit) throws ServiceException {
+        try {
+            return vocabularyFolderDAO.getRecentlyReleasedVocabularyFolders(limit);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
+        }
+    } // end of method getRecentlyReleasedVocabularyFolders
 }

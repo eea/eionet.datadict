@@ -165,12 +165,34 @@ public interface PropsIF {
      * Data Dictionary Working Language.
      */
     String DD_WORKING_LANGUAGE_KEY = "dd.working.language";
-
     /**
      * Data Dictionary Default Working Language Values (used when working language is not defined in local.properties).
      */
     String DD_DEFAULT_WORKING_LANGUAGE_VALUE = "en";
-
+    /**
+     * Recently released vocabularies count to be displayed, key.
+     */
+    String DD_RECENTLY_RELEASED_VOCABULARIES_KEY = "dd.recently.released.vocabularies";
+    /**
+     * Recently released vocabularies count to be displayed, default value.
+     */
+    String DD_DEFAULT_RECENTLY_RELEASED_VOCABULARIES_VALUE = "4";
+    /**
+     * Recently released schemas count to be displayed, key.
+     */
+    String DD_RECENTLY_RELEASED_SCHEMAS_KEY = "dd.recently.released.schemas";
+    /**
+     * Recently released schemas count to be displayed, default value.
+     */
+    String DD_DEFAULT_RECENTLY_RELEASED_SCHEMAS_VALUE = "4";
+    /**
+     * Recently released datasets count to be displayed, key.
+     */
+    String DD_RECENTLY_RELEASED_DATASETS_KEY = "dd.recently.released.datasets";
+    /**
+     * Recently released datasets count to be displayed, default value.
+     */
+    String DD_DEFAULT_RECENTLY_RELEASED_DATASETS_VALUE = "4";
     /**
      * If false, the Central Authentication Service (CAS) is not used.
      * Instead, the mechanism provided by the eionetdir.properties and the local users file defined in uit.properties is used.

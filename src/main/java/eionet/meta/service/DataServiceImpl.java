@@ -63,6 +63,15 @@ public class DataServiceImpl implements IDataService {
         }
     }
 
+    @Override
+    public List<DataSet> getRecentlyReleasedDatasets(int limit) throws ServiceException {
+        try {
+            return dataSetDao.getRecentlyReleasedDatasets(limit);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get data sets: " + e.getMessage(), e);
+        }
+    } // end of method getRecentlyReleasedDatasets
+
     /**
      * {@inheritDoc}
      */

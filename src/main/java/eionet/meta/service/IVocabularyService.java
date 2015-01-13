@@ -598,4 +598,14 @@ public interface IVocabularyService {
      * @param concepts     concepts of the vocabulary
      */
     void fixRelatedReferenceElements(int vocabularyId, List<VocabularyConcept> concepts);
+
+    /**
+     * Returns list of recently released vocabulary folders.
+     *
+     * @param limit maximum number of vocabulary folders
+     * @return list of vocabulary folders
+     * @throws ServiceException
+     *             if operation fails
+     */
+    List<VocabularyFolder> getRecentlyReleasedVocabularyFolders(int limit) throws ServiceException;
 }
