@@ -32,6 +32,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import eionet.meta.service.data.ObsoleteStatus;
+import eionet.meta.service.data.VocabularyConceptData;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
@@ -57,11 +63,6 @@ import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.service.data.VocabularyConceptData;
-import eionet.meta.service.data.VocabularyConceptFilter;
-import eionet.meta.service.data.VocabularyConceptResult;
-import eionet.meta.service.data.VocabularyFilter;
-import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Triple;
@@ -333,7 +334,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public void updateVocabularyConceptNonTransactional(VocabularyConcept vocabularyConcept, boolean handleInverse) throws ServiceException {
+    public void updateVocabularyConceptNonTransactional(VocabularyConcept vocabularyConcept, boolean handleInverse)
+            throws ServiceException {
         try {
             quickUpdateVocabularyConcept(vocabularyConcept);
             // updateVocabularyConceptAttributes(vocabularyConcept);
@@ -361,7 +363,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * @param  handleInverse if to handle inverse automatically
      * @throws ServiceException if update of attributes fails
      */
-    private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept, boolean handleInverse) throws ServiceException {
+    private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept, boolean handleInverse)
+            throws ServiceException {
         List<DataElement> dataElementValues = new ArrayList<DataElement>();
         if (vocabularyConcept.getElementAttributes() != null) {
             for (List<DataElement> values : vocabularyConcept.getElementAttributes()) {
@@ -433,15 +436,15 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
                 for (DataElement elem : dataElementValues) {
 
-                    //for localref elements and reference elements which reside in the same vocabulary , create inverse links immediately
-                    //to show them in the working copy as well:
+                    //for localref elements and reference elements which reside in the same vocabulary ,
+                    // create inverse links immediately to show them in the working copy as well:
                     Integer relatedConceptId = elem.getRelatedConceptId();
                     if (elem.getRelatedConceptId() != null && elem.getRelatedConceptId() != 0) {
 
                         String elemType = dataElementDAO.getDataElementDataType(elem.getId());
                         if ("localref".equals(elemType)
-                                || ("reference".equals(elemType) &&
-                                getVocabularyConcept(relatedConceptId).getVocabularyId() == vocabularyConcept.getVocabularyId())) {
+                                || ("reference".equals(elemType)
+                                && getVocabularyConcept(relatedConceptId).getVocabularyId() == vocabularyConcept.getVocabularyId())) {
                             dataElementDAO.createInverseElements(elem.getId(), vocabularyConcept.getId(), elem.getRelatedConceptId());
                         }
                     }
