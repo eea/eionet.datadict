@@ -4,8 +4,8 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.tee.uit.client.ServiceClientIF;
-import com.tee.uit.client.ServiceClients;
+import eionet.rpcclient.ServiceClientIF;
+import eionet.rpcclient.ServiceClients;
 
 import eionet.util.Props;
 import eionet.util.Util;

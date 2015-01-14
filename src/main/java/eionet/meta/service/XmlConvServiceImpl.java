@@ -34,8 +34,8 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import com.tee.uit.client.ServiceClientIF;
-import com.tee.uit.client.ServiceClients;
+import eionet.rpcclient.ServiceClientIF;
+import eionet.rpcclient.ServiceClients;
 
 import eionet.meta.service.data.SchemaConversionsData;
 import eionet.util.Props;

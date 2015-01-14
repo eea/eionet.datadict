@@ -476,22 +476,22 @@
         </dependency>
         <dependency>
             <groupId>eionet</groupId>
-            <artifactId>uit-server</artifactId>
-            <version>1.0</version>
+            <artifactId>rpcserver</artifactId>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>eionet</groupId>
-            <artifactId>uit-definition</artifactId>
-            <version>1.0</version>
+            <artifactId>definition</artifactId>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>eionet</groupId>
-            <artifactId>uit-client</artifactId>
-            <version>1.0</version>
+            <artifactId>rpcclient</artifactId>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>eionet</groupId>
-            <artifactId>uit-help</artifactId>
+            <artifactId>help</artifactId>
             <version>2.0</version>
         </dependency>
         <dependency>
