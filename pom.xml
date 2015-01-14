@@ -470,9 +470,9 @@
             <version>1.5</version>
         </dependency>
         <dependency>
-            <groupId>eionet.acl</groupId>
+            <groupId>eionet</groupId>
             <artifactId>acl</artifactId>
-            <version>1.2</version>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>eionet</groupId>
@@ -514,18 +514,11 @@
             <artifactId>itext</artifactId>
             <version>2.1.7</version>
         </dependency>
-
-        <dependency>
-            <groupId>castor</groupId>
-            <artifactId>castor</artifactId>
-            <version>1.0</version>
-        </dependency>
         <dependency>
             <groupId>xmlrpc</groupId>
             <artifactId>xmlrpc</artifactId>
             <version>2.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.healthmarketscience.jackcess</groupId>
             <artifactId>jackcess</artifactId>
