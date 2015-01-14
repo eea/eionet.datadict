@@ -1,7 +1,7 @@
 <%@page import="eionet.doc.dto.DocumentationDTO"%>
 <%@page import="eionet.doc.dto.DocPageDTO"%>
 <%@page import="eionet.doc.DocumentationService"%>
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,java.io.*,eionet.meta.*,eionet.util.sql.ConnectionUtil,com.tee.uit.help.Helps,eionet.util.Util"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,java.io.*,eionet.meta.*,eionet.util.sql.ConnectionUtil,eionet.help.Helps,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!final static int MAX_DOCUMENTATION_ITEMS=5;%>
