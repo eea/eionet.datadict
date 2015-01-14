@@ -2,8 +2,8 @@ package eionet.meta;
 
 import org.apache.log4j.Logger;
 
-import com.tee.uit.security.AuthMechanism;
-import com.tee.uit.security.SignOnException;
+import eionet.acl.AuthMechanism;
+import eionet.acl.SignOnException;
 
 /**
  *

@@ -36,8 +36,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.tee.uit.security.AccessControlListIF;
-import com.tee.uit.security.AccessController;
+import eionet.acl.AccessControlListIF;
+import eionet.acl.AccessController;
 
 import edu.yale.its.tp.cas.client.filter.CASFilter;
 import eionet.meta.AfterCASLoginServlet;

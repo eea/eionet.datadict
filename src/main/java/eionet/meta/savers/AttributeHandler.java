@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.tee.uit.security.AccessController;
+import eionet.acl.AccessController;
 
 import eionet.meta.DDUser;
 import eionet.meta.DElemAttribute;

@@ -492,7 +492,7 @@
         <dependency>
             <groupId>eionet</groupId>
             <artifactId>uit-help</artifactId>
-            <version>1.1</version>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
