@@ -554,18 +554,9 @@
             <artifactId>jackcess</artifactId>
             <version>1.2.1</version>
         </dependency>
-        <!--
-        Javadbf can be reached by but not sure if it is a good idea. maybe this jar can be moved to eea-internal repo and then javadbf folder can be deleted.
-        This package is used by Dbf class in Dbf.java file. The class is responsible for database template creation of a table.
+        <!-- This package is used by Dbf class in Dbf.java file. The class is responsible for generating dataset table in dBase format. -->
         <dependency>
             <groupId>com.linuxense</groupId>
-            <artifactId>javadbf</artifactId>
-            <version>0.4.0</version>
-        </dependency>
-        Source: http://search.maven.org/#artifactdetails|com.linuxense|javadbf|0.4.0|jar
-        -->
-        <dependency>
-            <groupId>javadbf</groupId>
             <artifactId>javadbf</artifactId>
             <version>0.4.0</version>
         </dependency>
