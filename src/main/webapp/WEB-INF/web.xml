@@ -289,11 +289,6 @@
         <url-pattern>/namespaces/*</url-pattern>
     </servlet-mapping>
 
-
-    <servlet>
-        <servlet-name>env</servlet-name>
-        <servlet-class>com.tee.util.EnvServlet</servlet-class>
-    </servlet>
     <servlet>
         <servlet-name>rpcrouter</servlet-name>
         <servlet-class>eionet.rpcserver.servlets.XmlRpcRouter</servlet-class>
@@ -421,10 +416,6 @@
 
     <!-- servlet mappings -->
 
-    <servlet-mapping>
-        <servlet-name>env</servlet-name>
-        <url-pattern>/env/*</url-pattern>
-    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>rpcrouter</servlet-name>
         <url-pattern>/rpcrouter</url-pattern>
