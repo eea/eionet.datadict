@@ -7,7 +7,8 @@ import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.InvocationContext;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
-import com.tee.uit.servlets.XmlRpcRouter;
+
+import eionet.rpcserver.servlets.XmlRpcRouter;
 import eionet.DDDatabaseTestCase;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;

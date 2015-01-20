@@ -33,11 +33,13 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.tee.uit.security.AccessControlListIF;
-import com.tee.uit.security.AccessController;
-import com.tee.uit.security.AclNotFoundException;
-import com.tee.uit.security.AuthMechanism;
-import com.tee.uit.security.SignOnException;
+
+
+import eionet.acl.AccessControlListIF;
+import eionet.acl.AccessController;
+import eionet.acl.AclNotFoundException;
+import eionet.acl.AuthMechanism;
+import eionet.acl.SignOnException;
 
 import eionet.directory.DirectoryService;
 import eionet.util.Props;

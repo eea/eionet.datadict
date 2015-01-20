@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="com.tee.uit.help.Helps, java.sql.*, eionet.meta.*,eionet.util.sql.ConnectionUtil,eionet.util.Util"%>
+<%@page contentType="text/html;charset=UTF-8" import="eionet.help.Helps, java.sql.*, eionet.meta.*,eionet.util.sql.ConnectionUtil,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%

@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
-import com.tee.uit.security.AccessController;
-import com.tee.uit.security.SignOnException;
+import eionet.acl.AccessController;
+import eionet.acl.SignOnException;
 
 import eionet.meta.DDUser;
 import eionet.meta.Dataset;

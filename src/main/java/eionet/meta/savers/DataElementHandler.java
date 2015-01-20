@@ -23,8 +23,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
-import com.tee.uit.security.AccessController;
-import com.tee.uit.security.SignOnException;
+import eionet.acl.AccessController;
+import eionet.acl.SignOnException;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;

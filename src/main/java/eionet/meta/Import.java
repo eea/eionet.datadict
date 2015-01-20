@@ -22,8 +22,8 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.XMLReader;
 
-import com.tee.uit.security.AccessControlListIF;
-import com.tee.uit.security.AccessController;
+import eionet.acl.AccessControlListIF;
+import eionet.acl.AccessController;
 
 import eionet.meta.imp.BaseHandler;
 import eionet.meta.imp.DatasetImport;
