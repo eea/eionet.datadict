@@ -61,6 +61,7 @@ import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.util.Props;
@@ -315,8 +316,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
             if (vocFolder != null && vocFolder.isNotationsEqualIdentifiers()) {
                 vocabularyConcept.setNotation(vocabularyConcept.getIdentifier());
             }
+            if (vocabularyConcept.getStatus() == null) {
+                vocabularyConcept.setStatus(StandardGenericStatus.VALID);
+                vocabularyConcept.setStatusModified(new java.sql.Date(System.currentTimeMillis()));
+            }
             return vocabularyConceptDAO.createVocabularyConcept(vocabularyFolderId, vocabularyConcept);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ServiceException("Failed to create vocabulary concept: " + e.getMessage(), e);
         }
     }
@@ -361,7 +367,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      *
      * @param vocabularyConcept concept
      * @param  handleInverse if to handle inverse automatically
-     * @throws ServiceException if update of attributes fails
+     * @throws ServiceException
+     *             if update of attributes fails
      */
     private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept, boolean handleInverse)
             throws ServiceException {
@@ -523,9 +530,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public void markConceptsObsolete(List<Integer> ids) throws ServiceException {
+    public void markConceptsInvalid(List<Integer> ids) throws ServiceException {
         try {
-            vocabularyConceptDAO.markConceptsObsolete(ids);
+            vocabularyConceptDAO.markConceptsInvalid(ids);
         } catch (Exception e) {
             throw new ServiceException("Failed to mark the concepts obsolete: " + e.getMessage(), e);
         }
@@ -535,9 +542,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public void unMarkConceptsObsolete(List<Integer> ids) throws ServiceException {
+    public void markConceptsValid(List<Integer> ids) throws ServiceException {
         try {
-            vocabularyConceptDAO.unMarkConceptsObsolete(ids);
+            vocabularyConceptDAO.markConceptsValid(ids);
         } catch (Exception e) {
             throw new ServiceException("Failed to delete remove obsolete status: " + e.getMessage(), e);
         }

@@ -21,27 +21,36 @@
 
 package eionet.web.action;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
+import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.util.UriUtils;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
-import eionet.meta.service.data.*;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.StringEncoder;
 import eionet.util.Util;
-import net.sourceforge.stripes.action.*;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-import net.sourceforge.stripes.validation.ValidationMethod;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.web.util.UriUtils;
-
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Vocabulary concept action bean.
@@ -248,7 +257,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     public Resolution markConceptObsolete() throws ServiceException {
         vocabularyConcept.setIdentifier(getConceptIdentifier());
-        vocabularyService.markConceptsObsolete(Collections.singletonList(vocabularyConcept.getId()));
+        vocabularyService.markConceptsInvalid(Collections.singletonList(vocabularyConcept.getId()));
 
         addSystemMessage("Vocabulary concept marked obsolete");
 
@@ -268,7 +277,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     public Resolution unMarkConceptObsolete() throws ServiceException {
         vocabularyConcept.setIdentifier(getConceptIdentifier());
-        vocabularyService.unMarkConceptsObsolete(Collections.singletonList(vocabularyConcept.getId()));
+        vocabularyService.markConceptsValid(Collections.singletonList(vocabularyConcept.getId()));
 
         addSystemMessage("Obsolete status removed from vocabulary concept");
 
@@ -309,6 +318,11 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         }
         if (StringUtils.isEmpty(vocabularyConcept.getLabel())) {
             addGlobalValidationError("Vocabulary concept label is missing");
+        }
+
+        Date today = new Date(System.currentTimeMillis());
+        if (vocabularyConcept.getStatusModified() == null || today.before(vocabularyConcept.getStatusModified())) {
+            addGlobalValidationError("Vocabulary concept status modified cannot be later than today [" + today + "]");
         }
 
         // Validate unique identifier
@@ -382,7 +396,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
         // this is needed because of "limit " clause in the SQL. if this remains true, paging does not work in display:table
         relatedConceptsFilter.setUsePaging(false);
-        relatedConceptsFilter.setObsoleteStatus(ObsoleteStatus.ALL);
+        //relatedConceptsFilter.setObsoleteStatus(ObsoleteStatus.ALL);
 
         // vocabulary is selected in step 1 (non CH3)
         String vocabularyId = getContext().getRequestParameter("folderId");
@@ -741,8 +755,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         referenceElement.setRelatedConceptIdentifier(relatedConcept.getIdentifier());
         referenceElement.setRelatedConceptLabel(relatedConcept.getLabel());
 
-        //referenceElement.setRelatedVocabularyStatus(relatedFolder.getRegStatus().getLabel());
-        //referenceElement.setRelatedVocabularyWorkingCopy(relatedFolder.isWorkingCopy());
+        // referenceElement.setRelatedVocabularyStatus(relatedFolder.getRegStatus().getLabel());
+        // referenceElement.setRelatedVocabularyWorkingCopy(relatedFolder.isWorkingCopy());
 
     }
 

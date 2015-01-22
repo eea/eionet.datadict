@@ -21,10 +21,16 @@
 
 package eionet.meta.service;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyImportBaseHandler;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -34,13 +40,11 @@ import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.StandardGenericStatus;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyImportBaseHandler;
 
 /**
  * JUnit integration test with Unitils for RDF Vocabulary Import Service.
@@ -286,8 +290,8 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setIdentifier("rdf_test_concept_4");
         vc11.setLabel("rdf_test_concept_label_4");
         vc11.setDefinition("rdf_test_concept_def_4");
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-        vc11.setCreated(dateFormatter.parse(dateFormatter.format(Calendar.getInstance().getTime())));
+        vc11.setStatus(StandardGenericStatus.VALID);
+        vc11.setStatusModified(new Date(System.currentTimeMillis()));
 
         // create element attributes (there is only one concept)
         List<List<DataElement>> elementAttributes = new ArrayList<List<DataElement>>();
@@ -367,8 +371,8 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setIdentifier("rdf_test_concept_4");
         vc11.setLabel("rdf_test_concept_label_4");
         vc11.setDefinition("rdf_test_concept_def_4");
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-        vc11.setCreated(dateFormatter.parse(dateFormatter.format(Calendar.getInstance().getTime())));
+        vc11.setStatus(StandardGenericStatus.VALID);
+        vc11.setStatusModified(new Date(System.currentTimeMillis()));
 
         // create element attributes (there is only one concept)
         List<List<DataElement>> elementAttributes = new ArrayList<List<DataElement>>();
@@ -445,6 +449,9 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
+        vc8.setStatus(StandardGenericStatus.VALID);
+        vc8.setAcceptedDate(new Date(System.currentTimeMillis()));
+        vc8.setStatusModified(new Date(System.currentTimeMillis()));
         vc8.setDefinition("rdf_test_concept_def_1_updated");
 
         List<List<DataElement>> dataElements = vc8.getElementAttributes();
@@ -493,6 +500,9 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyConcept vc10 = findVocabularyConceptById(concepts, 10);
         vc10.setLabel("rdf_test_concept_label_3_updated");
         vc10.setDefinition("rdf_test_concept_def_3_updated");
+        vc10.setStatus(StandardGenericStatus.VALID);
+        vc10.setAcceptedDate(new Date(System.currentTimeMillis()));
+        vc10.setStatusModified(new Date(System.currentTimeMillis()));
 
         dataElements = vc10.getElementAttributes();
         elems = VocabularyImportBaseHandler.getDataElementValuesByNameAndLang("skos:prefLabel", "bg", dataElements);
@@ -581,7 +591,13 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concepts.remove(2);// remove last object
         // there is not much object just update, no need to iterate
         concepts.get(0).setIdentifier("rdf_test_concept_1_after_purge");
+        concepts.get(0).setStatus(StandardGenericStatus.VALID);
+        concepts.get(0).setAcceptedDate(new Date(System.currentTimeMillis()));
+        concepts.get(0).setStatusModified(new Date(System.currentTimeMillis()));
         concepts.get(1).setIdentifier("rdf_test_concept_2_after_purge");
+        concepts.get(1).setStatus(StandardGenericStatus.VALID);
+        concepts.get(1).setAcceptedDate(new Date(System.currentTimeMillis()));
+        concepts.get(1).setStatusModified(new Date(System.currentTimeMillis()));
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
@@ -828,12 +844,18 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // manually compare updated objects values
         // Concept 1
         VocabularyConcept concept = findVocabularyConceptByIdentifier(updatedConcepts, "rdf_test_concept_1");
+        concept.setStatus(StandardGenericStatus.VALID);
+        concept.setAcceptedDate(new Date(System.currentTimeMillis()));
+        concept.setStatusModified(new Date(System.currentTimeMillis()));
         Assert.assertEquals("Label does not match for concept.", "en_rdf_test_concept_1", concept.getLabel());
         Assert.assertEquals("skos:prefLabel should have 3 elements for concept.", 3, VocabularyImportBaseHandler
                 .getDataElementValuesByName("skos:prefLabel", concept.getElementAttributes()).size());
 
         // Concept 2
         concept = findVocabularyConceptByIdentifier(updatedConcepts, "rdf_test_concept_2");
+        concept.setStatus(StandardGenericStatus.VALID);
+        concept.setAcceptedDate(new Date(System.currentTimeMillis()));
+        concept.setStatusModified(new Date(System.currentTimeMillis()));
         Assert.assertEquals("Label does not match for concept.", "rdf_test_concept_label_2", concept.getLabel());
         Assert.assertEquals("Definition does not match for concept.", "rdf_test_concept_def_2", concept.getDefinition());
         Assert.assertEquals("skos:prefLabel should have 2 elements for concept.", 2, VocabularyImportBaseHandler
@@ -843,6 +865,9 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // Concept 3
         concept = findVocabularyConceptByIdentifier(updatedConcepts, "rdf_test_concept_3");
+        concept.setStatus(StandardGenericStatus.VALID);
+        concept.setAcceptedDate(new Date(System.currentTimeMillis()));
+        concept.setStatusModified(new Date(System.currentTimeMillis()));
         Assert.assertEquals("Label does not match for concept.", "bg_rdf_test_concept_3", concept.getLabel());
         Assert.assertEquals("Definition does not match for concept.", "en_rdf_test_concept_3", concept.getDefinition());
         Assert.assertEquals("skos:prefLabel should have 2 elements for concept.", 2, VocabularyImportBaseHandler

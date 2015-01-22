@@ -753,7 +753,7 @@ else if (mode.equals("add"))
                                                 }
 
                                                 // MS Excel link
-                                                if (dispAll || dispXLS){ 
+                                                if (dispAll || dispXLS){
                                                 %>
                                                     <tr>
                                                         <td>
@@ -1430,7 +1430,7 @@ else if (mode.equals("add"))
                                                                                     %>
                                                                                     <a href="<%=request.getContextPath()%>/vocabulary/<%=vocabulary.getFolderName()%>/<%=vocabulary.getIdentifier()%>/view">
                                                                                         <%=Util.processForDisplay(elemType)%>
-                                                                                    </a> <% if (!elem.isAllConceptsValid()) {%><span title="Only concepts created and not become obsolete before releasing the element are valid" class="checkedout"><strong>*</strong></span><%}
+                                                                                    </a> <% if (!elem.isAllConceptsValid()) {%><span title="Only concepts created and accepted before releasing the element are valid" class="checkedout"><strong>*</strong></span><%}
                                                                                 } else {
                                                                                     %><span><%=Util.processForDisplay(elemType)%></span><%
                                                                                 }

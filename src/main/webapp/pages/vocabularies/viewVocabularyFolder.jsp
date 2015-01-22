@@ -261,12 +261,12 @@
                         <td class="simple_attr_value">
                             <stripes:text class="smalltext" size="30" name="filter.text" id="filterText"/>
                         </td>
-                        <th scope="row" class="scope-row simple_attr_title" title="Concept's obsolete status">
-                            <label for="obsoleteStatus"><span style="white-space:nowrap;">Obsolete status</span></label>
+                        <th scope="row" class="scope-row simple_attr_title" title="Concept's status">
+                            <label for="status"><span style="white-space:nowrap;">Status</span></label>
                         </th>
                         <td class="simple_attr_value" style="padding-right: 5em;">
-                            <stripes:select name="filter.obsoleteStatus" id="obsoleteStatus">
-                                <stripes:options-enumeration enum="eionet.meta.service.data.ObsoleteStatus" label="label"/>
+                            <stripes:select name="filter.conceptStatus" id="status">
+                                <stripes:options-enumeration enum="eionet.meta.dao.domain.StandardGenericStatus" label="label"/>
                             </stripes:select>
                         </td>
                         <td>
@@ -288,7 +288,7 @@
 
             <display:column title="Id" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 5%" media="html">
                 <c:choose>
-                    <c:when test="${concept.obsolete != null}">
+                    <c:when test="${!concept.status.accepted}">
                         <span style="text-decoration:line-through"><c:out value="${concept.identifier}" /></span>
                     </c:when>
                     <c:otherwise>
@@ -296,7 +296,7 @@
                     </c:otherwise>
                 </c:choose>
             </display:column>
-            <display:column title="Preferred label" media="html" style="width: 35%">
+            <display:column title="Preferred label" media="html" style="width: 40%">
                 <c:choose>
                     <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
                         <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view" title="${concept.label}">
@@ -312,16 +312,20 @@
                     </c:otherwise>
                 </c:choose>
             </display:column>
-            <display:column title="Definition" escapeXml="false" style="width: 55%">
-                <dd:attributeValue attrValue="${concept.definition}"/>
+            <display:column title="Status" escapeXml="false" style="width: 20%">
+                <dd:attributeValue attrValue="${concept.status.label}"/>
+            </display:column>
+            <display:column title="Status Modified" escapeXml="false" style="width: 15%">
+                <fmt:formatDate value="${concept.statusModified}" pattern="dd.MM.yyyy"/>
             </display:column>
             <display:column title="Notation" escapeXml="true" property="notation" style="width: 5%"/>
 
-            <c:if test="${actionBean.filter.obsoleteStatus != 'VALID_ONLY'}">
-                <display:column title="Obsolete from">
-                    <fmt:formatDate value="${concept.obsolete}" pattern="dd.MM.yyyy"/>
-                </display:column>
-            </c:if>
+            <display:column title="Not Accepted from" escapeXml="false" style="width: 15%">
+                <c:if test="${!concept.status.accepted}">
+                   <fmt:formatDate value="${concept.notAcceptedDate}" pattern="dd.MM.yyyy"/>
+                </c:if>
+
+            </display:column>
 
         </display:table>
         </div>

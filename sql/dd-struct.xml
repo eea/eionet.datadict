@@ -1801,4 +1801,52 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             newDataType="VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL"/>
     </changeSet>
 
+  <changeSet author="enverveli" id="rev-137">
+      <comment>Updates to introduce more status types for vocabulary concept. Includes followings:
+          --> Replace OBSOLETE_DATE column with new STATUS (enum) column and update all obsolete concepts to invalid.
+          --> Add new column STATUS_MODIFIED
+          --> Add new column ACCEPTED_DATE
+          --> Add new column NOT_ACCEPTED_DATE
+          --> Remove CREATION_DATE column
+      </comment>
+      <addColumn tableName="VOCABULARY_CONCEPT">
+          <column name="STATUS" defaultValueNumeric="145" type="TINYINT UNSIGNED"
+                  remarks="Enum Values are as follows:
+                  NOT_ACCEPTED('Not accepted', 64),
+                  SUBMITTED('Submitted', 81),
+                  RESERVED('Reserved', 97),
+                  INVALID('Invalid', 113),
+                  ACCEPTED('Accepted', 128),
+                  VALID('Valid', 145),
+                  VALID_STABLE('Valid - stable', 147),
+                  VALID_EXPERIMENTAL('Valid - experimental', 149),
+                  DEPRECATED('Deprecated', 161),
+                  DEPRECATED_RETIRED('Deprecated - retired', 163),
+                  DEPRECATED_SUPERSEDED('Deprecated - superseded', 165).
+                  Default value = 145 = VALID.">
+              <constraints nullable="false"/>
+          </column>
+          <column name="STATUS_MODIFIED" defaultValue="NULL" type="DATETIME"/>
+          <column name="ACCEPTED_DATE" defaultValue="NULL" type="DATETIME"/>
+          <column name="NOT_ACCEPTED_DATE" defaultValue="NULL" type="DATETIME"/>
+      </addColumn>
+      <update tableName="VOCABULARY_CONCEPT">
+          <column name="STATUS" valueNumeric="113"/>
+          <where>OBSOLETE_DATE IS NOT NULL</where>
+      </update>
+      <update tableName="VOCABULARY_CONCEPT">
+          <column name="NOT_ACCEPTED_DATE" valueComputed="CURRENT_TIMESTAMP"/>
+          <where>OBSOLETE_DATE IS NOT NULL</where>
+      </update>
+      <update tableName="VOCABULARY_CONCEPT">
+          <column name="ACCEPTED_DATE" valueComputed="CURRENT_TIMESTAMP"/>
+          <where>OBSOLETE_DATE IS NULL</where>
+      </update>
+      <update tableName="VOCABULARY_CONCEPT">
+          <column name="STATUS_MODIFIED" valueComputed="CURRENT_TIMESTAMP"/>
+      </update>
+      <dropColumn tableName="VOCABULARY_CONCEPT" columnName="OBSOLETE_DATE"/>
+      <dropColumn tableName="VOCABULARY_CONCEPT" columnName="CREATION_DATE"/>
+  </changeSet>
+
 </databaseChangeLog>

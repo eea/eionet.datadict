@@ -53,6 +53,7 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.InspireCodelistXmlWriter;
@@ -65,7 +66,6 @@ import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
-import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -675,8 +675,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @throws ServiceException
      *             if an error occurs
      */
-    public Resolution markConceptsObsolete() throws ServiceException {
-        vocabularyService.markConceptsObsolete(conceptIds);
+    public Resolution markConceptsInvalid() throws ServiceException {
+        vocabularyService.markConceptsInvalid(conceptIds);
         addSystemMessage("Vocabulary concepts marked obsolete");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
@@ -692,8 +692,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @throws ServiceException
      *             if an error occurs
      */
-    public Resolution unMarkConceptsObsolete() throws ServiceException {
-        vocabularyService.unMarkConceptsObsolete(conceptIds);
+    public Resolution markConceptsValid() throws ServiceException {
+        vocabularyService.markConceptsValid(conceptIds);
         addSystemMessage("Obsolete status removed from vocabulary concepts");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
@@ -1059,7 +1059,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             initFilter();
             filter.setUsePaging(false);
-            filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
+            filter.setConceptStatus(StandardGenericStatus.VALID);
             final List<? extends VocabularyConcept> concepts;
             if (vocabularyFolder.isSiteCodeType()) {
                 String countryCode = getContext().getRequestParameter("countryCode");

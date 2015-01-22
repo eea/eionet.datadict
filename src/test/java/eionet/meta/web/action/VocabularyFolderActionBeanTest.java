@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.FileBean;
@@ -156,16 +157,13 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         concept3.add("");
 
         // 5. column
-        header.add("StartDate");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar cal = Calendar.getInstance();
-        String date = dateFormat.format(cal.getTime());
-        concept1.add(date);
-        concept2.add(date);
-        concept3.add(date);
+        header.add("Status");
+        concept1.add(StandardGenericStatus.VALID.getLabel());
+        concept2.add(StandardGenericStatus.VALID.getLabel());
+        concept3.add(StandardGenericStatus.VALID.getLabel());
 
         // 6. column
-        header.add("EndDate");
+        header.add("AcceptedDate");
         concept1.add("");
         concept2.add("");
         concept3.add("");
@@ -313,15 +311,12 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         concept2.add("");
 
         // 5. column
-        header.add("StartDate");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar cal = Calendar.getInstance();
-        String date = dateFormat.format(cal.getTime());
-        concept1.add(date);
-        concept2.add(date);
+        header.add("Status");
+        concept1.add(StandardGenericStatus.VALID.getLabel());
+        concept2.add(StandardGenericStatus.VALID.getLabel());
 
         // 6. column
-        header.add("EndDate");
+        header.add("AcceptedDate");
         concept1.add("");
         concept2.add("");
 

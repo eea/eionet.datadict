@@ -35,7 +35,6 @@ import org.apache.commons.lang.StringUtils;
 import java.io.IOException;
 import java.io.Reader;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -229,6 +228,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     lastFoundConcept.setLabel(StringUtils.trimToNull(lineParams[conceptPropertyIndex]));
                 }
 
+
                 // check definition
                 conceptPropertyIndex = fixedHeaderIndices.get(fixedHeaders[VocabularyCSVOutputHelper.DEFINITION_INDEX]);
                 if (conceptPropertyIndex != null) {
@@ -241,17 +241,10 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     lastFoundConcept.setNotation(StringUtils.trimToNull(lineParams[conceptPropertyIndex]));
                 }
 
+                
+                // TODO: update - with merging flexible csv import
                 // check start date
-                conceptPropertyIndex = fixedHeaderIndices.get(fixedHeaders[VocabularyCSVOutputHelper.START_DATE_INDEX]);
-                if (conceptPropertyIndex != null && StringUtils.isNotBlank(lineParams[conceptPropertyIndex])) {
-                    lastFoundConcept.setCreated(dateFormatter.parse(lineParams[conceptPropertyIndex]));
-                }
-
-                // check end date
-                conceptPropertyIndex = fixedHeaderIndices.get(fixedHeaders[VocabularyCSVOutputHelper.END_DATE_INDEX]);
-                if (conceptPropertyIndex != null && StringUtils.isNotBlank(lineParams[conceptPropertyIndex])) {
-                    lastFoundConcept.setObsolete(dateFormatter.parse(lineParams[conceptPropertyIndex]));
-                }
+                // ignore status and accepteddate changes
 
                 // now it is time iterate on rest of the columns, here is the tricky part
                 List<DataElement> elementsOfConcept = null;
@@ -326,13 +319,13 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                         continue;
                     }
 
-                    //create VCE
+                    // create VCE
                     DataElement elem = new DataElement();
                     elementsOfConcept.add(elem);
                     elem.setAttributeLanguage(lang);
                     elem.setIdentifier(elementHeader);
                     elem.setId(this.boundElementsIds.get(elementHeader));
-                    //check if there is a found related concept
+                    // check if there is a found related concept
                     if (foundRelatedConcept != null) {
                         elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
                         int id = foundRelatedConcept.getId();

@@ -397,12 +397,12 @@
                         <td class="simple_attr_value">
                             <stripes:text class="smalltext" size="30" name="filter.text" id="filterText"/>
                         </td>
-                        <th scope="row" class="scope-row simple_attr_title" title="Concept's obsolete status">
-                            <label for="obsoleteStatus"><span style="white-space:nowrap;">Obsolete status</span></label>
+                        <th scope="row" class="scope-row simple_attr_title" title="Concept's status">
+                            <label for="status"><span style="white-space:nowrap;">Status</span></label>
                         </th>
                         <td class="simple_attr_value" style="padding-right: 5em;">
-                            <stripes:select name="filter.obsoleteStatus" id="obsoleteStatus">
-                                <stripes:options-enumeration enum="eionet.meta.service.data.ObsoleteStatus" label="label"/>
+                            <stripes:select name="filter.conceptStatus" id="status">
+                                <stripes:options-enumeration enum="eionet.meta.dao.domain.StandardGenericStatus" label="label"/>
                             </stripes:select>
                         </td>
                         <td>
@@ -417,7 +417,7 @@
         <!-- Vocabulary concepts -->
         <c:url var="editIcon" value="/images/edit.gif" />
         <stripes:form method="post" id="conceptsForm" beanclass="${actionBean.class.name}">
-            <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="item" style="width:80%"
+            <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="concept" style="width:80%"
                 requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/edit">
                 <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
                 <display:setProperty name="paging.banner.placement" value="both" />
@@ -429,30 +429,33 @@
                 </display:column>
                 <display:column title="Id" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%">
                     <c:choose>
-                        <c:when test="${item.obsolete != null}">
-                            <span style="text-decoration:line-through"><c:out value="${item.identifier}" /></span>
-                        </c:when>
-                        <c:otherwise>
-                            <c:out value="${item.identifier}" />
+                    <c:when test="${!concept.status.accepted}">
+                        <span style="text-decoration:line-through"><c:out value="${concept.identifier}" /></span>
+                    </c:when>
+                    <c:otherwise>
+                        <c:out value="${concept.identifier}" />
                         </c:otherwise>
                     </c:choose>
                 </display:column>
                 <display:column title="Label">
                     <!-- beanClass encodes incorrectly identifiers containing '+'. Can be replaced back after upgrading to Stripes 1.5.8 -->
-                    <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/${item.identifier}/edit">
+                    <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/${concept.identifier}/edit">
                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                        <c:out value="${item.label}" />
+                        <c:out value="${concept.label}" />
                     </stripes:link>
                     <a href="#" onClick="openPopup('#editConceptDiv${item.id}')"><img src="${editIcon}" title="Quick edit" alt="Quick edit" style="border:0" /></a>
                 </display:column>
                 <display:column title="Definition" escapeXml="true" property="definition" />
                 <display:column title="Notation" escapeXml="true" property="notation" />
-
-                <c:if test="${actionBean.filter.obsoleteStatus != 'VALID_ONLY'}">
-                    <display:column title="Obsolete from">
-                        <fmt:formatDate value="${concept.obsolete}" pattern="dd.MM.yyyy"/>
-                    </display:column>
-                </c:if>
+                <display:column title="Status" escapeXml="false" property="status.label" />
+                <display:column title="Status Modified" escapeXml="false">
+                    <fmt:formatDate value="${concept.statusModified}" pattern="dd.MM.yyyy"/>
+                </display:column>
+                <display:column title="Not Accepted from">
+                    <c:if test="${!concept.status.accepted}">
+                       <fmt:formatDate value="${concept.notAcceptedDate}" pattern="dd.MM.yyyy"/>
+                    </c:if>
+                </display:column>
             </display:table>
             <c:if test="${not empty actionBean.vocabularyConcepts.list}">
                 <div style="padding-top: 10px;">
@@ -461,8 +464,8 @@
                     <stripes:hidden name="vocabularyFolder.workingCopy" />
                     <input type="button" onclick="toggleSelectAll('conceptsForm');return false" value="Select all" name="selectAll">
                     <stripes:submit name="deleteConcepts" value="Delete" />
-                    <stripes:submit name="markConceptsObsolete" value="Mark obsolete" />
-                    <stripes:submit name="unMarkConceptsObsolete" value="Remove obsolete status" />
+                    <stripes:submit name="markConceptsInvalid" value="Mark invalid" />
+                    <stripes:submit name="markConceptsValid" value="Mark valid" />
 
                     <c:if test="${actionBean.vocabularyFolder.commonType}">
                         <button id="addNewConceptBtn">Add new concept</button>

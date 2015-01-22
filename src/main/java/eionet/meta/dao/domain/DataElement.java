@@ -119,20 +119,17 @@ public class DataElement {
     private String relatedConceptBaseURI;
 
     /**
-     * Related Vocabulary Status.
-     * used in displaying automatically created inverse values.
+     * Related Vocabulary Status. used in displaying automatically created inverse values.
      */
     private String relatedVocabularyStatus;
 
     /**
-     * Related Vocabulary working copy.
-     * used in displaying automatically created inverse values.
+     * Related Vocabulary working copy. used in displaying automatically created inverse values.
      */
     private boolean relatedVocabularyWorkingCopy;
 
     /**
-     * Related concept original ID.
-     * used in displaying automatically created inverse values.
+     * Related concept original ID. used in displaying automatically created inverse values.
      */
     private Integer relatedConceptOriginalId;
 
@@ -544,8 +541,8 @@ public class DataElement {
     }
 
     /**
-     * If inverse elements are created the concept can be not visible by regular url.
-     * URL does not work is just created and does not have checked in copy.
+     * If inverse elements are created the concept can be not visible by regular url. URL does not work is just created and does not
+     * have checked in copy.
      */
     public boolean isRelatedConceptVisibleByUri() {
         return !relatedVocabularyWorkingCopy || (relatedVocabularyWorkingCopy && relatedConceptOriginalId == null);

@@ -36,7 +36,6 @@ import org.unitils.spring.annotation.SpringBeanByType;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.service.data.ObsoleteStatus;
 
 /**
  * JUnit integration test with Unitils for vocabulary service relation methods.
