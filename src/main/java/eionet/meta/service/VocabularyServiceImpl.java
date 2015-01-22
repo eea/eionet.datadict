@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -1034,7 +1033,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 // when language is not empty, some concepts are filtered, so add an additional query!!! to get filtered concepts!!
                 VocabularyConceptFilter filter = new VocabularyConceptFilter();
                 filter.setVocabularyFolderId(vocabularyFolderId);
-                filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
+                filter.setConceptStatus(StandardGenericStatus.VALID);
                 filter.setUsePaging(false);
                 filter.setIdentifier(conceptIdentifier);
                 filter.setLabel(label);

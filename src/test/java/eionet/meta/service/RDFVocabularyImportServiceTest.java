@@ -26,6 +26,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1001,8 +1003,8 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setIdentifier("rdf_test_concept_5");
         vc11.setLabel("rdf_test_concept_label_5");
         vc11.setDefinition("rdf_test_concept_def_5");
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-        vc11.setCreated(dateFormatter.parse(dateFormatter.format(Calendar.getInstance().getTime())));
+        vc11.setStatus(StandardGenericStatus.VALID);
+        vc11.setStatusModified(new Date(System.currentTimeMillis()));
 
         // create element attributes (there is only one concept)
         List<List<DataElement>> elementAttributes = new ArrayList<List<DataElement>>();

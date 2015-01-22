@@ -143,7 +143,7 @@ public final class VocabularyCSVOutputHelper {
             for (Triple<String, String, Integer> row : attributesMeta) {
                 String elemName = row.getLeft();
 
-                attributeElems = getDataElementValuesByNameAndLang(elemName, row.getCentral(), c.getElementAttributes());
+                attributeElems = VocabularyOutputHelper.getDataElementValuesByNameAndLang(elemName, row.getCentral(), c.getElementAttributes());
 
                 int sizeOfAttributeElems = 0;
                 if (attributeElems != null) {

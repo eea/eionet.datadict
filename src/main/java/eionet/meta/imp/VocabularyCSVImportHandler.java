@@ -35,6 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import java.io.IOException;
 import java.io.Reader;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -341,9 +342,6 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 } // end of for loop iterating on rest of the columns (for data elements)
             } // end of row iterator (while loop on rows)
             processUnseenConceptsForRelatedElements();
-        } catch (ParseException e) {
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
             throw new ServiceException(e.getMessage());
