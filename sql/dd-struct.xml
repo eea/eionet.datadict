@@ -1801,13 +1801,13 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             newDataType="VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL"/>
     </changeSet>
 
-  <changeSet author="enverveli" id="rev-137">
+  <changeSet author="enverveli" id="rev-138">
       <comment>Updates to introduce more status types for vocabulary concept. Includes followings:
-          --> Replace OBSOLETE_DATE column with new STATUS (enum) column and update all obsolete concepts to invalid.
+          --> Add new column STATUS (enum) and update all obsolete concepts to invalid.
           --> Add new column STATUS_MODIFIED
-          --> Add new column ACCEPTED_DATE
-          --> Add new column NOT_ACCEPTED_DATE
-          --> Remove CREATION_DATE column
+          --> Add new column ACCEPTED_DATE and populate with CREATION_DATE
+          --> Add new column NOT_ACCEPTED_DATE and populate with OBSOLETE_DATE
+          --> Remove CREATION_DATE and OBSOLETE_DATE columns
       </comment>
       <addColumn tableName="VOCABULARY_CONCEPT">
           <column name="STATUS" defaultValueNumeric="145" type="TINYINT UNSIGNED"
@@ -1835,12 +1835,12 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
           <where>OBSOLETE_DATE IS NOT NULL</where>
       </update>
       <update tableName="VOCABULARY_CONCEPT">
-          <column name="NOT_ACCEPTED_DATE" valueComputed="CURRENT_TIMESTAMP"/>
+          <column name="NOT_ACCEPTED_DATE" valueComputed="TIMESTAMP(OBSOLETE_DATE)"/>
           <where>OBSOLETE_DATE IS NOT NULL</where>
       </update>
       <update tableName="VOCABULARY_CONCEPT">
-          <column name="ACCEPTED_DATE" valueComputed="CURRENT_TIMESTAMP"/>
-          <where>OBSOLETE_DATE IS NULL</where>
+          <column name="ACCEPTED_DATE" valueComputed="TIMESTAMP(CREATION_DATE)"/>
+          <where>CREATION_DATE IS NOT NULL</where>
       </update>
       <update tableName="VOCABULARY_CONCEPT">
           <column name="STATUS_MODIFIED" valueComputed="CURRENT_TIMESTAMP"/>

@@ -1,2 +1,2 @@
-"URI","Notation","StartDate","label","EndDate","skos:definition@de","skos:definition@de","skos:definition@en","skos:definition@pl","skos:prefLabel@bg","skos:prefLabel@bg","skos:prefLabel@en","skos:prefLabel@et","skos:prefLabel@pl","definitiOn"
+"URI","Notation","AcceptedDate","label","Status","skos:definition@de","skos:definition@de","skos:definition@en","skos:definition@pl","skos:prefLabel@bg","skos:prefLabel@bg","skos:prefLabel@en","skos:prefLabel@et","skos:prefLabel@pl","definitiOn"
 "http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/csv_header_vocab/csv_test_concept_4",,"2014-02-17","csv_test_concept_label_4",,"de_csv_test_concept_4",,,,"bg_csv_test_concept_4","bg2_csv_test_concept_4",,,,"csv_test_concept_def_4"

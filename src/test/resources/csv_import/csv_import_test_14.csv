@@ -1,2 +1,2 @@
-"URI","Label","Definition","Notation","StartDate","EndDate","skos:relatedMatch"
-"mailto://somehost/mailto_vocabulary/number_two","Number two",,,"2014-02-17",,"urn:aa:lv::number_one"
+"URI","Label","Definition","Notation","Status","AcceptedDate","skos:relatedMatch"
+"mailto://somehost/mailto_vocabulary/number_two","Number two",,,,,"urn:aa:lv::number_one"
