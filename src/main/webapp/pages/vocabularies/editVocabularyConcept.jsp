@@ -171,6 +171,22 @@
                         <stripes:text id="txtStatusModified" formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.statusModified" class="smalltext" size="12"/>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Accepted Date</th>
+                    <td class="simple_attr_help"></td>
+                    <td class="simple_attr_value">
+                        <stripes:text id="txtAcceptedDate" formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.acceptedDate" class="smalltext" size="12"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Not Accepted Date</th>
+                    <td class="simple_attr_help"></td>
+                    <td class="simple_attr_value">
+                        <stripes:text id="txtNotAcceptedDate" formatType="date" formatPattern="dd.MM.yyyy" name="vocabularyConcept.notAcceptedDate" class="smalltext" size="12"/>
+                    </td>
+                </tr>
                     <%-- Additional attributes --%>
                 <!-- Data element attributes -->
                 <c:forEach var="elementValues" items="${actionBean.vocabularyConcept.elementAttributes}" varStatus="outerLoop">

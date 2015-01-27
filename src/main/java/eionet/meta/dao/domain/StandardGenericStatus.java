@@ -89,6 +89,10 @@ public enum StandardGenericStatus {
      * mask, if result is greater than 0 then in same set.
      */
     public static final int IN_SAME_SET_MASK = 192;
+    /**
+     * Bit mask to match all status types.
+     */
+    public static final int ALL_MASK = 255;
 
     /**
      * Label for enum.

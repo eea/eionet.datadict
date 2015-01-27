@@ -402,6 +402,7 @@
                         </th>
                         <td class="simple_attr_value" style="padding-right: 5em;">
                             <stripes:select name="filter.conceptStatus" id="status">
+                                <stripes:option value="" label="All concepts"/>
                                 <stripes:options-enumeration enum="eionet.meta.dao.domain.StandardGenericStatus" label="label"/>
                             </stripes:select>
                         </td>

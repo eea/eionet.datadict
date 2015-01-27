@@ -1843,7 +1843,12 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
           <where>CREATION_DATE IS NOT NULL</where>
       </update>
       <update tableName="VOCABULARY_CONCEPT">
-          <column name="STATUS_MODIFIED" valueComputed="CURRENT_TIMESTAMP"/>
+          <column name="STATUS_MODIFIED" valueComputed="TIMESTAMP(CREATION_DATE)"/>
+          <where>OBSOLETE_DATE IS NULL</where>
+      </update>
+      <update tableName="VOCABULARY_CONCEPT">
+          <column name="STATUS_MODIFIED" valueComputed="TIMESTAMP(OBSOLETE_DATE)"/>
+          <where>OBSOLETE_DATE IS NOT NULL</where>
       </update>
       <dropColumn tableName="VOCABULARY_CONCEPT" columnName="OBSOLETE_DATE"/>
       <dropColumn tableName="VOCABULARY_CONCEPT" columnName="CREATION_DATE"/>

@@ -76,6 +76,20 @@
                         <fmt:formatDate pattern="dd.MM.yyyy" value="${actionBean.vocabularyConcept.statusModified}" />
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Accepted Date</th>
+                    <td class="simple_attr_value">
+                        <fmt:formatDate pattern="dd.MM.yyyy" value="${actionBean.vocabularyConcept.acceptedDate}" />
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Not Accepted Date</th>
+                    <td class="simple_attr_value">
+                        <fmt:formatDate pattern="dd.MM.yyyy" value="${actionBean.vocabularyConcept.notAcceptedDate}" />
+                    </td>
+                </tr>
                 <!-- Data element attributes -->
                 <c:forEach var="elementValues" items="${actionBean.vocabularyConcept.elementAttributes}">
                     <c:set var="elementMeta" value="${elementValues[0]}"/>
