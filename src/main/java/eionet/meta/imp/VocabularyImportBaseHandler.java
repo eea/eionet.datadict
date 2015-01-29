@@ -190,6 +190,7 @@ public abstract class VocabularyImportBaseHandler {
             lastFoundConcept.setIdentifier(conceptIdentifier);
             lastFoundConcept.setStatus(StandardGenericStatus.VALID);
             lastFoundConcept.setStatusModified(new Date(System.currentTimeMillis()));
+            lastFoundConcept.setAcceptedDate(new Date(System.currentTimeMillis()));
             List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
             lastFoundConcept.setElementAttributes(newConceptElementAttributes);
             return new Pair<VocabularyConcept, Boolean>(lastFoundConcept, false);
@@ -238,6 +239,7 @@ public abstract class VocabularyImportBaseHandler {
             foundRelatedConcept.setIdentifier(relatedConceptIdentifier);
             foundRelatedConcept.setStatus(StandardGenericStatus.VALID);
             foundRelatedConcept.setStatusModified(new Date(System.currentTimeMillis()));
+            foundRelatedConcept.setAcceptedDate(new Date(System.currentTimeMillis()));
             List<List<DataElement>> newConceptElementAttributes = new ArrayList<List<DataElement>>();
             foundRelatedConcept.setElementAttributes(newConceptElementAttributes);
             this.notSeenConceptsYet.add(foundRelatedConcept);
