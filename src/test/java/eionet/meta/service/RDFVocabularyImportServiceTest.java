@@ -294,6 +294,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setDefinition("rdf_test_concept_def_4");
         vc11.setStatus(StandardGenericStatus.VALID);
         vc11.setStatusModified(new Date(System.currentTimeMillis()));
+        vc11.setAcceptedDate(new Date(System.currentTimeMillis()));
 
         // create element attributes (there is only one concept)
         List<List<DataElement>> elementAttributes = new ArrayList<List<DataElement>>();
@@ -375,6 +376,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setDefinition("rdf_test_concept_def_4");
         vc11.setStatus(StandardGenericStatus.VALID);
         vc11.setStatusModified(new Date(System.currentTimeMillis()));
+        vc11.setAcceptedDate(new Date(System.currentTimeMillis()));
 
         // create element attributes (there is only one concept)
         List<List<DataElement>> elementAttributes = new ArrayList<List<DataElement>>();
@@ -1005,6 +1007,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setDefinition("rdf_test_concept_def_5");
         vc11.setStatus(StandardGenericStatus.VALID);
         vc11.setStatusModified(new Date(System.currentTimeMillis()));
+        vc11.setAcceptedDate(new Date(System.currentTimeMillis()));
 
         // create element attributes (there is only one concept)
         List<List<DataElement>> elementAttributes = new ArrayList<List<DataElement>>();
