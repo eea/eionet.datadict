@@ -41,6 +41,22 @@
                 imgPath:"<c:url value='/css/jscalendar/img/'/>"
             });
 
+            new JsDatePick({
+                useMode:2,
+                target:"txtAcceptedDate",
+                dateFormat:"%d.%m.%Y",
+                cellColorScheme:"eea",
+                imgPath:"<c:url value='/css/jscalendar/img/'/>"
+            });
+
+            new JsDatePick({
+                useMode:2,
+                target:"txtNotAcceptedDate",
+                dateFormat:"%d.%m.%Y",
+                cellColorScheme:"eea",
+                imgPath:"<c:url value='/css/jscalendar/img/'/>"
+            });
+
 
         };
 
@@ -83,8 +99,6 @@
             <stripes:hidden name="vocabularyConcept.vocabularyId" />
             <stripes:hidden name="vocabularyConcept.identifier" />
             <stripes:hidden id="txtEditDivId" name="editDivId" />
-
-
 
             <table class="datatable">
                 <colgroup>

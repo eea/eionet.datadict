@@ -253,11 +253,15 @@ public class VocabularyConceptFilter extends PagedRequest {
         this.conceptStatus = conceptStatus;
     }
 
+    public int getConceptStatusInt() {
+        return conceptStatus != null ? conceptStatus.getValue() : StandardGenericStatus.ALL_MASK;
+    }
+
     /**
      * Setter method to set conceptStatus from int value
      * @param conceptStatus int value. value should be in range, otherwise it will be null
      */
-    public void setConceptStatus(int conceptStatus) {
+    public void setConceptStatusInt(int conceptStatus) {
         //if we receive all mask, just set it to null
         if (conceptStatus == StandardGenericStatus.ALL_MASK){
             this.conceptStatus = null;

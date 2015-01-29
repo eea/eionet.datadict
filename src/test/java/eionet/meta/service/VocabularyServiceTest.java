@@ -240,6 +240,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept.setStatus(StandardGenericStatus.VALID);
         java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
         concept.setStatusModified(today);
+        concept.setAcceptedDate(today);
 
         vocabularyService.createVocabularyConcept(3, concept);
 
@@ -260,6 +261,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept.setStatus(StandardGenericStatus.INVALID);
         java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
         concept.setStatusModified(today);
+        concept.setNotAcceptedDate(today);
 
         vocabularyService.createVocabularyConcept(3, concept);
 
@@ -282,6 +284,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept3.setLabel("test3");
         concept3.setStatus(StandardGenericStatus.SUBMITTED);
         concept3.setStatusModified(today);
+        concept3.setNotAcceptedDate(today);
         int id = vocabularyService.createVocabularyConcept(3, concept3);
         concept3.setId(id);
 
@@ -290,12 +293,15 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept4.setLabel("test4");
         concept4.setStatus(StandardGenericStatus.DEPRECATED_RETIRED);
         concept4.setStatusModified(today);
+        concept4.setAcceptedDate(today);
         id = vocabularyService.createVocabularyConcept(3, concept4);
         concept4.setId(id);
 
         // now change status
         concept3.setStatus(StandardGenericStatus.VALID_STABLE);
+        concept3.setAcceptedDate(today);
         concept4.setStatus(StandardGenericStatus.RESERVED);
+        concept4.setNotAcceptedDate(today);
 
         // update
         vocabularyService.updateVocabularyConcept(concept3);
@@ -327,6 +333,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept3.setLabel("test3");
         concept3.setStatus(StandardGenericStatus.SUBMITTED);
         concept3.setStatusModified(today);
+        concept3.setNotAcceptedDate(today);
         int id = vocabularyService.createVocabularyConcept(3, concept3);
         concept3.setId(id);
 
@@ -335,6 +342,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         concept4.setLabel("test4");
         concept4.setStatus(StandardGenericStatus.DEPRECATED_RETIRED);
         concept4.setStatusModified(today);
+        concept4.setAcceptedDate(today);
         id = vocabularyService.createVocabularyConcept(3, concept4);
         concept4.setId(id);
 
@@ -376,7 +384,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         VocabularyConcept concept3 = new VocabularyConcept();
         concept3.setIdentifier("test3");
         concept3.setLabel("test3");
-        concept3.setStatus(StandardGenericStatus.SUBMITTED.getValue(), true);
+        concept3.setStatus(StandardGenericStatus.SUBMITTED);
         concept3.setStatusModified(dStatusModified);
         concept3.setNotAcceptedDate(new java.sql.Date(dNotAcceptedDate.getTime()));
         concept3.setAcceptedDate(new java.sql.Date(dAcceptedDate.getTime()));
@@ -399,7 +407,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         dNotAcceptedDate = cal.getTime();
         cal.set(2014, 8, 23);
         dAcceptedDate = cal.getTime();
-        concept3.setStatus(StandardGenericStatus.VALID.getValue(), true);
+        concept3.setStatus(StandardGenericStatus.VALID);
         concept3.setStatusModified(dStatusModified);
         concept3.setNotAcceptedDate(new java.sql.Date(dNotAcceptedDate.getTime()));
         concept3.setAcceptedDate(new java.sql.Date(dAcceptedDate.getTime()));
@@ -528,7 +536,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     public void testMarkConceptsValid() throws ServiceException {
         // change it to invalid, cos already valid concepts are not updated.
         VocabularyConcept concept = vocabularyService.getVocabularyConcept(3, "concept1", true);
-        concept.setStatus(StandardGenericStatus.INVALID.getValue(), true);
+        concept.setStatus(StandardGenericStatus.INVALID);
         vocabularyService.updateVocabularyConcept(concept);
         // now mark it as valid
         vocabularyService.markConceptsValid(Collections.singletonList(1));

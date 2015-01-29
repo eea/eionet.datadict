@@ -91,11 +91,11 @@ public class VocabularyConcept {
     /**
      * Accepted date.
      */
-    private Date acceptedDate;
+    private java.util.Date acceptedDate;
     /**
      * Not accepted date.
      */
-    private Date notAcceptedDate;
+    private java.util.Date notAcceptedDate;
     /**
      * Status modified.
      */
@@ -255,21 +255,12 @@ public class VocabularyConcept {
     }
 
     /**
-     * Sets status and updates accepted or notAccepted date when status is switched. NOTE: This method automatically updates
-     * accepted or not accepted dates.
+     * Sets status
      *
      * @param status
      *            new status.
      */
     public void setStatus(StandardGenericStatus status) {
-        if (this.status == null || !this.status.isSameSet(status)) {
-            Date statusChangeDate = new Date(System.currentTimeMillis());
-            if (status.isSubStatus(StandardGenericStatus.ACCEPTED)) {
-                setAcceptedDate(statusChangeDate);
-            } else {
-                setNotAcceptedDate(statusChangeDate);
-            }
-        }
         this.status = status;
     }
 
@@ -278,16 +269,9 @@ public class VocabularyConcept {
      *
      * @param value
      *            integer value of status enum
-     * @param loadingFromDb
-     *            when loading from db do not set accepted and not accepted dates
      */
-    public void setStatus(int value, boolean loadingFromDb) {
-        StandardGenericStatus newStatus = StandardGenericStatus.fromValue(value);
-        if (loadingFromDb) {
-            this.status = newStatus;
-        } else {
-            setStatus(StandardGenericStatus.fromValue(value));
-        }
+    public void setStatus(int value) {
+        setStatus(StandardGenericStatus.fromValue(value));
     }
 
     /**
@@ -299,19 +283,19 @@ public class VocabularyConcept {
         return this.status.getValue();
     }
 
-    public Date getAcceptedDate() {
+    public java.util.Date getAcceptedDate() {
         return acceptedDate;
     }
 
-    public void setAcceptedDate(Date acceptedDate) {
+    public void setAcceptedDate(java.util.Date acceptedDate) {
         this.acceptedDate = acceptedDate;
     }
 
-    public Date getNotAcceptedDate() {
+    public java.util.Date getNotAcceptedDate() {
         return notAcceptedDate;
     }
 
-    public void setNotAcceptedDate(Date notAcceptedDate) {
+    public void setNotAcceptedDate(java.util.Date notAcceptedDate) {
         this.notAcceptedDate = notAcceptedDate;
     }
 

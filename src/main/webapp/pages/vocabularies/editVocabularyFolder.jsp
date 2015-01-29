@@ -401,9 +401,9 @@
                             <label for="status"><span style="white-space:nowrap;">Status</span></label>
                         </th>
                         <td class="simple_attr_value" style="padding-right: 5em;">
-                            <stripes:select name="filter.conceptStatus" id="status">
-                                <stripes:option value="" label="All concepts"/>
-                                <stripes:options-enumeration enum="eionet.meta.dao.domain.StandardGenericStatus" label="label"/>
+                            <stripes:select name="filter.conceptStatusInt" id="status">
+                                <stripes:option value="255" label="All concepts"/>
+                                <stripes:options-collection collection="<%=eionet.meta.dao.domain.StandardGenericStatus.valuesAsList()%>" label="label" value="value"/>
                             </stripes:select>
                         </td>
                         <td>
@@ -426,7 +426,7 @@
                 <display:setProperty name="paging.banner.items_name" value="concepts" />
 
                 <display:column style="width: 1%">
-                    <stripes:checkbox name="conceptIds" value="${item.id}" />
+                    <stripes:checkbox name="conceptIds" value="${concept.id}" />
                 </display:column>
                 <display:column title="Id" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%">
                     <c:choose>

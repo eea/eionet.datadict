@@ -25,9 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -677,7 +675,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public Resolution markConceptsInvalid() throws ServiceException {
         vocabularyService.markConceptsInvalid(conceptIds);
-        addSystemMessage("Vocabulary concepts marked obsolete");
+        addSystemMessage("Vocabulary concepts marked invalid");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
@@ -694,7 +692,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public Resolution markConceptsValid() throws ServiceException {
         vocabularyService.markConceptsValid(conceptIds);
-        addSystemMessage("Obsolete status removed from vocabulary concepts");
+        addSystemMessage("Vocabulary concepts marked valid");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
@@ -1003,6 +1001,21 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         // Validate unique identifier
         if (!vocabularyService.isUniqueConceptIdentifier(vc.getIdentifier(), vocabularyFolder.getId(), vc.getId())) {
             addGlobalValidationError("Vocabulary concept identifier is not unique");
+        }
+
+        //check for dates, they cannot be set to future
+        Date today = new Date(System.currentTimeMillis());
+
+        if (vocabularyConcept.getStatusModified() != null && today.before(vocabularyConcept.getStatusModified() )){
+            addGlobalValidationError("Status modified date cannot be set to future");
+        }
+
+        if (vocabularyConcept.getAcceptedDate() != null && today.before(vocabularyConcept.getAcceptedDate())){
+            addGlobalValidationError("Accepted date cannot be set to future");
+        }
+
+        if (vocabularyConcept.getNotAcceptedDate() != null && today.before(vocabularyConcept.getNotAcceptedDate())){
+            addGlobalValidationError("Not accepted date cannot be set to future");
         }
 
         if (isValidationErrors()) {
@@ -1379,6 +1392,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private void initFilter() {
         if (filter == null) {
             filter = new VocabularyConceptFilter();
+            filter.setConceptStatus(StandardGenericStatus.VALID);
         }
         filter.setVocabularyFolderId(vocabularyFolder.getId());
         filter.setPageNumber(page);

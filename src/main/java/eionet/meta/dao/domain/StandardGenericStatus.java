@@ -22,6 +22,7 @@
 package eionet.meta.dao.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -212,5 +213,13 @@ public enum StandardGenericStatus {
 
         return uiValues.toArray(new StandardGenericStatus[uiValues.size()]);
     } // end of static method uiValues
+
+    /**
+     * A helper method to return enum values as list.
+     * @return All enum values as list
+     */
+    public static List<StandardGenericStatus> valuesAsList(){
+        return Arrays.asList(StandardGenericStatus.values());
+    } //end of static method valuesAsList
 
 } // end of enum StandardGenericStatus

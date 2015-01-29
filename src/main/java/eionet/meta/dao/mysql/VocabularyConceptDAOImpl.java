@@ -72,7 +72,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
-                        vc.setStatus(rs.getInt("STATUS"), true);
+                        vc.setStatus(rs.getInt("STATUS"));
                         vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
                         vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
                         vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
@@ -191,7 +191,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
-                        vc.setStatus(rs.getInt("STATUS"), true);
+                        vc.setStatus(rs.getInt("STATUS"));
                         vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
                         vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
                         vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
@@ -487,7 +487,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
-                        vc.setStatus(rs.getInt("STATUS"), true);
+                        vc.setStatus(rs.getInt("STATUS"));
                         vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
                         vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
                         vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
@@ -522,7 +522,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
-                        vc.setStatus(rs.getInt("STATUS"), true);
+                        vc.setStatus(rs.getInt("STATUS"));
                         vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
                         vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
                         vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
@@ -647,7 +647,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                     vc.setIdentifier(rs.getString("IDENTIFIER"));
                     vc.setDefinition(rs.getString("DEFINITION"));
                     vc.setNotation(rs.getString("NOTATION"));
-                    vc.setStatus(rs.getInt("STATUS"), true);
+                    vc.setStatus(rs.getInt("STATUS"));
                     vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
                     vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
                     vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));

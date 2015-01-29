@@ -320,9 +320,19 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             addGlobalValidationError("Vocabulary concept label is missing");
         }
 
+        //check for dates, they cannot be set to future
         Date today = new Date(System.currentTimeMillis());
-        if (vocabularyConcept.getStatusModified() == null || today.before(vocabularyConcept.getStatusModified())) {
-            addGlobalValidationError("Vocabulary concept status modified cannot be later than today [" + today + "]");
+
+        if (vocabularyConcept.getStatusModified() != null && today.before(vocabularyConcept.getStatusModified() )){
+            addGlobalValidationError("Status modified date cannot be set to future");
+        }
+
+        if (vocabularyConcept.getAcceptedDate() != null && today.before(vocabularyConcept.getAcceptedDate())){
+            addGlobalValidationError("Accepted date cannot be set to future");
+        }
+
+        if (vocabularyConcept.getNotAcceptedDate() != null && today.before(vocabularyConcept.getNotAcceptedDate())){
+            addGlobalValidationError("Not accepted date cannot be set to future");
         }
 
         // Validate unique identifier
@@ -365,6 +375,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             addElementMetadata();
             initElemVocabularyNames();
             editDivId = null;
+            Resolution resolution = new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
+            getContext().setSourcePageResolution(resolution);
         }
     }
 
@@ -726,15 +738,18 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException if database query fails
      */
     private void addElementMetadata() throws ServiceException {
-        for (List<DataElement> elems : vocabularyConcept.getElementAttributes()) {
-            if (elems != null) {
-                // only metainfo has to be added because it is used in the UI
-                DataElement metaInfo = elems.get(0);
-                dataService.setDataElementAttributes(metaInfo);
-                // set relational elements
-                for (DataElement elem : elems) {
-                    if (elem.getRelatedConceptId() != null) {
-                        setReferenceElementAttrs(elem);
+        List<List<DataElement>> elementAttributes = vocabularyConcept.getElementAttributes();
+        if (elementAttributes != null) {
+            for (List<DataElement> elems :elementAttributes) {
+                if (elems != null) {
+                    // only metainfo has to be added because it is used in the UI
+                    DataElement metaInfo = elems.get(0);
+                    dataService.setDataElementAttributes(metaInfo);
+                    // set relational elements
+                    for (DataElement elem : elems) {
+                        if (elem.getRelatedConceptId() != null) {
+                            setReferenceElementAttrs(elem);
+                        }
                     }
                 }
             }
@@ -815,14 +830,19 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     private void initElemVocabularyNames() throws ServiceException {
         elemVocabularyNames = new ArrayList<String>();
-        for (List<DataElement> elems : vocabularyConcept.getElementAttributes()) {
-            DataElement elemMeta = elems.get(0);
-            String vocName = "";
-            if (elemMeta.getType() != null && elemMeta.getType().equals("CH3")) {
-                int vocabularyId = elemMeta.getVocabularyId();
-                vocName = vocabularyService.getVocabularyFolder(vocabularyId).getLabel();
+        List<List<DataElement>> elementAttributes = vocabularyConcept.getElementAttributes();
+        if (elementAttributes != null) {
+            for (List<DataElement> elems : elementAttributes) {
+                if (elems != null) {
+                    DataElement elemMeta = elems.get(0);
+                    String vocName = "";
+                    if (elemMeta.getType() != null && elemMeta.getType().equals("CH3")) {
+                        int vocabularyId = elemMeta.getVocabularyId();
+                        vocName = vocabularyService.getVocabularyFolder(vocabularyId).getLabel();
+                    }
+                    elemVocabularyNames.add(vocName);
+                }
             }
-            elemVocabularyNames.add(vocName);
         }
     }
 
