@@ -281,13 +281,14 @@
         <%-- Vocabulary concepts --%>
         <div>
         <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept"
-            style="width:80%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view" >
+            style="width:80%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view"
+            excludedParams="view vocabularyFolder.identifier vocabularyFolder.folderName">
             <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
             <display:setProperty name="paging.banner.placement" value="both" />
             <display:setProperty name="paging.banner.item_name" value="concept" />
             <display:setProperty name="paging.banner.items_name" value="concepts" />
 
-            <display:column title="Id" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 5%" media="html">
+            <display:column title="Id" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 10%" media="html">
                 <c:choose>
                     <c:when test="${!concept.status.accepted}">
                         <span style="text-decoration:line-through"><c:out value="${concept.identifier}" /></span>
@@ -297,7 +298,7 @@
                     </c:otherwise>
                 </c:choose>
             </display:column>
-            <display:column title="Preferred label" media="html" style="width: 40%">
+            <display:column title="Preferred label" media="html">
                 <c:choose>
                     <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
                         <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view" title="${concept.label}">
@@ -313,21 +314,13 @@
                     </c:otherwise>
                 </c:choose>
             </display:column>
-            <display:column title="Status" escapeXml="false" style="width: 20%">
+            <display:column title="Status" escapeXml="false" style="width: 15%">
                 <dd:attributeValue attrValue="${concept.status.label}"/>
             </display:column>
             <display:column title="Status Modified" escapeXml="false" style="width: 15%">
                 <fmt:formatDate value="${concept.statusModified}" pattern="dd.MM.yyyy"/>
             </display:column>
-            <display:column title="Notation" escapeXml="true" property="notation" style="width: 5%"/>
-
-            <display:column title="Not Accepted from" escapeXml="false" style="width: 15%">
-                <c:if test="${!concept.status.accepted}">
-                   <fmt:formatDate value="${concept.notAcceptedDate}" pattern="dd.MM.yyyy"/>
-                </c:if>
-
-            </display:column>
-
+            <display:column title="Notation" escapeXml="true" property="notation" style="width: 10%"/>
         </display:table>
         </div>
     <%-- The section that displays versions of this vocabulary. --%>
