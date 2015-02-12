@@ -1,7 +1,8 @@
 package eionet.util;
 
-import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
+
+import static junit.framework.Assert.assertEquals;
 
 public class StringEncoderTest {
 
@@ -100,4 +101,11 @@ public class StringEncoderTest {
         assertEquals(expct, StringEncoder.encodeToIRI(input));
     }
 
+	/* ESCAPE IRI */
+	@Test
+	public void escapeSampleIRI() {
+		String input = "http://site/sp ace";
+		String expct = "http://site/sp%20ace";
+		assertEquals(expct, StringEncoder.encodeToIRI(input));
+	}
 }

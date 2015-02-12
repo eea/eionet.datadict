@@ -21,16 +21,6 @@
 
 package eionet.meta.exports.rdf;
 
-import java.io.OutputStream;
-import java.util.Calendar;
-import java.util.List;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.commons.lang.StringUtils;
-
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
@@ -39,6 +29,14 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.VocabularyOutputHelper;
 import eionet.meta.service.data.SiteCode;
 import eionet.util.StringEncoder;
+import org.apache.commons.lang.StringUtils;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.OutputStream;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * Vocabulary RDF-XML writer.
@@ -348,7 +346,7 @@ public class VocabularyXmlWriter {
 
         writer.writeCharacters("\n");
         writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.DD_SCHEMA_NS, "status");
-        writer.writeCharacters(sc.getStatus().name());
+        writer.writeCharacters(sc.getSiteCodeStatus().name());
         writer.writeEndElement();
 
         if (StringUtils.isNotEmpty(sc.getCountryCode())) {
