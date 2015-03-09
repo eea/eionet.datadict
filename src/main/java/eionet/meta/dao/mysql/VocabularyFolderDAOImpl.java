@@ -667,7 +667,8 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         if (filter.getVocabularyWorkingCopyId() != null) {
             if (BooleanUtils.isFalse(filter.isWorkingCopy())) {
                 params.put("workingCopyVocabularyId", filter.getVocabularyWorkingCopyId());
-                sql.append("AND ((WORKING_COPY = 0 AND CHECKEDOUT_COPY_ID <> :workingCopyVocabularyId) OR (WORKING_COPY = 1 AND VOCABULARY_ID = :workingCopyVocabularyId)) ");
+                sql.append("AND ((WORKING_COPY = 0 AND (CHECKEDOUT_COPY_ID IS NULL OR CHECKEDOUT_COPY_ID <> :workingCopyVocabularyId)) "
+                        + "OR (WORKING_COPY = 1 AND VOCABULARY_ID = :workingCopyVocabularyId)) ");
             }
 
         } else if (filter.isWorkingCopy() != null) {

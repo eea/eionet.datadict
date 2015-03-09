@@ -21,30 +21,6 @@
 
 package eionet.meta.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.unitils.UnitilsJUnit4;
-import org.unitils.spring.annotation.SpringApplicationContext;
-import org.unitils.spring.annotation.SpringBeanByType;
-
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
@@ -60,6 +36,23 @@ import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Triple;
+import org.apache.log4j.Logger;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.unitils.UnitilsJUnit4;
+import org.unitils.spring.annotation.SpringApplicationContext;
+import org.unitils.spring.annotation.SpringBeanByType;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * JUnit integration test with Unitils for vocabulary service.
@@ -1158,4 +1151,18 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     } // end of test step testRecentlyReleasedVocabularyFolders
 
+    @Test
+    public void testVocabularySearch() throws Exception {
+
+        VocabularyFilter filter = new VocabularyFilter();
+        filter.setText("base");
+        VocabularyResult result = this.vocabularyService.searchVocabularies(filter);
+        
+        assertTrue(4 == result.getFullListSize());
+        
+        
+        
+        
+        
+    }
 }
