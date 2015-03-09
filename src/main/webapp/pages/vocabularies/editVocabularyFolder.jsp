@@ -444,7 +444,7 @@
                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                         <c:out value="${concept.label}" />
                     </stripes:link>
-                    <a href="#" onClick="openPopup('#editConceptDiv${item.id}')"><img src="${editIcon}" title="Quick edit" alt="Quick edit" style="border:0" /></a>
+                    <a href="#" onClick="openPopup('#editConceptDiv${concept.id}')"><img src="${editIcon}" title="Quick edit" alt="Quick edit" style="border:0" /></a>
                 </display:column>
                 <display:column title="Definition" escapeXml="true" property="definition" />
                 <display:column title="Notation" escapeXml="true" property="notation" />
@@ -502,6 +502,7 @@
                         <stripes:hidden name="page" />
                         <stripes:hidden name="filter.text" />
                         <stripes:hidden name="vocabularyConcepts.list[${loop.index}].id" />
+                        <input type="hidden" name="vocabularyConcepts.list[${loop.index}].status" value="vocabularyConcepts.list[${loop.index}].status.value" />
 
                         <table class="datatable">
                             <colgroup>

@@ -21,32 +21,6 @@
 
 package eionet.web.action;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import eionet.meta.exports.VocabularyOutputHelper;
-import eionet.meta.exports.json.VocabularyJSONOutputHelper;
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ErrorResolution;
-import net.sourceforge.stripes.action.FileBean;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-import net.sourceforge.stripes.validation.ValidationMethod;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.StringUtils;
-
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
@@ -54,6 +28,8 @@ import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.exports.VocabularyOutputHelper;
+import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.meta.exports.rdf.InspireCodelistXmlWriter;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.ICSVVocabularyImportService;
@@ -74,6 +50,30 @@ import eionet.util.StringEncoder;
 import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
+import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ErrorResolution;
+import net.sourceforge.stripes.action.FileBean;
+import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
+import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.StreamingResolution;
+import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Edit vocabulary folder action bean.
@@ -1006,15 +1006,15 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         //check for dates, they cannot be set to future
         Date today = new Date(System.currentTimeMillis());
 
-        if (vocabularyConcept.getStatusModified() != null && today.before(vocabularyConcept.getStatusModified() )){
+        if (vc.getStatusModified() != null && today.before(vc.getStatusModified() )){
             addGlobalValidationError("Status modified date cannot be set to future");
         }
 
-        if (vocabularyConcept.getAcceptedDate() != null && today.before(vocabularyConcept.getAcceptedDate())){
+        if (vc.getAcceptedDate() != null && today.before(vc.getAcceptedDate())){
             addGlobalValidationError("Accepted date cannot be set to future");
         }
 
-        if (vocabularyConcept.getNotAcceptedDate() != null && today.before(vocabularyConcept.getNotAcceptedDate())){
+        if (vc.getNotAcceptedDate() != null && today.before(vc.getNotAcceptedDate())){
             addGlobalValidationError("Not accepted date cannot be set to future");
         }
 
@@ -1525,7 +1525,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         return vocabularyConcept;
     }
 
-    /**
+    /**\
      * @param vocabularyConcept
      *            the vocabularyConcept to set
      */
