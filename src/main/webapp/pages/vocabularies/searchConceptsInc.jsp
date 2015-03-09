@@ -329,7 +329,7 @@
                     </display:column>
                     <display:column title="Label" sortable="true" sortProperty="label">
                         <c:choose>
-                            <c:when test="${not empty item.obsolete}">
+                            <c:when test="${item.invalid}">
                                 <span style="text-decoration:line-through"><span title="${item.definition} (Obsolete)">${item.label}</span></span>
                             </c:when>
                             <c:otherwise>

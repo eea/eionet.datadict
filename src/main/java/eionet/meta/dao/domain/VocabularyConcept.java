@@ -21,12 +21,11 @@
 
 package eionet.meta.dao.domain;
 
-import java.sql.Date;
-import java.util.List;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+
+import java.util.List;
 
 /**
  * Vocabulary concept.
@@ -341,5 +340,14 @@ public class VocabularyConcept {
         int result = 1;
         result = prime * result + id;
         return result;
+    }
+
+
+    /**
+     * to distinguish concepts that can be used in some UIs.
+     * @return true if concept not active and valid.
+     */
+    public Boolean getInvalid() {
+        return StandardGenericStatus.VALID != status;
     }
 }
