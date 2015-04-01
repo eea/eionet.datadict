@@ -99,10 +99,6 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         Map<String, Object> parameters = new HashMap<String, Object>();
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT SQL_CALC_FOUND_ROWS ss.*, ATTRIBUTE.VALUE as NAME_ATTR ");
-
-        if (searchFilter.isDateModifiedEnhanced()) {
-            sql.append(", func_getSchemaSetModificationDate(ss.SCHEMA_SET_ID) as DATE_MODIFIED_ENHANCED ");
-        }
         
         sql.append("FROM T_SCHEMA_SET ss ");
         sql.append("left outer join ATTRIBUTE on ");

@@ -1900,5 +1900,12 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
           <sql>drop function if exists func_getSchemaSetModificationDate</sql>
       </rollback>
   </changeSet>
+  
+  <changeSet author="nakasnik" id="rev-140">
+      <comment>
+          Revert rev-139 whose logic turned out to be unnecessary.
+      </comment>
+      <sql>drop function if exists func_getSchemaSetModificationDate</sql>
+  </changeSet>
 
 </databaseChangeLog>

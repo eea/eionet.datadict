@@ -48,8 +48,6 @@ public class SchemaSetFilter extends PagedRequest implements IObjectWithDynamicA
 
     /** */
     private String searchingUser;
-
-    private boolean dateModifiedEnhanced;
     
     /** Dynamic search attributes. */
     private List<Attribute> attributes;
@@ -204,13 +202,5 @@ public class SchemaSetFilter extends PagedRequest implements IObjectWithDynamicA
      */
     public void setRegStatuses(List<String> regStatuses) {
         this.regStatuses = regStatuses;
-    }
-
-    public boolean isDateModifiedEnhanced() {
-        return dateModifiedEnhanced;
-    }
-
-    public void setDateModifiedEnhanced(boolean dateModifiedEnhanced) {
-        this.dateModifiedEnhanced = dateModifiedEnhanced;
     }
 }

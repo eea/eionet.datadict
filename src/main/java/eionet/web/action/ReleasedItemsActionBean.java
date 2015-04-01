@@ -96,9 +96,8 @@ public class ReleasedItemsActionBean extends AbstractActionBean {
         filter.setUsePaging(true);
         filter.setPageNumber(1);
         filter.setPageSize(Props.getIntProperty(PropsIF.DD_RECENTLY_RELEASED_SCHEMAS_KEY));
-        filter.setDateModifiedEnhanced(true);
         // TODO sort property can be added to filter and be queried from there
-        filter.setSortProperty("DATE_MODIFIED_ENHANCED");
+        filter.setSortProperty("DATE_MODIFIED");
         filter.setSortOrder(SortOrderEnum.DESCENDING);
         SchemaSetsResult schemaSetsResult = this.schemaService.searchSchemaSets(filter);
         List<SchemaSet> schemaSets = schemaSetsResult.getList();

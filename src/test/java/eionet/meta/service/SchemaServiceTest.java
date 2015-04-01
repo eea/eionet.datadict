@@ -5,6 +5,7 @@
  */
 package eionet.meta.service;
 
+import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
@@ -48,25 +49,18 @@ public class SchemaServiceTest extends UnitilsJUnit4 {
         DBUnitHelper.deleteData(SEED_FILE_SCHEMA_SETS);
         DBUnitHelper.deleteData(SEED_FILE_ATTRIBUTE);
     }
-
-    @Test
-    public void testDateModifiedEnhancement() throws ServiceException {
-        SchemaSetFilter filterByDateModified = new SchemaSetFilter();
-        filterByDateModified.setSortProperty("DATE_MODIFIED");
-        filterByDateModified.setSortOrder(SortOrderEnum.ASCENDING);
+    
+    @Test 
+    public void testReleasedSchemaSets() throws ServiceException {
+        SchemaSetFilter filterDummy = new SchemaSetFilter();
         
-        SchemaSetFilter filterByEnhancedDateModified = new SchemaSetFilter();
-        filterByEnhancedDateModified.setDateModifiedEnhanced(true);
-        filterByEnhancedDateModified.setSortProperty("DATE_MODIFIED_ENHANCED");
-        filterByEnhancedDateModified.setSortOrder(SortOrderEnum.ASCENDING);
+        SchemaSetFilter filterReleased = new SchemaSetFilter();
+        filterReleased.setRegStatus(RegStatus.RELEASED.toString());
         
-        SchemaSetsResult result1 = this.service.searchSchemaSets(filterByDateModified);
-        SchemaSetsResult result2 = this.service.searchSchemaSets(filterByEnhancedDateModified);
+        SchemaSetsResult allSchemaSets = this.service.searchSchemaSets(filterDummy);
+        SchemaSetsResult releasedSchemaSets = this.service.searchSchemaSets(filterReleased);
         
-        assertEquals(2, result1.getTotalItems());
-        assertEquals("Sort order should not affect result set size", result1.getTotalItems(), result2.getTotalItems());
-        
-        assertEquals(261, result1.getList().get(0).getId());
-        assertEquals(310, result2.getList().get(0).getId());
+        assertEquals(2, allSchemaSets.getTotalItems());
+        assertEquals(1, releasedSchemaSets.getTotalItems());
     }
 }
