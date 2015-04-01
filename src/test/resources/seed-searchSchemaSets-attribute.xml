@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<dataset>
+  <M_ATTRIBUTE M_ATTRIBUTE_ID="1" NAME="Name" OBLIGATION="M" DEFINITION="Single or multi word designation assigned to a data element. Source: ISO 11179." SHORT_NAME="Name" NAMESPACE_ID="2" DISP_TYPE="text" DISP_ORDER="1" DISP_WHEN="459" DISP_WIDTH="80" DISP_HEIGHT="1" DISP_MULTIPLE="0" INHERIT="0" LANGUAGE_USED="0"/>
+</dataset>

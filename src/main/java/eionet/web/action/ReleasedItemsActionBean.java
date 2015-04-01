@@ -35,14 +35,14 @@ import org.displaytag.properties.SortOrderEnum;
 import eionet.meta.RecentlyReleased;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.RegStatus;
-import eionet.meta.dao.domain.Schema;
+import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
-import eionet.meta.service.data.SchemaFilter;
-import eionet.meta.service.data.SchemasResult;
+import eionet.meta.service.data.SchemaSetFilter;
+import eionet.meta.service.data.SchemaSetsResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
@@ -91,17 +91,19 @@ public class ReleasedItemsActionBean extends AbstractActionBean {
         List<VocabularyFolder> vocabularies =
                 this.vocabularyService.getRecentlyReleasedVocabularyFolders(Props
                         .getIntProperty(PropsIF.DD_RECENTLY_RELEASED_VOCABULARIES_KEY));
-        SchemaFilter filter = new SchemaFilter();
+        SchemaSetFilter filter = new SchemaSetFilter();
         filter.setRegStatus(RegStatus.RELEASED.toString());
         filter.setUsePaging(true);
         filter.setPageNumber(1);
         filter.setPageSize(Props.getIntProperty(PropsIF.DD_RECENTLY_RELEASED_SCHEMAS_KEY));
+        filter.setDateModifiedEnhanced(true);
         // TODO sort property can be added to filter and be queried from there
-        filter.setSortProperty("S.DATE_MODIFIED");
+        filter.setSortProperty("DATE_MODIFIED_ENHANCED");
         filter.setSortOrder(SortOrderEnum.DESCENDING);
-        SchemasResult schemasResult = this.schemaService.searchSchemas(filter);
-        List<Schema> schemas = schemasResult.getList();
-        convertAndSort(dataSets, vocabularies, schemas);
+        SchemaSetsResult schemaSetsResult = this.schemaService.searchSchemaSets(filter);
+        List<SchemaSet> schemaSets = schemaSetsResult.getList();
+        convertAndSort(dataSets, vocabularies, schemaSets);
+        
         return new ForwardResolution(RELEASED_ITEMS_JSP);
     } // end of default handler - view
 
@@ -112,10 +114,10 @@ public class ReleasedItemsActionBean extends AbstractActionBean {
      *            list of data sets.
      * @param vocabularies
      *            list of vocabularies.
-     * @param schemas
-     *            list of schemas.
+     * @param schemaSets
+     *            list of schema-sets.
      */
-    private void convertAndSort(List<DataSet> dataSets, List<VocabularyFolder> vocabularies, List<Schema> schemas) {
+    private void convertAndSort(List<DataSet> dataSets, List<VocabularyFolder> vocabularies, List<SchemaSet> schemaSets) {
         // create empty list
         this.results = new ArrayList<RecentlyReleased>();
         RecentlyReleased rr;
@@ -140,11 +142,11 @@ public class ReleasedItemsActionBean extends AbstractActionBean {
         }
 
         // add schemas to list
-        if (schemas != null) {
-            for (Schema s : schemas) {
-                rr = new RecentlyReleased(s.getNameAttribute(), s.getDateModified(), RecentlyReleased.Type.SCHEMA);
-                rr.addParameter("schemaSetIdentifier", s.getSchemaSetIdentifier());
-                rr.addParameter("fileName", s.getFileName());
+        if (schemaSets != null) {
+            for (SchemaSet s : schemaSets) {
+                rr = new RecentlyReleased(s.getNameAttribute(), s.getDateModified(), RecentlyReleased.Type.SCHEMA_SET);
+                rr.addParameter("schemaSetIdentifier", s.getIdentifier());
+                //rr.addParameter("fileName", s.getFileName());
                 this.results.add(rr);
             }
         }

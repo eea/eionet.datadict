@@ -16,7 +16,7 @@
                 <c:when test="${recentlyReleased.type eq 'DATASET'}">
                     <img src="${datasetIconUrl}" alt="Dataset definition" />
                 </c:when>
-                <c:when test="${recentlyReleased.type eq 'SCHEMA'}">
+                <c:when test="${recentlyReleased.type eq 'SCHEMA_SET'}">
                     <img src="${schemaIconUrl}" alt="XML schema" />
                 </c:when>
             </c:choose>
@@ -35,7 +35,7 @@
                         <c:out value="${recentlyReleased.name}" />
                     </a>
                 </c:when>
-                <c:when test="${recentlyReleased.type eq 'SCHEMA'}">
+                <c:when test="${recentlyReleased.type eq 'SCHEMA_SET'}">
                     <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" title="View Schemaset">
                         <stripes:param name="schemaSet.identifier" value="${recentlyReleased.parameters['schemaSetIdentifier']}"/>
                         <c:out value="${recentlyReleased.name}" />

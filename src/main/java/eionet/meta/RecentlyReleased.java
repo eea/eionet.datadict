@@ -35,7 +35,7 @@ public class RecentlyReleased implements Comparable<RecentlyReleased> {
      * Type enum for current item.
      */
     public static enum Type {
-        VOCABULARY, DATASET, SCHEMA
+        VOCABULARY, DATASET, SCHEMA_SET
     };
 
     /**

@@ -1854,4 +1854,51 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
       <dropColumn tableName="VOCABULARY_CONCEPT" columnName="CREATION_DATE"/>
   </changeSet>
 
+  <changeSet author="nakasnik" id="rev-139">
+      <comment>
+          Calculates the actual modification date of the schema-set with the given id, 
+          based both on the date_modified field of the schema-set, as well as its child
+          schemas.
+      </comment>
+      <sql>drop function if exists func_getSchemaSetModificationDate</sql>
+      <createProcedure>
+        <![CDATA[
+            create function func_getSchemaSetModificationDate (schema_set_id int)
+            returns timestamp
+            begin
+                declare date_modified timestamp;
+
+                select 
+                    max(dates.DATE_MODIFIED) into date_modified
+                from 
+                    (
+                        select
+                            case when ss.DATE_MODIFIED > s.DATE_MODIFIED then 
+                                ss.DATE_MODIFIED 
+                            else 
+                                s.DATE_MODIFIED 
+                            end as DATE_MODIFIED
+                        from  
+                            (
+                                select 
+                                    tss.* 
+                                from 
+                                    T_SCHEMA_SET tss 
+                                where 
+                                    tss.SCHEMA_SET_ID = schema_set_id
+                            ) ss 
+                                inner join 
+                            T_SCHEMA s 
+                                on ss.SCHEMA_SET_ID = s.SCHEMA_SET_ID
+                    ) dates;
+
+                return date_modified;
+            end
+        ]]>
+      </createProcedure>
+      <rollback>
+          <sql>drop function if exists func_getSchemaSetModificationDate</sql>
+      </rollback>
+  </changeSet>
+
 </databaseChangeLog>
