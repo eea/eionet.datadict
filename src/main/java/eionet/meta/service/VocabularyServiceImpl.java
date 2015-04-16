@@ -778,6 +778,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolder.setBaseUri(baseUri);
 
             vocabularyFolder.setContinuityId(originalVocabularyFolder.getContinuityId());
+            vocabularyFolder.setRegStatus(originalVocabularyFolder.getRegStatus());
             vocabularyFolder.setUserModified(userName);
             int newVocabularyFolderId = vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
 

@@ -596,12 +596,16 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         vocabularyFolder.setFolderId(1);
         vocabularyFolder.setLabel("copy");
         vocabularyFolder.setIdentifier("copy");
-        int id = vocabularyService.createVocabularyFolderCopy(vocabularyFolder, 1, "testUser", null);
+        vocabularyFolder.setRegStatus(null);
+        int idToCopy = 1;
+        int id = vocabularyService.createVocabularyFolderCopy(vocabularyFolder, idToCopy, "testUser", null);
         VocabularyFolder result = vocabularyService.getVocabularyFolder(id);
         assertNotNull("Expected vocabulary folder", result);
+        VocabularyFolder original = vocabularyService.getVocabularyFolder(idToCopy);
         String baseUriExpected = "http://test.tripledev.ee/datadict/vocabulary/common/test_vocabulary1/";
         assertEquals("Copied Base Uri is not correct!", baseUriExpected, vocabularyFolder.getBaseUri());
-
+        assertEquals("Vocabulary status missmatch", result.getRegStatus(), original.getRegStatus());
+        
         List<VocabularyConcept> concepts = vocabularyService.getValidConceptsWithAttributes(id);
 
         assertEquals("Expected concepts size ", 4, concepts.size());
