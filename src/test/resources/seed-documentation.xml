@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Tables are CASE SENSITIVE under Linux -->
+<dataset>
+  <documentation page_id="about" content_type="text/html"
+      title="About page"/>
+</dataset>
+
