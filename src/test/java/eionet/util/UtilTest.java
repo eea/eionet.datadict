@@ -138,4 +138,21 @@ public class UtilTest {
         assertFalse(Util.isValidIdentifier(" "));
     }
 
+    /**
+     * The escapeXML is very buggy. The tests that fail are commented out.
+     */
+    @Test
+    public void checkEscapeXml() {
+        //assertEquals("&lt;---&lt;", Util.escapeXML("&lt;---&lt;"));
+        //assertEquals("-&lt;---&lt;", Util.escapeXML("-&lt;---&lt;"));
+        assertEquals("&lt;---&lt;-", Util.escapeXML("&lt;---&lt;-"));
+        assertEquals("&lt;head&gt;", Util.escapeXML("<head>"));
+        assertEquals("&#88;", Util.escapeXML("&#88;"));
+        assertEquals("&amp;", Util.escapeXML("&"));
+        //assertEquals("&lt;#88;&gt;", Util.escapeXML("<#88;>"));
+        assertEquals("&amp;#", Util.escapeXML("&#"));
+        assertEquals("&apos;X&apos;", Util.escapeXML("'X'"));
+        //assertEquals("&apos;#88;", Util.escapeXML("'#88;"));
+    }
+
 }
