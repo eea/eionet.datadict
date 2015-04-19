@@ -1,4 +1,4 @@
-/**
+/*
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of
@@ -82,8 +82,9 @@ public final class Util {
 
     /** Size of buffer for the write() method. */
     private static final int BUF_SIZE = 1024;
+    /** Cache of reserved characters in XML to be escaped. */
     private static Hashtable xmlEscapes = null;
-    private static String[][] allowedFxvDatatypeConversions = { {"boolean", "string"}, {"date", "string"}, {"float", "string"},
+    private static String[][] allowedFxvDatatypeConversions = {{"boolean", "string"}, {"date", "string"}, {"float", "string"},
             {"double", "string"}, {"integer", "string"}, {"integer", "float"}, {"integer", "double"}, {"integer", "decimal"},
             {"float", "double"}, {"float", "decimal"}, {"double", "decimal"}, {"decimal", "string"}};
 
@@ -108,7 +109,7 @@ public final class Util {
      *
      * @param str
      *            The given string.
-     * @return
+     * @return true if the given string is null or its length is 0.
      */
     public static boolean isEmpty(String str) {
 
@@ -161,6 +162,9 @@ public final class Util {
 
     /**
      * A method for formatting the given timestamp into a String for history.
+     *
+     * @param timestamp Milliseconds since 1 January 1970.
+     * @return formatted time as string in the form 2015/04/18 12:43.
      */
     public static String historyDate(long timestamp) {
 
@@ -188,7 +192,7 @@ public final class Util {
 
     /**
      *
-     * @param timestamp
+     * @param timestamp Milliseconds since 1 January 1970.
      * @return
      */
     public static String releasedDateShort(long timestamp) {
@@ -197,6 +201,8 @@ public final class Util {
 
     /**
      * A method for formatting the given timestamp into a String released_datasets.jsp.
+     *
+     * @param timestamp Milliseconds since 1 January 1970.
      */
     public static String releasedDate(long timestamp) {
         return releasedDate(timestamp, false);
@@ -204,6 +210,8 @@ public final class Util {
 
     /**
      * A method for formatting the given timestamp into a String released_datasets.jsp.
+     *
+     * @param timestamp Milliseconds since 1 January 1970.
      */
     private static String releasedDate(long timestamp, boolean shortMonth) {
 
@@ -235,7 +243,7 @@ public final class Util {
     /**
      * Formats a timestamp to the presentation used on web pages.
      *
-     * @param timestamp
+     * @param timestamp Milliseconds since 1 January 1970.
      * @return
      */
     public static String hoursMinutesSeconds(long timestamp) {
@@ -245,6 +253,7 @@ public final class Util {
 
     /**
      *
+     * @param timestamp Milliseconds since 1 January 1970.
      */
     public static String pdfDate(long timestamp) {
 
@@ -385,6 +394,7 @@ public final class Util {
 
     /**
      * A method for counting occurences of a substring in a string.
+     * NOTE: Goes into an infinite loop.
      */
     public static int countSubString(String str, String substr) {
         int count = 0;
@@ -457,8 +467,8 @@ public final class Util {
 
     /**
      *
-     * @param str
-     * @return
+     * @param str The string to create an MD5 hash of
+     * @return the MD5 hash as hexadecimal string
      */
     public static String md5(String str) {
 
@@ -670,7 +680,10 @@ public final class Util {
     }
 
     /**
+     * Checks if a class implements the interface given as second argument.
      *
+     * @param c - class as an object.
+     * @param ifName - interface name as string.
      */
     public static boolean implementsIF(Class c, String ifName) {
 
@@ -687,7 +700,7 @@ public final class Util {
     }
 
     /*
-     * Return's a throwable's stack trace in a string
+     * Return's a throwable's stack trace in a string.
      */
     public static String getStack(Throwable t) {
         ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
@@ -696,7 +709,7 @@ public final class Util {
     }
 
     /*
-     * Return's indicator-image name according to given status
+     * Return's indicator-image name according to given status.
      */
     public static String getStatusImage(String status) {
 
@@ -822,8 +835,10 @@ public final class Util {
     }
 
     /**
-     * Method used in JSP to determine weather the row with a given index is odd or even. Returns a String used by JSP to set the
-     * style correspondingly and with as little code as possible.
+     * Method used in JSP to determine weather the row with a given index is odd or even.
+     *
+     * @param displayed - row number.
+     * @return a String used by JSP to set the style correspondingly and with as little code as possible.
      */
     public static String isOdd(int displayed) {
         String isOdd = (displayed % 2 != 0) ? "odd" : "even";
@@ -831,7 +846,11 @@ public final class Util {
     }
 
     /**
+     * Opens a URL and fetches the content. If there is an error, then the
+     * exception message is returned.
      *
+     * @param url - the URL
+     * @return the content
      */
     public static String getUrlContent(String url) {
 
@@ -884,6 +903,13 @@ public final class Util {
          */
     }
 
+    /**
+     * Copy the content from an open input stream to an open output stream and closes both.
+     *
+     * @param in - the input stream.
+     * @param out - the output stream.
+     * @throws IOException if something went wrong.
+     */
     public static void write(InputStream in, OutputStream out) throws IOException {
 
         int i = 0;
@@ -901,6 +927,14 @@ public final class Util {
         }
     }
 
+    /**
+     * Create an HTML attribute of its arguments in the form of color="blue".
+     * Value can not contain quote (") or less-than (&lt;) as no XML escaping is done.
+     *
+     * @param name = the name of the attribute.
+     * @param value = the value.
+     * @return name="value" as string
+     */
     public static String htmlAttr(String name, String value) {
         StringBuffer buf = new StringBuffer();
         if (value != null) {
@@ -909,6 +943,12 @@ public final class Util {
         return buf.toString();
     }
 
+    /**
+     * XML-escape a string. I.e &lt; becomes &amp;lt;
+     * 
+     * @param text The string
+     * @return the escaped string.
+     */
     public static String escapeXML(String text) {
 
         if (text == null) {
@@ -926,6 +966,15 @@ public final class Util {
         return buf.toString();
     }
 
+    /**
+     * XML-escape one character in a string. Does not do it if it looks like
+     * the string is already escaped. Also doesn't escape if the content is
+     * a numeric entity.
+     *
+     * @param pos the position of the character
+     * @param text the string.
+     * @return the escaped character.
+     */
     public static String escapeXML(int pos, String text) {
 
         if (xmlEscapes == null) {
