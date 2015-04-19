@@ -1503,7 +1503,6 @@ public final class Util {
 
             return true;
         } catch (Exception ex) {
-            ex.printStackTrace();
             return false;
         }
     }
