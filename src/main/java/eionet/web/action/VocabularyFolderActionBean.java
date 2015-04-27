@@ -585,7 +585,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             vocabularyService.createVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept);
         } else {
             // Update existing concept
-            vocabularyService.quickUpdateVocabularyConcept(getEditableConcept());
+            VocabularyConcept fromForm = getEditableConcept();
+            VocabularyConcept toUpdate = vocabularyService.getVocabularyConcept(fromForm.getId());
+            toUpdate.setIdentifier(fromForm.getIdentifier());
+            toUpdate.setLabel(fromForm.getLabel());
+            toUpdate.setDefinition(fromForm.getDefinition());
+            vocabularyService.quickUpdateVocabularyConcept(toUpdate);
             initFilter();
             resolution.addParameter("page", page);
             if (StringUtils.isNotEmpty(filter.getText())) {

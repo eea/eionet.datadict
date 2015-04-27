@@ -502,8 +502,10 @@
                         <stripes:hidden name="page" />
                         <stripes:hidden name="filter.text" />
                         <stripes:hidden name="vocabularyConcepts.list[${loop.index}].id" />
+                        <!--
                         <input type="hidden" name="vocabularyConcepts.list[${loop.index}].status" value="vocabularyConcepts.list[${loop.index}].status.value" />
-
+                        -->
+                        
                         <table class="datatable">
                             <colgroup>
                                 <col style="width:26%"/>
