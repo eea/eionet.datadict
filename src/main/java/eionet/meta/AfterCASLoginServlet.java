@@ -27,10 +27,8 @@ public class AfterCASLoginServlet extends HttpServlet {
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         String afterLogin = (String)((HttpServletRequest) request).getSession().getAttribute(AFTER_LOGIN_ATTR_NAME);
-        if (afterLogin != null)
-            ((HttpServletResponse) response).sendRedirect(afterLogin);
-        else
-            request.getRequestDispatcher("/").forward(request, response);
+        String targetUrl = afterLogin == null ? this.getServletContext().getContextPath() : afterLogin;
+        response.sendRedirect(targetUrl);
     }
 
     /**
