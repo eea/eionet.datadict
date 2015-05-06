@@ -246,10 +246,6 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
-        <url-pattern>/schemas/rdf</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/searchelements/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>

@@ -29,16 +29,20 @@ import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 
+import org.apache.commons.lang.StringUtils;
+
 import eionet.meta.exports.rdf.SchemasManifestXmlWriter;
 import eionet.meta.service.ISchemaService;
 
 /**
- * Action bean that serves RDF output of schemas.
+ * Action bean that serves RDF output of schemas sets.
  *
  * @author Juhan Voolaid
  */
-@UrlBinding("/schemas/rdf")
+@UrlBinding("/schemasets/rdf")
 public class SchemasRdfActionBean extends AbstractActionBean {
+
+    private String contextRoot;
 
     @SpringBean
     private ISchemaService schemaService;
@@ -50,15 +54,15 @@ public class SchemasRdfActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution getRdf() {
+        contextRoot = StringUtils.substringBeforeLast(getContext().getRequest().getRequestURL().toString(), "/");
+
         StreamingResolution result = new StreamingResolution("application/xml") {
-            
-            @Override
             public void stream(HttpServletResponse response) throws Exception {
-                SchemasManifestXmlWriter xmlWriter = new SchemasManifestXmlWriter(response.getOutputStream(), schemaService);
+                SchemasManifestXmlWriter xmlWriter =
+                        new SchemasManifestXmlWriter(response.getOutputStream(), contextRoot, schemaService);
                 xmlWriter.writeManifestXml();
             }
         };
-        
         return result;
     }
 }
