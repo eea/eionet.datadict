@@ -1,25 +1,14 @@
 package eionet.meta;
 
-import eionet.JNDISupport;
-import eionet.DataSourceSupport;
 import eionet.doc.DocumentationService;
 import eionet.doc.FileService;
 import eionet.doc.dto.DocPageDTO;
 import eionet.doc.dto.MessageDTO;
+import eionet.meta.service.DBUnitHelper;
 
 import java.util.List;
-import javax.sql.DataSource;
 
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -32,33 +21,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class DocModuleTest {
 
-    private static DataSource ds;
-
     @BeforeClass
     public static void createDataSource() throws Exception {
-        ds = DataSourceSupport.getDataSource();
-        loadData("/seed-documentation.xml");
-    }
-
-    private static void loadData(String seedFileName) throws Exception {
-        IDatabaseConnection dbConn = new DatabaseConnection(ds.getConnection());
-        IDataSet dataSet = new FlatXmlDataSet(DocModuleTest.class.getResourceAsStream(seedFileName));
-        DatabaseOperation.CLEAN_INSERT.execute(dbConn, dataSet);
-    }
-
-    @Before
-    public void setUpIC() throws Exception {
-        JNDISupport.setUpCore();
-        JNDISupport.addSubCtxToTomcat("jdbc");
-        JNDISupport.addPropToTomcat("jdbc/datadict", ds);
-        // Tell the Doc module under what name the datasource is located
-        JNDISupport.addSubCtxToTomcat("doc");
-        JNDISupport.addPropToTomcat("doc/datasourcename", "jdbc/datadict");
-    }
-
-    @After
-    public void cleanUpIC() throws Exception {
-        JNDISupport.cleanUp();
+        DBUnitHelper.loadData("seed-documentation.xml");
     }
 
     @Test
