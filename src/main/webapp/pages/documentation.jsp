@@ -73,7 +73,7 @@
 		                    </c:if>
 		                    <tr>
 		                        <td><stripes:label class="question" for="file">File</stripes:label></td>
-		                        <td><stripes:file name="pageObject.file" id="file" size="54" /></td>
+		                        <td><stripes:file name="fileToSave" id="file" size="54" /></td>
 		                    </tr>
 		                    <tr>
 		                        <td colspan="2" align="right">
@@ -106,7 +106,7 @@
 		                    </tr>
 		                    <tr>
 		                        <td><stripes:label class="question" for="file">File</stripes:label></td>
-		                        <td><stripes:file name="pageObject.file" id="file" size="54" /></td>
+		                        <td><stripes:file name="fileToSave" id="file" size="54" /></td>
 		                    </tr>
 		                    <tr>
 		                    	<td></td>

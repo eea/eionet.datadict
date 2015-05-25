@@ -30,6 +30,10 @@ import net.sourceforge.stripes.validation.ValidationErrors;
 import net.sourceforge.stripes.validation.ValidationMethod;
 import eionet.doc.DocumentationService;
 import eionet.doc.dto.DocPageDTO;
+import eionet.doc.extensions.stripes.DocumentationValidator;
+import eionet.doc.extensions.stripes.FileBeanToFileInfoConverter;
+import net.sourceforge.stripes.action.FileBean;
+import net.sourceforge.stripes.integration.spring.SpringBean;
 
 /**
  *
@@ -39,11 +43,18 @@ import eionet.doc.dto.DocPageDTO;
 @UrlBinding("/documentation/{pageId}/{event}")
 public class DocumentationActionBean extends AbstractActionBean {
 
+    @SpringBean
+    private DocumentationService documentationService;
+    
+    @SpringBean
+    private DocumentationValidator docValidator;
+    
     /** */
     private String pageId;
     private String event;
 
     private DocPageDTO pageObject;
+    private FileBean fileToSave;
 
     /**
      *
@@ -54,7 +65,8 @@ public class DocumentationActionBean extends AbstractActionBean {
     public Resolution view() throws Exception {
 
         String forward = "/pages/documentation.jsp";
-        pageObject = DocumentationService.getInstance().view(pageId, event);
+        pageObject = this.documentationService.view(pageId, event);
+        
         if (pageObject != null && pageObject.getFis() != null) {
             return new StreamingResolution(pageObject.getContentType(), pageObject.getFis());
         }
@@ -72,7 +84,8 @@ public class DocumentationActionBean extends AbstractActionBean {
 
         if (isUserLoggedIn()) {
             if (isPostRequest()) {
-                DocumentationService.getInstance().editContent(pageObject, false);
+                this.attachFileInfoToPageObject();
+                this.documentationService.editContent(pageObject);
                 addSystemMessage("Successfully saved!");
             }
         } else {
@@ -90,7 +103,8 @@ public class DocumentationActionBean extends AbstractActionBean {
     public Resolution addContent() throws Exception {
         if (isUserLoggedIn()) {
             if (isPostRequest()) {
-                DocumentationService.getInstance().addContent(pageObject, false);
+                this.attachFileInfoToPageObject();
+                this.documentationService.addContent(pageObject);
             }
         } else {
             addWarningMessage("You are not logged in!");
@@ -100,14 +114,17 @@ public class DocumentationActionBean extends AbstractActionBean {
 
     @ValidationMethod(on = {"addContent"})
     public void validatePageId(ValidationErrors errors) throws Exception {
+        this.attachFileInfoToPageObject();
         // Expects that first parameter is named "pageObject" in this actionBean class
         // Does two validations:
         // - If pageObject.overwrite = false, then checks if page ID already exists
         // - If no file is chosen, then Page ID is mandatory
-        errors = DocumentationService.getInstance().getStripesValidationErrors(pageObject, errors);
+        docValidator.getStripesValidationErrors(pageObject, errors);
+        
         if (errors != null && errors.size() > 0) {
             getContext().setValidationErrors(errors);
         }
+        
         event = "add";
     }
 
@@ -122,7 +139,7 @@ public class DocumentationActionBean extends AbstractActionBean {
         if (isUserLoggedIn()) {
             // The page title is not mandatory. If it is not filled in, then it takes the value of the page_id.
             if (pageObject != null && pageObject.getDocIds() != null &&  pageObject.getDocIds().size() > 0) {
-                DocumentationService.getInstance().delete(pageObject);
+                this.documentationService.delete(pageObject);
             } else {
                 addWarningMessage("No objects selected!");
             }
@@ -157,4 +174,20 @@ public class DocumentationActionBean extends AbstractActionBean {
         this.pageObject = pageObject;
     }
 
+    public FileBean getFileToSave() {
+        return this.fileToSave;
+    }
+    
+    public void setFileToSave(FileBean fileToSave) {
+        this.fileToSave = fileToSave;
+    }
+    
+    private void attachFileInfoToPageObject() {
+        if (this.pageObject.getFile() != null) {
+            return;
+        }
+        
+        FileBeanToFileInfoConverter converter = new FileBeanToFileInfoConverter();
+        this.pageObject.setFile(converter.convert(this.fileToSave));
+    }
 }
