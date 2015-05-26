@@ -1142,4 +1142,20 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
     }
 
+    @Test
+    @Rollback
+    public void testImportWithEncodedIdentifier() throws Exception {
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_13.rdf");
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, true, false);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        
+        
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        VocabularyConcept vc = findVocabularyConceptByIdentifier(concepts, "Cervus elaphus corsicanus");
+        
+        Assert.assertNotNull(vc);
+    }
 }

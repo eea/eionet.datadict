@@ -47,6 +47,7 @@ import java.util.Set;
 
 import eionet.util.Util;
 import eionet.meta.exports.VocabularyOutputHelper;
+import net.sourceforge.stripes.util.StringUtil;
 
 /**
  * Implementation of OpenRDF's {@link RDFHandler} that will be used by implementations of
@@ -301,8 +302,9 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         }
         this.seenStatementsHashCodes.add(statementHashCode);
 
+        String conceptUriDecoded = StringUtil.urlDecode(conceptUri);
         // if it does not a have conceptIdentifier than it may be an attribute for vocabulary or a wrong record, so just ignore it
-        String conceptIdentifier = conceptUri.replace(this.folderContextRoot, "");
+        String conceptIdentifier = conceptUriDecoded.replace(this.folderContextRoot, "");
         if (StringUtils.contains(conceptIdentifier, "/") || !Util.isValidIdentifier(conceptIdentifier)) {
             // this.logMessages.add(st.toString() + " NOT imported, contains a / in concept identifier or empty");
             return;

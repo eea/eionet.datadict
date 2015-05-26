@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:dctype="http://purl.org/dc/dcmitype/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns="http://dd.eionet.europa.eu/property/" xml:base="">
+<skos:ConceptScheme rdf:about="">
+<rdfs:label>HaBiDes other species</rdfs:label>
+<skos:notation>habitatsspecies</skos:notation>
+</skos:ConceptScheme>
+
+<skos:Concept rdf:about="Ablepharus%20budaki">
+<skos:prefLabel>Ablepharus budaki</skos:prefLabel>
+<skos:definition>Annex Ablepharus budaki  (Bern Convention)</skos:definition>
+<skos:inScheme rdf:resource=""/>
+<skos:altLabel>All species of Reptiles not included in Annex II</skos:altLabel>
+</skos:Concept>
+
+<skos:Concept rdf:about="Cervus%20elaphus%20corsicanus">
+<skos:prefLabel>Cervus elaphus corsicanus</skos:prefLabel>
+<skos:definition>Annexes II, IV</skos:definition>
+<skos:inScheme rdf:resource=""/>
+</skos:Concept>
+
+<skos:Concept rdf:about="Cervus">
+<skos:prefLabel>Cervus sp.</skos:prefLabel>
+<skos:definition>Annexes II, IV</skos:definition>
+<skos:inScheme rdf:resource=""/>
+</skos:Concept>
+
+</rdf:RDF>
