@@ -42,6 +42,7 @@ import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
+import java.util.Collection;
 
 /**
  * Search engine.
@@ -1527,6 +1528,43 @@ public class DDSearchEngine {
         }
 
         return v;
+    }
+    
+    public Collection getDElementRules(DataElement dataElement){
+        ArrayList<InferenceRule> rules = new ArrayList<InferenceRule>();
+        
+        INParameters inParams = new INParameters();
+        StringBuilder query = new StringBuilder("SELECT * FROM INFERENCE_RULE WHERE (DATAELEM_ID = ");
+        query.append(inParams.add(dataElement.getID(), Types.INTEGER));
+        query.append(" OR TARGET_ELEM_ID = ");
+        query.append(inParams.add(dataElement.getID(), Types.INTEGER));
+        query.append(")");
+        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try{
+            stmt = SQL.preparedStatement(query.toString(), inParams, conn);
+            rs = stmt.executeQuery();
+            
+            InferenceRule rule;
+            while(rs.next()){
+                DataElement sourceElement = getDataElement(Integer.toString(rs.getInt("DATAELEM_ID")));
+                String ruleName = rs.getString("RULE");
+                DataElement targetElement = getDataElement(Integer.toString(rs.getInt("TARGET_ELEM_ID")));
+                rule = new InferenceRule(sourceElement, ruleName, targetElement);
+                rules.add(rule);
+            }
+            
+        }
+        catch(SQLException sql_e){
+            LOGGER.debug(query.toString());
+        }
+        finally{
+            try { if (rs != null) rs.close(); } catch (Exception e) {LOGGER.error(e.getMessage());}
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {LOGGER.error(e.getMessage());}
+        }
+        
+        return rules;
     }
 
     public Vector<FixedValue> getFixedValues(String delemId) throws SQLException, DDException {

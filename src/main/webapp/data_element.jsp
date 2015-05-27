@@ -181,6 +181,7 @@
     Vector complexAttrs = null;
     Vector fixedValues = null;
     String feedbackValue = null;
+    ArrayList<InferenceRule> dataElementRules = null;
 
     ServletContext ctx = getServletContext();
     DDUser user = SecurityUtil.getUser(request);
@@ -476,6 +477,8 @@
                             request, response);
                     return;
                 }
+                
+                dataElementRules = (ArrayList<InferenceRule>)searchEngine.getDElementRules(dataElement);
 
                 // set parameters regardless of common or non-common elements
                 elmCommon = dataElement.getNamespace() == null
@@ -2694,6 +2697,40 @@ String helpAreaName = "";
                                             %>
                                         <!-- end complex attributes -->
 
+                                        <!-- Inference Rules -->
+                                        <% if(dataElementRules.size() > 0){ %>
+                                        
+                                        <h2>Rules</h2>
+                                        
+                                        <table class="datatable" id="element-rules">
+                                            <col style="width: 27%"/>
+                                            <col style="width: 63%"/>
+                                            <tr>
+                                                <th>Inference Rule</th>
+                                                <th>Element</th>
+                                            </tr>
+                                            
+                                            <tbody>
+                                                <%
+                                                    DataElement target = null;
+                                                    for(InferenceRule rule : dataElementRules){ 
+                                                            if(dataElement.getID().equals(rule.getSourceDElement().getID()) )
+                                                                target = rule.getTargetDElement();
+                                                            else if(dataElement.getID().equals(rule.getTargetDElement().getID()) )
+                                                                target = rule.getSourceDElement();
+                                                    %>
+                                                        <tr>
+                                                            <td><%=rule.getRuleName()%></td>
+                                                            <td><a href="<%=request.getContextPath()%>/dataelements/<%=target.getID()%>"><%=target.getID()%></a></td>
+                                                        </tr>
+                                                    <%}
+                                                %>
+                                            </tbody>
+                                        </table>
+                                        
+                                        <% } %>
+                                        <!-- end Inference Rules -->
+                                        
                                         <%
                                             // other versions
                                                 if (mode.equals("view") && elmCommon && otherVersions != null
