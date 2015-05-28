@@ -25,7 +25,7 @@ public class InferenceRule {
                     return type;
                 }
             }
-            throw new IllegalArgumentException("Illegal color name: " + name);
+            throw new IllegalArgumentException("Illegal rule name: " + name);
         }
     }
     
@@ -35,7 +35,7 @@ public class InferenceRule {
     
     public InferenceRule(DataElement source, String rule, DataElement target){
         this.sourceDElement = source;
-        this.rule = RuleType.fromName("owl:inverseOf");
+        this.rule = RuleType.fromName(rule);
         this.targetDElement = target;
     }
     
