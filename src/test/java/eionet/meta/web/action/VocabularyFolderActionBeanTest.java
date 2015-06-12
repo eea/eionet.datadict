@@ -1,8 +1,6 @@
 package eionet.meta.web.action;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,8 +8,6 @@ import java.util.Map.Entry;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;
 
-import eionet.util.Props;
-import eionet.util.PropsIF;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
