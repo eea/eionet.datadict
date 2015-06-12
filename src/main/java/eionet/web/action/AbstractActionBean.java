@@ -39,6 +39,9 @@ import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
+import java.util.List;
+import net.sourceforge.stripes.action.Message;
+import net.sourceforge.stripes.validation.ValidationErrors;
 
 /**
  * Root class for all DD ActionBeans.
@@ -100,6 +103,14 @@ public abstract class AbstractActionBean implements ActionBean {
     protected void addSystemMessage(final String message) {
         getContext().getMessages(SYSTEM_MESSAGES).add(new SimpleMessage(message));
     }
+    
+    /**
+     * Returns system messages
+     * @return 
+     */
+    protected List<Message> getSystemMessages(){
+        return getContext().getMessages(SYSTEM_MESSAGES);
+    }
 
     /**
      * Adds caution message. The message will be shown wrapped in the &lt;div class="caution-msg"&lt; element. A caution is less
@@ -110,6 +121,14 @@ public abstract class AbstractActionBean implements ActionBean {
     protected void addCautionMessage(final String message) {
         getContext().getMessages(CAUTION_MESSAGES).add(new SimpleMessage(message));
     }
+    
+    /**
+     * Returns caution messages
+     * @return 
+     */
+    protected List<Message> getCautionMessages(){
+        return getContext().getMessages(CAUTION_MESSAGES);
+    }
 
     /**
      * Adds warning message. The message will be shown wrapped in the &lt;div class="warning-msg"&lt; element.
@@ -119,12 +138,28 @@ public abstract class AbstractActionBean implements ActionBean {
     protected void addWarningMessage(final String message) {
         getContext().getMessages(WARNING_MESSAGES).add(new SimpleMessage(message));
     }
+    
+    /**
+     * Returns warning messages
+     * @return 
+     */
+    protected List<Message> getWarningMessages(){
+        return getContext().getMessages(WARNING_MESSAGES);
+    }
 
     /**
      * @param simpleErrorMessage error msg
      */
     protected void addGlobalValidationError(String simpleErrorMessage) {
         context.getValidationErrors().addGlobalError(new SimpleError(simpleErrorMessage));
+    }
+    
+    /**
+     * Returns context validation errors
+     * @return 
+     */
+    protected ValidationErrors getGlobalValidationErrors(){
+        return context.getValidationErrors();
     }
 
     /**
@@ -302,5 +337,4 @@ public abstract class AbstractActionBean implements ActionBean {
 
         return isWebBrowser;
     }
-
 }
