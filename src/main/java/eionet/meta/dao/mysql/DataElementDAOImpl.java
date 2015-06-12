@@ -41,13 +41,17 @@ import org.springframework.stereotype.Repository;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
+import eionet.meta.dao.domain.InferenceRule;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
+import java.util.Collection;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 /**
  * Data element DAO.
@@ -406,6 +410,17 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             }
         });
         return result;
+    }
+    
+    @Override 
+    public boolean dataElementExists(int id){
+        String sql = "select count(*) from DATAELEM where DATAELEM_ID = :id";
+        
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("id", id);
+        
+        int count = getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+        return (count > 0);
     }
 
     /**
@@ -1090,5 +1105,120 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         params.put("vocabularyId", vocabularyId);
         getNamedParameterJdbcTemplate().update(sql, params);
     }
+    
+    @Override
+    public Collection<InferenceRule> getInferenceRules(DataElement parentElem) {
+        StringBuilder sql = new StringBuilder("select * from INFERENCE_RULE where DATAELEM_ID = :dataelem_id");
+        final DataElement source = getDataElement(parentElem.getId());
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("dataelem_id", parentElem.getId());
+        
+        List<InferenceRule> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<InferenceRule>() {
 
+            @Override
+            public InferenceRule mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DataElement target = getDataElement(Integer.parseInt(rs.getString("TARGET_ELEM_ID")));
+                InferenceRule rule = new InferenceRule(source, RuleType.fromName(rs.getString("RULE")), target);
+                return rule;
+            }
+            
+        });
+        return result;
+    }
+    
+    @Override
+    public Collection<InferenceRule> listInferenceRules(DataElement parentElem){
+        StringBuilder sql = new StringBuilder("select * from INFERENCE_RULE where DATAELEM_ID = :dataelem_id");
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("dataelem_id", parentElem.getId());
+        
+        List<InferenceRule> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<InferenceRule>() {
+
+            @Override
+            public InferenceRule mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DataElement source = new DataElement();
+                DataElement target = new DataElement();
+                source.setId(Integer.parseInt(rs.getString("DATAELEM_ID")));
+                target.setId(Integer.parseInt(rs.getString("TARGET_ELEM_ID")));
+                InferenceRule rule = new InferenceRule(source, RuleType.fromName(rs.getString("RULE")), target);
+
+                return rule;
+            }
+        });
+        return result;
+        
+    }
+    
+    @Override
+    public void createInferenceRule(InferenceRule rule) {
+        StringBuilder sql = new StringBuilder("insert into INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) values (:sourceElementId, :ruleName, :targetElementId)");
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("sourceElementId", rule.getSourceDElement().getId());
+        params.put("ruleName", rule.getTypeName());
+        params.put("targetElementId", rule.getTargetDElement().getId());
+        
+        getNamedParameterJdbcTemplate().update(sql.toString(), params);
+    }
+    
+    @Override
+    public void deleteInferenceRule(InferenceRule rule) {
+        StringBuilder sql = new StringBuilder("delete from INFERENCE_RULE where DATAELEM_ID = :sourceElementId AND RULE = :ruleName AND TARGET_ELEM_ID = :targetElementId");
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("sourceElementId", rule.getSourceDElement().getId());
+        params.put("ruleName", rule.getTypeName());
+        params.put("targetElementId", rule.getTargetDElement().getId());
+        
+        getNamedParameterJdbcTemplate().update(sql.toString(), params);
+    }
+
+    @Override
+    public boolean inferenceRuleExists(InferenceRule rule){
+        StringBuilder sql = new StringBuilder("select count(*) from INFERENCE_RULE where DATAELEM_ID = :sourceElementId AND RULE = :ruleName AND TARGET_ELEM_ID = :targetElementId");
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("sourceElementId", rule.getSourceDElement().getId());
+        params.put("ruleName", rule.getTypeName());
+        params.put("targetElementId", rule.getTargetDElement().getId());
+        
+        int count = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
+        return (count > 0);
+    }
+    
+    @Override
+    public void updateInferenceRule(InferenceRule rule, InferenceRule newRule){
+        StringBuilder sql = new StringBuilder("update INFERENCE_RULE set RULE = :newRuleName, TARGET_ELEM_ID = :newTargetElementId where DATAELEM_ID = :sourceElementId AND RULE = :ruleName AND TARGET_ELEM_ID = :targetElementId");
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("sourceElementId", rule.getSourceDElement().getId());
+        params.put("ruleName", rule.getTypeName());
+        params.put("targetElementId", rule.getTargetDElement().getId());
+        params.put("newRuleName", newRule.getTypeName());
+        params.put("newTargetElementId", newRule.getTargetDElement().getId());
+        
+        getNamedParameterJdbcTemplate().update(sql.toString(), params);
+    }
+    
+    @Override
+    public Collection<DataElement> grepDataElement(String pattern){
+        String sql = "select DATAELEM_ID, SHORT_NAME from DATAELEM where SHORT_NAME like :pattern";
+        
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        String fullPattern = "%" + pattern + "%";
+        params.addValue("pattern", fullPattern);
+        
+        List<DataElement> elements = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<DataElement>() {
+            @Override
+            public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DataElement element = new DataElement();
+                element.setId(Integer.parseInt(rs.getString("DATAELEM_ID")));
+                element.setShortName(rs.getString("SHORT_NAME"));
+                return element;
+            }
+        });
+        return elements;
+    }
 }

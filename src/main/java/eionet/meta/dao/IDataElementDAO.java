@@ -28,8 +28,10 @@ import java.util.Map;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.InferenceRule;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
+import java.util.Collection;
 
 /**
  * Data element DAO.
@@ -82,6 +84,13 @@ public interface IDataElementDAO {
      * @return element
      */
     DataElement getDataElement(String identifier);
+    
+    /**
+     * Checks if data element with specific id exists
+     * @param id
+     * @return 
+     */
+    boolean dataElementExists(int id);
 
     /**
      * Returns latest version of the COMMON data element id.
@@ -363,4 +372,51 @@ public interface IDataElementDAO {
      */
     List<DataElement> getPotentialReferringVocabularyConceptsElements();
 
+    /**
+     * Returns inference rules of specific element 
+     * 
+     * @param parentElem
+     * @return List of rules
+     */
+    Collection<InferenceRule> getInferenceRules(DataElement parentElem);
+    
+    /**
+     * Returns inference rules of specific element (not fetching Data Elements, only their IDs)
+     * @param parentElem
+     * @return List of rules
+     */
+    Collection<InferenceRule> listInferenceRules(DataElement parentElem);
+    
+    /**
+     * Creates new inference rule for specific element
+     * @param rule 
+     */
+    void createInferenceRule(InferenceRule rule);
+    
+    /**
+     * Deletes specific inference rule
+     * @param rule 
+     */
+    void deleteInferenceRule(InferenceRule rule);
+    
+    /**
+     * Checks if specific inference rule exists
+     * @param rule 
+     * @return  
+     */
+    boolean inferenceRuleExists(InferenceRule rule);
+    
+    /**
+     * Updates rule to newRule
+     * @param rule 
+     * @param newRule 
+     */
+    void updateInferenceRule(InferenceRule rule, InferenceRule newRule);
+    
+    /**
+     * Searches for data elements whose short name includes pattern
+     * @param pattern
+     * @return 
+     */
+    Collection<DataElement> grepDataElement(String pattern);
 }

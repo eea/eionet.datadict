@@ -28,9 +28,12 @@ import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.InferenceRule;
+import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
+import java.util.Collection;
 
 /**
  * Service for getting data objects.
@@ -81,6 +84,14 @@ public interface IDataService {
      */
     DataElement getDataElement(int id) throws ServiceException;
 
+    /**
+     * Checks if data element with specific id exists
+     * @param id
+     * @return
+     * @throws ServiceException 
+     */
+    boolean dataElementExists(int id) throws ServiceException;
+    
     /**
      * Search data elements.
      *
@@ -196,4 +207,70 @@ public interface IDataService {
      *             In case an error happens.
      */
     void switchDataElemType(int elemId, String newType) throws ServiceException;
+    
+    /**
+     * Returns all inference rules of a data element
+     * 
+     * @param dataElementId
+     * @return List of InferenceRules
+     * @throws ServiceException 
+     */
+    Collection<InferenceRule> getDataElementRules(int dataElementId) throws ServiceException;
+    
+    /**
+     * Returns all inference rules of a data element (not fetching Data Elements, only their IDs)
+     * @param dataElementId
+     * @return
+     * @throws ServiceException 
+     */
+    Collection<InferenceRule> listDataElementRules(int dataElementId) throws ServiceException;
+    
+    /**
+     * Creates new inference rule for specific data element
+     * 
+     * @param sourceDElementId
+     * @param type
+     * @param targetDElementId
+     * @throws ServiceException 
+     */
+    void createDataElementRule(int sourceDElementId, RuleType type, int targetDElementId) throws ServiceException;
+    
+    /**
+     * Deletes specific inference rule of a data element
+     * 
+     * @param sourceDElementId
+     * @param type
+     * @param targetDElementId
+     * @throws ServiceException 
+     */
+    void deleteDataElementRule(int sourceDElementId, RuleType type, int targetDElementId) throws ServiceException;
+    
+    /**
+     * Checks if specific inference rule exists
+     * 
+     * @param sourceDElementId
+     * @param type
+     * @param targetDElementId
+     * @return boolean
+     * @throws ServiceException 
+     */
+    boolean ruleExists(int sourceDElementId, RuleType type, int targetDElementId) throws ServiceException;
+    
+    /**
+     * Updates specific rule of data element
+     * 
+     * @param sourceDElementId
+     * @param type
+     * @param targetDElementId
+     * @throws ServiceException 
+     */
+    void updateDataElementRule(int sourceDElementId, RuleType type, int targetDElementId, RuleType newType, int newTargetElementId) throws ServiceException;
+    
+    /**
+     * Searches for Data Elements whose short name includes pattern
+     * @param id
+     * @return
+     * @throws ServiceException 
+     */
+    Collection<DataElement> grepDataElement(String pattern) throws ServiceException;
 }

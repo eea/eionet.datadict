@@ -20,10 +20,13 @@ import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.InferenceRule;
+import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 import eionet.util.IrrelevantAttributes;
+import java.util.Collection;
 
 /**
  * Data Service implementation.
@@ -128,6 +131,16 @@ public class DataServiceImpl implements IDataService {
             return dataElementDao.getDataElement(id);
         } catch (Exception e) {
             throw new ServiceException("Failed to get data element: " + e.getMessage(), e);
+        }
+    }
+    
+    @Override
+    public boolean dataElementExists(int id) throws ServiceException {
+        try{
+            return dataElementDao.dataElementExists(id);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to check if data element exists: " + e.getMessage(), e);
         }
     }
 
@@ -280,6 +293,97 @@ public class DataServiceImpl implements IDataService {
         Set<String> irrelevantAttrs = instance.get(newType);
         if (CollectionUtils.isNotEmpty(irrelevantAttrs)) {
             dataElementDao.removeSimpleAttrsByShortName(elemId, irrelevantAttrs.toArray(new String[irrelevantAttrs.size()]));
+        }
+    }
+    
+    @Override
+    public Collection<InferenceRule> getDataElementRules(int dataElementId) throws ServiceException {
+        try{
+            DataElement dataElement = dataElementDao.getDataElement(dataElementId);
+            return dataElementDao.listInferenceRules(dataElement);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to get inference rules for element " + dataElementId + " : " + e.getMessage(), e);
+        }
+    }
+    
+    @Override
+    public Collection<InferenceRule> listDataElementRules(int dataElementId) throws ServiceException {
+        try{
+            DataElement dataElement = dataElementDao.getDataElement(dataElementId);
+            return dataElementDao.getInferenceRules(dataElement);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to list inference rules for element " + dataElementId + " : " + e.getMessage(), e);
+        }
+    }
+    
+    @Override
+    public void createDataElementRule(int sourceDElementId, RuleType type, int targetDElementId) throws ServiceException {
+        try{
+            DataElement sourceDElement = dataElementDao.getDataElement(sourceDElementId);
+            DataElement targetDElement = dataElementDao.getDataElement(targetDElementId);
+            InferenceRule rule = new InferenceRule(sourceDElement, type, targetDElement);
+            
+            dataElementDao.createInferenceRule(rule);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to create new rule (" + type.getName() + "," + targetDElementId + ") for element " + sourceDElementId + " : " + e.getMessage(), e);
+        }
+    }
+    
+    @Override
+    public void deleteDataElementRule(int sourceDElementId, RuleType type, int targetDElementId) throws ServiceException {
+        try{
+            DataElement sourceDElement = dataElementDao.getDataElement(sourceDElementId);
+            DataElement targetDElement = dataElementDao.getDataElement(targetDElementId);
+            InferenceRule rule = new InferenceRule(sourceDElement, type, targetDElement);
+            
+            dataElementDao.deleteInferenceRule(rule);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to delete rule (" + type.getName() + "," + targetDElementId + ") for element " + sourceDElementId + " : " + e.getMessage(), e);
+        }
+    }
+    
+    @Override
+    public boolean ruleExists(int sourceDElementId, RuleType type, int targetDElementId) throws ServiceException {
+        try{
+            DataElement sourceDElement = dataElementDao.getDataElement(sourceDElementId);
+            DataElement targetDElement = dataElementDao.getDataElement(targetDElementId);
+            InferenceRule rule = new InferenceRule(sourceDElement, type, targetDElement);
+            
+            return  dataElementDao.inferenceRuleExists(rule);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to check if rule (" + type.getName() + "," + targetDElementId + ") for element " + sourceDElementId + " exists : " + e.getMessage(), e);
+        }
+    }
+    
+    @Override
+    public void updateDataElementRule(int sourceDElementId, RuleType type, int targetDElementId, RuleType newType, int newTargetElementId) throws ServiceException {
+        try{
+            DataElement sourceDElement = dataElementDao.getDataElement(sourceDElementId);
+            DataElement targetDElement = dataElementDao.getDataElement(targetDElementId);
+            InferenceRule rule = new InferenceRule(sourceDElement, type, targetDElement);
+            
+            DataElement newTargetDElement = dataElementDao.getDataElement(newTargetElementId);
+            InferenceRule newRule = new InferenceRule(sourceDElement, newType, newTargetDElement);
+            
+            dataElementDao.updateInferenceRule(rule, newRule);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to update rule (" + type.getName() + "," + targetDElementId + ") for element " + sourceDElementId + " : " + e.getMessage(), e);
+        }
+    }
+    
+    @Override
+    public Collection<DataElement> grepDataElement(String pattern) throws ServiceException {
+        try{
+            return dataElementDao.grepDataElement(pattern);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to grep for data element : " + e.getMessage(), e);
         }
     }
 }

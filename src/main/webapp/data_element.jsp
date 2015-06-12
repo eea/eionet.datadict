@@ -1,3 +1,5 @@
+<%@page import="eionet.meta.dao.mysql.DataElementDAOImpl"%>
+<%@page import="eionet.meta.dao.domain.InferenceRule"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.dao.domain.VocabularyFolder,eionet.util.*,eionet.util.sql.ConnectionUtil,java.io.*,javax.servlet.http.HttpUtils"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -478,7 +480,11 @@
                     return;
                 }
                 
-                dataElementRules = (ArrayList<InferenceRule>)searchEngine.getDElementRules(dataElement);
+                if(mode.equals("view")){
+                    DataElementDAOImpl dao = searchEngine.getSpringContext().getBean(DataElementDAOImpl.class);
+                    eionet.meta.dao.domain.DataElement element = dao.getDataElement(Integer.parseInt(dataElement.getID()));
+                    dataElementRules = (ArrayList<InferenceRule>)dao.listInferenceRules(element);
+                }
 
                 // set parameters regardless of common or non-common elements
                 elmCommon = dataElement.getNamespace() == null
@@ -2698,36 +2704,48 @@ String helpAreaName = "";
                                         <!-- end complex attributes -->
 
                                         <!-- Inference Rules -->
-                                        <% if(dataElementRules.size() > 0){ %>
+                                        <% if(mode.equals("edit")){ %>
+                                        <h2>Rules
+                                            <!-- Eionet styling -->
+                                            <span class="inference_rules_help">
+                                                <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
+                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                </a>
+                                            </span>    
+                                            <span class="inference_rules_help">
+                                                  <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt="mandatory"/>  
+                                            </span>
+                                            <span class="barfont_bordered">
+                                                <a href="<%=request.getContextPath()%>/inference_rules/<%=delem_id%>">[Click to manage rules of this element]</a>
+                                            </span>
+                                        </h2>
+                                        <% } %>
                                         
-                                        <h2>Rules</h2>
-                                        
-                                        <table class="datatable" id="element-rules">
-                                            <col style="width: 27%"/>
-                                            <col style="width: 63%"/>
-                                            <tr>
-                                                <th>Inference Rule</th>
-                                                <th>Element</th>
-                                            </tr>
-                                            
-                                            <tbody>
-                                                <%
-                                                    DataElement target = null;
-                                                    for(InferenceRule rule : dataElementRules){ 
-                                                            if(dataElement.getID().equals(rule.getSourceDElement().getID()) )
-                                                                target = rule.getTargetDElement();
-                                                            else if(dataElement.getID().equals(rule.getTargetDElement().getID()) )
-                                                                target = rule.getSourceDElement();
+                                        <% if( mode.equals("view") ){ %>
+                                            <% if( dataElementRules.size() > 0 ){ %>
+                                            <h2>Rules</h2>
+                                            <table class="datatable" id="element-rules">
+                                                <col style="width: 27%"/>
+                                                <col style="width: 63%"/>
+                                                <tr>
+                                                    <th>Inference Rule</th>
+                                                    <th>Element</th>
+                                                </tr>
+                                                <tbody>
+                                                    <%
+                                                        eionet.meta.dao.domain.DataElement target;
+                                                        for(InferenceRule rule : dataElementRules){
+                                                            target = rule.getTargetDElement();
+                                                        %>
+                                                            <tr>
+                                                                <td><%=rule.getTypeName()%></td>
+                                                                <td><a href="<%=request.getContextPath()%>/dataelements/<%=target.getId()%>"><%=target.getId()%></a></td>
+                                                            </tr>
+                                                        <%}
                                                     %>
-                                                        <tr>
-                                                            <td><%=rule.getRuleName()%></td>
-                                                            <td><a href="<%=request.getContextPath()%>/dataelements/<%=target.getID()%>"><%=target.getID()%></a></td>
-                                                        </tr>
-                                                    <%}
-                                                %>
-                                            </tbody>
-                                        </table>
-                                        
+                                                </tbody>
+                                            </table>
+                                            <% } %>
                                         <% } %>
                                         <!-- end Inference Rules -->
                                         
