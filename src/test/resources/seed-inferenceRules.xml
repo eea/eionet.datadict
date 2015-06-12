@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<INFERENCE_RULE DATAELEM_ID="1" RULE="owl:inverseOf" TARGET_ELEM_ID="3" />
+	<INFERENCE_RULE DATAELEM_ID="1" RULE="owl:inverseOf" TARGET_ELEM_ID="4" />
+	<INFERENCE_RULE DATAELEM_ID="2" RULE="owl:inverseOf" TARGET_ELEM_ID="4" />
+</dataset>

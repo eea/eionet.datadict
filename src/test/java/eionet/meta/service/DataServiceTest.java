@@ -20,7 +20,11 @@ import org.unitils.spring.annotation.SpringBeanByType;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
+import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.VocabularyConcept;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * DataService tests.
@@ -45,6 +49,7 @@ public class DataServiceTest extends UnitilsJUnit4 {
     @BeforeClass
     public static void loadData() throws Exception {
         DBUnitHelper.loadData("seed-dataelements.xml");
+        DBUnitHelper.loadData("seed-inferenceRules.xml");
     }
 
     /**
@@ -56,6 +61,7 @@ public class DataServiceTest extends UnitilsJUnit4 {
     @AfterClass
     public static void deleteData() throws Exception {
         DBUnitHelper.deleteData("seed-dataelements.xml");
+        DBUnitHelper.deleteData("seed-inferenceRules.xml");
     }
 
     /**
@@ -195,7 +201,7 @@ public class DataServiceTest extends UnitilsJUnit4 {
         assertEquals("Short name does not match", "NiD_testE_SN", dataSet.getShortName());
         assertEquals("Date does not match", 1400186800000L, dataSet.getDate());
         assertEquals("Name does not match", "Name0 for NiD_testE v1", dataSet.getName());
-    } // end of test step testRecentlyReleasedDatesets
+    }
 
     /**
      *
@@ -233,5 +239,31 @@ public class DataServiceTest extends UnitilsJUnit4 {
             assertFalse("Unexpected attribute: " + attrShortName, attrsMap.containsKey(attrShortName));
         }
     }
-
+    
+    @Test
+    public void testRulesExistence() throws Exception {
+        
+        assertTrue("Expected inference rule does not exist", dataService.ruleExists(1, RuleType.INVERSE, 3));
+        assertTrue("Expected inference rule does not exist", dataService.ruleExists(1, RuleType.INVERSE, 4));
+        assertTrue("Expected inference rule does not exist", dataService.ruleExists(2, RuleType.INVERSE, 4));
+    }
+    
+    @Test
+    public void testGrepElements() throws Exception {
+        String searchPattern = "comm";
+        
+        Collection<DataElement> matchedElements = dataService.grepDataElement(searchPattern);
+        
+        assertEquals("Size of matched elements list does not match", 3, matchedElements.size());
+        
+        Set expectedNames = new HashSet(Arrays.asList("common1", "common2", "common3"));
+        
+        Set searchedNames = new HashSet();
+        for(DataElement element : matchedElements){
+            searchedNames.add(element.getShortName());
+        }
+        
+        assertEquals("Searched elements do not match", expectedNames, searchedNames);
+    }
+    
 }
