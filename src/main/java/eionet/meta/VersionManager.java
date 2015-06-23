@@ -30,6 +30,9 @@ import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
 import eionet.util.sql.SQLTransaction;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -748,6 +751,9 @@ public class VersionManager {
                     tableIdsAndIdentifiers.put(tbl.getIdentifier(), tbl.getID());
                 }
 
+                // also remember the identifier-id mappings of non-common elements
+                Map<String, String> dataElementIdMap = this.mapDataElementIdentifiersToIds(checkedoutCopyID);
+                
                 // delete the previous copy
                 Parameters params = new Parameters();
                 params.addParameterValue("mode", "delete");
@@ -778,6 +784,9 @@ public class VersionManager {
                         DsTableHandler.replaceTableId(checkedOutTableID, tbl.getID(), this.conn);
                     }
                 }
+                
+                // the non-common data elements must also get the previous ids
+                this.replaceDataElementIds(checkedoutCopyID, dataElementIdMap);
             } else {
                 // unlock the checked-out copy
                 gen.clear();
@@ -815,6 +824,39 @@ public class VersionManager {
         return true;
     }
 
+    private Map<String, String> mapDataElementIdentifiersToIds(String dataSetId) throws SQLException {
+        HashMap<String, String> result = new HashMap<String, String>();
+        Collection<DataElement> dataElements = this.getDataElementsOfDataSet(dataSetId);
+        
+        for (DataElement dataElement : dataElements) {
+            String identifier = this.composeIdentifier(dataElement);
+            result.put(identifier, dataElement.getID());
+        }
+        
+        return result;
+    }
+    
+    private void replaceDataElementIds(String dataSetId, Map<String, String> dataElementIdMap) throws SQLException {
+        Collection<DataElement> dataElements = this.getDataElementsOfDataSet(dataSetId);
+        
+        for (DataElement dataElement : dataElements) {
+            String identifier = this.composeIdentifier(dataElement);
+            
+            if (dataElementIdMap.containsKey(identifier)) {
+                String originalId = dataElementIdMap.get(identifier);
+                DataElementHandler.replaceID(dataElement.getID(), originalId, this.conn);
+            }
+        }
+    }
+    
+    private String composeIdentifier(DataElement dataElement) {
+        return dataElement.getTblIdentifier() + "." + dataElement.getIdentifier();
+    }
+    
+    private Collection<DataElement> getDataElementsOfDataSet(String dataSetId) throws SQLException {
+        return this.searchEngine.getDataElements(null, null, null, null, null, dataSetId);
+    }
+    
     private void checkRequirements(DataElement elm, String status) throws Exception {
         // check Submitting Org
         DElemAttribute submOrg = elm.getAttributeByShortName("SubmitOrganisation");
