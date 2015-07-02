@@ -2134,8 +2134,7 @@
                          }
  %>
                                                                     </select>
-                                                                    <a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.processForDisplay(attribute
-                                        .getShortName())%>&amp;parent_type=attr">
+                                                                    <a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/fixed_values/attr/<%=attrID%>">
                                                                         <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                                     </a>
                                                                     <%
@@ -2296,9 +2295,7 @@ String helpAreaName = "";
                                                                     // the link
                                                                     String valuesLink = "";
                                                                     if (!type.equals("CH3")) {
-                                                                        valuesLink = request.getContextPath() + "/fixed_values.jsp?delem_id=" + delem_id
-                                                                            + "&amp;delem_name=" + delem_name
-                                                                            + "&amp;parent_type=" + type;
+                                                                        valuesLink = request.getContextPath() + "/fixed_values/elem/" + delem_id;
                                                                     } else {
                                                                         if (vocabulary != null) {
                                                                             valuesLink = request.getContextPath() + "/vocabulary/" + vocabulary.getFolderName()
@@ -2357,24 +2354,13 @@ String helpAreaName = "";
                                                                                         fxvID = fxv.getID();
                                                                                         defin = fxv.getDefinition();
                                                                                         shortDesc = fxv.getShortDesc();
-                                                                                        if (!type.equals("CH3")) {
-                                                                                        valueLink = request.getContextPath() + "/fixed_value.jsp?fxv_id=" + fxvID
-                                                                                                + "&amp;mode=" + mode
-                                                                                                + "&amp;delem_id=" + delem_id
-                                                                                                + "&amp;delem_name=" + delem_name
-                                                                                                + "&amp;parent_type=" + type;
-                                                                                        } else {
+                                                                                        if (type.equals("CH3")) {
                                                                                             //build concept link if CH3
                                                                                             valueLink = request.getContextPath() + "/vocabularyconcept/"
                                                                                                     + vocabulary.getFolderName() + "/" + vocabulary.getIdentifier()
                                                                                                     + "/" + value + "/view";
                                                                                         }
                                                                                     }
-
-                                                                                    //if (shortDesc.length() == 0)
-                                                                                    //    shortDesc = "&nbsp;";
-                                                                                    //if (defin.length() == 0)
-                                                                                    //    defin = "&nbsp;";
 
                                                                                     defin = defin == null ? "" : defin;
                                                                                     String dispDefin = defin.length() > MAX_CELL_LEN ? defin
@@ -2388,9 +2374,7 @@ String helpAreaName = "";
                                                                 %>
                                                                     <tr>
                                                                         <td>
-                                                                            <a href="<%=valueLink%>">
-                                                                                <%=Util.processForDisplay(value)%>
-                                                                            </a>
+                                                                            <%=Util.processForDisplay(value)%>
                                                                         </td>
                                                                         <td title="<%=Util.processForDisplay(defin, true)%>">
                                                                             <%=Util.processForDisplay(dispDefin)%>

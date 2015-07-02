@@ -126,7 +126,7 @@ ServletContext ctx = null;
                                 type_name="Allowable value";
                                 String comp_id = (String)object.get("component_id");
                                 String comp_type = (String)object.get("component_type");
-                                link="fixed_value.jsp?fxv_id=" + parent_id+ "&delem_id=" + comp_id + "&parent_type=" + comp_type;
+                                link="fixed_values/" + comp_type + "/" + comp_id ;
                             }
                             else if (parent_type.equals("E")){
                                 type_name="Data element";

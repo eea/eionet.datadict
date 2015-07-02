@@ -24,8 +24,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- *
- * @author dr
+ *  Tests Inference Rules
+ * @author Raptis Dimos
  */
 public class InferenceRuleActionBeanTest {
     

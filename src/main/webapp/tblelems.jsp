@@ -681,7 +681,7 @@ if (messages.trim().length()>0){
 
                             <td style="text-align: left; padding-right:10px">
                                 <% if (elem.getType().equals("CH1")){ %>
-                                    <a href="javascript:clickLink('fixed_values.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.processForDisplay(elem.getShortName())%>')"><%=Util.processForDisplay(elemType)%></a>
+                                    <a href="javascript:clickLink('fixed_values/elem/<%=elem.getID()%>')"><%=Util.processForDisplay(elemType)%></a>
                                 <%} else{ %>
                                     <%=Util.processForDisplay(elemType)%>
                                 <% } %>

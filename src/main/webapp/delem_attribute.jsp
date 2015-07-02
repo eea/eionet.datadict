@@ -338,8 +338,7 @@
         }
 
         function openFxValues(){
-            //var url = "fixed_values.jsp?delem_id=<%=attr_id%>&amp;delem_name=<%=Util.processForDisplay(attr_shortname)%>&amp;parent_type=attr";
-            var url = "fixed_values.jsp?mode=edit&delem_id=<%=attr_id%>&delem_name=<%=Util.processForDisplay(attr_shortname)%>&parent_type=attr";
+            var url = "fixed_values/attr/<%=attr_id%>";
             wCh1Values = window.open(url,"AllowableValues","height=600,width=800,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
             if (window.focus) {wCh1Values.focus()}
         }
@@ -727,7 +726,7 @@ else
                             <%
                             if (mode.equals("edit") && dispType!=null && dispType.equals("select")){
                                 %>
-                                &nbsp;<span class="smallfont"><a href="fixed_values.jsp?mode=edit&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=Util.processForDisplay(attr_shortname)%>&amp;parent_type=attr">
+                                &nbsp;<span class="smallfont"><a href="fixed_values/attr/<%=attr_id%>">
                                 <b>FIXED VALUES</b></a></span>
                                 <%
                             }
@@ -740,7 +739,7 @@ else
                 %>
                     <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
                         <th scope="row" class="scope-row">
-                                <a href="fixed_values.jsp?delem_id=<%=attr_id%>&amp;delem_name=<%=Util.processForDisplay(attr_shortname)%>&amp;parent_type=attr">
+                                <a href="fixed_values/attr/<%=attr_id%>">
                                     Fixed values
                                 </a>
                         </th>

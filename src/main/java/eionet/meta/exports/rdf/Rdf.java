@@ -165,7 +165,7 @@ public class Rdf {
      * @throws Exception
      */
     private void writeCodeList(Writer writer) throws Exception {
-        List<FixedValue> fixedValues = dataService.getFixedValues(id);
+        List<FixedValue> fixedValues = dataService.getDataElementFixedValues(id);
         eionet.meta.dao.domain.DataElement dataElement = dataService.getDataElement(id);
         Map<String, List<String>> elemAttributeValues = dataService.getDataElementSimpleAttributeValues(id);
 

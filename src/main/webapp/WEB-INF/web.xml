@@ -296,6 +296,10 @@
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/inference_rules/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/fixed_values/*</url-pattern>
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>rpcrouter</servlet-name>

@@ -24,8 +24,10 @@ import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.ComplexAttribute;
 import eionet.meta.dao.domain.ComplexAttributeField;
+import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
+import eionet.meta.service.ServiceException;
 import eionet.util.Pair;
 
 /**
@@ -540,5 +542,63 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
 
         return items;
     }
+    
+    public Attribute getById(int id){
+        String sql = "select * from M_ATTRIBUTE where M_ATTRIBUTE_ID = :id";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("id", id);
 
+        Attribute result = getNamedParameterJdbcTemplate().queryForObject(sql, params, new RowMapper<Attribute>() {
+            @Override
+            public Attribute mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Attribute attribute = new Attribute();
+                attribute.setId(rs.getInt("M_ATTRIBUTE_ID"));
+                attribute.setName(rs.getString("NAME"));
+                attribute.setShortName(rs.getString("SHORT_NAME"));
+                return attribute;
+            }
+        });
+        return result;
+    }
+
+    @Override
+    public boolean exists(int id){
+        String sql = "select count(*) from M_ATTRIBUTE where M_ATTRIBUTE_ID = :id";
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("id", id);
+         
+        int count = getNamedParameterJdbcTemplate().queryForInt(sql, params);
+        
+        return (count > 0);
+    }
+    
+    @Override
+    public List<FixedValue> getFixedValues(int attributeId) throws ServiceException {
+        StringBuilder sql = new StringBuilder("select * from FXV");
+        sql.append(" where OWNER_ID = :ownerId ");
+        sql.append(" and OWNER_TYPE=:ownerType ");
+        sql.append(" order by FXV_ID");
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ownerId", attributeId);
+        params.put("ownerType", "attr");
+        
+        List<FixedValue> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<FixedValue>() {
+            @Override
+            public FixedValue mapRow(ResultSet rs, int rowNum) throws SQLException {
+                FixedValue fv = new FixedValue();
+                fv.setId(rs.getInt("FXV_ID"));
+                fv.setOwnerId(rs.getInt("OWNER_ID"));
+                fv.setOwnerType(rs.getString("OWNER_TYPE"));
+                fv.setValue(rs.getString("VALUE"));
+                fv.setIsDefault(rs.getString("IS_DEFAULT"));
+                fv.setDefinition(rs.getString("DEFINITION"));
+                fv.setShortDescription(rs.getString("SHORT_DESC"));
+                return fv;
+            }
+        });
+        
+        return result;
+    }
 }

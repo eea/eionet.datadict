@@ -6,8 +6,10 @@ import java.util.Map;
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.ComplexAttribute;
+import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
+import eionet.meta.service.ServiceException;
 
 /**
  *
@@ -130,4 +132,25 @@ public interface IAttributeDAO {
      */
     List<SimpleAttribute> getAttributesMetadata(int typeWeight);
 
+    /**
+     * Returns attribute with specific ID
+     * @param id
+     * @return attribute
+     */
+    Attribute getById(int id);
+    
+    /**
+     * Checks if attribute with specific ID exists
+     * @param id
+     * @return boolean
+     */
+    boolean exists(int id);
+    
+    /**
+     * Returns attribute's fixed values.
+     * @param attributeId
+     * @return list of fixed values
+     * @throws ServiceException 
+     */
+    public List<FixedValue> getFixedValues(int attributeId) throws ServiceException;
 }

@@ -1244,7 +1244,7 @@ else if (mode.equals("add"))
                                                                     }
                                                                     %>
                                                                 </select>
-                                                                <a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.processForDisplay(attribute.getShortName())%>&amp;parent_type=attr">
+                                                                <a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/fixed_values/attr/<%=attrID%>">
                                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
                                                                 </a>
                                                                 <%
@@ -1418,7 +1418,7 @@ else if (mode.equals("add"))
                                                                         <td>
                                                                             <%
                                                                             if (elem.getType().equals("CH1")){ %>
-                                                                                <a href="<%=request.getContextPath()%>/fixed_values.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.processForDisplay(elem.getShortName())%>">
+                                                                                <a href="<%=request.getContextPath()%>/fixed_values/elem/<%=elem.getID()%>">
                                                                                     <%=Util.processForDisplay(elemType)%>
                                                                                 </a> <%
                                                                             }

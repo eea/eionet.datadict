@@ -17,6 +17,7 @@
  *
  * Contributor(s):
  *        Juhan Voolaid
+ *        Raptis Dimos
  */
 
 package eionet.meta.dao.domain;
@@ -29,6 +30,28 @@ import org.apache.commons.lang.StringUtils;
  * @author Juhan Voolaid
  */
 public class FixedValue {
+    
+    public enum Default {
+        YES("Y"), NO("N");
+        private final String value;
+        
+        private Default(String value){
+            this.value = value;
+        }
+        
+        public String getValue(){
+            return this.value;
+        }
+        
+        public static Default fromValue(String name){
+            for(Default defaultValue : Default.values()){
+                if(defaultValue.getValue().equals(name)){
+                    return defaultValue;
+                }
+            }
+            throw new IllegalArgumentException("Illegal default value name: " + name);
+        }
+    };
 
     private int id;
 
@@ -41,6 +64,8 @@ public class FixedValue {
     private String shortDescription;
 
     private String definition;
+    
+    private Default isDefault;
 
     /**
      * @return the id
@@ -140,4 +165,17 @@ public class FixedValue {
 
         return value + " [" + label + "]";
     }
+    
+    public Default getIsDefault(){
+        return isDefault;
+    }
+    
+    public void setIsDefault(Default isDefault){
+        this.isDefault = isDefault;
+    }
+    
+    public void setIsDefault(String defaultValue){
+        this.isDefault = Default.fromValue(defaultValue);
+    }
+    
 }

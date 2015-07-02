@@ -15,6 +15,7 @@ import eionet.meta.DElemAttribute.ParentType;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IDataSetDAO;
+import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
@@ -48,6 +49,10 @@ public class DataServiceImpl implements IDataService {
     /** Data element DAO. */
     @Autowired
     private IDataElementDAO dataElementDao;
+    
+    /** Fixed Value DAO */
+    @Autowired
+    private IFixedValueDAO fixedValueDao;
 
     /** Vocabulary concept DAO. */
     @Autowired
@@ -85,6 +90,26 @@ public class DataServiceImpl implements IDataService {
             throw new ServiceException("Failed to get the attribute for '" + shortName + "': " + e.getMessage(), e);
         }
     }
+    
+    @Override
+    public Attribute getAttributeById(int id) throws ServiceException {
+        try {
+            return attributeDao.getById(id);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to get attribute by id " + e.getMessage(), e);
+        }
+    }
+    
+    @Override
+    public boolean attributeExists(int id) throws ServiceException {
+        try {
+            return attributeDao.exists(id);
+        } 
+        catch(Exception e){
+            throw new ServiceException("Failed to check if attribute exists " + e.getMessage(), e);
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -109,18 +134,28 @@ public class DataServiceImpl implements IDataService {
             throw new ServiceException("Failed to get data element attributes: " + e.getMessage(), e);
         }
     }
-
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
-    public List<FixedValue> getFixedValues(int dataElementId) throws ServiceException {
-        try {
+    public List<FixedValue> getDataElementFixedValues(int dataElementId) throws ServiceException {
+        try{
             return dataElementDao.getFixedValues(dataElementId);
-        } catch (Exception e) {
+        }
+        catch(Exception e){
             throw new ServiceException("Failed to get data element's fixed values: " + e.getMessage(), e);
         }
     }
+    
+    @Override
+    public List<FixedValue> getAttributeFixedValues(int attributeId) throws ServiceException {
+        try{
+            return attributeDao.getFixedValues(attributeId);
+        }
+        catch(Exception e) {
+            throw new ServiceException("Failed to get attribute's fixed values: " + e.getMessage(), e);
+        }
+    }
+    
+    
 
     /**
      * {@inheritDoc}
@@ -386,4 +421,66 @@ public class DataServiceImpl implements IDataService {
             throw new ServiceException("Failed to grep for data element : " + e.getMessage(), e);
         }
     }
+    
+    @Override
+    public void createFixedValue(FixedValue fixedValue) throws ServiceException {
+        try{
+            fixedValueDao.create(fixedValue);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to create fixed value : " + e.getMessage(), e);
+            
+        }
+    }
+    
+    @Override
+    public void deleteFixedValue(FixedValue fixedValue) throws ServiceException {
+        try{
+            fixedValueDao.delete(fixedValue);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to delete fixed value : " + e.getMessage(), e);
+        }
+    }
+    
+    @Override
+    public void updateFixedValue(FixedValue fixedValue) throws ServiceException {
+        try{
+            fixedValueDao.update(fixedValue);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to update fixed value : " + e.getMessage(), e);
+        }
+    }
+        
+    @Override
+    public FixedValue getFixedValueById(int id) throws ServiceException {
+        try{
+            return fixedValueDao.getById(id);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to get fixed value by id : " + e.getMessage(), e);
+        }
+    }
+    
+    @Override
+    public boolean fixedValueExists(int id) throws ServiceException {
+        try{
+            return fixedValueDao.exists(id);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to check if fixed value exists : " + e.getMessage(), e);
+        }
+    }
+    
+    @Override
+    public boolean fixedValueExistsWithSameNameOwner(FixedValue fixedValue) throws ServiceException {
+        try{
+            return fixedValueDao.existsWithSameNameOwner(fixedValue);
+        }
+        catch(Exception e){
+            throw new ServiceException("Failed to check if fixed value with same owner,name exists : " + e.getMessage(), e);
+        }
+    }
+    
 }

@@ -17,6 +17,7 @@
  *
  * Contributor(s):
  *        Juhan Voolaid
+ *        Raptis Dimos
  */
 
 package eionet.meta.service;
@@ -75,6 +76,22 @@ public interface IDataService {
      * @return
      */
     Attribute getAttributeByName(String shortName) throws ServiceException;
+    
+    /**
+     * Returns attribute with specific ID
+     * @param id
+     * @return attribute
+     * @throws ServiceException 
+     */
+    Attribute getAttributeById(int id) throws ServiceException;
+    
+    /**
+     * Checks if attribute with specific ID exists
+     * @param id
+     * @return boolean
+     * @throws ServiceException 
+     */
+    boolean attributeExists(int id) throws ServiceException;
 
     /**
      * Returns data element by id.
@@ -100,14 +117,22 @@ public interface IDataService {
      * @throws ServiceException
      */
     DataElementsResult searchDataElements(DataElementsFilter filter) throws ServiceException;
-
+    
     /**
-     * Returns data element's fixed values.
-     *
-     * @return
-     * @throws ServiceException
+     * Returns data element's fixed values
+     * @param dataElementId
+     * @return list of fixed values
+     * @throws ServiceException 
      */
-    List<FixedValue> getFixedValues(int dataElementId) throws ServiceException;
+    List<FixedValue> getDataElementFixedValues(int dataElementId) throws ServiceException;
+    
+    /**
+     * Returns attribute's fixed values
+     * @param attributeId
+     * @return list of fixed values
+     * @throws ServiceException 
+     */
+    List<FixedValue> getAttributeFixedValues(int attributeId) throws ServiceException;
 
     /**
      * Returns data elements that have code list values.
@@ -262,15 +287,61 @@ public interface IDataService {
      * @param sourceDElementId
      * @param type
      * @param targetDElementId
+     * @param newType
+     * @param newTargetElementId
      * @throws ServiceException 
      */
     void updateDataElementRule(int sourceDElementId, RuleType type, int targetDElementId, RuleType newType, int newTargetElementId) throws ServiceException;
     
     /**
      * Searches for Data Elements whose short name includes pattern
-     * @param id
+     * @param pattern
      * @return
      * @throws ServiceException 
      */
     Collection<DataElement> grepDataElement(String pattern) throws ServiceException;
+    
+    /**
+     * Creates a new fixed value
+     * @param fixedValue 
+     * @throws eionet.meta.service.ServiceException 
+     */
+    void createFixedValue(FixedValue fixedValue) throws ServiceException;
+    
+    /**
+     * Deletes a fixed value
+     * @param fixedValue 
+     * @throws eionet.meta.service.ServiceException 
+     */
+    void deleteFixedValue(FixedValue fixedValue) throws ServiceException;
+    
+    /**
+     * Updates a fixed value
+     * @param fixedValue 
+     * @throws eionet.meta.service.ServiceException 
+     */
+    void updateFixedValue(FixedValue fixedValue) throws ServiceException;
+    
+    /**
+     * Returns fixed value with specific id
+     * @param id
+     * @return fixed value
+     * @throws eionet.meta.service.ServiceException
+     */
+    FixedValue getFixedValueById(int id) throws ServiceException;
+    
+    /**
+     * Checks if fixed value with given id exists
+     * @param id
+     * @return boolean
+     * @throws eionet.meta.service.ServiceException
+     */
+    boolean fixedValueExists(int id) throws ServiceException;
+    
+    /**
+     * Checks if fixed value exists with same owner,name
+     * @param fixedValue
+     * @return boolean
+     */
+    boolean fixedValueExistsWithSameNameOwner(FixedValue fixedValue) throws ServiceException;
 }
