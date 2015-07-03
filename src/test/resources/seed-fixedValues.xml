@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<FXV FXV_ID="1" OWNER_ID="1" OWNER_TYPE="elem" VALUE="element first fixed value" IS_DEFAULT="N" DEFINITION="definition 1" SHORT_DESC="description 1" />
+	<FXV FXV_ID="2" OWNER_ID="1" OWNER_TYPE="elem" VALUE="element second fixed value" IS_DEFAULT="N" DEFINITION="definition 2" SHORT_DESC="description 2" />
+	<FXV FXV_ID="3" OWNER_ID="1" OWNER_TYPE="attr" VALUE="attribute first fixed value" IS_DEFAULT="Y" DEFINITION="definition 3" SHORT_DESC="description 3" />
+	<FXV FXV_ID="4" OWNER_ID="1" OWNER_TYPE="attr" VALUE="attribute second fixed value" IS_DEFAULT="N" DEFINITION="definition 4" SHORT_DESC="description 4" />
+</dataset>
