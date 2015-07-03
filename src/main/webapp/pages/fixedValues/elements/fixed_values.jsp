@@ -7,10 +7,16 @@
         <c:if test="${empty actionBean.context.validationErrors}">
             <h1>Fixed Values of <stripes:link href="/dataelements/${actionBean.owner.id}">${actionBean.owner.identifier}</stripes:link> element </h1>
             <div style="margin:10px">
-                <stripes:form beanclass="eionet.web.action.FixedValuesActionBean" method="GET">
+                <stripes:form beanclass="eionet.web.action.FixedValuesActionBean" method="GET" style="float: left; padding-right: 5px;" >
                     <stripes:hidden name="ownerType" value="${ownerType}" />
                     <stripes:hidden name="ownerId" value="${ownerId}" />
                     <stripes:submit name="new" value="Add new Value" />
+                </stripes:form>
+                <stripes:form action="/import.jsp" method="GET" >
+                    <stripes:hidden name="mode" value="FXV" />
+                    <stripes:hidden name="delem_id" value="${actionBean.owner.id}" />
+                    <stripes:hidden name="short_name" value="${actionBean.owner.shortName}" />
+                    <stripes:submit name="import" value="Import" />
                 </stripes:form>
             </div>
             <c:choose>
