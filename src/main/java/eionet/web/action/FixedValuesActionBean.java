@@ -52,7 +52,7 @@ public class FixedValuesActionBean extends AbstractActionBean {
     private static final String ATTRIBUTE_FIXED_VALUES_NEW_JSP = "/pages/fixedValues/attributes/new_fixed_value.jsp";
     private static final String ATTRIBUTE_FIXED_VALUES_EXISTING_JSP = "/pages/fixedValues/attributes/existing_fixed_value.jsp";
             
-    private static final String ERROR_PAGE = "/pages/fixedValues/values_access.jsp";
+    private static final String ERROR_PAGE = "/pages/utils/error_page.jsp";
     
     @SpringBean
     private IDataService dataService;

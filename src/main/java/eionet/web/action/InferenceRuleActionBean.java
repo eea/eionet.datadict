@@ -58,7 +58,7 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     private static final String INFERENCE_RULES_VIEW_JSP = "/pages/inferenceRules/inference_rules.jsp";
     private static final String INFERENCE_RULE_NEW_JSP = "/pages/inferenceRules/new_inference_rule.jsp";
     private static final String INFERENCE_RULE_EXISTING_JSP = "/pages/inferenceRules/existing_inference_rule.jsp";
-    private static final String INFERENCE_RULE_ACCESS_PAGE = "/pages/inferenceRules/inference_access.jsp";
+    private static final String ERROR_PAGE = "/pages/utils/error_page.jsp";
     
     @SpringBean
     private IDataService dataService;
@@ -67,7 +67,7 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     public Resolution view() throws ServiceException {
         if(!isUserLoggedIn()){
             addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(INFERENCE_RULE_ACCESS_PAGE);
+            return new ForwardResolution(ERROR_PAGE);
         }
         
         if(!dataService.dataElementExists(parentElementId) )
@@ -83,7 +83,7 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     public Resolution newRule() throws ServiceException {
         if(!isUserLoggedIn()){
             addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(INFERENCE_RULE_ACCESS_PAGE);
+            return new ForwardResolution(ERROR_PAGE);
         }
         
         if(!dataService.dataElementExists(parentElementId))
@@ -98,7 +98,7 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     public Resolution addRule() throws ServiceException {
         if(!isUserLoggedIn()){
             addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(INFERENCE_RULE_ACCESS_PAGE);
+            return new ForwardResolution(ERROR_PAGE);
         }
         
         if(!dataService.dataElementExists(parentElementId))
@@ -126,7 +126,7 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     public Resolution existingRule() throws ServiceException {
         if(!isUserLoggedIn()){
             addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(INFERENCE_RULE_ACCESS_PAGE);
+            return new ForwardResolution(ERROR_PAGE);
         }
         
         if( !dataService.dataElementExists(parentElementId) )
@@ -143,7 +143,7 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     public Resolution editRule() throws ServiceException {
         if(!isUserLoggedIn()){
             addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(INFERENCE_RULE_ACCESS_PAGE);
+            return new ForwardResolution(ERROR_PAGE);
         }
 
         if( !dataService.dataElementExists(parentElementId))
@@ -173,7 +173,7 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     public Resolution deleteRule() throws ServiceException {
         if(!isUserLoggedIn()){
             addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(INFERENCE_RULE_ACCESS_PAGE);
+            return new ForwardResolution(ERROR_PAGE);
         }
         
         if( !dataService.dataElementExists(parentElementId) || !dataService.dataElementExists(targetElementId) )
@@ -189,7 +189,7 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     public Resolution grepElement() throws ServiceException {
         if(!isUserLoggedIn()){
             addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(INFERENCE_RULE_ACCESS_PAGE);
+            return new ForwardResolution(ERROR_PAGE);
         }
         
         Collection<DataElement> elements = dataService.grepDataElement(pattern);
