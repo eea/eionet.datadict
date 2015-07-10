@@ -3,8 +3,8 @@ package eionet.util;
 /**
  * Class to help escape strings for XML and URI components.
  *
- * @see http://www.java2s.com/Tutorial/Java/0120__Development/EscapeHTML.htm
- * @see http://www.ietf.org/rfc/rfc3986.txt
+ * @see <a href="http://www.java2s.com/Tutorial/Java/0120__Development/EscapeHTML.htm">Escape HTML : HTML Parser</a>
+ * @see <a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>
  */
 public final class StringEncoder {
     /**
@@ -17,16 +17,20 @@ public final class StringEncoder {
     private static final String[] BAD_IRI_CHARS_ESCAPES = {"%20", "%7B", "%7D", "%3C", "%3E",
                                                         "%22", "%7C", "%5C", "%5E", "%60"};
 
-    /** * Characters that aren't allowed in XML.  */
+    /** Characters that aren't allowed in XML.  */
     private static final char[] BAD_XML_CHARS = {'\'', '"', '&', '<', '>'};
+
     /** Replacements for characters that aren't allowed in XML. */
     private static final String[] BAD_XML_CHARS_ESCAPES = {"&#39;", "&quot;", "&amp;", "&lt;", "&gt;"};
 
+    /** Characters that aren't allowed in URI components. */
     private static final char[] BAD_CMP_CHARS = {';', '/', '?', ':', '@', '&', '=',
         '+', '$', ',', '[', ']', '<', '>', '#', '%', '\"', '{', '}', '\n', '\t', ' '};
 
+    /** Replacements for characters that aren't allowed in URI components. */
     private static final String[] BAD_CMP_CHARS_ESCAPES = {"%3B", "%2F", "%3F", "%3A", "%40", "%26", "%3D",
         "%2B", "%24", "%2C", "%5B", "%5D", "%3C", "%3E", "%23", "%25", "%22", "%7B", "%7D", "%0A", "%09", "%20"};
+
     /**
      * Constructor. Since all methods are static we don't want instantiations of the class.
      */
@@ -60,12 +64,13 @@ public final class StringEncoder {
     }
 
     /**
-     * %-escapes the given string for a legal URI component. See http://www.ietf.org/rfc/rfc3986.txt section 2.4 for more.
+     * %-escapes the given string for a legal URI component.
      * Do not use this method for full URLs.
      *
      * @param s
      *            The string to %-escape.
      * @return The escaped string.
+     * @see <a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986 section 2.4</a>
      */
     public static String encodeURIComponent(String s) {
         return escapeString(s, BAD_CMP_CHARS, BAD_CMP_CHARS_ESCAPES);

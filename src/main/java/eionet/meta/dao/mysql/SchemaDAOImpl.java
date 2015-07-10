@@ -67,7 +67,8 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     private static final String INSERT_SQL =
         "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, CONTINUITY_ID, REG_STATUS, "
         + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID, OTHER_DOCUMENT) "
-        + "values (:filename,:schemaSetId,:continuityId,:regStatus,:workingCopy,:workingUser,now(),:userModified,:comment,:checkedOutCopyId,:otherDocument)";
+        + "values (:filename,:schemaSetId,:continuityId,:regStatus,:workingCopy,"
+        + ":workingUser,now(),:userModified,:comment,:checkedOutCopyId,:otherDocument)";
 
     /** */
     private static final String LIST_FOR_SCHEMA_SET = "select * from T_SCHEMA where SCHEMA_SET_ID=:schemaSetId order by FILENAME";
@@ -75,7 +76,8 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     /** */
     private static final String COPY_TO_SCHEMA_SET_SQL =
         "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, DATE_MODIFIED, USER_MODIFIED, OTHER_DOCUMENT) "
-        + "select ifnull(:newFileName,FILENAME), ifnull(:schemaSetId,SCHEMA_SET_ID), now(), :userName, OTHER_DOCUMENT from T_SCHEMA where SCHEMA_ID=:schemaId";
+        + "select ifnull(:newFileName,FILENAME), ifnull(:schemaSetId,SCHEMA_SET_ID), now(),"
+        + ":userName, OTHER_DOCUMENT from T_SCHEMA where SCHEMA_ID=:schemaId";
 
     /** */
     private static final String GET_WORKING_COPIES_SQL =
@@ -95,9 +97,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         "select * from T_SCHEMA where (SCHEMA_SET_ID is null or SCHEMA_SET_ID<=0)"
         + " and WORKING_COPY=true and CHECKEDOUT_COPY_ID = :checkedOutCopyId";
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#createSchema(eionet.meta.dao.domain.Schema)
-     */
     @Override
     public int createSchema(Schema schema) {
 
@@ -128,9 +127,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return getLastInsertId();
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#listForSchemaSet(int)
-     */
     @Override
     public List<Schema> listForSchemaSet(int schemaSetId) {
 
@@ -142,9 +138,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return resultList;
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#listForSchemaSets(List<SchemaSets>)
-     */
     @Override
     public List<Schema> listForSchemaSets(List<SchemaSet> schemaSets) {
 
@@ -161,9 +154,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return getSchemas(schemaIdList);
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#copyToSchemaSet(int, int, String, String)
-     */
     @Override
     public int copyToSchemaSet(int schemaId, int schemaSetId, String fileName, String userName) {
 
@@ -177,9 +167,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return getLastInsertId();
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#replaceId(int, int)
-     */
     @Override
     public void replaceId(int replacedId, int substituteId) {
 
@@ -255,9 +242,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return result;
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#searchSchemas(eionet.meta.service.data.SchemaFilter)
-     */
     @Override
     public SchemasResult searchSchemas(SchemaFilter searchFilter) {
 
@@ -378,9 +362,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return result;
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#updateSchema(eionet.meta.dao.domain.Schema)
-     */
     @Override
     public void updateSchema(Schema schema) {
 
@@ -400,9 +381,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         getNamedParameterJdbcTemplate().update(sql, parameters);
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#updateSchemaAttributes(int, java.util.Map)
-     */
     @Override
     public void updateSchemaAttributes(int schemaId, Map<Integer, Set<String>> attributes) {
 
@@ -435,9 +413,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         }
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#getWorkingCopiesOf(java.lang.String)
-     */
     @Override
     public List<Schema> getWorkingCopiesOf(String userName) {
 
@@ -467,9 +442,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return resultList;
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#getSchema(int)
-     */
     @Override
     public Schema getSchema(int schemaId) {
 
@@ -541,9 +513,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return result;
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#unlock(int)
-     */
     @Override
     public void unlock(int checkedOutCopyId) {
 
@@ -554,9 +523,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         getNamedParameterJdbcTemplate().update(SET_WORKING_USER_SQL, params);
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#checkIn(int, java.lang.String, java.lang.String)
-     */
     @Override
     public void checkIn(int schemaId, String username, String comment) {
 
@@ -571,9 +537,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         getNamedParameterJdbcTemplate().update(sql, parameters);
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#existsRootLevelSchema(java.lang.String)
-     */
     @Override
     public boolean existsRootLevelSchema(String filename) {
 
@@ -585,9 +548,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return count > 0;
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#getRootLevelSchemas(String)
-     */
     @Override
     public List<Schema> getRootLevelSchemas(String userName) {
 
@@ -654,9 +614,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return schema;
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#getWorkingCopyOfSchema(int)
-     */
     @Override
     public Schema getWorkingCopyOfSchema(int schemaId) {
 
@@ -685,9 +642,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return result;
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#setWorkingUser(int, java.lang.String)
-     */
     @Override
     public void setWorkingUser(int schemaId, String userName) {
 
@@ -698,9 +652,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         getNamedParameterJdbcTemplate().update(SET_WORKING_USER_SQL, params);
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#copySchemaRow(int, java.lang.String, java.lang.String, eionet.meta.dao.domain.RegStatus)
-     */
     @Override
     public int copySchemaRow(int schemaId, String userName, String newFileName, RegStatus regStatus) {
 
@@ -720,9 +671,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return getLastInsertId();
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#getSchemaVersions(String, java.lang.String, int...)
-     */
     @Override
     public List<Schema> getSchemaVersions(String userName, String continuityId, int... excludeIds) {
 
@@ -770,9 +718,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return resultList;
     }
 
-    /**
-     * @see eionet.meta.dao.ISchemaDAO#schemaExists(java.lang.String, int)
-     */
     @Override
     public boolean schemaExists(String fileName, int schemaSetId) {
 

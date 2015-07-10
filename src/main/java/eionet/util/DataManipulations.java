@@ -62,10 +62,10 @@ public class DataManipulations {
     protected PrintWriter outputWriter = null;
 
     /**
+     * Constructor.
      *
-     * @param ctx
-     * @param request
-     * @param response
+     * @param conn - database connection.
+     * @param outputWriter - for writing progress messages.
      * @throws IOException
      */
     public DataManipulations(Connection conn, PrintWriter outputWriter) throws IOException {

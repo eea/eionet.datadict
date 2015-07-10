@@ -186,8 +186,7 @@ public interface IDataElementDAO {
 
     /**
      * Returns data element attributes for vocabulary concepts in a folder.
-     *
-     * @precondition if emptyAttributes true then this method should be called with a single concept id, i.e.
+     * Precondition: If emptyAttributes true then this method should be called with a single concept id, i.e.
      *               vocabularyConceptIds.length should be 1.
      * @param vocabularyFolderId
      *            vocabularyID

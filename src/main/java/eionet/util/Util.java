@@ -437,7 +437,7 @@ public final class Util {
      *
      * @param src
      *            String to be digested.
-     * @param algosrithm
+     * @param algorithm
      *            Digesting algorithm (please see Java documentation for allowable values).
      * @return A unique String-typed Hexa-Decimal digest of the input message.
      */
@@ -503,10 +503,10 @@ public final class Util {
     }
 
     /**
-     * First replaces the given input string with {@link StringEscapeUtils#escapeXml(String)}. Then, if the 1st boolean input is
-     * false, replaces all occurrences of URLs in the string with HTML links (i.e. anchors) like (<a href"...">...</a>). Finally, if
+     * First replaces the given input string with escaped Xml. Then, if the 1st boolean input is
+     * false, replaces all occurrences of URLs in the string with HTML links (i.e. anchors) like (&lt;a href"..."&gt;...&lt;/a&gt;). Finally, if
      * the 2nd boolean input is false, replaces all occurrences of Java string line breaks ('\n' and '\r\n') with HTML line breaks
-     * like <br/>
+     * like &lt;br/&gt;
      * .
      *
      * @param in
@@ -541,7 +541,7 @@ public final class Util {
 
     /**
      * Finds all urls in a given string and replaces them with HTML anchors. If boolean newWindow==true then target will be a new
-     * window, else no. If boolean cutLink > 0 then cut the displayed link length at cutLink.
+     * window, else no. If boolean cutLink &gt; 0 then cut the displayed link length at cutLink.
      */
     public static String setAnchors(String s, boolean newWindow, int cutLink) {
 
@@ -1366,7 +1366,7 @@ public final class Util {
     /**
      * Returns the URL binding of the given Stripes action bean class. Be aware that a Stripes URL binding may be parameterized
      * (e.g. "/foo/{bar}/{baz}"). If you want to get the URL binding with parameters replaced by real values, use
-     * {@link #getUrlBinding(Class, Pair...)}.
+     * getUrlBinding(Class, String, Pair...).
      *
      * @param actionBeanClass
      * @return

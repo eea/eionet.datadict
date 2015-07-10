@@ -45,10 +45,11 @@ public class DsTable implements Comparable {
     private int positionInDataset;
 
     /**
+     * Constructor.
      *
      * @param id
      * @param dsID
-     * @param shortName
+     * @param shortName - Short name
      */
     public DsTable(String id, String dsID, String shortName) {
         this.id = id;
@@ -322,65 +323,34 @@ public class DsTable implements Comparable {
         return buf.toString();
     }
 
-    /**
-     *
-     * @return
-     */
     public String getDstStatus() {
         return dstStatus;
     }
 
-    /**
-     *
-     * @param dstStatus
-     */
     public void setDstStatus(String dstStatus) {
         this.dstStatus = dstStatus;
     }
 
-    /**
-     *
-     * @return
-     */
     public String getDstWorkingUser() {
         return dstWorkingUser;
     }
 
-    /**
-     *
-     * @param dstWorkingUser
-     */
     public void setDstWorkingUser(String dstWorkingUser) {
         this.dstWorkingUser = dstWorkingUser;
     }
 
-    /**
-     *
-     * @return
-     */
     public String getDstDate() {
         return dstDate;
     }
 
-    /**
-     *
-     * @param dstDate
-     */
     public void setDstDate(String dstDate) {
         this.dstDate = dstDate;
     }
 
-    /**
-     * @return the positionInDataset
-     */
     public int getPositionInDataset() {
         return positionInDataset;
     }
 
-    /**
-     * @param positionInDataset
-     *            the positionInDataset to set
-     */
     public void setPositionInDataset(int positionInDataset) {
         this.positionInDataset = positionInDataset;
     }
