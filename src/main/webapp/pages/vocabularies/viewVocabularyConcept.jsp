@@ -104,9 +104,13 @@
                                     <c:choose>
                                         <c:when test="${not actionBean.vocabularyFolder.workingCopy or attr.datatype eq 'reference'}">
                                             <a href="${actionBean.conceptViewPrefix}${attr.relatedConceptRelativePath}/view"><c:out value="${attr.relatedConceptIdentifier}" />
-                                            <c:if test="${not empty attr.relatedConceptLabel}">
-                                                (<c:out value="${attr.relatedConceptLabel}" />)
-                                            </c:if></a>
+                                                <c:if test="${not empty attr.relatedConceptLabel}">
+                                                    (<c:out value="${attr.relatedConceptLabel}" />)
+                                                </c:if>
+                                                <c:if test="${not empty attr.relatedConceptVocSet}">
+                                                    in <c:out value="${attr.relatedConceptVocSet}/${attr.relatedConceptVocabulary}" />
+                                                </c:if>
+                                            </a>
                                         </c:when>
                                         <c:otherwise>
                                           <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean">
