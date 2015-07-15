@@ -2326,9 +2326,9 @@ String helpAreaName = "";
                                                                 <col style="width:40%"/>
                                                                 <col style="width:40%"/>
                                                                 <tr>
-                                                                    <th>Value</th>
+                                                                    <th>Code</th>
+                                                                    <th>Label</th>
                                                                     <th>Definition</th>
-                                                                    <th>ShortDescription</th>
                                                                 </tr>
                                                                 <%
                                                                     // rows
@@ -2376,11 +2376,11 @@ String helpAreaName = "";
                                                                         <td>
                                                                             <%=Util.processForDisplay(value)%>
                                                                         </td>
-                                                                        <td title="<%=Util.processForDisplay(defin, true)%>">
-                                                                            <%=Util.processForDisplay(dispDefin)%>
-                                                                        </td>
                                                                         <td title="<%=Util.processForDisplay(shortDesc, true)%>">
                                                                             <%=Util.processForDisplay(dispShortDesc)%>
+                                                                        </td>
+                                                                        <td title="<%=Util.processForDisplay(defin, true)%>">
+                                                                            <%=Util.processForDisplay(dispDefin)%>
                                                                         </td>
                                                                     </tr><%
                                                                         }

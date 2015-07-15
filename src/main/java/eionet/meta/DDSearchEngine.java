@@ -1626,7 +1626,7 @@ public class DDSearchEngine {
         Vector<FixedValue> result = new Vector<FixedValue>();
         for (VocabularyConcept concept : concepts) {
             //simulate FXV id = concept.ID
-            FixedValue fxv = new FixedValue(String.valueOf(concept.getId()), elementId, concept.getIdentifier());
+            FixedValue fxv = new FixedValue(String.valueOf(concept.getId()), elementId, concept.getNotation());
 
             //TODO default?
             fxv.setDefinition(concept.getDefinition());
