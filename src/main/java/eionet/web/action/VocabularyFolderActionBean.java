@@ -1397,7 +1397,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private void initFilter() {
         if (filter == null) {
             filter = new VocabularyConceptFilter();
-            filter.setConceptStatus(StandardGenericStatus.VALID);
+            filter.setConceptStatus(StandardGenericStatus.ACCEPTED);
         }
         filter.setVocabularyFolderId(vocabularyFolder.getId());
         filter.setPageNumber(page);
