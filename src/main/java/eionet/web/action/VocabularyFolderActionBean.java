@@ -868,8 +868,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
         // Validate unique identifier
         if (vocabularyFolder.getId() == 0) {
-            if (!vocabularyService.isUniqueVocabularyFolderIdentifier(vocabularyFolder.getFolderId(),
-                    vocabularyFolder.getIdentifier())) {
+            int folderId = FOLDER_CHOICE_NEW.equalsIgnoreCase(folderChoice) ? folder.getId() : vocabularyFolder.getFolderId();
+            
+            if (!vocabularyService.isUniqueVocabularyFolderIdentifier(folderId, vocabularyFolder.getIdentifier())) {
                 addGlobalValidationError("Vocabulary identifier is not unique");
             }
         } else {
