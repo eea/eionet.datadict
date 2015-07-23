@@ -1264,6 +1264,7 @@ public class PdfUtil {
         }
 
         String s = processUnicode(value);
+        s = rmvCR(s);
         return processLinks(s, font);
     }
 
