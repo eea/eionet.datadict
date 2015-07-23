@@ -2374,7 +2374,23 @@ String helpAreaName = "";
                                                                 %>
                                                                     <tr>
                                                                         <td>
-                                                                            <%=Util.processForDisplay(value)%>
+                                                                            <%
+                                                                                if (valueLink.length() > 0) {
+                                                                                    
+                                                                            %>
+                                                                            <a href="<%=valueLink%>">
+                                                                            <%
+                                                                                }
+                                                                            %>
+                                                                                <%=Util.processForDisplay(value)%>
+                                                                            <%
+                                                                                if (valueLink.length() > 0) {
+                                                                                    
+                                                                            %>
+                                                                            </a>
+                                                                            <%
+                                                                                }
+                                                                            %>
                                                                         </td>
                                                                         <td title="<%=Util.processForDisplay(shortDesc, true)%>">
                                                                             <%=Util.processForDisplay(dispShortDesc)%>
