@@ -1631,6 +1631,7 @@ public class DDSearchEngine {
             //TODO default?
             fxv.setDefinition(concept.getDefinition());
             fxv.setShortDesc(concept.getLabel());
+            fxv.setCsID(concept.getIdentifier());
 
             result.add(fxv);
         }

@@ -2337,28 +2337,25 @@ String helpAreaName = "";
 
                                                                                     FixedValue fxv = null;
                                                                                     String value = "";
-                                                                                    String fxvID = "";
                                                                                     String defin = "";
                                                                                     String shortDesc = "";
                                                                                     String valueLink = "";
 
                                                                                     if (i == MAX_DISP_VALUES) {
                                                                                         value = ". . .";
-                                                                                        fxvID = "";
                                                                                         defin = ". . .";
                                                                                         shortDesc = ". . .";
                                                                                         valueLink = valuesLink;
                                                                                     } else {
                                                                                         fxv = (FixedValue) fixedValues.get(i);
                                                                                         value = fxv.getValue();
-                                                                                        fxvID = fxv.getID();
                                                                                         defin = fxv.getDefinition();
                                                                                         shortDesc = fxv.getShortDesc();
                                                                                         if (type.equals("CH3")) {
                                                                                             //build concept link if CH3
                                                                                             valueLink = request.getContextPath() + "/vocabularyconcept/"
                                                                                                     + vocabulary.getFolderName() + "/" + vocabulary.getIdentifier()
-                                                                                                    + "/" + value + "/view";
+                                                                                                    + "/" + fxv.getCsID() + "/view";
                                                                                         }
                                                                                     }
 
