@@ -180,4 +180,17 @@ public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implem
         }
         return sql;
     }
+    
+    protected final boolean convertYesNoToBoolean(String value) {
+        if (StringUtils.isBlank(value) || "n".equalsIgnoreCase(value)) {
+            return false;
+        }
+        
+        if ("y".equalsIgnoreCase(value)) {
+            return true;
+        }
+        
+        throw new IllegalArgumentException();
+    }
+    
 }

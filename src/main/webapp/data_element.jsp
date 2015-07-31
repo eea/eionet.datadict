@@ -2134,7 +2134,7 @@
                          }
  %>
                                                                     </select>
-                                                                    <a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/fixed_values/attr/<%=attrID%>">
+                                                                    <a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>">
                                                                         <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                                     </a>
                                                                     <%
@@ -2295,7 +2295,7 @@ String helpAreaName = "";
                                                                     // the link
                                                                     String valuesLink = "";
                                                                     if (!type.equals("CH3")) {
-                                                                        valuesLink = request.getContextPath() + "/fixed_values/elem/" + delem_id;
+                                                                        valuesLink = request.getContextPath() + "/fixedvalues/elem/" + delem_id + "/edit";
                                                                     } else {
                                                                         if (vocabulary != null) {
                                                                             valuesLink = request.getContextPath() + "/vocabulary/" + vocabulary.getFolderName()
@@ -2356,6 +2356,9 @@ String helpAreaName = "";
                                                                                             valueLink = request.getContextPath() + "/vocabularyconcept/"
                                                                                                     + vocabulary.getFolderName() + "/" + vocabulary.getIdentifier()
                                                                                                     + "/" + fxv.getCsID() + "/view";
+                                                                                        }
+                                                                                        else {
+                                                                                            valueLink = request.getContextPath() + "/fixedvalues/elem/" + delem_id + "/view/" + java.net.URLEncoder.encode(value, "UTF-8");
                                                                                         }
                                                                                     }
 

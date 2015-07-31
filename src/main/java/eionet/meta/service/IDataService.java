@@ -110,6 +110,15 @@ public interface IDataService {
     boolean dataElementExists(int id) throws ServiceException;
     
     /**
+     * Returns the parent dataset of the non-common element with the given id.
+     * 
+     * @param dataElementId the id of a non-common element
+     * @return a {@link eionet.meta.dao.domain.DataSet} instance of the parent of the data element; null if no parent is found.
+     * @throws ServiceException
+     */
+    DataSet getDataElementParentDataSet(int dataElementId) throws ServiceException;
+    
+    /**
      * Search data elements.
      *
      * @param filter
@@ -316,6 +325,15 @@ public interface IDataService {
     void deleteFixedValue(FixedValue fixedValue) throws ServiceException;
     
     /**
+     * Deletes all fixed values of a specific owner.
+     * 
+     * @param ownerType the type of the owner
+     * @param ownerId the id of the owner
+     * @throws ServiceException 
+     */
+    void deleteFixedValues(FixedValue.OwnerType ownerType, int ownerId) throws ServiceException;
+    
+    /**
      * Updates a fixed value
      * @param fixedValue 
      * @throws eionet.meta.service.ServiceException 
@@ -331,6 +349,17 @@ public interface IDataService {
     FixedValue getFixedValueById(int id) throws ServiceException;
     
     /**
+     * Gets a fixed value by value and based on the owner specified.
+     * 
+     * @param ownerType the type of the owner
+     * @param ownerId the id of the owner
+     * @param value the value attribute of the fixed value
+     * @return a fixed value matching the specified criteria; null otherwise.
+     * @throws eionet.meta.service.ServiceException
+     */
+    FixedValue getFixedValue(FixedValue.OwnerType ownerType, int ownerId, String value) throws ServiceException;
+    
+    /**
      * Checks if fixed value with given id exists
      * @param id
      * @return boolean
@@ -339,9 +368,13 @@ public interface IDataService {
     boolean fixedValueExists(int id) throws ServiceException;
     
     /**
-     * Checks if fixed value exists with same owner,name
-     * @param fixedValue
-     * @return boolean
+     * Checks if a fixed value exists with same owner, name
+     * 
+     * @param ownerType the type of the owner
+     * @param ownerId the id of the owner
+     * @param value the value attribute of the fixed value
+     * @return true if found; false otherwise
+     * @throws eionet.meta.service.ServiceException
      */
-    boolean fixedValueExistsWithSameNameOwner(FixedValue fixedValue) throws ServiceException;
+    boolean fixedValueExistsWithSameNameOwner(FixedValue.OwnerType ownerType, int ownerId, String value) throws ServiceException;
 }

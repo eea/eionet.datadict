@@ -681,7 +681,9 @@ if (messages.trim().length()>0){
 
                             <td style="text-align: left; padding-right:10px">
                                 <% if (elem.getType().equals("CH1")){ %>
-                                    <a href="javascript:clickLink('fixed_values/elem/<%=elem.getID()%>')"><%=Util.processForDisplay(elemType)%></a>
+                                <a href="javascript:clickLink('<%=request.getContextPath()%>/fixedvalues/elem/<%=elem.getID() + "/" + ("view".equals(request.getParameter("mode")) ? "view" : "edit" ) %>')">
+                                        <%=Util.processForDisplay(elemType)%>
+                                    </a>
                                 <%} else{ %>
                                     <%=Util.processForDisplay(elemType)%>
                                 <% } %>

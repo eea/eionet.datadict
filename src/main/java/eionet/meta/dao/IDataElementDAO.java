@@ -27,6 +27,7 @@ import java.util.Map;
 
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.InferenceRule;
 import eionet.meta.service.data.DataElementsFilter;
@@ -101,6 +102,14 @@ public interface IDataElementDAO {
      */
     int getCommonDataElementId(String identifier);
 
+    /**
+     * Returns the parent dataset of the non-common element with the given id.
+     * 
+     * @param dataElementId the id of a non-common element
+     * @return a {@link eionet.meta.dao.domain.DataSet} instance of the parent of the data element; null if no parent is found.
+     */
+    DataSet getParentDataSet(int dataElementId);
+    
     /**
      *
      * @param dataElementId

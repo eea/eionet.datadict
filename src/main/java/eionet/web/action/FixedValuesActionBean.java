@@ -74,7 +74,7 @@ public class FixedValuesActionBean extends AbstractActionBean {
         }
         
     }
-    
+        
     public Resolution elementOwnerView() throws ServiceException {
         if(!dataService.dataElementExists(ownerId) ){
             addGlobalValidationError("There is no element with ID : " + Integer.toString(ownerId));
@@ -157,7 +157,7 @@ public class FixedValuesActionBean extends AbstractActionBean {
         fixedValue.setOwnerType("elem");
         fixedValue.setOwnerId(ownerId);
         
-        if(dataService.fixedValueExistsWithSameNameOwner(fixedValue)){
+        if(dataService.fixedValueExistsWithSameNameOwner(FixedValue.OwnerType.DATA_ELEMENT, ownerId, fixedValue.getValue())){
             addCautionMessage("Another fixed value with the same name exists for this element/attribute");
             owner = dataService.getDataElement(ownerId);
             return getContext().getSourcePageResolution();
@@ -171,7 +171,7 @@ public class FixedValuesActionBean extends AbstractActionBean {
         fixedValue.setOwnerType("attr");
         fixedValue.setOwnerId(ownerId);
         
-        if(dataService.fixedValueExistsWithSameNameOwner(fixedValue)){
+        if(dataService.fixedValueExistsWithSameNameOwner(FixedValue.OwnerType.ATTRIBUTE, ownerId, fixedValue.getValue())){
             addCautionMessage("Another fixed value with the same name exists for this element/attribute");
             owner = dataService.getDataElement(ownerId);
             return getContext().getSourcePageResolution();
@@ -264,7 +264,7 @@ public class FixedValuesActionBean extends AbstractActionBean {
         fixedValue.setOwnerType("elem");
         fixedValue.setOwnerId(ownerId);
         
-        if(dataService.fixedValueExistsWithSameNameOwner(fixedValue)){
+        if(dataService.fixedValueExistsWithSameNameOwner(FixedValue.OwnerType.DATA_ELEMENT, ownerId, fixedValue.getValue())){
             addCautionMessage("Another fixed value with the same name exists for this element/attribute");
             owner = dataService.getDataElement(ownerId);
             return getContext().getSourcePageResolution();
@@ -282,7 +282,7 @@ public class FixedValuesActionBean extends AbstractActionBean {
         fixedValue.setOwnerType("attr");
         fixedValue.setOwnerId(ownerId);
         
-        if(dataService.fixedValueExistsWithSameNameOwner(fixedValue)){
+        if(dataService.fixedValueExistsWithSameNameOwner(FixedValue.OwnerType.ATTRIBUTE, ownerId, fixedValue.getValue())){
             addCautionMessage("Another fixed value with the same name exists for this element/attribute");
             owner = dataService.getDataElement(ownerId);
             return getContext().getSourcePageResolution();

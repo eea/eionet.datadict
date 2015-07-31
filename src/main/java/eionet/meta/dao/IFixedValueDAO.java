@@ -42,6 +42,14 @@ public interface IFixedValueDAO {
     public void delete(FixedValue fixedValue);
     
     /**
+     * Deletes all fixed values of a specific owner.
+     * 
+     * @param ownerType the type of the owner
+     * @param ownerId the id of the owner
+     */
+    void deleteAll(FixedValue.OwnerType ownerType, int ownerId);
+    
+    /**
      * Updates an existing fixed value
      * @param fixedValue
      */
@@ -55,6 +63,16 @@ public interface IFixedValueDAO {
     public FixedValue getById(int id);
     
     /**
+     * Gets a fixed value by value and based on the owner specified.
+     * 
+     * @param ownerType the type of the owner
+     * @param ownerId the id of the owner
+     * @param value the value attribute of the fixed value
+     * @return a fixed value matching the specified criteria; null otherwise
+     */
+    public FixedValue getByValue(FixedValue.OwnerType ownerType, int ownerId, String value);
+    
+    /**
      * Checks existence of specific fixed value
      * @param id
      * @return fixed value
@@ -62,9 +80,12 @@ public interface IFixedValueDAO {
     public boolean exists(int id);
     
     /**
-     * Checks if fixed value exists with same owner,name
-     * @param fixedValue
-     * @return boolean
+     * Checks if fixed value exists with same owner, name
+     * 
+     * @param ownerType the type of the owner
+     * @param ownerId the id of the owner
+     * @param value the value attribute of the fixed value
+     * @return true if found; false otherwise
      */
-    public boolean existsWithSameNameOwner(FixedValue fixedValue);
+    public boolean existsWithSameNameOwner(FixedValue.OwnerType ownerType, int ownerId, String value);
 }

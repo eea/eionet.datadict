@@ -52,6 +52,10 @@ public class DataSet {
      */
     private String name;
 
+    private boolean workingCopy;
+    
+    private String workingUser;
+    
     /**
      * @return the id
      */
@@ -127,4 +131,21 @@ public class DataSet {
     public void setName(String name) {
         this.name = name;
     }
+
+    public boolean isWorkingCopy() {
+        return workingCopy;
+    }
+
+    public void setWorkingCopy(boolean workingCopy) {
+        this.workingCopy = workingCopy;
+    }
+
+    public String getWorkingUser() {
+        return workingUser;
+    }
+
+    public void setWorkingUser(String workingUser) {
+        this.workingUser = workingUser;
+    }
+    
 }

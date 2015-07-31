@@ -1334,7 +1334,7 @@ else if (mode.equals("add"))
                                                                         }
                                                                         %>
                                                                     </select>
-                                                                    <a  href="<%=request.getContextPath()%>/fixed_values/attr/<%=attrID%>" onclick="pop(this.href);return false;">
+                                                                    <a  href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>" onclick="pop(this.href);return false;">
                                                                         <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                                     </a>
                                                                     <%

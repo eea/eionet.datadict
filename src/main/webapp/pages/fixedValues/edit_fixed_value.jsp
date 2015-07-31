@@ -2,54 +2,61 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="New Fixed Value">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Fixed Value Editor">
     <stripes:layout-component name="contents">
         <c:if test="${empty actionBean.context.validationErrors}">
-            <h1>Fixed value of <stripes:link href="/delem_attribute.jsp?type=SIMPLE&mode=edit&attr_id=${actionBean.owner.id}">${actionBean.owner.shortName}</stripes:link> attribute</h1>
+            <%@ include file="/pages/fixedValues/fixed_value_header.jsp"%>
+            
             <div id="operations">
                 <ul>
                     <li>
-                        <stripes:link href="/fixed_values/${actionBean.ownerType}/${actionBean.owner.id}">back to fixed values</stripes:link>
+                        <stripes:link beanclass="${actionBean.viewModel.actionBeanName}" event="edit">
+                            <stripes:param name="ownerId" value="${actionBean.viewModel.owner.id}" />
+                            back to 
+                            <c:out value="${actionBean.viewModel.fixedValueCategoryLower}" /> 
+                            values
+                        </stripes:link>
                     </li>
                 </ul>
             </div>
-            <stripes:form beanclass="eionet.web.action.FixedValuesActionBean">
+            
+            <stripes:form beanclass="${actionBean.viewModel.actionBeanName}">
                 <table class="datatable" style="width:auto">
                     <tbody>
                         <tr>
-                            <th>Value</th>
+                            <th scope="row">Value:</th>
                             <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
-                            <td><stripes:text name="fixedValue.value" /></td>
+                            <td><stripes:text name="viewModel.fixedValue.value" /></td>
                         </tr>
                         <tr>
-                            <th>Default</th>
+                            <th scope="row">Default</th>
                             <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
                             <td>
-                                <stripes:select name="fixedValue.isDefault">
+                                <stripes:select name="viewModel.fixedValue.isDefault">
                                     <stripes:options-enumeration enum="eionet.meta.dao.domain.FixedValue.Default" />
                                 </stripes:select>
                             </td>
                         </tr>
                         <tr>
-                            <th>Definition</th>
+                            <th scope="row">Definition:</th>
                             <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
-                            <td><stripes:textarea class="small" rows="3" cols="60" name="fixedValue.definition" /></td>
+                            <td><stripes:textarea class="small" rows="3" cols="60" name="viewModel.fixedValue.definition" /></td>
                         </tr>
                         <tr>
-                            <th>Short Description</th>
+                            <th scope="row">Short Description:</th>
                             <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
-                            <td><stripes:textarea class="small" rows="3" cols="60" name="fixedValue.shortDescription" /></td>
+                            <td><stripes:textarea class="small" rows="3" cols="60" name="viewModel.fixedValue.shortDescription" /></td>
                         </tr>
                         <tr>
                             <td></td>
                             <td></td>
-                            <td><stripes:submit name="edit" value="Edit" /></td>
+                            <td><stripes:submit name="save" value="Save" /></td>
                         </tr>
                     </tbody>
                 </table>
-                <stripes:hidden name="fixedValue.id" value="${actionBean.fixedValue.id}" />
-                <stripes:hidden name="ownerId" value="${ownerId}" />
-                <stripes:hidden name="ownerType" value="${ownerType}" />
+                        
+                <stripes:hidden name="ownerId" value="${actionBean.viewModel.owner.id}" />
+                <stripes:hidden name="viewModel.fixedValue.id" value="${actionBean.viewModel.fixedValue.id}" />
             </stripes:form>
         </c:if>
     </stripes:layout-component>

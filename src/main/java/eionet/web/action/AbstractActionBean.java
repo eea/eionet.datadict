@@ -78,6 +78,13 @@ public abstract class AbstractActionBean implements ActionBean {
     /** */
     private String contextPath;
 
+    private final ActionBeanContextProvider contextProvider;
+    
+    public AbstractActionBean() {
+        super();
+        this.contextProvider = new ActionBeanContextProvider(this);
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -336,5 +343,9 @@ public abstract class AbstractActionBean implements ActionBean {
         }
 
         return isWebBrowser;
+    }
+    
+    protected final ActionBeanContextProvider getContextProvider() {
+        return this.contextProvider;
     }
 }

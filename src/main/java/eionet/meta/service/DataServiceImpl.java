@@ -183,6 +183,19 @@ public class DataServiceImpl implements IDataService {
      * {@inheritDoc}
      */
     @Override
+    public DataSet getDataElementParentDataSet(int dataElementId) throws ServiceException {
+        try {
+            return this.dataElementDao.getParentDataSet(dataElementId);
+        }
+        catch (Exception ex) {
+            throw new ServiceException("Failed to get parent data set of data element with id: " + dataElementId, ex);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<DataElement> getDataElementsWithFixedValues() throws ServiceException {
         try {
             DataElementsFilter commonElementsFilter = new DataElementsFilter();
@@ -442,6 +455,17 @@ public class DataServiceImpl implements IDataService {
             throw new ServiceException("Failed to delete fixed value : " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public void deleteFixedValues(FixedValue.OwnerType ownerType, int ownerId) throws ServiceException {
+        try {
+            this.fixedValueDao.deleteAll(ownerType, ownerId);
+        }
+        catch (Exception ex) {
+            String msg = String.format("Failed to delete fixed values of owner with type %s and id %d", ownerType.toString(), ownerId);
+            throw new ServiceException(msg, ex);
+        }
+    }
     
     @Override
     public void updateFixedValue(FixedValue fixedValue) throws ServiceException {
@@ -462,6 +486,17 @@ public class DataServiceImpl implements IDataService {
             throw new ServiceException("Failed to get fixed value by id : " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public FixedValue getFixedValue(FixedValue.OwnerType ownerType, int ownerId, String value) throws ServiceException {
+        try {
+            return fixedValueDao.getByValue(ownerType, ownerId, value);
+        }
+        catch (Exception ex) {
+            String msg = String.format("Value '%s' cannot be found for owner with id '%d' of type '%s'", value, ownerId, ownerType.toString());
+            throw new ServiceException(msg, ex);
+        }
+    }
     
     @Override
     public boolean fixedValueExists(int id) throws ServiceException {
@@ -474,9 +509,9 @@ public class DataServiceImpl implements IDataService {
     }
     
     @Override
-    public boolean fixedValueExistsWithSameNameOwner(FixedValue fixedValue) throws ServiceException {
+    public boolean fixedValueExistsWithSameNameOwner(FixedValue.OwnerType ownerType, int ownerId, String value) throws ServiceException {
         try{
-            return fixedValueDao.existsWithSameNameOwner(fixedValue);
+            return fixedValueDao.existsWithSameNameOwner(ownerType, ownerId, value);
         }
         catch(Exception e){
             throw new ServiceException("Failed to check if fixed value with same owner,name exists : " + e.getMessage(), e);

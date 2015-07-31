@@ -298,7 +298,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
-        <url-pattern>/fixed_values/*</url-pattern>
+        <url-pattern>/fixedvalues/*</url-pattern>
     </servlet-mapping>
 
     <servlet>

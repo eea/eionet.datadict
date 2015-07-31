@@ -26,6 +26,7 @@ import eionet.meta.dao.domain.FixedValue;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -62,6 +63,15 @@ public class FixedValueDAOImpl extends GeneralDAOImpl implements IFixedValueDAO 
         
         getNamedParameterJdbcTemplate().update(sql.toString(), params);
     }
+
+    @Override
+    public void deleteAll(FixedValue.OwnerType ownerType, int ownerId) {
+        String sql = "delete from FXV where OWNER_TYPE = :ownerType and OWNER_ID = :ownerId";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ownerType", ownerType.toString());
+        params.put("ownerId", ownerId);
+        this.getNamedParameterJdbcTemplate().update(sql, params);
+    }
     
     @Override
     public void update(FixedValue fixedValue){
@@ -89,22 +99,35 @@ public class FixedValueDAOImpl extends GeneralDAOImpl implements IFixedValueDAO 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);
         
-        FixedValue fixedValue = getNamedParameterJdbcTemplate().queryForObject(sql, params, new RowMapper<FixedValue>(){
+        List<FixedValue> fixedValues = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<FixedValue>() {
+            
+            @Override
             public FixedValue mapRow(ResultSet rs, int rowNum) throws SQLException {
-                FixedValue fixedValue = new FixedValue();
-                fixedValue.setId(rs.getInt("FXV_ID"));
-                fixedValue.setOwnerId(rs.getInt("OWNER_ID"));
-                fixedValue.setOwnerType(rs.getString("OWNER_TYPE"));
-                fixedValue.setValue(rs.getString("VALUE"));
-                fixedValue.setIsDefault(rs.getString("IS_DEFAULT"));
-                fixedValue.setDefinition(rs.getString("DEFINITION"));
-                fixedValue.setShortDescription(rs.getString("SHORT_DESC"));
-                
-                return fixedValue;
+                return createFromSimpleSelectStatement(rs);
             }
         });
         
-        return fixedValue;
+        return fixedValues.isEmpty() ? null : fixedValues.get(0);
+    }
+
+    @Override
+    public FixedValue getByValue(FixedValue.OwnerType ownerType, int ownerId, String value) {
+        String sql = "select * from FXV where OWNER_TYPE = :ownerType and OWNER_ID = :ownerId and VALUE = :value";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ownerType", ownerType.toString());
+        params.put("ownerId", ownerId);
+        params.put("value", value);
+        
+        List<FixedValue> fixedValues = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<FixedValue>() {
+
+            @Override
+            public FixedValue mapRow(ResultSet rs, int i) throws SQLException {
+                return createFromSimpleSelectStatement(rs);
+            }
+            
+        });
+        
+        return fixedValues.isEmpty() ? null : fixedValues.get(0);
     }
     
     @Override
@@ -120,17 +143,30 @@ public class FixedValueDAOImpl extends GeneralDAOImpl implements IFixedValueDAO 
     }
     
     @Override
-    public boolean existsWithSameNameOwner(FixedValue fixedValue){
+    public boolean existsWithSameNameOwner(FixedValue.OwnerType ownerType, int ownerId, String value){
         String sql = "select count(*) from FXV where OWNER_ID = :ownerId AND OWNER_TYPE = :ownerType AND value = :value";
         
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("ownerId", fixedValue.getOwnerId());
-        params.put("ownerType", fixedValue.getOwnerType());
-        params.put("value", fixedValue.getValue());
+        params.put("ownerId", ownerId);
+        params.put("ownerType", ownerType.toString());
+        params.put("value", value);
          
         int count = getNamedParameterJdbcTemplate().queryForInt(sql, params);
         
         return (count > 0);
+    }
+    
+    private FixedValue createFromSimpleSelectStatement(ResultSet rs) throws SQLException {
+        FixedValue fixedValue = new FixedValue();
+        fixedValue.setId(rs.getInt("FXV_ID"));
+        fixedValue.setOwnerId(rs.getInt("OWNER_ID"));
+        fixedValue.setOwnerType(rs.getString("OWNER_TYPE"));
+        fixedValue.setValue(rs.getString("VALUE"));
+        fixedValue.setIsDefault(rs.getString("IS_DEFAULT"));
+        fixedValue.setDefinition(rs.getString("DEFINITION"));
+        fixedValue.setShortDescription(rs.getString("SHORT_DESC"));
+
+        return fixedValue;
     }
     
 }

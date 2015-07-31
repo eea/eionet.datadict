@@ -31,8 +31,45 @@ import org.apache.commons.lang.StringUtils;
  */
 public class FixedValue {
     
-    public enum Default {
-        YES("Y"), NO("N");
+    public static enum OwnerType {
+        DATA_ELEMENT("elem"),
+        ATTRIBUTE("attr");
+        
+        private final String value;
+        
+        private OwnerType(String value) {
+            this.value = value;
+        }
+        
+        public boolean isMatch(String value) {
+            return this.value.equalsIgnoreCase(value);
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+        
+        public static OwnerType parse(String value) {
+            if (StringUtils.isBlank(value)) {
+                return null;
+            }
+            
+            for (OwnerType type : OwnerType.values()) {
+                if (type.isMatch(value)) {
+                    return type;
+                }
+            }
+            
+            throw new IllegalArgumentException();
+        }
+    }
+    
+    public static enum Default {
+        
+        NO("N"), 
+        YES("Y");
+        
         private final String value;
         
         private Default(String value){
