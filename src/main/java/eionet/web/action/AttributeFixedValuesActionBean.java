@@ -1,7 +1,7 @@
 package eionet.web.action;
 
 import eionet.meta.application.errors.DuplicateResourceException;
-import eionet.meta.controllers.CompoundDataObject;
+import eionet.util.CompoundDataObject;
 import eionet.meta.controllers.AttributeFixedValuesController;
 import eionet.meta.application.errors.MalformedIdentifierException;
 import eionet.meta.application.errors.UserAuthenticationException;

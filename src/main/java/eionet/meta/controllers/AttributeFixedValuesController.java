@@ -1,5 +1,6 @@
 package eionet.meta.controllers;
 
+import eionet.util.CompoundDataObject;
 import eionet.meta.application.errors.DuplicateResourceException;
 import eionet.meta.application.errors.MalformedIdentifierException;
 import eionet.meta.application.errors.UserAuthenticationException;

@@ -1,4 +1,4 @@
-package eionet.meta.controllers;
+package eionet.util;
 
 import java.util.Collection;
 import java.util.HashMap;
