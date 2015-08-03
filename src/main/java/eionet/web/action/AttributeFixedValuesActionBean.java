@@ -37,14 +37,12 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     public static final String PAGE_FIXED_VALUE_VIEW;
     public static final String PAGE_FIXED_VALUES_EDIT;
     public static final String PAGE_FIXED_VALUE_EDIT;
-    public static final String ERROR_PAGE;
     
     static {
         PAGE_FIXED_VALUES_VIEW = "/pages/fixedValues/fixed_values.jsp";
         PAGE_FIXED_VALUE_VIEW = "/pages/fixedValues/fixed_value.jsp";
         PAGE_FIXED_VALUES_EDIT = "/pages/fixedValues/edit_fixed_values.jsp";
         PAGE_FIXED_VALUE_EDIT = "/pages/fixedValues/edit_fixed_value.jsp";
-        ERROR_PAGE = "/pages/utils/error_page.jsp";
     }
 
     @SpringBean
@@ -265,42 +263,33 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     }
     
     private Resolution onAnonymousUser() {
-        this.addGlobalValidationError("You have to login to access fixed values");
-        
-        return new ForwardResolution(ERROR_PAGE);
+        String msg = "You have to login to access fixed values";
+        return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, msg);
     }
     
     private Resolution onMalformedAttributeId() {
         String msg = String.format("Malformed attribute id: %s", this.ownerId);
-        this.addGlobalValidationError(msg);
-        
-        return new ForwardResolution(ERROR_PAGE);
+        return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, msg);
     }
     
     private Resolution onOwnerAttributeNotFound() {
-        this.addGlobalValidationError("Cannot find attribute with id: " + this.ownerId);
-            
-        return new ForwardResolution(ERROR_PAGE);
+        String msg = "Cannot find attribute with id: " + this.ownerId;
+        return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, msg);
     }
     
     private Resolution onFixedValueNotFound() {
-        String msg = String.format("Cannot find value &apos;%s&apos; for owner attribute with id %s", this.fixedValue, this.ownerId);
-        this.addGlobalValidationError(msg);
-            
-        return new ForwardResolution(ERROR_PAGE);
+        String msg = String.format("Cannot find value '%s' for owner attribute with id %s", this.fixedValue, this.ownerId);
+        return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, msg);
     }
     
     private Resolution onFixedValueAlreadyExists() {
-        String msg = String.format("Value &apos;%s&apos; already exists for owner attribute with id %s", this.fixedValue, this.ownerId);
-        this.addGlobalValidationError(msg);
-            
-        return new ForwardResolution(ERROR_PAGE);
+        String msg = String.format("Value '%s' already exists for owner attribute with id %s", this.fixedValue, this.ownerId);
+        return super.createErrorResolution(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR, msg);
     }
     
     private Resolution onEmptyValue() {
-        this.addGlobalValidationError("Cannot use an empty value as a fixed value");
-            
-        return new ForwardResolution(ERROR_PAGE);
+        String msg = "Cannot use an empty value as a fixed value";
+        return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, msg);
     }
     
     private Resolution redirectToEditValuesPage() {
