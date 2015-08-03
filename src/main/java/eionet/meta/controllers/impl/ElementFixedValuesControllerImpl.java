@@ -1,7 +1,7 @@
 package eionet.meta.controllers.impl;
 
 import eionet.meta.application.errors.DuplicateResourceException;
-import eionet.meta.controllers.ControllerContextProvider;
+import eionet.meta.controllers.AppContextProvider;
 import eionet.meta.controllers.CompoundDataObject;
 import eionet.meta.controllers.ElementFixedValuesController;
 import eionet.meta.application.errors.MalformedIdentifierException;
@@ -36,7 +36,7 @@ public class ElementFixedValuesControllerImpl implements ElementFixedValuesContr
     }
 
     @Override
-    public DataElement getOwnerDataElement(ControllerContextProvider contextProvider, String ownerDataElementId, boolean isEditRequest) 
+    public DataElement getOwnerDataElement(AppContextProvider contextProvider, String ownerDataElementId, boolean isEditRequest) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
                    FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
         if (!contextProvider.isUserAuthenticated()) {
@@ -54,7 +54,7 @@ public class ElementFixedValuesControllerImpl implements ElementFixedValuesContr
     }
     
     @Override
-    public CompoundDataObject getSingleValueModel(ControllerContextProvider contextProvider, String ownerDataElementId, String fixedValue, boolean isEditRequest) 
+    public CompoundDataObject getSingleValueModel(AppContextProvider contextProvider, String ownerDataElementId, String fixedValue, boolean isEditRequest) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
                    FixedValueOwnerNotEditableException, UserAuthorizationException, FixedValueNotFoundException, ServiceException {
         DataElement ownerElement = this.getOwnerDataElement(contextProvider, ownerDataElementId, isEditRequest);
@@ -67,7 +67,7 @@ public class ElementFixedValuesControllerImpl implements ElementFixedValuesContr
     }
 
     @Override
-    public CompoundDataObject getAllValuesModel(ControllerContextProvider contextProvider, String ownerDataElementId, boolean isEditRequest) 
+    public CompoundDataObject getAllValuesModel(AppContextProvider contextProvider, String ownerDataElementId, boolean isEditRequest) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
                    FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
         DataElement ownerElement = this.getOwnerDataElement(contextProvider, ownerDataElementId, isEditRequest);
@@ -80,7 +80,7 @@ public class ElementFixedValuesControllerImpl implements ElementFixedValuesContr
     }
 
     @Override
-    public void saveFixedValue(ControllerContextProvider contextProvider, String ownerDataElementId, FixedValue fixedValue) 
+    public void saveFixedValue(AppContextProvider contextProvider, String ownerDataElementId, FixedValue fixedValue) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException,
                    FixedValueOwnerNotEditableException, UserAuthorizationException, EmptyValueException, DuplicateResourceException, ServiceException {
         if (fixedValue == null) {
@@ -102,7 +102,7 @@ public class ElementFixedValuesControllerImpl implements ElementFixedValuesContr
     }
 
     @Override
-    public void deleteFixedValue(ControllerContextProvider contextProvider, String ownerDataElementId, String fixedValue) 
+    public void deleteFixedValue(AppContextProvider contextProvider, String ownerDataElementId, String fixedValue) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
                    FixedValueOwnerNotEditableException, UserAuthorizationException, FixedValueNotFoundException, ServiceException {
         CompoundDataObject result = this.getSingleValueModel(contextProvider, ownerDataElementId, fixedValue, true);
@@ -111,7 +111,7 @@ public class ElementFixedValuesControllerImpl implements ElementFixedValuesContr
     }
 
     @Override
-    public void deleteFixedValues(ControllerContextProvider contextProvider, String ownerDataElementId) 
+    public void deleteFixedValues(AppContextProvider contextProvider, String ownerDataElementId) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueOwnerNotEditableException, 
                    UserAuthorizationException, ServiceException {
         DataElement ownerElement = this.getOwnerDataElement(contextProvider, ownerDataElementId, true);
@@ -135,7 +135,7 @@ public class ElementFixedValuesControllerImpl implements ElementFixedValuesContr
         return this.dataService.getDataElement(elementId);
     }
     
-    private void checkEditability(ControllerContextProvider contextProvider, DataElement dataElement) 
+    private void checkEditability(AppContextProvider contextProvider, DataElement dataElement) 
             throws FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
         boolean workingCopy;
         String workingUser;

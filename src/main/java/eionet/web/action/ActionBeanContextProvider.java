@@ -1,12 +1,12 @@
 package eionet.web.action;
 
-import eionet.meta.controllers.ControllerContextProvider;
+import eionet.meta.controllers.AppContextProvider;
 
 /**
  *
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
-public class ActionBeanContextProvider implements ControllerContextProvider {
+public class ActionBeanContextProvider implements AppContextProvider {
 
     private final AbstractActionBean actionBean;
     

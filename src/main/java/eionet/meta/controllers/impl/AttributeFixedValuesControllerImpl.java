@@ -1,7 +1,7 @@
 package eionet.meta.controllers.impl;
 
 import eionet.meta.application.errors.DuplicateResourceException;
-import eionet.meta.controllers.ControllerContextProvider;
+import eionet.meta.controllers.AppContextProvider;
 import eionet.meta.controllers.CompoundDataObject;
 import eionet.meta.controllers.AttributeFixedValuesController;
 import eionet.meta.application.errors.MalformedIdentifierException;
@@ -33,7 +33,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
 
     @Override
-    public Attribute getOwnerAttribute(ControllerContextProvider contextProvider, String ownerAttributeId) 
+    public Attribute getOwnerAttribute(AppContextProvider contextProvider, String ownerAttributeId) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException {
         if (!contextProvider.isUserAuthenticated()) {
             throw new UserAuthenticationException();
@@ -46,7 +46,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
     
     @Override
-    public CompoundDataObject getSingleValueModel(ControllerContextProvider contextProvider, String ownerAttributeId, String fixedValue) 
+    public CompoundDataObject getSingleValueModel(AppContextProvider contextProvider, String ownerAttributeId, String fixedValue) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, ServiceException {
         Attribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
         FixedValue value = this.getFixedValue(ownerAttribute, fixedValue);
@@ -58,7 +58,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
 
     @Override
-    public CompoundDataObject getAllValuesModel(ControllerContextProvider contextProvider, String ownerAttributeId) 
+    public CompoundDataObject getAllValuesModel(AppContextProvider contextProvider, String ownerAttributeId) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException {
         Attribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
         Collection<FixedValue> fixedValues = this.getFixedValues(ownerAttribute.getId());
@@ -70,7 +70,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
 
     @Override
-    public void saveFixedValue(ControllerContextProvider contextProvider, String ownerAttributeId, FixedValue fixedValue) 
+    public void saveFixedValue(AppContextProvider contextProvider, String ownerAttributeId, FixedValue fixedValue) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
                    EmptyValueException, DuplicateResourceException, ServiceException {
         if (fixedValue == null) {
@@ -92,7 +92,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
 
     @Override
-    public void deleteFixedValue(ControllerContextProvider contextProvider, String ownerAttributeId, String fixedValue) 
+    public void deleteFixedValue(AppContextProvider contextProvider, String ownerAttributeId, String fixedValue) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, ServiceException {
         CompoundDataObject result = this.getSingleValueModel(contextProvider, ownerAttributeId, fixedValue);
         FixedValue  fxv = result.get(PROPERTY_FIXED_VALUE);
@@ -100,7 +100,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
     
     @Override
-    public void deleteFixedValues(ControllerContextProvider contextProvider, String ownerAttributeId) 
+    public void deleteFixedValues(AppContextProvider contextProvider, String ownerAttributeId) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException {
         Attribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
         this.dataService.deleteFixedValues(FixedValue.OwnerType.ATTRIBUTE, ownerAttribute.getId());

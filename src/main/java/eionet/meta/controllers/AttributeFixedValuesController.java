@@ -16,23 +16,23 @@ import eionet.meta.service.ServiceException;
  */
 public interface AttributeFixedValuesController {
     
-    Attribute getOwnerAttribute(ControllerContextProvider contextProvider, String ownerAttributeId)
+    Attribute getOwnerAttribute(AppContextProvider contextProvider, String ownerAttributeId)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException;
     
-    CompoundDataObject getSingleValueModel(ControllerContextProvider contextProvider, String ownerAttributeId, String fixedValue)
+    CompoundDataObject getSingleValueModel(AppContextProvider contextProvider, String ownerAttributeId, String fixedValue)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, ServiceException;
     
-    CompoundDataObject getAllValuesModel(ControllerContextProvider contextProvider, String ownerAttributeId)
+    CompoundDataObject getAllValuesModel(AppContextProvider contextProvider, String ownerAttributeId)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException;
     
-    void saveFixedValue(ControllerContextProvider contextProvider, String ownerAttributeId, FixedValue fixedValue)
+    void saveFixedValue(AppContextProvider contextProvider, String ownerAttributeId, FixedValue fixedValue)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
                    EmptyValueException, DuplicateResourceException, ServiceException;
     
-    void deleteFixedValue(ControllerContextProvider contextProvider, String ownerAttributeId, String fixedValue)
+    void deleteFixedValue(AppContextProvider contextProvider, String ownerAttributeId, String fixedValue)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, ServiceException;
     
-    void deleteFixedValues(ControllerContextProvider contextProvider, String ownerAttributeId)
+    void deleteFixedValues(AppContextProvider contextProvider, String ownerAttributeId)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException;
     
     public static final String PROPERTY_OWNER_ATTRIBUTE = "owner";

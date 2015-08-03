@@ -4,7 +4,7 @@ package eionet.meta.controllers;
  *
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
-public interface ControllerContextProvider {
+public interface AppContextProvider {
 
     boolean isUserAuthenticated();
     
