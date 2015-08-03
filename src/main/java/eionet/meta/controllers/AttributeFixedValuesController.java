@@ -16,23 +16,23 @@ import eionet.meta.service.ServiceException;
  */
 public interface AttributeFixedValuesController {
     
-    Attribute getOwnerAttribute(String ownerAttributeId)
+    Attribute getOwnerAttribute(ControllerContextProvider contextProvider, String ownerAttributeId)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException;
     
-    CompoundDataObject getSingleValueModel(String ownerAttributeId, String fixedValue)
+    CompoundDataObject getSingleValueModel(ControllerContextProvider contextProvider, String ownerAttributeId, String fixedValue)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, ServiceException;
     
-    CompoundDataObject getAllValuesModel(String ownerAttributeId)
+    CompoundDataObject getAllValuesModel(ControllerContextProvider contextProvider, String ownerAttributeId)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException;
     
-    void saveFixedValue(String ownerAttributeId, FixedValue fixedValue)
+    void saveFixedValue(ControllerContextProvider contextProvider, String ownerAttributeId, FixedValue fixedValue)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
                    EmptyValueException, DuplicateResourceException, ServiceException;
     
-    void deleteFixedValue(String ownerAttributeId, String fixedValue)
+    void deleteFixedValue(ControllerContextProvider contextProvider, String ownerAttributeId, String fixedValue)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, ServiceException;
     
-    void deleteFixedValues(String ownerAttributeId)
+    void deleteFixedValues(ControllerContextProvider contextProvider, String ownerAttributeId)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException;
     
     public static final String PROPERTY_OWNER_ATTRIBUTE = "owner";

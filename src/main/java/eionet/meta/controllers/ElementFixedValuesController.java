@@ -17,28 +17,28 @@ import eionet.meta.service.ServiceException;
  */
 public interface ElementFixedValuesController {
     
-    DataElement getOwnerDataElement(String ownerDataElementId, boolean isEditRequest)
+    DataElement getOwnerDataElement(ControllerContextProvider contextProvider, String ownerDataElementId, boolean isEditRequest)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
                    FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException;
     
-    CompoundDataObject getSingleValueModel(String ownerDataElementId, String fixedValue, boolean isEditRequest)
+    CompoundDataObject getSingleValueModel(ControllerContextProvider contextProvider, String ownerDataElementId, String fixedValue, boolean isEditRequest)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
                    FixedValueNotFoundException, FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException;
     
-    CompoundDataObject getAllValuesModel(String ownerDataElementId, boolean isEditRequest)
+    CompoundDataObject getAllValuesModel(ControllerContextProvider contextProvider, String ownerDataElementId, boolean isEditRequest)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
                    FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException;
     
-    void saveFixedValue(String ownerDataElementId, FixedValue fixedValue)
+    void saveFixedValue(ControllerContextProvider contextProvider, String ownerDataElementId, FixedValue fixedValue)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
                    FixedValueNotFoundException, FixedValueOwnerNotEditableException, UserAuthorizationException, 
                    DuplicateResourceException, EmptyValueException, ServiceException;
     
-    void deleteFixedValue(String ownerDataElementId, String fixedValue)
+    void deleteFixedValue(ControllerContextProvider contextProvider, String ownerDataElementId, String fixedValue)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
                    FixedValueNotFoundException, FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException;
     
-    void deleteFixedValues(String ownerDataElementId)
+    void deleteFixedValues(ControllerContextProvider contextProvider, String ownerDataElementId)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
                    FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException;
     

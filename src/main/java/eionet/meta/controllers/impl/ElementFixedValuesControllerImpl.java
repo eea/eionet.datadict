@@ -18,25 +18,28 @@ import eionet.meta.service.ServiceException;
 import java.util.Collection;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 /**
  *
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
-public class ElementFixedValuesControllerImpl extends AbstractController implements ElementFixedValuesController {
+@Controller
+public class ElementFixedValuesControllerImpl implements ElementFixedValuesController {
     
     private final IDataService dataService;
     
-    public ElementFixedValuesControllerImpl(ControllerContextProvider contextProvider, IDataService dataService) {
-        super(contextProvider);
+    @Autowired
+    public ElementFixedValuesControllerImpl(IDataService dataService) {
         this.dataService = dataService;
     }
 
     @Override
-    public DataElement getOwnerDataElement(String ownerDataElementId, boolean isEditRequest) 
+    public DataElement getOwnerDataElement(ControllerContextProvider contextProvider, String ownerDataElementId, boolean isEditRequest) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
                    FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
-        if (!this.getContextProvider().isUserAuthenticated()) {
+        if (!contextProvider.isUserAuthenticated()) {
             throw new UserAuthenticationException();
         }
         
@@ -44,17 +47,17 @@ public class ElementFixedValuesControllerImpl extends AbstractController impleme
         DataElement ownerElement = this.getDataElement(elementId);
         
         if (isEditRequest) {
-            this.checkEditability(ownerElement);
+            this.checkEditability(contextProvider, ownerElement);
         }
         
         return ownerElement;
     }
     
     @Override
-    public CompoundDataObject getSingleValueModel(String ownerDataElementId, String fixedValue, boolean isEditRequest) 
+    public CompoundDataObject getSingleValueModel(ControllerContextProvider contextProvider, String ownerDataElementId, String fixedValue, boolean isEditRequest) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
                    FixedValueOwnerNotEditableException, UserAuthorizationException, FixedValueNotFoundException, ServiceException {
-        DataElement ownerElement = this.getOwnerDataElement(ownerDataElementId, isEditRequest);
+        DataElement ownerElement = this.getOwnerDataElement(contextProvider, ownerDataElementId, isEditRequest);
         FixedValue value = this.getFixedValue(ownerElement, fixedValue);
         CompoundDataObject result = new CompoundDataObject();
         result.put(PROPERTY_OWNER_DATA_ELEMENT, ownerElement);
@@ -64,10 +67,10 @@ public class ElementFixedValuesControllerImpl extends AbstractController impleme
     }
 
     @Override
-    public CompoundDataObject getAllValuesModel(String ownerDataElementId, boolean isEditRequest) 
+    public CompoundDataObject getAllValuesModel(ControllerContextProvider contextProvider, String ownerDataElementId, boolean isEditRequest) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
                    FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
-        DataElement ownerElement = this.getOwnerDataElement(ownerDataElementId, isEditRequest);
+        DataElement ownerElement = this.getOwnerDataElement(contextProvider, ownerDataElementId, isEditRequest);
         Collection<FixedValue> fixedValues = this.getFixedValues(ownerElement.getId());
         CompoundDataObject result = new CompoundDataObject();
         result.put(PROPERTY_OWNER_DATA_ELEMENT, ownerElement);
@@ -77,14 +80,14 @@ public class ElementFixedValuesControllerImpl extends AbstractController impleme
     }
 
     @Override
-    public void saveFixedValue(String ownerDataElementId, FixedValue fixedValue) 
+    public void saveFixedValue(ControllerContextProvider contextProvider, String ownerDataElementId, FixedValue fixedValue) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException,
                    FixedValueOwnerNotEditableException, UserAuthorizationException, EmptyValueException, DuplicateResourceException, ServiceException {
         if (fixedValue == null) {
             throw new IllegalArgumentException();
         }
         
-        DataElement ownerElement = this.getOwnerDataElement(ownerDataElementId, true);
+        DataElement ownerElement = this.getOwnerDataElement(contextProvider, ownerDataElementId, true);
         
         if (StringUtils.isBlank(fixedValue.getValue())) {
             throw new EmptyValueException();
@@ -99,19 +102,19 @@ public class ElementFixedValuesControllerImpl extends AbstractController impleme
     }
 
     @Override
-    public void deleteFixedValue(String ownerDataElementId, String fixedValue) 
+    public void deleteFixedValue(ControllerContextProvider contextProvider, String ownerDataElementId, String fixedValue) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
                    FixedValueOwnerNotEditableException, UserAuthorizationException, FixedValueNotFoundException, ServiceException {
-        CompoundDataObject result = this.getSingleValueModel(ownerDataElementId, fixedValue, true);
+        CompoundDataObject result = this.getSingleValueModel(contextProvider, ownerDataElementId, fixedValue, true);
         FixedValue  fxv = result.get(PROPERTY_FIXED_VALUE);
         this.dataService.deleteFixedValue(fxv);
     }
 
     @Override
-    public void deleteFixedValues(String ownerDataElementId) 
+    public void deleteFixedValues(ControllerContextProvider contextProvider, String ownerDataElementId) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueOwnerNotEditableException, 
                    UserAuthorizationException, ServiceException {
-        DataElement ownerElement = this.getOwnerDataElement(ownerDataElementId, true);
+        DataElement ownerElement = this.getOwnerDataElement(contextProvider, ownerDataElementId, true);
         this.dataService.deleteFixedValues(FixedValue.OwnerType.DATA_ELEMENT, ownerElement.getId());
     }
     
@@ -132,7 +135,8 @@ public class ElementFixedValuesControllerImpl extends AbstractController impleme
         return this.dataService.getDataElement(elementId);
     }
     
-    private void checkEditability(DataElement dataElement) throws FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
+    private void checkEditability(ControllerContextProvider contextProvider, DataElement dataElement) 
+            throws FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
         boolean workingCopy;
         String workingUser;
         
@@ -155,7 +159,7 @@ public class ElementFixedValuesControllerImpl extends AbstractController impleme
             throw new FixedValueOwnerNotEditableException();
         }
         
-        if (!ObjectUtils.equals(workingUser, this.getContextProvider().getUserName())) {
+        if (!ObjectUtils.equals(workingUser, contextProvider.getUserName())) {
             throw new UserAuthorizationException();
         }
     }
