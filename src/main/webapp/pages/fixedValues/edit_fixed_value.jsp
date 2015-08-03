@@ -6,7 +6,7 @@
     <stripes:layout-component name="contents">
         <c:if test="${empty actionBean.context.validationErrors}">
             <%@ include file="/pages/fixedValues/fixed_value_header.jsp"%>
-            
+
             <div id="operations">
                 <ul>
                     <li>
@@ -19,7 +19,7 @@
                     </li>
                 </ul>
             </div>
-            
+
             <stripes:form beanclass="${actionBean.viewModel.actionBeanName}">
                 <table class="datatable" style="width:auto">
                     <tbody>
@@ -28,15 +28,17 @@
                             <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
                             <td><stripes:text name="viewModel.fixedValue.value" /></td>
                         </tr>
-                        <tr>
-                            <th scope="row">Default</th>
-                            <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
-                            <td>
-                                <stripes:select name="viewModel.fixedValue.isDefault">
-                                    <stripes:options-enumeration enum="eionet.meta.dao.domain.FixedValue.Default" />
-                                </stripes:select>
-                            </td>
-                        </tr>
+                        <c:if test="${actionBean.viewModel.defaultValueRequired}">
+                            <tr>
+                                <th scope="row">Default:</th>
+                                <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
+                                <td>
+                                    <stripes:select name="viewModel.fixedValue.isDefault">
+                                        <stripes:options-enumeration enum="eionet.meta.dao.domain.FixedValue.Default" />
+                                    </stripes:select>
+                                </td>
+                            </tr>
+                        </c:if>
                         <tr>
                             <th scope="row">Definition:</th>
                             <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
@@ -54,7 +56,7 @@
                         </tr>
                     </tbody>
                 </table>
-                        
+
                 <stripes:hidden name="ownerId" value="${actionBean.viewModel.owner.id}" />
                 <stripes:hidden name="viewModel.fixedValue.id" value="${actionBean.viewModel.fixedValue.id}" />
             </stripes:form>

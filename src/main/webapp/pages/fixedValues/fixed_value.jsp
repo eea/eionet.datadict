@@ -13,6 +13,12 @@
                         <th scope="row">Value:</th>
                         <td><c:out value="${actionBean.viewModel.fixedValue.value}" /></td>
                     </tr>
+                    <c:if test="${actionBean.viewModel.defaultValueRequired}">
+                        <tr>
+                            <th scope="row">Default:</th>
+                            <td>${actionBean.viewModel.fixedValue.isDefault}</td>
+                        </tr>
+                    </c:if>
                     <tr>
                         <th scope="row">Definition:</th>
                         <td><c:out value="${actionBean.viewModel.fixedValue.definition}" /></td>

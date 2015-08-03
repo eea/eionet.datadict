@@ -436,9 +436,11 @@ public class DataServiceImpl implements IDataService {
     }
     
     @Override
+    @Transactional
     public void createFixedValue(FixedValue fixedValue) throws ServiceException {
         try{
             fixedValueDao.create(fixedValue);
+            this.updateDefaultStatus(fixedValue);
         }
         catch(Exception e){
             throw new ServiceException("Failed to create fixed value : " + e.getMessage(), e);
@@ -468,9 +470,11 @@ public class DataServiceImpl implements IDataService {
     }
     
     @Override
+    @Transactional
     public void updateFixedValue(FixedValue fixedValue) throws ServiceException {
         try{
             fixedValueDao.update(fixedValue);
+            this.updateDefaultStatus(fixedValue);
         }
         catch(Exception e){
             throw new ServiceException("Failed to update fixed value : " + e.getMessage(), e);
@@ -518,4 +522,12 @@ public class DataServiceImpl implements IDataService {
         }
     }
     
+    private void updateDefaultStatus(FixedValue fixedValue) {
+        if (fixedValue.getIsDefault() != FixedValue.Default.YES) {
+            return;
+        }
+        
+        FixedValue.OwnerType ownerType = FixedValue.OwnerType.parse(fixedValue.getOwnerType());
+        this.fixedValueDao.updateDefaultValue(ownerType, fixedValue.getOwnerId(), fixedValue.getValue());
+    }
 }

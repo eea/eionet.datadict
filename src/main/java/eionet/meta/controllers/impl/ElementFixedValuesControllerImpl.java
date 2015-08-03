@@ -185,6 +185,7 @@ public class ElementFixedValuesControllerImpl implements ElementFixedValuesContr
         
         fixedValue.setOwnerId(ownerElement.getId());
         fixedValue.setOwnerType(FixedValue.OwnerType.DATA_ELEMENT.toString());
+        fixedValue.setIsDefault(FixedValue.Default.NO);
         this.dataService.createFixedValue(fixedValue);
     }
     
@@ -207,7 +208,6 @@ public class ElementFixedValuesControllerImpl implements ElementFixedValuesContr
         }
         
         fxv.setDefinition(fixedValue.getDefinition());
-        fxv.setIsDefault(fixedValue.getIsDefault());
         fxv.setShortDescription(fixedValue.getShortDescription());
         fxv.setValue(fixedValue.getValue());
         this.dataService.updateFixedValue(fxv);

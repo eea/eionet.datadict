@@ -155,6 +155,20 @@ public class FixedValueDAOImpl extends GeneralDAOImpl implements IFixedValueDAO 
         
         return (count > 0);
     }
+
+    @Override
+    public void updateDefaultValue(FixedValue.OwnerType ownerType, int ownerId, String value) {
+        String sql = "update FXV\n" +
+                     "set IS_DEFAULT = case when VALUE = :value then 'Y' else 'N' end\n" +
+                     "where OWNER_TYPE = :ownerType and OWNER_ID = :ownerId";
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ownerId", ownerId);
+        params.put("ownerType", ownerType.toString());
+        params.put("value", value);
+        
+        super.getNamedParameterJdbcTemplate().update(sql, params);
+    }
     
     private FixedValue createFromSimpleSelectStatement(ResultSet rs) throws SQLException {
         FixedValue fixedValue = new FixedValue();

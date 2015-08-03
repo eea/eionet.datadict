@@ -4,31 +4,31 @@
 
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Fixed Values">
     <stripes:layout-component name="head">
-        
+
         <script type="text/javascript">
-            
+
             (
-                function($, window, document) {
-                    $(document).ready(function() {
-                        
-                        $('#btnDeleteAllFixedValues').click(function() {
-                            var msg = 'This action will delete all existing <c:out value="${actionBean.viewModel.fixedValueCategoryLower}" /> values. Are you sure you want to continue?';
-                            
-                            if (!window.confirm(msg)) {
-                                return false;
-                            }
-                            
-                            return true;
+                    function ($, window, document) {
+                        $(document).ready(function () {
+
+                            $('#btnDeleteAllFixedValues').click(function () {
+                                var msg = 'This action will delete all existing <c:out value="${actionBean.viewModel.fixedValueCategoryLower}" /> values. Are you sure you want to continue?';
+
+                                if (!window.confirm(msg)) {
+                                    return false;
+                                }
+
+                                return true;
+                            });
+
                         });
-                        
-                    });
-                }
+                    }
             )(jQuery, window, document);
-            
+
         </script>
-        
+
     </stripes:layout-component>
-    
+
     <stripes:layout-component name="contents">
         <c:if test="${empty actionBean.context.validationErrors}">
             <%@ include file="/pages/fixedValues/fixed_values_header.jsp"%>
@@ -65,6 +65,9 @@
                         <tr>
                             <th></th>
                             <th>Value</th>
+                            <c:if test="${actionBean.viewModel.defaultValueRequired}">
+                                <th>Default</th>
+                            </c:if>
                             <th>Definition</th>
                             <th>Short Description</th>
                         </tr>
@@ -85,6 +88,11 @@
                                         ${fixedValue.value}
                                     </stripes:link>
                                 </td>
+                                <c:if test="${actionBean.viewModel.defaultValueRequired}">
+                                    <td>
+                                        <c:out value="${fixedValue.isDefault.value}" />
+                                    </td>
+                                </c:if>
                                 <td>${fixedValue.definition}</td>
                                 <td>${fixedValue.shortDescription}</td>
                             </tr>

@@ -88,4 +88,7 @@ public interface IFixedValueDAO {
      * @return true if found; false otherwise
      */
     public boolean existsWithSameNameOwner(FixedValue.OwnerType ownerType, int ownerId, String value);
+    
+    
+    public void updateDefaultValue(FixedValue.OwnerType ownerType, int ownerId, String value);
 }

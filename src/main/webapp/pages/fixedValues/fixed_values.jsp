@@ -14,12 +14,20 @@
                     <table class="datatable">
                         <tr>
                             <th>Value</th>
+                            <c:if test="${actionBean.viewModel.defaultValueRequired}">
+                                <th>Default</th>
+                            </c:if>
                             <th>Definition</th>
                             <th>Short Description</th>
                         </tr>
                         <c:forEach items="${actionBean.viewModel.fixedValues}" var="fixedValue">
                             <tr>
                                 <td>${fixedValue.value}</td>
+                                <c:if test="${actionBean.viewModel.defaultValueRequired}">
+                                    <td>
+                                        <c:out value="${fixedValue.isDefault.value}" />
+                                    </td>
+                                </c:if>
                                 <td>${fixedValue.definition}</td>
                                 <td>${fixedValue.shortDescription}</td>
                             </tr>

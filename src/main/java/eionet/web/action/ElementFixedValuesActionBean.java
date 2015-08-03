@@ -329,6 +329,7 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
     private void initViewModel() {
         this.setViewModel(new FixedValuesViewModel());
         this.viewModel.setActionBeanName(this.getClass().getName());
+        this.viewModel.setDefaultValueRequired(false);
     }
     
     private void applyOwnerToViewModel(CompoundDataObject result, boolean hasEditSource) {

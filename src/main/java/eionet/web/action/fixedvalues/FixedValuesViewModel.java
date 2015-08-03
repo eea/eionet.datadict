@@ -15,6 +15,7 @@ public final class FixedValuesViewModel {
     private FixedValueOwnerDetails owner;
     private final List<FixedValue> fixedValues;
     private FixedValueCategory fixedValueCategory;
+    private boolean defaultValueRequired;
 
     public FixedValuesViewModel() {
         this.fixedValues = new ArrayList<FixedValue>();
@@ -40,6 +41,22 @@ public final class FixedValuesViewModel {
         return fixedValues;
     }
     
+    public FixedValueCategory getFixedValueCategory() {
+        return fixedValueCategory;
+    }
+
+    public void setFixedValueCategory(FixedValueCategory fixedValueCategory) {
+        this.fixedValueCategory = fixedValueCategory;
+    }
+
+    public boolean isDefaultValueRequired() {
+        return defaultValueRequired;
+    }
+
+    public void setDefaultValueRequired(boolean defaultValueRequired) {
+        this.defaultValueRequired = defaultValueRequired;
+    }
+    
     public FixedValue getFixedValue() {
         return this.fixedValues.isEmpty() ? null : this.getFixedValues().get(0);
     }
@@ -51,14 +68,6 @@ public final class FixedValuesViewModel {
         else {
             this.fixedValues.set(0, fixedValue);
         }
-    }
-
-    public FixedValueCategory getFixedValueCategory() {
-        return fixedValueCategory;
-    }
-
-    public void setFixedValueCategory(FixedValueCategory fixedValueCategory) {
-        this.fixedValueCategory = fixedValueCategory;
     }
     
     public String getFixedValueCategoryUpper() {
