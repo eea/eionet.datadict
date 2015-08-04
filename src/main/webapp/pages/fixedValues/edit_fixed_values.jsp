@@ -90,7 +90,7 @@
                                 </td>
                                 <c:if test="${actionBean.viewModel.defaultValueRequired}">
                                     <td>
-                                        <c:out value="${fixedValue.isDefault.value}" />
+                                        ${ddfn:checkmark(fixedValue.defaultValue)}
                                     </td>
                                 </c:if>
                                 <td>${fixedValue.definition}</td>

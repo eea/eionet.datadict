@@ -185,7 +185,7 @@ public class ElementFixedValuesControllerImpl implements ElementFixedValuesContr
         
         fixedValue.setOwnerId(ownerElement.getId());
         fixedValue.setOwnerType(FixedValue.OwnerType.DATA_ELEMENT.toString());
-        fixedValue.setIsDefault(FixedValue.Default.NO);
+        fixedValue.setDefaultValue(false);
         this.dataService.createFixedValue(fixedValue);
     }
     

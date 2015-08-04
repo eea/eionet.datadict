@@ -33,9 +33,7 @@
                                 <th scope="row">Default:</th>
                                 <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
                                 <td>
-                                    <stripes:select name="viewModel.fixedValue.isDefault">
-                                        <stripes:options-enumeration enum="eionet.meta.dao.domain.FixedValue.Default" />
-                                    </stripes:select>
+                                    <stripes:checkbox name="viewModel.fixedValue.defaultValue" />
                                 </td>
                             </tr>
                         </c:if>

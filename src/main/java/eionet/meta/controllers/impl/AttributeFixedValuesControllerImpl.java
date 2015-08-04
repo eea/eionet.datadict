@@ -166,7 +166,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
         }
         
         fxv.setDefinition(fixedValue.getDefinition());
-        fxv.setIsDefault(fixedValue.getIsDefault());
+        fxv.setDefaultValue(fixedValue.isDefaultValue());
         fxv.setShortDescription(fixedValue.getShortDescription());
         fxv.setValue(fixedValue.getValue());
         this.dataService.updateFixedValue(fxv);

@@ -523,7 +523,7 @@ public class DataServiceImpl implements IDataService {
     }
     
     private void updateDefaultStatus(FixedValue fixedValue) {
-        if (fixedValue.getIsDefault() != FixedValue.Default.YES) {
+        if (!fixedValue.isDefaultValue()) {
             return;
         }
         

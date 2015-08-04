@@ -49,6 +49,7 @@ import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.RegStatus;
+import eionet.meta.dao.mysql.valueconverters.BooleanToYesNoConverter;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 import java.util.Collection;
@@ -401,7 +402,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setStatus(rs.getString("de.REG_STATUS"));
                 de.setType(rs.getString("de.TYPE"));
                 de.setModified(new Date(rs.getLong("de.DATE")));
-                de.setWorkingCopy(convertYesNoToBoolean(rs.getString("de.WORKING_COPY")));
+                de.setWorkingCopy(new BooleanToYesNoConverter().convertBack(rs.getString("de.WORKING_COPY")));
                 de.setWorkingUser(rs.getString("de.WORKING_USER"));
                 de.setDate(rs.getString("de.DATE"));
                 setParentNamespace(de, rs, "de.PARENT_NS");
@@ -473,7 +474,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 ds.setIdentifier(rs.getString("ds.IDENTIFIER"));
                 ds.setDate(rs.getLong("ds.DATE"));
                 ds.setShortName(rs.getString("ds.SHORT_NAME"));
-                ds.setWorkingCopy(convertYesNoToBoolean(rs.getString("ds.WORKING_COPY")));
+                ds.setWorkingCopy(new BooleanToYesNoConverter().convertBack(rs.getString("ds.WORKING_COPY")));
                 ds.setWorkingUser(rs.getString("ds.WORKING_USER"));
                 
                 return ds;

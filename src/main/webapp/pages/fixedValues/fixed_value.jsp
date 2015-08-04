@@ -16,7 +16,7 @@
                     <c:if test="${actionBean.viewModel.defaultValueRequired}">
                         <tr>
                             <th scope="row">Default:</th>
-                            <td>${actionBean.viewModel.fixedValue.isDefault}</td>
+                            <td>${ddfn:checkmark(actionBean.viewModel.fixedValue.defaultValue)}</td>
                         </tr>
                     </c:if>
                     <tr>

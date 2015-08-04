@@ -27,6 +27,7 @@ import eionet.meta.dao.domain.ComplexAttributeField;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
+import eionet.meta.dao.mysql.valueconverters.BooleanToYesNoConverter;
 import eionet.meta.service.ServiceException;
 import eionet.util.Pair;
 
@@ -592,7 +593,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
                 fv.setOwnerId(rs.getInt("OWNER_ID"));
                 fv.setOwnerType(rs.getString("OWNER_TYPE"));
                 fv.setValue(rs.getString("VALUE"));
-                fv.setIsDefault(rs.getString("IS_DEFAULT"));
+                fv.setDefaultValue(new BooleanToYesNoConverter().convertBack(rs.getString("IS_DEFAULT")));
                 fv.setDefinition(rs.getString("DEFINITION"));
                 fv.setShortDescription(rs.getString("SHORT_DESC"));
                 return fv;

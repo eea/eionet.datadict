@@ -23,6 +23,7 @@ package eionet.meta.dao.mysql;
 
 import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.mysql.valueconverters.BooleanToYesNoConverter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class FixedValueDAOImpl extends GeneralDAOImpl implements IFixedValueDAO 
         params.put("ownerId", fixedValue.getOwnerId());
         params.put("ownerType", fixedValue.getOwnerType());
         params.put("value", fixedValue.getValue());
-        params.put("isDefault", fixedValue.getIsDefault().getValue());
+        params.put("isDefault", new BooleanToYesNoConverter().convert(fixedValue.isDefaultValue()));
         params.put("definition", (fixedValue.getDefinition() == null) ? "" : fixedValue.getDefinition());
         params.put("shortDesc", (fixedValue.getShortDescription() == null) ? "" : fixedValue.getShortDescription() );
         
@@ -84,7 +85,7 @@ public class FixedValueDAOImpl extends GeneralDAOImpl implements IFixedValueDAO 
         params.put("ownerId", fixedValue.getOwnerId());
         params.put("ownerType", fixedValue.getOwnerType());
         params.put("value", fixedValue.getValue());
-        params.put("isDefault", fixedValue.getIsDefault().getValue());
+        params.put("isDefault", new BooleanToYesNoConverter().convert(fixedValue.isDefaultValue()));
         params.put("definition", (fixedValue.getDefinition() == null) ? "" : fixedValue.getDefinition());
         params.put("shortDesc", (fixedValue.getShortDescription() == null) ? "" : fixedValue.getShortDescription());
         params.put("id", fixedValue.getId());
@@ -176,7 +177,7 @@ public class FixedValueDAOImpl extends GeneralDAOImpl implements IFixedValueDAO 
         fixedValue.setOwnerId(rs.getInt("OWNER_ID"));
         fixedValue.setOwnerType(rs.getString("OWNER_TYPE"));
         fixedValue.setValue(rs.getString("VALUE"));
-        fixedValue.setIsDefault(rs.getString("IS_DEFAULT"));
+        fixedValue.setDefaultValue(new BooleanToYesNoConverter().convertBack(rs.getString("IS_DEFAULT")));
         fixedValue.setDefinition(rs.getString("DEFINITION"));
         fixedValue.setShortDescription(rs.getString("SHORT_DESC"));
 
