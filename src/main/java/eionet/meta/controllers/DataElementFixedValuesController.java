@@ -15,7 +15,7 @@ import eionet.meta.dao.domain.FixedValue;
  *
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
-public interface ElementFixedValuesController {
+public interface DataElementFixedValuesController {
     
     DataElement getOwnerDataElement(AppContextProvider contextProvider, String ownerDataElementId, boolean isEditRequest)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 

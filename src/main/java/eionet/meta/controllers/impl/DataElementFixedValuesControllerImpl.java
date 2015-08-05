@@ -3,7 +3,7 @@ package eionet.meta.controllers.impl;
 import eionet.meta.application.errors.DuplicateResourceException;
 import eionet.meta.controllers.AppContextProvider;
 import eionet.util.CompoundDataObject;
-import eionet.meta.controllers.ElementFixedValuesController;
+import eionet.meta.controllers.DataElementFixedValuesController;
 import eionet.meta.application.errors.MalformedIdentifierException;
 import eionet.meta.application.errors.UserAuthenticationException;
 import eionet.meta.application.errors.UserAuthorizationException;
@@ -26,14 +26,14 @@ import org.springframework.stereotype.Controller;
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
 @Controller
-public class ElementFixedValuesControllerImpl implements ElementFixedValuesController {
+public class DataElementFixedValuesControllerImpl implements DataElementFixedValuesController {
     
     private final FixedValuesService fixedValuesService;
     private final IDataElementDAO dataElementDao;
     private final IFixedValueDAO fixedValueDao;
     
     @Autowired
-    public ElementFixedValuesControllerImpl(FixedValuesService fixedValuesService, IDataElementDAO dataElementDao, IFixedValueDAO fixedValueDao) {
+    public DataElementFixedValuesControllerImpl(FixedValuesService fixedValuesService, IDataElementDAO dataElementDao, IFixedValueDAO fixedValueDao) {
         this.fixedValuesService = fixedValuesService;
         this.dataElementDao = dataElementDao;
         this.fixedValueDao = fixedValueDao;
