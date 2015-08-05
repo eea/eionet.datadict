@@ -144,7 +144,7 @@ public class FixedValueDAOImpl extends GeneralDAOImpl implements IFixedValueDAO 
     }
     
     @Override
-    public boolean existsWithSameNameOwner(FixedValue.OwnerType ownerType, int ownerId, String value){
+    public boolean exists(FixedValue.OwnerType ownerType, int ownerId, String value){
         String sql = "select count(*) from FXV where OWNER_ID = :ownerId AND OWNER_TYPE = :ownerType AND value = :value";
         
         Map<String, Object> params = new HashMap<String, Object>();

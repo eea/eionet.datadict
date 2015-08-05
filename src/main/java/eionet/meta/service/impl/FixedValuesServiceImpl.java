@@ -74,7 +74,7 @@ public class FixedValuesServiceImpl implements FixedValuesService {
     }
     
     private void insertFixedValue(FixedValue.OwnerType ownerType, int ownerId, FixedValue fixedValue) throws DuplicateResourceException {
-        if (this.fixedValueDao.existsWithSameNameOwner(ownerType, ownerId, fixedValue.getValue())) {
+        if (this.fixedValueDao.exists(ownerType, ownerId, fixedValue.getValue())) {
             throw new DuplicateResourceException(fixedValue.getValue());
         }
         
