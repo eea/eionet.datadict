@@ -9,12 +9,12 @@ import eionet.meta.application.errors.UserAuthenticationException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
+import eionet.meta.dao.IAttributeDAO;
+import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.FixedValue;
-import eionet.meta.service.IDataService;
-import eionet.meta.service.ServiceException;
+import eionet.meta.service.FixedValuesService;
 import java.util.Collection;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -24,17 +24,21 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesController {
-    
-    private final IDataService dataService;
+
+    private final FixedValuesService fixedValuesService;
+    private final IAttributeDAO attributeDao;
+    private final IFixedValueDAO fixedValueDao;
     
     @Autowired
-    public AttributeFixedValuesControllerImpl(IDataService dataService) {
-        this.dataService = dataService;
+    public AttributeFixedValuesControllerImpl(FixedValuesService fixedValuesService, IAttributeDAO attributeDao, IFixedValueDAO fixedValueDao) {
+        this.fixedValuesService = fixedValuesService;
+        this.attributeDao = attributeDao;
+        this.fixedValueDao = fixedValueDao;
     }
 
     @Override
     public Attribute getOwnerAttribute(AppContextProvider contextProvider, String ownerAttributeId) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
         if (!contextProvider.isUserAuthenticated()) {
             throw new UserAuthenticationException();
         }
@@ -47,9 +51,9 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     
     @Override
     public CompoundDataObject getSingleValueModel(AppContextProvider contextProvider, String ownerAttributeId, String fixedValue) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, ServiceException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
         Attribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
-        FixedValue value = this.getFixedValue(ownerAttribute, fixedValue);
+        FixedValue value = this.fixedValuesService.getFixedValue(ownerAttribute, fixedValue);
         CompoundDataObject result = new CompoundDataObject();
         result.put(PROPERTY_OWNER_ATTRIBUTE, ownerAttribute);
         result.put(PROPERTY_FIXED_VALUE, value);
@@ -59,9 +63,9 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
 
     @Override
     public CompoundDataObject getAllValuesModel(AppContextProvider contextProvider, String ownerAttributeId) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
         Attribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
-        Collection<FixedValue> fixedValues = this.getFixedValues(ownerAttribute.getId());
+        Collection<FixedValue> fixedValues = this.attributeDao.getFixedValues(ownerAttribute.getId());
         CompoundDataObject result = new CompoundDataObject();
         result.put(PROPERTY_OWNER_ATTRIBUTE, ownerAttribute);
         result.put(PROPERTY_FIXED_VALUES, fixedValues);
@@ -72,38 +76,28 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     @Override
     public void saveFixedValue(AppContextProvider contextProvider, String ownerAttributeId, FixedValue fixedValue) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                   EmptyValueException, DuplicateResourceException, ServiceException {
+                   EmptyValueException, DuplicateResourceException {
         if (fixedValue == null) {
             throw new IllegalArgumentException();
         }
         
         Attribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
-        
-        if (StringUtils.isBlank(fixedValue.getValue())) {
-            throw new EmptyValueException();
-        }
-        
-        if (fixedValue.getId() == 0) {
-            this.insertFixedValue(ownerAttribute, fixedValue);
-        }
-        else {
-            this.updateFixedValue(ownerAttribute, fixedValue);
-        }
+        this.fixedValuesService.saveFixedValue(ownerAttribute, fixedValue);
     }
 
     @Override
     public void deleteFixedValue(AppContextProvider contextProvider, String ownerAttributeId, String fixedValue) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, ServiceException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
         CompoundDataObject result = this.getSingleValueModel(contextProvider, ownerAttributeId, fixedValue);
         FixedValue  fxv = result.get(PROPERTY_FIXED_VALUE);
-        this.dataService.deleteFixedValue(fxv);
+        this.fixedValueDao.delete(fxv);
     }
     
     @Override
     public void deleteFixedValues(AppContextProvider contextProvider, String ownerAttributeId) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
         Attribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
-        this.dataService.deleteFixedValues(FixedValue.OwnerType.ATTRIBUTE, ownerAttribute.getId());
+        this.fixedValueDao.deleteAll(FixedValue.OwnerType.ATTRIBUTE, ownerAttribute.getId());
     }
     
     private int convertStringIdentifier(String id) throws MalformedIdentifierException {
@@ -115,60 +109,12 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
         }
     }
     
-    private Attribute getAttribute(int attributeId) throws FixedValueOwnerNotFoundException, ServiceException {
-        if (!this.dataService.attributeExists(attributeId)) {
+    private Attribute getAttribute(int attributeId) throws FixedValueOwnerNotFoundException {
+        if (!this.attributeDao.exists(attributeId)) {
             throw new FixedValueOwnerNotFoundException(attributeId);
         }
         
-        return this.dataService.getAttributeById(attributeId);
+        return this.attributeDao.getById(attributeId);
     }
     
-    private FixedValue getFixedValue(Attribute owner, String fixedValue) throws FixedValueNotFoundException, ServiceException {
-        FixedValue fxv = this.dataService.getFixedValue(FixedValue.OwnerType.ATTRIBUTE, owner.getId(), fixedValue);
-        
-        if (fxv == null) {
-            throw new FixedValueNotFoundException(fixedValue);
-        }
-        
-        return fxv;
-    }
-    
-    private Collection<FixedValue> getFixedValues(int attributeId) throws ServiceException {
-        return this.dataService.getAttributeFixedValues(attributeId);
-    }
-    
-    private void insertFixedValue(Attribute ownerAttribute, FixedValue fixedValue) throws DuplicateResourceException, ServiceException {
-        if (this.dataService.fixedValueExistsWithSameNameOwner(FixedValue.OwnerType.ATTRIBUTE, ownerAttribute.getId(), fixedValue.getValue())) {
-            throw new DuplicateResourceException(fixedValue.getValue());
-        }
-        
-        fixedValue.setOwnerId(ownerAttribute.getId());
-        fixedValue.setOwnerType(FixedValue.OwnerType.ATTRIBUTE.toString());
-        this.dataService.createFixedValue(fixedValue);
-    }
-    
-    private void updateFixedValue(Attribute ownerAttribute, FixedValue fixedValue) 
-            throws FixedValueNotFoundException, DuplicateResourceException, ServiceException {
-        FixedValue fxv = this.dataService.getFixedValueById(fixedValue.getId());
-        
-        if (fxv == null) {
-            throw new FixedValueNotFoundException(fixedValue.getValue());
-        }
-        
-        if (!FixedValue.OwnerType.ATTRIBUTE.isMatch(fxv.getOwnerType()) || fxv.getOwnerId() != ownerAttribute.getId()) {
-            throw new IllegalStateException();
-        }
-        
-        FixedValue fxvByValue = this.dataService.getFixedValue(FixedValue.OwnerType.ATTRIBUTE, fxv.getOwnerId(), fixedValue.getValue());
-        
-        if (fxvByValue != null && fxv.getId() != fxvByValue.getId()) {
-            throw new DuplicateResourceException(fxv.getValue());
-        }
-        
-        fxv.setDefinition(fixedValue.getDefinition());
-        fxv.setDefaultValue(fixedValue.isDefaultValue());
-        fxv.setShortDescription(fixedValue.getShortDescription());
-        fxv.setValue(fixedValue.getValue());
-        this.dataService.updateFixedValue(fxv);
-    }
 }

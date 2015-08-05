@@ -136,14 +136,6 @@ public interface IDataService {
     List<FixedValue> getDataElementFixedValues(int dataElementId) throws ServiceException;
     
     /**
-     * Returns attribute's fixed values
-     * @param attributeId
-     * @return list of fixed values
-     * @throws ServiceException 
-     */
-    List<FixedValue> getAttributeFixedValues(int attributeId) throws ServiceException;
-
-    /**
      * Returns data elements that have code list values.
      *
      * @return
@@ -310,71 +302,4 @@ public interface IDataService {
      */
     Collection<DataElement> grepDataElement(String pattern) throws ServiceException;
     
-    /**
-     * Creates a new fixed value
-     * @param fixedValue 
-     * @throws eionet.meta.service.ServiceException 
-     */
-    void createFixedValue(FixedValue fixedValue) throws ServiceException;
-    
-    /**
-     * Deletes a fixed value
-     * @param fixedValue 
-     * @throws eionet.meta.service.ServiceException 
-     */
-    void deleteFixedValue(FixedValue fixedValue) throws ServiceException;
-    
-    /**
-     * Deletes all fixed values of a specific owner.
-     * 
-     * @param ownerType the type of the owner
-     * @param ownerId the id of the owner
-     * @throws ServiceException 
-     */
-    void deleteFixedValues(FixedValue.OwnerType ownerType, int ownerId) throws ServiceException;
-    
-    /**
-     * Updates a fixed value
-     * @param fixedValue 
-     * @throws eionet.meta.service.ServiceException 
-     */
-    void updateFixedValue(FixedValue fixedValue) throws ServiceException;
-    
-    /**
-     * Returns fixed value with specific id
-     * @param id
-     * @return fixed value
-     * @throws eionet.meta.service.ServiceException
-     */
-    FixedValue getFixedValueById(int id) throws ServiceException;
-    
-    /**
-     * Gets a fixed value by value and based on the owner specified.
-     * 
-     * @param ownerType the type of the owner
-     * @param ownerId the id of the owner
-     * @param value the value attribute of the fixed value
-     * @return a fixed value matching the specified criteria; null otherwise.
-     * @throws eionet.meta.service.ServiceException
-     */
-    FixedValue getFixedValue(FixedValue.OwnerType ownerType, int ownerId, String value) throws ServiceException;
-    
-    /**
-     * Checks if fixed value with given id exists
-     * @param id
-     * @return boolean
-     * @throws eionet.meta.service.ServiceException
-     */
-    boolean fixedValueExists(int id) throws ServiceException;
-    
-    /**
-     * Checks if a fixed value exists with same owner, name
-     * 
-     * @param ownerType the type of the owner
-     * @param ownerId the id of the owner
-     * @param value the value attribute of the fixed value
-     * @return true if found; false otherwise
-     * @throws eionet.meta.service.ServiceException
-     */
-    boolean fixedValueExistsWithSameNameOwner(FixedValue.OwnerType ownerType, int ownerId, String value) throws ServiceException;
 }

@@ -152,5 +152,5 @@ public interface IAttributeDAO {
      * @return list of fixed values
      * @throws ServiceException 
      */
-    public List<FixedValue> getFixedValues(int attributeId) throws ServiceException;
+    public List<FixedValue> getFixedValues(int attributeId);
 }

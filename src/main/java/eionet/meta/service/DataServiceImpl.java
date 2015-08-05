@@ -144,18 +144,6 @@ public class DataServiceImpl implements IDataService {
             throw new ServiceException("Failed to get data element's fixed values: " + e.getMessage(), e);
         }
     }
-    
-    @Override
-    public List<FixedValue> getAttributeFixedValues(int attributeId) throws ServiceException {
-        try{
-            return attributeDao.getFixedValues(attributeId);
-        }
-        catch(Exception e) {
-            throw new ServiceException("Failed to get attribute's fixed values: " + e.getMessage(), e);
-        }
-    }
-    
-    
 
     /**
      * {@inheritDoc}
@@ -435,99 +423,4 @@ public class DataServiceImpl implements IDataService {
         }
     }
     
-    @Override
-    @Transactional
-    public void createFixedValue(FixedValue fixedValue) throws ServiceException {
-        try{
-            fixedValueDao.create(fixedValue);
-            this.updateDefaultStatus(fixedValue);
-        }
-        catch(Exception e){
-            throw new ServiceException("Failed to create fixed value : " + e.getMessage(), e);
-            
-        }
-    }
-    
-    @Override
-    public void deleteFixedValue(FixedValue fixedValue) throws ServiceException {
-        try{
-            fixedValueDao.delete(fixedValue);
-        }
-        catch(Exception e){
-            throw new ServiceException("Failed to delete fixed value : " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public void deleteFixedValues(FixedValue.OwnerType ownerType, int ownerId) throws ServiceException {
-        try {
-            this.fixedValueDao.deleteAll(ownerType, ownerId);
-        }
-        catch (Exception ex) {
-            String msg = String.format("Failed to delete fixed values of owner with type %s and id %d", ownerType.toString(), ownerId);
-            throw new ServiceException(msg, ex);
-        }
-    }
-    
-    @Override
-    @Transactional
-    public void updateFixedValue(FixedValue fixedValue) throws ServiceException {
-        try{
-            fixedValueDao.update(fixedValue);
-            this.updateDefaultStatus(fixedValue);
-        }
-        catch(Exception e){
-            throw new ServiceException("Failed to update fixed value : " + e.getMessage(), e);
-        }
-    }
-        
-    @Override
-    public FixedValue getFixedValueById(int id) throws ServiceException {
-        try{
-            return fixedValueDao.getById(id);
-        }
-        catch(Exception e){
-            throw new ServiceException("Failed to get fixed value by id : " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public FixedValue getFixedValue(FixedValue.OwnerType ownerType, int ownerId, String value) throws ServiceException {
-        try {
-            return fixedValueDao.getByValue(ownerType, ownerId, value);
-        }
-        catch (Exception ex) {
-            String msg = String.format("Value '%s' cannot be found for owner with id '%d' of type '%s'", value, ownerId, ownerType.toString());
-            throw new ServiceException(msg, ex);
-        }
-    }
-    
-    @Override
-    public boolean fixedValueExists(int id) throws ServiceException {
-        try{
-            return fixedValueDao.exists(id);
-        }
-        catch(Exception e){
-            throw new ServiceException("Failed to check if fixed value exists : " + e.getMessage(), e);
-        }
-    }
-    
-    @Override
-    public boolean fixedValueExistsWithSameNameOwner(FixedValue.OwnerType ownerType, int ownerId, String value) throws ServiceException {
-        try{
-            return fixedValueDao.existsWithSameNameOwner(ownerType, ownerId, value);
-        }
-        catch(Exception e){
-            throw new ServiceException("Failed to check if fixed value with same owner,name exists : " + e.getMessage(), e);
-        }
-    }
-    
-    private void updateDefaultStatus(FixedValue fixedValue) {
-        if (!fixedValue.isDefaultValue()) {
-            return;
-        }
-        
-        FixedValue.OwnerType ownerType = FixedValue.OwnerType.parse(fixedValue.getOwnerType());
-        this.fixedValueDao.updateDefaultValue(ownerType, fixedValue.getOwnerId(), fixedValue.getValue());
-    }
 }

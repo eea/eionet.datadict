@@ -10,7 +10,6 @@ import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.FixedValue;
-import eionet.meta.service.ServiceException;
 import eionet.web.action.fixedvalues.FixedValueCategory;
 import eionet.web.action.fixedvalues.FixedValueOwnerDetails;
 import eionet.web.action.fixedvalues.FixedValuesViewModel;
@@ -85,7 +84,7 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     
     @DefaultHandler
     @HandlesEvent("view")
-    public Resolution view() throws ServiceException {
+    public Resolution view() {
         if (this.isSingleValueRequest()) {
             return this.viewSingle();
         }
@@ -94,7 +93,7 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     }
     
     @HandlesEvent("edit")
-    public Resolution edit() throws ServiceException {
+    public Resolution edit() {
         if (this.isSingleValueRequest()) {
             return this.editSingle();
         }
@@ -103,7 +102,7 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     }
     
     @HandlesEvent("delete")
-    public Resolution delete() throws ServiceException {
+    public Resolution delete() {
         if (this.isSingleValueRequest()) {
             return this.deleteSingle();
         }
@@ -112,11 +111,11 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     }
     
     @HandlesEvent("add")
-    public Resolution add() throws ServiceException {
+    public Resolution add() {
         return new ActionHandler<Attribute>(this) {
             
             @Override
-            protected Attribute executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException {
+            protected Attribute executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
                 return controller.getOwnerAttribute(getContextProvider(), ownerId);
             }
             
@@ -130,12 +129,13 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     }
     
     @HandlesEvent("save")
-    public Resolution save() throws ServiceException {
+    public Resolution save() {
         return new ActionHandler<Void>(this) {
 
             @Override
-            protected Void executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                    FixedValueNotFoundException, EmptyValueException, DuplicateResourceException, ServiceException {
+            protected Void executeAction() 
+                    throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
+                           FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
                 FixedValue fxv = viewModel.getFixedValue();
                 
                 if (fxv != null) {
@@ -155,28 +155,28 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
         }.invoke();
     }
     
-    private Resolution viewSingle() throws ServiceException {
+    private Resolution viewSingle() {
         return this.getSingleValueViewResolution(false, PAGE_FIXED_VALUE_VIEW);
     }
     
-    private Resolution viewAll() throws ServiceException {
+    private Resolution viewAll() {
         return this.getAllValuesViewResolution(false, PAGE_FIXED_VALUES_VIEW);
     }
     
-    private Resolution editSingle() throws ServiceException {
+    private Resolution editSingle() {
         return this.getSingleValueViewResolution(true, PAGE_FIXED_VALUE_EDIT);
     }
     
-    private Resolution editAll() throws ServiceException {
+    private Resolution editAll() {
         return this.getAllValuesViewResolution(true, PAGE_FIXED_VALUES_EDIT);
     }
     
-    private Resolution deleteSingle() throws ServiceException {
+    private Resolution deleteSingle() {
         return new ActionHandler<Void>(this) {
 
             @Override
-            protected Void executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                    FixedValueNotFoundException, ServiceException {
+            protected Void executeAction() 
+                    throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
                 controller.deleteFixedValue(getContextProvider(), ownerId, fixedValue);
                 
                 return null;
@@ -190,12 +190,12 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
         }.invoke();
     }
     
-    private Resolution deleteAll() throws ServiceException {
+    private Resolution deleteAll() {
         return new ActionHandler<Void>(this) {
 
             @Override
-            protected Void executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                    FixedValueNotFoundException, ServiceException {
+            protected Void executeAction() 
+                    throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
                 controller.deleteFixedValues(getContextProvider(), ownerId);
                 
                 return null;
@@ -209,12 +209,12 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
         }.invoke();
     }
     
-    private Resolution getSingleValueViewResolution(final boolean isEditSource, final String forwardTargetPage) throws ServiceException {
+    private Resolution getSingleValueViewResolution(final boolean isEditSource, final String forwardTargetPage) {
         return new ActionHandler<CompoundDataObject>(this) {
 
             @Override
-            protected CompoundDataObject executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                    FixedValueNotFoundException, ServiceException {
+            protected CompoundDataObject executeAction() 
+                    throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
                 return controller.getSingleValueModel(getContextProvider(), ownerId, fixedValue);
             }
 
@@ -228,11 +228,11 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
         }.invoke();
     }
     
-    private Resolution getAllValuesViewResolution(final boolean isEditSource, final String forwardTargetPage) throws ServiceException {
+    private Resolution getAllValuesViewResolution(final boolean isEditSource, final String forwardTargetPage) {
         return new ActionHandler<CompoundDataObject>(this) {
 
             @Override
-            protected CompoundDataObject executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ServiceException {
+            protected CompoundDataObject executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
                 return controller.getAllValuesModel(getContextProvider(), ownerId);
             }
 
@@ -345,7 +345,7 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
             this.actionBean = actionBean;
         }
         
-        public final Resolution invoke() throws ServiceException {
+        public final Resolution invoke() {
             T actionResult;
             
             try {
@@ -375,7 +375,7 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
         
         protected abstract T executeAction() 
                 throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                       EmptyValueException, DuplicateResourceException, ServiceException;
+                       EmptyValueException, DuplicateResourceException;
         
         protected abstract Resolution onActionComplete(T actionResult);
     }

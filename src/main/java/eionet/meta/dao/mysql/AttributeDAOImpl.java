@@ -575,7 +575,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
     }
     
     @Override
-    public List<FixedValue> getFixedValues(int attributeId) throws ServiceException {
+    public List<FixedValue> getFixedValues(int attributeId) {
         StringBuilder sql = new StringBuilder("select * from FXV");
         sql.append(" where OWNER_ID = :ownerId ");
         sql.append(" and OWNER_TYPE=:ownerType ");

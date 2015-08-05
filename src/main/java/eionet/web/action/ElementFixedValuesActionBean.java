@@ -11,7 +11,6 @@ import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
-import eionet.meta.service.ServiceException;
 import eionet.web.action.fixedvalues.FixedValueCategory;
 import eionet.web.action.fixedvalues.FixedValueOwnerDetails;
 import eionet.web.action.fixedvalues.FixedValuesViewModel;
@@ -86,7 +85,7 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
     
     @DefaultHandler
     @HandlesEvent("view")
-    public Resolution view() throws ServiceException {
+    public Resolution view() {
         if (this.isSingleValueRequest()) {
             return this.viewSingle();
         }
@@ -95,7 +94,7 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
     }
     
     @HandlesEvent("edit")
-    public Resolution edit() throws ServiceException {
+    public Resolution edit() {
         if (this.isSingleValueRequest()) {
             return this.editSingle();
         }
@@ -104,12 +103,12 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
     }
     
     @HandlesEvent("add")
-    public Resolution add() throws ServiceException {
+    public Resolution add() {
         return new ActionHandler<DataElement>(this) {
 
             @Override
             protected DataElement executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
+                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 return controller.getOwnerDataElement(getContextProvider(), ownerId, true);
             }
 
@@ -124,12 +123,12 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
     }
     
     @HandlesEvent("save")
-    public Resolution save() throws ServiceException {
+    public Resolution save() {
         return new ActionHandler<Void>(this) {
 
             @Override
             protected Void executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, DuplicateResourceException, EmptyValueException, ServiceException {
+                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, DuplicateResourceException, EmptyValueException {
                 FixedValue fxv = viewModel.getFixedValue();
                 
                 if (fxv != null) {
@@ -150,7 +149,7 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
     }
     
     @HandlesEvent("delete")
-    public Resolution delete() throws ServiceException {
+    public Resolution delete() {
         if (this.isSingleValueRequest()) {
             return this.deleteSingle();
         }
@@ -158,12 +157,12 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
         return this.deleteAll();
     }
     
-    private Resolution viewSingle() throws ServiceException {
+    private Resolution viewSingle() {
         return new ActionHandler<CompoundDataObject>(this) {
 
             @Override
             protected CompoundDataObject executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
+                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 return controller.getSingleValueModel(getContextProvider(), ownerId, fixedValue, false);
             }
 
@@ -176,12 +175,12 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
         }.invoke();
     }
     
-    private Resolution viewAll() throws ServiceException {
+    private Resolution viewAll() {
         return new ActionHandler<CompoundDataObject>(this) {
 
             @Override
             protected CompoundDataObject executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
+                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 return controller.getAllValuesModel(getContextProvider(), ownerId, false);
             }
 
@@ -195,12 +194,12 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
         }.invoke();
     }
     
-    private Resolution editSingle() throws ServiceException {
+    private Resolution editSingle() {
         return new ActionHandler<CompoundDataObject>(this) {
 
             @Override
             protected CompoundDataObject executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
+                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 return controller.getSingleValueModel(getContextProvider(), ownerId, fixedValue, true);
             }
 
@@ -213,12 +212,12 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
         }.invoke();
     }
     
-    private Resolution editAll() throws ServiceException {
+    private Resolution editAll() {
         return new ActionHandler<CompoundDataObject>(this) {
 
             @Override
             protected CompoundDataObject executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
+                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 return controller.getAllValuesModel(getContextProvider(), ownerId, true);
             }
 
@@ -231,12 +230,12 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
         }.invoke();
     }
     
-    private Resolution deleteSingle() throws ServiceException {
+    private Resolution deleteSingle() {
         return new ActionHandler<Void>(this) {
 
             @Override
             protected Void executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
+                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 controller.deleteFixedValue(getContextProvider(), ownerId, fixedValue);
                 
                 return null;
@@ -249,12 +248,12 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
         }.invoke();
     }
     
-    private Resolution deleteAll() throws ServiceException {
+    private Resolution deleteAll() {
         return new ActionHandler<Void>(this) {
 
             @Override
             protected Void executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, ServiceException {
+                    ElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 controller.deleteFixedValues(getContextProvider(), ownerId);
                 
                 return null;
@@ -376,7 +375,7 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
             this.actionBean = actionBean;
         }
         
-        public final Resolution invoke() throws ServiceException {
+        public final Resolution invoke() {
             T actionResult;
             
             try {
@@ -413,7 +412,7 @@ public class ElementFixedValuesActionBean extends AbstractActionBean {
         protected abstract T executeAction() 
                 throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
                        FixedValueNotFoundException, ElementFixedValuesController.FixedValueOwnerNotEditableException, 
-                       UserAuthorizationException, DuplicateResourceException, EmptyValueException, ServiceException;
+                       UserAuthorizationException, DuplicateResourceException, EmptyValueException;
         
         protected abstract Resolution onActionComplete(T actionResult);
     }
