@@ -37,9 +37,10 @@ public interface IFixedValueDAO {
     
     /**
      * Deletes an existing fixed value
-     * @param fixedValue
+     * 
+     * @param id
      */
-    public void delete(FixedValue fixedValue);
+    public void deleteById(int id);
     
     /**
      * Deletes all fixed values of a specific owner.

@@ -55,12 +55,12 @@ public class FixedValueDAOImpl extends GeneralDAOImpl implements IFixedValueDAO 
     }
     
     @Override
-    public void delete(FixedValue fixedValue){
+    public void deleteById(int id){
         StringBuilder sql = new StringBuilder();
         sql.append("delete from FXV where FXV_ID = :id");
         
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("id", fixedValue.getId());
+        params.put("id", id);
         
         getNamedParameterJdbcTemplate().update(sql.toString(), params);
     }

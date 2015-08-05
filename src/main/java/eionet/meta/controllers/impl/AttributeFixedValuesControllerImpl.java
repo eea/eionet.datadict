@@ -90,7 +90,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
         CompoundDataObject result = this.getSingleValueModel(contextProvider, ownerAttributeId, fixedValue);
         FixedValue  fxv = result.get(PROPERTY_FIXED_VALUE);
-        this.fixedValueDao.delete(fxv);
+        this.fixedValueDao.deleteById(fxv.getId());
     }
     
     @Override

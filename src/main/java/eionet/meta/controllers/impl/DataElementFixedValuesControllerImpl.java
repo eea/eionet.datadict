@@ -101,7 +101,7 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
                    FixedValueOwnerNotEditableException, UserAuthorizationException, FixedValueNotFoundException {
         CompoundDataObject result = this.getSingleValueModel(contextProvider, ownerDataElementId, fixedValue, true);
         FixedValue  fxv = result.get(PROPERTY_FIXED_VALUE);
-        this.fixedValueDao.delete(fxv);
+        this.fixedValueDao.deleteById(fxv.getId());
     }
 
     @Override
