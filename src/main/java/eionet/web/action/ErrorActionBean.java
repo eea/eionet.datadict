@@ -60,18 +60,16 @@ public class ErrorActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution showError() throws ServiceException {
         switch (this.type) {
-            case INTERNAL_SERVER_ERROR:
-                return this.createHttpCodeBasedErrorResolution(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             case NOT_AUTHENTICATED_401:
                 return this.createHttpCodeBasedErrorResolution(HttpServletResponse.SC_UNAUTHORIZED);
             case FORBIDDEN_403:
                 return this.createHttpCodeBasedErrorResolution(HttpServletResponse.SC_FORBIDDEN);
-            // not found 404 errors are handled in DDExceptionHandler, this line probably wont be reached
             case NOT_FOUND_404:
                 return this.createHttpCodeBasedErrorResolution(HttpServletResponse.SC_NOT_FOUND);
+            case INTERNAL_SERVER_ERROR:
             case UNKNOWN:
             default:
-                return new ForwardResolution("/pages/error.jsp");
+                return this.createHttpCodeBasedErrorResolution(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -98,7 +96,6 @@ public class ErrorActionBean extends AbstractActionBean {
                 return "401 Unauthorized";
             case FORBIDDEN_403:
                 return "403 Forbidden";
-            // not found 404 errors are handled in DDExceptionHandler, this line probably wont be reached
             case NOT_FOUND_404:
                 return "404 Not Found";
             case INVALID_INPUT:
@@ -118,6 +115,8 @@ public class ErrorActionBean extends AbstractActionBean {
     }
     
     private Resolution createHttpCodeBasedErrorResolution(int httpCode) {
+        super.getContext().getResponse().setStatus(httpCode);
+        
         return new ForwardResolution("/pages/error.jsp");
     }
     
