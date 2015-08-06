@@ -2,13 +2,12 @@ package eionet.meta.dao.mysql.valueconverters;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import org.unitils.UnitilsJUnit4;
 
 /**
  *
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
-public class BooleanToYesNoValueConverterTest extends UnitilsJUnit4 {
+public class BooleanToYesNoValueConverterTest {
     
     private final BooleanToYesNoConverter converter = new BooleanToYesNoConverter();
     
