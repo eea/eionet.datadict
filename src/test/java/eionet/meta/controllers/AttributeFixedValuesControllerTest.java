@@ -90,6 +90,7 @@ public class AttributeFixedValuesControllerTest {
         final int ownerId = 5;
         Attribute expectedOwner = this.createOwner(ownerId);
         List<FixedValue> expectedValues = new ArrayList<FixedValue>();
+        expectedValues.add(this.createFixedValue(12, expectedOwner, "val"));
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.exists(ownerId)).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
