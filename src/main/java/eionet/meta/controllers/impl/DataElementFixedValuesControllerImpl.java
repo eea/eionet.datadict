@@ -84,7 +84,7 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
     }
 
     @Override
-    public void saveFixedValue(AppContextProvider contextProvider, String ownerDataElementId, FixedValue fixedValue) 
+    public void saveFixedValue(AppContextProvider contextProvider, String ownerDataElementId, String originalValue, FixedValue fixedValue) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException,
                    FixedValueOwnerNotEditableException, UserAuthorizationException, EmptyValueException, DuplicateResourceException {
         if (fixedValue == null) {
@@ -92,7 +92,7 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
         }
         
         DataElement ownerElement = this.getOwnerDataElement(contextProvider, ownerDataElementId, true);
-        this.fixedValuesService.saveFixedValue(ownerElement, fixedValue);
+        this.fixedValuesService.saveFixedValue(ownerElement, originalValue, fixedValue);
     }
 
     @Override

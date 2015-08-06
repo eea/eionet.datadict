@@ -130,12 +130,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
             protected Void executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
                     DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, DuplicateResourceException, EmptyValueException {
                 FixedValue fxv = viewModel.getFixedValue();
-                
-                if (fxv != null) {
-                    fixedValue = fxv.getValue();
-                }
-                
-                controller.saveFixedValue(getContextProvider(), ownerId, fxv);
+                controller.saveFixedValue(getContextProvider(), ownerId, fixedValue, fxv);
                 
                 return null;
             }
@@ -271,13 +266,13 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, msg);
     }
     
-    private Resolution onMalformedDataElementId() {
-        String msg = String.format("Malformed data element id: %s", this.ownerId);
+    private Resolution onMalformedDataElementId(String id) {
+        String msg = String.format("Malformed data element id: %s", id);
         return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, msg);
     }
     
-    private Resolution onOwnerDataElementNotFound() {
-        String msg = "Cannot find element with id: " + this.ownerId;
+    private Resolution onOwnerDataElementNotFound(int ownerId) {
+        String msg = "Cannot find element with id: " + ownerId;
         return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, msg);
     }
     
@@ -291,13 +286,13 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         return super.createErrorResolution(ErrorActionBean.ErrorType.FORBIDDEN_403, msg);
     }
     
-    private Resolution onFixedValueNotFound() {
-        String msg = String.format("Cannot find value '%s' for owner data element with id %s", this.fixedValue, this.ownerId);
+    private Resolution onFixedValueNotFound(String value) {
+        String msg = String.format("Cannot find value '%s' for owner data element with id %s", value, this.ownerId);
         return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, msg);
     }
     
-    private Resolution onFixedValueAlreadyExists() {
-        String msg = String.format("Value '%s' already exists for owner data element with id %s", this.fixedValue, this.ownerId);
+    private Resolution onFixedValueAlreadyExists(String value) {
+        String msg = String.format("Value '%s' already exists for owner data element with id %s", value, this.ownerId);
         return super.createErrorResolution(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR, msg);
     }
     
@@ -385,10 +380,10 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
                 return this.actionBean.onAnonymousUser();
             } 
             catch (MalformedIdentifierException ex) {
-                return this.actionBean.onMalformedDataElementId();
+                return this.actionBean.onMalformedDataElementId(ex.getId());
             } 
             catch (FixedValueOwnerNotFoundException ex) {
-                return this.actionBean.onOwnerDataElementNotFound();
+                return this.actionBean.onOwnerDataElementNotFound(ex.getOwnerId());
             }
             catch (DataElementFixedValuesController.FixedValueOwnerNotEditableException ex) {
                 return this.actionBean.onOwnerDataElementNotEditable();
@@ -397,10 +392,10 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
                 return this.actionBean.onUnauthorizedUser();
             }
             catch (FixedValueNotFoundException ex) {
-                return this.actionBean.onFixedValueNotFound();
+                return this.actionBean.onFixedValueNotFound(ex.getFixedValue());
             }
             catch (DuplicateResourceException ex) {
-                return this.actionBean.onFixedValueAlreadyExists();
+                return this.actionBean.onFixedValueAlreadyExists(ex.getResourceId().toString());
             }
             catch (EmptyValueException ex) {
                 return this.actionBean.onEmptyValue();

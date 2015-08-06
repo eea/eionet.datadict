@@ -81,7 +81,23 @@ public class FixedValueServiceTest extends UnitilsJUnit4 {
         Attribute owner = this.createOwnerAttribute(ownerId);
         FixedValue toCreate = this.createFixedValue(ownerType, ownerId, value, "definition", "short description", false);
         when(fixedValueDao.exists(ownerType, ownerId, value)).thenReturn(false);
-        this.fixedValueService.saveFixedValue(owner, toCreate);
+        this.fixedValueService.saveFixedValue(owner, null, toCreate);
+        ArgumentCaptor<FixedValue> toInsertCaptor = ArgumentCaptor.forClass(FixedValue.class);
+        verify(fixedValueDao, times(1)).create(toInsertCaptor.capture());
+        FixedValue inserted = toInsertCaptor.getValue();
+        assertTrue(EqualsBuilder.reflectionEquals(toCreate, inserted));
+        verify(fixedValueDao, times(0)).updateDefaultValue(ownerType, ownerId, value);
+    }
+    
+    @Test
+    public void testCreateFixedValueOfDataElement() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+        FixedValue.OwnerType ownerType = FixedValue.OwnerType.DATA_ELEMENT;
+        int ownerId = 1;
+        String value = "val";
+        DataElement owner = this.createOwnerDataElement(ownerId);
+        FixedValue toCreate = this.createFixedValue(ownerType, ownerId, value, "definition", "short description", false);
+        when(fixedValueDao.exists(ownerType, ownerId, value)).thenReturn(false);
+        this.fixedValueService.saveFixedValue(owner, null, toCreate);
         ArgumentCaptor<FixedValue> toInsertCaptor = ArgumentCaptor.forClass(FixedValue.class);
         verify(fixedValueDao, times(1)).create(toInsertCaptor.capture());
         FixedValue inserted = toInsertCaptor.getValue();
@@ -97,28 +113,12 @@ public class FixedValueServiceTest extends UnitilsJUnit4 {
         Attribute owner = this.createOwnerAttribute(ownerId);
         FixedValue toCreate = this.createFixedValue(ownerType, ownerId, value, "definition", "short description", true);
         when(fixedValueDao.exists(ownerType, ownerId, value)).thenReturn(false);
-        this.fixedValueService.saveFixedValue(owner, toCreate);
+        this.fixedValueService.saveFixedValue(owner, null, toCreate);
         ArgumentCaptor<FixedValue> toInsertCaptor = ArgumentCaptor.forClass(FixedValue.class);
         verify(fixedValueDao, times(1)).create(toInsertCaptor.capture());
         FixedValue inserted = toInsertCaptor.getValue();
         assertTrue(EqualsBuilder.reflectionEquals(toCreate, inserted));
         verify(fixedValueDao, times(1)).updateDefaultValue(ownerType, ownerId, value);
-    }
-    
-    @Test
-    public void testCreateFixedValueOfDataElement() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
-        FixedValue.OwnerType ownerType = FixedValue.OwnerType.DATA_ELEMENT;
-        int ownerId = 1;
-        String value = "val";
-        DataElement owner = this.createOwnerDataElement(ownerId);
-        FixedValue toCreate = this.createFixedValue(ownerType, ownerId, value, "definition", "short description", false);
-        when(fixedValueDao.exists(ownerType, ownerId, value)).thenReturn(false);
-        this.fixedValueService.saveFixedValue(owner, toCreate);
-        ArgumentCaptor<FixedValue> toInsertCaptor = ArgumentCaptor.forClass(FixedValue.class);
-        verify(fixedValueDao, times(1)).create(toInsertCaptor.capture());
-        FixedValue inserted = toInsertCaptor.getValue();
-        assertTrue(EqualsBuilder.reflectionEquals(toCreate, inserted));
-        verify(fixedValueDao, times(0)).updateDefaultValue(ownerType, ownerId, value);
     }
     
     @Test
@@ -129,53 +129,48 @@ public class FixedValueServiceTest extends UnitilsJUnit4 {
         DataElement owner = this.createOwnerDataElement(ownerId);
         FixedValue toCreate = this.createFixedValue(ownerType, ownerId, value, "definition", "short description", false);
         when(fixedValueDao.exists(ownerType, ownerId, value)).thenReturn(false);
-        this.fixedValueService.saveFixedValue(owner, toCreate);
+        this.fixedValueService.saveFixedValue(owner, null, toCreate);
         ArgumentCaptor<FixedValue> toInsertCaptor = ArgumentCaptor.forClass(FixedValue.class);
         verify(fixedValueDao, times(1)).create(toInsertCaptor.capture());
         FixedValue inserted = toInsertCaptor.getValue();
         assertTrue(EqualsBuilder.reflectionEquals(toCreate, inserted, new String[] {"defaultValue"}));
+        /*
+         * As of the time being, Data Elements do not make use of default value functionality. 
+         * Thus, fixed values for elements should not be marked as default, even if data input
+         * suggests the opposite.
+         */
         assertFalse(inserted.isDefaultValue());
         verify(fixedValueDao, times(0)).updateDefaultValue(ownerType, ownerId, value);
     }
     
     @Test (expected = EmptyValueException.class)
-    public void testFailToSaveAttributeFixedValueBecauseOfEmptyValue() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
-        FixedValue.OwnerType ownerType = FixedValue.OwnerType.ATTRIBUTE;
-        int ownerId = 1;
-        Attribute owner = this.createOwnerAttribute(ownerId);
-        FixedValue toCreate = this.createFixedValue(ownerType, ownerId, null);
-        this.fixedValueService.saveFixedValue(owner, toCreate);
-    }
-    
-    @Test (expected = EmptyValueException.class)
-    public void testFailToSaveDataElementFixedValueBecauseOfEmptyValue() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    public void testFailToSaveFixedValueBecauseOfEmptyValue() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.DATA_ELEMENT;
         int ownerId = 1;
         DataElement owner = this.createOwnerDataElement(ownerId);
         FixedValue toCreate = this.createFixedValue(ownerType, ownerId, null);
-        this.fixedValueService.saveFixedValue(owner, toCreate);
+        this.fixedValueService.saveFixedValue(owner, null, toCreate);
     }
     
     @Test (expected = DuplicateResourceException.class)
-    public void testFailToCreateAttributeFixedValueBecauseOfDuplicate() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    public void testFailToCreateFixedValueBecauseOfDuplicate() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.ATTRIBUTE;
         int ownerId = 1;
         String value = "val";
         Attribute owner = this.createOwnerAttribute(ownerId);
         FixedValue toCreate = this.createFixedValue(ownerType, ownerId, value);
         when(fixedValueDao.exists(ownerType, ownerId, value)).thenReturn(true);
-        this.fixedValueService.saveFixedValue(owner, toCreate);
+        this.fixedValueService.saveFixedValue(owner, null, toCreate);
     }
     
-    @Test (expected = DuplicateResourceException.class)
-    public void testFailToCreateDataElementFixedValueBecauseOfDuplicate() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    @Test
+    public void testUpdateAttributeFixedValue() {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.DATA_ELEMENT;
         int ownerId = 1;
         String value = "val";
         DataElement owner = this.createOwnerDataElement(ownerId);
-        FixedValue toCreate = this.createFixedValue(ownerType, ownerId, value);
-        when(fixedValueDao.exists(ownerType, ownerId, value)).thenReturn(true);
-        this.fixedValueService.saveFixedValue(owner, toCreate);
+        FixedValue toUpdate = this.createFixedValue(1, ownerType, ownerId, value, "definition", "short description", false);
+        //when(fixedValueDao.getById(toUpdate.getId())).thenr
     }
     
     private FixedValue createFixedValue(FixedValue.OwnerType ownerType, int ownerId, String value) {
@@ -192,6 +187,13 @@ public class FixedValueServiceTest extends UnitilsJUnit4 {
         fxv.setDefinition(definition);
         fxv.setShortDescription(shortDescription);
         fxv.setDefaultValue(defaultValue);
+        
+        return fxv;
+    }
+    
+    private FixedValue createFixedValue(int id, FixedValue.OwnerType ownerType, int ownerId, String value, String definition, String shortDescription, boolean defaultValue) {
+        FixedValue fxv = this.createFixedValue(ownerType, ownerId, value, definition, shortDescription, defaultValue);
+        fxv.setId(id);
         
         return fxv;
     }

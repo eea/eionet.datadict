@@ -25,7 +25,7 @@ public interface AttributeFixedValuesController {
     CompoundDataObject getAllValuesModel(AppContextProvider contextProvider, String ownerAttributeId)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException;
     
-    void saveFixedValue(AppContextProvider contextProvider, String ownerAttributeId, FixedValue fixedValue)
+    void saveFixedValue(AppContextProvider contextProvider, String ownerAttributeId, String originalValue, FixedValue fixedValue)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
                    EmptyValueException, DuplicateResourceException;
     

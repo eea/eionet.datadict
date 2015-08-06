@@ -29,7 +29,7 @@ public interface DataElementFixedValuesController {
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
                    FixedValueOwnerNotEditableException, UserAuthorizationException;
     
-    void saveFixedValue(AppContextProvider contextProvider, String ownerDataElementId, FixedValue fixedValue)
+    void saveFixedValue(AppContextProvider contextProvider, String ownerDataElementId, String originalValue, FixedValue fixedValue)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
                    FixedValueNotFoundException, FixedValueOwnerNotEditableException, UserAuthorizationException, 
                    DuplicateResourceException, EmptyValueException;

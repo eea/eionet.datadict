@@ -17,8 +17,8 @@ public interface FixedValuesService {
     
     FixedValue getFixedValue(Attribute owner, String value) throws FixedValueNotFoundException;
     
-    void saveFixedValue(DataElement owner, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException;
+    void saveFixedValue(DataElement owner, String originalValue, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException;
     
-    void saveFixedValue(Attribute owner, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException;
+    void saveFixedValue(Attribute owner, String originalValue, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException;
     
 }

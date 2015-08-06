@@ -137,12 +137,7 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
                     throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
                            FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
                 FixedValue fxv = viewModel.getFixedValue();
-                
-                if (fxv != null) {
-                    fixedValue = fxv.getValue();
-                }
-
-                controller.saveFixedValue(getContextProvider(), ownerId, fxv);
+                controller.saveFixedValue(getContextProvider(), ownerId, fixedValue, fxv);
                 
                 return null;
             }
@@ -251,23 +246,23 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
         return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, msg);
     }
     
-    private Resolution onMalformedAttributeId() {
-        String msg = String.format("Malformed attribute id: %s", this.ownerId);
+    private Resolution onMalformedAttributeId(String id) {
+        String msg = String.format("Malformed attribute id: %s", id);
         return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, msg);
     }
     
-    private Resolution onOwnerAttributeNotFound() {
-        String msg = "Cannot find attribute with id: " + this.ownerId;
+    private Resolution onOwnerAttributeNotFound(int ownerId) {
+        String msg = "Cannot find attribute with id: " + ownerId;
         return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, msg);
     }
     
-    private Resolution onFixedValueNotFound() {
-        String msg = String.format("Cannot find value '%s' for owner attribute with id %s", this.fixedValue, this.ownerId);
+    private Resolution onFixedValueNotFound(String value) {
+        String msg = String.format("Cannot find value '%s' for owner attribute with id %s", value, this.ownerId);
         return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, msg);
     }
     
-    private Resolution onFixedValueAlreadyExists() {
-        String msg = String.format("Value '%s' already exists for owner attribute with id %s", this.fixedValue, this.ownerId);
+    private Resolution onFixedValueAlreadyExists(String value) {
+        String msg = String.format("Value '%s' already exists for owner attribute with id %s", value, this.ownerId);
         return super.createErrorResolution(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR, msg);
     }
     
@@ -355,16 +350,16 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
                 return this.actionBean.onAnonymousUser();
             }
             catch (MalformedIdentifierException ex) {
-                return this.actionBean.onMalformedAttributeId();
+                return this.actionBean.onMalformedAttributeId(ex.getId());
             }
             catch (FixedValueOwnerNotFoundException ex) {
-                return this.actionBean.onOwnerAttributeNotFound();
+                return this.actionBean.onOwnerAttributeNotFound(ex.getOwnerId());
             }
             catch (FixedValueNotFoundException ex) {
-                return this.actionBean.onFixedValueNotFound();
+                return this.actionBean.onFixedValueNotFound(ex.getFixedValue());
             }
             catch (DuplicateResourceException ex) {
-                return this.actionBean.onFixedValueAlreadyExists();
+                return this.actionBean.onFixedValueAlreadyExists(ex.getResourceId().toString());
             }
             catch (EmptyValueException ex) {
                 return this.actionBean.onEmptyValue();

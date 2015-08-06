@@ -74,7 +74,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
 
     @Override
-    public void saveFixedValue(AppContextProvider contextProvider, String ownerAttributeId, FixedValue fixedValue) 
+    public void saveFixedValue(AppContextProvider contextProvider, String ownerAttributeId, String originalValue, FixedValue fixedValue) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
                    EmptyValueException, DuplicateResourceException {
         if (fixedValue == null) {
@@ -82,7 +82,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
         }
         
         Attribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
-        this.fixedValuesService.saveFixedValue(ownerAttribute, fixedValue);
+        this.fixedValuesService.saveFixedValue(ownerAttribute, originalValue, fixedValue);
     }
 
     @Override
