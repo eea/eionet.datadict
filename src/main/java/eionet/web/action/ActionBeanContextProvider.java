@@ -1,6 +1,6 @@
 package eionet.web.action;
 
-import eionet.meta.controllers.AppContextProvider;
+import eionet.meta.application.AppContextProvider;
 
 /**
  *

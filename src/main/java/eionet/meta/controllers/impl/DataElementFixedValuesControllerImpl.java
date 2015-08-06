@@ -1,7 +1,7 @@
 package eionet.meta.controllers.impl;
 
 import eionet.meta.application.errors.DuplicateResourceException;
-import eionet.meta.controllers.AppContextProvider;
+import eionet.meta.application.AppContextProvider;
 import eionet.util.CompoundDataObject;
 import eionet.meta.controllers.DataElementFixedValuesController;
 import eionet.meta.application.errors.MalformedIdentifierException;

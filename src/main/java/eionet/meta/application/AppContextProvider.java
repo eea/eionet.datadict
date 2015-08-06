@@ -1,4 +1,4 @@
-package eionet.meta.controllers;
+package eionet.meta.application;
 
 /**
  *
