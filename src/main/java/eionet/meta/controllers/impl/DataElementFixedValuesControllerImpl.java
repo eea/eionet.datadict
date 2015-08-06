@@ -5,6 +5,8 @@ import eionet.meta.application.AppContextProvider;
 import eionet.util.CompoundDataObject;
 import eionet.meta.controllers.DataElementFixedValuesController;
 import eionet.meta.application.errors.MalformedIdentifierException;
+import eionet.meta.application.errors.NotAWorkingCopyException;
+import eionet.meta.application.errors.ResourceNotFoundException;
 import eionet.meta.application.errors.UserAuthenticationException;
 import eionet.meta.application.errors.UserAuthorizationException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
@@ -13,11 +15,10 @@ import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundExcepti
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.service.DataElementsService;
 import eionet.meta.service.FixedValuesService;
 import java.util.Collection;
-import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -28,12 +29,16 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class DataElementFixedValuesControllerImpl implements DataElementFixedValuesController {
     
+    private final DataElementsService dataElementsService;
     private final FixedValuesService fixedValuesService;
     private final IDataElementDAO dataElementDao;
     private final IFixedValueDAO fixedValueDao;
     
     @Autowired
-    public DataElementFixedValuesControllerImpl(FixedValuesService fixedValuesService, IDataElementDAO dataElementDao, IFixedValueDAO fixedValueDao) {
+    public DataElementFixedValuesControllerImpl(
+            DataElementsService dataElementsService, FixedValuesService fixedValuesService, 
+            IDataElementDAO dataElementDao, IFixedValueDAO fixedValueDao) {
+        this.dataElementsService = dataElementsService;
         this.fixedValuesService = fixedValuesService;
         this.dataElementDao = dataElementDao;
         this.fixedValueDao = fixedValueDao;
@@ -43,18 +48,17 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
     public DataElement getOwnerDataElement(AppContextProvider contextProvider, String ownerDataElementId, boolean isEditRequest) 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
                    FixedValueOwnerNotEditableException, UserAuthorizationException {
-        if (!contextProvider.isUserAuthenticated()) {
-            throw new UserAuthenticationException();
-        }
-        
         int elementId = this.convertStringIdentifier(ownerDataElementId);
-        DataElement ownerElement = this.getDataElement(elementId);
         
-        if (isEditRequest) {
-            this.checkEditability(contextProvider, ownerElement);
+        try {
+            return this.dataElementsService.getDataElement(contextProvider, elementId, !isEditRequest);
         }
-        
-        return ownerElement;
+        catch (ResourceNotFoundException ex) {
+            throw new FixedValueOwnerNotFoundException((Integer)ex.getResourceId());
+        }
+        catch (NotAWorkingCopyException ex) {
+            throw new FixedValueOwnerNotEditableException(ex);
+        }
     }
     
     @Override
@@ -118,43 +122,6 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
         }
         catch (NumberFormatException ex) {
             throw new MalformedIdentifierException(id, ex);
-        }
-    }
-    
-    private DataElement getDataElement(int elementId) throws FixedValueOwnerNotFoundException {
-        if (!this.dataElementDao.dataElementExists(elementId)) {
-            throw new FixedValueOwnerNotFoundException(elementId);
-        }
-        
-        return this.dataElementDao.getDataElement(elementId);
-    }
-    
-    private void checkEditability(AppContextProvider contextProvider, DataElement dataElement) 
-            throws FixedValueOwnerNotEditableException, UserAuthorizationException {
-        boolean workingCopy;
-        String workingUser;
-        
-        if (dataElement.isCommonElement()) {
-            workingCopy = dataElement.isWorkingCopy();
-            workingUser = dataElement.getWorkingUser();
-        }
-        else {
-            DataSet parentDataSet = this.dataElementDao.getParentDataSet(dataElement.getId());
-            
-            if (parentDataSet == null) {
-                throw new IllegalStateException();
-            }
-            
-            workingCopy = parentDataSet.isWorkingCopy();
-            workingUser = parentDataSet.getWorkingUser();
-        }
-        
-        if (!workingCopy) {
-            throw new FixedValueOwnerNotEditableException();
-        }
-        
-        if (!ObjectUtils.equals(workingUser, contextProvider.getUserName())) {
-            throw new UserAuthorizationException();
         }
     }
     

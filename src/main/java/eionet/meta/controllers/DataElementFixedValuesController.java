@@ -48,6 +48,12 @@ public interface DataElementFixedValuesController {
     public static final String PROPERTY_FIXED_VALUES = "fixedValues";
     
     public static class FixedValueOwnerNotEditableException extends Exception {
+
+        public FixedValueOwnerNotEditableException() { }
+        
+        public FixedValueOwnerNotEditableException(Throwable cause) {
+            super(cause);
+        }
         
     }
     
