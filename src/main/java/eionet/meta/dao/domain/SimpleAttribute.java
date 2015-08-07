@@ -21,14 +21,52 @@
 
 package eionet.meta.dao.domain;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Simple attribute object.
  *
  * @author Juhan Voolaid
  */
-public class
-        SimpleAttribute {
+public class SimpleAttribute {
 
+    public static enum DisplayType {
+        NONE(""),
+        TEXT_BOX("text"),
+        TEXT_AREA("textarea"),
+        SELECT_BOX("select"),
+        IMAGE("image");
+        
+        private String value;
+        
+        private DisplayType(String value) {
+            this.value = value;
+        }
+        
+        public boolean isMatch(String value) {
+            return this.value.equalsIgnoreCase(value);
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+        
+        public static DisplayType parse(String text) {
+            if (StringUtils.isBlank(text)) {
+                return NONE;
+            }
+            
+            for (DisplayType value : DisplayType.values()) {
+                if (value.isMatch(text)) {
+                    return value;
+                }
+            }
+            
+            throw new IllegalArgumentException();
+        }
+    }
+    
     /**
      * M_ATTRIBUTE_ID.
      */

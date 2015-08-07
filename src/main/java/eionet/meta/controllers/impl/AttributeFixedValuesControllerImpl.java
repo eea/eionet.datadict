@@ -9,6 +9,7 @@ import eionet.meta.application.errors.UserAuthenticationException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
+import eionet.meta.application.errors.fixedvalues.NotAFixedValueOwnerException;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.domain.FixedValue;
@@ -38,7 +39,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
 
     @Override
     public SimpleAttribute getOwnerAttribute(AppContextProvider contextProvider, String ownerAttributeId) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         if (!contextProvider.isUserAuthenticated()) {
             throw new UserAuthenticationException();
         }
@@ -51,7 +52,8 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     
     @Override
     public CompoundDataObject getSingleValueModel(AppContextProvider contextProvider, String ownerAttributeId, String fixedValue) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
+                   NotAFixedValueOwnerException, FixedValueNotFoundException {
         SimpleAttribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
         FixedValue value = this.fixedValuesService.getFixedValue(ownerAttribute, fixedValue);
         CompoundDataObject result = new CompoundDataObject();
@@ -63,7 +65,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
 
     @Override
     public CompoundDataObject getAllValuesModel(AppContextProvider contextProvider, String ownerAttributeId) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         SimpleAttribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
         Collection<FixedValue> fixedValues = this.attributeDao.getFixedValues(ownerAttribute.getAttributeId());
         CompoundDataObject result = new CompoundDataObject();
@@ -75,8 +77,8 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
 
     @Override
     public void saveFixedValue(AppContextProvider contextProvider, String ownerAttributeId, String originalValue, FixedValue fixedValue) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                   EmptyValueException, DuplicateResourceException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
+                   FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
         if (fixedValue == null) {
             throw new IllegalArgumentException();
         }
@@ -87,7 +89,8 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
 
     @Override
     public void deleteFixedValue(AppContextProvider contextProvider, String ownerAttributeId, String fixedValue) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
+                   NotAFixedValueOwnerException, FixedValueNotFoundException {
         CompoundDataObject result = this.getSingleValueModel(contextProvider, ownerAttributeId, fixedValue);
         FixedValue  fxv = result.get(PROPERTY_FIXED_VALUE);
         this.fixedValueDao.deleteById(fxv.getId());
@@ -95,7 +98,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     
     @Override
     public void deleteFixedValues(AppContextProvider contextProvider, String ownerAttributeId) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         SimpleAttribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
         this.fixedValueDao.deleteAll(FixedValue.OwnerType.ATTRIBUTE, ownerAttribute.getAttributeId());
     }
@@ -109,11 +112,15 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
         }
     }
     
-    private SimpleAttribute getAttribute(int attributeId) throws FixedValueOwnerNotFoundException {
+    private SimpleAttribute getAttribute(int attributeId) throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         SimpleAttribute attr = this.attributeDao.getById(attributeId);
         
         if (attr == null) {
             throw new FixedValueOwnerNotFoundException(attributeId);
+        }
+        
+        if (!SimpleAttribute.DisplayType.SELECT_BOX.isMatch(attr.getInputType())) {
+            throw new NotAFixedValueOwnerException();
         }
         
         return this.attributeDao.getById(attributeId);

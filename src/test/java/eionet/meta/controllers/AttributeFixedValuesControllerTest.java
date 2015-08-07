@@ -7,6 +7,7 @@ import eionet.meta.application.errors.UserAuthenticationException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
+import eionet.meta.application.errors.fixedvalues.NotAFixedValueOwnerException;
 import eionet.meta.controllers.impl.AttributeFixedValuesControllerImpl;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IFixedValueDAO;
@@ -51,7 +52,7 @@ public class AttributeFixedValuesControllerTest {
     
     @Test
     public void testGetOwnerAttribute() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         final int ownerId = 5;
         SimpleAttribute expected = this.createOwner(ownerId);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
@@ -62,30 +63,40 @@ public class AttributeFixedValuesControllerTest {
     
     @Test(expected = UserAuthenticationException.class)
     public void testFailToGetOwnerAttributeBecauseOfAuthentication() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         when(contextProvider.isUserAuthenticated()).thenReturn(false);
         this.controller.getOwnerAttribute(contextProvider, "1");
     }
     
     @Test(expected = MalformedIdentifierException.class)
     public void testFailToGetOwnerAttributeBecauseOfMalformedId() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         this.controller.getOwnerAttribute(contextProvider, "a");
     }
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
     public void testFailToGetOwnerAttributeBecauseOfOwnerNotFound() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         final int ownerId = 5;
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(null);
         this.controller.getOwnerAttribute(contextProvider, Integer.toString(ownerId));
     }
     
+    @Test(expected = NotAFixedValueOwnerException.class)
+    public void testFailToGetOwnerAttributeBecauseOfOwnership() 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        final int ownerId = 5;
+        SimpleAttribute expected = this.createNonOwner(ownerId);
+        when(contextProvider.isUserAuthenticated()).thenReturn(true);
+        when(attributeDao.getById(ownerId)).thenReturn(expected);
+        this.controller.getOwnerAttribute(contextProvider, Integer.toString(ownerId));
+    }
+    
     @Test
     public void testGetAllValuesModel() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         final int ownerId = 5;
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
         List<FixedValue> expectedValues = new ArrayList<FixedValue>();
@@ -102,30 +113,40 @@ public class AttributeFixedValuesControllerTest {
     
     @Test(expected = UserAuthenticationException.class)
     public void testFailToGetAllValuesModelBecauseOfAuthentication() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         when(contextProvider.isUserAuthenticated()).thenReturn(false);
         this.controller.getAllValuesModel(contextProvider, "1");
     }
     
     @Test(expected = MalformedIdentifierException.class)
     public void testFailToGetAllValuesModelBecauseOfMalformedId() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         this.controller.getAllValuesModel(contextProvider, "a");
     }
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
     public void testFailToGetAllValuesModelBecauseOfOwnerNotFound() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         final int ownerId = 5;
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(null);
         this.controller.getAllValuesModel(contextProvider, Integer.toString(ownerId));
     }
     
+    @Test(expected = NotAFixedValueOwnerException.class)
+    public void testFailToGetAllValuesModelBecauseOfOwnership() 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        final int ownerId = 5;
+        SimpleAttribute expected = this.createNonOwner(ownerId);
+        when(contextProvider.isUserAuthenticated()).thenReturn(true);
+        when(attributeDao.getById(ownerId)).thenReturn(expected);
+        this.controller.getAllValuesModel(contextProvider, Integer.toString(ownerId));
+    }
+    
     @Test
     public void testDeleteFixedValues() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         final int ownerId = 5;
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
@@ -136,30 +157,40 @@ public class AttributeFixedValuesControllerTest {
     
     @Test(expected = UserAuthenticationException.class)
     public void testFailToDeleteFixedValuesBecauseOfAuthentication() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         when(contextProvider.isUserAuthenticated()).thenReturn(false);
         this.controller.deleteFixedValues(contextProvider, "1");
     }
     
     @Test(expected = MalformedIdentifierException.class)
     public void testFailToDeleteFixedValuesBecauseOfMalformedId() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         this.controller.deleteFixedValues(contextProvider, "a");
     }
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
     public void testFailToDeleteFixedValuesBecauseOfOwnerNotFound() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         final int ownerId = 5;
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(null);
         this.controller.deleteFixedValues(contextProvider, Integer.toString(ownerId));
     }
     
+    @Test(expected = NotAFixedValueOwnerException.class)
+    public void testFailToDeleteFixedValuesBecauseOfOwnership() 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        final int ownerId = 5;
+        SimpleAttribute expected = this.createNonOwner(ownerId);
+        when(contextProvider.isUserAuthenticated()).thenReturn(true);
+        when(attributeDao.getById(ownerId)).thenReturn(expected);
+        this.controller.deleteFixedValues(contextProvider, Integer.toString(ownerId));
+    }
+    
     @Test
     public void testGetSingleValueModel() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
         final String fixedValue = "val";
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
@@ -176,30 +207,40 @@ public class AttributeFixedValuesControllerTest {
     
     @Test(expected = UserAuthenticationException.class)
     public void testFailToGetSingleValueModelBecauseOfAuthentication() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         when(contextProvider.isUserAuthenticated()).thenReturn(false);
         this.controller.getSingleValueModel(contextProvider, "1", "val");
     }
     
     @Test(expected = MalformedIdentifierException.class)
     public void testFailToGetSingleValueModelBecauseOfMalformedId() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         this.controller.getSingleValueModel(contextProvider, "a", "val");
     }
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
     public void testFailToGetSingleValueModelBecauseOfOwnerNotFound() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(null);
         this.controller.getSingleValueModel(contextProvider, Integer.toString(ownerId), "val");
     }
     
+    @Test(expected = NotAFixedValueOwnerException.class)
+    public void testFailToGetSingleValueModelBecauseOfOwnership() 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
+        final int ownerId = 5;
+        SimpleAttribute expected = this.createNonOwner(ownerId);
+        when(contextProvider.isUserAuthenticated()).thenReturn(true);
+        when(attributeDao.getById(ownerId)).thenReturn(expected);
+        this.controller.getSingleValueModel(contextProvider, Integer.toString(ownerId), "val");
+    }
+    
     @Test(expected = FixedValueNotFoundException.class)
     public void testFailToGetSingleValueModelBecauseOfValueNotFound() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
         final String fixedValue = "val";
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
@@ -211,7 +252,7 @@ public class AttributeFixedValuesControllerTest {
     
     @Test
     public void testDeleteFixedValue() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
         final String fixedValue = "val";
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
@@ -225,30 +266,40 @@ public class AttributeFixedValuesControllerTest {
     
     @Test(expected = UserAuthenticationException.class)
     public void testFailToDeleteFixedValueBecauseOfAuthentication() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         when(contextProvider.isUserAuthenticated()).thenReturn(false);
         this.controller.deleteFixedValue(contextProvider, "1", "val");
     }
     
     @Test(expected = MalformedIdentifierException.class)
     public void testFailToDeleteFixedValueBecauseOfMalformedId() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         this.controller.deleteFixedValue(contextProvider, "a", "val");
     }
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
     public void testFailToDeleteFixedValueBecauseOfOwnerNotFound() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(null);
         this.controller.deleteFixedValue(contextProvider, Integer.toString(ownerId), "val");
     }
     
+    @Test(expected = NotAFixedValueOwnerException.class)
+    public void testFailToDeleteFixedValueBecauseOfOwnership() 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
+        final int ownerId = 5;
+        SimpleAttribute expected = this.createNonOwner(ownerId);
+        when(contextProvider.isUserAuthenticated()).thenReturn(true);
+        when(attributeDao.getById(ownerId)).thenReturn(expected);
+        this.controller.deleteFixedValue(contextProvider, Integer.toString(ownerId), "val");
+    }
+    
     @Test(expected = FixedValueNotFoundException.class)
     public void testFailToDeleteFixedValueBecauseOfValueNotFound() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException {
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
         final String fixedValue = "val";
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
@@ -261,7 +312,7 @@ public class AttributeFixedValuesControllerTest {
     @Test
     public void testSaveFixedValue() 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                   FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
+                   FixedValueNotFoundException, NotAFixedValueOwnerException, EmptyValueException, DuplicateResourceException {
         final int ownerId = 5;
         final String originalValue = "val";
         final FixedValue fxv = this.createSaveInput(originalValue);
@@ -275,7 +326,7 @@ public class AttributeFixedValuesControllerTest {
     @Test(expected = UserAuthenticationException.class)
     public void testFailToSaveFixedValueBecauseOfAuthentication() 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                   FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
+                   FixedValueNotFoundException, NotAFixedValueOwnerException, EmptyValueException, DuplicateResourceException {
         when(contextProvider.isUserAuthenticated()).thenReturn(false);
         this.controller.saveFixedValue(contextProvider, "3", "val", this.createSaveInput("val"));
     }
@@ -283,7 +334,7 @@ public class AttributeFixedValuesControllerTest {
     @Test(expected = MalformedIdentifierException.class)
     public void testFailToSaveFixedValueBecauseOfMalformedId() 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                   FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
+                   FixedValueNotFoundException, NotAFixedValueOwnerException, EmptyValueException, DuplicateResourceException {
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         this.controller.saveFixedValue(contextProvider, "a", "val", this.createSaveInput("val"));
     }
@@ -291,17 +342,29 @@ public class AttributeFixedValuesControllerTest {
     @Test(expected = FixedValueOwnerNotFoundException.class)
     public void testFailToSaveFixedValueBecauseOfOwnerNotFound() 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                   FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
+                   FixedValueNotFoundException, NotAFixedValueOwnerException, EmptyValueException, DuplicateResourceException {
         final int ownerId = 5;
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(null);
         this.controller.saveFixedValue(contextProvider, Integer.toString(ownerId), "val", this.createSaveInput("val"));
     }
     
+    @Test(expected = NotAFixedValueOwnerException.class)
+    public void testFailToSaveFixedValueBecauseOfOwnership() 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
+                   FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
+        final int ownerId = 5;
+        final String value = "val";
+        SimpleAttribute expected = this.createNonOwner(ownerId);
+        when(contextProvider.isUserAuthenticated()).thenReturn(true);
+        when(attributeDao.getById(ownerId)).thenReturn(expected);
+        this.controller.saveFixedValue(contextProvider, Integer.toString(ownerId), value, this.createSaveInput(value));
+    }
+    
     @Test(expected = FixedValueNotFoundException.class)
     public void testFailToSaveFixedValueBecauseOfValueNotFound() 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                   FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
+                   FixedValueNotFoundException, NotAFixedValueOwnerException, EmptyValueException, DuplicateResourceException {
         final int ownerId = 5;
         final String originalValue = "val";
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
@@ -315,7 +378,7 @@ public class AttributeFixedValuesControllerTest {
     @Test(expected = EmptyValueException.class)
     public void testFailToSaveFixedValueBecauseOfEmptyValue() 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                   FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
+                   FixedValueNotFoundException, NotAFixedValueOwnerException, EmptyValueException, DuplicateResourceException {
         final int ownerId = 5;
         final String originalValue = "val";
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
@@ -329,7 +392,7 @@ public class AttributeFixedValuesControllerTest {
     @Test(expected = DuplicateResourceException.class)
     public void testFailToSaveFixedValueBecauseOfDuplicateValue() 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                   FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
+                   FixedValueNotFoundException, NotAFixedValueOwnerException, EmptyValueException, DuplicateResourceException {
         final int ownerId = 5;
         final String originalValue = "val";
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
@@ -341,6 +404,14 @@ public class AttributeFixedValuesControllerTest {
     }
     
     private SimpleAttribute createOwner(int id) {
+        SimpleAttribute owner = new SimpleAttribute();
+        owner.setAttributeId(id);
+        owner.setInputType(SimpleAttribute.DisplayType.SELECT_BOX.toString());
+        
+        return owner;
+    }
+    
+    private SimpleAttribute createNonOwner(int id) {
         SimpleAttribute owner = new SimpleAttribute();
         owner.setAttributeId(id);
         
