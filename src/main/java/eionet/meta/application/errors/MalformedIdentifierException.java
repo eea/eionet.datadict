@@ -1,7 +1,8 @@
 package eionet.meta.application.errors;
 
 /**
- *
+ * Thrown to indicate parsing failure of an entity's id.
+ * 
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
 public class MalformedIdentifierException extends Exception {

@@ -3,7 +3,11 @@ package eionet.web.action;
 import eionet.meta.application.AppContextProvider;
 
 /**
- *
+ * An adapter type that implements the {@link AppContextProvider} protocol.
+ * Using this implementation with IoC pattern, we ensure that controllers
+ * and services remain agnostic to the view layer and its specifics, such as
+ * HTTP servlet requests etc.
+ * 
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
 public class ActionBeanContextProvider implements AppContextProvider {

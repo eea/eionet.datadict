@@ -1,7 +1,8 @@
 package eionet.meta.application.errors;
 
 /**
- *
+ * Thrown to indicate that a requested resource was not found.
+ * 
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
 public class ResourceNotFoundException extends Exception {
