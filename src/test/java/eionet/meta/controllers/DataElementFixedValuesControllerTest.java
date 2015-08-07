@@ -10,6 +10,7 @@ import eionet.meta.application.errors.UserAuthorizationException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
+import eionet.meta.application.errors.fixedvalues.NotAFixedValueOwnerException;
 import eionet.meta.controllers.impl.DataElementFixedValuesControllerImpl;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IFixedValueDAO;
@@ -58,7 +59,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test
     public void testGetOwnerDataElement() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, 
+            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, NotAFixedValueOwnerException,
                    MalformedIdentifierException, FixedValueOwnerNotFoundException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = false;
@@ -70,14 +71,14 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = MalformedIdentifierException.class)
     public void testFailToGetOwnerDataElementBecauseOfMalformedId() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
         this.controller.getOwnerDataElement(contextProvider, "a", false);
     }
     
     @Test(expected = UserAuthenticationException.class)
     public void testFailToGetOwnerDataElementBecauseOfAuthentication() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException,
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, NotAWorkingCopyException {
         final int ownerId = 5;
         final boolean edit = false;
@@ -87,7 +88,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
     public void testFailToGetOwnerDataElementBecauseOfOwnerNotFound() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = false;
@@ -97,7 +98,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = DataElementFixedValuesController.FixedValueOwnerNotEditableException.class)
     public void testFailToGetOwnerDataElementBecauseOfOwnerNotEditable() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -107,7 +108,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = UserAuthorizationException.class)
     public void testFailToGetOwnerDataElementBecauseOfAuthorization() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -115,9 +116,20 @@ public class DataElementFixedValuesControllerTest {
         this.controller.getOwnerDataElement(contextProvider, Integer.toString(ownerId), edit);
     }
     
+    @Test(expected = NotAFixedValueOwnerException.class)
+    public void testFailToGetOwnerDataElementBecauseOfOwnership() 
+            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, NotAFixedValueOwnerException,
+                   MalformedIdentifierException, FixedValueOwnerNotFoundException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
+        final int ownerId = 5;
+        final boolean edit = false;
+        DataElement expected = this.createNonOwner(ownerId);
+        when(dataElementsService.getDataElement(contextProvider, ownerId, !edit)).thenReturn(expected);
+        this.controller.getOwnerDataElement(contextProvider, Integer.toString(ownerId), edit);
+    }
+    
     @Test
     public void testGetAllValuesModel() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, 
+            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, NotAFixedValueOwnerException,
                    MalformedIdentifierException, FixedValueOwnerNotFoundException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = false;
@@ -135,14 +147,14 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = MalformedIdentifierException.class)
     public void testFailToGetAllValuesModelBecauseOfMalformedId() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
         this.controller.getAllValuesModel(contextProvider, "a", false);
     }
     
     @Test(expected = UserAuthenticationException.class)
     public void testFailToGetAllValuesModelBecauseOfAuthentication() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException,
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, NotAWorkingCopyException {
         final int ownerId = 5;
         final boolean edit = false;
@@ -152,7 +164,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
     public void testFailToGetAllValuesModelBecauseOfOwnerNotFound() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = false;
@@ -162,7 +174,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = DataElementFixedValuesController.FixedValueOwnerNotEditableException.class)
     public void testFailToGetAllValuesModelBecauseOfOwnerNotEditable() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -172,7 +184,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = UserAuthorizationException.class)
     public void testFailToGetAllValuesModelBecauseOfAuthorization() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -182,7 +194,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test
     public void testDeleteFixedValues() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, 
+            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, NotAFixedValueOwnerException,
                    MalformedIdentifierException, FixedValueOwnerNotFoundException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -194,14 +206,14 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = MalformedIdentifierException.class)
     public void testFailToDeleteFixedValuesBecauseOfMalformedId() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
         this.controller.deleteFixedValues(contextProvider, "a");
     }
     
     @Test(expected = UserAuthenticationException.class)
     public void testFailToDeleteFixedValuesBecauseOfAuthentication() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException,
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, NotAWorkingCopyException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -211,7 +223,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
     public void testFailToDeleteFixedValuesBecauseOfOwnerNotFound() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -221,7 +233,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = DataElementFixedValuesController.FixedValueOwnerNotEditableException.class)
     public void testFailToDeleteFixedValuesBecauseOfOwnerNotEditable() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -231,7 +243,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = UserAuthorizationException.class)
     public void testFailToDeleteFixedValuesBecauseOfAuthorization() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -241,7 +253,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test
     public void testGetSingleValueModel() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, 
+            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, NotAFixedValueOwnerException,
                    MalformedIdentifierException, FixedValueOwnerNotFoundException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = false;
@@ -259,14 +271,14 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = MalformedIdentifierException.class)
     public void testFailToGetSingleValueModelBecauseOfMalformedId() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, FixedValueNotFoundException {
         this.controller.getSingleValueModel(contextProvider, "a", "val", false);
     }
     
     @Test(expected = UserAuthenticationException.class)
     public void testFailToGetSingleValueModelBecauseOfAuthentication() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException,
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, NotAWorkingCopyException {
         final int ownerId = 5;
         final boolean edit = false;
@@ -276,7 +288,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
     public void testFailToGetSingleValueModelBecauseOfOwnerNotFound() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = false;
@@ -286,7 +298,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = DataElementFixedValuesController.FixedValueOwnerNotEditableException.class)
     public void testFailToGetSingleValueModelBecauseOfOwnerNotEditable() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -296,7 +308,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = UserAuthorizationException.class)
     public void testFailToGetSingleValueModelBecauseOfAuthorization() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -306,7 +318,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = FixedValueNotFoundException.class)
     public void testFailToGetSingleValueModelBecauseOfValueNotFound()
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = false;
@@ -319,7 +331,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test
     public void testDeleteFixedValue() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, 
+            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, NotAFixedValueOwnerException,
                    MalformedIdentifierException, FixedValueOwnerNotFoundException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -334,14 +346,14 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = MalformedIdentifierException.class)
     public void testFailToDeleteFixedValueBecauseOfMalformedId() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, FixedValueNotFoundException {
         this.controller.deleteFixedValue(contextProvider, "a", "val");
     }
     
     @Test(expected = UserAuthenticationException.class)
     public void testFailToDeleteFixedValueBecauseOfAuthentication() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException,
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, NotAWorkingCopyException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -351,7 +363,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
     public void testFailToDeleteFixedValueBecauseOfOwnerNotFound() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -361,7 +373,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = DataElementFixedValuesController.FixedValueOwnerNotEditableException.class)
     public void testFailToDeleteFixedValueBecauseOfOwnerNotEditable() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -371,7 +383,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = UserAuthorizationException.class)
     public void testFailToDeleteFixedValueBecauseOfAuthorization() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -381,7 +393,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = FixedValueNotFoundException.class)
     public void testFailToDeleteFixedValueBecauseOfValueNotFound()
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         final boolean edit = true;
@@ -394,7 +406,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test
     public void testSaveFixedValue() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, 
+            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, NotAFixedValueOwnerException,
                    MalformedIdentifierException, FixedValueOwnerNotFoundException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
                    DuplicateResourceException, EmptyValueException {
         final int ownerId = 5;
@@ -409,7 +421,7 @@ public class DataElementFixedValuesControllerTest {
     
     @Test(expected = MalformedIdentifierException.class)
     public void testFailToSaveFixedValueBecauseOfMalformedId() 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
+            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, FixedValueNotFoundException,
                    DuplicateResourceException, EmptyValueException {
         final String value = "val";
@@ -420,7 +432,7 @@ public class DataElementFixedValuesControllerTest {
     public void testFailToSaveFixedValueBecauseOfAuthentication() 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException,
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, NotAWorkingCopyException,
-                   DuplicateResourceException, EmptyValueException {
+                   DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
         final boolean edit = true;
         final String value = "val";
@@ -432,7 +444,7 @@ public class DataElementFixedValuesControllerTest {
     public void testFailToSaveFixedValueBecauseOfOwnerNotFound() 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
-                   DuplicateResourceException, EmptyValueException {
+                   DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
         final boolean edit = true;
         final String value = "val";
@@ -444,7 +456,7 @@ public class DataElementFixedValuesControllerTest {
     public void testFailToSaveFixedValueBecauseOfOwnerNotEditable() 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
-                   DuplicateResourceException, EmptyValueException {
+                   DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
         final boolean edit = true;
         final String value = "val";
@@ -456,7 +468,7 @@ public class DataElementFixedValuesControllerTest {
     public void testFailToSaveFixedValueBecauseOfAuthorization() 
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
-                   DuplicateResourceException, EmptyValueException {
+                   DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
         final boolean edit = true;
         final String value = "val";
@@ -468,7 +480,7 @@ public class DataElementFixedValuesControllerTest {
     public void testFailToSaveFixedValueBecauseOfValueNotFound()
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
-                   DuplicateResourceException, EmptyValueException {
+                   DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
         final boolean edit = true;
         final String value = "val";
@@ -483,7 +495,7 @@ public class DataElementFixedValuesControllerTest {
     public void testFailToSaveFixedValueBecauseOfDuplicate()
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
-                   DuplicateResourceException, EmptyValueException {
+                   DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
         final boolean edit = true;
         final String originalValue = "val";
@@ -499,7 +511,7 @@ public class DataElementFixedValuesControllerTest {
     public void testFailToSaveFixedValueBecauseOfEmptyValue()
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, ResourceNotFoundException, 
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
-                   DuplicateResourceException, EmptyValueException {
+                   DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
         final boolean edit = true;
         final String originalValue = "val";
@@ -514,8 +526,17 @@ public class DataElementFixedValuesControllerTest {
     private DataElement createOwner(int id) {
         DataElement owner = new DataElement();
         owner.setId(id);
+        owner.setType(DataElement.DataElementValueType.FIXED.toString());
         
         return owner;
+    }
+    
+    private DataElement createNonOwner(int id) {
+        DataElement nonOwner = new DataElement();
+        nonOwner.setId(id);
+        nonOwner.setType(DataElement.DataElementValueType.VOCABULARY.toString());
+        
+        return nonOwner;
     }
     
     private FixedValue createFixedValue(int id, DataElement owner, String value) {

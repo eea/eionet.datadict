@@ -9,6 +9,7 @@ import eionet.meta.application.errors.UserAuthorizationException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
+import eionet.meta.application.errors.fixedvalues.NotAFixedValueOwnerException;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.web.action.fixedvalues.DataElementFixedValuesViewModelBuilder;
@@ -108,8 +109,9 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         return new ActionHandler<DataElement>(this) {
 
             @Override
-            protected DataElement executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+            protected DataElement executeAction() 
+                    throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
+                           DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 return controller.getOwnerDataElement(getContextProvider(), ownerId, true);
             }
 
@@ -128,8 +130,10 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         return new ActionHandler<Void>(this) {
 
             @Override
-            protected Void executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, DuplicateResourceException, EmptyValueException {
+            protected Void executeAction() 
+                    throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
+                           DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, DuplicateResourceException, 
+                           NotAFixedValueOwnerException, EmptyValueException {
                 FixedValue fxv = viewModel.getFixedValue();
                 controller.saveFixedValue(getContextProvider(), ownerId, fixedValue, fxv);
                 
@@ -157,8 +161,9 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         return new ActionHandler<CompoundDataObject>(this) {
 
             @Override
-            protected CompoundDataObject executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+            protected CompoundDataObject executeAction() 
+                    throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
+                           NotAFixedValueOwnerException, DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 return controller.getSingleValueModel(getContextProvider(), ownerId, fixedValue, false);
             }
 
@@ -175,8 +180,9 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         return new ActionHandler<CompoundDataObject>(this) {
 
             @Override
-            protected CompoundDataObject executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+            protected CompoundDataObject executeAction() 
+                    throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
+                           DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 return controller.getAllValuesModel(getContextProvider(), ownerId, false);
             }
 
@@ -194,8 +200,9 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         return new ActionHandler<CompoundDataObject>(this) {
 
             @Override
-            protected CompoundDataObject executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+            protected CompoundDataObject executeAction() 
+                    throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
+                           NotAFixedValueOwnerException, DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 return controller.getSingleValueModel(getContextProvider(), ownerId, fixedValue, true);
             }
 
@@ -212,8 +219,9 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         return new ActionHandler<CompoundDataObject>(this) {
 
             @Override
-            protected CompoundDataObject executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+            protected CompoundDataObject executeAction() 
+                    throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
+                           DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 return controller.getAllValuesModel(getContextProvider(), ownerId, true);
             }
 
@@ -230,8 +238,9 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         return new ActionHandler<Void>(this) {
 
             @Override
-            protected Void executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+            protected Void executeAction() 
+                    throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
+                           NotAFixedValueOwnerException, DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 controller.deleteFixedValue(getContextProvider(), ownerId, fixedValue);
                 
                 return null;
@@ -248,8 +257,9 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         return new ActionHandler<Void>(this) {
 
             @Override
-            protected Void executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+            protected Void executeAction() 
+                    throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
+                           DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
                 controller.deleteFixedValues(getContextProvider(), ownerId);
                 
                 return null;
@@ -302,6 +312,11 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, msg);
     }
     
+    private Resolution onNotAFixedValueOwner() {
+        String msg = String.format("Data element with id %s is not a fixed values owner", this.ownerId);
+        return super.createErrorResolution(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR, msg);
+    }
+    
     private Resolution redirectToEditValuesPage() {
         return new RedirectResolution(this.getClass(), "edit").addParameter("ownerId", this.ownerId);
     }
@@ -348,6 +363,9 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
             catch (EmptyValueException ex) {
                 return this.actionBean.onEmptyValue();
             }
+            catch (NotAFixedValueOwnerException ex) {
+                return this.actionBean.onNotAFixedValueOwner();
+            }
             
             return this.onActionComplete(actionResult);
         }
@@ -355,7 +373,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         protected abstract T executeAction() 
                 throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
                        FixedValueNotFoundException, DataElementFixedValuesController.FixedValueOwnerNotEditableException, 
-                       UserAuthorizationException, DuplicateResourceException, EmptyValueException;
+                       NotAFixedValueOwnerException, UserAuthorizationException, DuplicateResourceException, EmptyValueException;
         
         protected abstract Resolution onActionComplete(T actionResult);
     }

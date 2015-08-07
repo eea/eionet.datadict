@@ -35,6 +35,41 @@ import java.util.Map;
  */
 public class DataElement {
 
+    public static enum DataElementValueType {
+        FIXED("CH1"),
+        QUANTITIVE("CH2"),
+        VOCABULARY("CH3");
+        
+        private final String value;
+        
+        private DataElementValueType(String value) {
+            this.value = value;
+        }
+        
+        public boolean isMatch(String value) {
+            return this.value.equalsIgnoreCase(value);
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+        
+        public static DataElementValueType parse(String text) {
+            if (StringUtils.isBlank(text)) {
+                return null;
+            }
+            
+            for (DataElementValueType value : DataElementValueType.values()) {
+                if (value.isMatch(text)) {
+                    return value;
+                }
+            }
+            
+            throw new IllegalArgumentException();
+        }
+    }
+    
     /**
      * Id.
      */
