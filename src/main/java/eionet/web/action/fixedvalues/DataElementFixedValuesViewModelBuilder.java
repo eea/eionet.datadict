@@ -52,7 +52,7 @@ public class DataElementFixedValuesViewModelBuilder {
     private void attachOwnerDetails(DataElement ownerElement, boolean editView, FixedValuesViewModel viewModel) {
         FixedValueOwnerDetails owner = new FixedValueOwnerDetails();
         owner.setId(ownerElement.getId());
-        owner.setCaption(ownerElement.getShortName());
+        owner.setCaption(ownerElement.getIdentifier());
         owner.setUri(this.composeOwnerUri(ownerElement, editView));
         owner.setEntityName("element");
         viewModel.setOwner(owner);
