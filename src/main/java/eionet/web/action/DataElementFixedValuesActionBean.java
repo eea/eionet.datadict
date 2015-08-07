@@ -11,10 +11,8 @@ import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
-import eionet.web.action.fixedvalues.FixedValueCategory;
-import eionet.web.action.fixedvalues.FixedValueOwnerDetails;
+import eionet.web.action.fixedvalues.DataElementFixedValuesViewModelBuilder;
 import eionet.web.action.fixedvalues.FixedValuesViewModel;
-import java.util.Collection;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.HandlesEvent;
@@ -46,17 +44,20 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
     @SpringBean
     private DataElementFixedValuesController controller;
     
+    private final DataElementFixedValuesViewModelBuilder viewModelBuilder;
+    
     private String ownerId;
     private String fixedValue;
     
     private FixedValuesViewModel viewModel;
-
-    public DataElementFixedValuesController getController() {
-        return controller;
+    
+    public DataElementFixedValuesActionBean() { 
+        this.viewModelBuilder = new DataElementFixedValuesViewModelBuilder();
     }
-
-    public void setController(DataElementFixedValuesController controller) {
+    
+    public DataElementFixedValuesActionBean(DataElementFixedValuesController controller, DataElementFixedValuesViewModelBuilder viewModelBuilder) {
         this.controller = controller;
+        this.viewModelBuilder = viewModelBuilder;
     }
     
     public String getOwnerId() {
@@ -114,7 +115,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected Resolution onActionComplete(DataElement actionResult) {
-                applyResultToViewModel(actionResult, true);
+                viewModel = viewModelBuilder.buildFromOwner(actionResult, true);
         
                 return new ForwardResolution(PAGE_FIXED_VALUE_EDIT);
             }
@@ -163,7 +164,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected Resolution onActionComplete(CompoundDataObject actionResult) {
-                applyResultToViewModel(actionResult, false);
+                viewModel = viewModelBuilder.buildFromSingleValueModel(actionResult, false);
         
                 return new ForwardResolution(PAGE_FIXED_VALUE_VIEW);
             }
@@ -181,7 +182,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected Resolution onActionComplete(CompoundDataObject actionResult) {
-                applyResultToViewModel(actionResult, true);
+                viewModel = viewModelBuilder.buildFromAllValuesModel(actionResult, false);
         
                 return new ForwardResolution(PAGE_FIXED_VALUES_VIEW);
             }
@@ -200,7 +201,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected Resolution onActionComplete(CompoundDataObject actionResult) {
-                applyResultToViewModel(actionResult, true);
+                viewModel = viewModelBuilder.buildFromSingleValueModel(actionResult, true);
                 
                 return new ForwardResolution(PAGE_FIXED_VALUE_EDIT);
             }
@@ -218,7 +219,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected Resolution onActionComplete(CompoundDataObject actionResult) {
-                applyResultToViewModel(actionResult, true);
+                viewModel = viewModelBuilder.buildFromAllValuesModel(actionResult, true);
         
                 return new ForwardResolution(PAGE_FIXED_VALUES_EDIT);
             }
@@ -307,59 +308,6 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
     
     private boolean isSingleValueRequest() {
         return !StringUtils.isBlank(this.fixedValue);
-    }
-    
-    private void applyResultToViewModel(CompoundDataObject result, boolean hasEditSource) {
-        this.initViewModel();
-        this.applyOwnerToViewModel(result, hasEditSource);
-        this.applyFixedValuesToViewModel(result);
-    }
-    
-    private void applyResultToViewModel(DataElement result, boolean hasEditSource) {
-        this.initViewModel();
-        this.applyOwnerToViewModel(result, hasEditSource);
-    }
-    
-    private void initViewModel() {
-        this.setViewModel(new FixedValuesViewModel());
-        this.viewModel.setActionBeanName(this.getClass().getName());
-        this.viewModel.setDefaultValueRequired(false);
-    }
-    
-    private void applyOwnerToViewModel(CompoundDataObject result, boolean hasEditSource) {
-        DataElement ownerElement = result.get(DataElementFixedValuesController.PROPERTY_OWNER_DATA_ELEMENT);
-        this.applyOwnerToViewModel(ownerElement, hasEditSource);
-    }
-    
-    private void applyOwnerToViewModel(DataElement ownerElement, boolean hasEditSource) {
-        FixedValueOwnerDetails owner = new FixedValueOwnerDetails();
-        owner.setId(ownerElement.getId());
-        owner.setCaption(ownerElement.getShortName());
-        owner.setUri(this.composeOwnerUri(ownerElement, hasEditSource));
-        owner.setEntityName("element");
-        this.viewModel.setOwner(owner);
-        this.viewModel.setFixedValueCategory("CH2".equals(ownerElement.getType()) ? FixedValueCategory.SUGGESTED : FixedValueCategory.ALLOWABLE);
-    }
-    
-    private String composeOwnerUri(DataElement ownerElement, boolean hasEditSource) {
-        String uri = String.format("/dataelements/%d", ownerElement.getId());
-        
-        if (hasEditSource) {
-            uri += "/edit";
-        }
-        
-        return uri;
-    }
-    
-    private void applyFixedValuesToViewModel(CompoundDataObject result) {
-        if (result.containsKey(DataElementFixedValuesController.PROPERTY_FIXED_VALUES)) {
-            Collection<FixedValue> fixedValues = result.get(DataElementFixedValuesController.PROPERTY_FIXED_VALUES);
-            viewModel.getFixedValues().addAll(fixedValues);
-        }
-        else {
-            FixedValue fxv = result.get(DataElementFixedValuesController.PROPERTY_FIXED_VALUE);
-            viewModel.setFixedValue(fxv);
-        }
     }
     
     private static abstract class ActionHandler<T> {

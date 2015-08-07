@@ -10,10 +10,8 @@ import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.FixedValue;
-import eionet.web.action.fixedvalues.FixedValueCategory;
-import eionet.web.action.fixedvalues.FixedValueOwnerDetails;
+import eionet.web.action.fixedvalues.AttributeFixedValuesViewModelBuilder;
 import eionet.web.action.fixedvalues.FixedValuesViewModel;
-import java.util.Collection;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.HandlesEvent;
@@ -45,17 +43,20 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     @SpringBean
     private AttributeFixedValuesController controller;
     
+    private final AttributeFixedValuesViewModelBuilder viewModelBuilder;
+    
     private String ownerId;
     private String fixedValue;
     
     private FixedValuesViewModel viewModel;
 
-    public AttributeFixedValuesController getController() {
-        return controller;
+    public AttributeFixedValuesActionBean() {
+        this.viewModelBuilder = new AttributeFixedValuesViewModelBuilder();
     }
-
-    public void setController(AttributeFixedValuesController contoller) {
-        this.controller = contoller;
+    
+    public AttributeFixedValuesActionBean(AttributeFixedValuesController controller, AttributeFixedValuesViewModelBuilder viewModelBuilder) {
+        this.controller = controller;
+        this.viewModelBuilder = viewModelBuilder;
     }
     
     public String getOwnerId() {
@@ -121,7 +122,7 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
             
             @Override
             protected Resolution onActionComplete(Attribute actionResult) {
-                applyResultToViewModel(actionResult, true);
+                viewModel = viewModelBuilder.buildFromOwner(actionResult, true);
         
                 return new ForwardResolution(PAGE_FIXED_VALUE_EDIT);
             }
@@ -215,7 +216,7 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected Resolution onActionComplete(CompoundDataObject actionResult) {
-                applyResultToViewModel(actionResult, isEditSource);
+                viewModel = viewModelBuilder.buildFromSingleValueModel(actionResult, isEditSource);
         
                 return new ForwardResolution(forwardTargetPage);
             }
@@ -233,7 +234,7 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected Resolution onActionComplete(CompoundDataObject actionResult) {
-                applyResultToViewModel(actionResult, isEditSource);
+                viewModel = viewModelBuilder.buildFromAllValuesModel(actionResult, isEditSource);
         
                 return new ForwardResolution(forwardTargetPage);
             }
@@ -277,59 +278,6 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     
     private boolean isSingleValueRequest() {
         return !StringUtils.isBlank(this.fixedValue);
-    }
-    
-    private void applyResultToViewModel(CompoundDataObject result, boolean hasEditSource) {
-        this.initViewModel();
-        this.applyOwnerToViewModel(result, hasEditSource);
-        this.applyFixedValuesToViewModel(result);
-    }
-    
-    private void applyResultToViewModel(Attribute result, boolean hasEditSource) {
-        this.initViewModel();
-        this.applyOwnerToViewModel(result, hasEditSource);
-    }
-    
-    private void initViewModel() {
-        this.setViewModel(new FixedValuesViewModel());
-        this.viewModel.setActionBeanName(this.getClass().getName());
-        this.viewModel.setDefaultValueRequired(true);
-    }
-    
-    private void applyOwnerToViewModel(CompoundDataObject result, boolean hasEditSource) {
-        Attribute ownerAttribute = result.get(AttributeFixedValuesController.PROPERTY_OWNER_ATTRIBUTE);
-        this.applyOwnerToViewModel(ownerAttribute, hasEditSource);
-    }
-    
-    private void applyOwnerToViewModel(Attribute ownerAttribute, boolean hasEditSource) {
-        FixedValueOwnerDetails owner = new FixedValueOwnerDetails();
-        owner.setId(ownerAttribute.getId());
-        owner.setCaption(ownerAttribute.getShortName());
-        owner.setUri(this.composeOwnerUri(ownerAttribute, hasEditSource));
-        owner.setEntityName("attribute");
-        this.viewModel.setOwner(owner);
-        this.viewModel.setFixedValueCategory(FixedValueCategory.ALLOWABLE);
-    }
-    
-    private String composeOwnerUri(Attribute ownerAttribute, boolean hasEditSource) {
-        String uri = String.format("/delem_attribute.jsp?type=SIMPLE&attr_id=%d", ownerAttribute.getId());
-        
-        if (hasEditSource) {
-            uri += "&mode=edit";
-        }
-        
-        return uri;
-    }
-    
-    private void applyFixedValuesToViewModel(CompoundDataObject result) {
-        if (result.containsKey(AttributeFixedValuesController.PROPERTY_FIXED_VALUES)) {
-            Collection<FixedValue> fixedValues = result.get(AttributeFixedValuesController.PROPERTY_FIXED_VALUES);
-            viewModel.getFixedValues().addAll(fixedValues);
-        }
-        else {
-            FixedValue fxv = result.get(AttributeFixedValuesController.PROPERTY_FIXED_VALUE);
-            viewModel.setFixedValue(fxv);
-        }
     }
     
     private static abstract class ActionHandler<T> {
