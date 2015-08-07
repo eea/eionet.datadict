@@ -8,8 +8,8 @@ import eionet.meta.application.errors.UserAuthenticationException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
-import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.web.action.fixedvalues.AttributeFixedValuesViewModelBuilder;
 import eionet.web.action.fixedvalues.FixedValuesViewModel;
 import net.sourceforge.stripes.action.DefaultHandler;
@@ -113,15 +113,15 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     
     @HandlesEvent("add")
     public Resolution add() {
-        return new ActionHandler<Attribute>(this) {
+        return new ActionHandler<SimpleAttribute>(this) {
             
             @Override
-            protected Attribute executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
+            protected SimpleAttribute executeAction() throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException {
                 return controller.getOwnerAttribute(getContextProvider(), ownerId);
             }
             
             @Override
-            protected Resolution onActionComplete(Attribute actionResult) {
+            protected Resolution onActionComplete(SimpleAttribute actionResult) {
                 viewModel = viewModelBuilder.buildFromOwner(actionResult, true);
         
                 return new ForwardResolution(PAGE_FIXED_VALUE_EDIT);

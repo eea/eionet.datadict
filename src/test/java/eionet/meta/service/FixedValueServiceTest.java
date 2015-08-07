@@ -4,9 +4,9 @@ import eionet.meta.application.errors.DuplicateResourceException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.dao.IFixedValueDAO;
-import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.service.impl.FixedValuesServiceImpl;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import static org.junit.Assert.*;
@@ -39,7 +39,7 @@ public class FixedValueServiceTest {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.ATTRIBUTE;
         int ownerId = 1;
         String value = "val";
-        Attribute owner = this.createOwnerAttribute(ownerId);
+        SimpleAttribute owner = this.createOwnerAttribute(ownerId);
         FixedValue expected = this.createFixedValue(ownerType, ownerId, value);
         when(fixedValueDao.getByValue(ownerType, ownerId, value)).thenReturn(expected);
         FixedValue actual = this.fixedValueService.getFixedValue(owner, value);
@@ -48,7 +48,7 @@ public class FixedValueServiceTest {
     
     @Test(expected = FixedValueNotFoundException.class)
     public void testGetNonExistingFixedValueOfAttribute() throws FixedValueNotFoundException {
-        Attribute owner = this.createOwnerAttribute(1);
+        SimpleAttribute owner = this.createOwnerAttribute(1);
         when(fixedValueDao.getByValue(any(FixedValue.OwnerType.class), any(Integer.class), any(String.class))).thenReturn(null);
         this.fixedValueService.getFixedValue(owner, "any value");
     }
@@ -77,7 +77,7 @@ public class FixedValueServiceTest {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.ATTRIBUTE;
         int ownerId = 1;
         String value = "val";
-        Attribute owner = this.createOwnerAttribute(ownerId);
+        SimpleAttribute owner = this.createOwnerAttribute(ownerId);
         FixedValue inValue = this.createFixedValue(value, "definition", "short description", false);
         when(fixedValueDao.exists(ownerType, ownerId, value)).thenReturn(false);
         this.fixedValueService.saveFixedValue(owner, null, inValue);
@@ -111,7 +111,7 @@ public class FixedValueServiceTest {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.ATTRIBUTE;
         int ownerId = 1;
         String value = "val";
-        Attribute owner = this.createOwnerAttribute(ownerId);
+        SimpleAttribute owner = this.createOwnerAttribute(ownerId);
         FixedValue inValue = this.createFixedValue(value, "definition", "short description", true);
         when(fixedValueDao.exists(ownerType, ownerId, value)).thenReturn(false);
         this.fixedValueService.saveFixedValue(owner, null, inValue);
@@ -158,7 +158,7 @@ public class FixedValueServiceTest {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.ATTRIBUTE;
         int ownerId = 1;
         String value = "val";
-        Attribute owner = this.createOwnerAttribute(ownerId);
+        SimpleAttribute owner = this.createOwnerAttribute(ownerId);
         FixedValue inValue = this.createFixedValue(value, null, null, false);
         when(fixedValueDao.exists(ownerType, ownerId, value)).thenReturn(true);
         this.fixedValueService.saveFixedValue(owner, null, inValue);
@@ -208,7 +208,7 @@ public class FixedValueServiceTest {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.ATTRIBUTE;
         int ownerId = 5;
         String value = "val";
-        Attribute owner = this.createOwnerAttribute(ownerId);
+        SimpleAttribute owner = this.createOwnerAttribute(ownerId);
         FixedValue inValue = this.createFixedValue(value, "definition", "short description", true);
         String originalValue = value;
         FixedValue original = this.createFixedValue(1, ownerType, ownerId, originalValue, "orig def", "orig desc", false);
@@ -295,9 +295,9 @@ public class FixedValueServiceTest {
         return fxv;
     }
     
-    private Attribute createOwnerAttribute(int ownerId) {
-        Attribute owner = new Attribute();
-        owner.setId(ownerId);
+    private SimpleAttribute createOwnerAttribute(int ownerId) {
+        SimpleAttribute owner = new SimpleAttribute();
+        owner.setAttributeId(ownerId);
         
         return owner;
     }

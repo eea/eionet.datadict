@@ -1,8 +1,8 @@
 package eionet.web.action.fixedvalues;
 
 import eionet.meta.controllers.AttributeFixedValuesController;
-import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.util.CompoundDataObject;
 import eionet.web.action.AttributeFixedValuesActionBean;
 import java.util.Collection;
@@ -13,7 +13,7 @@ import java.util.Collection;
  */
 public class AttributeFixedValuesViewModelBuilder {
 
-    public FixedValuesViewModel buildFromOwner(Attribute ownerElement, boolean editView) {
+    public FixedValuesViewModel buildFromOwner(SimpleAttribute ownerElement, boolean editView) {
         FixedValuesViewModel viewModel = this.createViewModel();
         this.attachOwnerDetails(ownerElement, editView, viewModel);
         
@@ -45,22 +45,22 @@ public class AttributeFixedValuesViewModelBuilder {
     }
     
     private void attachOwnerDetails(CompoundDataObject model, boolean editView, FixedValuesViewModel viewModel) {
-        Attribute ownerAttribute = model.get(AttributeFixedValuesController.PROPERTY_OWNER_ATTRIBUTE);
+        SimpleAttribute ownerAttribute = model.get(AttributeFixedValuesController.PROPERTY_OWNER_ATTRIBUTE);
         this.attachOwnerDetails(ownerAttribute, editView, viewModel);
     }
     
-    private void attachOwnerDetails(Attribute ownerAttribute, boolean editView, FixedValuesViewModel viewModel) {
+    private void attachOwnerDetails(SimpleAttribute ownerAttribute, boolean editView, FixedValuesViewModel viewModel) {
         FixedValueOwnerDetails owner = new FixedValueOwnerDetails();
-        owner.setId(ownerAttribute.getId());
-        owner.setCaption(ownerAttribute.getShortName());
+        owner.setId(ownerAttribute.getAttributeId());
+        owner.setCaption(ownerAttribute.getIdentifier());
         owner.setUri(this.composeOwnerUri(ownerAttribute, editView));
         owner.setEntityName("attribute");
         viewModel.setOwner(owner);
         viewModel.setFixedValueCategory(FixedValueCategory.ALLOWABLE);
     }
     
-    private String composeOwnerUri(Attribute ownerAttribute, boolean editView) {
-        String uri = String.format("/delem_attribute.jsp?type=SIMPLE&attr_id=%d", ownerAttribute.getId());
+    private String composeOwnerUri(SimpleAttribute ownerAttribute, boolean editView) {
+        String uri = String.format("/delem_attribute.jsp?type=SIMPLE&attr_id=%d", ownerAttribute.getAttributeId());
         
         if (editView) {
             uri += "&mode=edit";

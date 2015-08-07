@@ -91,26 +91,6 @@ public class DataServiceImpl implements IDataService {
         }
     }
     
-    @Override
-    public Attribute getAttributeById(int id) throws ServiceException {
-        try {
-            return attributeDao.getById(id);
-        }
-        catch(Exception e){
-            throw new ServiceException("Failed to get attribute by id " + e.getMessage(), e);
-        }
-    }
-    
-    @Override
-    public boolean attributeExists(int id) throws ServiceException {
-        try {
-            return attributeDao.exists(id);
-        } 
-        catch(Exception e){
-            throw new ServiceException("Failed to check if attribute exists " + e.getMessage(), e);
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -166,20 +146,6 @@ public class DataServiceImpl implements IDataService {
             throw new ServiceException("Failed to check if data element exists: " + e.getMessage(), e);
         }
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DataSet getDataElementParentDataSet(int dataElementId) throws ServiceException {
-        try {
-            return this.dataElementDao.getParentDataSet(dataElementId);
-        }
-        catch (Exception ex) {
-            throw new ServiceException("Failed to get parent data set of data element with id: " + dataElementId, ex);
-        }
-    }
-
     /**
      * {@inheritDoc}
      */

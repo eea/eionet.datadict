@@ -9,7 +9,6 @@ import eionet.meta.dao.domain.ComplexAttribute;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
-import eionet.meta.service.ServiceException;
 
 /**
  *
@@ -133,24 +132,16 @@ public interface IAttributeDAO {
     List<SimpleAttribute> getAttributesMetadata(int typeWeight);
 
     /**
-     * Returns attribute with specific ID
-     * @param id
-     * @return attribute
+     * Returns a simple attribute with a specific id.
+     * @param id the id for the attribute to fetch.
+     * @return the corresponding {@link SimpleAttribute} instance if an attribute with the given id is found; null otherwise.
      */
-    Attribute getById(int id);
-    
-    /**
-     * Checks if attribute with specific ID exists
-     * @param id
-     * @return boolean
-     */
-    boolean exists(int id);
+    SimpleAttribute getById(int id);
     
     /**
      * Returns attribute's fixed values.
      * @param attributeId
      * @return list of fixed values
-     * @throws ServiceException 
      */
     public List<FixedValue> getFixedValues(int attributeId);
 }

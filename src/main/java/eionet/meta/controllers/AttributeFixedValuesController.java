@@ -8,8 +8,8 @@ import eionet.meta.application.errors.UserAuthenticationException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
-import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.SimpleAttribute;
 
 /**
  *
@@ -17,7 +17,7 @@ import eionet.meta.dao.domain.FixedValue;
  */
 public interface AttributeFixedValuesController {
     
-    Attribute getOwnerAttribute(AppContextProvider contextProvider, String ownerAttributeId)
+    SimpleAttribute getOwnerAttribute(AppContextProvider contextProvider, String ownerAttributeId)
             throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException;
     
     CompoundDataObject getSingleValueModel(AppContextProvider contextProvider, String ownerAttributeId, String fixedValue)

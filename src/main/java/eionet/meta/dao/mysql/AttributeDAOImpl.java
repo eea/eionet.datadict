@@ -28,7 +28,6 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.mysql.valueconverters.BooleanToYesNoConverter;
-import eionet.meta.service.ServiceException;
 import eionet.util.Pair;
 
 /**
@@ -544,34 +543,27 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         return items;
     }
     
-    public Attribute getById(int id){
+    @Override
+    public SimpleAttribute getById(int id){
         String sql = "select * from M_ATTRIBUTE where M_ATTRIBUTE_ID = :id";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);
 
-        Attribute result = getNamedParameterJdbcTemplate().queryForObject(sql, params, new RowMapper<Attribute>() {
+        List<SimpleAttribute> result = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<SimpleAttribute>() {
+            
             @Override
-            public Attribute mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Attribute attribute = new Attribute();
-                attribute.setId(rs.getInt("M_ATTRIBUTE_ID"));
-                attribute.setName(rs.getString("NAME"));
-                attribute.setShortName(rs.getString("SHORT_NAME"));
-                return attribute;
+            public SimpleAttribute mapRow(ResultSet rs, int rowNum) throws SQLException {
+                SimpleAttribute attr = new SimpleAttribute();
+                attr.setAttributeId(rs.getInt("M_ATTRIBUTE_ID"));
+                attr.setIdentifier(rs.getString("SHORT_NAME"));
+                attr.setLabel(rs.getString("NAME"));
+                attr.setInputType(rs.getString("DISP_TYPE"));
+                
+                return attr;
             }
         });
-        return result;
-    }
-
-    @Override
-    public boolean exists(int id){
-        String sql = "select count(*) from M_ATTRIBUTE where M_ATTRIBUTE_ID = :id";
         
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("id", id);
-         
-        int count = getNamedParameterJdbcTemplate().queryForInt(sql, params);
-        
-        return (count > 0);
+        return result.isEmpty() ? null : result.get(0);
     }
     
     @Override

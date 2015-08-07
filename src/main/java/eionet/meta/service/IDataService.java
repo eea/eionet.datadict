@@ -76,22 +76,6 @@ public interface IDataService {
      * @return
      */
     Attribute getAttributeByName(String shortName) throws ServiceException;
-    
-    /**
-     * Returns attribute with specific ID
-     * @param id
-     * @return attribute
-     * @throws ServiceException 
-     */
-    Attribute getAttributeById(int id) throws ServiceException;
-    
-    /**
-     * Checks if attribute with specific ID exists
-     * @param id
-     * @return boolean
-     * @throws ServiceException 
-     */
-    boolean attributeExists(int id) throws ServiceException;
 
     /**
      * Returns data element by id.
@@ -108,15 +92,6 @@ public interface IDataService {
      * @throws ServiceException 
      */
     boolean dataElementExists(int id) throws ServiceException;
-    
-    /**
-     * Returns the parent dataset of the non-common element with the given id.
-     * 
-     * @param dataElementId the id of a non-common element
-     * @return a {@link eionet.meta.dao.domain.DataSet} instance of the parent of the data element; null if no parent is found.
-     * @throws ServiceException
-     */
-    DataSet getDataElementParentDataSet(int dataElementId) throws ServiceException;
     
     /**
      * Search data elements.

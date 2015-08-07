@@ -4,9 +4,9 @@ import eionet.meta.application.errors.DuplicateResourceException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.dao.IFixedValueDAO;
-import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.service.FixedValuesService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +33,8 @@ public class FixedValuesServiceImpl implements FixedValuesService {
     }
 
     @Override
-    public FixedValue getFixedValue(Attribute owner, String value) throws FixedValueNotFoundException {
-        return this.getFixedValue(FixedValue.OwnerType.ATTRIBUTE, owner.getId(), value);
+    public FixedValue getFixedValue(SimpleAttribute owner, String value) throws FixedValueNotFoundException {
+        return this.getFixedValue(FixedValue.OwnerType.ATTRIBUTE, owner.getAttributeId(), value);
     }
     
     private FixedValue getFixedValue(FixedValue.OwnerType ownerType, int ownerId, String value) throws FixedValueNotFoundException {
@@ -56,8 +56,8 @@ public class FixedValuesServiceImpl implements FixedValuesService {
 
     @Override
     @Transactional
-    public void saveFixedValue(Attribute owner, String originalValue, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
-        this.saveFixedValue(FixedValue.OwnerType.ATTRIBUTE, owner.getId(), originalValue, fixedValue);
+    public void saveFixedValue(SimpleAttribute owner, String originalValue, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+        this.saveFixedValue(FixedValue.OwnerType.ATTRIBUTE, owner.getAttributeId(), originalValue, fixedValue);
     }
     
     private void saveFixedValue(FixedValue.OwnerType ownerType, int ownerId, String originalValue, FixedValue fixedValue) 
