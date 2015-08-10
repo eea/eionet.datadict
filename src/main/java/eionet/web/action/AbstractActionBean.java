@@ -41,6 +41,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
 import java.util.List;
 import net.sourceforge.stripes.action.Message;
+import net.sourceforge.stripes.action.RedirectResolution;
+import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.validation.ValidationErrors;
 
 /**
@@ -78,6 +80,13 @@ public abstract class AbstractActionBean implements ActionBean {
     /** */
     private String contextPath;
 
+    private final ActionBeanContextProvider contextProvider;
+    
+    public AbstractActionBean() {
+        super();
+        this.contextProvider = new ActionBeanContextProvider(this);
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -336,5 +345,13 @@ public abstract class AbstractActionBean implements ActionBean {
         }
 
         return isWebBrowser;
+    }
+    
+    protected final ActionBeanContextProvider getContextProvider() {
+        return this.contextProvider;
+    }
+    
+    protected Resolution createErrorResolution(ErrorActionBean.ErrorType errorType, String message) {
+        return new RedirectResolution(ErrorActionBean.class).addParameter("type", errorType).addParameter("message", message);
     }
 }

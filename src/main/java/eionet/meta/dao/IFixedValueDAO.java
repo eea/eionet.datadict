@@ -37,9 +37,18 @@ public interface IFixedValueDAO {
     
     /**
      * Deletes an existing fixed value
-     * @param fixedValue
+     * 
+     * @param id
      */
-    public void delete(FixedValue fixedValue);
+    public void deleteById(int id);
+    
+    /**
+     * Deletes all fixed values of a specific owner.
+     * 
+     * @param ownerType the type of the owner
+     * @param ownerId the id of the owner
+     */
+    void deleteAll(FixedValue.OwnerType ownerType, int ownerId);
     
     /**
      * Updates an existing fixed value
@@ -55,6 +64,16 @@ public interface IFixedValueDAO {
     public FixedValue getById(int id);
     
     /**
+     * Gets a fixed value by value and based on the owner specified.
+     * 
+     * @param ownerType the type of the owner
+     * @param ownerId the id of the owner
+     * @param value the value attribute of the fixed value
+     * @return a fixed value matching the specified criteria; null otherwise
+     */
+    public FixedValue getByValue(FixedValue.OwnerType ownerType, int ownerId, String value);
+    
+    /**
      * Checks existence of specific fixed value
      * @param id
      * @return fixed value
@@ -62,9 +81,23 @@ public interface IFixedValueDAO {
     public boolean exists(int id);
     
     /**
-     * Checks if fixed value exists with same owner,name
-     * @param fixedValue
-     * @return boolean
+     * Checks if fixed value exists with same owner, name
+     * 
+     * @param ownerType the type of the owner
+     * @param ownerId the id of the owner
+     * @param value the value attribute of the fixed value
+     * @return true if found; false otherwise
      */
-    public boolean existsWithSameNameOwner(FixedValue fixedValue);
+    public boolean exists(FixedValue.OwnerType ownerType, int ownerId, String value);
+    
+    /**
+     * Updates the default value of a fixed value set of a specified owner.
+     * This is an atomic operation that will flag the given value as default,
+     * and set all other values of the set as not default.
+     * 
+     * @param ownerType the entity type of the owner.
+     * @param ownerId the id of the owner.
+     * @param value the value to set as default.
+     */
+    public void updateDefaultValue(FixedValue.OwnerType ownerType, int ownerId, String value);
 }

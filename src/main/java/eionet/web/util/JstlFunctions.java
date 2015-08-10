@@ -223,4 +223,14 @@ public final class JstlFunctions {
     public static boolean arrayContains(Object[] array, Object o) {
         return Arrays.asList(array).contains(o);
     }
+    
+    /**
+     * Returns a UTF8 character representation of a boolean value.
+     * 
+     * @param value the value to convert.
+     * @return checkmark character if true; ballot-x character otherwise.
+     */
+    public static char checkmark(boolean value) {
+        return value ? '\u2713' : '\u2717';
+    }
 }

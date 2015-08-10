@@ -114,5 +114,14 @@
         </example>
     </function>
 
+    <function>
+        <description>Returns a UTF8 character representation of a boolean value.</description>
+        <name>checkmark</name>
+        <function-class>eionet.web.util.JstlFunctions</function-class>
+        <function-signature>char checkmark(boolean)</function-signature>
+        <example>
+            ${checkmark(someBoolean)}
+        </example>
+    </function>
 
 </taglib>

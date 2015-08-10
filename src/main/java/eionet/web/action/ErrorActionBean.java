@@ -29,6 +29,7 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 
 import javax.servlet.http.HttpServletResponse;
+import net.sourceforge.stripes.action.RedirectResolution;
 
 /**
  * Error page action bean.
@@ -43,9 +44,14 @@ public class ErrorActionBean extends AbstractActionBean {
 
     /** Possible Error Types. */
     public static enum ErrorType {
-        UNKNOWN, NOT_FOUND_404, INVALID_INPUT
+        UNKNOWN,
+        INTERNAL_SERVER_ERROR,
+        NOT_AUTHENTICATED_401,
+        FORBIDDEN_403,
+        NOT_FOUND_404, 
+        INVALID_INPUT
     };
-
+    
     /** Error message. */
     private String message;
     /** Error type. */
@@ -54,12 +60,16 @@ public class ErrorActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution showError() throws ServiceException {
         switch (this.type) {
-            // not found 404 errors are handled in DDExceptionHandler, this line probably wont be reached
+            case NOT_AUTHENTICATED_401:
+                return this.createHttpCodeBasedErrorResolution(HttpServletResponse.SC_UNAUTHORIZED);
+            case FORBIDDEN_403:
+                return this.createHttpCodeBasedErrorResolution(HttpServletResponse.SC_FORBIDDEN);
             case NOT_FOUND_404:
-                return new ErrorResolution(HttpServletResponse.SC_NOT_FOUND, this.message);
+                return this.createHttpCodeBasedErrorResolution(HttpServletResponse.SC_NOT_FOUND);
+            case INTERNAL_SERVER_ERROR:
             case UNKNOWN:
             default:
-                return new ForwardResolution("/pages/error.jsp");
+                return this.createHttpCodeBasedErrorResolution(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -80,7 +90,12 @@ public class ErrorActionBean extends AbstractActionBean {
 
     public String getErrorTypeMsg() {
         switch (this.type) {
-            // not found 404 errors are handled in DDExceptionHandler, this line probably wont be reached
+            case INTERNAL_SERVER_ERROR:
+                return "500 Server error";
+            case NOT_AUTHENTICATED_401:
+                return "401 Unauthorized";
+            case FORBIDDEN_403:
+                return "403 Forbidden";
             case NOT_FOUND_404:
                 return "404 Not Found";
             case INVALID_INPUT:
@@ -98,4 +113,11 @@ public class ErrorActionBean extends AbstractActionBean {
             this.type = ErrorType.UNKNOWN;
         }
     }
+    
+    private Resolution createHttpCodeBasedErrorResolution(int httpCode) {
+        super.getContext().getResponse().setStatus(httpCode);
+        
+        return new ForwardResolution("/pages/error.jsp");
+    }
+    
 }

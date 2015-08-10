@@ -180,4 +180,5 @@ public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implem
         }
         return sql;
     }
+        
 }

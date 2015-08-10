@@ -338,7 +338,7 @@
         }
 
         function openFxValues(){
-            var url = "fixed_values/attr/<%=attr_id%>";
+            var url = "<%=request.getContextPath()%>/fixedvalues/attr/<%=attr_id%>";
             wCh1Values = window.open(url,"AllowableValues","height=600,width=800,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
             if (window.focus) {wCh1Values.focus()}
         }
@@ -726,7 +726,7 @@ else
                             <%
                             if (mode.equals("edit") && dispType!=null && dispType.equals("select")){
                                 %>
-                                &nbsp;<span class="smallfont"><a href="fixed_values/attr/<%=attr_id%>">
+                                &nbsp;<span class="smallfont"><a href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attr_id%>/edit">
                                 <b>FIXED VALUES</b></a></span>
                                 <%
                             }
@@ -739,7 +739,7 @@ else
                 %>
                     <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
                         <th scope="row" class="scope-row">
-                                <a href="fixed_values/attr/<%=attr_id%>">
+                                <a href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attr_id%>">
                                     Fixed values
                                 </a>
                         </th>

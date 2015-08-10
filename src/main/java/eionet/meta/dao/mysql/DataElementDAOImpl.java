@@ -45,9 +45,11 @@ import eionet.meta.dao.domain.InferenceRule;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.RegStatus;
+import eionet.meta.dao.mysql.valueconverters.BooleanToYesNoConverter;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 import java.util.Collection;
@@ -400,9 +402,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setStatus(rs.getString("de.REG_STATUS"));
                 de.setType(rs.getString("de.TYPE"));
                 de.setModified(new Date(rs.getLong("de.DATE")));
+                de.setWorkingCopy(new BooleanToYesNoConverter().convertBack(rs.getString("de.WORKING_COPY")));
                 de.setWorkingUser(rs.getString("de.WORKING_USER"));
                 de.setDate(rs.getString("de.DATE"));
-
+                setParentNamespace(de, rs, "de.PARENT_NS");
                 de.setAllConceptsValid(rs.getBoolean("de.ALL_CONCEPTS_LEGAL"));
                 de.setVocabularyId(rs.getInt("de.VOCABULARY_ID"));
 
@@ -444,6 +447,41 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         parameters.put("regStatus", RegStatus.RELEASED.toString());
 
         return getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DataSet getParentDataSet(int dataElementId) {
+        String sql = 
+                "select ds.*\n" +
+                "from (\n" +
+                "	select DATAELEM_ID from DATAELEM where DATAELEM_ID = :dataElementId and PARENT_NS is not null\n" +
+                ") de \n" +
+                "	inner join TBL2ELEM dt2de on dt2de.DATAELEM_ID = de.DATAELEM_ID\n" +
+                "	inner join DST2TBL ds2dt on ds2dt.TABLE_ID = dt2de.TABLE_ID\n" +
+                "	inner join DATASET ds on ds.DATASET_ID = ds2dt.DATASET_ID;";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("dataElementId", dataElementId);
+        
+        List<DataSet> result = this.getNamedParameterJdbcTemplate().query(sql, parameters, new RowMapper<DataSet>() {
+
+            @Override
+            public DataSet mapRow(ResultSet rs, int i) throws SQLException {
+                DataSet ds = new DataSet();
+                ds.setId(rs.getInt("ds.DATASET_ID"));
+                ds.setIdentifier(rs.getString("ds.IDENTIFIER"));
+                ds.setDate(rs.getLong("ds.DATE"));
+                ds.setShortName(rs.getString("ds.SHORT_NAME"));
+                ds.setWorkingCopy(new BooleanToYesNoConverter().convertBack(rs.getString("ds.WORKING_COPY")));
+                ds.setWorkingUser(rs.getString("ds.WORKING_USER"));
+                
+                return ds;
+            }
+        });
+        
+        return result.isEmpty() ? null : result.get(0);
     }
 
     /**
@@ -1221,4 +1259,16 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         });
         return elements;
     }
+    
+    private void setParentNamespace(DataElement de, ResultSet rs, String columnName) throws SQLException {
+        int parentNamespace = rs.getInt(columnName);
+        
+        if (rs.wasNull()) {
+            de.setParentNamespace(null);
+        }
+        else {
+            de.setParentNamespace(parentNamespace);
+        }
+    }
+    
 }
