@@ -6,7 +6,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *
+ * A {@link Map} based object type that emulates dynamic object behavior. 
+ * Useful for scenarios that require returning compositions of DTO objects, 
+ * when we want to avoid introducing new object types to that purpose.
+ * 
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
 public final class CompoundDataObject implements Map<String, Object> {

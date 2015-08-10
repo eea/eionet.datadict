@@ -90,6 +90,14 @@ public interface IFixedValueDAO {
      */
     public boolean exists(FixedValue.OwnerType ownerType, int ownerId, String value);
     
-    
+    /**
+     * Updates the default value of a fixed value set of a specified owner.
+     * This is an atomic operation that will flag the given value as default,
+     * and set all other values of the set as not default.
+     * 
+     * @param ownerType the entity type of the owner.
+     * @param ownerId the id of the owner.
+     * @param value the value to set as default.
+     */
     public void updateDefaultValue(FixedValue.OwnerType ownerType, int ownerId, String value);
 }
