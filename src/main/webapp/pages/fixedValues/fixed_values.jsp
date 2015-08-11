@@ -8,7 +8,10 @@
             <%@ include file="/pages/fixedValues/fixed_values_header.jsp"%>
             <c:choose>
                 <c:when test="${empty actionBean.viewModel.fixedValues}">
-                    There are no <c:out value="${actionBean.viewModel.fixedValueCategoryLower}" /> values for this element
+                    There are no 
+                    <c:out value="${actionBean.viewModel.fixedValueCategoryLower}" /> 
+                    values for this 
+                    <c:out value="${actionBean.viewModel.owner.entityName}" />
                 </c:when>
                 <c:otherwise>
                     <table class="datatable">
