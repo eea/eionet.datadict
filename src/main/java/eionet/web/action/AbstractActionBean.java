@@ -26,6 +26,7 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.web.DDActionBeanContext;
+import eionet.web.action.uiservices.ErrorPageService;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.SimpleMessage;
@@ -43,6 +44,7 @@ import java.util.List;
 import net.sourceforge.stripes.action.Message;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationErrors;
 
 /**
@@ -82,6 +84,9 @@ public abstract class AbstractActionBean implements ActionBean {
 
     private final ActionBeanContextProvider contextProvider;
     
+    @SpringBean
+    private ErrorPageService errorPageService;
+    
     public AbstractActionBean() {
         super();
         this.contextProvider = new ActionBeanContextProvider(this);
@@ -103,6 +108,14 @@ public abstract class AbstractActionBean implements ActionBean {
         this.context = (DDActionBeanContext) context;
     }
 
+    public ErrorPageService getErrorPageService() {
+        return errorPageService;
+    }
+
+    public void setErrorPageService(ErrorPageService errorPageService) {
+        this.errorPageService = errorPageService;
+    }
+    
     /**
      * Adds system message. The message will be shown in a simple rectangle and is to provide information on <i>successful</i>
      * actions.
@@ -352,6 +365,7 @@ public abstract class AbstractActionBean implements ActionBean {
     }
     
     protected Resolution createErrorResolution(ErrorActionBean.ErrorType errorType, String message) {
-        return new RedirectResolution(ErrorActionBean.class).addParameter("type", errorType).addParameter("message", message);
+        return this.errorPageService.createErrorResolution(errorType, message);
     }
+    
 }
