@@ -44,19 +44,27 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
     @SpringBean
     private DataElementFixedValuesController controller;
     
-    private final DataElementFixedValuesViewModelBuilder viewModelBuilder;
+    @SpringBean
+    private DataElementFixedValuesViewModelBuilder viewModelBuilder;
     
     private String ownerId;
     private String fixedValue;
     
     private FixedValuesViewModel viewModel;
     
-    public DataElementFixedValuesActionBean() { 
-        this.viewModelBuilder = new DataElementFixedValuesViewModelBuilder();
+    public DataElementFixedValuesController getController() {
+        return controller;
     }
-    
-    public DataElementFixedValuesActionBean(DataElementFixedValuesController controller, DataElementFixedValuesViewModelBuilder viewModelBuilder) {
+
+    public void setController(DataElementFixedValuesController controller) {
         this.controller = controller;
+    }
+
+    public DataElementFixedValuesViewModelBuilder getViewModelBuilder() {
+        return viewModelBuilder;
+    }
+
+    public void setViewModelBuilder(DataElementFixedValuesViewModelBuilder viewModelBuilder) {
         this.viewModelBuilder = viewModelBuilder;
     }
     

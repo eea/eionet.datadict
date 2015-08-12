@@ -6,11 +6,13 @@ import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.util.CompoundDataObject;
 import eionet.web.action.AttributeFixedValuesActionBean;
 import java.util.Collection;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
+@Component
 public class AttributeFixedValuesViewModelBuilder {
 
     public FixedValuesViewModel buildFromOwner(SimpleAttribute ownerElement, boolean editView) {

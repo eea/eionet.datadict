@@ -6,11 +6,13 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.util.CompoundDataObject;
 import eionet.web.action.DataElementFixedValuesActionBean;
 import java.util.Collection;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
+@Component
 public class DataElementFixedValuesViewModelBuilder {
 
     public FixedValuesViewModel buildFromOwner(DataElement ownerElement, boolean editView) {

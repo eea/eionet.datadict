@@ -43,22 +43,30 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     @SpringBean
     private AttributeFixedValuesController controller;
     
-    private final AttributeFixedValuesViewModelBuilder viewModelBuilder;
+    @SpringBean
+    private AttributeFixedValuesViewModelBuilder viewModelBuilder;
     
     private String ownerId;
     private String fixedValue;
     
     private FixedValuesViewModel viewModel;
 
-    public AttributeFixedValuesActionBean() {
-        this.viewModelBuilder = new AttributeFixedValuesViewModelBuilder();
+    public AttributeFixedValuesController getController() {
+        return controller;
     }
-    
-    public AttributeFixedValuesActionBean(AttributeFixedValuesController controller, AttributeFixedValuesViewModelBuilder viewModelBuilder) {
+
+    public void setController(AttributeFixedValuesController controller) {
         this.controller = controller;
+    }
+
+    public AttributeFixedValuesViewModelBuilder getViewModelBuilder() {
+        return viewModelBuilder;
+    }
+
+    public void setViewModelBuilder(AttributeFixedValuesViewModelBuilder viewModelBuilder) {
         this.viewModelBuilder = viewModelBuilder;
     }
-    
+
     public String getOwnerId() {
         return ownerId;
     }
