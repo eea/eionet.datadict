@@ -4,7 +4,6 @@ import eionet.meta.application.errors.DuplicateResourceException;
 import eionet.meta.application.AppContextProvider;
 import eionet.util.CompoundDataObject;
 import eionet.meta.controllers.AttributeFixedValuesController;
-import eionet.meta.application.errors.MalformedIdentifierException;
 import eionet.meta.application.errors.UserAuthenticationException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
@@ -38,22 +37,20 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
 
     @Override
-    public SimpleAttribute getOwnerAttribute(AppContextProvider contextProvider, String ownerAttributeId) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+    public SimpleAttribute getOwnerAttribute(AppContextProvider contextProvider, int ownerAttributeId) 
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         if (!contextProvider.isUserAuthenticated()) {
             throw new UserAuthenticationException();
         }
         
-        int attributeId = this.convertStringIdentifier(ownerAttributeId);
-        SimpleAttribute ownerAttribute = this.getAttribute(attributeId);
+        SimpleAttribute ownerAttribute = this.getAttribute(ownerAttributeId);
         
         return ownerAttribute;
     }
     
     @Override
-    public CompoundDataObject getSingleValueModel(AppContextProvider contextProvider, String ownerAttributeId, String fixedValue) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
-                   NotAFixedValueOwnerException, FixedValueNotFoundException {
+    public CompoundDataObject getSingleValueModel(AppContextProvider contextProvider, int ownerAttributeId, String fixedValue) 
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         SimpleAttribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
         FixedValue value = this.fixedValuesService.getFixedValue(ownerAttribute, fixedValue);
         CompoundDataObject result = new CompoundDataObject();
@@ -64,8 +61,8 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
 
     @Override
-    public CompoundDataObject getAllValuesModel(AppContextProvider contextProvider, String ownerAttributeId) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+    public CompoundDataObject getAllValuesModel(AppContextProvider contextProvider, int ownerAttributeId) 
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         SimpleAttribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
         Collection<FixedValue> fixedValues = this.attributeDao.getFixedValues(ownerAttribute.getAttributeId());
         CompoundDataObject result = new CompoundDataObject();
@@ -76,8 +73,8 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
 
     @Override
-    public void saveFixedValue(AppContextProvider contextProvider, String ownerAttributeId, String originalValue, FixedValue fixedValue) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
+    public void saveFixedValue(AppContextProvider contextProvider, int ownerAttributeId, String originalValue, FixedValue fixedValue) 
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
                    FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
         if (fixedValue == null) {
             throw new IllegalArgumentException();
@@ -88,28 +85,18 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
 
     @Override
-    public void deleteFixedValue(AppContextProvider contextProvider, String ownerAttributeId, String fixedValue) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
-                   NotAFixedValueOwnerException, FixedValueNotFoundException {
+    public void deleteFixedValue(AppContextProvider contextProvider, int ownerAttributeId, String fixedValue) 
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         CompoundDataObject result = this.getSingleValueModel(contextProvider, ownerAttributeId, fixedValue);
         FixedValue  fxv = result.get(PROPERTY_FIXED_VALUE);
         this.fixedValueDao.deleteById(fxv.getId());
     }
     
     @Override
-    public void deleteFixedValues(AppContextProvider contextProvider, String ownerAttributeId) 
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+    public void deleteFixedValues(AppContextProvider contextProvider, int ownerAttributeId) 
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         SimpleAttribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
         this.fixedValueDao.deleteAll(FixedValue.OwnerType.ATTRIBUTE, ownerAttribute.getAttributeId());
-    }
-    
-    private int convertStringIdentifier(String id) throws MalformedIdentifierException {
-        try {
-            return Integer.parseInt(id);
-        }
-        catch (NumberFormatException ex) {
-            throw new MalformedIdentifierException(id, ex);
-        }
     }
     
     private SimpleAttribute getAttribute(int attributeId) throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {

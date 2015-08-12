@@ -4,7 +4,6 @@ import eionet.meta.application.AppContextProvider;
 import eionet.util.CompoundDataObject;
 import eionet.meta.application.errors.DuplicateResourceException;
 import eionet.meta.application.errors.UserAuthenticationException;
-import eionet.meta.application.errors.MalformedIdentifierException;
 import eionet.meta.application.errors.UserAuthorizationException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
@@ -23,21 +22,20 @@ public interface DataElementFixedValuesController {
      * Fetches info about an specific data element that accepts fixed values.
      * 
      * @param contextProvider an object that provides for application context info.
-     * @param ownerDataElementId the data element id in {@link String} form.
+     * @param ownerDataElementId the data element id.
      * @param isEditRequest a flag indicating whether the source operation concerns
      * editing, or viewing only.
      * 
      * @return a {@link DataElement} containing the requested info.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws MalformedIdentifierException if the data element id cannot be parsed.
      * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
      * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
      * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
-    DataElement getOwnerDataElement(AppContextProvider contextProvider, String ownerDataElementId, boolean isEditRequest)
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
+    DataElement getOwnerDataElement(AppContextProvider contextProvider, int ownerDataElementId, boolean isEditRequest)
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, 
                    NotAFixedValueOwnerException, FixedValueOwnerNotEditableException, UserAuthorizationException;
     
     /**
@@ -50,7 +48,7 @@ public interface DataElementFixedValuesController {
      * </ul>
      * 
      * @param contextProvider an object that provides for application context info.
-     * @param ownerDataElementId the data element id in {@link String} format.
+     * @param ownerDataElementId the data element id.
      * @param fixedValue the requested value.
      * @param isEditRequest a flag indicating whether the source operation concerns
      * editing, or viewing only.
@@ -59,16 +57,15 @@ public interface DataElementFixedValuesController {
      * fixed value, and the owner data element.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws MalformedIdentifierException if the data element id cannot be parsed.
      * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
      * @throws FixedValueNotFoundException if the fixed value cannot be found.
      * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
      * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
-    CompoundDataObject getSingleValueModel(AppContextProvider contextProvider, String ownerDataElementId, String fixedValue, boolean isEditRequest)
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                   FixedValueNotFoundException, NotAFixedValueOwnerException, FixedValueOwnerNotEditableException, UserAuthorizationException;
+    CompoundDataObject getSingleValueModel(AppContextProvider contextProvider, int ownerDataElementId, String fixedValue, boolean isEditRequest)
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
+                   NotAFixedValueOwnerException, FixedValueOwnerNotEditableException, UserAuthorizationException;
     
     /**
      * Fetches all the info required about the fixed values of a specific owner.
@@ -80,7 +77,7 @@ public interface DataElementFixedValuesController {
      * </ul>
      * 
      * @param contextProvider an object that provides for application context info.
-     * @param ownerDataElementId the data element id in {@link String} format.
+     * @param ownerDataElementId the data element id.
      * @param isEditRequest a flag indicating whether the source operation concerns
      * editing, or viewing only.
      * 
@@ -88,15 +85,14 @@ public interface DataElementFixedValuesController {
      * fixed values, and the owner data element.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws MalformedIdentifierException if the data element id cannot be parsed.
      * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
      * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
      * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
-    CompoundDataObject getAllValuesModel(AppContextProvider contextProvider, String ownerDataElementId, boolean isEditRequest)
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
-                   NotAFixedValueOwnerException, FixedValueOwnerNotEditableException, UserAuthorizationException;
+    CompoundDataObject getAllValuesModel(AppContextProvider contextProvider, int ownerDataElementId, boolean isEditRequest)
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
+                   FixedValueOwnerNotEditableException, UserAuthorizationException;
     
     /**
      * Persists the modified data of the fixed value of a specified owner. 
@@ -104,12 +100,11 @@ public interface DataElementFixedValuesController {
      * perform a create operation.
      * 
      * @param contextProvider an object that provides for application context info.
-     * @param ownerDataElementId the data element id in {@link String} format.
+     * @param ownerDataElementId the data element id.
      * @param originalValue the value of the {@link FixedValue} instance before the modification.
      * @param fixedValue the modification payload.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws MalformedIdentifierException if the data element id cannot be parsed.
      * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
      * @throws FixedValueNotFoundException if the fixed value cannot be found.
      * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
@@ -118,8 +113,8 @@ public interface DataElementFixedValuesController {
      * @throws EmptyValueException if the value property of the payload is blank.
      * @throws DuplicateResourceException if the updated/created value already exists.
      */
-    void saveFixedValue(AppContextProvider contextProvider, String ownerDataElementId, String originalValue, FixedValue fixedValue)
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
+    void saveFixedValue(AppContextProvider contextProvider, int ownerDataElementId, String originalValue, FixedValue fixedValue)
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException,
                    FixedValueNotFoundException, FixedValueOwnerNotEditableException, UserAuthorizationException, 
                    NotAFixedValueOwnerException, DuplicateResourceException, EmptyValueException;
     
@@ -127,36 +122,34 @@ public interface DataElementFixedValuesController {
      * Deletes the requested fixed value of a specified owner.
      * 
      * @param contextProvider an object that provides for application context info.
-     * @param ownerDataElementId the data element id in {@link String} format.
+     * @param ownerDataElementId the data element id.
      * @param fixedValue the value to be deleted.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws MalformedIdentifierException if the data element id cannot be parsed.
      * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
      * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
      * @throws FixedValueNotFoundException if the fixed value cannot be found.
      * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
-    void deleteFixedValue(AppContextProvider contextProvider, String ownerDataElementId, String fixedValue)
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException, 
-                   NotAFixedValueOwnerException, FixedValueNotFoundException, FixedValueOwnerNotEditableException, UserAuthorizationException;
+    void deleteFixedValue(AppContextProvider contextProvider, int ownerDataElementId, String fixedValue)
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
+                   FixedValueNotFoundException, FixedValueOwnerNotEditableException, UserAuthorizationException;
     
     /**
      * Deletes all fixed values of a specified owner.
      * 
      * @param contextProvider an object that provides for application context info.
-     * @param ownerDataElementId the data element id in {@link String} format.
+     * @param ownerDataElementId the data element id.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws MalformedIdentifierException if the data element id cannot be parsed.
      * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
      * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
      * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
-    void deleteFixedValues(AppContextProvider contextProvider, String ownerDataElementId)
-            throws UserAuthenticationException, MalformedIdentifierException, FixedValueOwnerNotFoundException,
+    void deleteFixedValues(AppContextProvider contextProvider, int ownerDataElementId)
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException,
                    NotAFixedValueOwnerException, FixedValueOwnerNotEditableException, UserAuthorizationException;
     
     public static final String PROPERTY_OWNER_DATA_ELEMENT = "owner";
