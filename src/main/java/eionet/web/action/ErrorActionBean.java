@@ -23,13 +23,10 @@ package eionet.web.action;
 
 import eionet.meta.service.ServiceException;
 import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
-
 import javax.servlet.http.HttpServletResponse;
-import net.sourceforge.stripes.action.RedirectResolution;
 
 /**
  * Error page action bean.
