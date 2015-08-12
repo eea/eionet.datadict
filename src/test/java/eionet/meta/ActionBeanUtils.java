@@ -8,11 +8,12 @@ import javax.servlet.ServletContextEvent;
 import net.sourceforge.stripes.controller.DispatcherServlet;
 import net.sourceforge.stripes.controller.StripesFilter;
 import net.sourceforge.stripes.mock.MockServletContext;
+import org.apache.commons.lang.StringUtils;
 
 import org.springframework.web.context.ContextLoaderListener;
 
 /**
- * Utils for testing Action Beans.
+ * Utilities for testing Action Beans.
  *
  * @author kaido
  */
@@ -34,10 +35,8 @@ public final class ActionBeanUtils {
             MockServletContext ctx = new MockServletContext("test");
 
             Map filterParams = new HashMap();
-
-            filterParams.put("Interceptor.Classes", "net.sourceforge.stripes.integration.spring.SpringInterceptor");
+            filterParams.put("Interceptor.Classes", getInterceptorClassesParameter());
             filterParams.put("ActionResolver.Packages", "eionet.web.action");
-
             filterParams.put("ActionBeanContext.Class", "eionet.web.DDActionBeanContext");
 
             ctx.addFilter(StripesFilter.class, "StripesFilter", filterParams);
@@ -53,4 +52,14 @@ public final class ActionBeanUtils {
 
         return ActionBeanUtils.context;
     }
+    
+    private static String getInterceptorClassesParameter() {
+        String[] interceptors = new String[] {
+            "net.sourceforge.stripes.integration.spring.SpringInterceptor",
+            "eionet.web.action.di.ActionBeanDependencyInjectionInterceptor"
+        };
+        
+        return StringUtils.join(interceptors, ", ");
+    }
+    
 }
