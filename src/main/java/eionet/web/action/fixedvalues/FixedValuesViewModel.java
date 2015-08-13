@@ -2,6 +2,9 @@ package eionet.web.action.fixedvalues;
 
 import eionet.meta.dao.domain.FixedValue;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -37,8 +40,20 @@ public final class FixedValuesViewModel {
         this.owner = owner;
     }
 
-    public List<FixedValue> getFixedValues() {
+    public Iterable<FixedValue> getFixedValues() {
         return fixedValues;
+    }
+    
+    public void setFixedValues(Collection<FixedValue> fixedValues) {
+        this.fixedValues.clear();
+        this.fixedValues.addAll(fixedValues);
+        Collections.sort(this.fixedValues, new Comparator<FixedValue>() {
+
+            @Override
+            public int compare(FixedValue o1, FixedValue o2) {
+                return o1.getValue().compareToIgnoreCase(o2.getValue());
+            }
+        });
     }
     
     public FixedValueCategory getFixedValueCategory() {
@@ -58,7 +73,7 @@ public final class FixedValuesViewModel {
     }
     
     public FixedValue getFixedValue() {
-        return this.fixedValues.isEmpty() ? null : this.getFixedValues().get(0);
+        return this.fixedValues.isEmpty() ? null : this.fixedValues.get(0);
     }
     
     public void setFixedValue(FixedValue fixedValue) {

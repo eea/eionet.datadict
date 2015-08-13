@@ -73,7 +73,7 @@ public class AttributeFixedValuesViewModelBuilder {
     
     private void attachFixedValues(CompoundDataObject model, FixedValuesViewModel viewModel) {
         Collection<FixedValue> values = model.get(AttributeFixedValuesController.PROPERTY_FIXED_VALUES);
-        viewModel.getFixedValues().addAll(values);
+        viewModel.setFixedValues(values);
     }
     
     private void attachFixedValue(CompoundDataObject model, FixedValuesViewModel viewModel) {
