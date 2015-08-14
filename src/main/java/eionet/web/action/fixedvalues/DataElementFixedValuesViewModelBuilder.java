@@ -2,6 +2,7 @@ package eionet.web.action.fixedvalues;
 
 import eionet.meta.controllers.DataElementFixedValuesController;
 import eionet.meta.dao.domain.DataElement;
+import static eionet.meta.dao.domain.DataElement.DataElementValueType;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.util.CompoundDataObject;
 import eionet.web.action.DataElementFixedValuesActionBean;
@@ -58,7 +59,7 @@ public class DataElementFixedValuesViewModelBuilder {
         owner.setUri(this.composeOwnerUri(ownerElement, editView));
         owner.setEntityName("element");
         viewModel.setOwner(owner);
-        viewModel.setFixedValueCategory("CH2".equals(ownerElement.getType()) ? FixedValueCategory.SUGGESTED : FixedValueCategory.ALLOWABLE);
+        viewModel.setFixedValueCategory(this.resolveCategory(ownerElement));
     }
     
     private String composeOwnerUri(DataElement ownerElement, boolean editView) {
@@ -69,6 +70,14 @@ public class DataElementFixedValuesViewModelBuilder {
         }
         
         return uri;
+    }
+    
+    private FixedValueCategory resolveCategory(DataElement ownerElement) {
+        if (DataElementValueType.QUANTITIVE.isMatch(ownerElement.getType())) {
+            return FixedValueCategory.SUGGESTED;
+        }
+        
+        return FixedValueCategory.ALLOWABLE;
     }
     
     private void attachFixedValues(CompoundDataObject model, FixedValuesViewModel viewModel) {
