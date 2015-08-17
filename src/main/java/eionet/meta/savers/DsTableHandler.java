@@ -745,7 +745,7 @@ public class DsTableHandler extends BaseHandler {
 
         String qry = "SELECT LAST_INSERT_ID()";
 
-        LOGGER.debug(qry);
+        //LOGGER.debug(qry);
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);

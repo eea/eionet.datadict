@@ -91,6 +91,11 @@ public class ElmSchema extends Schema {
         writeSimpleContent(elem);
     }
 
+    /**
+     * Write the schema declaration for a simple type with restrictions.
+     *
+     * @param elem - Data element
+     */
     private void writeSimpleContent(DataElement elem) throws Exception {
 
         String dataType = nonAnnotationAttributes.get("Datatype");
@@ -130,6 +135,10 @@ public class ElmSchema extends Schema {
         newLine();
 
         if (dataType != null) {
+            // "reference" and "localref" don't exist as XML types. They are RDF concepts.
+            if (dataType.equalsIgnoreCase("reference") || dataType.equalsIgnoreCase("localref")) {
+                dataType = "string";
+            }
 
             addString("\t\t");
             addString("<xs:restriction base=\"xs:");
@@ -221,7 +230,7 @@ public class ElmSchema extends Schema {
     }
 
     /**
-     * indicates if element is in container.
+     * Indicates if element is in container.
      * @return true if element schema is inside container
      */
     private boolean isIncontainer() {
