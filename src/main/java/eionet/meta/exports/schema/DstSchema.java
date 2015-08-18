@@ -45,6 +45,10 @@ public class DstSchema extends Schema {
         // set target namespace (being the so-called "datasets" namespace)
         setTargetNsUrl(NSID_DATASETS);
 
+        // Add the NS for datasets
+        Namespace tns = searchEngine.getNamespace(NSID_DATASETS);
+        addNamespace(tns);
+
         // set the dataset corresponding namespace
         String nsID = ds.getNamespaceID();
         if (!Util.isEmpty(nsID)) {
