@@ -10,7 +10,7 @@
             <table class="datatable" style="width:auto" cellspacing="0">
                 <tbody>
                     <tr>
-                        <th scope="row">Value:</th>
+                        <th scope="row">Code:</th>
                         <td><c:out value="${actionBean.viewModel.fixedValue.value}" /></td>
                     </tr>
                     <c:if test="${actionBean.viewModel.defaultValueRequired}">
@@ -20,12 +20,12 @@
                         </tr>
                     </c:if>
                     <tr>
-                        <th scope="row">Definition:</th>
-                        <td><c:out value="${actionBean.viewModel.fixedValue.definition}" /></td>
+                        <th scope="row">Label:</th>
+                        <td><c:out value="${actionBean.viewModel.fixedValue.shortDescription}" /></td>
                     </tr>
                     <tr>
-                        <th scope="row">Short Description:</th>
-                        <td><c:out value="${actionBean.viewModel.fixedValue.shortDescription}" /></td>
+                        <th scope="row">Definition:</th>
+                        <td><c:out value="${actionBean.viewModel.fixedValue.definition}" /></td>
                     </tr>
                 </tbody>
             </table>

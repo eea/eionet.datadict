@@ -24,7 +24,7 @@
                 <table class="datatable" style="width:auto">
                     <tbody>
                         <tr>
-                            <th scope="row">Value:</th>
+                            <th scope="row">Code:</th>
                             <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
                             <td><stripes:text name="viewModel.fixedValue.value" /></td>
                         </tr>
@@ -38,14 +38,14 @@
                             </tr>
                         </c:if>
                         <tr>
+                            <th scope="row">Label:</th>
+                            <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
+                            <td><stripes:textarea class="small" rows="3" cols="60" name="viewModel.fixedValue.shortDescription" /></td>
+                        </tr>
+                        <tr>
                             <th scope="row">Definition:</th>
                             <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
                             <td><stripes:textarea class="small" rows="3" cols="60" name="viewModel.fixedValue.definition" /></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Short Description:</th>
-                            <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
-                            <td><stripes:textarea class="small" rows="3" cols="60" name="viewModel.fixedValue.shortDescription" /></td>
                         </tr>
                         <tr>
                             <td></td>

@@ -67,12 +67,12 @@
                     <table class="datatable">
                         <tr>
                             <th></th>
-                            <th>Value</th>
+                            <th>Code</th>
                             <c:if test="${actionBean.viewModel.defaultValueRequired}">
                                 <th>Default</th>
                             </c:if>
+                            <th>Label</th>
                             <th>Definition</th>
-                            <th>Short Description</th>
                         </tr>
                         <c:forEach items="${actionBean.viewModel.fixedValues}" var="fixedValue">
                             <tr>
@@ -96,8 +96,8 @@
                                         ${ddfn:checkmark(fixedValue.defaultValue)}
                                     </td>
                                 </c:if>
-                                <td>${fixedValue.definition}</td>
                                 <td>${fixedValue.shortDescription}</td>
+                                <td>${fixedValue.definition}</td>
                             </tr>
                         </c:forEach>
                     </table>
