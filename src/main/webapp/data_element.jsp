@@ -483,7 +483,7 @@
                 if(mode.equals("view")){
                     DataElementDAOImpl dao = searchEngine.getSpringContext().getBean(DataElementDAOImpl.class);
                     eionet.meta.dao.domain.DataElement element = dao.getDataElement(Integer.parseInt(dataElement.getID()));
-                    dataElementRules = (ArrayList<InferenceRule>)dao.listInferenceRules(element);
+                    dataElementRules = (ArrayList<InferenceRule>)dao.getInferenceRules(element);
                 }
 
                 // set parameters regardless of common or non-common elements
@@ -2739,7 +2739,7 @@ String helpAreaName = "";
                                                         %>
                                                             <tr>
                                                                 <td><%=rule.getTypeName()%></td>
-                                                                <td><a href="<%=request.getContextPath()%>/dataelements/<%=target.getId()%>"><%=target.getId()%></a></td>
+                                                                <td><a href="<%=request.getContextPath()%>/dataelements/<%=target.getId()%>"><%=target.getIdentifier()%></a></td>
                                                             </tr>
                                                         <%}
                                                     %>
