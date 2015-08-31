@@ -91,10 +91,10 @@ public class AttributeFixedValuesActionBeanTest {
         final CompoundDataObject controllerResult = new CompoundDataObject();
         final FixedValuesViewModel viewModel = new FixedValuesViewModel();
         MockRoundtrip trip = this.prepareRoundTrip(ownerId);
-        when(controller.getAllValuesModel(any(AppContextProvider.class), eq(ownerId))).thenReturn(controllerResult);
+        when(controller.getAllValuesModel(ownerId)).thenReturn(controllerResult);
         doReturn(viewModel).when(viewModelBuilder).buildFromAllValuesModel(controllerResult, isEditView);
         trip.execute("view");
-        verify(controller, times(1)).getAllValuesModel(any(AppContextProvider.class), eq(ownerId));
+        verify(controller, times(1)).getAllValuesModel(ownerId);
         verify(viewModelBuilder, times(1)).buildFromAllValuesModel(controllerResult, isEditView);
         AttributeFixedValuesActionBean actionBean = trip.getActionBean(AttributeFixedValuesActionBean.class);
         assertEquals(viewModel, actionBean.getViewModel());
@@ -106,7 +106,7 @@ public class AttributeFixedValuesActionBeanTest {
         final boolean isEditView = false;
         MockRoundtrip trip = this.prepareRoundTrip("5a");
         trip.execute("view");
-        verify(controller, times(0)).getAllValuesModel(any(AppContextProvider.class), any(Integer.class));
+        verify(controller, times(0)).getAllValuesModel(any(Integer.class));
         AttributeFixedValuesActionBean actionBean = trip.getActionBean(AttributeFixedValuesActionBean.class);
         assertNull(actionBean.getViewModel());
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INVALID_INPUT), any(String.class));
@@ -115,26 +115,13 @@ public class AttributeFixedValuesActionBeanTest {
     }
     
     @Test
-    public void testFailToViewAllValuesBecauseOfAuthentication() throws Exception {
-        final int ownerId = 5;
-        final boolean isEditView = false;
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId);
-        when(controller.getAllValuesModel(any(AppContextProvider.class), eq(ownerId))).thenThrow(UserAuthenticationException.class);
-        trip.execute("view");
-        verify(controller, times(1)).getAllValuesModel(any(AppContextProvider.class), eq(ownerId));
-        verify(viewModelBuilder, times(0)).buildFromAllValuesModel(any(CompoundDataObject.class), eq(isEditView));
-        verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401), any(String.class));
-        assertTrue(trip.getRedirectUrl().contains("/error.action"));
-    }
-    
-    @Test
     public void testFailToViewAllValuesBecauseOfOwnerNotFound() throws Exception {
         final int ownerId = 1005;
         final boolean isEditView = false;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId);
-        when(controller.getAllValuesModel(any(AppContextProvider.class), eq(ownerId))).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
+        when(controller.getAllValuesModel(ownerId)).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
         trip.execute("view");
-        verify(controller, times(1)).getAllValuesModel(any(AppContextProvider.class), eq(ownerId));
+        verify(controller, times(1)).getAllValuesModel(ownerId);
         verify(viewModelBuilder, times(0)).buildFromAllValuesModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -145,9 +132,9 @@ public class AttributeFixedValuesActionBeanTest {
         final int ownerId = 17;
         final boolean isEditView = false;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId);
-        when(controller.getAllValuesModel(any(AppContextProvider.class), eq(ownerId))).thenThrow(NotAFixedValueOwnerException.class);
+        when(controller.getAllValuesModel(ownerId)).thenThrow(NotAFixedValueOwnerException.class);
         trip.execute("view");
-        verify(controller, times(1)).getAllValuesModel(any(AppContextProvider.class), eq(ownerId));
+        verify(controller, times(1)).getAllValuesModel(ownerId);
         verify(viewModelBuilder, times(0)).buildFromAllValuesModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -160,10 +147,10 @@ public class AttributeFixedValuesActionBeanTest {
         final CompoundDataObject controllerResult = new CompoundDataObject();
         final FixedValuesViewModel viewModel = new FixedValuesViewModel();
         MockRoundtrip trip = this.prepareRoundTrip(ownerId);
-        when(controller.getAllValuesModel(any(AppContextProvider.class), eq(ownerId))).thenReturn(controllerResult);
+        when(controller.getEditableAllValuesModel(any(AppContextProvider.class), eq(ownerId))).thenReturn(controllerResult);
         doReturn(viewModel).when(viewModelBuilder).buildFromAllValuesModel(controllerResult, isEditView);
         trip.execute("edit");
-        verify(controller, times(1)).getAllValuesModel(any(AppContextProvider.class), eq(ownerId));
+        verify(controller, times(1)).getEditableAllValuesModel(any(AppContextProvider.class), eq(ownerId));
         verify(viewModelBuilder, times(1)).buildFromAllValuesModel(controllerResult, isEditView);
         AttributeFixedValuesActionBean actionBean = trip.getActionBean(AttributeFixedValuesActionBean.class);
         assertEquals(viewModel, actionBean.getViewModel());
@@ -175,7 +162,7 @@ public class AttributeFixedValuesActionBeanTest {
         final boolean isEditView = true;
         MockRoundtrip trip = this.prepareRoundTrip("5a");
         trip.execute("edit");
-        verify(controller, times(0)).getAllValuesModel(any(AppContextProvider.class), any(Integer.class));
+        verify(controller, times(0)).getEditableAllValuesModel(any(AppContextProvider.class), any(Integer.class));
         AttributeFixedValuesActionBean actionBean = trip.getActionBean(AttributeFixedValuesActionBean.class);
         assertNull(actionBean.getViewModel());
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INVALID_INPUT), any(String.class));
@@ -188,9 +175,9 @@ public class AttributeFixedValuesActionBeanTest {
         final int ownerId = 5;
         final boolean isEditView = true;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId);
-        when(controller.getAllValuesModel(any(AppContextProvider.class), eq(ownerId))).thenThrow(UserAuthenticationException.class);
+        when(controller.getEditableAllValuesModel(any(AppContextProvider.class), eq(ownerId))).thenThrow(UserAuthenticationException.class);
         trip.execute("edit");
-        verify(controller, times(1)).getAllValuesModel(any(AppContextProvider.class), eq(ownerId));
+        verify(controller, times(1)).getEditableAllValuesModel(any(AppContextProvider.class), eq(ownerId));
         verify(viewModelBuilder, times(0)).buildFromAllValuesModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -201,9 +188,9 @@ public class AttributeFixedValuesActionBeanTest {
         final int ownerId = 1005;
         final boolean isEditView = true;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId);
-        when(controller.getAllValuesModel(any(AppContextProvider.class), eq(ownerId))).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
+        when(controller.getEditableAllValuesModel(any(AppContextProvider.class), eq(ownerId))).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
         trip.execute("edit");
-        verify(controller, times(1)).getAllValuesModel(any(AppContextProvider.class), eq(ownerId));
+        verify(controller, times(1)).getEditableAllValuesModel(any(AppContextProvider.class), eq(ownerId));
         verify(viewModelBuilder, times(0)).buildFromAllValuesModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -214,9 +201,9 @@ public class AttributeFixedValuesActionBeanTest {
         final int ownerId = 17;
         final boolean isEditView = true;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId);
-        when(controller.getAllValuesModel(any(AppContextProvider.class), eq(ownerId))).thenThrow(NotAFixedValueOwnerException.class);
+        when(controller.getEditableAllValuesModel(any(AppContextProvider.class), eq(ownerId))).thenThrow(NotAFixedValueOwnerException.class);
         trip.execute("edit");
-        verify(controller, times(1)).getAllValuesModel(any(AppContextProvider.class), eq(ownerId));
+        verify(controller, times(1)).getEditableAllValuesModel(any(AppContextProvider.class), eq(ownerId));
         verify(viewModelBuilder, times(0)).buildFromAllValuesModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -284,10 +271,10 @@ public class AttributeFixedValuesActionBeanTest {
         final CompoundDataObject controllerResult = new CompoundDataObject();
         final FixedValuesViewModel viewModel = new FixedValuesViewModel();
         MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenReturn(controllerResult);
+        when(controller.getSingleValueModel(ownerId, value)).thenReturn(controllerResult);
         doReturn(viewModel).when(viewModelBuilder).buildFromSingleValueModel(controllerResult, isEditView);
         trip.execute("view");
-        verify(controller, times(1)).getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getSingleValueModel(ownerId, value);
         verify(viewModelBuilder, times(1)).buildFromSingleValueModel(controllerResult, isEditView);
         AttributeFixedValuesActionBean actionBean = trip.getActionBean(AttributeFixedValuesActionBean.class);
         assertEquals(viewModel, actionBean.getViewModel());
@@ -300,25 +287,11 @@ public class AttributeFixedValuesActionBeanTest {
         final String value = "val";
         MockRoundtrip trip = this.prepareRoundTrip("5a", value);
         trip.execute("view");
-        verify(controller, times(0)).getSingleValueModel(any(AppContextProvider.class), any(Integer.class), eq(value));
+        verify(controller, times(0)).getSingleValueModel(any(Integer.class), eq(value));
         AttributeFixedValuesActionBean actionBean = trip.getActionBean(AttributeFixedValuesActionBean.class);
         assertNull(actionBean.getViewModel());
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INVALID_INPUT), any(String.class));
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
-        assertTrue(trip.getRedirectUrl().contains("/error.action"));
-    }
-    
-    @Test
-    public void testFailToViewSingleValueBecauseOfAuthentication() throws Exception {
-        final int ownerId = 5;
-        final String value = "val";
-        final boolean isEditView = false;
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(UserAuthenticationException.class);
-        trip.execute("view");
-        verify(controller, times(1)).getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
-        verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
-        verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
     
@@ -328,9 +301,9 @@ public class AttributeFixedValuesActionBeanTest {
         final String value = "val";
         final boolean isEditView = false;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
+        when(controller.getSingleValueModel(ownerId, value)).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
         trip.execute("view");
-        verify(controller, times(1)).getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getSingleValueModel(ownerId, value);
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -342,9 +315,9 @@ public class AttributeFixedValuesActionBeanTest {
         final String value = "val";
         final boolean isEditView = false;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(NotAFixedValueOwnerException.class);
+        when(controller.getSingleValueModel(ownerId, value)).thenThrow(NotAFixedValueOwnerException.class);
         trip.execute("view");
-        verify(controller, times(1)).getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getSingleValueModel(ownerId, value);
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -356,9 +329,9 @@ public class AttributeFixedValuesActionBeanTest {
         final String value = "val";
         final boolean isEditView = false;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(new FixedValueNotFoundException(value));
+        when(controller.getSingleValueModel(ownerId, value)).thenThrow(new FixedValueNotFoundException(value));
         trip.execute("view");
-        verify(controller, times(1)).getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getSingleValueModel(ownerId, value);
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -372,10 +345,10 @@ public class AttributeFixedValuesActionBeanTest {
         final CompoundDataObject controllerResult = new CompoundDataObject();
         final FixedValuesViewModel viewModel = new FixedValuesViewModel();
         MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenReturn(controllerResult);
+        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenReturn(controllerResult);
         doReturn(viewModel).when(viewModelBuilder).buildFromSingleValueModel(controllerResult, isEditView);
         trip.execute("edit");
-        verify(controller, times(1)).getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
         verify(viewModelBuilder, times(1)).buildFromSingleValueModel(controllerResult, isEditView);
         AttributeFixedValuesActionBean actionBean = trip.getActionBean(AttributeFixedValuesActionBean.class);
         assertEquals(viewModel, actionBean.getViewModel());
@@ -388,7 +361,7 @@ public class AttributeFixedValuesActionBeanTest {
         final String value = "val";
         MockRoundtrip trip = this.prepareRoundTrip("5a", value);
         trip.execute("edit");
-        verify(controller, times(0)).getSingleValueModel(any(AppContextProvider.class), any(Integer.class), eq(value));
+        verify(controller, times(0)).getEditableSingleValueModel(any(AppContextProvider.class), any(Integer.class), eq(value));
         AttributeFixedValuesActionBean actionBean = trip.getActionBean(AttributeFixedValuesActionBean.class);
         assertNull(actionBean.getViewModel());
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INVALID_INPUT), any(String.class));
@@ -402,9 +375,9 @@ public class AttributeFixedValuesActionBeanTest {
         final String value = "val";
         final boolean isEditView = true;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(UserAuthenticationException.class);
+        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(UserAuthenticationException.class);
         trip.execute("edit");
-        verify(controller, times(1)).getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -416,9 +389,9 @@ public class AttributeFixedValuesActionBeanTest {
         final String value = "val";
         final boolean isEditView = true;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
+        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
         trip.execute("edit");
-        verify(controller, times(1)).getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -430,9 +403,9 @@ public class AttributeFixedValuesActionBeanTest {
         final String value = "val";
         final boolean isEditView = true;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(NotAFixedValueOwnerException.class);
+        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(NotAFixedValueOwnerException.class);
         trip.execute("edit");
-        verify(controller, times(1)).getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -444,9 +417,9 @@ public class AttributeFixedValuesActionBeanTest {
         final String value = "val";
         final boolean isEditView = true;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(new FixedValueNotFoundException(value));
+        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(new FixedValueNotFoundException(value));
         trip.execute("edit");
-        verify(controller, times(1)).getSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -530,10 +503,10 @@ public class AttributeFixedValuesActionBeanTest {
         final SimpleAttribute controllerResult = new SimpleAttribute();
         final FixedValuesViewModel viewModel = new FixedValuesViewModel();
         MockRoundtrip trip = this.prepareRoundTrip(ownerId);
-        when(controller.getOwnerAttribute(any(AppContextProvider.class), eq(ownerId))).thenReturn(controllerResult);
+        when(controller.getEditableOwnerAttribute(any(AppContextProvider.class), eq(ownerId))).thenReturn(controllerResult);
         doReturn(viewModel).when(viewModelBuilder).buildFromOwner(controllerResult, isEditView);
         trip.execute("add");
-        verify(controller, times(1)).getOwnerAttribute(any(AppContextProvider.class), eq(ownerId));
+        verify(controller, times(1)).getEditableOwnerAttribute(any(AppContextProvider.class), eq(ownerId));
         verify(viewModelBuilder, times(1)).buildFromOwner(controllerResult, isEditView);
         AttributeFixedValuesActionBean actionBean = trip.getActionBean(AttributeFixedValuesActionBean.class);
         assertEquals(viewModel, actionBean.getViewModel());
@@ -545,7 +518,7 @@ public class AttributeFixedValuesActionBeanTest {
         final boolean isEditView = true;
         MockRoundtrip trip = this.prepareRoundTrip("5a");
         trip.execute("add");
-        verify(controller, times(0)).getOwnerAttribute(any(AppContextProvider.class), any(Integer.class));
+        verify(controller, times(0)).getEditableOwnerAttribute(any(AppContextProvider.class), any(Integer.class));
         AttributeFixedValuesActionBean actionBean = trip.getActionBean(AttributeFixedValuesActionBean.class);
         assertNull(actionBean.getViewModel());
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INVALID_INPUT), any(String.class));
@@ -558,9 +531,9 @@ public class AttributeFixedValuesActionBeanTest {
         final int ownerId = 5;
         final boolean isEditView = true;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId);
-        when(controller.getOwnerAttribute(any(AppContextProvider.class), eq(ownerId))).thenThrow(UserAuthenticationException.class);
+        when(controller.getEditableOwnerAttribute(any(AppContextProvider.class), eq(ownerId))).thenThrow(UserAuthenticationException.class);
         trip.execute("add");
-        verify(controller, times(1)).getOwnerAttribute(any(AppContextProvider.class), eq(ownerId));
+        verify(controller, times(1)).getEditableOwnerAttribute(any(AppContextProvider.class), eq(ownerId));
         verify(viewModelBuilder, times(0)).buildFromOwner(any(SimpleAttribute.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -571,9 +544,9 @@ public class AttributeFixedValuesActionBeanTest {
         final int ownerId = 1005;
         final boolean isEditView = true;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId);
-        when(controller.getOwnerAttribute(any(AppContextProvider.class), eq(ownerId))).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
+        when(controller.getEditableOwnerAttribute(any(AppContextProvider.class), eq(ownerId))).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
         trip.execute("add");
-        verify(controller, times(1)).getOwnerAttribute(any(AppContextProvider.class), eq(ownerId));
+        verify(controller, times(1)).getEditableOwnerAttribute(any(AppContextProvider.class), eq(ownerId));
         verify(viewModelBuilder, times(0)).buildFromOwner(any(SimpleAttribute.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -584,9 +557,9 @@ public class AttributeFixedValuesActionBeanTest {
         final int ownerId = 17;
         final boolean isEditView = true;
         MockRoundtrip trip = this.prepareRoundTrip(ownerId);
-        when(controller.getOwnerAttribute(any(AppContextProvider.class), eq(ownerId))).thenThrow(NotAFixedValueOwnerException.class);
+        when(controller.getEditableOwnerAttribute(any(AppContextProvider.class), eq(ownerId))).thenThrow(NotAFixedValueOwnerException.class);
         trip.execute("add");
-        verify(controller, times(1)).getOwnerAttribute(any(AppContextProvider.class), eq(ownerId));
+        verify(controller, times(1)).getEditableOwnerAttribute(any(AppContextProvider.class), eq(ownerId));
         verify(viewModelBuilder, times(0)).buildFromOwner(any(SimpleAttribute.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));

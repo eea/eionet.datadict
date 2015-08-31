@@ -28,27 +28,25 @@ public class DataElementsServiceImpl implements DataElementsService {
     }
     
     @Override
-    public DataElement getDataElement(AppContextProvider contextProvider, int dataElementId, boolean readOnly) 
+    public DataElement getDataElement(int elementId) throws ResourceNotFoundException {
+        if (!this.dataElementDao.dataElementExists(elementId)) {
+            throw new ResourceNotFoundException(elementId);
+        }
+        
+        return this.dataElementDao.getDataElement(elementId);
+    }
+    
+    @Override
+    public DataElement getEditableDataElement(AppContextProvider contextProvider, int dataElementId) 
             throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
         if (!contextProvider.isUserAuthenticated()) {
             throw new UserAuthenticationException();
         }
         
         DataElement ownerElement = this.getDataElement(dataElementId);
-        
-        if (!readOnly) {
-            this.checkEditability(contextProvider, ownerElement);
-        }
+        this.checkEditability(contextProvider, ownerElement);
         
         return ownerElement;
-    }
-    
-    private DataElement getDataElement(int elementId) throws ResourceNotFoundException {
-        if (!this.dataElementDao.dataElementExists(elementId)) {
-            throw new ResourceNotFoundException(elementId);
-        }
-        
-        return this.dataElementDao.getDataElement(elementId);
     }
     
     private void checkEditability(AppContextProvider contextProvider, DataElement dataElement) 

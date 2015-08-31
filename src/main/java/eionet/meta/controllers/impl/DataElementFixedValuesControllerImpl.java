@@ -18,7 +18,7 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.service.DataElementsService;
 import eionet.meta.service.FixedValuesService;
-import java.util.Collection;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -45,13 +45,30 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
     }
 
     @Override
-    public DataElement getOwnerDataElement(AppContextProvider contextProvider, int ownerDataElementId, boolean isEditRequest) 
+    public DataElement getOwnerDataElement(int ownerDataElementId) 
+            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        DataElement owner;
+        
+        try {
+            owner = this.dataElementsService.getDataElement(ownerDataElementId);
+        }
+        catch (ResourceNotFoundException ex) {
+            throw new FixedValueOwnerNotFoundException((Integer)ex.getResourceId());
+        }
+        
+        this.ensureFixedValueOwnership(owner);
+        
+        return owner;
+    }
+
+    @Override
+    public DataElement getEditableOwnerDataElement(AppContextProvider contextProvider, int ownerDataElementId) 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
                    FixedValueOwnerNotEditableException, UserAuthorizationException {
         DataElement owner;
         
         try {
-            owner = this.dataElementsService.getDataElement(contextProvider, ownerDataElementId, !isEditRequest);
+            owner = this.dataElementsService.getEditableDataElement(contextProvider, ownerDataElementId);
         }
         catch (ResourceNotFoundException ex) {
             throw new FixedValueOwnerNotFoundException((Integer)ex.getResourceId());
@@ -64,33 +81,45 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
         
         return owner;
     }
-    
+
     @Override
-    public CompoundDataObject getSingleValueModel(AppContextProvider contextProvider, int ownerDataElementId, String fixedValue, boolean isEditRequest) 
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
-                   FixedValueOwnerNotEditableException, UserAuthorizationException, FixedValueNotFoundException {
-        DataElement ownerElement = this.getOwnerDataElement(contextProvider, ownerDataElementId, isEditRequest);
+    public CompoundDataObject getSingleValueModel(int ownerDataElementId, String fixedValue) 
+            throws FixedValueOwnerNotFoundException, FixedValueNotFoundException, NotAFixedValueOwnerException {
+        DataElement ownerElement = this.getOwnerDataElement(ownerDataElementId);
         FixedValue value = this.fixedValuesService.getFixedValue(ownerElement, fixedValue);
-        CompoundDataObject result = new CompoundDataObject();
-        result.put(PROPERTY_OWNER_DATA_ELEMENT, ownerElement);
-        result.put(PROPERTY_FIXED_VALUE, value);
         
-        return result;
+        return this.packageDataResult(ownerElement, value);
     }
 
     @Override
-    public CompoundDataObject getAllValuesModel(AppContextProvider contextProvider, int ownerDataElementId, boolean isEditRequest) 
+    public CompoundDataObject getEditableSingleValueModel(AppContextProvider contextProvider, int ownerDataElementId, String fixedValue) 
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
+                   NotAFixedValueOwnerException, FixedValueOwnerNotEditableException, UserAuthorizationException {
+        DataElement ownerElement = this.getEditableOwnerDataElement(contextProvider, ownerDataElementId);
+        FixedValue value = this.fixedValuesService.getFixedValue(ownerElement, fixedValue);
+        
+        return this.packageDataResult(ownerElement, value);
+    }
+
+    @Override
+    public CompoundDataObject getAllValuesModel(int ownerDataElementId) 
+            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        DataElement ownerElement = this.getOwnerDataElement(ownerDataElementId);
+        List<FixedValue> fixedValues = this.dataElementDao.getFixedValues(ownerElement.getId());
+        
+        return this.packageDataResult(ownerElement, fixedValues);
+    }
+
+    @Override
+    public CompoundDataObject getEditableAllValuesModel(AppContextProvider contextProvider, int ownerDataElementId) 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
                    FixedValueOwnerNotEditableException, UserAuthorizationException {
-        DataElement ownerElement = this.getOwnerDataElement(contextProvider, ownerDataElementId, isEditRequest);
-        Collection<FixedValue> fixedValues = this.dataElementDao.getFixedValues(ownerElement.getId());
-        CompoundDataObject result = new CompoundDataObject();
-        result.put(PROPERTY_OWNER_DATA_ELEMENT, ownerElement);
-        result.put(PROPERTY_FIXED_VALUES, fixedValues);
+        DataElement ownerElement = this.getEditableOwnerDataElement(contextProvider, ownerDataElementId);
+        List<FixedValue> fixedValues = this.dataElementDao.getFixedValues(ownerElement.getId());
         
-        return result;
+        return this.packageDataResult(ownerElement, fixedValues);
     }
-
+    
     @Override
     public void saveFixedValue(AppContextProvider contextProvider, int ownerDataElementId, String originalValue, FixedValue fixedValue) 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, NotAFixedValueOwnerException, 
@@ -99,7 +128,7 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
             throw new IllegalArgumentException();
         }
         
-        DataElement ownerElement = this.getOwnerDataElement(contextProvider, ownerDataElementId, true);
+        DataElement ownerElement = this.getEditableOwnerDataElement(contextProvider, ownerDataElementId);
         this.fixedValuesService.saveFixedValue(ownerElement, originalValue, fixedValue);
     }
 
@@ -107,7 +136,7 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
     public void deleteFixedValue(AppContextProvider contextProvider, int ownerDataElementId, String fixedValue) 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
                    FixedValueOwnerNotEditableException, UserAuthorizationException, FixedValueNotFoundException {
-        CompoundDataObject result = this.getSingleValueModel(contextProvider, ownerDataElementId, fixedValue, true);
+        CompoundDataObject result = this.getEditableSingleValueModel(contextProvider, ownerDataElementId, fixedValue);
         FixedValue  fxv = result.get(PROPERTY_FIXED_VALUE);
         this.fixedValueDao.deleteById(fxv.getId());
     }
@@ -116,7 +145,7 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
     public void deleteFixedValues(AppContextProvider contextProvider, int ownerDataElementId) 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueOwnerNotEditableException, 
                    NotAFixedValueOwnerException, UserAuthorizationException {
-        DataElement ownerElement = this.getOwnerDataElement(contextProvider, ownerDataElementId, true);
+        DataElement ownerElement = this.getEditableOwnerDataElement(contextProvider, ownerDataElementId);
         this.fixedValueDao.deleteAll(FixedValue.OwnerType.DATA_ELEMENT, ownerElement.getId());
     }
     
@@ -126,6 +155,22 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
         if (valueType != DataElement.DataElementValueType.FIXED && valueType != DataElement.DataElementValueType.QUANTITIVE) {
             throw new NotAFixedValueOwnerException();
         }
+    }
+    
+    private CompoundDataObject packageDataResult(DataElement ownerElement, FixedValue value) {
+        CompoundDataObject result = new CompoundDataObject();
+        result.put(PROPERTY_OWNER_DATA_ELEMENT, ownerElement);
+        result.put(PROPERTY_FIXED_VALUE, value);
+        
+        return result;
+    }
+    
+    private CompoundDataObject packageDataResult(DataElement ownerElement, List<FixedValue> fixedValues) {
+        CompoundDataObject result = new CompoundDataObject();
+        result.put(PROPERTY_OWNER_DATA_ELEMENT, ownerElement);
+        result.put(PROPERTY_FIXED_VALUES, fixedValues);
+        
+        return result;
     }
     
 }

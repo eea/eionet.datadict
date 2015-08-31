@@ -126,7 +126,7 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
             @Override
             protected SimpleAttribute executeAction(int ownerId) 
                     throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
-                return controller.getOwnerAttribute(getContextProvider(), ownerId);
+                return controller.getEditableOwnerAttribute(getContextProvider(), ownerId);
             }
             
             @Override
@@ -220,7 +220,12 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
             @Override
             protected CompoundDataObject executeAction(int ownerId) 
                     throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
-                return controller.getSingleValueModel(getContextProvider(), ownerId, fixedValue);
+                if (isEditSource) {
+                    return controller.getEditableSingleValueModel(getContextProvider(), ownerId, fixedValue);
+                }
+                else {
+                    return controller.getSingleValueModel(ownerId, fixedValue);
+                }
             }
 
             @Override
@@ -239,7 +244,12 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
             @Override
             protected CompoundDataObject executeAction(int ownerId) 
                     throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
-                return controller.getAllValuesModel(getContextProvider(), ownerId);
+                if (isEditSource) {
+                    return controller.getEditableAllValuesModel(getContextProvider(), ownerId);
+                }
+                else {
+                    return controller.getAllValuesModel(ownerId);
+                }
             }
 
             @Override

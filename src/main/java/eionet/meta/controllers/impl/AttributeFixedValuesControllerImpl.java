@@ -14,7 +14,7 @@ import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.service.FixedValuesService;
-import java.util.Collection;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -37,39 +37,64 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
 
     @Override
-    public SimpleAttribute getOwnerAttribute(AppContextProvider contextProvider, int ownerAttributeId) 
+    public SimpleAttribute getOwnerAttribute(int ownerAttributeId) throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        SimpleAttribute attr = this.attributeDao.getById(ownerAttributeId);
+        
+        if (attr == null) {
+            throw new FixedValueOwnerNotFoundException(ownerAttributeId);
+        }
+        
+        if (!SimpleAttribute.DisplayType.SELECT_BOX.isMatch(attr.getInputType())) {
+            throw new NotAFixedValueOwnerException();
+        }
+        
+        return this.attributeDao.getById(ownerAttributeId);
+    }
+    
+    @Override
+    public SimpleAttribute getEditableOwnerAttribute(AppContextProvider contextProvider, int ownerAttributeId) 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         if (!contextProvider.isUserAuthenticated()) {
             throw new UserAuthenticationException();
         }
         
-        SimpleAttribute ownerAttribute = this.getAttribute(ownerAttributeId);
+        SimpleAttribute ownerAttribute = this.getOwnerAttribute(ownerAttributeId);
         
         return ownerAttribute;
     }
+
+    @Override
+    public CompoundDataObject getSingleValueModel(int ownerAttributeId, String fixedValue) throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
+        SimpleAttribute ownerAttribute = this.getOwnerAttribute(ownerAttributeId);
+        FixedValue value = this.fixedValuesService.getFixedValue(ownerAttribute, fixedValue);
+        
+        return this.packageResults(ownerAttribute, value);
+    }
     
     @Override
-    public CompoundDataObject getSingleValueModel(AppContextProvider contextProvider, int ownerAttributeId, String fixedValue) 
+    public CompoundDataObject getEditableSingleValueModel(AppContextProvider contextProvider, int ownerAttributeId, String fixedValue) 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
-        SimpleAttribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
+        SimpleAttribute ownerAttribute = this.getEditableOwnerAttribute(contextProvider, ownerAttributeId);
         FixedValue value = this.fixedValuesService.getFixedValue(ownerAttribute, fixedValue);
-        CompoundDataObject result = new CompoundDataObject();
-        result.put(PROPERTY_OWNER_ATTRIBUTE, ownerAttribute);
-        result.put(PROPERTY_FIXED_VALUE, value);
         
-        return result;
+        return this.packageResults(ownerAttribute, value);
     }
 
     @Override
-    public CompoundDataObject getAllValuesModel(AppContextProvider contextProvider, int ownerAttributeId) 
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
-        SimpleAttribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
-        Collection<FixedValue> fixedValues = this.attributeDao.getFixedValues(ownerAttribute.getAttributeId());
-        CompoundDataObject result = new CompoundDataObject();
-        result.put(PROPERTY_OWNER_ATTRIBUTE, ownerAttribute);
-        result.put(PROPERTY_FIXED_VALUES, fixedValues);
+    public CompoundDataObject getAllValuesModel(int ownerAttributeId) throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        SimpleAttribute ownerAttribute = this.getOwnerAttribute(ownerAttributeId);
+        List<FixedValue> fixedValues = this.attributeDao.getFixedValues(ownerAttribute.getAttributeId());
         
-        return result;
+        return this.packageResults(ownerAttribute, fixedValues);
+    }
+    
+    @Override
+    public CompoundDataObject getEditableAllValuesModel(AppContextProvider contextProvider, int ownerAttributeId) 
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        SimpleAttribute ownerAttribute = this.getEditableOwnerAttribute(contextProvider, ownerAttributeId);
+        List<FixedValue> fixedValues = this.attributeDao.getFixedValues(ownerAttribute.getAttributeId());
+        
+        return this.packageResults(ownerAttribute, fixedValues);
     }
 
     @Override
@@ -80,14 +105,14 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
             throw new IllegalArgumentException();
         }
         
-        SimpleAttribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
+        SimpleAttribute ownerAttribute = this.getEditableOwnerAttribute(contextProvider, ownerAttributeId);
         this.fixedValuesService.saveFixedValue(ownerAttribute, originalValue, fixedValue);
     }
 
     @Override
     public void deleteFixedValue(AppContextProvider contextProvider, int ownerAttributeId, String fixedValue) 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
-        CompoundDataObject result = this.getSingleValueModel(contextProvider, ownerAttributeId, fixedValue);
+        CompoundDataObject result = this.getEditableSingleValueModel(contextProvider, ownerAttributeId, fixedValue);
         FixedValue  fxv = result.get(PROPERTY_FIXED_VALUE);
         this.fixedValueDao.deleteById(fxv.getId());
     }
@@ -95,22 +120,24 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     @Override
     public void deleteFixedValues(AppContextProvider contextProvider, int ownerAttributeId) 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
-        SimpleAttribute ownerAttribute = this.getOwnerAttribute(contextProvider, ownerAttributeId);
+        SimpleAttribute ownerAttribute = this.getEditableOwnerAttribute(contextProvider, ownerAttributeId);
         this.fixedValueDao.deleteAll(FixedValue.OwnerType.ATTRIBUTE, ownerAttribute.getAttributeId());
     }
     
-    private SimpleAttribute getAttribute(int attributeId) throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
-        SimpleAttribute attr = this.attributeDao.getById(attributeId);
+    private CompoundDataObject packageResults(SimpleAttribute ownerAttribute, FixedValue value) {
+        CompoundDataObject result = new CompoundDataObject();
+        result.put(PROPERTY_OWNER_ATTRIBUTE, ownerAttribute);
+        result.put(PROPERTY_FIXED_VALUE, value);
         
-        if (attr == null) {
-            throw new FixedValueOwnerNotFoundException(attributeId);
-        }
+        return result;
+    }
+    
+    private CompoundDataObject packageResults(SimpleAttribute ownerAttribute, List<FixedValue> fixedValues) {
+        CompoundDataObject result = new CompoundDataObject();
+        result.put(PROPERTY_OWNER_ATTRIBUTE, ownerAttribute);
+        result.put(PROPERTY_FIXED_VALUES, fixedValues);
         
-        if (!SimpleAttribute.DisplayType.SELECT_BOX.isMatch(attr.getInputType())) {
-            throw new NotAFixedValueOwnerException();
-        }
-        
-        return this.attributeDao.getById(attributeId);
+        return result;
     }
     
 }

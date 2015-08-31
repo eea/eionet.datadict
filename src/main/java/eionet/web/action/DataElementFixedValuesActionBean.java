@@ -119,7 +119,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
             protected DataElement executeAction(int ownerId) 
                     throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
                            DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
-                return controller.getOwnerDataElement(getContextProvider(), ownerId, true);
+                return controller.getEditableOwnerDataElement(getContextProvider(), ownerId);
             }
 
             @Override
@@ -171,7 +171,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
             protected CompoundDataObject executeAction(int ownerId) 
                     throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
                            NotAFixedValueOwnerException, DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
-                return controller.getSingleValueModel(getContextProvider(), ownerId, fixedValue, false);
+                return controller.getSingleValueModel(ownerId, fixedValue);
             }
 
             @Override
@@ -190,7 +190,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
             protected CompoundDataObject executeAction(int ownerId) 
                     throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
                            DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
-                return controller.getAllValuesModel(getContextProvider(), ownerId, false);
+                return controller.getAllValuesModel(ownerId);
             }
 
             @Override
@@ -210,7 +210,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
             protected CompoundDataObject executeAction(int ownerId) 
                     throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
                            NotAFixedValueOwnerException, DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
-                return controller.getSingleValueModel(getContextProvider(), ownerId, fixedValue, true);
+                return controller.getEditableSingleValueModel(getContextProvider(), ownerId, fixedValue);
             }
 
             @Override
@@ -229,7 +229,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
             protected CompoundDataObject executeAction(int ownerId) 
                     throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
                            DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
-                return controller.getAllValuesModel(getContextProvider(), ownerId, true);
+                return controller.getEditableAllValuesModel(getContextProvider(), ownerId);
             }
 
             @Override

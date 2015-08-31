@@ -37,31 +37,20 @@ public class DataElementsServiceTest {
     }
     
     @Test
-    public void testGetDataElementReadOnly() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
+    public void testGetDataElement() throws ResourceNotFoundException {
         final int elmId = 5;
         DataElement expected = this.createDataElement(elmId);
-        when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(dataElementDao.dataElementExists(elmId)).thenReturn(true);
         when(dataElementDao.getDataElement(elmId)).thenReturn(expected);
-        DataElement actual = this.service.getDataElement(contextProvider, elmId, true);
+        DataElement actual = this.service.getDataElement(elmId);
         assertEquals(expected, actual);
     }
     
-    @Test(expected = UserAuthenticationException.class)
-    public void testFailGetDataElementBecauseOfAuthentication() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
-        when(contextProvider.isUserAuthenticated()).thenReturn(false);
-        this.service.getDataElement(contextProvider, 5, true);
-    }
-    
     @Test(expected = ResourceNotFoundException.class)
-    public void testFailGetDataElementBecauseOfNotFound() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
+    public void testFailGetDataElementBecauseOfNotFound() throws ResourceNotFoundException {
         final int elmId = 5;
-        when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(dataElementDao.dataElementExists(elmId)).thenReturn(false);
-        this.service.getDataElement(contextProvider, elmId, true);
+        this.service.getDataElement(elmId);
     }
     
     @Test
@@ -74,7 +63,7 @@ public class DataElementsServiceTest {
         when(contextProvider.getUserName()).thenReturn(user);
         when(dataElementDao.dataElementExists(elmId)).thenReturn(true);
         when(dataElementDao.getDataElement(elmId)).thenReturn(expected);
-        DataElement actual = this.service.getDataElement(contextProvider, elmId, false);
+        DataElement actual = this.service.getEditableDataElement(contextProvider, elmId);
         assertEquals(expected, actual);
         verify(dataElementDao, times(0)).getParentDataSet(elmId);
     }
@@ -91,9 +80,25 @@ public class DataElementsServiceTest {
         when(dataElementDao.dataElementExists(elmId)).thenReturn(true);
         when(dataElementDao.getDataElement(elmId)).thenReturn(expected);
         when(dataElementDao.getParentDataSet(elmId)).thenReturn(parentDataSet);
-        DataElement actual = this.service.getDataElement(contextProvider, elmId, false);
+        DataElement actual = this.service.getEditableDataElement(contextProvider, elmId);
         assertEquals(expected, actual);
         verify(dataElementDao, times(1)).getParentDataSet(elmId);
+    }
+    
+    @Test(expected = UserAuthenticationException.class)
+    public void testFailGetEditableDataElementBecauseOfAuthentication() 
+            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
+        when(contextProvider.isUserAuthenticated()).thenReturn(false);
+        this.service.getEditableDataElement(contextProvider, 5);
+    }
+    
+    @Test(expected = ResourceNotFoundException.class)
+    public void testFailGetEditableDataElementBecauseOfNotFound() 
+            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
+        final int elmId = 5;
+        when(contextProvider.isUserAuthenticated()).thenReturn(true);
+        when(dataElementDao.dataElementExists(elmId)).thenReturn(false);
+        this.service.getDataElement(elmId);
     }
     
     @Test(expected = NotAWorkingCopyException.class)
@@ -104,7 +109,7 @@ public class DataElementsServiceTest {
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(dataElementDao.dataElementExists(elmId)).thenReturn(true);
         when(dataElementDao.getDataElement(elmId)).thenReturn(expected);
-        this.service.getDataElement(contextProvider, elmId, false);
+        this.service.getEditableDataElement(contextProvider, elmId);
     }
     
     @Test(expected = UserAuthorizationException.class)
@@ -116,7 +121,7 @@ public class DataElementsServiceTest {
         when(contextProvider.getUserName()).thenReturn("user");
         when(dataElementDao.dataElementExists(elmId)).thenReturn(true);
         when(dataElementDao.getDataElement(elmId)).thenReturn(expected);
-        this.service.getDataElement(contextProvider, elmId, false);
+        this.service.getEditableDataElement(contextProvider, elmId);
     }
     
     @Test(expected = NotAWorkingCopyException.class)
@@ -129,7 +134,7 @@ public class DataElementsServiceTest {
         when(dataElementDao.dataElementExists(elmId)).thenReturn(true);
         when(dataElementDao.getDataElement(elmId)).thenReturn(expected);
         when(dataElementDao.getParentDataSet(elmId)).thenReturn(parentDataSet);
-        this.service.getDataElement(contextProvider, elmId, false);
+        this.service.getEditableDataElement(contextProvider, elmId);
     }
     
     @Test(expected = UserAuthorizationException.class)
@@ -143,7 +148,7 @@ public class DataElementsServiceTest {
         when(dataElementDao.dataElementExists(elmId)).thenReturn(true);
         when(dataElementDao.getDataElement(elmId)).thenReturn(expected);
         when(dataElementDao.getParentDataSet(elmId)).thenReturn(parentDataSet);
-        this.service.getDataElement(contextProvider, elmId, false);
+        this.service.getEditableDataElement(contextProvider, elmId);
     }
     
     private DataElement createDataElement(int id) {

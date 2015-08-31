@@ -21,10 +21,23 @@ public interface DataElementFixedValuesController {
     /**
      * Fetches info about an specific data element that accepts fixed values.
      * 
+     * @param ownerDataElementId the data element id.
+     * 
+     * @return a {@link DataElement} containing the requested info.
+     * 
+     * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
+     * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
+     */
+    DataElement getOwnerDataElement(int ownerDataElementId)
+            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException;
+    
+    /**
+     * Fetches info about an specific data element that accepts fixed values. 
+     * This method concerns edit-based scenarios, where the user must be authorized
+     * to edit the requested resource.
+     * 
      * @param contextProvider an object that provides for application context info.
      * @param ownerDataElementId the data element id.
-     * @param isEditRequest a flag indicating whether the source operation concerns
-     * editing, or viewing only.
      * 
      * @return a {@link DataElement} containing the requested info.
      * 
@@ -34,7 +47,7 @@ public interface DataElementFixedValuesController {
      * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
-    DataElement getOwnerDataElement(AppContextProvider contextProvider, int ownerDataElementId, boolean isEditRequest)
+    DataElement getEditableOwnerDataElement(AppContextProvider contextProvider, int ownerDataElementId) 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, 
                    NotAFixedValueOwnerException, FixedValueOwnerNotEditableException, UserAuthorizationException;
     
@@ -46,12 +59,34 @@ public interface DataElementFixedValuesController {
      * <li>{@value #PROPERTY_OWNER_DATA_ELEMENT}: the {@link DataElement} instance</li>
      * <li>{@value #PROPERTY_FIXED_VALUE}: the {@link FixedValue} instance</li>
      * </ul>
+     *
+     * @param ownerDataElementId the data element id.
+     * @param fixedValue the requested value.
+     * 
+     * @return a {@link CompoundDataObject} instance containing info about the 
+     * fixed value, and the owner data element.
+     * 
+     * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
+     * @throws FixedValueNotFoundException if the fixed value cannot be found.
+     * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
+     */
+    CompoundDataObject getSingleValueModel(int ownerDataElementId, String fixedValue)
+            throws FixedValueOwnerNotFoundException, FixedValueNotFoundException, NotAFixedValueOwnerException;
+    
+    /**
+     * Fetches all the info required about a fixed value and its respective
+     * owner. The results are packed into a {@link CompoundDataObject} instance,
+     * given the following specification:
+     * <ul>
+     * <li>{@value #PROPERTY_OWNER_DATA_ELEMENT}: the {@link DataElement} instance</li>
+     * <li>{@value #PROPERTY_FIXED_VALUE}: the {@link FixedValue} instance</li>
+     * </ul>
+     * This method concerns edit-based scenarios, where the user must be authorized
+     * to edit the requested resource.
      * 
      * @param contextProvider an object that provides for application context info.
      * @param ownerDataElementId the data element id.
      * @param fixedValue the requested value.
-     * @param isEditRequest a flag indicating whether the source operation concerns
-     * editing, or viewing only.
      * 
      * @return a {@link CompoundDataObject} instance containing info about the 
      * fixed value, and the owner data element.
@@ -63,7 +98,7 @@ public interface DataElementFixedValuesController {
      * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
-    CompoundDataObject getSingleValueModel(AppContextProvider contextProvider, int ownerDataElementId, String fixedValue, boolean isEditRequest)
+    CompoundDataObject getEditableSingleValueModel(AppContextProvider contextProvider, int ownerDataElementId, String fixedValue)
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
                    NotAFixedValueOwnerException, FixedValueOwnerNotEditableException, UserAuthorizationException;
     
@@ -76,10 +111,30 @@ public interface DataElementFixedValuesController {
      * <li>{@value #PROPERTY_FIXED_VALUES}: a {@link List} of {@link FixedValue} instances</li>
      * </ul>
      * 
+     * @param ownerDataElementId the data element id.
+     * 
+     * @return a {@link CompoundDataObject} instance containing info about the 
+     * fixed values, and the owner data element.
+     * 
+     * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
+     * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
+     */
+    CompoundDataObject getAllValuesModel(int ownerDataElementId)
+            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException;
+    
+    /**
+     * Fetches all the info required about the fixed values of a specific owner.
+     * The results are packed into a {@link CompoundDataObject} instance, given 
+     * the following specification:
+     * <ul>
+     * <li>{@value #PROPERTY_OWNER_DATA_ELEMENT}: a {@link DataElement} instance</li>
+     * <li>{@value #PROPERTY_FIXED_VALUES}: a {@link List} of {@link FixedValue} instances</li>
+     * </ul>
+     * This method concerns edit-based scenarios, where the user must be authorized
+     * to edit the requested resource.
+     * 
      * @param contextProvider an object that provides for application context info.
      * @param ownerDataElementId the data element id.
-     * @param isEditRequest a flag indicating whether the source operation concerns
-     * editing, or viewing only.
      * 
      * @return a {@link CompoundDataObject} instance containing info about the 
      * fixed values, and the owner data element.
@@ -90,7 +145,7 @@ public interface DataElementFixedValuesController {
      * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
-    CompoundDataObject getAllValuesModel(AppContextProvider contextProvider, int ownerDataElementId, boolean isEditRequest)
+    CompoundDataObject getEditableAllValuesModel(AppContextProvider contextProvider, int ownerDataElementId)
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
                    FixedValueOwnerNotEditableException, UserAuthorizationException;
     

@@ -13,7 +13,10 @@ import eionet.meta.dao.domain.DataElement;
  */
 public interface DataElementsService {
 
-    DataElement getDataElement(AppContextProvider contextProvider, int dataElementId, boolean readOnly) 
+    DataElement getDataElement(int dataElementId) 
+            throws ResourceNotFoundException;
+    
+    DataElement getEditableDataElement(AppContextProvider contextProvider, int dataElementId)
             throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException;
     
 }

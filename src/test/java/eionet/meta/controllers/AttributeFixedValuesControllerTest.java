@@ -51,43 +51,103 @@ public class AttributeFixedValuesControllerTest {
     
     @Test
     public void testGetOwnerAttribute() 
+            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        final int ownerId = 5;
+        SimpleAttribute expected = this.createOwner(ownerId);
+        when(attributeDao.getById(ownerId)).thenReturn(expected);
+        SimpleAttribute actual = this.controller.getOwnerAttribute(ownerId);
+        assertEquals(expected, actual);
+    }
+    
+    @Test(expected = FixedValueOwnerNotFoundException.class)
+    public void testFailToGetOwnerAttributeBecauseOfOwnerNotFound() 
+            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        final int ownerId = 5;
+        when(attributeDao.getById(ownerId)).thenReturn(null);
+        this.controller.getOwnerAttribute(ownerId);
+    }
+    
+    @Test(expected = NotAFixedValueOwnerException.class)
+    public void testFailToGetOwnerAttributeBecauseOfOwnership() 
+            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        final int ownerId = 5;
+        SimpleAttribute expected = this.createNonOwner(ownerId);
+        when(attributeDao.getById(ownerId)).thenReturn(expected);
+        this.controller.getOwnerAttribute(ownerId);
+    }
+    
+    @Test
+    public void testGetEditableOwnerAttribute() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         final int ownerId = 5;
         SimpleAttribute expected = this.createOwner(ownerId);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expected);
-        SimpleAttribute actual = this.controller.getOwnerAttribute(contextProvider, ownerId);
+        SimpleAttribute actual = this.controller.getEditableOwnerAttribute(contextProvider, ownerId);
         assertEquals(expected, actual);
     }
     
     @Test(expected = UserAuthenticationException.class)
-    public void testFailToGetOwnerAttributeBecauseOfAuthentication() 
+    public void testFailToGetEditableOwnerAttributeBecauseOfAuthentication() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         when(contextProvider.isUserAuthenticated()).thenReturn(false);
-        this.controller.getOwnerAttribute(contextProvider, 1);
+        this.controller.getEditableOwnerAttribute(contextProvider, 1);
     }
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
-    public void testFailToGetOwnerAttributeBecauseOfOwnerNotFound() 
+    public void testFailToGetEditableOwnerAttributeBecauseOfOwnerNotFound() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         final int ownerId = 5;
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(null);
-        this.controller.getOwnerAttribute(contextProvider, ownerId);
+        this.controller.getEditableOwnerAttribute(contextProvider, ownerId);
     }
     
     @Test(expected = NotAFixedValueOwnerException.class)
-    public void testFailToGetOwnerAttributeBecauseOfOwnership() 
+    public void testFailToGetEditableOwnerAttributeBecauseOfOwnership() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         final int ownerId = 5;
         SimpleAttribute expected = this.createNonOwner(ownerId);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expected);
-        this.controller.getOwnerAttribute(contextProvider, ownerId);
+        this.controller.getEditableOwnerAttribute(contextProvider, ownerId);
     }
     
     @Test
     public void testGetAllValuesModel() 
+            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        final int ownerId = 5;
+        SimpleAttribute expectedOwner = this.createOwner(ownerId);
+        List<FixedValue> expectedValues = new ArrayList<FixedValue>();
+        expectedValues.add(this.createFixedValue(12, expectedOwner, "val"));
+        when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
+        when(attributeDao.getFixedValues(ownerId)).thenReturn(expectedValues);
+        CompoundDataObject result = this.controller.getAllValuesModel(ownerId);
+        SimpleAttribute actualOwner = result.get(AttributeFixedValuesController.PROPERTY_OWNER_ATTRIBUTE);
+        assertEquals(expectedOwner, actualOwner);
+        List<FixedValue> actualValues = result.get(AttributeFixedValuesController.PROPERTY_FIXED_VALUES);
+        assertEquals(expectedValues, actualValues);
+    }
+    
+    @Test(expected = FixedValueOwnerNotFoundException.class)
+    public void testFailToGetAllValuesModelBecauseOfOwnerNotFound() 
+            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        final int ownerId = 5;
+        when(attributeDao.getById(ownerId)).thenReturn(null);
+        this.controller.getAllValuesModel(ownerId);
+    }
+    
+    @Test(expected = NotAFixedValueOwnerException.class)
+    public void testFailToGetAllValuesModelBecauseOfOwnership() 
+            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+        final int ownerId = 5;
+        SimpleAttribute expected = this.createNonOwner(ownerId);
+        when(attributeDao.getById(ownerId)).thenReturn(expected);
+        this.controller.getAllValuesModel(ownerId);
+    }
+    
+    @Test
+    public void testGetEditableAllValuesModel() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         final int ownerId = 5;
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
@@ -96,7 +156,7 @@ public class AttributeFixedValuesControllerTest {
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
         when(attributeDao.getFixedValues(ownerId)).thenReturn(expectedValues);
-        CompoundDataObject result = this.controller.getAllValuesModel(contextProvider, ownerId);
+        CompoundDataObject result = this.controller.getEditableAllValuesModel(contextProvider, ownerId);
         SimpleAttribute actualOwner = result.get(AttributeFixedValuesController.PROPERTY_OWNER_ATTRIBUTE);
         assertEquals(expectedOwner, actualOwner);
         List<FixedValue> actualValues = result.get(AttributeFixedValuesController.PROPERTY_FIXED_VALUES);
@@ -104,29 +164,29 @@ public class AttributeFixedValuesControllerTest {
     }
     
     @Test(expected = UserAuthenticationException.class)
-    public void testFailToGetAllValuesModelBecauseOfAuthentication() 
+    public void testFailToGetEditableAllValuesModelBecauseOfAuthentication() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         when(contextProvider.isUserAuthenticated()).thenReturn(false);
-        this.controller.getAllValuesModel(contextProvider, 1);
+        this.controller.getEditableAllValuesModel(contextProvider, 1);
     }
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
-    public void testFailToGetAllValuesModelBecauseOfOwnerNotFound() 
+    public void testFailToGetEditableAllValuesModelBecauseOfOwnerNotFound() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         final int ownerId = 5;
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(null);
-        this.controller.getAllValuesModel(contextProvider, ownerId);
+        this.controller.getEditableAllValuesModel(contextProvider, ownerId);
     }
     
     @Test(expected = NotAFixedValueOwnerException.class)
-    public void testFailToGetAllValuesModelBecauseOfOwnership() 
+    public void testFailToGetEditableAllValuesModelBecauseOfOwnership() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
         final int ownerId = 5;
         SimpleAttribute expected = this.createNonOwner(ownerId);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expected);
-        this.controller.getAllValuesModel(contextProvider, ownerId);
+        this.controller.getEditableAllValuesModel(contextProvider, ownerId);
     }
     
     @Test
@@ -168,35 +228,26 @@ public class AttributeFixedValuesControllerTest {
     
     @Test
     public void testGetSingleValueModel() 
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
+            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
         final String fixedValue = "val";
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
         FixedValue expectedValue = this.createFixedValue(4, expectedOwner, fixedValue);
-        when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
         when(fixedValuesService.getFixedValue(expectedOwner, fixedValue)).thenReturn(expectedValue);
-        CompoundDataObject result = this.controller.getSingleValueModel(contextProvider, ownerId, fixedValue);
+        CompoundDataObject result = this.controller.getSingleValueModel(ownerId, fixedValue);
         SimpleAttribute actualOwner = result.get(AttributeFixedValuesController.PROPERTY_OWNER_ATTRIBUTE);
         assertEquals(expectedOwner, actualOwner);
         FixedValue actualValue = result.get(AttributeFixedValuesController.PROPERTY_FIXED_VALUE);
         assertEquals(expectedValue, actualValue);
     }
     
-    @Test(expected = UserAuthenticationException.class)
-    public void testFailToGetSingleValueModelBecauseOfAuthentication() 
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
-        when(contextProvider.isUserAuthenticated()).thenReturn(false);
-        this.controller.getSingleValueModel(contextProvider, 1, "val");
-    }
-    
     @Test(expected = FixedValueOwnerNotFoundException.class)
     public void testFailToGetSingleValueModelBecauseOfOwnerNotFound() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
-        when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(null);
-        this.controller.getSingleValueModel(contextProvider, ownerId, "val");
+        this.controller.getSingleValueModel(ownerId, "val");
     }
     
     @Test(expected = NotAFixedValueOwnerException.class)
@@ -204,9 +255,8 @@ public class AttributeFixedValuesControllerTest {
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
         SimpleAttribute expected = this.createNonOwner(ownerId);
-        when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expected);
-        this.controller.getSingleValueModel(contextProvider, ownerId, "val");
+        this.controller.getSingleValueModel(ownerId, "val");
     }
     
     @Test(expected = FixedValueNotFoundException.class)
@@ -215,10 +265,64 @@ public class AttributeFixedValuesControllerTest {
         final int ownerId = 5;
         final String fixedValue = "val";
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
+        when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
+        when(fixedValuesService.getFixedValue(expectedOwner, fixedValue)).thenThrow(FixedValueNotFoundException.class);
+        this.controller.getSingleValueModel(ownerId, fixedValue);
+    }
+    
+    @Test
+    public void testGetEditableSingleValueModel() 
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
+        final int ownerId = 5;
+        final String fixedValue = "val";
+        SimpleAttribute expectedOwner = this.createOwner(ownerId);
+        FixedValue expectedValue = this.createFixedValue(4, expectedOwner, fixedValue);
+        when(contextProvider.isUserAuthenticated()).thenReturn(true);
+        when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
+        when(fixedValuesService.getFixedValue(expectedOwner, fixedValue)).thenReturn(expectedValue);
+        CompoundDataObject result = this.controller.getEditableSingleValueModel(contextProvider, ownerId, fixedValue);
+        SimpleAttribute actualOwner = result.get(AttributeFixedValuesController.PROPERTY_OWNER_ATTRIBUTE);
+        assertEquals(expectedOwner, actualOwner);
+        FixedValue actualValue = result.get(AttributeFixedValuesController.PROPERTY_FIXED_VALUE);
+        assertEquals(expectedValue, actualValue);
+    }
+    
+    @Test(expected = UserAuthenticationException.class)
+    public void testFailToGetEditableSingleValueModelBecauseOfAuthentication() 
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
+        when(contextProvider.isUserAuthenticated()).thenReturn(false);
+        this.controller.getEditableSingleValueModel(contextProvider, 1, "val");
+    }
+    
+    @Test(expected = FixedValueOwnerNotFoundException.class)
+    public void testFailToGetEditableSingleValueModelBecauseOfOwnerNotFound() 
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
+        final int ownerId = 5;
+        when(contextProvider.isUserAuthenticated()).thenReturn(true);
+        when(attributeDao.getById(ownerId)).thenReturn(null);
+        this.controller.getEditableSingleValueModel(contextProvider, ownerId, "val");
+    }
+    
+    @Test(expected = NotAFixedValueOwnerException.class)
+    public void testFailToGetEditableSingleValueModelBecauseOfOwnership() 
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
+        final int ownerId = 5;
+        SimpleAttribute expected = this.createNonOwner(ownerId);
+        when(contextProvider.isUserAuthenticated()).thenReturn(true);
+        when(attributeDao.getById(ownerId)).thenReturn(expected);
+        this.controller.getEditableSingleValueModel(contextProvider, ownerId, "val");
+    }
+    
+    @Test(expected = FixedValueNotFoundException.class)
+    public void testFailToGetEditableSingleValueModelBecauseOfValueNotFound() 
+            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
+        final int ownerId = 5;
+        final String fixedValue = "val";
+        SimpleAttribute expectedOwner = this.createOwner(ownerId);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
         when(fixedValuesService.getFixedValue(expectedOwner, fixedValue)).thenThrow(FixedValueNotFoundException.class);
-        this.controller.getSingleValueModel(contextProvider, ownerId, fixedValue);
+        this.controller.getEditableSingleValueModel(contextProvider, ownerId, fixedValue);
     }
     
     @Test
