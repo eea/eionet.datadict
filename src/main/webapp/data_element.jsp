@@ -2560,13 +2560,13 @@ String helpAreaName = "";
 
                                                         <td rowspan="2" style="vertical-align:top">
                                                             <% if (mode.equals("edit")) {%>
-                                                                <input type="radio" name="all_concepts_legal" value="1" <% if (allowAllConcepts) { %> checked="checked" <%}%>>All concepts are valid</input>
-                                                                <br/><input type="radio" name="all_concepts_legal" value="0" <% if (!allowAllConcepts) { %> checked="checked" <%}%>>Only concepts created before the release date of this element are valid</input>
+                                                                <input type="radio" name="all_concepts_legal" value="1" <% if (allowAllConcepts) { %> checked="checked" <%}%>>All accepted concepts from the vocabulary</input>
+                                                                <br/><input type="radio" name="all_concepts_legal" value="0" <% if (!allowAllConcepts) { %> checked="checked" <%}%>>Only concepts accepted before the release of the data element are used</input>
                                                             <% }else {%>
                                                                 <% if (allowAllConcepts) {%>
-                                                                    <div>All concepts are valid</div>
+                                                                    <div>All accepted concepts from the vocabulary</div>
                                                                 <% } else {%>
-                                                                    <div>Only concepts created before and not terminated before the release date of this element are valid</div>
+                                                                    <div>Only concepts accepted before the release of the data element are used</div>
                                                                 <% } %>
                                                             <% } %>
                                                         </td>
