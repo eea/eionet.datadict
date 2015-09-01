@@ -2194,6 +2194,80 @@
                                                 <%
                                                     }
                                                 %>
+                                                
+                                            <% 
+                                                if (vocabulary != null) {
+                                            %>
+                                                <tr class="zebra<%=isOdd%>">
+                                                    <th scope="row" class="scope-row simple_attr_title">
+                                                        Vocabulary
+                                                    </th>
+                                                    <td class="simple_attr_help">
+                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=vocabulary_link" onclick="pop(this.href);return false;">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                        </a>
+                                                    </td>
+                                                    <%
+                                                        if (colspan == 4) {
+                                                    %>
+                                                    <td class="simple_attr_help">
+                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt=""/>
+                                                    </td>
+                                                    <%
+                                                        }
+                                                    %>
+                                                    <td class="simple_attr_value">
+                                                        <%
+                                                            String vocabularyUri = request.getContextPath() + "/vocabulary/" + vocabulary.getFolderName() + "/" + vocabulary.getIdentifier();
+                                                            boolean vocabularyEditing = "edit".equals(mode);
+                                                            
+                                                            if (vocabularyEditing) {
+                                                        %>
+                                                        <input type="radio" name="all_concepts_legal" value="1" <% if (allowAllConcepts) { %> checked="checked" <%}%>>
+                                                        <%
+                                                            }
+                                                            else {
+                                                        %>
+                                                        <div style="display: <%=allowAllConcepts ? "inherit" : "none"%>;">
+                                                        <%
+                                                            }
+                                                        %>
+                                                            All accepted concepts from the vocabulary
+                                                            <a href="<%=vocabularyUri%>"><%=vocabulary.getLabel()%></a>
+                                                            in the <em><%=vocabulary.getFolderName()%></em> set
+                                                        <%
+                                                            if (vocabularyEditing) {
+                                                        %>
+                                                        <br/>
+                                                        <input type="radio" name="all_concepts_legal" value="0" <% if (!allowAllConcepts) { %> checked="checked" <%}%>>
+                                                        <%
+                                                            }
+                                                            else {
+                                                        %>
+                                                        </div>
+                                                        <div style="display: <%=!allowAllConcepts ? "inherit" : "none"%>;">
+                                                        <%
+                                                            }
+                                                        %>
+                                                            Only concepts accepted before the release of the data element are used from the vocabulary
+                                                            <a href="<%=vocabularyUri%>"><%=vocabulary.getLabel()%></a>
+                                                            in the <em><%=vocabulary.getFolderName()%></em> set
+                                                        <%
+                                                            if (!vocabularyEditing) {
+                                                        %>
+                                                        </div>
+                                                        <%
+                                                            }
+                                                        %>
+                                                        
+                                                    </td>
+                                                    <%
+                                                        isOdd = Util.isOdd(++displayed);
+                                                    %>
+                                                </tr>
+                                            <%
+                                                }
+                                            %>
 
                                             <%
                                             pageContext.setAttribute("dataElement", dataElement);
@@ -2542,45 +2616,6 @@ String helpAreaName = "";
                                             <%
                                                 }
                                             %>
-
-                                        <!--  vocabulary -->
-                                        <%
-                                        if ( ((mode.equals("edit") && user != null) || mode.equals("view")) && vocabulary != null) {%>
-
-
-                                                <table class="datatable" id="dataset-attributes">
-                                                                <col style="width: 19%"/>
-                                                                <col style="width: 20%"/>
-                                                                <col style="width: 61%"/>
-
-                                                    <tr class="zebra">
-                                                        <th class="scope-row simple_attr_title">Vocabulary</th>
-                                                        <td style="vertical-align:top"><a href="<%=request.getContextPath() + "/vocabulary/" + vocabulary.getFolderName() + "/" + vocabulary.getIdentifier()%>"><%=vocabulary.getLabel()%></a></td>
-
-
-                                                        <td rowspan="2" style="vertical-align:top">
-                                                            <% if (mode.equals("edit")) {%>
-                                                                <input type="radio" name="all_concepts_legal" value="1" <% if (allowAllConcepts) { %> checked="checked" <%}%>>All accepted concepts from the vocabulary</input>
-                                                                <br/><input type="radio" name="all_concepts_legal" value="0" <% if (!allowAllConcepts) { %> checked="checked" <%}%>>Only concepts accepted before the release of the data element are used</input>
-                                                            <% }else {%>
-                                                                <% if (allowAllConcepts) {%>
-                                                                    <div>All accepted concepts from the vocabulary</div>
-                                                                <% } else {%>
-                                                                    <div>Only concepts accepted before the release of the data element are used</div>
-                                                                <% } %>
-                                                            <% } %>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th class="scope-row simple_attr_title">Vocabulary Set</th>
-                                                        <td style="vertical-align:top"><%=vocabulary.getFolderName()%></td>
-                                                    </tr>
-                                                </table>
-
-                                            <%}
-                                        %>
-
-
 
                                         <!-- complex attributes -->
 
