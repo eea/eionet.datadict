@@ -465,7 +465,14 @@ public class DatasetMSAccessFile {
             throw new IllegalArgumentException("Element datatype must not be null or null");
         }
 
-        int index = dataTypes.indexOf(datatype);
+        String coersedDataType = datatype;
+        
+        if (coersedDataType.equals("reference")) {
+            coersedDataType = "string";
+        }
+        
+        int index = dataTypes.indexOf(coersedDataType);
+        
         if (index < 0) {
             throw new IllegalArgumentException("Unknown element datatype: " + datatype);
         } else {
