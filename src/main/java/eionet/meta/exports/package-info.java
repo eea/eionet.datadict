@@ -1,4 +1,3 @@
-package eionet.meta.exports;
 /**
  * Data dictionary export functionality.
  * This is the root package of DD’s export logic which is responsible
@@ -7,3 +6,5 @@ package eionet.meta.exports;
  * cachable. Sub-packages of this package are each dedicated to a concrete
  * output format.
  */
+
+package eionet.meta.exports;
