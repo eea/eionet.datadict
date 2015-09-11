@@ -429,11 +429,36 @@ public class DatasetMSAccessFile {
      * @return
      */
     private Integer elmAttrInteger(DataElement elm, String attrName) {
+        int minMaxSizeValue = this.tryHandleMinMaxSizeOfGeometryType(elm, attrName);
+        
+        if (minMaxSizeValue > -1) {
+            return minMaxSizeValue;
+        }
 
         String attrValue = elm.getAttributeValueByShortName(attrName);
         return attrValue == null ? null : Integer.valueOf(attrValue);
     }
-
+    
+    private int tryHandleMinMaxSizeOfGeometryType(DataElement elm, String attrName) {
+        boolean isMinSizeAttribute = "MinSize".equals(attrName);
+        boolean isMaxSizeAttribute = "MaxSize".equals(attrName);
+        
+        if (isMinSizeAttribute || isMaxSizeAttribute) {
+            String elementDataType = elm.getAttributeValueByShortName("Datatype");
+            
+            if (this.isGeometryDataType(elementDataType)) {
+                if (isMinSizeAttribute) {
+                    return 0;
+                }
+                else {
+                    return 1000; // must be > 256 for MS Access macros to generate large text column.
+                }
+            }
+        }
+        
+        return -1;
+    }
+    
     /**
      *
      * @param type
@@ -465,13 +490,8 @@ public class DatasetMSAccessFile {
             throw new IllegalArgumentException("Element datatype must not be null or null");
         }
 
-        String coersedDataType = datatype;
-        
-        if (coersedDataType.equals("reference")) {
-            coersedDataType = "string";
-        }
-        
-        int index = dataTypes.indexOf(coersedDataType);
+        String coercedDataType = this.coerceElmDataType(datatype);
+        int index = dataTypes.indexOf(coercedDataType);
         
         if (index < 0) {
             throw new IllegalArgumentException("Unknown element datatype: " + datatype);
@@ -480,6 +500,36 @@ public class DatasetMSAccessFile {
         }
     }
 
+    private String coerceElmDataType(String dataType) {
+        final String stringType = "string";
+        
+        if ("reference".equals(dataType)) {
+            return stringType;
+        }
+        
+        if (this.isGeometryDataType(dataType)) {
+            return stringType;
+        }
+        
+        return dataType;
+    }
+    
+    private boolean isGeometryDataType(String dataType) {
+        if ("point".equals(dataType)) {
+            return true;
+        }
+        
+        if ("linestring".equals(dataType)) {
+            return true;
+        }
+        
+        if ("polygon".equals(dataType)) {
+            return true;
+        }
+        
+        return false;
+    }
+    
     /**
      *
      * @param publicOrInternal

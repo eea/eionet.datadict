@@ -75,20 +75,44 @@ public class ElmSchema extends Schema {
                 addNamespace(elem.getNameSpacePrefix(), nsUri);
             }
         }
-        // writeElemStart(elem.getShortName());
-        //in element schema use external names without NS prefix because it is targetNamespace:
-        String elemName=elem.getIdentifier();
-        if (!isIncontainer() && elem.isExternalSchema()) {
-            elemName = StringUtils.substringAfter(elemName, ":");
-        }
-        writeElemStart(elemName);
+        
+        writeElemStart(elem);
         writeAnnotation(elem.getAttributes(), elem.getComplexAttributes());
         writeContent(elem);
         writeElemEnd();
     }
 
+    private void writeElemStart(DataElement dataElement) {
+        String elementName = this.getElementName(dataElement);
+        
+        if (!this.includeElementTypeAsXmlAttribute(dataElement)) {
+            super.writeElemStart(elementName);
+            return;
+        }
+        
+        String dataType = dataElement.getAttributeValueByShortName("Datatype");
+        String coercedDataType = this.coerceDataType(dataType);
+        
+        addString(String.format("<xs:element name=\"%s\" type=\"xs:%s\">", elementName, coercedDataType));        
+        newLine();
+    }
+    
+    private String getElementName(DataElement dataElement) {
+        // writeElemStart(elem.getShortName());
+        //in element schema use external names without NS prefix because it is targetNamespace:
+        String elementName = dataElement.getIdentifier();
+        
+        if (!isIncontainer() && dataElement.isExternalSchema()) {
+            elementName = StringUtils.substringAfter(elementName, ":");
+        }
+        
+        return elementName;
+    }
+    
     private void writeContent(DataElement elem) throws Exception {
-        writeSimpleContent(elem);
+        if (!this.includeElementTypeAsXmlAttribute(elem)) {
+            writeSimpleContent(elem);
+        }
     }
 
     /**
@@ -135,14 +159,11 @@ public class ElmSchema extends Schema {
         newLine();
 
         if (dataType != null) {
-            // "reference" and "localref" don't exist as XML types. They are RDF concepts.
-            if (dataType.equalsIgnoreCase("reference") || dataType.equalsIgnoreCase("localref")) {
-                dataType = "string";
-            }
+            String coercedDataType = this.coerceDataType(dataType);
 
             addString("\t\t");
             addString("<xs:restriction base=\"xs:");
-            addString(dataType);
+            addString(coercedDataType);
             addString("\">");
             newLine();
 
@@ -156,7 +177,7 @@ public class ElmSchema extends Schema {
 
             if (!Util.isEmpty(maxSize)) {
                 addString("\t\t\t");
-                if (dataType.equalsIgnoreCase("string"))
+                if (coercedDataType.equalsIgnoreCase("string"))
                     addString("<xs:maxLength value=\"");
                 else
                     addString("<xs:totalDigits value=\"");
@@ -205,7 +226,7 @@ public class ElmSchema extends Schema {
                 newLine();
             }
 
-            if (!dataType.equalsIgnoreCase("boolean")) {
+            if (!coercedDataType.equalsIgnoreCase("boolean")) {
                 Vector fixedValues = elem.getFixedValues();
                 for (int k = 0; fixedValues != null && k < fixedValues.size(); k++) {
 
@@ -236,4 +257,50 @@ public class ElmSchema extends Schema {
     private boolean isIncontainer() {
         return StringUtils.isNotBlank(getContainerNamespaceID());
     }
+    
+    private String coerceDataType(String dataType) {
+        final String stringType = "string";
+        final String anyType = "anyType";
+        
+        if ("reference".equals(dataType)) {
+            return stringType;
+        }
+        
+        if ("localref".equals(dataType)) {
+            return stringType;
+        }
+        
+        if (this.isGeometryDataType(dataType)) {
+            return anyType;
+        }
+        
+        return dataType;
+    }
+    
+    private boolean isGeometryDataType(String dataType) {
+        if ("point".equals(dataType)) {
+            return true;
+        }
+        
+        if ("linestring".equals(dataType)) {
+            return true;
+        }
+        
+        if ("polygon".equals(dataType)) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private boolean isGeometryDataElement(DataElement dataElement) {
+        String dataType = dataElement.getAttributeValueByShortName("Datatype");
+        
+        return this.isGeometryDataType(dataType);
+    }
+    
+    private boolean includeElementTypeAsXmlAttribute(DataElement dataElement) {
+        return this.isGeometryDataElement(dataElement);
+    }
+    
 }
