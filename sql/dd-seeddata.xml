@@ -452,5 +452,64 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             ]]>
         </sql>
       </changeSet>
+      
+      <changeSet author="nakasnik" id="seed-5">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                <![CDATA[
+                    SELECT 
+                        count(*)
+                    FROM (
+                        SELECT 
+                            *
+                        FROM
+                            M_ATTRIBUTE
+                        WHERE
+                            M_ATTRIBUTE.`NAME` = 'Datatype'
+                    ) ma INNER JOIN FXV fxv 
+                        ON ma.M_ATTRIBUTE_ID = fxv.OWNER_ID AND fxv.OWNER_TYPE = 'attr'
+                    WHERE 
+                        fxv.`VALUE` IN ('point', 'linestring', 'polygon')
+                    ;
+                ]]>
+            </sqlCheck>
+        </preConditions>
+        <comment>Geometric data types</comment>
+        <sql>
+            <![CDATA[
+                INSERT INTO `FXV` (
+                    OWNER_ID, 
+                    OWNER_TYPE, 
+                    VALUE, 
+                    IS_DEFAULT, 
+                    DEFINITION, 
+                    SHORT_DESC
+                ) 
+                VALUES (
+                    (SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE WHERE SHORT_NAME = 'Datatype') ,
+                    'attr',
+                    'point',
+                    'N',
+                    'A Point is defined by a single coordinate tuple.',
+                    ''
+                ), (
+                    (SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE WHERE SHORT_NAME = 'Datatype'),
+                    'attr',
+                    'linestring',
+                    'N',
+                    'A LineString is defined by two or more coordinate tuples, with linear interpolation between them.',
+                    ''
+                ), (
+                    (SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE WHERE SHORT_NAME = 'Datatype'),
+                    'attr',
+                    'polygon',
+                    'N',
+                    'A Polygon is a special surface that is defined by a single surface patch.',
+                    ''
+                );
+            ]]>
+        </sql>
+      </changeSet>
+      
     </databaseChangeLog>
 
