@@ -766,6 +766,7 @@ public class DataElementHandler extends BaseHandler {
         deleteFixedValues();
         deleteFkRelations();
         deleteTableElem();
+        this.deleteInferenceRules();
 
         // delete the elements themselves
 
@@ -923,6 +924,25 @@ public class DataElementHandler extends BaseHandler {
         PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
         stmt.executeUpdate();
         stmt.close();
+    }
+    
+    private void deleteInferenceRules() throws SQLException {
+        String sql = "delete from INFERENCE_RULE where DATAELEM_ID = ? or TARGET_ELEM_ID = ?";
+        
+        for (String elementId : this.delem_ids) {
+            int dataElementId = Integer.valueOf(elementId);
+            PreparedStatement stmt = null;
+            
+            try {
+                stmt = this.conn.prepareStatement(sql);
+                stmt.setInt(1, dataElementId);
+                stmt.setInt(2, dataElementId);
+                stmt.executeUpdate();
+            }
+            finally {
+                stmt.close();
+            }
+        }
     }
 
     private String getTableElemPos() throws SQLException {
@@ -1844,6 +1864,10 @@ public class DataElementHandler extends BaseHandler {
             buf = new StringBuffer(gen.updateStatement());
             buf.append(" where OWNER_TYPE='elem' and OWNER_ID=").append(oldID);
             stmt.executeUpdate(buf.toString());
+            
+            stmt.executeUpdate(String.format("update INFERENCE_RULE set DATAELEM_ID = %s where DATAELEM_ID = %s", newID, oldID));
+            stmt.executeUpdate(String.format("update INFERENCE_RULE set TARGET_ELEM_ID = %s where TARGET_ELEM_ID = %s", newID, oldID));
+            
         } finally {
             try {
                 if (stmt != null) {

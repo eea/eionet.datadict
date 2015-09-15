@@ -113,6 +113,7 @@ public class CopyHandler extends OldCopyHandler {
         copyFkRelations();
         copyDstToTblRelations();
         copyTblToElmRelations();
+        this.copyInferenceRules();
 
         return newDstId;
     }
@@ -153,6 +154,8 @@ public class CopyHandler extends OldCopyHandler {
             if (isCopyTbl2ElmRelations) {
                 copyElmToTblRelations();
             }
+            
+            this.copyInferenceRules();
         }
         return newId;
     }
@@ -1122,6 +1125,30 @@ public class CopyHandler extends OldCopyHandler {
         }
     }
 
+    private void copyInferenceRules() throws SQLException {
+        for (String oldElementId : this.oldNewElements.keySet()) {
+            String newElementId = this.oldNewElements.get(oldElementId);
+            this.copyInferenceRules(oldElementId, newElementId);
+        }
+    }
+    
+    private void copyInferenceRules(String oldElementId, String newElementId) throws SQLException {
+        String sql = "insert into INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) select ?, RULE, TARGET_ELEM_ID from INFERENCE_RULE where DATAELEM_ID = ?";
+        PreparedStatement stmt = null;
+        
+        try {
+            stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, Integer.valueOf(newElementId));
+            stmt.setInt(2, Integer.valueOf(oldElementId));
+            stmt.executeUpdate();
+        }
+        finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+    }
+    
     /**
      *
      * @param stmt

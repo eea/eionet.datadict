@@ -1907,5 +1907,17 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
       </comment>
       <sql>drop function if exists func_getSchemaSetModificationDate</sql>
   </changeSet>
+  
+  <changeSet author="nakasnik" id="rev-141" dbms="mysql">
+      <sql>
+          alter table INFERENCE_RULE ENGINE = InnoDB;
+      </sql>
+  </changeSet>
+  
+  <changeSet author="nakasnik" id="rev-142" dbms="mysql">
+      <sql>
+          alter table INFERENCE_RULE convert to character set utf8 collate utf8_unicode_ci;
+      </sql>
+  </changeSet>
 
 </databaseChangeLog>

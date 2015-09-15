@@ -776,6 +776,9 @@ public class DataManipulations {
             buf.append("delete from FXV where OWNER_TYPE='elem' and OWNER_ID=").append(elmID);
             stmt = conn.createStatement();
             stmt.executeUpdate(buf.toString());
+            
+            // delete inference rules
+            stmt.executeUpdate(String.format("delete from INFERENCE_RULE where DATAELEM_ID = %s or TARGET_ELEM_ID = %s", elmID, elmID));
 
             // delete entries in DATAELEM
             buf = new StringBuffer();
