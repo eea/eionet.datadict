@@ -78,45 +78,62 @@ public class VocabularyRelationshipServiceTest  extends UnitilsJUnit4 {
 
     }
     
-    static List<Integer> rel1DataElements = new ArrayList<Integer>() {{ add(6); add(5); add(5); }};
-    static List<Integer> rel1Vocabularies = new ArrayList<Integer>() {{ add(2); add(3); add(2); }};
-    static List<Integer> rel1Concepts = new ArrayList<Integer>() {{ add(5); add(8); add(5); add(10);  }};
+    static List<Integer> concepts1            = new ArrayList<Integer>() {{ add(1); add(2);         }};
+    static List<Integer> rel1DataElementSizes = new ArrayList<Integer>() {{ add(1); add(1);         }};
+    static List<Integer> rel1DataElements     = new ArrayList<Integer>() {{ add(6); add(5);         }};
+    static List<Integer> rel1Vocabularies     = new ArrayList<Integer>() {{ add(2); add(3);         }};
+    static List<Integer> rel1ConceptSizes     = new ArrayList<Integer>() {{ add(1); add(2);         }};
+    static List<Integer> rel1Concepts         = new ArrayList<Integer>() {{ add(5); add(8); add(10);}};
     @Test
     public void getRelatedVocabularyConcepts1(){
-        getRelatedVocabularyConcepts(1, rel1DataElements, rel1Vocabularies, rel1Concepts);
+        getRelatedVocabularyConcepts(concepts1, 1, rel1DataElementSizes, rel1DataElements, rel1Vocabularies, rel1ConceptSizes, rel1Concepts);
     }
     
-    static List<Integer> rel2DataElements = new ArrayList<Integer>() {{ add(6); }};
-    static List<Integer> rel2Vocabularies = new ArrayList<Integer>() {{ add(3); }};
-    static List<Integer> rel2Concepts = new ArrayList<Integer>() {{ add(9); add(10);  }};
+    static List<Integer> concepts2            = new ArrayList<Integer>() {{ add(5); add(6);         }};
+    static List<Integer> rel2DataElementSizes = new ArrayList<Integer>() {{ add(1); add(0);         }};
+    static List<Integer> rel2DataElements     = new ArrayList<Integer>() {{ add(6); }};
+    static List<Integer> rel2Vocabularies     = new ArrayList<Integer>() {{ add(3); }};
+    static List<Integer> rel2ConceptSizes     = new ArrayList<Integer>() {{ add(1); }};
+    static List<Integer> rel2Concepts         = new ArrayList<Integer>() {{ add(9); }};
     @Test
     public void getRelatedVocabularyConcepts2(){
-        getRelatedVocabularyConcepts(2, rel2DataElements, rel2Vocabularies, rel2Concepts);
+        getRelatedVocabularyConcepts(concepts2, 2, rel2DataElementSizes, rel2DataElements, rel2Vocabularies, rel2ConceptSizes, rel2Concepts);
     }
     
-    private void getRelatedVocabularyConcepts(int vocId, List<Integer> relDataElements, List<Integer> relVocabularies, List<Integer> relConcepts ){
-        Map<DataElement, Map<VocabularyFolder, List<VocabularyConcept>>> concepts = service.getRelatedVocabularyConcepts(1, service.getVocabularyRelationships(vocId) );
-        
-        Assert.assertThat("There are "+relDataElements.size()+" relationships between Vocabulary ID:"+vocId+" and other", concepts.size(), CoreMatchers.is(relDataElements.size()) );
+    private void getRelatedVocabularyConcepts(List<Integer> conceptIds, int vocId, List<Integer> relDataElementSizes, List<Integer> relDataElements, List<Integer> relVocabularies, List<Integer> relConceptSizes, List<Integer> relConcepts ){
         
         int idx = 0; int vIdx = 0; int cIdx = 0;
-        for ( Map.Entry<DataElement, Map<VocabularyFolder, List<VocabularyConcept>>> relEntry : concepts.entrySet() ){
-        System.out.println(relEntry.getKey().getId());
-            Assert.assertThat("Relationship "+(idx+1)+" is achieved through data element with ID "+relDataElements.get(idx),
-                    relEntry.getKey().getId(), CoreMatchers.is(relDataElements.get(idx)));
+        
+        for ( int conceptId: conceptIds ){
             
-            for ( Map.Entry<VocabularyFolder, List<VocabularyConcept>> entry : relEntry.getValue().entrySet() ){
-                Assert.assertThat("...towards Vocabulary with ID "+relVocabularies.get(vIdx),
-                    entry.getKey().getId(), CoreMatchers.is(relVocabularies.get(vIdx)));
-                
-                for( VocabularyConcept concept : entry.getValue() ){
-                    Assert.assertThat("...and concept with ID "+relConcepts.get(cIdx),
-                        concept.getId(), CoreMatchers.is(relConcepts.get(cIdx)));
-                    cIdx++;
+            Map<DataElement, Map<VocabularyFolder, List<VocabularyConcept>>> concepts = service.getRelatedVocabularyConcepts(conceptId, service.getVocabularyRelationships(vocId) );
+        
+            Assert.assertThat("There are "+relDataElementSizes.get(idx)+" relationships between Vocabulary ID:"+vocId+" and other for Given concept "+conceptId, 
+                    concepts.size(), CoreMatchers.is(relDataElementSizes.get(idx)) );
+
+            for ( Map.Entry<DataElement, Map<VocabularyFolder, List<VocabularyConcept>>> relEntry : concepts.entrySet() ){
+
+                Assert.assertThat("Relationship is achieved through data element with ID "+relDataElements.get(idx),
+                        relEntry.getKey().getId(), CoreMatchers.is(relDataElements.get(idx)));
+
+                for ( Map.Entry<VocabularyFolder, List<VocabularyConcept>> entry : relEntry.getValue().entrySet() ){
+                    Assert.assertThat("...towards Vocabulary with ID "+relVocabularies.get(vIdx),
+                        entry.getKey().getId(), CoreMatchers.is(relVocabularies.get(vIdx)));
+
+                    Assert.assertThat("...for "+relConceptSizes.get(vIdx)+" concepts ",
+                        entry.getValue().size(), CoreMatchers.is(relConceptSizes.get(vIdx)));
+
+                    for( VocabularyConcept concept : entry.getValue() ){
+                        Assert.assertThat("...and concept with ID "+relConcepts.get(cIdx),
+                            concept.getId(), CoreMatchers.is(relConcepts.get(cIdx)));
+                        cIdx++;
+                    }
+                    vIdx++;
                 }
-                vIdx++;
+                
             }
             idx++;
         }
+        
     }
 }

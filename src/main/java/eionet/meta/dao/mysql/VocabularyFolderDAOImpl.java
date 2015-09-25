@@ -889,7 +889,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                                    sql.append("on vc.VOCABULARY_CONCEPT_ID = vce.VOCABULARY_CONCEPT_ID ");
                                    sql.append("inner join VOCABULARY_CONCEPT vc2 ");
                                    sql.append("on vce.RELATED_CONCEPT_ID = vc2.VOCABULARY_CONCEPT_ID ");
-                                   sql.append("where vc.VOCABULARY_ID = :ID");
+                                   sql.append("where vc.VOCABULARY_ID = :ID and vce.RELATED_CONCEPT_ID IS NOT NULL");
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("ID", vocabularyID );

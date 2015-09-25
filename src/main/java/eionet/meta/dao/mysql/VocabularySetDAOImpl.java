@@ -27,7 +27,7 @@ public class VocabularySetDAOImpl extends GeneralDAOImpl implements IVocabularyS
 
     @Override
     public VocabularySet get(int vocabularySetID) {
-        String sql = "select * FROM VOCABULARY_SET where v.ID = :ID";
+        String sql = "select * FROM VOCABULARY_SET where ID = :ID";
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("ID", vocabularySetID );

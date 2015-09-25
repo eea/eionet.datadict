@@ -80,11 +80,14 @@ public class VocabularyRelationshipServiceImpl implements VocabularyRelationship
         Map<DataElement, Map<VocabularyFolder, List<VocabularyConcept>>> result = new LinkedHashMap<DataElement, Map<VocabularyFolder, List<VocabularyConcept>>>();
         
         for ( VocabularyRelationship vocRelationship : vocRelationships ){
-            
+            //Vocabulary Relationship is: Vocabulary - Relationship DataElement - Related Vocabulary
             DataElement relationship = vocRelationship.getRelationship();
             VocabularyFolder relatedVocabulary = vocRelationship.getRelatedVocabulary();
             
             List<Integer> relatedConceptIDs = this.vocabularyFolderDAO.getRelatedVocabularyConcepts( vocabularyConceptID, relationship.getId(), relatedVocabulary.getId() );
+            if ( relatedConceptIDs.isEmpty() ){
+                continue;
+            }
             List<VocabularyConcept> relatedConcepts = new ArrayList<VocabularyConcept>();
             for ( Integer relatedConceptID : relatedConceptIDs ){
                 relatedConcepts.add( this.vocabularyConceptDAO.getVocabularyConcept(relatedConceptID) ) ;
