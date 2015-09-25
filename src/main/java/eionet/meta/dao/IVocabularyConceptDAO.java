@@ -235,4 +235,5 @@ public interface IVocabularyConceptDAO {
     List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
             String dataElementIdentifier, String language, String defaultLanguage);
 
+
 }

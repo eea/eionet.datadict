@@ -120,7 +120,7 @@ public class InspireCodelistXmlWriter {
      *             if streaming fails
      */
     public InspireCodelistXmlWriter(OutputStream out, VocabularyFolder voc, String ctx) throws XMLStreamException {
-        writer = XMLOutputFactory.newInstance().createXMLStreamWriter(out, ENCODING);
+        writer =  XMLOutputFactory.newInstance().createXMLStreamWriter(out, ENCODING);
         vocabulary = voc;
         contextRoot = ctx;
     }

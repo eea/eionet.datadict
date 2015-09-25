@@ -700,4 +700,5 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         return resultList;
     } // end of method getValidConceptsWithValuedElements
 
+
 }

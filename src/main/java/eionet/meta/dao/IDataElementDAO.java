@@ -192,7 +192,7 @@ public interface IDataElementDAO {
      *            target vocabulary id
      */
     void copyVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId);
-
+    
     /**
      * Returns data element attributes for vocabulary concepts in a folder.
      * Precondition: If emptyAttributes true then this method should be called with a single concept id, i.e.

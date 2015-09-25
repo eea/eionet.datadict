@@ -16,12 +16,18 @@ import org.openrdf.rio.rdfxml.RDFXMLParser;
 import java.io.ByteArrayOutputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.security.CodeSource;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.xpath.XPathFactory;
 
 /**
  * Test VocabularyXmlWriter.
@@ -48,7 +54,7 @@ public class VocabularyXmlWriterTest {
 		writer.writeRDFXml(commonElemsUri, rootContext, vocabularyContext, testVocabulary, concepts, new ArrayList<RdfNamespace>());
 		outputStream.close();
 		String output = new String(outputStream.toByteArray(), "UTF-8");
-
+    
 		// test output
 		Assert.assertTrue(StringUtils.contains(output, "<skos:Concept rdf:about=\"" + BASE_URL + "/vocabulary/folder/test/Id1\">"));
 		Assert.assertTrue(StringUtils.contains(output, "<skos:notation>Notation1</skos:notation>"));
@@ -64,8 +70,7 @@ public class VocabularyXmlWriterTest {
 		RDFParser parser = new RDFXMLParser();
 		parser.parse(reader, vocabularyContext);
 		reader.close();
-
-	}
+        }
 
 	@Test
 	public void writeSiteCodesXml() throws Exception {
