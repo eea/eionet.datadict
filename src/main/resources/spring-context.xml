@@ -55,8 +55,6 @@
         </property>
     </bean>
     
-    <bean id="springApplicationContext" class="eionet.util.SpringApplicationContext"/>
-    
     <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="targetObject">
             <!-- System.getProperties() -->

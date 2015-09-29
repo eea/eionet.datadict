@@ -11,16 +11,34 @@ import javax.servlet.http.HttpServletResponse;
 
 import eionet.meta.DDUser;
 import eionet.util.SecurityUtil;
-import eionet.util.SpringApplicationContext;
 import eionet.util.Util;
+import javax.servlet.ServletConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
+ * 
+ * changed by Lena Kargioti, eka@eworx.gr on Sept 2015
  *
  */
 public class CodelistServlet extends HttpServlet {
+    
+    @Autowired
+    private CodeValueHandlerProvider codeValueHandlerProvider;
 
+    private WebApplicationContext springContext;
+
+    @Override
+    public void init(final ServletConfig config) throws ServletException {
+        super.init(config);
+        springContext = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
+        final AutowireCapableBeanFactory beanFactory = springContext.getAutowireCapableBeanFactory();
+        beanFactory.autowireBean(this);
+    }
     /*
      *  (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -64,7 +82,7 @@ public class CodelistServlet extends HttpServlet {
             writer = new PrintWriter(osw);
 
             // construct codelist writer
-            Codelist codelist = new Codelist(exportType, SpringApplicationContext.getBean(CodeValueHandlerProvider.class));
+            Codelist codelist = new Codelist(exportType, codeValueHandlerProvider);
 
             // write & flush
             String listStr = codelist.write(id, type);
