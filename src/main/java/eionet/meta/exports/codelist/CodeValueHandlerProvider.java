@@ -7,7 +7,6 @@ package eionet.meta.exports.codelist;
 
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
-import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataElement.DataElementValueType;
 import eionet.meta.service.VocabularyRelationshipService;
 import org.springframework.beans.factory.annotation.Autowired;

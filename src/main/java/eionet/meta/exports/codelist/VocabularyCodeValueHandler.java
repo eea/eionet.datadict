@@ -5,6 +5,7 @@
  */
 package eionet.meta.exports.codelist;
 
+import eionet.meta.CleanupServlet;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.DataElement;
@@ -13,13 +14,17 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyRelationship;
 import eionet.meta.service.VocabularyRelationshipService;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.apache.log4j.Logger;
 
 /**
  * @author Lena KARGIOTI eka@eworx.gr
  */
 public class VocabularyCodeValueHandler extends CodeValueHandler {
+    
+    private static final Logger LOGGER = Logger.getLogger(VocabularyCodeValueHandler.class);
     
     private final VocabularyRelationshipService vocabularyRelationshipService;
     
@@ -39,7 +44,13 @@ public class VocabularyCodeValueHandler extends CodeValueHandler {
         }
         Integer vocabularyID = this.element.getVocabularyId();
         
+        if ( vocabularyID == null ){
+            LOGGER.info("Vocabulary Element identified by '"+this.element.getIdentifier()+"' is not bound to any vocabulary. Skipping...");
+            return Collections.emptyList();
+        }
+        
         List<VocabularyRelationship> relationships = this.vocabularyRelationshipService.getVocabularyRelationships(vocabularyID);
+
         //Define extra headers
         this.addRelationshipNames( relationships );
         
