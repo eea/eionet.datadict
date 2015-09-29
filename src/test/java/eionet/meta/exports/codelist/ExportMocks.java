@@ -366,19 +366,13 @@ public class ExportMocks {
     }
     
     static String emptyDatasetExportCSV(){
-        String part1 = uncommonDataElementWithFixedValuesExportCSV();
-        String part2 = uncommonDataElementWithVocabularyValuesWithRelationshipsExportCSV();
-        return part1.substring(0, (part1.indexOf("\n")+1) ) + ExportStatics.CSV_NEW_LINE + part2.substring(0, (part2.indexOf("\n")+1) )+ ExportStatics.CSV_NEW_LINE;
+        return "";
     }
     
     static String emptyDatasetExportXML(){
-        String part1 = uncommonDataElementWithFixedValuesExportXML();
-        String part2 = uncommonDataElementWithVocabularyValuesWithRelationshipsExportXML();
+        String root = XML_EXPORT_ROOT_ELEMENT_OPEN;
         return 
-                part1.substring(0, (part1.indexOf(">")+1) ) + 
-                part1.substring(part1.lastIndexOf("<") ) +
-                part2.substring(0, (part2.indexOf(">")+1) ) +
-                part2.substring(part2.lastIndexOf("<") ) ;
+                root.substring(0, (root.length()-1) ) + "/>";
     }
     
     static String wrapXML( String xml ){

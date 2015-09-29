@@ -105,6 +105,23 @@ public class Codelist {
             
             //Prepare Export Element
             Element element = new Element();
+            
+            //Get Related List of Values (Fixed or Vocabulary Concepts)
+            //and relationship information
+            CodeValueHandler handler = codeValueHandlerProvider.get(type);
+            handler.setDataElement(dataElement);
+            
+            List<CodeItem> codes = handler.getCodeItemList();
+            //When there are no code items, simply skip this data element
+            if ( codes == null || codes.isEmpty() ){
+                continue;
+            }
+            
+            element.setValues( codes );
+            element.setRelationshipNames( handler.getRelationshipNames() );
+            
+            elements.add(element);
+            
             //IDENTIFIER
             String elementIdentifier = legacyElement.getIdentifier();
             if (elementIdentifier == null || elementIdentifier.trim().length() == 0) {
@@ -138,15 +155,7 @@ public class Codelist {
                 element.setFixed(true);
             }
             
-            //Get Related List of Values (Fixed or Vocabulary Concepts)
-            //and relationship information
-            CodeValueHandler handler = codeValueHandlerProvider.get(type);
-            handler.setDataElement(dataElement);
             
-            element.setValues( handler.getCodeItemList() );
-            element.setRelationshipNames( handler.getRelationshipNames() );
-            
-            elements.add(element);
         }
         
         ExportElement export = new ExportElement();

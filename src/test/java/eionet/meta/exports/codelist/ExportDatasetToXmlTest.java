@@ -114,8 +114,8 @@ public class ExportDatasetToXmlTest {
         Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );;
         
         String actual = codelist.write(elements, objType);
-System.out.println(actual);
-        String expected = ExportMocks.wrapXML( ExportMocks.emptyDatasetExportXML() );
+
+        String expected = ExportMocks.emptyDatasetExportXML();
 
         Diff diff = new Diff(expected, actual);
 //        DetailedDiff detDiff = new DetailedDiff(diff);
