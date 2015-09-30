@@ -6,7 +6,7 @@ package eionet.meta.exports.codelist;
 import eionet.meta.DDRuntimeException;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
-import eionet.meta.exports.codelist.ExportElement.Element;
+import eionet.meta.exports.codelist.Element;
 import eionet.meta.exports.codelist.ExportStatics.ObjectType;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,9 +116,9 @@ public class Codelist {
             if ( codes == null || codes.isEmpty() ){
                 continue;
             }
-            
+            List<String> relationshipNames = handler.getRelationshipNames();
             element.setValues( codes );
-            element.setRelationshipNames( handler.getRelationshipNames() );
+            element.setRelationshipNames( relationshipNames );
             
             elements.add(element);
             

@@ -59,27 +59,42 @@ public class ExportMocks {
         List<CodeItem> values = new ArrayList<CodeItem>();
         
         CodeItem item = new CodeItem("el", "Greek", "Greek language");
-        List<CodeItem.RelationshipInfo> relInfo = new ArrayList<CodeItem.RelationshipInfo>();
+        List<RelationshipInfo> relInfo = new ArrayList<RelationshipInfo>();
         //Rel to country
-        List<CodeItem> rels1 = new ArrayList<CodeItem>();
-        rels1.add( new CodeItem("GR", "Greece", "Greece/Hellas Country", "GR/EL") );
-        CodeItem.RelationshipInfo rel1 = new CodeItem.RelationshipInfo("language of country", "Countries", "EU taxonomies", rels1);
-        relInfo.add(rel1);
+        List<CodeItem> relsCountry = new ArrayList<CodeItem>();
+        relsCountry.add( new CodeItem("GR", "Greece", "Greece/Hellas Country", "GR/EL") );
+        RelationshipInfo relCountry = new RelationshipInfo("language of country", "Countries", "EU taxonomies", relsCountry);
+        
         //Rel to other language
-        List<CodeItem> rels2 = new ArrayList<CodeItem>();
-        rels2.add( new CodeItem("el", "Cypriot Greek", "Dialect of Greek spoken in Cyprus", "el/cy") );
-        CodeItem.RelationshipInfo rel2 = new CodeItem.RelationshipInfo("similar language", "Languages", "EU taxonomies", rels2);
-        relInfo.add(rel2);
+        List<CodeItem> relsLang = new ArrayList<CodeItem>();
+        relsLang.add( new CodeItem("el", "Cypriot Greek", "Dialect of Greek spoken in Cyprus", "el/cy") );
+        relsLang.add( new CodeItem("el", "Southern Italy Greek", "Dialect of Greek spoken in southern Italy", "el/it") );
+        RelationshipInfo relLang = new RelationshipInfo("similar language", "Languages", "EU taxonomies", relsLang);
+        
+        relInfo.add(relLang);
+        relInfo.add(relCountry);
         item.setRelationships(relInfo);
         values.add(item);
+        
+        CodeItem en = new CodeItem("en", "English", "English language");
+        List<RelationshipInfo> enRelInfo = new ArrayList<RelationshipInfo>();
+        //Rel to country
+        List<CodeItem> enRels = new ArrayList<CodeItem>();
+        enRels.add( new CodeItem("US", "USA", "United States of America", "US/EN") );
+        enRels.add( new CodeItem("UK", "UK", "United Kingdom", "UK/EN") );
+        RelationshipInfo enRel = new RelationshipInfo("language of country", "Countries", "EU taxonomies", enRels);
+        
+        enRelInfo.add(enRel);
+        en.setRelationships(enRelInfo);
+        values.add(en);
         
         return values;
     }
     
     static List<String> vocabularyConceptRelationshipNames(){
         List<String> relationshipNames = new ArrayList<String>();
-        relationshipNames.add("language of country");
         relationshipNames.add("similar language");
+        relationshipNames.add("language of country");
         
         return relationshipNames;    
     }
@@ -92,20 +107,43 @@ public class ExportMocks {
             "   <label>Greek</label>"+
             "   <definition>Greek language</definition>"+
             "   <relationship-list>"+
-            "    <relationship attribute=\"language of country\" vocabulary=\"Countries\" vocabularySet=\"EU taxonomies\">"+
-            "      <value code=\"GR\">"+
-            "       <label>Greece</label>"+
-            "        <definition>Greece/Hellas Country</definition>"+
-            "        <notation>GR/EL</notation>"+
-            "      </value>"+
-            "    </relationship>"+
             "    <relationship attribute=\"similar language\" vocabulary=\"Languages\" vocabularySet=\"EU taxonomies\">"+
             "      <value code=\"el\">"+
             "        <label>Cypriot Greek</label>"+
             "        <definition>Dialect of Greek spoken in Cyprus</definition>"+
             "        <notation>el/cy</notation>"+
             "      </value>"+
+            "      <value code=\"el\">"+
+            "        <label>Southern Italy Greek</label>"+
+            "        <definition>Dialect of Greek spoken in southern Italy</definition>"+
+            "        <notation>el/it</notation>"+
+            "      </value>"+
             "     </relationship>"+
+            "     <relationship attribute=\"language of country\" vocabulary=\"Countries\" vocabularySet=\"EU taxonomies\">"+
+            "      <value code=\"GR\">"+
+            "       <label>Greece</label>"+
+            "        <definition>Greece/Hellas Country</definition>"+
+            "        <notation>GR/EL</notation>"+
+            "      </value>"+
+            "     </relationship>"+
+            "   </relationship-list>"+
+            "  </value>"+
+            "  <value code=\"en\">"+
+            "   <label>English</label>"+
+            "   <definition>English language</definition>"+
+            "   <relationship-list>"+
+            "    <relationship attribute=\"language of country\" vocabulary=\"Countries\" vocabularySet=\"EU taxonomies\">"+
+            "      <value code=\"US\">"+
+            "       <label>USA</label>"+
+            "        <definition>United States of America</definition>"+
+            "        <notation>US/EN</notation>"+
+            "      </value>"+
+            "      <value code=\"UK\">"+
+            "       <label>UK</label>"+
+            "        <definition>United Kingdom</definition>"+
+            "        <notation>UK/EN</notation>"+
+            "      </value>"+
+            "    </relationship>"+
             "   </relationship-list>"+
             "  </value>"+
             " </value-list>";
@@ -113,9 +151,10 @@ public class ExportMocks {
     
     static String commonDataElementWithVocabularyValuesWithRelationshipsExportCSV(){
         return 
-            "Element:languageCode Fixed:false\n"+
-            "Code,Label,Definition,language of country,similar language\n"+
-            "el,Greek,Greek language,EU taxonomies::Countries::GR/EL|EU taxonomies::Languages::el/cy\n\n";
+            "\"Element:languageCode\" \"Fixed:false\"\n"+
+            "\"Code\",\"Label\",\"Definition\",\"similar language\",\"language of country\"\n"+
+            "\"el\",\"Greek\",\"Greek language\",\"EU taxonomies::Languages::['el/cy' 'el/it']\",\"EU taxonomies::Countries::GR/EL\"\n"+
+            "\"en\",\"English\",\"English language\",\"\",\"EU taxonomies::Countries::['US/EN' 'UK/EN']\"\n\n";
     }
     
     static String uncommonDataElementWithVocabularyValuesWithRelationshipsExportXML(){
@@ -126,20 +165,43 @@ public class ExportMocks {
             "   <label>Greek</label>"+
             "   <definition>Greek language</definition>"+
             "   <relationship-list>"+
-            "    <relationship attribute=\"language of country\" vocabulary=\"Countries\" vocabularySet=\"EU taxonomies\">"+
-            "      <value code=\"GR\">"+
-            "       <label>Greece</label>"+
-            "        <definition>Greece/Hellas Country</definition>"+
-            "        <notation>GR/EL</notation>"+
-            "      </value>"+
-            "    </relationship>"+
             "    <relationship attribute=\"similar language\" vocabulary=\"Languages\" vocabularySet=\"EU taxonomies\">"+
             "      <value code=\"el\">"+
             "        <label>Cypriot Greek</label>"+
             "        <definition>Dialect of Greek spoken in Cyprus</definition>"+
             "        <notation>el/cy</notation>"+
             "      </value>"+
+            "      <value code=\"el\">"+
+            "        <label>Southern Italy Greek</label>"+
+            "        <definition>Dialect of Greek spoken in southern Italy</definition>"+
+            "        <notation>el/it</notation>"+
+            "      </value>"+
             "     </relationship>"+
+            "     <relationship attribute=\"language of country\" vocabulary=\"Countries\" vocabularySet=\"EU taxonomies\">"+
+            "      <value code=\"GR\">"+
+            "       <label>Greece</label>"+
+            "        <definition>Greece/Hellas Country</definition>"+
+            "        <notation>GR/EL</notation>"+
+            "      </value>"+
+            "     </relationship>"+
+            "   </relationship-list>"+
+            "  </value>"+
+            "  <value code=\"en\">"+
+            "   <label>English</label>"+
+            "   <definition>English language</definition>"+
+            "   <relationship-list>"+
+            "    <relationship attribute=\"language of country\" vocabulary=\"Countries\" vocabularySet=\"EU taxonomies\">"+
+            "      <value code=\"US\">"+
+            "       <label>USA</label>"+
+            "        <definition>United States of America</definition>"+
+            "        <notation>US/EN</notation>"+
+            "      </value>"+
+            "      <value code=\"UK\">"+
+            "       <label>UK</label>"+
+            "        <definition>United Kingdom</definition>"+
+            "        <notation>UK/EN</notation>"+
+            "      </value>"+
+            "    </relationship>"+
             "   </relationship-list>"+
             "  </value>"+
             " </value-list>";
@@ -147,9 +209,7 @@ public class ExportMocks {
     
     static String uncommonDataElementWithVocabularyValuesWithRelationshipsExportCSV(){
         return 
-            "Dataset:EU taxonomies Table:Languages Element:languageCode Fixed:false\n"+
-            "Code,Label,Definition,language of country,similar language\n"+
-            "el,Greek,Greek language,EU taxonomies::Countries::GR/EL|EU taxonomies::Languages::el/cy\n\n";
+            "\"Dataset:EU taxonomies\" \"Table:Languages\" "+commonDataElementWithVocabularyValuesWithRelationshipsExportCSV();
     }
 
     static List<eionet.meta.DataElement> vocabularyCommonDataElementSimple(){
@@ -199,10 +259,10 @@ public class ExportMocks {
     
     static String commonDataElementWithVocabularyValuesExportCSV(){
         return 
-            "Element:inCountry Fixed:false\n"+
-            "Code,Label,Definition\n"+
-            "TJ,Tajikistan,\n"+
-            "TK,Tokelau,\n\n";
+            "\"Element:inCountry\" \"Fixed:false\"\n"+
+            "\"Code\",\"Label\",\"Definition\"\n"+
+            "\"TJ\",\"Tajikistan\",\"\"\n"+
+            "\"TK\",\"Tokelau\",\"\"\n\n";
     }
     
     static List<eionet.meta.DataElement> commonFixedValueDataElement(){
@@ -290,15 +350,15 @@ public class ExportMocks {
     
     static String commonDataElementWithFixedValuesExportCSV(){
         return 
-            "Element:ageGroup Fixed:true\n"+
-            "Code,Label,Definition\n"+
-            "00,up to 15,\n"+
-            "01,15-20,\n"+
-            "02,20-25,\n"+
-            "03,25-30,\n"+
-            "04,30-40,\n"+
-            "05,40-50,\n"+
-            "06,60+,\n\n";
+            "\"Element:ageGroup\" \"Fixed:true\"\n"+
+            "\"Code\",\"Label\",\"Definition\"\n"+
+            "\"00\",\"up to 15\",\"\"\n"+
+            "\"01\",\"15-20\",\"\"\n"+
+            "\"02\",\"20-25\",\"\"\n"+
+            "\"03\",\"25-30\",\"\"\n"+
+            "\"04\",\"30-40\",\"\"\n"+
+            "\"05\",\"40-50\",\"\"\n"+
+            "\"06\",\"60+\",\"\"\n\n";
     }
 
     static String uncommonDataElementWithFixedValuesExportXML(){
@@ -337,15 +397,7 @@ public class ExportMocks {
     
     static String uncommonDataElementWithFixedValuesExportCSV(){
         return 
-            "Dataset:Misc taxonomies Table:Person Element:ageGroup Fixed:true\n"+
-            "Code,Label,Definition\n"+
-            "00,up to 15,\n"+
-            "01,15-20,\n"+
-            "02,20-25,\n"+
-            "03,25-30,\n"+
-            "04,30-40,\n"+
-            "05,40-50,\n"+
-            "06,60+,\n\n";
+            "\"Dataset:Misc taxonomies\" \"Table:Person\" "+commonDataElementWithFixedValuesExportCSV();
     }
 
 

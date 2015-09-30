@@ -6,10 +6,13 @@
 package eionet.meta.exports.codelist;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import static eionet.meta.exports.codelist.ExportStatics.*;
+import eionet.util.PredicateFiltering;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
@@ -34,6 +37,9 @@ public class CodeItem {
     @JacksonXmlProperty(namespace = DD_NAMESPACE, localName = "relationship")
     private List<RelationshipInfo> relationships;
     
+    @JsonIgnore
+    private Element parentElement;
+    
     public CodeItem(){}
     
     public CodeItem( String code, String label, String definition ){
@@ -48,40 +54,23 @@ public class CodeItem {
         this.notation = notation;
     }
 
-    public String getCode() {
-        return code;
-    }
-    public void setCode(String code) {
-        this.code = code;
-    }
+    public String getCode() { return code;  }
+    public void setCode(String code) {this.code = code; }
 
-    public String getLabel() {
-        return label;
-    }
-    public void setLabel(String label) {
-        this.label = label;
-    }
+    public String getLabel() { return label; }
+    public void setLabel(String label) { this.label = label;}
 
-    public String getDefinition() {
-        return definition;
-    }
-    public void setDefinition(String definition) {
-        this.definition = definition;
-    }
+    public String getDefinition() { return definition; }
+    public void setDefinition(String definition) { this.definition = definition; }
 
-    public String getNotation() {
-        return notation;
-    }
-    public void setNotation(String notation) {
-        this.notation = notation;
-    }
+    public String getNotation() { return notation; }
+    public void setNotation(String notation) { this.notation = notation; }
+
+    public Element getParentElement() { return parentElement; }
+    public void setParentElement(Element parentElement) { this.parentElement = parentElement; }
     
-    public List<RelationshipInfo> getRelationships(){
-        return this.relationships;
-    }
-    public void setRelationships(List<RelationshipInfo> relationships){
-        this.relationships = relationships;
-    }
+    public List<RelationshipInfo> getRelationships(){ return this.relationships; }
+    public void setRelationships(List<RelationshipInfo> relationships){ this.relationships = relationships; }
     public void addRelationship( RelationshipInfo relationship ){
         if ( this.relationships == null ){
             this.relationships = new ArrayList<RelationshipInfo>();
@@ -89,6 +78,13 @@ public class CodeItem {
         this.relationships.add(relationship);
     }
     
+    RelationshipInfo findRelationship( String relationshipName ){
+        Collection<RelationshipInfo> col = PredicateFiltering.filter(relationships, new RelationshipInfo.AttributePredicate( relationshipName ) );
+        if ( col.isEmpty() ){
+            return null;
+        }
+        return col.iterator().next();
+    }
     /**
      * Return this CodeItem as CSV line
      * 
@@ -96,67 +92,20 @@ public class CodeItem {
      */
     String toCSV(){
         List<String> parts = new ArrayList<String>();
-        parts.add(code);
-        parts.add(label);
-        parts.add(definition);
+        parts.add(wrap(code));
+        parts.add(wrap(label));
+        parts.add(wrap(definition));
         
         if ( relationships != null ){
             List<String> infoParts = new ArrayList<String>();
-            for ( RelationshipInfo info : relationships ){
-                if ( info.getItems().isEmpty() )
-                    continue;
-                infoParts.add( info.toCSV() );
+            for ( String relAttribute : parentElement.getRelationshipNames() ){
+                RelationshipInfo info = this.findRelationship(relAttribute);
+                
+                infoParts.add( info == null ? "\"\"" : wrap(info.toCSV()) );
             }
-            parts.add( StringUtils.join(infoParts, CSV_DELIMITER_LIST) );
+            parts.add( StringUtils.join(infoParts, CSV_DELIMITER_COMMA) );
         }
         return StringUtils.join(parts, CSV_DELIMITER_COMMA);
     }
     
-    /**
-     * Utility class for describing the relationship between this CodeItem and others
-     */
-    public static class RelationshipInfo{
-        @JacksonXmlProperty(isAttribute = true)
-        private String attribute;
-        @JacksonXmlProperty(isAttribute = true)
-        private String vocabulary;
-        @JacksonXmlProperty(isAttribute = true)
-        private String vocabularySet;
-        
-        @JacksonXmlElementWrapper(useWrapping = false)
-        @JacksonXmlProperty(namespace = DD_NAMESPACE, localName = "value")
-        private List<CodeItem> items;
-        
-        public RelationshipInfo(){}
-        
-        public RelationshipInfo(String attribute, String vocabulary, String vocabularySet, List<CodeItem> items){
-            this.attribute = attribute;
-            this.vocabulary = vocabulary;
-            this.vocabularySet = vocabularySet;
-            this.items = items;
-        }
-
-        public String getAttribute() { return attribute;}
-        public void setAttribute(String attribute) {this.attribute = attribute;}
-
-        public String getVocabulary() {return vocabulary;}
-        public void setVocabulary(String vocabulary) {this.vocabulary = vocabulary;}
-
-        public String getVocabularySet() { return vocabularySet; }
-        public void setVocabularySet(String vocabularySet) { this.vocabularySet = vocabularySet; }
-
-        public List<CodeItem> getItems() {return items;}
-        public void setItems(List<CodeItem> items) {this.items = items;}
-        
-        String toCSV(){
-            String prefix = vocabularySet + "::" + vocabulary + "::";
-            List<String> str = new ArrayList<String>();
-            for ( CodeItem rel : items){
-                str.add( rel.getNotation() );
-            }
-            String itemStr = StringUtils.join(str, CSV_DELIMITER_COMMA );
-            return prefix+itemStr;
-        }
-        
-    }
 }

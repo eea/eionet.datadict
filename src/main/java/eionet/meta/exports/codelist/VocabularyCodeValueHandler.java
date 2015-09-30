@@ -89,7 +89,7 @@ public class VocabularyCodeValueHandler extends CodeValueHandler {
                             relCodeItems.add(relatedItem);
                         }
                         
-                        CodeItem.RelationshipInfo info = new CodeItem.RelationshipInfo(relationshipAttribute, relVocName, relVocSetName, relCodeItems);
+                        RelationshipInfo info = new RelationshipInfo(relationshipAttribute, relVocName, relVocSetName, relCodeItems);
                         
                         //Augment the CodeItem with relationship information
                         item.addRelationship(info);

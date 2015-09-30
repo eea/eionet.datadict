@@ -9,7 +9,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import eionet.meta.dao.domain.DataElement;
 import java.io.IOException;
 import java.util.List;
+import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -62,9 +64,9 @@ public class ExportElementToXmlTest {
         Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );;
         
         String actual = codelist.write(elements, objType);
-       
+  
         String expected = ExportMocks.wrapXML( ExportMocks.commonDataElementWithVocabularyValuesWithRelationshipsExportXML() );
-        
+     
         Diff diff = new Diff(expected, actual);
 //        DetailedDiff detDiff = new DetailedDiff(diff);
 //        List differences = detDiff.getAllDifferences();
@@ -97,7 +99,7 @@ public class ExportElementToXmlTest {
         String actual = codelist.write(elements, objType);
 
         String expected = ExportMocks.wrapXML( ExportMocks.uncommonDataElementWithVocabularyValuesWithRelationshipsExportXML() );
-        
+
         Diff diff = new Diff(expected, actual);
 
         Assert.assertTrue("Exported XML is similar", diff.similar());
