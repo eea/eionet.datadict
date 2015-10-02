@@ -5,7 +5,6 @@
  */
 package eionet.meta.exports.codelist;
 
-import eionet.meta.CleanupServlet;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.DataElement;
@@ -61,12 +60,11 @@ public class VocabularyCodeValueHandler extends CodeValueHandler {
         for (VocabularyConcept concept : concepts) {
             if ( concept.getStatus().isValid() ){
                 int conceptID = concept.getId();
-                String code = concept.getIdentifier();
+                String code = concept.getNotation();
                 String label = concept.getLabel();
                 String definition = concept.getDefinition();
-                String notation = concept.getNotation();
                 
-                CodeItem item = new CodeItem( code, label, definition, notation );
+                CodeItem item = new CodeItem( code, label, definition );
                 
                 //Set the related concepts
                 Map<DataElement, Map<VocabularyFolder, List<VocabularyConcept>>> relatedConcepts = this.vocabularyRelationshipService.getRelatedVocabularyConcepts(conceptID, relationships);
@@ -85,7 +83,7 @@ public class VocabularyCodeValueHandler extends CodeValueHandler {
                         List<CodeItem> relCodeItems = new ArrayList<CodeItem>();
                         //Iterate Vocabulary Concepts
                         for( VocabularyConcept relConcept : entry.getValue() ){
-                            CodeItem relatedItem = new CodeItem( relConcept.getIdentifier(), relConcept.getLabel(), relConcept.getDefinition(), relConcept.getNotation() );
+                            CodeItem relatedItem = new CodeItem( relConcept.getNotation(), relConcept.getLabel(), relConcept.getDefinition() );
                             relCodeItems.add(relatedItem);
                         }
                         

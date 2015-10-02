@@ -30,8 +30,6 @@ public class CodeItem {
     private String label;
     @JacksonXmlProperty(namespace = DD_NAMESPACE)
     private String definition;
-    @JacksonXmlProperty(namespace = DD_NAMESPACE)
-    private String notation;
     
     @JacksonXmlElementWrapper(namespace = DD_NAMESPACE, localName = "relationship-list")
     @JacksonXmlProperty(namespace = DD_NAMESPACE, localName = "relationship")
@@ -47,12 +45,6 @@ public class CodeItem {
         this.label = label;
         this.definition = definition;
     }
-    public CodeItem( String code, String label, String definition, String notation ){
-        this.code = code;
-        this.label = label;
-        this.definition = definition;
-        this.notation = notation;
-    }
 
     public String getCode() { return code;  }
     public void setCode(String code) {this.code = code; }
@@ -62,9 +54,6 @@ public class CodeItem {
 
     public String getDefinition() { return definition; }
     public void setDefinition(String definition) { this.definition = definition; }
-
-    public String getNotation() { return notation; }
-    public void setNotation(String notation) { this.notation = notation; }
 
     public Element getParentElement() { return parentElement; }
     public void setParentElement(Element parentElement) { this.parentElement = parentElement; }

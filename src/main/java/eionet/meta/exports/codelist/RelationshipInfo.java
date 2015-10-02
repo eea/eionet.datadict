@@ -55,7 +55,7 @@ public class RelationshipInfo {
         String prefix = vocabularySet + "::" + vocabulary + "::";
         List<String> str = new ArrayList<String>();
         for (CodeItem rel : items) {
-            str.add(rel.getNotation());
+            str.add(rel.getCode());
         }
         String itemStr = StringUtils.join(str, ExportStatics.CSV_DELIMITER_COMMA);
         return prefix + itemStr;

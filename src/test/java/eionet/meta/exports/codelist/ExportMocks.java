@@ -62,13 +62,13 @@ public class ExportMocks {
         List<RelationshipInfo> relInfo = new ArrayList<RelationshipInfo>();
         //Rel to country
         List<CodeItem> relsCountry = new ArrayList<CodeItem>();
-        relsCountry.add( new CodeItem("GR", "Greece", "Greece/Hellas Country", "GR/EL") );
+        relsCountry.add( new CodeItem("GR", "Greece", "Greece/Hellas Country") );
         RelationshipInfo relCountry = new RelationshipInfo("language of country", "Countries", "EU taxonomies", relsCountry);
         
         //Rel to other language
         List<CodeItem> relsLang = new ArrayList<CodeItem>();
-        relsLang.add( new CodeItem("el", "Cypriot Greek", "Dialect of Greek spoken in Cyprus", "el/cy") );
-        relsLang.add( new CodeItem("el", "Southern Italy Greek", "Dialect of Greek spoken in southern Italy", "el/it") );
+        relsLang.add( new CodeItem("el/cy", "Cypriot Greek", "Dialect of Greek spoken in Cyprus") );
+        relsLang.add( new CodeItem("el/it", "Southern Italy Greek", "Dialect of Greek spoken in southern Italy") );
         RelationshipInfo relLang = new RelationshipInfo("similar language", "Languages", "EU taxonomies", relsLang);
         
         relInfo.add(relLang);
@@ -80,8 +80,8 @@ public class ExportMocks {
         List<RelationshipInfo> enRelInfo = new ArrayList<RelationshipInfo>();
         //Rel to country
         List<CodeItem> enRels = new ArrayList<CodeItem>();
-        enRels.add( new CodeItem("US", "USA", "United States of America", "US/EN") );
-        enRels.add( new CodeItem("UK", "UK", "United Kingdom", "UK/EN") );
+        enRels.add( new CodeItem("US", "USA", "United States of America") );
+        enRels.add( new CodeItem("UK", "UK", "United Kingdom") );
         RelationshipInfo enRel = new RelationshipInfo("language of country", "Countries", "EU taxonomies", enRels);
         
         enRelInfo.add(enRel);
@@ -108,22 +108,19 @@ public class ExportMocks {
             "   <definition>Greek &quot;language&quot;</definition>"+
             "   <relationship-list>"+
             "    <relationship attribute=\"similar language\" vocabulary=\"Languages\" vocabularySet=\"EU taxonomies\">"+
-            "      <value code=\"el\">"+
+            "      <value code=\"el/cy\">"+
             "        <label>Cypriot Greek</label>"+
             "        <definition>Dialect of Greek spoken in Cyprus</definition>"+
-            "        <notation>el/cy</notation>"+
             "      </value>"+
-            "      <value code=\"el\">"+
+            "      <value code=\"el/it\">"+
             "        <label>Southern Italy Greek</label>"+
             "        <definition>Dialect of Greek spoken in southern Italy</definition>"+
-            "        <notation>el/it</notation>"+
             "      </value>"+
             "     </relationship>"+
             "     <relationship attribute=\"language of country\" vocabulary=\"Countries\" vocabularySet=\"EU taxonomies\">"+
             "      <value code=\"GR\">"+
-            "       <label>Greece</label>"+
+            "        <label>Greece</label>"+
             "        <definition>Greece/Hellas Country</definition>"+
-            "        <notation>GR/EL</notation>"+
             "      </value>"+
             "     </relationship>"+
             "   </relationship-list>"+
@@ -134,14 +131,12 @@ public class ExportMocks {
             "   <relationship-list>"+
             "    <relationship attribute=\"language of country\" vocabulary=\"Countries\" vocabularySet=\"EU taxonomies\">"+
             "      <value code=\"US\">"+
-            "       <label>USA</label>"+
+            "        <label>USA</label>"+
             "        <definition>United States of America</definition>"+
-            "        <notation>US/EN</notation>"+
             "      </value>"+
             "      <value code=\"UK\">"+
-            "       <label>UK</label>"+
+            "        <label>UK</label>"+
             "        <definition>United Kingdom</definition>"+
-            "        <notation>UK/EN</notation>"+
             "      </value>"+
             "    </relationship>"+
             "   </relationship-list>"+
@@ -153,8 +148,8 @@ public class ExportMocks {
         return 
             "Element:languageCode Fixed:false\n"+
             "\"Code\",\"Label\",\"Definition\",\"similar language\",\"language of country\"\n"+
-            "\"el\",\"Greek\",\"Greek \"\"language\"\"\",\"EU taxonomies::Languages::el/cy,el/it\",\"EU taxonomies::Countries::GR/EL\"\n"+
-            "\"en\",\"English\",\"English language\",\"\",\"EU taxonomies::Countries::US/EN,UK/EN\"\n\n";
+            "\"el\",\"Greek\",\"Greek \"\"language\"\"\",\"EU taxonomies::Languages::el/cy,el/it\",\"EU taxonomies::Countries::GR\"\n"+
+            "\"en\",\"English\",\"English language\",\"\",\"EU taxonomies::Countries::US,UK\"\n\n";
     }
     
     static String uncommonDataElementWithVocabularyValuesWithRelationshipsExportXML(){
@@ -166,22 +161,19 @@ public class ExportMocks {
             "   <definition>Greek &quot;language&quot;</definition>"+
             "   <relationship-list>"+
             "    <relationship attribute=\"similar language\" vocabulary=\"Languages\" vocabularySet=\"EU taxonomies\">"+
-            "      <value code=\"el\">"+
+            "      <value code=\"el/cy\">"+
             "        <label>Cypriot Greek</label>"+
             "        <definition>Dialect of Greek spoken in Cyprus</definition>"+
-            "        <notation>el/cy</notation>"+
             "      </value>"+
-            "      <value code=\"el\">"+
+            "      <value code=\"el/it\">"+
             "        <label>Southern Italy Greek</label>"+
             "        <definition>Dialect of Greek spoken in southern Italy</definition>"+
-            "        <notation>el/it</notation>"+
             "      </value>"+
             "     </relationship>"+
             "     <relationship attribute=\"language of country\" vocabulary=\"Countries\" vocabularySet=\"EU taxonomies\">"+
             "      <value code=\"GR\">"+
-            "       <label>Greece</label>"+
+            "        <label>Greece</label>"+
             "        <definition>Greece/Hellas Country</definition>"+
-            "        <notation>GR/EL</notation>"+
             "      </value>"+
             "     </relationship>"+
             "   </relationship-list>"+
@@ -192,14 +184,12 @@ public class ExportMocks {
             "   <relationship-list>"+
             "    <relationship attribute=\"language of country\" vocabulary=\"Countries\" vocabularySet=\"EU taxonomies\">"+
             "      <value code=\"US\">"+
-            "       <label>USA</label>"+
+            "        <label>USA</label>"+
             "        <definition>United States of America</definition>"+
-            "        <notation>US/EN</notation>"+
             "      </value>"+
             "      <value code=\"UK\">"+
-            "       <label>UK</label>"+
+            "        <label>UK</label>"+
             "        <definition>United Kingdom</definition>"+
-            "        <notation>UK/EN</notation>"+
             "      </value>"+
             "    </relationship>"+
             "   </relationship-list>"+
