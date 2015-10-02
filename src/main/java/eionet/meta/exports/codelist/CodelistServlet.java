@@ -65,14 +65,17 @@ public class CodelistServlet extends HttpServlet {
 
             //set export type
             Codelist.ExportType exportType = Codelist.ExportType.UNKNOWN;
+            String filename = "codelist_"+id+"_"+type;
             // set response content type
             if (format.equals("csv")){
                 exportType = Codelist.ExportType.CSV;
-                res.setContentType("text/plain; charset=UTF-8");
+                res.setContentType("text/csv; charset=UTF-8");
+                res.setHeader("Content-Disposition", "attachment; filename="+filename+".csv");
             }
             else if (format.equals("xml")){
                 exportType = Codelist.ExportType.XML;
                 res.setContentType("text/xml; charset=UTF-8");
+                res.setHeader("Content-Disposition", "attachment; filename="+filename+".xml");
             }
             else
                 throw new Exception("Unknown codelist format requested: " + format);
