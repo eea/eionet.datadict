@@ -58,7 +58,7 @@ public class ExportMocks {
     static List<CodeItem> vocabularyConceptsWithRelationships(){       
         List<CodeItem> values = new ArrayList<CodeItem>();
         
-        CodeItem item = new CodeItem("el", "Greek", "Greek language");
+        CodeItem item = new CodeItem("el", "Greek", "Greek \"language\"");
         List<RelationshipInfo> relInfo = new ArrayList<RelationshipInfo>();
         //Rel to country
         List<CodeItem> relsCountry = new ArrayList<CodeItem>();
@@ -105,7 +105,7 @@ public class ExportMocks {
             " <value-list element=\"languageCode\"  fixed=\"false\">"+
             "  <value code=\"el\">"+
             "   <label>Greek</label>"+
-            "   <definition>Greek language</definition>"+
+            "   <definition>Greek &quot;language&quot;</definition>"+
             "   <relationship-list>"+
             "    <relationship attribute=\"similar language\" vocabulary=\"Languages\" vocabularySet=\"EU taxonomies\">"+
             "      <value code=\"el\">"+
@@ -151,10 +151,10 @@ public class ExportMocks {
     
     static String commonDataElementWithVocabularyValuesWithRelationshipsExportCSV(){
         return 
-            "\"Element:languageCode\" \"Fixed:false\"\n"+
+            "Element:languageCode Fixed:false\n"+
             "\"Code\",\"Label\",\"Definition\",\"similar language\",\"language of country\"\n"+
-            "\"el\",\"Greek\",\"Greek language\",\"EU taxonomies::Languages::['el/cy' 'el/it']\",\"EU taxonomies::Countries::GR/EL\"\n"+
-            "\"en\",\"English\",\"English language\",\"\",\"EU taxonomies::Countries::['US/EN' 'UK/EN']\"\n\n";
+            "\"el\",\"Greek\",\"Greek \"\"language\"\"\",\"EU taxonomies::Languages::el/cy,el/it\",\"EU taxonomies::Countries::GR/EL\"\n"+
+            "\"en\",\"English\",\"English language\",\"\",\"EU taxonomies::Countries::US/EN,UK/EN\"\n\n";
     }
     
     static String uncommonDataElementWithVocabularyValuesWithRelationshipsExportXML(){
@@ -163,7 +163,7 @@ public class ExportMocks {
             " <value-list element=\"languageCode\" table=\"Languages\" dataset=\"EU taxonomies\"  fixed=\"false\">"+
             "  <value code=\"el\">"+
             "   <label>Greek</label>"+
-            "   <definition>Greek language</definition>"+
+            "   <definition>Greek &quot;language&quot;</definition>"+
             "   <relationship-list>"+
             "    <relationship attribute=\"similar language\" vocabulary=\"Languages\" vocabularySet=\"EU taxonomies\">"+
             "      <value code=\"el\">"+
@@ -209,7 +209,7 @@ public class ExportMocks {
     
     static String uncommonDataElementWithVocabularyValuesWithRelationshipsExportCSV(){
         return 
-            "\"Dataset:EU taxonomies\" \"Table:Languages\" "+commonDataElementWithVocabularyValuesWithRelationshipsExportCSV();
+            "Dataset:EU taxonomies Table:Languages "+commonDataElementWithVocabularyValuesWithRelationshipsExportCSV();
     }
 
     static List<eionet.meta.DataElement> vocabularyCommonDataElementSimple(){
@@ -259,7 +259,7 @@ public class ExportMocks {
     
     static String commonDataElementWithVocabularyValuesExportCSV(){
         return 
-            "\"Element:inCountry\" \"Fixed:false\"\n"+
+            "Element:inCountry Fixed:false\n"+
             "\"Code\",\"Label\",\"Definition\"\n"+
             "\"TJ\",\"Tajikistan\",\"\"\n"+
             "\"TK\",\"Tokelau\",\"\"\n\n";
@@ -350,7 +350,7 @@ public class ExportMocks {
     
     static String commonDataElementWithFixedValuesExportCSV(){
         return 
-            "\"Element:ageGroup\" \"Fixed:true\"\n"+
+            "Element:ageGroup Fixed:true\n"+
             "\"Code\",\"Label\",\"Definition\"\n"+
             "\"00\",\"up to 15\",\"\"\n"+
             "\"01\",\"15-20\",\"\"\n"+
@@ -397,7 +397,7 @@ public class ExportMocks {
     
     static String uncommonDataElementWithFixedValuesExportCSV(){
         return 
-            "\"Dataset:Misc taxonomies\" \"Table:Person\" "+commonDataElementWithFixedValuesExportCSV();
+            "Dataset:Misc taxonomies Table:Person "+commonDataElementWithFixedValuesExportCSV();
     }
 
 

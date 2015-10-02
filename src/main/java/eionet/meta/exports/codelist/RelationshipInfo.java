@@ -36,37 +36,17 @@ public class RelationshipInfo {
         this.items = items;
     }
 
-    public String getAttribute() {
-        return attribute;
-    }
+    public String getAttribute() {return attribute;}
+    public void setAttribute(String attribute) {this.attribute = attribute;}
 
-    public void setAttribute(String attribute) {
-        this.attribute = attribute;
-    }
+    public String getVocabulary() {return vocabulary;}
+    public void setVocabulary(String vocabulary) {this.vocabulary = vocabulary;}
 
-    public String getVocabulary() {
-        return vocabulary;
-    }
+    public String getVocabularySet() {return vocabularySet;}
+    public void setVocabularySet(String vocabularySet) {this.vocabularySet = vocabularySet;}
 
-    public void setVocabulary(String vocabulary) {
-        this.vocabulary = vocabulary;
-    }
-
-    public String getVocabularySet() {
-        return vocabularySet;
-    }
-
-    public void setVocabularySet(String vocabularySet) {
-        this.vocabularySet = vocabularySet;
-    }
-
-    public List<CodeItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<CodeItem> items) {
-        this.items = items;
-    }
+    public List<CodeItem> getItems() {return items;}
+    public void setItems(List<CodeItem> items) {this.items = items;}
 
     String toCSV() {
         if (items.isEmpty()) {
@@ -74,15 +54,10 @@ public class RelationshipInfo {
         }
         String prefix = vocabularySet + "::" + vocabulary + "::";
         List<String> str = new ArrayList<String>();
-        boolean multiple = items.size() > 1;
-        String wrapper = multiple ? ExportStatics.WRAPPER_SINGLE_QUOTE : null;
         for (CodeItem rel : items) {
-            str.add(ExportStatics.wrap(rel.getNotation(), wrapper));
+            str.add(rel.getNotation());
         }
-        String itemStr = StringUtils.join(str, ExportStatics.CSV_DELIMITER_SPACE);
-        if (multiple) {
-            itemStr = "[" + itemStr + "]";
-        }
+        String itemStr = StringUtils.join(str, ExportStatics.CSV_DELIMITER_COMMA);
         return prefix + itemStr;
     }
     

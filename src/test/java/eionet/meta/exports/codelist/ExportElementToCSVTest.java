@@ -56,7 +56,7 @@ public class ExportElementToCSVTest {
         //Mock Code Handler Provider 
         Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.VOCABULARY )).thenReturn(mockCodeValueHandler);
         
-        Codelist codelist = new Codelist(Codelist.ExportType.CSV, mockCodeValueHandlerProvider );;
+        Codelist codelist = new Codelist(Codelist.ExportType.CSV, mockCodeValueHandlerProvider );
         
         String actual = codelist.write(elements, objType);
         
@@ -80,7 +80,7 @@ public class ExportElementToCSVTest {
         //Mock Code Handler Provider 
         Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.VOCABULARY )).thenReturn(mockCodeValueHandler);
         
-        Codelist codelist = new Codelist(Codelist.ExportType.CSV, mockCodeValueHandlerProvider );;
+        Codelist codelist = new Codelist(Codelist.ExportType.CSV, mockCodeValueHandlerProvider );
         
         String actual = codelist.write(elements, objType);
         

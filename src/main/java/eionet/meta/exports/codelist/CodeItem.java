@@ -79,7 +79,7 @@ public class CodeItem {
     }
     
     RelationshipInfo findRelationship( String relationshipName ){
-        Collection<RelationshipInfo> col = PredicateFiltering.filter(relationships, new RelationshipInfo.AttributePredicate( relationshipName ) );
+       Collection<RelationshipInfo> col = PredicateFiltering.filter(relationships, new RelationshipInfo.AttributePredicate( relationshipName ) );
         if ( col.isEmpty() ){
             return null;
         }

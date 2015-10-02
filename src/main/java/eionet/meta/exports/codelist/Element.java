@@ -62,13 +62,13 @@ public class Element {
         StringBuilder list = new StringBuilder();
         //Dataset / Table Upper Header
         if (datasetAware) {
-            header.append(WRAPPER).append(CSV_HEADER_DATASET).append(CSV_DELIMITER_LABEL).append(datasetIdentifier).append(WRAPPER).append(CSV_DELIMITER_SPACE);
-            header.append(WRAPPER).append(CSV_HEADER_TABLE).append(CSV_DELIMITER_LABEL).append(tableIdentifier).append(WRAPPER).append(CSV_DELIMITER_SPACE);
+            header.append(CSV_HEADER_DATASET).append(CSV_DELIMITER_LABEL).append(datasetIdentifier).append(CSV_DELIMITER_SPACE);
+            header.append(CSV_HEADER_TABLE).append(CSV_DELIMITER_LABEL).append(tableIdentifier).append(CSV_DELIMITER_SPACE);
         }
         //Element name Upper Header
-        header.append(WRAPPER).append(CSV_HEADER_ELEMENT).append(CSV_DELIMITER_LABEL).append(identifier).append(WRAPPER).append(CSV_DELIMITER_SPACE);
+        header.append(CSV_HEADER_ELEMENT).append(CSV_DELIMITER_LABEL).append(identifier).append(CSV_DELIMITER_SPACE);
         //Fixed Upper Header
-        header.append(WRAPPER).append(CSV_HEADER_FIXED).append(CSV_DELIMITER_LABEL).append(fixed).append(WRAPPER);
+        header.append(CSV_HEADER_FIXED).append(CSV_DELIMITER_LABEL).append(fixed);
         //New line
         header.append(CSV_NEW_LINE);
         if (values == null || values.isEmpty()) {

@@ -5,6 +5,8 @@
  */
 package eionet.meta.exports.codelist;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 
 /**
  *
@@ -29,7 +31,6 @@ public class ExportStatics {
     static final String CSV_HEADER_CODEVALUE = "\"Code\",\"Label\",\"Definition\"";
     static final String CSV_DELIMITER_COMMA = ",";
     static final String CSV_DELIMITER_SPACE = " ";
-    static final String CSV_DELIMITER_LIST = "|";
     static final String CSV_DELIMITER_LABEL = ":";
     static final String CSV_NEW_LINE = "\n";
     
@@ -42,10 +43,18 @@ public class ExportStatics {
     static String wrap( String str, String wrapper ){
         if ( wrapper == null )
             return str;
+        
+        String escaped = StringEscapeUtils.escapeCsv( str );
+        
+        //if not already enclosed in wrapper, enclose
+        if ( escaped.startsWith(wrapper) && escaped.endsWith(wrapper) ){
+            return escaped;
+        }
         StringBuilder bld = new StringBuilder().append(wrapper);
         bld.append(str);
         bld.append(wrapper);
         return bld.toString();
+        
     }
     
 }
