@@ -25,6 +25,7 @@ import java.util.List;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.dao.domain.VocabularySet;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
@@ -250,4 +251,32 @@ public interface IVocabularyFolderDAO {
      * @return list of vocabulary folders
      */
     List<VocabularyFolder> getRecentlyReleasedVocabularyFolders(int limit);
+
+    /**
+     * Returns a VocabularySet object
+     * @param vocabularyID
+     *          the vocabulary ID
+     * @return a vocabulary set
+     */
+    VocabularySet getVocabularySet( int vocabularyID );
+    
+
+    /**
+     * Return information about the relationships with other vocabularies for the vocabulary identified by this ID.
+     * Information is a Triple of vocabulary ID - relationship ID - related vocabulary ID 
+     * 
+     * @param vocabularyID
+     * @return list of Triple
+     */
+    List<Triple<Integer,Integer,Integer>> getVocabulariesRelation( int vocabularyID );
+
+    /**
+     * Returns a list of Vocabulary Concept elements IDs with which the Vocabulary Concept identified by vocabularyConceptID is related to
+     * 
+     * @param vocabularyConceptID a specific vocabulary concept ID
+     * @param relationshipElementID a specific data element ID describing the relationship
+     * @param relatedVocabularyID a specific related vocabulary ID
+     * @return 
+     */
+    List<Integer> getRelatedVocabularyConcepts( int vocabularyConceptID, int relationshipElementID, int relatedVocabularyID );
 }

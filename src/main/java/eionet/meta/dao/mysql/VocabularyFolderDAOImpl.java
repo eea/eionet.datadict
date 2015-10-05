@@ -25,6 +25,7 @@ import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.dao.domain.VocabularySet;
 import eionet.meta.dao.domain.VocabularyType;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
@@ -39,7 +40,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
- * Vocabualary folder DAO.
+ * Vocabulary folder DAO.
  *
  * @author Juhan Voolaid
  */
@@ -852,4 +853,85 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         return items;
 
     } //end of method getRecentlyReleasedVocabularyFolders
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public VocabularySet getVocabularySet( int vocabularyID ){
+        String sql = "select vs.* FROM VOCABULARY v inner join VOCABULARY_SET vs on (v.FOLDER_ID = vs.ID) where v.VOCABULARY_ID = :ID";
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ID", vocabularyID );
+        
+        List<VocabularySet> vocabularySet = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<VocabularySet>() {
+
+            @Override
+            public VocabularySet mapRow(ResultSet rs, int rowNum) throws SQLException {
+                VocabularySet vocabularySet = new VocabularySet();
+                vocabularySet.setId( Integer.parseInt(rs.getString("ID")) );
+                vocabularySet.setLabel(rs.getString("LABEL"));
+                vocabularySet.setIdentifier(rs.getString("IDENTIFIER"));
+                return vocabularySet;
+            }
+        });
+        
+        return vocabularySet.get(0);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Triple<Integer,Integer,Integer>> getVocabulariesRelation( int vocabularyID ){
+        StringBuilder sql = new StringBuilder("select distinct vc.VOCABULARY_ID as vocabulary, vce.DATAELEM_ID as relationship, vc2.VOCABULARY_ID as relatedVocabulary ");
+                                   sql.append("from VOCABULARY_CONCEPT vc left join VOCABULARY_CONCEPT_ELEMENT vce ");
+                                   sql.append("on vc.VOCABULARY_CONCEPT_ID = vce.VOCABULARY_CONCEPT_ID ");
+                                   sql.append("inner join VOCABULARY_CONCEPT vc2 ");
+                                   sql.append("on vce.RELATED_CONCEPT_ID = vc2.VOCABULARY_CONCEPT_ID ");
+                                   sql.append("where vc.VOCABULARY_ID = :ID and vce.RELATED_CONCEPT_ID IS NOT NULL");
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ID", vocabularyID );
+        
+        List<Triple<Integer,Integer,Integer>> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Triple<Integer,Integer,Integer>>() {
+            @Override
+            public Triple<Integer,Integer,Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                String vocabularyID = rs.getString("vocabulary");
+                String relationshipID = rs.getString("relationship");
+                String relatedVocabularyID = rs.getString("relatedVocabulary");
+                
+                Triple<Integer,Integer,Integer> triple = new Triple<Integer,Integer,Integer>( Integer.parseInt(vocabularyID), Integer.parseInt(relationshipID), Integer.parseInt(relatedVocabularyID) );
+                
+                return triple;
+            }
+        });
+        return result;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> getRelatedVocabularyConcepts( int vocabularyConceptID, int relationshipElementID, int relatedVocabularyID ){
+        StringBuilder sql = new StringBuilder("select vce.RELATED_CONCEPT_ID  ");
+                                   sql.append("from VOCABULARY_CONCEPT vc left join VOCABULARY_CONCEPT_ELEMENT vce ");
+                                   sql.append("on vc.VOCABULARY_CONCEPT_ID = vce.RELATED_CONCEPT_ID ");
+                                   sql.append("where vce.VOCABULARY_CONCEPT_ID = :vocabularyConceptID ");
+                                   sql.append("and vce.DATAELEM_ID = :relationshipElementID ");
+                                   sql.append("and vc.VOCABULARY_ID = :relatedVocabularyID");
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyConceptID", vocabularyConceptID );
+        params.put("relationshipElementID", relationshipElementID );
+        params.put("relatedVocabularyID", relatedVocabularyID );
+        
+        List<Integer> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Integer>() {
+            @Override
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return Integer.parseInt( rs.getString("RELATED_CONCEPT_ID") );
+            }
+        });
+        return result;
+    }
 }
