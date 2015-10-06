@@ -2369,7 +2369,8 @@ String helpAreaName = "";
                                                                     // the link
                                                                     String valuesLink = "";
                                                                     if (!type.equals("CH3")) {
-                                                                        valuesLink = request.getContextPath() + "/fixedvalues/elem/" + delem_id + "/edit";
+                                                                        String valuesLinkAction = "view".equals(mode) ? "view" : "edit";
+                                                                        valuesLink = request.getContextPath() + "/fixedvalues/elem/" + delem_id + "/" + valuesLinkAction;
                                                                     } else {
                                                                         if (vocabulary != null) {
                                                                             valuesLink = request.getContextPath() + "/vocabulary/" + vocabulary.getFolderName()
