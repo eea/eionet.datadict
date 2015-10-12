@@ -64,18 +64,18 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
 
     @Override
-    public CompoundDataObject getSingleValueModel(int ownerAttributeId, String fixedValue) throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
+    public CompoundDataObject getSingleValueModel(int ownerAttributeId, int fixedValueId) throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         SimpleAttribute ownerAttribute = this.getOwnerAttribute(ownerAttributeId);
-        FixedValue value = this.fixedValuesService.getFixedValue(ownerAttribute, fixedValue);
+        FixedValue value = this.fixedValuesService.getFixedValue(ownerAttribute, fixedValueId);
         
         return this.packageResults(ownerAttribute, value);
     }
     
     @Override
-    public CompoundDataObject getEditableSingleValueModel(AppContextProvider contextProvider, int ownerAttributeId, String fixedValue) 
+    public CompoundDataObject getEditableSingleValueModel(AppContextProvider contextProvider, int ownerAttributeId, int fixedValueId) 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         SimpleAttribute ownerAttribute = this.getEditableOwnerAttribute(contextProvider, ownerAttributeId);
-        FixedValue value = this.fixedValuesService.getFixedValue(ownerAttribute, fixedValue);
+        FixedValue value = this.fixedValuesService.getFixedValue(ownerAttribute, fixedValueId);
         
         return this.packageResults(ownerAttribute, value);
     }
@@ -98,7 +98,7 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
     }
 
     @Override
-    public void saveFixedValue(AppContextProvider contextProvider, int ownerAttributeId, String originalValue, FixedValue fixedValue) 
+    public void saveFixedValue(AppContextProvider contextProvider, int ownerAttributeId, FixedValue fixedValue) 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
                    FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
         if (fixedValue == null) {
@@ -106,13 +106,13 @@ public class AttributeFixedValuesControllerImpl implements AttributeFixedValuesC
         }
         
         SimpleAttribute ownerAttribute = this.getEditableOwnerAttribute(contextProvider, ownerAttributeId);
-        this.fixedValuesService.saveFixedValue(ownerAttribute, originalValue, fixedValue);
+        this.fixedValuesService.saveFixedValue(ownerAttribute, fixedValue);
     }
 
     @Override
-    public void deleteFixedValue(AppContextProvider contextProvider, int ownerAttributeId, String fixedValue) 
+    public void deleteFixedValue(AppContextProvider contextProvider, int ownerAttributeId, int fixedValueId) 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
-        CompoundDataObject result = this.getEditableSingleValueModel(contextProvider, ownerAttributeId, fixedValue);
+        CompoundDataObject result = this.getEditableSingleValueModel(contextProvider, ownerAttributeId, fixedValueId);
         FixedValue  fxv = result.get(PROPERTY_FIXED_VALUE);
         this.fixedValueDao.deleteById(fxv.getId());
     }

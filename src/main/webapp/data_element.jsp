@@ -2433,7 +2433,7 @@ String helpAreaName = "";
                                                                                                     + "/" + fxv.getCsID() + "/view";
                                                                                         }
                                                                                         else {
-                                                                                            valueLink = request.getContextPath() + "/fixedvalues/elem/" + delem_id + "/view/" + java.net.URLEncoder.encode(value, "UTF-8");
+                                                                                            valueLink = request.getContextPath() + "/fixedvalues/elem/" + delem_id + "/view/" + java.net.URLEncoder.encode(fxv.getID(), "UTF-8");
                                                                                         }
                                                                                     }
 

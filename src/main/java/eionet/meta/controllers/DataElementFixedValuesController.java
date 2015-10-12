@@ -61,7 +61,7 @@ public interface DataElementFixedValuesController {
      * </ul>
      *
      * @param ownerDataElementId the data element id.
-     * @param fixedValue the requested value.
+     * @param fixedValueId the id of the requested value.
      * 
      * @return a {@link CompoundDataObject} instance containing info about the 
      * fixed value, and the owner data element.
@@ -70,7 +70,7 @@ public interface DataElementFixedValuesController {
      * @throws FixedValueNotFoundException if the fixed value cannot be found.
      * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
      */
-    CompoundDataObject getSingleValueModel(int ownerDataElementId, String fixedValue)
+    CompoundDataObject getSingleValueModel(int ownerDataElementId, int fixedValueId)
             throws FixedValueOwnerNotFoundException, FixedValueNotFoundException, NotAFixedValueOwnerException;
     
     /**
@@ -86,7 +86,7 @@ public interface DataElementFixedValuesController {
      * 
      * @param contextProvider an object that provides for application context info.
      * @param ownerDataElementId the data element id.
-     * @param fixedValue the requested value.
+     * @param fixedValueId the id of the requested value.
      * 
      * @return a {@link CompoundDataObject} instance containing info about the 
      * fixed value, and the owner data element.
@@ -98,7 +98,7 @@ public interface DataElementFixedValuesController {
      * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
-    CompoundDataObject getEditableSingleValueModel(AppContextProvider contextProvider, int ownerDataElementId, String fixedValue)
+    CompoundDataObject getEditableSingleValueModel(AppContextProvider contextProvider, int ownerDataElementId, int fixedValueId)
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
                    NotAFixedValueOwnerException, FixedValueOwnerNotEditableException, UserAuthorizationException;
     
@@ -156,7 +156,6 @@ public interface DataElementFixedValuesController {
      * 
      * @param contextProvider an object that provides for application context info.
      * @param ownerDataElementId the data element id.
-     * @param originalValue the value of the {@link FixedValue} instance before the modification.
      * @param fixedValue the modification payload.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
@@ -168,7 +167,7 @@ public interface DataElementFixedValuesController {
      * @throws EmptyValueException if the value property of the payload is blank.
      * @throws DuplicateResourceException if the updated/created value already exists.
      */
-    void saveFixedValue(AppContextProvider contextProvider, int ownerDataElementId, String originalValue, FixedValue fixedValue)
+    void saveFixedValue(AppContextProvider contextProvider, int ownerDataElementId, FixedValue fixedValue)
             throws UserAuthenticationException, FixedValueOwnerNotFoundException,
                    FixedValueNotFoundException, FixedValueOwnerNotEditableException, UserAuthorizationException, 
                    NotAFixedValueOwnerException, DuplicateResourceException, EmptyValueException;
@@ -178,7 +177,7 @@ public interface DataElementFixedValuesController {
      * 
      * @param contextProvider an object that provides for application context info.
      * @param ownerDataElementId the data element id.
-     * @param fixedValue the value to be deleted.
+     * @param fixedValueId the id of the value to be deleted.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
      * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
@@ -187,7 +186,7 @@ public interface DataElementFixedValuesController {
      * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
-    void deleteFixedValue(AppContextProvider contextProvider, int ownerDataElementId, String fixedValue)
+    void deleteFixedValue(AppContextProvider contextProvider, int ownerDataElementId, int fixedValueId)
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
                    FixedValueNotFoundException, FixedValueOwnerNotEditableException, UserAuthorizationException;
     

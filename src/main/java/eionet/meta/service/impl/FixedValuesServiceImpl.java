@@ -28,20 +28,20 @@ public class FixedValuesServiceImpl implements FixedValuesService {
     }
 
     @Override
-    public FixedValue getFixedValue(DataElement owner, String value) throws FixedValueNotFoundException {
-        return this.getFixedValue(FixedValue.OwnerType.DATA_ELEMENT, owner.getId(), value);
+    public FixedValue getFixedValue(DataElement owner, int valueId) throws FixedValueNotFoundException {
+        return this.getFixedValue(FixedValue.OwnerType.DATA_ELEMENT, owner.getId(), valueId);
     }
 
     @Override
-    public FixedValue getFixedValue(SimpleAttribute owner, String value) throws FixedValueNotFoundException {
-        return this.getFixedValue(FixedValue.OwnerType.ATTRIBUTE, owner.getAttributeId(), value);
+    public FixedValue getFixedValue(SimpleAttribute owner, int valueId) throws FixedValueNotFoundException {
+        return this.getFixedValue(FixedValue.OwnerType.ATTRIBUTE, owner.getAttributeId(), valueId);
     }
     
-    private FixedValue getFixedValue(FixedValue.OwnerType ownerType, int ownerId, String value) throws FixedValueNotFoundException {
-        FixedValue fxv = this.fixedValueDao.getByValue(ownerType, ownerId, value);
+    private FixedValue getFixedValue(FixedValue.OwnerType ownerType, int ownerId, int valueId) throws FixedValueNotFoundException {
+        FixedValue fxv = this.fixedValueDao.getById(valueId);
         
-        if (fxv == null) {
-            throw new FixedValueNotFoundException(value);
+        if (fxv == null || ownerId != fxv.getOwnerId() || !ownerType.isMatch(fxv.getOwnerType())) {
+            throw new FixedValueNotFoundException(Integer.toString(valueId));
         }
         
         return fxv;
@@ -49,28 +49,28 @@ public class FixedValuesServiceImpl implements FixedValuesService {
 
     @Override
     @Transactional
-    public void saveFixedValue(DataElement owner, String originalValue, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    public void saveFixedValue(DataElement owner, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
         fixedValue.setDefaultValue(false);
-        this.saveFixedValue(FixedValue.OwnerType.DATA_ELEMENT, owner.getId(), originalValue, fixedValue);
+        this.saveFixedValue(FixedValue.OwnerType.DATA_ELEMENT, owner.getId(), fixedValue);
     }
 
     @Override
     @Transactional
-    public void saveFixedValue(SimpleAttribute owner, String originalValue, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
-        this.saveFixedValue(FixedValue.OwnerType.ATTRIBUTE, owner.getAttributeId(), originalValue, fixedValue);
+    public void saveFixedValue(SimpleAttribute owner, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+        this.saveFixedValue(FixedValue.OwnerType.ATTRIBUTE, owner.getAttributeId(), fixedValue);
     }
     
-    private void saveFixedValue(FixedValue.OwnerType ownerType, int ownerId, String originalValue, FixedValue fixedValue) 
+    private void saveFixedValue(FixedValue.OwnerType ownerType, int ownerId, FixedValue fixedValue) 
             throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
         if (StringUtils.isBlank(fixedValue.getValue())) {
             throw new EmptyValueException();
         }
         
-        if (StringUtils.isBlank(originalValue)) {
+        if (fixedValue.getId() == 0) {
             this.insertFixedValue(ownerType, ownerId, fixedValue);
         }
         else {
-            this.updateFixedValue(ownerType, ownerId, originalValue, fixedValue);
+            this.updateFixedValue(ownerType, ownerId, fixedValue);
         }
     }
     
@@ -85,13 +85,9 @@ public class FixedValuesServiceImpl implements FixedValuesService {
         this.updateDefaultStatus(toInsert);
     }
     
-    private void updateFixedValue(FixedValue.OwnerType ownerType, int ownerId, String originalValue, FixedValue fixedValue) 
+    private void updateFixedValue(FixedValue.OwnerType ownerType, int ownerId, FixedValue fixedValue) 
             throws FixedValueNotFoundException, DuplicateResourceException {
-        FixedValue toUpdate = this.fixedValueDao.getByValue(ownerType, ownerId, originalValue);
-        
-        if (toUpdate == null) {
-            throw new FixedValueNotFoundException(originalValue);
-        }
+        FixedValue toUpdate = this.getFixedValue(ownerType, ownerId, fixedValue.getId());
         
         if (!fixedValue.getValue().equals(toUpdate.getValue())) {
             FixedValue fxvByValue = this.fixedValueDao.getByValue(ownerType, ownerId, fixedValue.getValue());

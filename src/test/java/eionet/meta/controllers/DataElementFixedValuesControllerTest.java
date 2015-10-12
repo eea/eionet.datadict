@@ -298,12 +298,12 @@ public class DataElementFixedValuesControllerTest {
     public void testGetSingleValueModel() 
             throws ResourceNotFoundException, NotAFixedValueOwnerException, FixedValueOwnerNotFoundException {
         final int ownerId = 5;
-        final String value = "val";
+        final int valueId = 10;
         DataElement expectedOwner = this.createOwner(ownerId);
-        FixedValue expectedValue = this.createFixedValue(23, expectedOwner, value);
+        FixedValue expectedValue = this.createFixedValue(23, expectedOwner, "val");
         when(dataElementsService.getDataElement(ownerId)).thenReturn(expectedOwner);
-        when(fixedValuesService.getFixedValue(expectedOwner, value)).thenReturn(expectedValue);
-        CompoundDataObject result = this.controller.getSingleValueModel(ownerId, value);
+        when(fixedValuesService.getFixedValue(expectedOwner, valueId)).thenReturn(expectedValue);
+        CompoundDataObject result = this.controller.getSingleValueModel(ownerId, valueId);
         DataElement actualOwner = result.get(DataElementFixedValuesController.PROPERTY_OWNER_DATA_ELEMENT);
         assertEquals(expectedOwner, actualOwner);
         FixedValue actualValue = result.get(DataElementFixedValuesController.PROPERTY_FIXED_VALUE);
@@ -315,7 +315,7 @@ public class DataElementFixedValuesControllerTest {
             throws ResourceNotFoundException, NotAFixedValueOwnerException, FixedValueOwnerNotFoundException {
         final int ownerId = 5;
         when(dataElementsService.getDataElement(ownerId)).thenThrow(new ResourceNotFoundException(ownerId));
-        this.controller.getSingleValueModel(ownerId, "val");
+        this.controller.getSingleValueModel(ownerId, 10);
     }
     
     @Test(expected = NotAFixedValueOwnerException.class)
@@ -324,7 +324,7 @@ public class DataElementFixedValuesControllerTest {
         final int ownerId = 5;
         DataElement expected = this.createNonOwner(ownerId);
         when(dataElementsService.getDataElement(ownerId)).thenReturn(expected);
-        this.controller.getSingleValueModel(ownerId, "val");
+        this.controller.getSingleValueModel(ownerId, 10);
     }
     
     @Test
@@ -332,12 +332,12 @@ public class DataElementFixedValuesControllerTest {
             throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, NotAFixedValueOwnerException,
                    FixedValueOwnerNotFoundException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
-        final String value = "val";
+        final int valueId = 10;
         DataElement expectedOwner = this.createOwner(ownerId);
-        FixedValue expectedValue = this.createFixedValue(23, expectedOwner, value);
+        FixedValue expectedValue = this.createFixedValue(23, expectedOwner, "val");
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenReturn(expectedOwner);
-        when(fixedValuesService.getFixedValue(expectedOwner, value)).thenReturn(expectedValue);
-        CompoundDataObject result = this.controller.getEditableSingleValueModel(contextProvider, ownerId, value);
+        when(fixedValuesService.getFixedValue(expectedOwner, valueId)).thenReturn(expectedValue);
+        CompoundDataObject result = this.controller.getEditableSingleValueModel(contextProvider, ownerId, valueId);
         DataElement actualOwner = result.get(DataElementFixedValuesController.PROPERTY_OWNER_DATA_ELEMENT);
         assertEquals(expectedOwner, actualOwner);
         FixedValue actualValue = result.get(DataElementFixedValuesController.PROPERTY_FIXED_VALUE);
@@ -350,7 +350,7 @@ public class DataElementFixedValuesControllerTest {
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, NotAWorkingCopyException {
         final int ownerId = 5;
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenThrow(UserAuthenticationException.class);
-        this.controller.getEditableSingleValueModel(contextProvider, ownerId, "val");
+        this.controller.getEditableSingleValueModel(contextProvider, ownerId, 10);
     }
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
@@ -359,7 +359,7 @@ public class DataElementFixedValuesControllerTest {
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenThrow(new ResourceNotFoundException(ownerId));
-        this.controller.getEditableSingleValueModel(contextProvider, ownerId, "val");
+        this.controller.getEditableSingleValueModel(contextProvider, ownerId, 10);
     }
     
     @Test(expected = DataElementFixedValuesController.FixedValueOwnerNotEditableException.class)
@@ -368,7 +368,7 @@ public class DataElementFixedValuesControllerTest {
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenThrow(NotAWorkingCopyException.class);
-        this.controller.getEditableSingleValueModel(contextProvider, ownerId, "val");
+        this.controller.getEditableSingleValueModel(contextProvider, ownerId, 10);
     }
     
     @Test(expected = UserAuthorizationException.class)
@@ -377,7 +377,7 @@ public class DataElementFixedValuesControllerTest {
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenThrow(UserAuthorizationException.class);
-        this.controller.getEditableSingleValueModel(contextProvider, ownerId, "val");
+        this.controller.getEditableSingleValueModel(contextProvider, ownerId, 10);
     }
     
     @Test(expected = NotAFixedValueOwnerException.class)
@@ -387,7 +387,7 @@ public class DataElementFixedValuesControllerTest {
         final int ownerId = 5;
         DataElement expected = this.createNonOwner(ownerId);
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenReturn(expected);
-        this.controller.getEditableSingleValueModel(contextProvider, ownerId, "val");
+        this.controller.getEditableSingleValueModel(contextProvider, ownerId, 10);
     }
     
     @Test(expected = FixedValueNotFoundException.class)
@@ -395,11 +395,11 @@ public class DataElementFixedValuesControllerTest {
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
-        final String value = "val";
+        final int valueId = 10;
         DataElement expectedOwner = this.createOwner(ownerId);
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenReturn(expectedOwner);
-        when(fixedValuesService.getFixedValue(expectedOwner, value)).thenThrow(new FixedValueNotFoundException(value));
-        this.controller.getEditableSingleValueModel(contextProvider, ownerId, value);
+        when(fixedValuesService.getFixedValue(expectedOwner, valueId)).thenThrow(new FixedValueNotFoundException(Integer.toString(valueId)));
+        this.controller.getEditableSingleValueModel(contextProvider, ownerId, valueId);
     }
     
     @Test
@@ -407,12 +407,12 @@ public class DataElementFixedValuesControllerTest {
             throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException, NotAFixedValueOwnerException,
                    FixedValueOwnerNotFoundException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
-        final String value = "val";
+        final int valueId = 10;
         DataElement expectedOwner = this.createOwner(ownerId);
-        FixedValue expectedValue = this.createFixedValue(23, expectedOwner, value);
+        FixedValue expectedValue = this.createFixedValue(23, expectedOwner, "val");
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenReturn(expectedOwner);
-        when(fixedValuesService.getFixedValue(expectedOwner, value)).thenReturn(expectedValue);
-        this.controller.deleteFixedValue(contextProvider, ownerId, value);
+        when(fixedValuesService.getFixedValue(expectedOwner, valueId)).thenReturn(expectedValue);
+        this.controller.deleteFixedValue(contextProvider, ownerId, valueId);
         verify(fixedValueDao, times(1)).deleteById(expectedValue.getId());
     }
     
@@ -422,7 +422,7 @@ public class DataElementFixedValuesControllerTest {
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, NotAWorkingCopyException {
         final int ownerId = 5;
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenThrow(UserAuthenticationException.class);
-        this.controller.deleteFixedValue(contextProvider, ownerId, "val");
+        this.controller.deleteFixedValue(contextProvider, ownerId, 10);
     }
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
@@ -431,7 +431,7 @@ public class DataElementFixedValuesControllerTest {
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenThrow(new ResourceNotFoundException(ownerId));
-        this.controller.deleteFixedValue(contextProvider, ownerId, "val");
+        this.controller.deleteFixedValue(contextProvider, ownerId, 10);
     }
     
     @Test(expected = DataElementFixedValuesController.FixedValueOwnerNotEditableException.class)
@@ -440,7 +440,7 @@ public class DataElementFixedValuesControllerTest {
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenThrow(NotAWorkingCopyException.class);
-        this.controller.deleteFixedValue(contextProvider, ownerId, "val");
+        this.controller.deleteFixedValue(contextProvider, ownerId, 10);
     }
     
     @Test(expected = UserAuthorizationException.class)
@@ -449,7 +449,7 @@ public class DataElementFixedValuesControllerTest {
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenThrow(UserAuthorizationException.class);
-        this.controller.deleteFixedValue(contextProvider, ownerId, "val");
+        this.controller.deleteFixedValue(contextProvider, ownerId, 10);
     }
     
     @Test(expected = NotAFixedValueOwnerException.class)
@@ -459,7 +459,7 @@ public class DataElementFixedValuesControllerTest {
         final int ownerId = 5;
         DataElement expected = this.createNonOwner(ownerId);
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenReturn(expected);
-        this.controller.deleteFixedValue(contextProvider, ownerId, "val");
+        this.controller.deleteFixedValue(contextProvider, ownerId, 10);
     }
     
     @Test(expected = FixedValueNotFoundException.class)
@@ -467,11 +467,11 @@ public class DataElementFixedValuesControllerTest {
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, ResourceNotFoundException, NotAFixedValueOwnerException,
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException {
         final int ownerId = 5;
-        final String value = "val";
+        final int valueId = 10;
         DataElement expectedOwner = this.createOwner(ownerId);
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenReturn(expectedOwner);
-        when(fixedValuesService.getFixedValue(expectedOwner, value)).thenThrow(new FixedValueNotFoundException(value));
-        this.controller.deleteFixedValue(contextProvider, ownerId, value);
+        when(fixedValuesService.getFixedValue(expectedOwner, valueId)).thenThrow(new FixedValueNotFoundException(Integer.toString(valueId)));
+        this.controller.deleteFixedValue(contextProvider, ownerId, valueId);
     }
     
     @Test
@@ -480,12 +480,11 @@ public class DataElementFixedValuesControllerTest {
                    FixedValueOwnerNotFoundException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
                    DuplicateResourceException, EmptyValueException {
         final int ownerId = 5;
-        final String value = "val";
         DataElement expectedOwner = this.createOwner(ownerId);
-        FixedValue inValue = this.createSaveInput(value);
+        FixedValue inValue = this.createSaveInput(10, "val");
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenReturn(expectedOwner);
-        this.controller.saveFixedValue(contextProvider, ownerId, value, inValue);
-        verify(fixedValuesService, times(1)).saveFixedValue(expectedOwner, value, inValue);
+        this.controller.saveFixedValue(contextProvider, ownerId, inValue);
+        verify(fixedValuesService, times(1)).saveFixedValue(expectedOwner, inValue);
     }
     
     @Test(expected = UserAuthenticationException.class)
@@ -494,9 +493,8 @@ public class DataElementFixedValuesControllerTest {
                    DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, NotAWorkingCopyException,
                    DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
-        final String value = "val";
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenThrow(UserAuthenticationException.class);
-        this.controller.saveFixedValue(contextProvider, ownerId, value, this.createSaveInput(value));
+        this.controller.saveFixedValue(contextProvider, ownerId, this.createSaveInput(10, "val"));
     }
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
@@ -505,9 +503,8 @@ public class DataElementFixedValuesControllerTest {
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
                    DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
-        final String value = "val";
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenThrow(new ResourceNotFoundException(ownerId));
-        this.controller.saveFixedValue(contextProvider, ownerId, value, this.createSaveInput(value));
+        this.controller.saveFixedValue(contextProvider, ownerId, this.createSaveInput(10, "val"));
     }
     
     @Test(expected = DataElementFixedValuesController.FixedValueOwnerNotEditableException.class)
@@ -516,9 +513,8 @@ public class DataElementFixedValuesControllerTest {
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
                    DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
-        final String value = "val";
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenThrow(NotAWorkingCopyException.class);
-        this.controller.saveFixedValue(contextProvider, ownerId, value, this.createSaveInput(value));
+        this.controller.saveFixedValue(contextProvider, ownerId, this.createSaveInput(10, "val"));
     }
     
     @Test(expected = UserAuthorizationException.class)
@@ -527,9 +523,8 @@ public class DataElementFixedValuesControllerTest {
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
                    DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
-        final String value = "val";
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenThrow(UserAuthorizationException.class);
-        this.controller.saveFixedValue(contextProvider, ownerId, value, this.createSaveInput(value));
+        this.controller.saveFixedValue(contextProvider, ownerId, this.createSaveInput(10, "val"));
     }
     
     @Test(expected = NotAFixedValueOwnerException.class)
@@ -538,10 +533,9 @@ public class DataElementFixedValuesControllerTest {
                    FixedValueOwnerNotFoundException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
                    DuplicateResourceException, EmptyValueException {
         final int ownerId = 5;
-        final String value = "val";
         DataElement expected = this.createNonOwner(ownerId);
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenReturn(expected);
-        this.controller.saveFixedValue(contextProvider, ownerId, value, this.createSaveInput(value));
+        this.controller.saveFixedValue(contextProvider, ownerId, this.createSaveInput(10, "val"));
     }
     
     @Test(expected = FixedValueNotFoundException.class)
@@ -550,12 +544,12 @@ public class DataElementFixedValuesControllerTest {
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
                    DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
-        final String value = "val";
+        final int valueId = 10;
         DataElement expectedOwner = this.createOwner(ownerId);
-        FixedValue inValue = this.createSaveInput(value);
+        FixedValue inValue = this.createSaveInput(valueId, "val");
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenReturn(expectedOwner);
-        doThrow(new FixedValueNotFoundException(value)).when(fixedValuesService).saveFixedValue(expectedOwner, value, inValue);
-        this.controller.saveFixedValue(contextProvider, ownerId, value, inValue);
+        doThrow(new FixedValueNotFoundException(Integer.toString(valueId))).when(fixedValuesService).saveFixedValue(expectedOwner, inValue);
+        this.controller.saveFixedValue(contextProvider, ownerId, inValue);
     }
     
     @Test(expected = DuplicateResourceException.class)
@@ -564,13 +558,13 @@ public class DataElementFixedValuesControllerTest {
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
                    DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
-        final String originalValue = "val";
+        final int valueId = 10;
         final String newValue = "other_val";
         DataElement expectedOwner = this.createOwner(ownerId);
-        FixedValue inValue = this.createSaveInput(newValue);
+        FixedValue inValue = this.createSaveInput(valueId, newValue);
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenReturn(expectedOwner);
-        doThrow(new DuplicateResourceException(newValue)).when(fixedValuesService).saveFixedValue(expectedOwner, originalValue, inValue);
-        this.controller.saveFixedValue(contextProvider, ownerId, originalValue, inValue);
+        doThrow(new DuplicateResourceException(newValue)).when(fixedValuesService).saveFixedValue(expectedOwner, inValue);
+        this.controller.saveFixedValue(contextProvider, ownerId, inValue);
     }
     
     @Test(expected = EmptyValueException.class)
@@ -579,13 +573,13 @@ public class DataElementFixedValuesControllerTest {
                    NotAWorkingCopyException, UserAuthorizationException, DataElementFixedValuesController.FixedValueOwnerNotEditableException,
                    DuplicateResourceException, NotAFixedValueOwnerException, EmptyValueException {
         final int ownerId = 5;
-        final String originalValue = "val";
+        final int valueId = 10;
         final String newValue = null;
         DataElement expectedOwner = this.createOwner(ownerId);
-        FixedValue inValue = this.createSaveInput(newValue);
+        FixedValue inValue = this.createSaveInput(valueId, newValue);
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenReturn(expectedOwner);
-        doThrow(EmptyValueException.class).when(fixedValuesService).saveFixedValue(expectedOwner, originalValue, inValue);
-        this.controller.saveFixedValue(contextProvider, ownerId, originalValue, inValue);
+        doThrow(EmptyValueException.class).when(fixedValuesService).saveFixedValue(expectedOwner, inValue);
+        this.controller.saveFixedValue(contextProvider, ownerId, inValue);
     }
     
     private DataElement createOwner(int id) {
@@ -614,8 +608,9 @@ public class DataElementFixedValuesControllerTest {
         return fxv;
     }
     
-    private FixedValue createSaveInput(String value) {
+    private FixedValue createSaveInput(int id, String value) {
         FixedValue payload = new FixedValue();
+        payload.setId(id);
         payload.setValue(value);
         
         return payload;

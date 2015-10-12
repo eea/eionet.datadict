@@ -80,14 +80,14 @@
                                     <stripes:form beanclass="${actionBean.viewModel.actionBeanName}" 
                                                   onclick="return confirm('Are you sure you want to delete this value?');" >
                                         <stripes:hidden name="ownerId" value="${actionBean.viewModel.owner.id}" />
-                                        <stripes:hidden name="fixedValue" value="${fixedValue.value}" />
+                                        <stripes:hidden name="fixedValueId" value="${fixedValue.id}" />
                                         <stripes:submit name="delete" value="Delete" />
                                     </stripes:form>
                                 </td>
                                 <td>
                                     <stripes:link beanclass="${actionBean.viewModel.actionBeanName}" event="edit">
                                         <stripes:param name="ownerId" value="${actionBean.viewModel.owner.id}" />
-                                        <stripes:param name="fixedValue" value="${fixedValue.value}" />
+                                        <stripes:param name="fixedValueId" value="${fixedValue.id}" />
                                         ${fixedValue.value}
                                     </stripes:link>
                                 </td>
