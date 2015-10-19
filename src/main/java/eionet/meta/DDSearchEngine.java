@@ -30,7 +30,6 @@ import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.dao.mysql.DataElementDAOImpl;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.IVocabularyService;
@@ -39,6 +38,7 @@ import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SchemaConversionsData;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.StringOrdinalComparator;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.INParameters;
@@ -1589,6 +1589,20 @@ public class DDSearchEngine {
         return v;
     }
 
+    public Vector<FixedValue> getFixedValuesOrderedByValue(String delemId, String parentType) throws SQLException, DDException {
+        Vector<FixedValue> fixedValuesOrderedByValue = getFixedValues(delemId, parentType);
+        Collections.sort(fixedValuesOrderedByValue, new Comparator<FixedValue>() {
+
+            private StringOrdinalComparator cmp = new StringOrdinalComparator();
+
+            @Override
+            public int compare(FixedValue o1, FixedValue o2) {
+                return cmp.compare(o1.getValue(), o2.getValue());
+            }
+        });
+
+        return fixedValuesOrderedByValue;
+    }
 
     /**
      *

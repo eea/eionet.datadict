@@ -1411,7 +1411,7 @@
                                 <%
                                     // set up fixed values
                                         fixedValues = mode.equals("add") ? null : searchEngine
-                                                .getFixedValues(delem_id, "elem");
+                                                .getFixedValuesOrderedByValue(delem_id, "elem");
 
                                         // set up foreign key relations (if non-common element)
                                         Vector fKeys = null;
