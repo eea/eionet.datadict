@@ -24,15 +24,12 @@ import org.apache.commons.lang.StringUtils;
  */
 public class CodeItem {
     
-    @JacksonXmlProperty(isAttribute = true, localName = "code")
     private String code;
-    @JacksonXmlProperty(namespace = DD_NAMESPACE)
+    
     private String label;
-    @JacksonXmlProperty(namespace = DD_NAMESPACE)
+    
     private String definition;
     
-    @JacksonXmlElementWrapper(namespace = DD_NAMESPACE, localName = "relationship-list")
-    @JacksonXmlProperty(namespace = DD_NAMESPACE, localName = "relationship")
     private List<RelationshipInfo> relationships;
     
     @JsonIgnore
@@ -46,18 +43,23 @@ public class CodeItem {
         this.definition = definition;
     }
 
+    @JacksonXmlProperty(isAttribute = true, localName = "code")
     public String getCode() { return code;  }
     public void setCode(String code) {this.code = code; }
 
+    @JacksonXmlProperty(namespace = DD_NAMESPACE)
     public String getLabel() { return label; }
     public void setLabel(String label) { this.label = label;}
 
+    @JacksonXmlProperty(namespace = DD_NAMESPACE)
     public String getDefinition() { return definition; }
     public void setDefinition(String definition) { this.definition = definition; }
 
     public Element getParentElement() { return parentElement; }
     public void setParentElement(Element parentElement) { this.parentElement = parentElement; }
     
+    @JacksonXmlElementWrapper(namespace = DD_NAMESPACE, localName = "relationship-list")
+    @JacksonXmlProperty(namespace = DD_NAMESPACE, localName = "relationship")
     public List<RelationshipInfo> getRelationships(){ return this.relationships; }
     public void setRelationships(List<RelationshipInfo> relationships){ this.relationships = relationships; }
     public void addRelationship( RelationshipInfo relationship ){

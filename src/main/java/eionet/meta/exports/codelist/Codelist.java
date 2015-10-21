@@ -3,6 +3,7 @@
  */
 package eionet.meta.exports.codelist;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.meta.DDRuntimeException;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
@@ -30,6 +31,8 @@ public class Codelist {
     
     private static final Logger LOGGER = Logger.getLogger(Codelist.class);
     
+    private ObjectMapper mapper = null;
+    
     private final ExportType exportType;
     
     @Autowired
@@ -38,6 +41,10 @@ public class Codelist {
     public Codelist(ExportType exportType, CodeValueHandlerProvider codeValueHandlerProvider) {
         this.exportType = exportType;
         this.codeValueHandlerProvider = codeValueHandlerProvider;
+    }
+    
+    public void setObjectMapper( ObjectMapper mapper ){
+        this.mapper = mapper;
     }
     
     /**
@@ -159,7 +166,7 @@ public class Codelist {
             }
         }
         
-        ExportElement export = new ExportElement();
+        ExportElement export = new ExportElement(mapper);
         export.setDatasetAware(datasetAware);
         export.setElements(elements);
         

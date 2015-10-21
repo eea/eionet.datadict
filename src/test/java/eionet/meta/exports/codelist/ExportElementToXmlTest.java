@@ -61,7 +61,7 @@ public class ExportElementToXmlTest {
         //Mock Code Handler Provider 
         Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.VOCABULARY )).thenReturn(mockCodeValueHandler);
         
-        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );;
+        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );
         
         String actual = codelist.write(elements, objType);
   
@@ -94,7 +94,7 @@ public class ExportElementToXmlTest {
         //Mock Code Handler Provider 
         Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.VOCABULARY )).thenReturn(mockCodeValueHandler);
         
-        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );;
+        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );
         
         String actual = codelist.write(elements, objType);
 
@@ -205,14 +205,14 @@ public class ExportElementToXmlTest {
         String expected = ExportMocks.wrapXML( ExportMocks.quantitativeValuesExportXML());
         
         Diff diff = new Diff(expected, actual);
-        DetailedDiff detDiff = new DetailedDiff(diff);
-        List differences = detDiff.getAllDifferences();
-        for (Object object : differences) {
-            Difference difference = (Difference)object;
-            System.out.println("***********************");
-            System.out.println(difference);
-            System.out.println("***********************");
-        }
+//        DetailedDiff detDiff = new DetailedDiff(diff);
+//        List differences = detDiff.getAllDifferences();
+//        for (Object object : differences) {
+//            Difference difference = (Difference)object;
+//            System.out.println("***********************");
+//            System.out.println(difference);
+//            System.out.println("***********************");
+//        }
 
         Assert.assertTrue("Exported XML is similar", diff.similar());
     }

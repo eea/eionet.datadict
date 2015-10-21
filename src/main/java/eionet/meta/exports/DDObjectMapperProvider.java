@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import eionet.meta.exports.codelist.CodeItem;
+import eionet.meta.exports.codelist.CodeItemMixin;
 import javax.xml.stream.XMLInputFactory;
 
 /**
@@ -31,9 +33,29 @@ public class DDObjectMapperProvider {
             input.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
             mapper = new XmlMapper( new XmlFactory(input, new WstxOutputFactory() {}));
             mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-//            mapper = new XmlMapper();
             mapper.setSerializationInclusion(Include.NON_NULL);
         }
         return mapper;
+    }
+    
+    /**
+     * Returns an ObjectMapper which uses 
+     * "value" attribute instead of "code"
+     * "shortDescription" element instead of "label"
+     * as per issue https://taskman.eionet.europa.eu/issues/29737
+     * @return 
+     */
+    public static XmlMapper getLegacy(){
+        XMLInputFactory input = new WstxInputFactory();
+        input.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
+        
+        XmlMapper anotherMapper =  new XmlMapper( new XmlFactory(input, new WstxOutputFactory() {}));
+        anotherMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+        anotherMapper.setSerializationInclusion(Include.NON_NULL);
+        
+        //Add the CodeItem mixin
+        anotherMapper.addMixInAnnotations(CodeItem.class, CodeItemMixin.class);
+        
+        return anotherMapper;
     }
 }

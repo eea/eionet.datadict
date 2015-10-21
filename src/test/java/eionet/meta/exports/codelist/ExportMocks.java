@@ -400,6 +400,24 @@ public class ExportMocks {
             " </value-list>";
     }
     
+    static String quantitativeValuesLegacyExportXML(){
+        return 
+            " <value-list element=\"test-quantitative\">"+
+            "  <value value=\"a\">"+
+            "   <shortDescription>aa</shortDescription>"+
+            "   <definition>aaa</definition>"+
+            "  </value>"+
+            "  <value value=\"b\">"+
+            "   <shortDescription>bb</shortDescription>"+
+            "   <definition>bbb</definition>"+
+            "  </value>"+
+            "  <value value=\"c\">"+
+            "   <shortDescription>cc</shortDescription>"+
+            "   <definition>ccc</definition>"+
+            "  </value>"+
+            " </value-list>";
+    }
+    
     static String quantitativeValuesExportCSV(){
         return 
             "Element:test-quantitative\n"+
