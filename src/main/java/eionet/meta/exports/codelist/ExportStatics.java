@@ -41,6 +41,9 @@ public class ExportStatics {
         return wrap( str, WRAPPER );
     }
     static String wrap( String str, String wrapper ){
+        if ( str == null )
+            return str;
+        
         if ( wrapper == null )
             return str;
         
