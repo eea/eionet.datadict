@@ -6,7 +6,6 @@ package eionet.meta.exports.codelist;
 import eionet.meta.DDRuntimeException;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
-import eionet.meta.exports.codelist.Element;
 import eionet.meta.exports.codelist.ExportStatics.ObjectType;
 import java.util.ArrayList;
 import java.util.List;
@@ -150,12 +149,14 @@ public class Codelist {
                 element.setDatasetIdentifier(datasetIdentifier);
             }
             //SET FIXED
-            // When type is Fixed
+            // When type is Fixed, set to true
             if (type.equals(DataElementValueType.FIXED)) {
                 element.setFixed(true);
+            } 
+            //When type is Vocabulary, set to false
+            else if (type.equals(DataElementValueType.VOCABULARY)) {
+                element.setFixed(false);
             }
-            
-            
         }
         
         ExportElement export = new ExportElement();

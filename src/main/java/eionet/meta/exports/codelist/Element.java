@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
 import static eionet.meta.exports.codelist.ExportStatics.*;
 
 /**
@@ -24,7 +23,7 @@ public class Element {
     @JacksonXmlProperty(isAttribute = true, localName = "dataset")
     private String datasetIdentifier;
     @JacksonXmlProperty(isAttribute = true, localName = "fixed")
-    private boolean fixed;
+    private Boolean fixed;
     @JsonIgnore
     private List<String> relationshipNames;
     private List<CodeItem> values;
@@ -38,8 +37,8 @@ public class Element {
     public String getDatasetIdentifier() {return datasetIdentifier;}
     public void setDatasetIdentifier(String datasetIdentifier) {this.datasetIdentifier = datasetIdentifier;}
 
-    public boolean isFixed() {return fixed;}
-    public void setFixed(boolean fixed) {this.fixed = fixed;}
+    public Boolean isFixed() {return fixed;}
+    public void setFixed(Boolean fixed) {this.fixed = fixed;}
 
     public List<String> getRelationshipNames() {return relationshipNames;}
     public void setRelationshipNames(List<String> relationshipNames) {this.relationshipNames = relationshipNames;}
@@ -66,9 +65,11 @@ public class Element {
             header.append(CSV_HEADER_TABLE).append(CSV_DELIMITER_LABEL).append(tableIdentifier).append(CSV_DELIMITER_SPACE);
         }
         //Element name Upper Header
-        header.append(CSV_HEADER_ELEMENT).append(CSV_DELIMITER_LABEL).append(identifier).append(CSV_DELIMITER_SPACE);
+        header.append(CSV_HEADER_ELEMENT).append(CSV_DELIMITER_LABEL).append(identifier);
         //Fixed Upper Header
-        header.append(CSV_HEADER_FIXED).append(CSV_DELIMITER_LABEL).append(fixed);
+        if ( fixed != null ){
+            header.append(CSV_DELIMITER_SPACE).append(CSV_HEADER_FIXED).append(CSV_DELIMITER_LABEL).append(fixed);
+        }
         //New line
         header.append(CSV_NEW_LINE);
         if (values == null || values.isEmpty()) {

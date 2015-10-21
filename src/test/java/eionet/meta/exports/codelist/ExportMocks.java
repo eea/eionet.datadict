@@ -19,6 +19,29 @@ public class ExportMocks {
     static String XML_EXPORT_ROOT_ELEMENT_OPEN = "<value-lists xmlns=\"http://dd.eionet.europa.eu\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
     static String XML_EXPORT_ROOT_ELEMENT_CLOSE = "</value-lists>";
     
+    static List<eionet.meta.DataElement> quantitativeDataElement(){
+        //ID, Short name, Type
+        //Type Fixed: CH1, Quantitative: CH2, Vocabulary: CH3
+        eionet.meta.DataElement element = new eionet.meta.DataElement("123", "test", "CH2");
+        
+        //Vocabulary ID
+        element.setVocabularyId("456");
+        
+        //common element - null namespace
+        element.setNamespace( null );
+        
+        element.setIdentifier("test-quantitative");
+        
+        //Table identifier
+        element.setTblIdentifier("national_overview");
+        
+        //Dataset identifier
+        element.setDstIdentifier("CDDA");
+        
+        List<eionet.meta.DataElement> elements = new ArrayList<eionet.meta.DataElement>();
+        elements.add(element);
+        return elements;
+    }
     static List<eionet.meta.DataElement> vocabularyCommonDataElement(){
         //ID, Short name, Type
         //Type Fixed: CH1, Quantitative: CH2, Vocabulary: CH3
@@ -304,6 +327,14 @@ public class ExportMocks {
         return values;
     }
     
+    static List<CodeItem> quantitativeValues(){       
+        List<CodeItem> values = new ArrayList<CodeItem>();
+        values.add(new CodeItem("a", "aa", "aaa"));
+        values.add(new CodeItem("b", "bb", "bbb"));
+        values.add(new CodeItem("c", "cc", "ccc"));       
+        return values;
+    }
+    
     static String commonDataElementWithFixedValuesExportXML(){
         return 
             " <value-list element=\"ageGroup\" fixed=\"true\">"+
@@ -349,6 +380,33 @@ public class ExportMocks {
             "\"04\",\"30-40\",\"\"\n"+
             "\"05\",\"40-50\",\"\"\n"+
             "\"06\",\"60+\",\"\"\n\n";
+    }
+    
+    static String quantitativeValuesExportXML(){
+        return 
+            " <value-list element=\"test-quantitative\">"+
+            "  <value code=\"a\">"+
+            "   <label>aa</label>"+
+            "   <definition>aaa</definition>"+
+            "  </value>"+
+            "  <value code=\"b\">"+
+            "   <label>bb</label>"+
+            "   <definition>bbb</definition>"+
+            "  </value>"+
+            "  <value code=\"c\">"+
+            "   <label>cc</label>"+
+            "   <definition>ccc</definition>"+
+            "  </value>"+
+            " </value-list>";
+    }
+    
+    static String quantitativeValuesExportCSV(){
+        return 
+            "Element:test-quantitative\n"+
+            "\"Code\",\"Label\",\"Definition\"\n"+
+            "\"a\",\"aa\",\"aaa\"\n"+
+            "\"b\",\"bb\",\"bbb\"\n"+
+            "\"c\",\"cc\",\"ccc\"\n\n";
     }
 
     static String uncommonDataElementWithFixedValuesExportXML(){

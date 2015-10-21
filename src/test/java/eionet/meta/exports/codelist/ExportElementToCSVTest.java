@@ -161,4 +161,28 @@ public class ExportElementToCSVTest {
         Assert.assertThat( "Code Item to CSV", actual,  CoreMatchers.is(expected) );
     }
     
+    @Test
+    public void quantitativeValues()  {
+        
+        List<eionet.meta.DataElement> elements = ExportMocks.quantitativeDataElement();
+        
+        //Type: ELM, TBL, DST
+        String objType = "ELM";
+        
+        //Mock Code Handler
+        Mockito.when( mockCodeValueHandler.getCodeItemList() ).thenReturn( ExportMocks.quantitativeValues());
+        Mockito.when( mockCodeValueHandler.getRelationshipNames() ).thenReturn(null);
+        
+        //Mock Code Handler Provider 
+        Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.QUANTITIVE )).thenReturn(mockCodeValueHandler);
+        
+        Codelist codelist = new Codelist(Codelist.ExportType.CSV, mockCodeValueHandlerProvider );
+        
+        String actual = codelist.write(elements, objType);
+        
+        String expected = ExportMocks.quantitativeValuesExportCSV();
+        
+        Assert.assertThat( "Code Item to CSV", actual,  CoreMatchers.is(expected) );
+    }
+    
 }

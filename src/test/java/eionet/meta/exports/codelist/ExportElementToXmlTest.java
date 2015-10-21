@@ -182,4 +182,38 @@ public class ExportElementToXmlTest {
 
         Assert.assertTrue("Exported XML is similar", diff.similar());
     }
+    
+    @Test
+    public void quantitativeValues() throws JsonProcessingException, SAXException, IOException {
+        
+        List<eionet.meta.DataElement> elements = ExportMocks.quantitativeDataElement();
+        
+        //Type: ELM, TBL, DST
+        String objType = "ELM";
+        
+        //Mock Code Handler
+        Mockito.when( mockCodeValueHandler.getCodeItemList() ).thenReturn( ExportMocks.quantitativeValues());
+        Mockito.when( mockCodeValueHandler.getRelationshipNames() ).thenReturn(null);
+        
+        //Mock Code Handler Provider 
+        Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.QUANTITIVE )).thenReturn(mockCodeValueHandler);
+        
+        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );
+        
+        String actual = codelist.write(elements, objType);
+        
+        String expected = ExportMocks.wrapXML( ExportMocks.quantitativeValuesExportXML());
+        
+        Diff diff = new Diff(expected, actual);
+        DetailedDiff detDiff = new DetailedDiff(diff);
+        List differences = detDiff.getAllDifferences();
+        for (Object object : differences) {
+            Difference difference = (Difference)object;
+            System.out.println("***********************");
+            System.out.println(difference);
+            System.out.println("***********************");
+        }
+
+        Assert.assertTrue("Exported XML is similar", diff.similar());
+    }
 }
