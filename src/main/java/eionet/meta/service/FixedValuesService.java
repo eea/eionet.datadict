@@ -13,12 +13,12 @@ import eionet.meta.dao.domain.SimpleAttribute;
  */
 public interface FixedValuesService {
     
-    FixedValue getFixedValue(DataElement owner, String value) throws FixedValueNotFoundException;
+    FixedValue getFixedValue(DataElement owner, int valueId) throws FixedValueNotFoundException;
     
-    FixedValue getFixedValue(SimpleAttribute owner, String value) throws FixedValueNotFoundException;
+    FixedValue getFixedValue(SimpleAttribute owner, int valueId) throws FixedValueNotFoundException;
     
-    void saveFixedValue(DataElement owner, String originalValue, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException;
+    void saveFixedValue(DataElement owner, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException;
     
-    void saveFixedValue(SimpleAttribute owner, String originalValue, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException;
+    void saveFixedValue(SimpleAttribute owner, FixedValue fixedValue) throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException;
     
 }

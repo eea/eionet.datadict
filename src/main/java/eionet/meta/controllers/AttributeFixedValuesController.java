@@ -60,7 +60,7 @@ public interface AttributeFixedValuesController {
      * </ul>
      * 
      * @param ownerAttributeId the attribute id.
-     * @param fixedValue the requested value.
+     * @param fixedValueId the id of the requested value.
      * 
      * @return a {@link CompoundDataObject} instance containing info about the 
      * fixed value, and the owner attribute.
@@ -69,7 +69,7 @@ public interface AttributeFixedValuesController {
      * @throws NotAFixedValueOwnerException if the attribute cannot be associated to fixed values.
      * @throws FixedValueNotFoundException if the requested fixed value is not found.
      */
-    CompoundDataObject getSingleValueModel(int ownerAttributeId, String fixedValue)
+    CompoundDataObject getSingleValueModel(int ownerAttributeId, int fixedValueId)
             throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException;
     
     /**
@@ -85,7 +85,7 @@ public interface AttributeFixedValuesController {
      * 
      * @param contextProvider an object that provides for application context info.
      * @param ownerAttributeId the attribute id.
-     * @param fixedValue the requested value.
+     * @param fixedValueId the id of the requested value.
      * 
      * @return a {@link CompoundDataObject} instance containing info about the 
      * fixed value, and the owner attribute.
@@ -95,7 +95,7 @@ public interface AttributeFixedValuesController {
      * @throws NotAFixedValueOwnerException if the attribute cannot be associated to fixed values.
      * @throws FixedValueNotFoundException if the requested fixed value is not found.
      */
-    CompoundDataObject getEditableSingleValueModel(AppContextProvider contextProvider, int ownerAttributeId, String fixedValue)
+    CompoundDataObject getEditableSingleValueModel(AppContextProvider contextProvider, int ownerAttributeId, int fixedValueId)
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException;
     
     /**
@@ -149,7 +149,6 @@ public interface AttributeFixedValuesController {
      * 
      * @param contextProvider an object that provides for application context info.
      * @param ownerAttributeId the attribute id.
-     * @param originalValue the value of the {@link FixedValue} instance before the modification.
      * @param fixedValue the modification payload.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
@@ -159,7 +158,7 @@ public interface AttributeFixedValuesController {
      * @throws EmptyValueException if the value property of the payload is blank.
      * @throws DuplicateResourceException if the updated/created value already exists.
      */
-    void saveFixedValue(AppContextProvider contextProvider, int ownerAttributeId, String originalValue, FixedValue fixedValue)
+    void saveFixedValue(AppContextProvider contextProvider, int ownerAttributeId, FixedValue fixedValue)
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException, 
                    EmptyValueException, DuplicateResourceException;
     
@@ -168,14 +167,14 @@ public interface AttributeFixedValuesController {
      * 
      * @param contextProvider an object that provides for application context info.
      * @param ownerAttributeId the attribute id.
-     * @param fixedValue the value to be deleted.
+     * @param fixedValueId the id of the value to be deleted.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
      * @throws FixedValueOwnerNotFoundException if the attribute cannot be found.
      * @throws NotAFixedValueOwnerException if the attribute cannot be associated to fixed values.
      * @throws FixedValueNotFoundException if the requested fixed value is not found.
      */
-    void deleteFixedValue(AppContextProvider contextProvider, int ownerAttributeId, String fixedValue)
+    void deleteFixedValue(AppContextProvider contextProvider, int ownerAttributeId, int fixedValueId)
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException;
     
     /**

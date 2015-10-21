@@ -56,7 +56,9 @@
                 </table>
 
                 <stripes:hidden name="ownerId" value="${actionBean.ownerId}" />
+                <%--
                 <stripes:hidden name="fixedValue" value="${actionBean.fixedValue}" />
+                --%>
                 <stripes:hidden name="viewModel.fixedValue.id" value="${actionBean.viewModel.fixedValue.id}" />
             </stripes:form>
         </c:if>

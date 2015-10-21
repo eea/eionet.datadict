@@ -315,15 +315,15 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testViewSingleValue() throws Exception {
         final int ownerId = 5;
-        final String value = "val";
+        final int valueId = 10;
         final boolean isEditView = false;
         final CompoundDataObject controllerResult = new CompoundDataObject();
         final FixedValuesViewModel viewModel = new FixedValuesViewModel();
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(ownerId, value)).thenReturn(controllerResult);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        when(controller.getSingleValueModel(ownerId, valueId)).thenReturn(controllerResult);
         doReturn(viewModel).when(viewModelBuilder).buildFromSingleValueModel(controllerResult, isEditView);
         trip.execute("view");
-        verify(controller, times(1)).getSingleValueModel(ownerId, value);
+        verify(controller, times(1)).getSingleValueModel(ownerId, valueId);
         verify(viewModelBuilder, times(1)).buildFromSingleValueModel(controllerResult, isEditView);
         DataElementFixedValuesActionBean actionBean = trip.getActionBean(DataElementFixedValuesActionBean.class);
         assertEquals(viewModel, actionBean.getViewModel());
@@ -333,10 +333,25 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToViewSingleValueBecauseOfMalformedOwnerId() throws Exception {
         final boolean isEditView = false;
-        final String value = "val";
-        MockRoundtrip trip = this.prepareRoundTrip("5a", value);
+        final int valueId = 10;
+        MockRoundtrip trip = this.prepareRoundTrip("5a", Integer.toString(valueId));
         trip.execute("view");
-        verify(controller, times(0)).getSingleValueModel(any(Integer.class), eq(value));
+        verify(controller, times(0)).getSingleValueModel(any(Integer.class), eq(valueId));
+        DataElementFixedValuesActionBean actionBean = trip.getActionBean(DataElementFixedValuesActionBean.class);
+        assertNull(actionBean.getViewModel());
+        verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INVALID_INPUT), any(String.class));
+        verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
+        assertTrue(trip.getRedirectUrl().contains("/error.action"));
+    }
+    
+    @Test
+    public void testFailToViewSingleValueBecauseOfMalformedValueId() throws Exception {
+        final boolean isEditView = false;
+        final int ownerId = 5;
+        final String valueId = "10a";
+        MockRoundtrip trip = this.prepareRoundTrip(Integer.toString(ownerId), valueId);
+        trip.execute("view");
+        verify(controller, times(0)).getSingleValueModel(eq(ownerId), any(Integer.class));
         DataElementFixedValuesActionBean actionBean = trip.getActionBean(DataElementFixedValuesActionBean.class);
         assertNull(actionBean.getViewModel());
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INVALID_INPUT), any(String.class));
@@ -347,12 +362,12 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToViewSingleValueBecauseOfOwnerNotFound() throws Exception {
         final int ownerId = 1005;
-        final String value = "val";
+        final int valueId = 10;
         final boolean isEditView = false;
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(eq(ownerId), eq(value))).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        when(controller.getSingleValueModel(eq(ownerId), eq(valueId))).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
         trip.execute("view");
-        verify(controller, times(1)).getSingleValueModel(eq(ownerId), eq(value));
+        verify(controller, times(1)).getSingleValueModel(eq(ownerId), eq(valueId));
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -361,12 +376,12 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToViewSingleValueBecauseOfNonOwner() throws Exception {
         final int ownerId = 17;
-        final String value = "val";
+        final int valueId = 10;
         final boolean isEditView = false;
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(ownerId, value)).thenThrow(NotAFixedValueOwnerException.class);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        when(controller.getSingleValueModel(ownerId, valueId)).thenThrow(NotAFixedValueOwnerException.class);
         trip.execute("view");
-        verify(controller, times(1)).getSingleValueModel(ownerId, value);
+        verify(controller, times(1)).getSingleValueModel(ownerId, valueId);
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -375,12 +390,12 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToViewSingleValueBecauseOfValueNotFound() throws Exception {
         final int ownerId = 17;
-        final String value = "val";
+        final int valueId = 10001;
         final boolean isEditView = false;
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getSingleValueModel(ownerId, value)).thenThrow(new FixedValueNotFoundException(value));
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        when(controller.getSingleValueModel(ownerId, valueId)).thenThrow(new FixedValueNotFoundException(Integer.toString(valueId)));
         trip.execute("view");
-        verify(controller, times(1)).getSingleValueModel(ownerId, value);
+        verify(controller, times(1)).getSingleValueModel(ownerId, valueId);
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -389,15 +404,15 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testEditSingleValue() throws Exception {
         final int ownerId = 5;
-        final String value = "val";
+        final int valueId = 10;
         final boolean isEditView = true;
         final CompoundDataObject controllerResult = new CompoundDataObject();
         final FixedValuesViewModel viewModel = new FixedValuesViewModel();
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenReturn(controllerResult);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId))).thenReturn(controllerResult);
         doReturn(viewModel).when(viewModelBuilder).buildFromSingleValueModel(controllerResult, isEditView);
         trip.execute("edit");
-        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         verify(viewModelBuilder, times(1)).buildFromSingleValueModel(controllerResult, isEditView);
         DataElementFixedValuesActionBean actionBean = trip.getActionBean(DataElementFixedValuesActionBean.class);
         assertEquals(viewModel, actionBean.getViewModel());
@@ -407,10 +422,25 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToEditSingleValueBecauseOfMalformedOwnerId() throws Exception {
         final boolean isEditView = true;
-        final String value = "val";
-        MockRoundtrip trip = this.prepareRoundTrip("5a", value);
+        final int valueId = 10;
+        MockRoundtrip trip = this.prepareRoundTrip("5a", Integer.toString(valueId));
         trip.execute("edit");
-        verify(controller, times(0)).getEditableSingleValueModel(any(AppContextProvider.class), any(Integer.class), eq(value));
+        verify(controller, times(0)).getEditableSingleValueModel(any(AppContextProvider.class), any(Integer.class), eq(valueId));
+        DataElementFixedValuesActionBean actionBean = trip.getActionBean(DataElementFixedValuesActionBean.class);
+        assertNull(actionBean.getViewModel());
+        verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INVALID_INPUT), any(String.class));
+        verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
+        assertTrue(trip.getRedirectUrl().contains("/error.action"));
+    }
+    
+    @Test
+    public void testFailToEditSingleValueBecauseOfMalformedValueId() throws Exception {
+        final boolean isEditView = true;
+        final int ownerId = 5;
+        final String valueId = "10a";
+        MockRoundtrip trip = this.prepareRoundTrip(Integer.toString(ownerId), valueId);
+        trip.execute("edit");
+        verify(controller, times(0)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), any(Integer.class));
         DataElementFixedValuesActionBean actionBean = trip.getActionBean(DataElementFixedValuesActionBean.class);
         assertNull(actionBean.getViewModel());
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INVALID_INPUT), any(String.class));
@@ -421,12 +451,12 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToEditSingleValueBecauseOfAuthentication() throws Exception {
         final int ownerId = 5;
-        final String value = "val";
+        final int valueId = 10;
         final boolean isEditView = true;
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(UserAuthenticationException.class);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId))).thenThrow(UserAuthenticationException.class);
         trip.execute("edit");
-        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -435,12 +465,12 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToEditSingleValueBecauseOfOwnerNotFound() throws Exception {
         final int ownerId = 1005;
-        final String value = "val";
+        final int valueId = 10;
         final boolean isEditView = true;
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId))).thenThrow(new FixedValueOwnerNotFoundException(ownerId));
         trip.execute("edit");
-        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -449,12 +479,12 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToEditSingleValueBecauseOfNonOwner() throws Exception {
         final int ownerId = 17;
-        final String value = "val";
+        final int valueId = 10;
         final boolean isEditView = true;
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(NotAFixedValueOwnerException.class);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId))).thenThrow(NotAFixedValueOwnerException.class);
         trip.execute("edit");
-        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -463,12 +493,12 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToEditSingleValueBecauseOfValueNotFound() throws Exception {
         final int ownerId = 17;
-        final String value = "val";
+        final int valueId = 10001;
         final boolean isEditView = true;
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(new FixedValueNotFoundException(value));
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId))).thenThrow(new FixedValueNotFoundException(Integer.toString(valueId)));
         trip.execute("edit");
-        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -477,12 +507,12 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToEditSingleValueBecauseOfOwnerNotEditable() throws Exception {
         final int ownerId = 17;
-        final String value = "val";
+        final int valueId = 10;
         final boolean isEditView = true;
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(DataElementFixedValuesController.FixedValueOwnerNotEditableException.class);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId))).thenThrow(DataElementFixedValuesController.FixedValueOwnerNotEditableException.class);
         trip.execute("edit");
-        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.FORBIDDEN_403), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -491,12 +521,12 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToEditSingleValueBecauseOfAuthorization() throws Exception {
         final int ownerId = 17;
-        final String value = "val";
+        final int valueId = 10;
         final boolean isEditView = true;
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value))).thenThrow(UserAuthorizationException.class);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        when(controller.getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId))).thenThrow(UserAuthorizationException.class);
         trip.execute("edit");
-        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).getEditableSingleValueModel(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         verify(viewModelBuilder, times(0)).buildFromSingleValueModel(any(CompoundDataObject.class), eq(isEditView));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.FORBIDDEN_403), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
@@ -505,20 +535,33 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testDeleteSingleValue() throws Exception {
         final int ownerId = 5;
-        final String value ="val";
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
+        final int valueId = 10;
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
         trip.execute("delete");
-        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         String redirectUrl = this.composeEditPageRedirectUrl(ownerId);
         assertTrue(trip.getRedirectUrl().endsWith(redirectUrl));
     }
     
     @Test
     public void testFailToDeleteSingleValueBecauseOfMalformedOwnerId() throws Exception {
-        final String value = "val";
-        MockRoundtrip trip = this.prepareRoundTrip("5a", value);
+        final int valueId = 10;
+        MockRoundtrip trip = this.prepareRoundTrip("5a", Integer.toString(valueId));
         trip.execute("delete");
-        verify(controller, times(0)).deleteFixedValue(any(AppContextProvider.class), any(Integer.class), eq(value));
+        verify(controller, times(0)).deleteFixedValue(any(AppContextProvider.class), any(Integer.class), eq(valueId));
+        DataElementFixedValuesActionBean actionBean = trip.getActionBean(DataElementFixedValuesActionBean.class);
+        assertNull(actionBean.getViewModel());
+        verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INVALID_INPUT), any(String.class));
+        assertTrue(trip.getRedirectUrl().contains("/error.action"));
+    }
+    
+    @Test
+    public void testFailToDeleteSingleValueBecauseOfMalformedValueId() throws Exception {
+        final int ownerId = 5;
+        final String valueId = "10a";
+        MockRoundtrip trip = this.prepareRoundTrip(Integer.toString(ownerId), valueId);
+        trip.execute("delete");
+        verify(controller, times(0)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), any(Integer.class));
         DataElementFixedValuesActionBean actionBean = trip.getActionBean(DataElementFixedValuesActionBean.class);
         assertNull(actionBean.getViewModel());
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INVALID_INPUT), any(String.class));
@@ -528,11 +571,11 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToDeleteSingleValueBecauseOfAuthentication() throws Exception {
         final int ownerId = 5;
-        final String value = "val";
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        doThrow(UserAuthenticationException.class).when(controller).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value));
+        final int valueId = 10;
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        doThrow(UserAuthenticationException.class).when(controller).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         trip.execute("delete");
-        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -540,11 +583,11 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToDeleteSingleValueBecauseOfOwnerNotFound() throws Exception {
         final int ownerId = 1005;
-        final String value = "val";
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        doThrow(new FixedValueOwnerNotFoundException(ownerId)).when(controller).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value));
+        final int valueId = 10;
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        doThrow(new FixedValueOwnerNotFoundException(ownerId)).when(controller).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         trip.execute("delete");
-        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -552,11 +595,11 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToDeleteSingleValueBecauseOfNonOwner() throws Exception {
         final int ownerId = 17;
-        final String value = "val";
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        doThrow(NotAFixedValueOwnerException.class).when(controller).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value));
+        final int valueId = 10;
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        doThrow(NotAFixedValueOwnerException.class).when(controller).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         trip.execute("delete");
-        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -564,11 +607,11 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToDeleteSingleValueBecauseOfOwnerNotEditable() throws Exception {
         final int ownerId = 15;
-        final String value = "val";
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        doThrow(DataElementFixedValuesController.FixedValueOwnerNotEditableException.class).when(controller).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value));
+        final int valueId = 10;
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        doThrow(DataElementFixedValuesController.FixedValueOwnerNotEditableException.class).when(controller).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         trip.execute("delete");
-        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.FORBIDDEN_403), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -576,11 +619,11 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToDeleteSingleValueBecauseOfValueNotFound() throws Exception {
         final int ownerId = 15;
-        final String value = "val";
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        doThrow(new FixedValueNotFoundException(value)).when(controller).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value));
+        final int valueId = 10001;
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        doThrow(new FixedValueNotFoundException(Integer.toString(valueId))).when(controller).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         trip.execute("delete");
-        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -588,11 +631,11 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToDeleteSingleValueBecauseOfAuthorization() throws Exception {
         final int ownerId = 15;
-        final String value = "val";
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value);
-        doThrow(UserAuthorizationException.class).when(controller).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value));
+        final int valueId = 10;
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, valueId);
+        doThrow(UserAuthorizationException.class).when(controller).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         trip.execute("delete");
-        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value));
+        verify(controller, times(1)).deleteFixedValue(any(AppContextProvider.class), eq(ownerId), eq(valueId));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.FORBIDDEN_403), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -695,23 +738,21 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testSaveValue() throws Exception {
         final int ownerId = 17;
-        final String value = "val";
-        final FixedValue savePayload = new FixedValue();
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value, savePayload);
+        final FixedValue savePayload = this.createSavePayload(10);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, savePayload);
         trip.execute("save");
         DataElementFixedValuesActionBean bean = trip.getActionBean(DataElementFixedValuesActionBean.class);
-        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), eq(bean.getViewModel().getFixedValue()));
+        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(bean.getViewModel().getFixedValue()));
         String redirectUrl = this.composeEditPageRedirectUrl(ownerId);
         assertTrue(trip.getRedirectUrl().endsWith(redirectUrl));
     }
     
     @Test
     public void testFailToSaveValueBecauseOfMalformedOwnerId() throws Exception {
-        final String value = "val";
-        final FixedValue savePayload = new FixedValue();
-        MockRoundtrip trip = this.prepareRoundTrip("5a", value, savePayload);
+        final FixedValue savePayload = this.createSavePayload(10);
+        MockRoundtrip trip = this.prepareRoundTrip("5a", savePayload);
         trip.execute("save");
-        verify(controller, times(0)).saveFixedValue(any(AppContextProvider.class), any(Integer.class), eq(value), any(FixedValue.class));
+        verify(controller, times(0)).saveFixedValue(any(AppContextProvider.class), any(Integer.class), any(FixedValue.class));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INVALID_INPUT), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -719,12 +760,11 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToSaveValueBecauseOfAuthentication() throws Exception {
         final int ownerId = 5;
-        final String value = "val";
-        final FixedValue savePayload = new FixedValue();
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value, savePayload);
-        doThrow(UserAuthenticationException.class).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        final FixedValue savePayload = this.createSavePayload(10);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, savePayload);
+        doThrow(UserAuthenticationException.class).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         trip.execute("save");
-        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -732,12 +772,11 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToSaveValueBecauseOfOwnerNotFound() throws Exception {
         final int ownerId = 5;
-        final String value = "val";
-        final FixedValue savePayload = new FixedValue();
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value, savePayload);
-        doThrow(new FixedValueOwnerNotFoundException(ownerId)).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        final FixedValue savePayload = this.createSavePayload(10);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, savePayload);
+        doThrow(new FixedValueOwnerNotFoundException(ownerId)).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         trip.execute("save");
-        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -745,12 +784,11 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToSaveValueBecauseOfNonOwner() throws Exception {
         final int ownerId = 5;
-        final String value = "val";
-        final FixedValue savePayload = new FixedValue();
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value, savePayload);
-        doThrow(NotAFixedValueOwnerException.class).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        final FixedValue savePayload = this.createSavePayload(10);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, savePayload);
+        doThrow(NotAFixedValueOwnerException.class).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         trip.execute("save");
-        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -758,12 +796,11 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToSaveValueBecauseOfOwnerNotEditable() throws Exception {
         final int ownerId = 5;
-        final String value = "val";
-        final FixedValue savePayload = new FixedValue();
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value, savePayload);
-        doThrow(DataElementFixedValuesController.FixedValueOwnerNotEditableException.class).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        final FixedValue savePayload = this.createSavePayload(10);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, savePayload);
+        doThrow(DataElementFixedValuesController.FixedValueOwnerNotEditableException.class).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         trip.execute("save");
-        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.FORBIDDEN_403), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -771,12 +808,11 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToSaveValueBecauseOfAuthorization() throws Exception {
         final int ownerId = 5;
-        final String value = "val";
-        final FixedValue savePayload = new FixedValue();
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value, savePayload);
-        doThrow(UserAuthorizationException.class).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        final FixedValue savePayload = this.createSavePayload(10);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, savePayload);
+        doThrow(UserAuthorizationException.class).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         trip.execute("save");
-        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.FORBIDDEN_403), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -784,12 +820,12 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToSaveValueBecauseOfValueNotFound() throws Exception {
         final int ownerId = 5;
-        final String value = "val";
-        final FixedValue savePayload = new FixedValue();
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value, savePayload);
-        doThrow(new FixedValueNotFoundException(value)).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        final int valueId = 10001;
+        final FixedValue savePayload = this.createSavePayload(valueId);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, savePayload);
+        doThrow(new FixedValueNotFoundException(Integer.toString(valueId))).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         trip.execute("save");
-        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -797,12 +833,12 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToSaveValueBecauseOfEmptyValue() throws Exception {
         final int ownerId = 5;
-        final String value = "val";
-        final FixedValue savePayload = new FixedValue();
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value, savePayload);
-        doThrow(EmptyValueException.class).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        final FixedValue savePayload = this.createSavePayload(10);
+        savePayload.setValue(null);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, savePayload);
+        doThrow(EmptyValueException.class).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         trip.execute("save");
-        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INVALID_INPUT), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
@@ -810,45 +846,46 @@ public class DataElementFixedValuesActionBeanTest {
     @Test
     public void testFailToSaveValueBecauseOfDuplicate() throws Exception {
         final int ownerId = 5;
-        final String value = "val";
-        final FixedValue savePayload = new FixedValue();
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, value, savePayload);
-        doThrow(new DuplicateResourceException(value)).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        final FixedValue savePayload = this.createSavePayload(10);
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId, savePayload);
+        doThrow(new DuplicateResourceException(savePayload.getValue())).when(controller).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         trip.execute("save");
-        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), eq(value), any(FixedValue.class));
+        verify(controller, times(1)).saveFixedValue(any(AppContextProvider.class), eq(ownerId), any(FixedValue.class));
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR), any(String.class));
         assertTrue(trip.getRedirectUrl().contains("/error.action"));
     }
     
     private MockRoundtrip prepareRoundTrip(int ownerId) {
-        return this.prepareRoundTrip(ownerId, null);
+        Integer valueId = null;
+        return this.prepareRoundTrip(ownerId, valueId);
     }
     
     private MockRoundtrip prepareRoundTrip(String ownerId) {
-        return this.prepareRoundTrip(ownerId, null);
+        return this.prepareRoundTrip(ownerId, (String) null);
     }
     
-    private MockRoundtrip prepareRoundTrip(int ownerId, String fixedValue) {
-        return this.prepareRoundTrip(Integer.toString(ownerId), fixedValue);
+    private MockRoundtrip prepareRoundTrip(int ownerId, Integer fixedValueId) {
+        return this.prepareRoundTrip(Integer.toString(ownerId), fixedValueId == null ? null : fixedValueId.toString());
     }
     
-    private MockRoundtrip prepareRoundTrip(String ownerId, String fixedValue) {
+    private MockRoundtrip prepareRoundTrip(String ownerId, String fixedValueId) {
         MockRoundtrip trip = this.createRoundtrip();
         trip.setParameter("ownerId", ownerId);
         
-        if (fixedValue != null) {
-            trip.setParameter("fixedValue", fixedValue);
+        if (fixedValueId != null) {
+            trip.setParameter("fixedValueId", fixedValueId);
         }
         
         return trip;
     }
     
-    private MockRoundtrip prepareRoundTrip(int ownerId, String fixedValue, FixedValue savePayload) {
-        return this.prepareRoundTrip(Integer.toString(ownerId), fixedValue, savePayload);
+    private MockRoundtrip prepareRoundTrip(int ownerId, FixedValue savePayload) {
+        return this.prepareRoundTrip(Integer.toString(ownerId), savePayload);
     }
     
-    private MockRoundtrip prepareRoundTrip(String ownerId, String fixedValue, FixedValue savePayload) {
-        MockRoundtrip trip = this.prepareRoundTrip(ownerId, fixedValue);
+    private MockRoundtrip prepareRoundTrip(String ownerId, FixedValue savePayload) {
+        MockRoundtrip trip = this.prepareRoundTrip(ownerId);
+        trip.setParameter("viewModel.fixedValue.id", Integer.toString(savePayload.getId()));
         trip.setParameter("viewModel.fixedValue.value", savePayload.getValue());
         trip.setParameter("viewModel.fixedValue.definition", savePayload.getDefinition());
         trip.setParameter("viewModel.fixedValue.shortDescription", savePayload.getShortDescription());
@@ -862,6 +899,14 @@ public class DataElementFixedValuesActionBeanTest {
         MockRoundtrip trip = new MockRoundtrip(ctx, DataElementFixedValuesActionBean.class);
         
         return trip;
+    }
+    
+    private FixedValue createSavePayload(int valueId) {
+        FixedValue payload = new FixedValue();
+        payload.setId(valueId);
+        payload.setValue("val");
+        
+        return payload;
     }
     
     private String composeEditPageRedirectUrl(int ownerId) {

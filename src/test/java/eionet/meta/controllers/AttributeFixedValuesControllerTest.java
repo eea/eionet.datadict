@@ -230,12 +230,12 @@ public class AttributeFixedValuesControllerTest {
     public void testGetSingleValueModel() 
             throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
-        final String fixedValue = "val";
+        final int fixedValueId = 10;
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
-        FixedValue expectedValue = this.createFixedValue(4, expectedOwner, fixedValue);
+        FixedValue expectedValue = this.createFixedValue(4, expectedOwner, "val");
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
-        when(fixedValuesService.getFixedValue(expectedOwner, fixedValue)).thenReturn(expectedValue);
-        CompoundDataObject result = this.controller.getSingleValueModel(ownerId, fixedValue);
+        when(fixedValuesService.getFixedValue(expectedOwner, fixedValueId)).thenReturn(expectedValue);
+        CompoundDataObject result = this.controller.getSingleValueModel(ownerId, fixedValueId);
         SimpleAttribute actualOwner = result.get(AttributeFixedValuesController.PROPERTY_OWNER_ATTRIBUTE);
         assertEquals(expectedOwner, actualOwner);
         FixedValue actualValue = result.get(AttributeFixedValuesController.PROPERTY_FIXED_VALUE);
@@ -247,7 +247,7 @@ public class AttributeFixedValuesControllerTest {
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
         when(attributeDao.getById(ownerId)).thenReturn(null);
-        this.controller.getSingleValueModel(ownerId, "val");
+        this.controller.getSingleValueModel(ownerId, 10);
     }
     
     @Test(expected = NotAFixedValueOwnerException.class)
@@ -256,31 +256,31 @@ public class AttributeFixedValuesControllerTest {
         final int ownerId = 5;
         SimpleAttribute expected = this.createNonOwner(ownerId);
         when(attributeDao.getById(ownerId)).thenReturn(expected);
-        this.controller.getSingleValueModel(ownerId, "val");
+        this.controller.getSingleValueModel(ownerId, 10);
     }
     
     @Test(expected = FixedValueNotFoundException.class)
     public void testFailToGetSingleValueModelBecauseOfValueNotFound() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
-        final String fixedValue = "val";
+        final int fixedValueId = 10;
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
-        when(fixedValuesService.getFixedValue(expectedOwner, fixedValue)).thenThrow(FixedValueNotFoundException.class);
-        this.controller.getSingleValueModel(ownerId, fixedValue);
+        when(fixedValuesService.getFixedValue(expectedOwner, fixedValueId)).thenThrow(new FixedValueNotFoundException(Integer.toString(fixedValueId)));
+        this.controller.getSingleValueModel(ownerId, fixedValueId);
     }
     
     @Test
     public void testGetEditableSingleValueModel() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
-        final String fixedValue = "val";
+        final int fixedValueId = 10;
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
-        FixedValue expectedValue = this.createFixedValue(4, expectedOwner, fixedValue);
+        FixedValue expectedValue = this.createFixedValue(4, expectedOwner, "val");
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
-        when(fixedValuesService.getFixedValue(expectedOwner, fixedValue)).thenReturn(expectedValue);
-        CompoundDataObject result = this.controller.getEditableSingleValueModel(contextProvider, ownerId, fixedValue);
+        when(fixedValuesService.getFixedValue(expectedOwner, fixedValueId)).thenReturn(expectedValue);
+        CompoundDataObject result = this.controller.getEditableSingleValueModel(contextProvider, ownerId, fixedValueId);
         SimpleAttribute actualOwner = result.get(AttributeFixedValuesController.PROPERTY_OWNER_ATTRIBUTE);
         assertEquals(expectedOwner, actualOwner);
         FixedValue actualValue = result.get(AttributeFixedValuesController.PROPERTY_FIXED_VALUE);
@@ -291,7 +291,7 @@ public class AttributeFixedValuesControllerTest {
     public void testFailToGetEditableSingleValueModelBecauseOfAuthentication() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         when(contextProvider.isUserAuthenticated()).thenReturn(false);
-        this.controller.getEditableSingleValueModel(contextProvider, 1, "val");
+        this.controller.getEditableSingleValueModel(contextProvider, 1, 10);
     }
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
@@ -300,7 +300,7 @@ public class AttributeFixedValuesControllerTest {
         final int ownerId = 5;
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(null);
-        this.controller.getEditableSingleValueModel(contextProvider, ownerId, "val");
+        this.controller.getEditableSingleValueModel(contextProvider, ownerId, 10);
     }
     
     @Test(expected = NotAFixedValueOwnerException.class)
@@ -310,28 +310,28 @@ public class AttributeFixedValuesControllerTest {
         SimpleAttribute expected = this.createNonOwner(ownerId);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expected);
-        this.controller.getEditableSingleValueModel(contextProvider, ownerId, "val");
+        this.controller.getEditableSingleValueModel(contextProvider, ownerId, 10);
     }
     
     @Test(expected = FixedValueNotFoundException.class)
     public void testFailToGetEditableSingleValueModelBecauseOfValueNotFound() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
-        final String fixedValue = "val";
+        final int fixedValueId = 10;
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
-        when(fixedValuesService.getFixedValue(expectedOwner, fixedValue)).thenThrow(FixedValueNotFoundException.class);
-        this.controller.getEditableSingleValueModel(contextProvider, ownerId, fixedValue);
+        when(fixedValuesService.getFixedValue(expectedOwner, fixedValueId)).thenThrow(new FixedValueNotFoundException(Integer.toString(fixedValueId)));
+        this.controller.getEditableSingleValueModel(contextProvider, ownerId, fixedValueId);
     }
     
     @Test
     public void testDeleteFixedValue() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
-        final String fixedValue = "val";
+        final int fixedValue = 10;
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
-        FixedValue expectedValue = this.createFixedValue(4, expectedOwner, fixedValue);
+        FixedValue expectedValue = this.createFixedValue(4, expectedOwner, "val");
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
         when(fixedValuesService.getFixedValue(expectedOwner, fixedValue)).thenReturn(expectedValue);
@@ -343,7 +343,7 @@ public class AttributeFixedValuesControllerTest {
     public void testFailToDeleteFixedValueBecauseOfAuthentication() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         when(contextProvider.isUserAuthenticated()).thenReturn(false);
-        this.controller.deleteFixedValue(contextProvider, 1, "val");
+        this.controller.deleteFixedValue(contextProvider, 1, 10);
     }
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
@@ -352,7 +352,7 @@ public class AttributeFixedValuesControllerTest {
         final int ownerId = 5;
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(null);
-        this.controller.deleteFixedValue(contextProvider, ownerId, "val");
+        this.controller.deleteFixedValue(contextProvider, ownerId, 10);
     }
     
     @Test(expected = NotAFixedValueOwnerException.class)
@@ -362,19 +362,19 @@ public class AttributeFixedValuesControllerTest {
         SimpleAttribute expected = this.createNonOwner(ownerId);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expected);
-        this.controller.deleteFixedValue(contextProvider, ownerId, "val");
+        this.controller.deleteFixedValue(contextProvider, ownerId, 10);
     }
     
     @Test(expected = FixedValueNotFoundException.class)
     public void testFailToDeleteFixedValueBecauseOfValueNotFound() 
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException {
         final int ownerId = 5;
-        final String fixedValue = "val";
+        final int fixedValueId = 10;
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
-        when(fixedValuesService.getFixedValue(expectedOwner, fixedValue)).thenThrow(FixedValueNotFoundException.class);
-        this.controller.deleteFixedValue(contextProvider, ownerId, fixedValue);
+        when(fixedValuesService.getFixedValue(expectedOwner, fixedValueId)).thenThrow(new FixedValueNotFoundException(Integer.toString(fixedValueId)));
+        this.controller.deleteFixedValue(contextProvider, ownerId, fixedValueId);
     }
     
     @Test
@@ -382,13 +382,12 @@ public class AttributeFixedValuesControllerTest {
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, 
                    FixedValueNotFoundException, NotAFixedValueOwnerException, EmptyValueException, DuplicateResourceException {
         final int ownerId = 5;
-        final String originalValue = "val";
-        final FixedValue fxv = this.createSaveInput(originalValue);
+        final FixedValue fxv = this.createSaveInput(10, "val");
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
-        this.controller.saveFixedValue(contextProvider, ownerId, originalValue, fxv);
-        verify(fixedValuesService, times(1)).saveFixedValue(expectedOwner, originalValue, fxv);
+        this.controller.saveFixedValue(contextProvider, ownerId, fxv);
+        verify(fixedValuesService, times(1)).saveFixedValue(expectedOwner, fxv);
     }
     
     @Test(expected = UserAuthenticationException.class)
@@ -396,7 +395,7 @@ public class AttributeFixedValuesControllerTest {
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, 
                    FixedValueNotFoundException, NotAFixedValueOwnerException, EmptyValueException, DuplicateResourceException {
         when(contextProvider.isUserAuthenticated()).thenReturn(false);
-        this.controller.saveFixedValue(contextProvider, 3, "val", this.createSaveInput("val"));
+        this.controller.saveFixedValue(contextProvider, 3, this.createSaveInput(10, "val"));
     }
     
     @Test(expected = FixedValueOwnerNotFoundException.class)
@@ -406,7 +405,7 @@ public class AttributeFixedValuesControllerTest {
         final int ownerId = 5;
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(null);
-        this.controller.saveFixedValue(contextProvider, ownerId, "val", this.createSaveInput("val"));
+        this.controller.saveFixedValue(contextProvider, ownerId, this.createSaveInput(10, "val"));
     }
     
     @Test(expected = NotAFixedValueOwnerException.class)
@@ -414,11 +413,10 @@ public class AttributeFixedValuesControllerTest {
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
                    FixedValueNotFoundException, EmptyValueException, DuplicateResourceException {
         final int ownerId = 5;
-        final String value = "val";
         SimpleAttribute expected = this.createNonOwner(ownerId);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expected);
-        this.controller.saveFixedValue(contextProvider, ownerId, value, this.createSaveInput(value));
+        this.controller.saveFixedValue(contextProvider, ownerId, this.createSaveInput(10, "val"));
     }
     
     @Test(expected = FixedValueNotFoundException.class)
@@ -426,13 +424,13 @@ public class AttributeFixedValuesControllerTest {
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, 
                    FixedValueNotFoundException, NotAFixedValueOwnerException, EmptyValueException, DuplicateResourceException {
         final int ownerId = 5;
-        final String originalValue = "val";
+        final int valueId = 10;
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
-        FixedValue inValue = this.createSaveInput(originalValue);
+        FixedValue inValue = this.createSaveInput(valueId, "val");
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
-        doThrow(FixedValueNotFoundException.class).when(fixedValuesService).saveFixedValue(expectedOwner, originalValue, inValue);
-        this.controller.saveFixedValue(contextProvider, ownerId, originalValue, inValue);
+        doThrow(new FixedValueNotFoundException(Integer.toString(valueId))).when(fixedValuesService).saveFixedValue(expectedOwner, inValue);
+        this.controller.saveFixedValue(contextProvider, ownerId, inValue);
     }
     
     @Test(expected = EmptyValueException.class)
@@ -440,13 +438,12 @@ public class AttributeFixedValuesControllerTest {
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, 
                    FixedValueNotFoundException, NotAFixedValueOwnerException, EmptyValueException, DuplicateResourceException {
         final int ownerId = 5;
-        final String originalValue = "val";
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
-        FixedValue inValue = this.createSaveInput(null);
+        FixedValue inValue = this.createSaveInput(10, null);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
-        doThrow(EmptyValueException.class).when(fixedValuesService).saveFixedValue(expectedOwner, originalValue, inValue);
-        this.controller.saveFixedValue(contextProvider, ownerId, originalValue, inValue);
+        doThrow(EmptyValueException.class).when(fixedValuesService).saveFixedValue(expectedOwner, inValue);
+        this.controller.saveFixedValue(contextProvider, ownerId, inValue);
     }
     
     @Test(expected = DuplicateResourceException.class)
@@ -454,13 +451,12 @@ public class AttributeFixedValuesControllerTest {
             throws UserAuthenticationException, FixedValueOwnerNotFoundException, 
                    FixedValueNotFoundException, NotAFixedValueOwnerException, EmptyValueException, DuplicateResourceException {
         final int ownerId = 5;
-        final String originalValue = "val";
         SimpleAttribute expectedOwner = this.createOwner(ownerId);
-        FixedValue inValue = this.createSaveInput("duplicate");
+        FixedValue inValue = this.createSaveInput(10, "duplicate");
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(attributeDao.getById(ownerId)).thenReturn(expectedOwner);
-        doThrow(DuplicateResourceException.class).when(fixedValuesService).saveFixedValue(expectedOwner, originalValue, inValue);
-        this.controller.saveFixedValue(contextProvider, ownerId, originalValue, inValue);
+        doThrow(new DuplicateResourceException(inValue.getValue())).when(fixedValuesService).saveFixedValue(expectedOwner, inValue);
+        this.controller.saveFixedValue(contextProvider, ownerId, inValue);
     }
     
     private SimpleAttribute createOwner(int id) {
@@ -488,8 +484,9 @@ public class AttributeFixedValuesControllerTest {
         return fxv;
     }
     
-    private FixedValue createSaveInput(String value) {
+    private FixedValue createSaveInput(int id, String value) {
         FixedValue payload = new FixedValue();
+        payload.setId(id);
         payload.setValue(value);
         
         return payload;
