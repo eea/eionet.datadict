@@ -10,8 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import eionet.meta.DDUser;
+import eionet.meta.exports.VocabularyOutputHelper;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
+import java.io.OutputStream;
 import javax.servlet.ServletConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -62,12 +64,18 @@ public class CodelistServlet extends HttpServlet {
             if (Util.isEmpty(format)) {
                 format = "csv";
             }
-
+            
+            // prepare output stream and writer
+            OutputStream out = res.getOutputStream();
+            osw = new OutputStreamWriter(out, "UTF-8");
+            
             //set export type
             Codelist.ExportType exportType = Codelist.ExportType.UNKNOWN;
             String filename = "codelist_"+id+"_"+type;
             // set response content type
             if (format.equals("csv")){
+                //Issue 29890
+                addBOM(out);
                 exportType = Codelist.ExportType.CSV;
                 res.setContentType("text/csv; charset=UTF-8");
                 res.setHeader("Content-Disposition", "attachment; filename="+filename+".csv");
@@ -80,8 +88,7 @@ public class CodelistServlet extends HttpServlet {
             else
                 throw new Exception("Unknown codelist format requested: " + format);
 
-            // prepare output stream and writer
-            osw = new OutputStreamWriter(res.getOutputStream(), "UTF-8");
+            
             writer = new PrintWriter(osw);
 
             // construct codelist writer
@@ -99,6 +106,21 @@ public class CodelistServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new ServletException(e.toString());
+        }
+    }
+    
+    /**
+     * Writes utf-8 BOM in the given writer.
+     *
+     * @param out
+     *            current outputstream
+     * @throws IOException
+     *             if connection fails
+     */
+    private static void addBOM(OutputStream out) throws IOException {
+        byte[] bomByteArray = VocabularyOutputHelper.getBomByteArray();
+        for (byte b : bomByteArray) {
+            out.write(b);
         }
     }
 
