@@ -350,7 +350,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                     continue;
                 }
 
-                PdfPTable codelist = PdfUtil.codelist(elm.getFixedValuesOrderedByValue());
+                PdfPTable codelist = PdfUtil.codelist(elm.getFixedValues());
                 if (codelist == null || codelist.size() == 0) {
                     continue;
                 }
@@ -447,7 +447,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             for (String elementId : commonElements.keySet()) {
                 DataElement elm = commonElements.get(elementId);
 
-                PdfPTable codelist = PdfUtil.codelist(elm.getFixedValuesOrderedByValue());
+                PdfPTable codelist = PdfUtil.codelist(elm.getFixedValues());
                 if (codelist == null || codelist.size() == 0) {
                     continue;
                 }
