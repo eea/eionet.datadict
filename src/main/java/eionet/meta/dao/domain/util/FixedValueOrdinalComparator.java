@@ -19,10 +19,10 @@ public class FixedValueOrdinalComparator {
     
     public FixedValueOrdinalComparator () { }
     
-    public ArrayList<FixedValue> getFixedValuesOrderedByCode(ArrayList unorderedFixedValuesVector) {
+    public ArrayList<FixedValue> getFixedValuesOrderedByCode(ArrayList unorderedFixedValues) {
         
 
-        Collections.sort(unorderedFixedValuesVector, new Comparator<FixedValue>() {
+        Collections.sort(unorderedFixedValues, new Comparator<FixedValue>() {
             private StringOrdinalComparator cmp = new StringOrdinalComparator();
 
             @Override
@@ -31,6 +31,6 @@ public class FixedValueOrdinalComparator {
             }
         });
 
-        return unorderedFixedValuesVector;
+        return unorderedFixedValues;
     }
 }
