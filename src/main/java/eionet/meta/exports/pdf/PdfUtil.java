@@ -666,7 +666,7 @@ public class PdfUtil {
         // add header row
 
         // value
-        PdfPCell cell = new PdfPCell(new Phrase("Value", Fonts.get(Fonts.TBL_HEADER)));
+        PdfPCell cell = new PdfPCell(new Phrase("Code", Fonts.get(Fonts.TBL_HEADER)));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setPaddingLeft(5);
         cell.setBorder(Rectangle.NO_BORDER);
@@ -684,7 +684,7 @@ public class PdfUtil {
         table.addCell(cell);
 
         // short description
-        cell = new PdfPCell(new Phrase("Short Description", Fonts.get(Fonts.TBL_HEADER)));
+        cell = new PdfPCell(new Phrase("Label", Fonts.get(Fonts.TBL_HEADER)));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setPaddingLeft(5);
         cell.setBorder(Rectangle.NO_BORDER);

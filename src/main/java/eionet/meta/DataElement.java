@@ -6,6 +6,9 @@ import org.apache.commons.lang.StringUtils;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.StringOrdinalComparator;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * The domain object for the record in DATAELEM table.
@@ -168,6 +171,21 @@ public class DataElement implements Comparable {
 
     public Vector getFixedValues() {
         return fixedValues;
+    }
+    
+    public Vector<FixedValue> getFixedValuesOrderedByValue() {
+        Vector<FixedValue> fixedValuesOrderedByValue = getFixedValues();
+        Collections.sort(fixedValuesOrderedByValue, new Comparator<FixedValue>() {
+
+            private StringOrdinalComparator cmp = new StringOrdinalComparator();
+
+            @Override
+            public int compare(FixedValue o1, FixedValue o2) {
+                return cmp.compare(o1.getValue(), o2.getValue());
+            }
+        });
+
+        return fixedValuesOrderedByValue;
     }
 
     public DElemAttribute getAttributeByShortName(String name) {
