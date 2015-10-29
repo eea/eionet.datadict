@@ -22,11 +22,10 @@ import eionet.meta.DElemAttribute;
 import eionet.meta.DataElement;
 import eionet.meta.DsTable;
 import eionet.meta.FixedValue;
-import eionet.meta.dao.domain.util.FixedValueOrdinalComparator;
+import eionet.meta.dao.domain.util.FixedValuesOrdinalComparator;
 import eionet.util.UnicodeEscapes;
 import eionet.util.Util;
 import java.util.Collections;
-import java.util.List;
 
 public class PdfUtil {
 
@@ -654,9 +653,7 @@ public class PdfUtil {
     public static PdfPTable codelist(Vector fxvs) throws Exception {
         
         ArrayList<FixedValue> fixedValuesOrderedByCode = new ArrayList<FixedValue>(fxvs);
-        
-        FixedValueOrdinalComparator fixedValueOrdinalComparator = new FixedValueOrdinalComparator();
-        fixedValueOrdinalComparator.getFixedValuesOrderedByCode(fixedValuesOrderedByCode);
+        Collections.sort(fixedValuesOrderedByCode, new FixedValuesOrdinalComparator());
         
         if (fixedValuesOrderedByCode == null || fixedValuesOrderedByCode.size() == 0) {
             return null;
