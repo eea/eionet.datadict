@@ -654,7 +654,6 @@ public class PdfUtil {
     public static PdfPTable codelist(Vector fxvs) throws Exception {
         
         ArrayList<FixedValue> fixedValuesOrderedByCode = new ArrayList<FixedValue>(fxvs);
-        //Collections.copy(fixedValuesOrderedByCode, fxvs);
         
         FixedValueOrdinalComparator fixedValueOrdinalComparator = new FixedValueOrdinalComparator();
         fixedValueOrdinalComparator.getFixedValuesOrderedByCode(fixedValuesOrderedByCode);
