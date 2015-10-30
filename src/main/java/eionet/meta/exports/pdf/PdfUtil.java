@@ -22,8 +22,10 @@ import eionet.meta.DElemAttribute;
 import eionet.meta.DataElement;
 import eionet.meta.DsTable;
 import eionet.meta.FixedValue;
+import eionet.meta.dao.domain.util.FixedValuesOrdinalComparator;
 import eionet.util.UnicodeEscapes;
 import eionet.util.Util;
+import java.util.Collections;
 
 public class PdfUtil {
 
@@ -649,8 +651,11 @@ public class PdfUtil {
     }
 
     public static PdfPTable codelist(Vector fxvs) throws Exception {
-
-        if (fxvs == null || fxvs.size() == 0) {
+        
+        ArrayList<FixedValue> fixedValuesOrderedByCode = new ArrayList<FixedValue>(fxvs);
+        Collections.sort(fixedValuesOrderedByCode, new FixedValuesOrdinalComparator());
+        
+        if (fixedValuesOrderedByCode == null || fixedValuesOrderedByCode.size() == 0) {
             return null;
         }
 
@@ -666,7 +671,7 @@ public class PdfUtil {
         // add header row
 
         // value
-        PdfPCell cell = new PdfPCell(new Phrase("Value", Fonts.get(Fonts.TBL_HEADER)));
+        PdfPCell cell = new PdfPCell(new Phrase("Code", Fonts.get(Fonts.TBL_HEADER)));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setPaddingLeft(5);
         cell.setBorder(Rectangle.NO_BORDER);
@@ -684,7 +689,7 @@ public class PdfUtil {
         table.addCell(cell);
 
         // short description
-        cell = new PdfPCell(new Phrase("Short Description", Fonts.get(Fonts.TBL_HEADER)));
+        cell = new PdfPCell(new Phrase("Label", Fonts.get(Fonts.TBL_HEADER)));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setPaddingLeft(5);
         cell.setBorder(Rectangle.NO_BORDER);
@@ -692,8 +697,8 @@ public class PdfUtil {
 
         table.addCell(cell);
 
-        for (int i = 0; i < fxvs.size(); i++) {
-            FixedValue fxv = (FixedValue) fxvs.get(i);
+        for (int i = 0; i < fixedValuesOrderedByCode.size(); i++) {
+            FixedValue fxv = (FixedValue) fixedValuesOrderedByCode.get(i);
             String val = fxv.getValue();
             if (Util.isEmpty(val)) {
                 continue;
@@ -711,7 +716,7 @@ public class PdfUtil {
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
 
-            if (i == fxvs.size() - 1) {
+            if (i == fixedValuesOrderedByCode.size() - 1) {
                 cell.setBorder(Rectangle.LEFT + Rectangle.BOTTOM);
             } else {
                 cell.setBorder(Rectangle.LEFT);
@@ -729,7 +734,7 @@ public class PdfUtil {
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
 
-            if (i == fxvs.size() - 1) {
+            if (i == fixedValuesOrderedByCode.size() - 1) {
                 cell.setBorder(Rectangle.LEFT + Rectangle.BOTTOM);
             } else {
                 cell.setBorder(Rectangle.LEFT);
@@ -747,7 +752,7 @@ public class PdfUtil {
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
 
-            if (i == fxvs.size() - 1) {
+            if (i == fixedValuesOrderedByCode.size() - 1) {
                 cell.setBorder(Rectangle.LEFT + Rectangle.RIGHT + Rectangle.BOTTOM);
             } else {
                 cell.setBorder(Rectangle.LEFT + Rectangle.RIGHT);
