@@ -1,5 +1,6 @@
 package eionet.meta.exports.codelist;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -93,7 +94,9 @@ public class CodelistServlet extends HttpServlet {
 
             // construct codelist writer
             Codelist codelist = new Codelist(exportType, codeValueHandlerProvider);
-
+            // since CodelistServlet is invoked through the use of the old url format 
+            // an ObjectMapper has to be created in order to use getLegacy() which appends the old names to elements
+            codelist.setObjectMapper(new ObjectMapper());
             // write & flush
             String listStr = codelist.write(id, type);
             
