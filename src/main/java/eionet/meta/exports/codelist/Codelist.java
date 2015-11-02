@@ -54,7 +54,7 @@ public class Codelist {
      * @return
      * @throws Exception 
      */
-    String write(String objID, String objType){
+    public String write(String objID, String objType){
         
         List<DataElement> elements = fetchElement(objID, objType);
 

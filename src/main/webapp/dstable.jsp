@@ -2,6 +2,9 @@
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.meta.service.data.*,eionet.util.sql.ConnectionUtil"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%> 
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
@@ -793,9 +796,12 @@ else if (mode.equals("add"))
                                                             Get the comma-separated codelists of this table
                                                         </td>
                                                         <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
-                                                            </a>
+                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.DownloadCodelistActionBean" event="codelist">
+                                                                    <stripes:param name="type" value="table"/>
+                                                                    <stripes:param name="id" value="<%=dsTable.getID()%>"/>
+                                                                    <stripes:param name="format" value="csv"/>
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
+                                                            </stripes:link>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -803,9 +809,12 @@ else if (mode.equals("add"))
                                                             Get the codelists of this table in XML format
                                                         </td>
                                                         <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL&amp;format=xml">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
-                                                            </a>
+                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.DownloadCodelistActionBean" event="codelist">
+                                                                    <stripes:param name="type" value="table"/>
+                                                                    <stripes:param name="id" value="<%=dsTable.getID()%>"/>
+                                                                    <stripes:param name="format" value="xml"/>
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
+                                                            </stripes:link>
                                                         </td>
                                                     </tr><%
                                                 }

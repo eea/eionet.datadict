@@ -1,5 +1,6 @@
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
+<%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private String currentUrl=null;%>
@@ -919,9 +920,12 @@ else if (mode.equals("add"))
                                                                 Get the comma-separated codelists of this dataset
                                                             </td>
                                                             <td>
-                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/CodelistServlet?id=<%=dataset.getID()%>&amp;type=DST">
+                                                                <stripes:link rel="nofollow" beanclass="eionet.web.action.DownloadCodelistActionBean" event="codelist">
+                                                                    <stripes:param name="type" value="dataset"/>
+                                                                    <stripes:param name="id" value="<%=dataset.getID()%>"/>
+                                                                    <stripes:param name="format" value="csv"/>
                                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
-                                                                </a>
+                                                                </stripes:link>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -929,9 +933,12 @@ else if (mode.equals("add"))
                                                                 Get the codelists of this dataset in XML format
                                                             </td>
                                                             <td>
-                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/CodelistServlet?id=<%=dataset.getID()%>&amp;type=DST&amp;format=xml">
+                                                                <stripes:link rel="nofollow" beanclass="eionet.web.action.DownloadCodelistActionBean" event="codelist">
+                                                                    <stripes:param name="type" value="dataset"/>
+                                                                    <stripes:param name="id" value="<%=dataset.getID()%>"/>
+                                                                    <stripes:param name="format" value="xml"/>
                                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
-                                                                </a>
+                                                                </stripes:link>
                                                             </td>
                                                         </tr><%
                                                     }
