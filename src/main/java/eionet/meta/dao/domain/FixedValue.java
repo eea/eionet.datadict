@@ -190,7 +190,7 @@ public class FixedValue {
      * @return 
      */
     public String getExportLabel(){
-        return StringUtils.isNotEmpty(shortDescription) ? shortDescription : definition;
+        return shortDescription;
     }
     
 }
