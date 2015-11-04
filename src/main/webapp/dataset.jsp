@@ -920,9 +920,9 @@ else if (mode.equals("add"))
                                                                 Get the comma-separated codelists of this dataset
                                                             </td>
                                                             <td>
-                                                                <stripes:link rel="nofollow" beanclass="eionet.web.action.DownloadCodelistActionBean" event="codelist">
-                                                                    <stripes:param name="type" value="dataset"/>
-                                                                    <stripes:param name="id" value="<%=dataset.getID()%>"/>
+                                                                <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
+                                                                    <stripes:param name="ownerType" value="datasets"/>
+                                                                    <stripes:param name="ownerId" value="<%=dataset.getID()%>"/>
                                                                     <stripes:param name="format" value="csv"/>
                                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
                                                                 </stripes:link>
@@ -933,9 +933,9 @@ else if (mode.equals("add"))
                                                                 Get the codelists of this dataset in XML format
                                                             </td>
                                                             <td>
-                                                                <stripes:link rel="nofollow" beanclass="eionet.web.action.DownloadCodelistActionBean" event="codelist">
-                                                                    <stripes:param name="type" value="dataset"/>
-                                                                    <stripes:param name="id" value="<%=dataset.getID()%>"/>
+                                                                <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
+                                                                    <stripes:param name="ownerType" value="datasets"/>
+                                                                    <stripes:param name="ownerId" value="<%=dataset.getID()%>"/>
                                                                     <stripes:param name="format" value="xml"/>
                                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
                                                                 </stripes:link>

@@ -74,7 +74,7 @@ public class ExportDatasetToXmlTest {
                 //Uncommon vocabulary concept with relationships element
                 .thenReturn( ExportMocks.vocabularyConceptRelationshipNames() );
         
-        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );;
+        Codelist codelist = new Codelist(ExportStatics.ExportType.XML, mockCodeValueHandlerProvider );;
         
         String actual = codelist.write(elements, objType);
        
@@ -111,7 +111,7 @@ public class ExportDatasetToXmlTest {
                 //Uncommon vocabulary concept with relationships element
                 .thenReturn( null );
         
-        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );;
+        Codelist codelist = new Codelist(ExportStatics.ExportType.XML, mockCodeValueHandlerProvider );;
         
         String actual = codelist.write(elements, objType);
 

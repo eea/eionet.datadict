@@ -1471,9 +1471,9 @@
                                                             Get the comma-separated codelist of this element
                                                         </td>
                                                         <td style="width:27%">
-                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.DownloadCodelistActionBean" event="codelist">
-                                                                    <stripes:param name="type" value="dataelement"/>
-                                                                    <stripes:param name="id" value="<%=dataElement.getID()%>"/>
+                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
+                                                                    <stripes:param name="ownerType" value="dataelements"/>
+                                                                    <stripes:param name="ownerId" value="<%=dataElement.getID()%>"/>
                                                                     <stripes:param name="format" value="csv"/>
                                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
                                                             </stripes:link>
@@ -1484,9 +1484,9 @@
                                                             Get the codelist of this element in XML format
                                                         </td>
                                                         <td style="width:27%">
-                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.DownloadCodelistActionBean" event="codelist">
-                                                                    <stripes:param name="type" value="dataelement"/>
-                                                                    <stripes:param name="id" value="<%=dataElement.getID()%>"/>
+                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
+                                                                    <stripes:param name="ownerType" value="dataelements"/>
+                                                                    <stripes:param name="ownerId" value="<%=dataElement.getID()%>"/>
                                                                     <stripes:param name="format" value="xml"/>
                                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
                                                             </stripes:link>

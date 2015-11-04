@@ -302,7 +302,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
-        <url-pattern>/download/*</url-pattern>
+        <url-pattern>/codelists/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
