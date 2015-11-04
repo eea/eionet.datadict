@@ -185,12 +185,5 @@ public class FixedValue {
     public void setDefaultValue(boolean defaultValue) {
         this.defaultValue = defaultValue;
     }
-    /**
-     * Label to display in the CSV/XML export
-     * @return 
-     */
-    public String getExportLabel(){
-        return shortDescription;
-    }
     
 }

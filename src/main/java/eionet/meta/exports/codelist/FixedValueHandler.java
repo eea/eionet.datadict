@@ -34,7 +34,7 @@ public class FixedValueHandler extends CodeValueHandler{
         List<CodeItem> items = new ArrayList<CodeItem>();
         
         for ( FixedValue value : values ){
-            items.add( new CodeItem( value.getValue(), value.getExportLabel(), value.getDefinition() ) );
+            items.add( new CodeItem( value.getValue(), value.getShortDescription(), value.getDefinition() ) );
         }
         
         return items;
