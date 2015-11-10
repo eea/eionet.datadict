@@ -2241,7 +2241,7 @@
                                                         %>
                                                             All accepted concepts from the vocabulary
                                                             <a href="<%=vocabularyUri%>"><%=vocabulary.getLabel()%></a>
-                                                            in the <em><%=vocabulary.getFolderName()%></em> set
+                                                            in the <em><%=vocabulary.getFolderName()%></em> set <br/> (Code = Notation)
                                                         <%
                                                             if (vocabularyEditing) {
                                                         %>
