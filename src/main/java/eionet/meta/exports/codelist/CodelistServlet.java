@@ -1,5 +1,6 @@
 package eionet.meta.exports.codelist;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -70,18 +71,18 @@ public class CodelistServlet extends HttpServlet {
             osw = new OutputStreamWriter(out, "UTF-8");
             
             //set export type
-            Codelist.ExportType exportType = Codelist.ExportType.UNKNOWN;
+            ExportStatics.ExportType exportType = ExportStatics.ExportType.UNKNOWN;
             String filename = "codelist_"+id+"_"+type;
             // set response content type
             if (format.equals("csv")){
                 //Issue 29890
                 addBOM(out);
-                exportType = Codelist.ExportType.CSV;
+                exportType = ExportStatics.ExportType.CSV;
                 res.setContentType("text/csv; charset=UTF-8");
                 res.setHeader("Content-Disposition", "attachment; filename="+filename+".csv");
             }
             else if (format.equals("xml")){
-                exportType = Codelist.ExportType.XML;
+                exportType = ExportStatics.ExportType.XML;
                 res.setContentType("text/xml; charset=UTF-8");
                 res.setHeader("Content-Disposition", "attachment; filename="+filename+".xml");
             }
@@ -93,7 +94,9 @@ public class CodelistServlet extends HttpServlet {
 
             // construct codelist writer
             Codelist codelist = new Codelist(exportType, codeValueHandlerProvider);
-
+            // since CodelistServlet is invoked through the use of the old url format 
+            // an ObjectMapper has to be created in order to use getLegacy() which appends the old names to elements
+            codelist.setObjectMapper(new ObjectMapper());
             // write & flush
             String listStr = codelist.write(id, type);
             

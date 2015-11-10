@@ -25,7 +25,7 @@ public class ExportElement {
     
     private static final Logger LOGGER = Logger.getLogger(ExportElement.class);
     
-    @JsonIgnore
+    //@JsonIgnore
     private ObjectMapper mapper;
     
     @JsonIgnore
@@ -80,11 +80,14 @@ public class ExportElement {
                 //use default mapper
                 mapper = DDObjectMapperProvider.get();
             }
+            else {
+                //use legacy mapper
+                mapper = DDObjectMapperProvider.getLegacy();
+            }
             return mapper.writeValueAsString( this );
         } catch ( JsonProcessingException jpe ){
             LOGGER.error("Failed to export element to XML", jpe);
             return "";
         }
-        
     }
 }

@@ -3,6 +3,7 @@
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.dao.domain.VocabularyFolder,eionet.util.*,eionet.util.sql.ConnectionUtil,java.io.*,javax.servlet.http.HttpUtils"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final int MAX_CELL_LEN = 40;%>
@@ -1470,9 +1471,12 @@
                                                             Get the comma-separated codelist of this element
                                                         </td>
                                                         <td style="width:27%">
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
-                                                            </a>
+                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
+                                                                    <stripes:param name="ownerType" value="dataelements"/>
+                                                                    <stripes:param name="ownerId" value="<%=dataElement.getID()%>"/>
+                                                                    <stripes:param name="format" value="csv"/>
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
+                                                            </stripes:link>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -1480,9 +1484,12 @@
                                                             Get the codelist of this element in XML format
                                                         </td>
                                                         <td style="width:27%">
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM&amp;format=xml">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
-                                                            </a>
+                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
+                                                                    <stripes:param name="ownerType" value="dataelements"/>
+                                                                    <stripes:param name="ownerId" value="<%=dataElement.getID()%>"/>
+                                                                    <stripes:param name="format" value="xml"/>
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
+                                                            </stripes:link>
                                                         </td>
                                                     </tr><%
                                                         }
@@ -2234,7 +2241,7 @@
                                                         %>
                                                             All accepted concepts from the vocabulary
                                                             <a href="<%=vocabularyUri%>"><%=vocabulary.getLabel()%></a>
-                                                            in the <em><%=vocabulary.getFolderName()%></em> set <br/> (Code = Notation)
+                                                            in the <em><%=vocabulary.getFolderName()%></em> set
                                                         <%
                                                             if (vocabularyEditing) {
                                                         %>

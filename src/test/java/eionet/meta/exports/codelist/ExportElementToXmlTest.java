@@ -61,7 +61,7 @@ public class ExportElementToXmlTest {
         //Mock Code Handler Provider 
         Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.VOCABULARY )).thenReturn(mockCodeValueHandler);
         
-        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );
+        Codelist codelist = new Codelist(ExportStatics.ExportType.XML, mockCodeValueHandlerProvider );
         
         String actual = codelist.write(elements, objType);
   
@@ -94,7 +94,7 @@ public class ExportElementToXmlTest {
         //Mock Code Handler Provider 
         Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.VOCABULARY )).thenReturn(mockCodeValueHandler);
         
-        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );
+        Codelist codelist = new Codelist(ExportStatics.ExportType.XML, mockCodeValueHandlerProvider );
         
         String actual = codelist.write(elements, objType);
 
@@ -120,7 +120,7 @@ public class ExportElementToXmlTest {
         //Mock Code Handler Provider 
         Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.VOCABULARY )).thenReturn(mockCodeValueHandler);
         
-        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );
+        Codelist codelist = new Codelist(ExportStatics.ExportType.XML, mockCodeValueHandlerProvider );
         
         String actual = codelist.write(elements, objType);
        
@@ -146,7 +146,7 @@ public class ExportElementToXmlTest {
         //Mock Code Handler Provider 
         Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.FIXED )).thenReturn(mockCodeValueHandler);
         
-        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );
+        Codelist codelist = new Codelist(ExportStatics.ExportType.XML, mockCodeValueHandlerProvider );
         
         String actual = codelist.write(elements, objType);
         
@@ -172,7 +172,7 @@ public class ExportElementToXmlTest {
         //Mock Code Handler Provider 
         Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.FIXED )).thenReturn(mockCodeValueHandler);
         
-        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );
+        Codelist codelist = new Codelist(ExportStatics.ExportType.XML, mockCodeValueHandlerProvider );
         
         String actual = codelist.write(elements, objType);
         
@@ -198,7 +198,7 @@ public class ExportElementToXmlTest {
         //Mock Code Handler Provider 
         Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.QUANTITIVE )).thenReturn(mockCodeValueHandler);
         
-        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );
+        Codelist codelist = new Codelist(ExportStatics.ExportType.XML, mockCodeValueHandlerProvider );
         
         String actual = codelist.write(elements, objType);
         

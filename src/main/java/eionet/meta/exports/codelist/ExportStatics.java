@@ -16,10 +16,16 @@ public class ExportStatics {
     
     protected ExportStatics(){}
     
-    static enum ObjectType{
+    public static enum ObjectType{
         ELM,
         TBL,
         DST;
+    }
+    
+    public static enum ExportType{
+        UNKNOWN,
+        CSV,
+        XML;
     }
     
     static final String WRAPPER = "\"";

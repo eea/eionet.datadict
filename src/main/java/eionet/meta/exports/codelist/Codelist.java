@@ -11,6 +11,7 @@ import eionet.meta.exports.codelist.ExportStatics.ObjectType;
 import java.util.ArrayList;
 import java.util.List;
 import eionet.meta.dao.domain.DataElement.DataElementValueType;
+import eionet.meta.exports.codelist.ExportStatics.ExportType;
 import eionet.util.sql.ConnectionUtil;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,12 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author jaanus
  */
 public class Codelist {
-
-    public static enum ExportType{
-        UNKNOWN,
-        CSV,
-        XML;
-    }
     
     private static final Logger LOGGER = Logger.getLogger(Codelist.class);
     
@@ -54,7 +49,7 @@ public class Codelist {
      * @return
      * @throws Exception 
      */
-    String write(String objID, String objType){
+    public String write(String objID, String objType){
         
         List<DataElement> elements = fetchElement(objID, objType);
 

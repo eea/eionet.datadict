@@ -70,7 +70,7 @@ public class ExportDatasetToCSVTest {
                 .thenReturn( ExportMocks.vocabularyConceptRelationshipNames() );
         
         
-        Codelist codelist = new Codelist(Codelist.ExportType.CSV, mockCodeValueHandlerProvider );
+        Codelist codelist = new Codelist(ExportStatics.ExportType.CSV, mockCodeValueHandlerProvider );
         
         String actual = codelist.write(elements, objType);
         
@@ -107,7 +107,7 @@ public class ExportDatasetToCSVTest {
                 .thenReturn( null );
         
         
-        Codelist codelist = new Codelist(Codelist.ExportType.CSV, mockCodeValueHandlerProvider );
+        Codelist codelist = new Codelist(ExportStatics.ExportType.CSV, mockCodeValueHandlerProvider );
         
         String actual = codelist.write(elements, objType);
         

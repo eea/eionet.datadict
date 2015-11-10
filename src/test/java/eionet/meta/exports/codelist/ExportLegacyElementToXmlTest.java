@@ -68,7 +68,7 @@ public class ExportLegacyElementToXmlTest {
         //Mock Code Handler Provider 
         Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.QUANTITIVE )).thenReturn(mockCodeValueHandler);
         
-        Codelist codelist = new Codelist(Codelist.ExportType.XML, mockCodeValueHandlerProvider );
+        Codelist codelist = new Codelist(ExportStatics.ExportType.XML, mockCodeValueHandlerProvider );
         codelist.setObjectMapper( mapper );
         
         String actual = codelist.write(elements, objType);
