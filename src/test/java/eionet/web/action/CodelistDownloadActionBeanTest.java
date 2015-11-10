@@ -14,6 +14,7 @@ import eionet.web.action.CodelistDownloadActionBean.CodelistFormatToContentTypeC
 import eionet.web.action.CodelistDownloadActionBean.CodelistFormatToExportTypeConverter;
 import eionet.web.action.CodelistDownloadActionBean.CodelistFormatToFileExtensionConverter;
 import eionet.web.action.CodelistDownloadActionBean.CodelistOwnerTypeConverter;
+import eionet.web.action.ErrorActionBean.ErrorType;
 import eionet.web.action.di.ActionBeanDependencyInjectionInterceptor;
 import eionet.web.action.di.ActionBeanDependencyInjector;
 import eionet.web.action.uiservices.ErrorPageService;
@@ -111,17 +112,18 @@ public class CodelistDownloadActionBeanTest {
         final String ownerId = "8";
         final String format = "csv";
         final byte[] exportReturned = new byte[]{1, 2};
-        when(codelistPrinter.exportCodelist(ownerId, ObjectType.DST, ExportType.CSV)).thenReturn(exportReturned);
+        when(codelistPrinter.exportCodelist(any(String.class), any(ObjectType.class), any(ExportType.class))).thenReturn(exportReturned);
 
         MockRoundtrip trip = this.prepareRoundtrip(ownerType, ownerId, format);
         trip.execute();
 
         verify(codelistOwnerTypeConverter, times(1)).convert(ownerType);
-        verify(errorPageService, times(0)).createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, format);
         verify(codelistFormatToExportTypeConverter, times(1)).convert(format);
-        verify(errorPageService, times(0)).createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, format);
         verify(codelistContentTypeConverter, times(1)).convert(format);
         verify(codelistPrinter, times(1)).exportCodelist(ownerId, ObjectType.DST, ExportType.CSV);
+
+        // verify that no Error Resolution of any type was returned
+        verify(errorPageService, times(0)).createErrorResolution(any(ErrorType.class), any(String.class));
 
         assertEquals("text/csv; charset=UTF-8", trip.getResponse().getContentType());
     }
@@ -133,7 +135,7 @@ public class CodelistDownloadActionBeanTest {
         final String ownerId = "10";
         final String format = "xml";
         final byte[] exportReturned = new byte[10];
-        when(codelistPrinter.exportCodelist(ownerId, ObjectType.ELM, ExportType.XML)).thenReturn(exportReturned);
+        when(codelistPrinter.exportCodelist(any(String.class), any(ObjectType.class), any(ExportType.class))).thenReturn(exportReturned);
 
         MockRoundtrip trip = this.prepareRoundtrip(ownerType, ownerId, format);
         trip.execute();
@@ -142,7 +144,9 @@ public class CodelistDownloadActionBeanTest {
         verify(codelistFormatToExportTypeConverter, times(1)).convert(format);
         verify(codelistContentTypeConverter, times(1)).convert(format);
         verify(codelistPrinter, times(1)).exportCodelist(ownerId, ObjectType.ELM, ExportType.XML);
-        verify(errorPageService, times(0)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
+
+        // verify that no Error Resolution of any type was returned
+        verify(errorPageService, times(0)).createErrorResolution(any(ErrorType.class), any(String.class));
 
         assertEquals("text/xml; charset=UTF-8", trip.getResponse().getContentType());
     }
@@ -159,7 +163,9 @@ public class CodelistDownloadActionBeanTest {
         verify(codelistOwnerTypeConverter, times(1)).convert(ownerType);
         verify(codelistFormatToExportTypeConverter, times(1)).convert(format);
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
-        verify(codelistPrinter, times(0)).exportCodelist(ownerId, ObjectType.DST, ExportType.UNKNOWN);
+
+        // verify that no codelist was exported in any type
+        verify(codelistPrinter, times(0)).exportCodelist(any(String.class), any(ObjectType.class), any(ExportType.class));
     }
 
     @Test
@@ -174,22 +180,24 @@ public class CodelistDownloadActionBeanTest {
         verify(codelistOwnerTypeConverter, times(1)).convert(ownerType);
         verify(errorPageService, times(1)).createErrorResolution(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class));
         verify(codelistFormatToExportTypeConverter, times(0)).convert(format);
-        verify(codelistPrinter, times(0)).exportCodelist(ownerId, null, ExportType.CSV);
+
+        // verify that no codelist was exported in any type
+        verify(codelistPrinter, times(0)).exportCodelist(any(String.class), any(ObjectType.class), any(ExportType.class));
     }
 
     @Test
     public void testTypesOfOwnerConversion() {
         ObjectType expectedType = null;
         ObjectType actualType = null;
-        
+
         expectedType = ExportStatics.ObjectType.DST;
         actualType = codelistOwnerTypeConverter.convert("datasets");
         assertEquals(expectedType, actualType);
-        
+
         expectedType = ExportStatics.ObjectType.TBL;
         actualType = codelistOwnerTypeConverter.convert("tables");
         assertEquals(expectedType, actualType);
-        
+
         expectedType = ExportStatics.ObjectType.ELM;
         actualType = codelistOwnerTypeConverter.convert("dataelements");
         assertEquals(expectedType, actualType);
@@ -199,7 +207,7 @@ public class CodelistDownloadActionBeanTest {
     public void testOwnerTypeIsUknownOrMisspelled() {
         ObjectType expectedType = null;
         ObjectType actualValue;
-        
+
         // Unknown or null owner types
         actualValue = codelistOwnerTypeConverter.convert("someUnknownType");
         assertEquals(expectedType, actualValue);
@@ -222,10 +230,10 @@ public class CodelistDownloadActionBeanTest {
     public void testCodelistExportedToDifferentTypes() {
         String actualExport = codelistContentTypeConverter.convert("xml");
         assertEquals(codelistContentTypeConverter.convertXml(), actualExport);
-        
+
         actualExport = codelistContentTypeConverter.convert("csv");
         assertEquals(codelistContentTypeConverter.convertCsv(), actualExport);
-        
+
         actualExport = codelistContentTypeConverter.convert("asdf");
         assertEquals(codelistContentTypeConverter.convertUnknown(), actualExport);
     }
@@ -311,9 +319,5 @@ public class CodelistDownloadActionBeanTest {
             trip.setParameter("format", format);
         }
         return trip;
-    }
-
-    private String composeDownloadPageUrl(String ownerType, String ownerId, String format) {
-        return String.format("/codelists/%s/%s/%s", ownerType, ownerId, format);
     }
 }
