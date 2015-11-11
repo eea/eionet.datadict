@@ -13,16 +13,16 @@ import org.apache.commons.lang.StringEscapeUtils;
  * @author Lena KARGIOTI eka@eworx.gr
  */
 public class ExportStatics {
-    
-    protected ExportStatics(){}
-    
-    public static enum ObjectType{
+
+    protected ExportStatics() {}
+
+    public static enum ObjectType {
         ELM,
         TBL,
         DST;
     }
-    
-    public static enum ExportType{
+
+    public static enum ExportType {
         UNKNOWN,
         CSV,
         XML;
@@ -33,7 +33,7 @@ public class ExportStatics {
     static final String CSV_HEADER_DATASET = "Dataset";
     static final String CSV_HEADER_TABLE = "Table";
     static final String CSV_HEADER_ELEMENT = "Element";
-    static final String CSV_HEADER_FIXED = "Fixed";
+    static final String CSV_HEADER_TYPE = "Type";
     static final String CSV_HEADER_CODEVALUE = "\"Code\",\"Label\",\"Definition\"";
     static final String CSV_DELIMITER_COMMA = ",";
     static final String CSV_DELIMITER_SPACE = " ";
@@ -42,28 +42,29 @@ public class ExportStatics {
     
     static final String DD_NAMESPACE = "http://dd.eionet.europa.eu";
     static final String XSI_NAMESPACE = "http://www.w3.org/2001/XMLSchema-instance";
-    
-    static String wrap( String str ){
-        return wrap( str, WRAPPER );
+
+    static String wrap(String str) {
+        return wrap(str, WRAPPER);
     }
-    static String wrap( String str, String wrapper ){
-        if ( str == null )
+
+    static String wrap(String str, String wrapper) {
+        if (str == null)
             return str;
-        
-        if ( wrapper == null )
+
+        if (wrapper == null)
             return str;
+
+        String escaped = StringEscapeUtils.escapeCsv(str);
         
-        String escaped = StringEscapeUtils.escapeCsv( str );
-        
-        //if not already enclosed in wrapper, enclose
-        if ( escaped.startsWith(wrapper) && escaped.endsWith(wrapper) ){
+        // if not already enclosed in wrapper, enclose
+        if (escaped.startsWith(wrapper) && escaped.endsWith(wrapper)) {
             return escaped;
         }
+
         StringBuilder bld = new StringBuilder().append(wrapper);
         bld.append(str);
         bld.append(wrapper);
         return bld.toString();
-        
     }
-    
+
 }

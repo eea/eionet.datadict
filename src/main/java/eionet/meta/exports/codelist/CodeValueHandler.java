@@ -14,20 +14,19 @@ import java.util.List;
  * @author Lena KARGIOTI eka@eworx.gr
  */
 public abstract class CodeValueHandler {
-    
+
     final IDataElementDAO elementDAO;
-    
     DataElement element;
 
-    public CodeValueHandler( IDataElementDAO elementDAO ) {
+    public CodeValueHandler(IDataElementDAO elementDAO) {
         this.elementDAO = elementDAO;
     }
-    
-    void setDataElement( DataElement element ){
+
+    void setDataElement(DataElement element) {
         this.element = element;
     }
 
     abstract List<CodeItem> getCodeItemList();
-
     abstract List<String> getRelationshipNames();
+
 }

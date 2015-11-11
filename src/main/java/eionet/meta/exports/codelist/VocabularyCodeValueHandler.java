@@ -22,99 +22,99 @@ import org.apache.log4j.Logger;
  * @author Lena KARGIOTI eka@eworx.gr
  */
 public class VocabularyCodeValueHandler extends CodeValueHandler {
-    
+
     private static final Logger LOGGER = Logger.getLogger(VocabularyCodeValueHandler.class);
-    
+
     private final VocabularyRelationshipService vocabularyRelationshipService;
-    
     private final IVocabularyConceptDAO vocabularyConceptDAO;
-    
     private List<String> relationshipNames;
-    
-    public VocabularyCodeValueHandler( VocabularyRelationshipService vocabularyRelationshipService, IVocabularyConceptDAO vocabularyConceptDAO, IDataElementDAO elementDAO ){
-        super( elementDAO );
+
+    public VocabularyCodeValueHandler(VocabularyRelationshipService vocabularyRelationshipService, IVocabularyConceptDAO vocabularyConceptDAO, IDataElementDAO elementDAO) {
+        super(elementDAO);
         this.vocabularyRelationshipService = vocabularyRelationshipService;
         this.vocabularyConceptDAO = vocabularyConceptDAO;
     }
+
     @Override
     List<CodeItem> getCodeItemList() {
-        if ( this.element == null ){
+        if (this.element == null) {
             throw new UnsupportedOperationException("Data element is not set");
         }
+
         Integer vocabularyID = this.element.getVocabularyId();
-        
-        if ( vocabularyID == null ){
-            LOGGER.info("Vocabulary Element identified by '"+this.element.getIdentifier()+"' is not bound to any vocabulary. Skipping...");
+        if (vocabularyID == null) {
+            LOGGER.info("Vocabulary Element identified by '" + this.element.getIdentifier() + "' is not bound to any vocabulary. Skipping...");
             return Collections.emptyList();
         }
-        
+
         List<VocabularyRelationship> relationships = this.vocabularyRelationshipService.getVocabularyRelationships(vocabularyID);
 
-        //Define extra headers
-        this.addRelationshipNames( relationships );
-        
+        // Define extra headers
+        this.addRelationshipNames(relationships);
+
         List<VocabularyConcept> concepts = this.vocabularyConceptDAO.getVocabularyConcepts( vocabularyID );
 
         List<CodeItem> items = new ArrayList<CodeItem>();
-        
+
         for (VocabularyConcept concept : concepts) {
-            if ( concept.getStatus().isValid() ){
+            if (concept.getStatus().isValid()) {
                 int conceptID = concept.getId();
                 String code = concept.getNotation();
                 String label = concept.getLabel();
                 String definition = concept.getDefinition();
-                
-                CodeItem item = new CodeItem( code, label, definition );
-                
-                //Set the related concepts
+
+                CodeItem item = new CodeItem(code, label, definition);
+
+                // Set the related concepts
                 Map<DataElement, Map<VocabularyFolder, List<VocabularyConcept>>> relatedConcepts = this.vocabularyRelationshipService.getRelatedVocabularyConcepts(conceptID, relationships);
-                //Iterate Relationships
-                for ( Map.Entry<DataElement, Map<VocabularyFolder, List<VocabularyConcept>>> relationshipEntry : relatedConcepts.entrySet() ){
-                    
+                
+                // Iterate Relationships
+                for (Map.Entry<DataElement, Map<VocabularyFolder, List<VocabularyConcept>>> relationshipEntry : relatedConcepts.entrySet()) {
                     String relationshipAttribute = relationshipEntry.getKey().getName();
-                    
-                    //Iterate Vocabularies and their Concepts
-                    for ( Map.Entry<VocabularyFolder, List<VocabularyConcept>> entry : relationshipEntry.getValue().entrySet() ){
-                        
+
+                    // Iterate Vocabularies and their Concepts
+                    for (Map.Entry<VocabularyFolder, List<VocabularyConcept>> entry : relationshipEntry.getValue().entrySet()) {
                         VocabularyFolder relVocabulary = entry.getKey();
                         String relVocSetName = relVocabulary.getFolderLabel();
                         String relVocName = relVocabulary.getLabel();
                         
                         List<CodeItem> relCodeItems = new ArrayList<CodeItem>();
-                        //Iterate Vocabulary Concepts
-                        for( VocabularyConcept relConcept : entry.getValue() ){
+                        // Iterate Vocabulary Concepts
+                        for (VocabularyConcept relConcept : entry.getValue()) {
                             CodeItem relatedItem = new CodeItem( relConcept.getNotation(), relConcept.getLabel(), relConcept.getDefinition() );
                             relCodeItems.add(relatedItem);
                         }
-                        
+
                         RelationshipInfo info = new RelationshipInfo(relationshipAttribute, relVocName, relVocSetName, relCodeItems);
-                        
-                        //Augment the CodeItem with relationship information
+
+                        // Augment the CodeItem with relationship information
                         item.addRelationship(info);
                     }   
                 }
-                items.add( item );
+                items.add(item);
             }
         }
         return items;
     }
+
     /**
      * Add the name of the relationship Data Element to the list of extra headers
      * 
      * @param relationships 
      */
-    private void addRelationshipNames( List<VocabularyRelationship> relationships ){
-        for ( VocabularyRelationship relationship : relationships ){
+    private void addRelationshipNames(List<VocabularyRelationship> relationships) {
+        for (VocabularyRelationship relationship : relationships) {
             this.addRelationshipName( relationship.getRelationship().getName() );
         }
     }
-    private void addRelationshipName( String relationshipName ){
-        if ( relationshipName == null )
+
+    private void addRelationshipName(String relationshipName) {
+        if (relationshipName == null)
             return;
-        if ( relationshipNames == null ){
+        if (relationshipNames == null) {
             relationshipNames = new ArrayList<String>();
         }
-        if ( relationshipNames.contains(relationshipName) )
+        if (relationshipNames.contains(relationshipName))
             return;
         relationshipNames.add(relationshipName);
     }
@@ -123,5 +123,5 @@ public class VocabularyCodeValueHandler extends CodeValueHandler {
     public List<String> getRelationshipNames() {
         return relationshipNames;
     }
-    
+
 }

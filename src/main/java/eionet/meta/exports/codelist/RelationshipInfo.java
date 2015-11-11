@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
  * Utility class for describing the relationship between this CodeItem and others
  */
 public class RelationshipInfo {
+
     @JacksonXmlProperty(isAttribute = true)
     private String attribute;
     @JacksonXmlProperty(isAttribute = true)
@@ -36,17 +37,37 @@ public class RelationshipInfo {
         this.items = items;
     }
 
-    public String getAttribute() {return attribute;}
-    public void setAttribute(String attribute) {this.attribute = attribute;}
+    public String getAttribute() {
+        return attribute;
+    }
 
-    public String getVocabulary() {return vocabulary;}
-    public void setVocabulary(String vocabulary) {this.vocabulary = vocabulary;}
+    public void setAttribute(String attribute) {
+        this.attribute = attribute;
+    }
 
-    public String getVocabularySet() {return vocabularySet;}
-    public void setVocabularySet(String vocabularySet) {this.vocabularySet = vocabularySet;}
+    public String getVocabulary() {
+        return vocabulary;
+    }
 
-    public List<CodeItem> getItems() {return items;}
-    public void setItems(List<CodeItem> items) {this.items = items;}
+    public void setVocabulary(String vocabulary) {
+        this.vocabulary = vocabulary;
+    }
+
+    public String getVocabularySet() {
+        return vocabularySet;
+    }
+
+    public void setVocabularySet(String vocabularySet) {
+        this.vocabularySet = vocabularySet;
+    }
+
+    public List<CodeItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<CodeItem> items) {
+        this.items = items;
+    }
 
     String toCSV() {
         if (items.isEmpty()) {
@@ -60,21 +81,22 @@ public class RelationshipInfo {
         String itemStr = StringUtils.join(str, ExportStatics.CSV_DELIMITER_COMMA);
         return prefix + itemStr;
     }
-    
-    AttributePredicate getAttributePredicate( String attribute ){
+
+    AttributePredicate getAttributePredicate(String attribute) {
         return new AttributePredicate( attribute );
     }
-    
-    static class AttributePredicate implements Predicate<RelationshipInfo>{
+
+    static class AttributePredicate implements Predicate<RelationshipInfo> {
         private final String attribute;
-        
-        AttributePredicate( String atttribute ){
+
+        AttributePredicate(String atttribute) {
             this.attribute = atttribute;
         }
+
         @Override
         public boolean apply(RelationshipInfo type) {
             return this.attribute.equals(type.getAttribute());
         }
     }
-    
+
 }

@@ -31,55 +31,55 @@ import org.xml.sax.SAXException;
  * @author Lena KARGIOTI eka@eworx.gr
  */
 public class ExportLegacyElementToXmlTest {
-   @Mock
+
+    @Mock
     private CodeValueHandler mockCodeValueHandler;
     @Mock
     private CodeValueHandlerProvider mockCodeValueHandlerProvider;
-    
+
     private static ObjectMapper mapper;
-    
+
     @BeforeClass
     public static void setUpClass() {
         XMLUnit.setIgnoreWhitespace(true); 
         mapper = DDObjectMapperProvider.getLegacy();
     }
+
     @AfterClass
     public static void tearDownClass() {}
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
+
     @After
     public void tearDown() {}
 
-    
     @Test
     public void quantitativeValues() throws JsonProcessingException, SAXException, IOException {
-        
         List<eionet.meta.DataElement> elements = ExportMocks.quantitativeDataElement();
-        
-        //Type: ELM, TBL, DST
+
+        // Type: ELM, TBL, DST
         String objType = "ELM";
+
+        // Mock Code Handler
+        Mockito.when(mockCodeValueHandler.getCodeItemList()).thenReturn(ExportMocks.quantitativeValues());
+        Mockito.when(mockCodeValueHandler.getRelationshipNames()).thenReturn(null);
         
-        //Mock Code Handler
-        Mockito.when( mockCodeValueHandler.getCodeItemList() ).thenReturn( ExportMocks.quantitativeValues());
-        Mockito.when( mockCodeValueHandler.getRelationshipNames() ).thenReturn(null);
-        
-        //Mock Code Handler Provider 
-        Mockito.when(mockCodeValueHandlerProvider.get( DataElement.DataElementValueType.QUANTITIVE )).thenReturn(mockCodeValueHandler);
-        
-        Codelist codelist = new Codelist(ExportStatics.ExportType.XML, mockCodeValueHandlerProvider );
-        codelist.setObjectMapper( mapper );
-        
+        // Mock Code Handler Provider 
+        Mockito.when(mockCodeValueHandlerProvider.get(DataElement.DataElementValueType.QUANTITIVE)).thenReturn(mockCodeValueHandler);
+
+        Codelist codelist = new Codelist(ExportStatics.ExportType.XML, mockCodeValueHandlerProvider);
+        codelist.setObjectMapper(mapper);
         String actual = codelist.write(elements, objType);
-        
         String expected = ExportMocks.wrapXML( ExportMocks.quantitativeValuesLegacyExportXML());
         
         Diff diff = new Diff(expected, actual);
         DetailedDiff detDiff = new DetailedDiff(diff);
         List differences = detDiff.getAllDifferences();
         for (Object object : differences) {
-            Difference difference = (Difference)object;
+            Difference difference = (Difference) object;
             System.out.println("***********************");
             System.out.println(difference);
             System.out.println("***********************");
@@ -87,4 +87,5 @@ public class ExportLegacyElementToXmlTest {
 
         Assert.assertTrue("Exported XML is similar", diff.similar());
     }
+
 }

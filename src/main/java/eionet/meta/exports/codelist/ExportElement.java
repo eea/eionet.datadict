@@ -22,61 +22,71 @@ import org.apache.log4j.Logger;
  */
 @JsonRootName(namespace = DD_NAMESPACE, value = "value-lists")
 public class ExportElement {
-    
+
     private static final Logger LOGGER = Logger.getLogger(ExportElement.class);
-    
+
     //@JsonIgnore
     private ObjectMapper mapper;
-    
+
     @JsonIgnore
     private boolean datasetAware;
-    
+
     private final String xsiSchema = XSI_NAMESPACE;
-    
+
     private List<Element> elements;
-    
-    public ExportElement(){}
-    
-    public ExportElement( ObjectMapper mapper ){
+
+    public ExportElement() {}
+
+    public ExportElement(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
-    public boolean isDatasetAware() {return datasetAware;}
-    public void setDatasetAware(boolean datasetAware) {this.datasetAware = datasetAware;}
-    
+    public boolean isDatasetAware() {
+        return datasetAware;
+    }
+
+    public void setDatasetAware(boolean datasetAware) {
+        this.datasetAware = datasetAware;
+    }
+
     @JacksonXmlProperty(localName = "xmlns:xsi", isAttribute = true)
-    public String getXsiSchema() {return xsiSchema;}
+    public String getXsiSchema() {
+        return xsiSchema;
+    }
 
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(namespace = DD_NAMESPACE, localName = "value-list" )
-    public List<Element> getElements() {return elements;}
-    public void setElements(List<Element> elements) {this.elements = elements;}
+    public List<Element> getElements() {
+        return elements;
+    }
 
+    public void setElements(List<Element> elements) {
+        this.elements = elements;
+    }
     
     /**
      * Return this CodeItem as CSV 
      * 
      * @return 
      */
-    String toCSV(){
+    String toCSV() {
         StringBuilder str = new StringBuilder("");
-        for( Element el: elements ){
-            str.append( el.toCSV(datasetAware) );
-            
+        for (Element el: elements) {
+            str.append(el.toCSV(datasetAware));
             str.append(CSV_NEW_LINE);
         }
         return str.toString();
     }
-    
+
     /**
      * Return this CodeItem as XML
      * 
      * @param mapper
      * @return 
      */
-    String toXML(){
+    String toXML() {
         try {
-            if ( mapper == null ){
+            if (mapper == null) {
                 //use default mapper
                 mapper = DDObjectMapperProvider.get();
             }
@@ -84,10 +94,11 @@ public class ExportElement {
                 //use legacy mapper
                 mapper = DDObjectMapperProvider.getLegacy();
             }
-            return mapper.writeValueAsString( this );
-        } catch ( JsonProcessingException jpe ){
+            return mapper.writeValueAsString(this);
+        } catch (JsonProcessingException jpe) {
             LOGGER.error("Failed to export element to XML", jpe);
             return "";
         }
     }
+
 }

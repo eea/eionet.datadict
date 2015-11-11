@@ -16,32 +16,62 @@ import static eionet.meta.exports.codelist.ExportStatics.*;
  * @author Lena KARGIOTI eka@eworx.gr
  */
 public class Element {
+
     @JacksonXmlProperty(isAttribute = true, localName = "element")
     private String identifier;
+
     @JacksonXmlProperty(isAttribute = true, localName = "table")
     private String tableIdentifier;
+
     @JacksonXmlProperty(isAttribute = true, localName = "dataset")
     private String datasetIdentifier;
-    @JacksonXmlProperty(isAttribute = true, localName = "fixed")
-    private Boolean fixed;
+
+    @JacksonXmlProperty(isAttribute = true, localName = "type")
+    private String type;
+
     @JsonIgnore
     private List<String> relationshipNames;
     private List<CodeItem> values;
 
-    public String getIdentifier() {return identifier;}
-    public void setIdentifier(String identifier) {this.identifier = identifier;}
+    public String getIdentifier() {
+        return identifier;
+    }
 
-    public String getTableIdentifier() {return tableIdentifier;}
-    public void setTableIdentifier(String tableIdentifier) {this.tableIdentifier = tableIdentifier;}
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
-    public String getDatasetIdentifier() {return datasetIdentifier;}
-    public void setDatasetIdentifier(String datasetIdentifier) {this.datasetIdentifier = datasetIdentifier;}
+    public String getTableIdentifier() {
+        return tableIdentifier;
+    }
 
-    public Boolean isFixed() {return fixed;}
-    public void setFixed(Boolean fixed) {this.fixed = fixed;}
+    public void setTableIdentifier(String tableIdentifier) {
+        this.tableIdentifier = tableIdentifier;
+    }
 
-    public List<String> getRelationshipNames() {return relationshipNames;}
-    public void setRelationshipNames(List<String> relationshipNames) {this.relationshipNames = relationshipNames;}
+    public String getDatasetIdentifier() {
+        return datasetIdentifier;
+    }
+
+    public void setDatasetIdentifier(String datasetIdentifier) {
+        this.datasetIdentifier = datasetIdentifier;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public List<String> getRelationshipNames() {
+        return relationshipNames;
+    }
+
+    public void setRelationshipNames(List<String> relationshipNames) {
+        this.relationshipNames = relationshipNames;
+    }
 
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(namespace = DD_NAMESPACE, localName = "value")
@@ -59,36 +89,40 @@ public class Element {
     String toCSV(boolean datasetAware) {
         StringBuilder header = new StringBuilder("");
         StringBuilder list = new StringBuilder();
-        //Dataset / Table Upper Header
+
+        // Dataset / Table Upper Header
         if (datasetAware) {
             header.append(CSV_HEADER_DATASET).append(CSV_DELIMITER_LABEL).append(datasetIdentifier).append(CSV_DELIMITER_SPACE);
             header.append(CSV_HEADER_TABLE).append(CSV_DELIMITER_LABEL).append(tableIdentifier).append(CSV_DELIMITER_SPACE);
         }
-        //Element name Upper Header
+
+        // Element name Upper Header
         header.append(CSV_HEADER_ELEMENT).append(CSV_DELIMITER_LABEL).append(identifier);
-        //Fixed Upper Header
-        if ( fixed != null ){
-            header.append(CSV_DELIMITER_SPACE).append(CSV_HEADER_FIXED).append(CSV_DELIMITER_LABEL).append(fixed);
-        }
-        //New line
+
+        // Type Upper Header
+        header.append(CSV_DELIMITER_SPACE).append(CSV_HEADER_TYPE).append(CSV_DELIMITER_LABEL).append(type);
+
         header.append(CSV_NEW_LINE);
+
         if (values == null || values.isEmpty()) {
             return header.toString();
         }
-        //Code-Label-Definition Header
+
+        // Code-Label-Definition Header
         header.append(CSV_HEADER_CODEVALUE);
-        
-        //Add relationship names to Header
-        if ( relationshipNames != null ){
-            for ( String relationshipName : relationshipNames ){
-                header.append(CSV_DELIMITER_COMMA).append( wrap(relationshipName) );
+
+        // Add relationship names to Header
+        if (relationshipNames != null) {
+            for (String relationshipName : relationshipNames) {
+                header.append(CSV_DELIMITER_COMMA).append(wrap(relationshipName));
             }
         }
+
         for (CodeItem value : values) {
             list.append(CSV_NEW_LINE);
             list.append(value.toCSV());
         }
         return header.toString() + list.toString() + CSV_NEW_LINE;
     }
-    
+
 }

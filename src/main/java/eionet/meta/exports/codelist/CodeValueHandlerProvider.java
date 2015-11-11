@@ -18,31 +18,32 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CodeValueHandlerProvider {
-    
+
     @Autowired
     private final IDataElementDAO elementDAO;
     @Autowired
     private final IVocabularyConceptDAO vocabularyConceptDAO;
     @Autowired
     private final VocabularyRelationshipService vocabularyRelationshipService;
-            
+
     @Autowired
-    public CodeValueHandlerProvider(IDataElementDAO elementDAO, IVocabularyConceptDAO vocabularyConceptDAO, VocabularyRelationshipService vocabularyRelationshipService ){
+    public CodeValueHandlerProvider(IDataElementDAO elementDAO, IVocabularyConceptDAO vocabularyConceptDAO, VocabularyRelationshipService vocabularyRelationshipService) {
         this.elementDAO = elementDAO;
         this.vocabularyConceptDAO = vocabularyConceptDAO;
         this.vocabularyRelationshipService = vocabularyRelationshipService;
     }
-    
-    public CodeValueHandler get( DataElementValueType type ){
-        switch ( type ){
-            case VOCABULARY:{
+
+    public CodeValueHandler get(DataElementValueType type) {
+        switch (type) {
+            case VOCABULARY: {
                 return new VocabularyCodeValueHandler(vocabularyRelationshipService, vocabularyConceptDAO, elementDAO);
             }
             case QUANTITIVE:
             case FIXED:
-            default:{
+            default: {
                 return new FixedValueHandler(elementDAO);
             }
         }        
     }
+
 }

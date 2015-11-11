@@ -29,7 +29,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  */
 public class CodelistServlet extends HttpServlet {
-    
+
     @Autowired
     private CodeValueHandlerProvider codeValueHandlerProvider;
 
@@ -42,18 +42,17 @@ public class CodelistServlet extends HttpServlet {
         final AutowireCapableBeanFactory beanFactory = springContext.getAutowireCapableBeanFactory();
         beanFactory.autowireBean(this);
     }
+
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    protected void service(HttpServletRequest req, HttpServletResponse res)
-                                throws ServletException, IOException {
-
+    protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         PrintWriter writer = null;
         OutputStreamWriter osw = null;
 
         try {
-            //guard(req);
+            // guard(req);
             // get the object ID
             String id = req.getParameter("id");
             if (Util.isEmpty(id)) throw new Exception("Missing object id!");
@@ -65,31 +64,30 @@ public class CodelistServlet extends HttpServlet {
             if (Util.isEmpty(format)) {
                 format = "csv";
             }
-            
+
             // prepare output stream and writer
             OutputStream out = res.getOutputStream();
             osw = new OutputStreamWriter(out, "UTF-8");
-            
+
             //set export type
             ExportStatics.ExportType exportType = ExportStatics.ExportType.UNKNOWN;
             String filename = "codelist_"+id+"_"+type;
             // set response content type
-            if (format.equals("csv")){
-                //Issue 29890
+            if (format.equals("csv")) {
+                // Issue 29890
                 addBOM(out);
                 exportType = ExportStatics.ExportType.CSV;
                 res.setContentType("text/csv; charset=UTF-8");
-                res.setHeader("Content-Disposition", "attachment; filename="+filename+".csv");
+                res.setHeader("Content-Disposition", "attachment; filename=" + filename + ".csv");
             }
-            else if (format.equals("xml")){
+            else if (format.equals("xml")) {
                 exportType = ExportStatics.ExportType.XML;
                 res.setContentType("text/xml; charset=UTF-8");
-                res.setHeader("Content-Disposition", "attachment; filename="+filename+".xml");
-            }
-            else
+                res.setHeader("Content-Disposition", "attachment; filename=" + filename + ".xml");
+            } else {
                 throw new Exception("Unknown codelist format requested: " + format);
+            }
 
-            
             writer = new PrintWriter(osw);
 
             // construct codelist writer
@@ -99,19 +97,18 @@ public class CodelistServlet extends HttpServlet {
             codelist.setObjectMapper(new ObjectMapper());
             // write & flush
             String listStr = codelist.write(id, type);
-            
+
             writer.write(listStr);
             writer.flush();
             osw.flush();
             writer.close();
             osw.close();
-            
         } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new ServletException(e.toString());
         }
     }
-    
+
     /**
      * Writes utf-8 BOM in the given writer.
      *
@@ -133,11 +130,11 @@ public class CodelistServlet extends HttpServlet {
      * @throws Exception
      */
     private void guard(HttpServletRequest req) throws Exception {
-
         DDUser user = SecurityUtil.getUser(req);
         if (user == null) throw new Exception("Not logged in!");
 
         if (!SecurityUtil.hasPerm(user.getUserName(), "/", "xmli"))
             throw new Exception("Not permitted!");
     }
+
 }
