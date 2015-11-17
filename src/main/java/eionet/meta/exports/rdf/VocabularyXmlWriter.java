@@ -195,6 +195,7 @@ public class VocabularyXmlWriter {
         writer.writeCharacters("\n");
         writer.writeEndElement(); // End rdf:RDF
         writer.writeCharacters("\n");
+        writer.flush();
     }
 
     /**
@@ -296,7 +297,7 @@ public class VocabularyXmlWriter {
                         if (elem.isRelationalElement()) {
                             writer.writeEmptyElement(elem.getIdentifier());
                             writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
-                                    elem.getRelatedConceptUri());
+                                    StringEncoder.encodeToIRI(elem.getRelatedConceptUri()));
                         } else if (StringUtils.isNotEmpty(elem.getAttributeValue())) {
                             if (StringUtils.isNotEmpty(elem.getRelatedConceptUri()) && StringUtils.isNotEmpty(elem.getDatatype())
                                     && elem.getDatatype().equalsIgnoreCase("reference")) {

@@ -7,6 +7,7 @@ import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
 import eionet.meta.service.data.SiteCode;
+import eionet.util.StringEncoder;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -54,7 +55,7 @@ public class VocabularyXmlWriterTest {
 		writer.writeRDFXml(commonElemsUri, rootContext, vocabularyContext, testVocabulary, concepts, new ArrayList<RdfNamespace>());
 		outputStream.close();
 		String output = new String(outputStream.toByteArray(), "UTF-8");
-    
+                System.out.println(output);
 		// test output
 		Assert.assertTrue(StringUtils.contains(output, "<skos:Concept rdf:about=\"" + BASE_URL + "/vocabulary/folder/test/Id1\">"));
 		Assert.assertTrue(StringUtils.contains(output, "<skos:notation>Notation1</skos:notation>"));
@@ -64,7 +65,13 @@ public class VocabularyXmlWriterTest {
 		Assert.assertTrue(StringUtils.contains(output, "<DataElemId1 rdf:resource=\"" + BASE_URL + "/vocabulary/folder/related/RelatedConcept1\"/>"));
 		Assert.assertTrue(StringUtils
 				.contains(output, "<DataElemId2 xml:lang=\"et\" rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\">AttributeValue2</DataElemId2>"));
-
+                Assert.assertTrue(
+                    StringUtils.contains(
+                        output, 
+                        "<DataElemId3 rdf:resource=\"" + BASE_URL + "/vocabulary/folder/related2/" + StringEncoder.encodeToIRI("mg{N}.L-1") +"\"/>"
+                    )
+                );
+                
 		// test if output is valid RDF
 		Reader reader = new StringReader(output);
 		RDFParser parser = new RDFXMLParser();
@@ -156,6 +163,13 @@ public class VocabularyXmlWriterTest {
 		elem2.setElemAttributeValues(elemAttributeValues);
 		elems.add(elem2);
 		elements.add(elems);
+                
+                DataElement elem3 = new DataElement();
+		elem3.setIdentifier("DataElemId3");
+		elem3.setRelatedConceptId(3);
+		elem3.setRelatedConceptIdentifier("mg{N}.L-1");
+		elem3.setRelatedConceptBaseURI(BASE_URL + "/vocabulary/folder/related2/");
+		elems.add(elem3);
 
 		concept2.setElementAttributes(elements);
 		concepts.add(concept2);
