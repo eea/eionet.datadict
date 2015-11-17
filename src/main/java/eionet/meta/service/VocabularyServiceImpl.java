@@ -646,7 +646,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public int checkInVocabularyFolder(int vocabularyFolderId, String userName) throws ServiceException {
+    public synchronized int checkInVocabularyFolder(int vocabularyFolderId, String userName) throws ServiceException {
         if (StringUtils.isBlank(userName)) {
             throw new IllegalArgumentException("User name must not be blank!");
         }
