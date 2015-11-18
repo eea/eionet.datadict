@@ -55,7 +55,7 @@ public class VocabularyXmlWriterTest {
 		writer.writeRDFXml(commonElemsUri, rootContext, vocabularyContext, testVocabulary, concepts, new ArrayList<RdfNamespace>());
 		outputStream.close();
 		String output = new String(outputStream.toByteArray(), "UTF-8");
-                System.out.println(output);
+                
 		// test output
 		Assert.assertTrue(StringUtils.contains(output, "<skos:Concept rdf:about=\"" + BASE_URL + "/vocabulary/folder/test/Id1\">"));
 		Assert.assertTrue(StringUtils.contains(output, "<skos:notation>Notation1</skos:notation>"));
@@ -71,6 +71,9 @@ public class VocabularyXmlWriterTest {
                         "<DataElemId3 rdf:resource=\"" + BASE_URL + "/vocabulary/folder/related2/" + StringEncoder.encodeToIRI("mg{N}.L-1") +"\"/>"
                     )
                 );
+                Assert.assertTrue(StringUtils.contains(output, "<DataElemId4>http://some.extenal.url/value%20with%20whitespace%20and%7Bcurly%7D</DataElemId4>"));
+                Assert.assertTrue(StringUtils.contains(output, "<DataElemId5>{value}||^</DataElemId5>"));
+                Assert.assertTrue(StringUtils.contains(output, "<DataElemId6 rdf:resource=\"http://some.extenal.url/value%20with%20whitespace%20and%7Bcurly%7D\"/>"));
                 
 		// test if output is valid RDF
 		Reader reader = new StringReader(output);
@@ -162,7 +165,6 @@ public class VocabularyXmlWriterTest {
 		elemAttributeValues.put("Datatype", Arrays.asList(new String[] {"int"}));
 		elem2.setElemAttributeValues(elemAttributeValues);
 		elems.add(elem2);
-		elements.add(elems);
                 
                 DataElement elem3 = new DataElement();
 		elem3.setIdentifier("DataElemId3");
@@ -171,6 +173,26 @@ public class VocabularyXmlWriterTest {
 		elem3.setRelatedConceptBaseURI(BASE_URL + "/vocabulary/folder/related2/");
 		elems.add(elem3);
 
+                DataElement elem4 = new DataElement();
+		elem4.setIdentifier("DataElemId4");
+		elem4.setAttributeValue("http://some.extenal.url/value%20with%20whitespace%20and%7Bcurly%7D");
+		elems.add(elem4);
+                
+                DataElement elem5 = new DataElement();
+		elem5.setIdentifier("DataElemId5");
+		elem5.setAttributeValue("{value}||^");
+		elems.add(elem5);
+                
+                DataElement elem6 = new DataElement();
+                elem6.setIdentifier("DataElemId6");
+                elem6.setAttributeValue("http://some.extenal.url/value%20with%20whitespace%20and%7Bcurly%7D");
+                Map<String, List<String>> elem6AttributeValues = new HashMap<String, List<String>>();
+                elem6AttributeValues.put("Datatype", Arrays.asList(new String[] { "reference" }));
+                elem6.setElemAttributeValues(elem6AttributeValues);
+                elems.add(elem6);
+		
+                elements.add(elems);
+                
 		concept2.setElementAttributes(elements);
 		concepts.add(concept2);
 
