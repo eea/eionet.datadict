@@ -67,11 +67,7 @@ else{
         <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
         <div id="sitetagline">This service is part of Reportnet</div>
     </div> <!-- pagehead -->
-    <div id="operations" style="margin-top:10px">
-        <ul>
-            <li><a href="javascript:window.close();">Close</a></li>
-        </ul>
-    </div>
+
     <div id="workarea" style="clear:right">
         <%=helpText%>
     </div>
