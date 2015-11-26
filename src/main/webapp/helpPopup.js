@@ -19,9 +19,10 @@
             });
             // popup the dialog window with predifined dimensions and functionality concerning the close event
             $('#modalPopup').dialog({
+                position: [20, 230],
                 title: "Data Dictionary - Help",
-                width: 800,
-                height: 400,
+                width: 350,
+                height: 510,
                 // when dialog is closed <div> element will be removed from DOM
                 close: function () {
                     $('#modalPopup').remove();
