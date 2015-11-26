@@ -7,6 +7,7 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Search data elements">
 
     <stripes:layout-component name="head">
+        <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
         <script type="text/javascript">
         // <![CDATA[
 
@@ -92,7 +93,7 @@
                     <label for="regStatusSelect" class="question">Registration status</label>
                 </td>
                 <td>
-                    <a href="help.jsp?screen=dataset&area=regstatus" onclick="pop(this.href);return false;">
+                    <a class="helpButton" href="help.jsp?screen=dataset&area=regstatus">
                         <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
                     </a>
                 </td>
@@ -108,7 +109,7 @@
                     <label for="datasetSelect" class="question">Dataset</label>
                 </td>
                 <td>
-                    <a href="help.jsp?screen=search_element&amp;area=dataset" onclick="pop(this.href);return false;">
+                    <a class="helpButton" href="help.jsp?screen=search_element&amp;area=dataset">
                         <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
                     </a>
                 </td>
@@ -124,7 +125,7 @@
                     <label for="typeSelect" class="question">Type</label>
                 </td>
                 <td>
-                    <a href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
+                    <a class="helpButton" href="help.jsp?screen=element&amp;area=type">
                         <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
                     </a>
                 </td>
@@ -142,7 +143,7 @@
                     <label for="txtShortName" class="question">Short name</label>
                 </td>
                 <td>
-                    <a href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+                    <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
                         <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
                     </a>
                 </td>
@@ -155,7 +156,7 @@
                     <label for="txtIdentifier" class="question">Identifier</label>
                 </td>
                 <td>
-                    <a href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+                    <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier">
                         <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
                     </a>
                 </td>
@@ -169,7 +170,7 @@
                         <label for="txtFilterAttr_${attr.id}_${row.index}" class="question"><c:out value="${attr.shortName}" /></label>
                     </td>
                     <td>
-                        <a href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+                        <a class="helpButton" href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE">
                             <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
                         </a>
                     </td>
@@ -187,7 +188,7 @@
                         <label for="txtAddedAttr_${attr.id}_${row.index}" class="question"><c:out value="${attr.name}" /></label>
                     </td>
                     <td>
-                        <a href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+                        <a class="helpButton" href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE">
                             <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
                         </a>
                     </td>

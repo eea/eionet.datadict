@@ -5,6 +5,7 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="View schema set">
 
     <stripes:layout-component name="head">
+        <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
         <script type="text/javascript">
         // <![CDATA[
             ( function($) {
@@ -194,7 +195,7 @@
                         Schema URL
                     </th>
                     <td class="simple_attr_help">
-                        <a href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=url" onclick="pop(this.href);return false;">
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=url">
                             <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
                         </a>
                     </td>
@@ -210,7 +211,7 @@
                     File name
                 </th>
                 <td class="simple_attr_help">
-                    <a href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=filename" onclick="pop(this.href);return false;">
+                    <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=filename">
                         <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
                     </a>
                 </td>
@@ -226,7 +227,7 @@
                         Schema set
                     </th>
                     <td class="simple_attr_help">
-                        <a href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=schemaSet" onclick="pop(this.href);return false;">
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=schemaSet">
                             <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
                         </a>
                     </td>
@@ -248,7 +249,7 @@
                         Registration status
                     </th>
                     <td class="simple_attr_help">
-                        <a href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus">
                             <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
                         </a>
                     </td>
@@ -279,7 +280,7 @@
                             <c:out value="${attribute.name}"/>
                         </th>
                         <td class="simple_attr_help">
-                            <a href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE">
                                 <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="Help"/>
                             </a>
                         </td>
@@ -316,7 +317,7 @@
                         </a>
                     </td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/help.jsp?attrid=${complexAttr.ID}&amp;attrtype=COMPLEX" onclick="pop(this.href);return false;">
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${complexAttr.ID}&amp;attrtype=COMPLEX">
                             <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="Help"/>
                         </a>
                     </td>

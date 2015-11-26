@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
+<%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
@@ -217,6 +218,10 @@
 <head>
     <%@ include file="headerinfo.jsp" %>
     <title>Search results - Data Dictionary</title>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
+    <link type="text/css" href="<c:url value="/css/smoothness/jquery-ui-1.8.16.custom.css" />" rel="stylesheet" />
+    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-1.6.2.min.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-ui-1.8.16.custom.min.js"></script>
     <script type="text/javascript">
     // <![CDATA[
         function setLocation(){
@@ -319,7 +324,7 @@ else{ %>
                 <div id="operations">
                     <ul>
                         <li><a href="javascript:window.close();">Close</a></li>
-                        <li class="help"><a href="help.jsp?screen=elements&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+                        <li class="help"><a class="helpButton" href="help.jsp?screen=elements&amp;area=pagehelp">Page help</a></li>
                     </ul>
                 </div><%
             }

@@ -1,8 +1,14 @@
 <%@page import="java.util.*,eionet.util.SecurityUtil,eionet.util.Props,eionet.util.PropsIF,eionet.meta.DDUser,eionet.meta.LoginServlet"%>
+<%@ include file="/pages/common/taglibs.jsp"%>
 <%
 ServletContext ctx = getServletContext();
 String appName = ctx.getInitParameter("application-name");
 %>
+
+<script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
+<link type="text/css" href="<c:url value="/css/smoothness/jquery-ui-1.8.16.custom.css" />" rel="stylesheet" />
+<script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-ui-1.8.16.custom.min.js"></script>
 <div id="toolribbon">
     <div id="lefttools">
         <%@ include file="topleftlinks.txt" %>
@@ -22,7 +28,7 @@ String appName = ctx.getInitParameter("application-name");
         String helpScreen = request.getParameter("helpscreen");
         if (helpScreen!=null){
             %>
-            <a id="pagehelplink" title="Get help on this page" href="<%=request.getContextPath()%>/help.jsp?screen=<%=helpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;"><span>Page help</span></a><%
+            <a id="pagehelplink" class="helpButton" title="Get help on this page" href="<%=request.getContextPath()%>/help.jsp?screen=<%=helpScreen%>&amp;area=pagehelp"><span>Page help</span></a><%
         }
         %>
         <a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>

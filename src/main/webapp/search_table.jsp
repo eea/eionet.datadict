@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.sql.ConnectionUtil,eionet.util.*"%>
+<%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!final static String POPUP="popup";%>
@@ -127,6 +128,10 @@ private String setDefaultAttrs(String name){
 <head>
     <%@ include file="headerinfo.jsp" %>
     <title>Search tables - Data Dictionary</title>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
+    <link type="text/css" href="<c:url value="/css/smoothness/jquery-ui-1.8.16.custom.css" />" rel="stylesheet" />
+    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-1.6.2.min.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-ui-1.8.16.custom.min.js"></script>
     <script type="text/javascript">
     // <![CDATA[
         attrWindow=null;
@@ -197,7 +202,7 @@ else {
           <div id="operations">
             <ul>
                 <li><a href="javascript:window.close();">Close</a></li>
-                <li class="help"><a href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+                <li class="help"><a class="helpButton" href="help.jsp?screen=search_table&amp;area=pagehelp" title="Get some help on this page">Page help</a></li>
               </ul>
     </div><%
       }
@@ -212,7 +217,7 @@ else {
                             <b>Short name</b>
                         </td>
                         <td>
-                            <a href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
                                 <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
                             </a>
                         </td>
@@ -226,7 +231,7 @@ else {
                             <b>Identifier</b>
                         </td>
                         <td>
-                            <a href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier">
                                 <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
                             </a>
                         </td>
@@ -274,7 +279,7 @@ else {
                                         <b><%=Util.processForDisplay(attrName)%></b>
                                     </td>
                                     <td>
-                                        <a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+                                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
                                             <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
                                         </a>
                                     </td>
@@ -306,7 +311,7 @@ else {
                                     <b><%=Util.processForDisplay(attrName)%></b>
                                 </td>
                                 <td>
-                                    <a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
                                         <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
                                     </a>
                                 </td>
@@ -333,7 +338,7 @@ else {
                                     <b><%=Util.processForDisplay(attrName)%></b>
                                 </td>
                                 <td>
-                                        <a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+                                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
                                             <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
                                         </a>
                                     </td>

@@ -396,6 +396,10 @@
     <%@ include file="headerinfo.jsp" %>
     <title><%=pageTitle.toString()%></title>
     <script type="text/javascript" src="<%=request.getContextPath()%>/modal_dialog.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
+    <link type="text/css" href="<c:url value="/css/smoothness/jquery-ui-1.8.16.custom.css" />" rel="stylesheet" />
+    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-1.6.2.min.js" /></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-ui-1.8.16.custom.min.js" /></script>
     <script type="text/javascript">
 // <![CDATA[
 
@@ -760,7 +764,7 @@ else if (mode.equals("add"))
                                                 %>
                                                     <tr>
                                                         <td>
-                                                            Create an MS Excel template for this table&nbsp;<a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" /></a>
+                                                            Create an MS Excel template for this table&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" /></a>
                                                         </td>
                                                         <td>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img style="border:0" src="<%=request.getContextPath()%>/images/xls.png" width="16" height="16" alt=""/></a>
@@ -768,7 +772,7 @@ else if (mode.equals("add"))
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            Create an MS Excel template for this table with drop-down boxes (BETA)&nbsp;<a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel_dropdown"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" /></a>
+                                                            Create an MS Excel template for this table with drop-down boxes (BETA)&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel_dropdown"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" /></a>
                                                         </td>
                                                         <td>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=tbl&amp;obj_act=dd&amp;obj_id=<%=tableID%>"><img style="border:0" src="<%=request.getContextPath()%>/images/xls.png" width="16" height="16" alt=""/></a>
@@ -781,7 +785,7 @@ else if (mode.equals("add"))
                                                 if (dispAll || dispODS){ %>
                                                     <tr>
                                                         <td>
-                                                            Create an OpenDocument spreadsheet template for this table&nbsp;<a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=ods"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" /></a>
+                                                            Create an OpenDocument spreadsheet template for this table&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=ods"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" /></a>
                                                         </td>
                                                         <td>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=tbl&amp;id=<%=tableID%>"><img style="border:0" src="<%=request.getContextPath()%>/images/ods.png" width="16" height="16" alt=""/></a>
@@ -905,7 +909,7 @@ else if (mode.equals("add"))
                                                 Identifier
                                             </th>
                                             <td class="simple_attr_help">
-                                                <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier">
                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
                                                 </a>
                                             </td>
@@ -935,7 +939,7 @@ else if (mode.equals("add"))
                                         <tr id="short_name_row">
                                             <th scope="row" class="scope-row short_name">Short name</th>
                                             <td class="short_name simple_attr_help">
-                                                <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name">
                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
                                                 </a>
                                             </td>
@@ -972,7 +976,7 @@ else if (mode.equals("add"))
                                                 Dataset
                                             </th>
                                             <td class="simple_attr_help">
-                                                <a href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
+                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=dataset">
                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
                                                 </a>
                                             </td>
@@ -1008,7 +1012,7 @@ else if (mode.equals("add"))
                                                     Reference URL
                                                 </th>
                                                 <td class="simple_attr_help">
-                                                    <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl">
                                                         <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
                                                     </a>
                                                 </td>
@@ -1092,7 +1096,7 @@ else if (mode.equals("add"))
                                                     <%=Util.processForDisplay(attribute.getName())%>
                                                 </th>
                                                 <td class="simple_attr_help">
-                                                    <a href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
                                                         <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
                                                     </a>
                                                 </td>
@@ -1253,7 +1257,7 @@ else if (mode.equals("add"))
                                                                     }
                                                                     %>
                                                                 </select>
-                                                                    <a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID + "/" + ("view".equals(mode) ? "view" : "edit")%>">
+                                                                    <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID + "/" + ("view".equals(mode) ? "view" : "edit")%>">
                                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
                                                                 </a>
                                                                 <%
@@ -1533,7 +1537,7 @@ else if (mode.equals("add"))
                                                                         </a>
                                                                     </td>
                                                                     <td>
-                                                                        <a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
+                                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
                                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                                         </a>
                                                                     </td>

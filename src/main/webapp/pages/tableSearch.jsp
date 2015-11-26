@@ -7,6 +7,9 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Search tables">
 
     <stripes:layout-component name="contents">
+        
+    <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
+        
     <h1>Search tables</h1>
 
     <stripes:form action="/tableSearch.action" method="post">
@@ -16,7 +19,7 @@
                     <b>Short name</b>
                 </td>
                 <td>
-                    <a href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+                    <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
                         <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
                     </a>
                 </td>
@@ -30,7 +33,7 @@
                     <b>Identifier</b>
                 </td>
                 <td>
-                    <a href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+                    <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
                         <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
                     </a>
                 </td>
@@ -45,7 +48,7 @@
                     <b><c:out value="${attr.name}" /></b>
                 </td>
                 <td>
-                    <a href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+                    <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
                         <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
                     </a>
                 </td>

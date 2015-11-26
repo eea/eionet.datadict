@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
+<%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
@@ -94,6 +95,10 @@ String disabled = user == null ? "disabled" : "";
 <head>
     <%@ include file="headerinfo.jsp" %>
     <title>Data Dictionary</title>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
+    <link type="text/css" href="<c:url value="/css/smoothness/jquery-ui-1.8.16.custom.css" />" rel="stylesheet" />
+    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-1.6.2.min.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-ui-1.8.16.custom.min.js"></script>
     <script type="text/javascript">
         // <![CDATA[
 
@@ -174,7 +179,7 @@ String disabled = user == null ? "disabled" : "";
                         }
                         %>
                     </select>&nbsp;
-                    <a href="help.jsp?screen=foreign_key_rel&amp;area=cardinality" onclick="pop(this.href);return false;">
+                    <a class="helpButton" href="help.jsp?screen=foreign_key_rel&amp;area=cardinality">
                         <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Get help on this item"/>
                     </a>
                 </td>

@@ -765,6 +765,10 @@
     <title><%=pageTitle.toString()%></title>
     <script type="text/javascript" src="<%=request.getContextPath()%>/querystring.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/modal_dialog.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
+    <link type="text/css" href="<c:url value="/css/smoothness/jquery-ui-1.8.16.custom.css" />" rel="stylesheet" />
+    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-1.6.2.min.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-ui-1.8.16.custom.min.js"></script>
     <script type="text/javascript">
         // <![CDATA[
 
@@ -1306,8 +1310,7 @@
                             <%
                             if (popup) {
                             %>
-                                    <li><a href="javascript:window.close();">Close</a></li>
-                                    <li class="help"><a href="<%=request.getContextPath()%>/help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li><%
+                                    <li class="help"><a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp">Page help</a></li><%
                             }
                             if (elmCommon && canNewVersion) {
                             %>
@@ -1507,7 +1510,7 @@
                                     <%
                                     if (mode.equals("add") && (type == null || type.length() == 0)) {
                                         %>
-                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
+                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type">
                                             <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                         </a>
                                         <br/><input type="radio" name="type" value="CH2" onclick="javascript:fixType(this)" checked="checked">Data element with quantitative values (e.g. measurements)</input>
@@ -1532,7 +1535,7 @@
                                             <b>DATA ELEMENT WITH QUANTITATIVE VALUES</b><%
                                         }
                                         %>
-                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
+                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type">
                                             <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                         </a><%
                                     }
@@ -1574,7 +1577,7 @@
                                                     Identifier
                                                 </th>
                                                 <td class="simple_attr_help">
-                                                    <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier">
                                                         <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                     </a>
                                                 </td>
@@ -1608,7 +1611,7 @@
                                             <tr id="short_name_row">
                                                 <th scope="row" class="scope-row short_name">Short name</th>
                                                 <td class="short_name simple_attr_help">
-                                                    <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name">
                                                         <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                     </a>
                                                 </td>
@@ -1653,7 +1656,7 @@
                                                         Dataset
                                                         </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=dataset">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
@@ -1692,7 +1695,7 @@
                                                         Table
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=table" onclick="pop(this.href);return false;">
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=table">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
@@ -1729,7 +1732,7 @@
                                                         RegistrationStatus
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=regstatus">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
@@ -1804,7 +1807,7 @@
                                                         Reference URL
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
@@ -1947,7 +1950,7 @@
                                                         <%=Util.processForDisplay(attribute.getName())%>
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
@@ -2141,7 +2144,7 @@
                          }
  %>
                                                                     </select>
-                                                                    <a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>">
+                                                                    <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>">
                                                                         <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                                     </a>
                                                                     <%
@@ -2178,7 +2181,7 @@
                                                         CheckInNo
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href);return false;">
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=check_in_no">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
@@ -2210,7 +2213,7 @@
                                                         Vocabulary
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=vocabulary_link" onclick="pop(this.href);return false;">
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=vocabulary_link">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
@@ -2359,7 +2362,7 @@ String helpAreaName = "";
                                                         if (!mode.equals("view")) {
                                                     %>
                                                         <span class="simple_attr_help">
-                                                            <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=<%=Util.processForDisplay(helpAreaName)%>" onclick="pop(this.href);return false;">
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=<%=Util.processForDisplay(helpAreaName)%>">
                                                                 <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                             </a>
                                                         </span>
@@ -2504,7 +2507,7 @@ String helpAreaName = "";
                                                         if (!mode.equals("view")) {
                                                     %>
                                                         <span class="simple_attr_help">
-                                                            <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=fks_link" onclick="pop(this.href);return false;">
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=fks_link">
                                                                 <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                             </a>
                                                         </span>
@@ -2643,7 +2646,7 @@ String helpAreaName = "";
                                                         if (!mode.equals("view")) {
                                                     %>
                                                         <span class="simple_attr_help">
-                                                            <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link">
                                                                 <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                             </a>
                                                         </span>
@@ -2691,7 +2694,7 @@ String helpAreaName = "";
                                                                             </a>
                                                                         </td>
                                                                         <td>
-                                                                            <a href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href);return false;">
+                                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
                                                                                 <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                                             </a>
                                                                         </td>
@@ -2751,7 +2754,7 @@ String helpAreaName = "";
                                         <h2>Rules
                                             <!-- Eionet styling -->
                                             <span class="inference_rules_help">
-                                                <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
+                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link">
                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                 </a>
                                             </span>    

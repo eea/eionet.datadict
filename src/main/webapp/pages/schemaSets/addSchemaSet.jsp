@@ -8,6 +8,7 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Add schema set">
 
     <stripes:layout-component name="contents">
+        <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
     <h1>Create schema set</h1>
 
     <stripes:form method="post" beanclass="eionet.web.action.SchemaSetActionBean">
@@ -24,7 +25,7 @@
                         Identifier
                     </th>
                     <td class="simple_attr_help">
-                        <a href="/help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+                        <a class="helpButton" href="/help.jsp?screen=dataset&amp;area=identifier">
                             <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                         </a>
                     </td>
@@ -43,7 +44,7 @@
                                 <c:out value="${attribute.shortName}"/>
                             </th>
                             <td class="simple_attr_help">
-                                <a href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+                                <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE">
                                     <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                 </a>
                             </td>
