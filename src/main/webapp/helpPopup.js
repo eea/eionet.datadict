@@ -19,7 +19,7 @@
             });
             // popup the dialog window with predifined dimensions and functionality concerning the close event
             $('#modalPopup').dialog({
-                position: [20, 230],
+                position: [20, 'center'],
                 title: "Data Dictionary - Help",
                 width: 350,
                 height: 510,
