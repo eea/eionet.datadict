@@ -860,8 +860,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // MS Excel link
-                                                    if (dispAll || dispXLS) {
-                                                    %>
+                                                    if (dispAll || dispXLS) { %>
                                                         <tr>
                                                             <td>
                                                                 Create an MS Excel template for this dataset&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/></a>
@@ -870,6 +869,8 @@ else if (mode.equals("add"))
                                                                 <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>"><img style="border:0" src="<%=request.getContextPath()%>/images/xls.png" width="16" height="16" alt="XLS icon"/></a>
                                                             </td>
                                                         </tr>
+                                                    <% }
+                                                    if ((dispAll || dispXLS) && user != null) { %>
                                                          <tr>
                                                             <td>
                                                                 Create an MS Excel template for this dataset with drop-down boxes (BETA)&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel_dropdown"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/></a>
