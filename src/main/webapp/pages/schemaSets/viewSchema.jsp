@@ -69,7 +69,7 @@
 
     <%-- Dropdown operations menu --%>
 
-    <stripes:url var="viewUrl" beanclass="${actionBean.class.name}" event="view">
+    <stripes:url var="viewUrl" beanclass="${actionBean['class'].name}" event="view">
         <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
         <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
     </stripes:url>
@@ -87,14 +87,14 @@
 
                     <c:if test="${isMySchemaWorkingCopy || isMySchemaSetWorkingCopy}">
                         <li>
-                            <stripes:link beanclass="${actionBean.class.name}" event="edit">Edit metadata
+                            <stripes:link beanclass="${actionBean['class'].name}" event="edit">Edit metadata
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                                 <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
                                 <stripes:param name="workingCopy" value="true"/>
                             </stripes:link>
                         </li>
                         <li>
-                            <stripes:url var="viewUrl" beanclass="${actionBean.class.name}" event="view">
+                            <stripes:url var="viewUrl" beanclass="${actionBean['class'].name}" event="view">
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                                 <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
                                 <stripes:param name="workingCopy" value="true"/>
@@ -115,14 +115,14 @@
                                 </c:when>
                                 <c:otherwise>
                                     <li>
-                                        <stripes:link beanclass="${actionBean.class.name}" event="checkIn">Check in
+                                        <stripes:link beanclass="${actionBean['class'].name}" event="checkIn">Check in
                                             <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
                                         </stripes:link>
                                     </li>
                                 </c:otherwise>
                             </c:choose>
                             <li>
-                                <stripes:link beanclass="${actionBean.class.name}" event="undoCheckout">Undo checkout
+                                <stripes:link beanclass="${actionBean['class'].name}" event="undoCheckout">Undo checkout
                                     <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
                                 </stripes:link>
                             </li>
@@ -135,7 +135,7 @@
                             </c:if>
                             <c:if test="${actionBean.checkoutAllowed}">
                                 <li>
-                                    <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
+                                    <stripes:link beanclass="${actionBean['class'].name}" event="checkOut">Check out
                                         <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
                                     </stripes:link>
                                 </li>
@@ -145,7 +145,7 @@
                 </c:if>
 
                 <li>
-                    <stripes:link beanclass="${actionBean.class.name}" event="validate">Validate
+                    <stripes:link beanclass="${actionBean['class'].name}" event="validate">Validate
                         <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                             <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
                             <stripes:param name="workingCopy" value="${actionBean.schema.workingCopy || actionBean.schema.schemaSetWorkingCopy}"/>
@@ -171,7 +171,7 @@
         <div class="note-msg">
             <strong>Note</strong>
             <p>You have a
-                <stripes:link beanclass="${actionBean.class.name}">
+                <stripes:link beanclass="${actionBean['class'].name}">
                     <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
                     <stripes:param name="workingCopy" value="true"/>
                     working copy
@@ -342,7 +342,7 @@
         <h2>Other versions of this schema</h2>
         <display:table name="${actionBean.otherVersions}" class="datatable" id="otherVersion" style="width:80%">
             <display:column title="File name">
-                <stripes:link beanclass="${actionBean.class.name}" title="Open schema details">
+                <stripes:link beanclass="${actionBean['class'].name}" title="Open schema details">
                     <stripes:param name="schema.id" value="${otherVersion.id}"/>
                     <c:out value="${otherVersion.fileName}"/>
                 </stripes:link>
@@ -380,7 +380,7 @@
     <%-- The check-in dialog for root-level schemas. Hidden unless activated. --%>
 
     <div id="checkInDialog" title="Check in">
-        <stripes:form beanclass="${actionBean.class.name}" method="get">
+        <stripes:form beanclass="${actionBean['class'].name}" method="get">
 
             <div class="note-msg">
                 <strong>Note</strong>
@@ -400,7 +400,7 @@
     <%-- The upload dialog. Hidden unless activated. --%>
 
     <div id="uploadSchemaDialog" title="Re-upload schema">
-        <stripes:form beanclass="${actionBean.class.name}" method="post">
+        <stripes:form beanclass="${actionBean['class'].name}" method="post">
 
             <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}" />
             <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}" />
@@ -427,7 +427,7 @@
     <%-- The dialog for creating a new version (relevant for root-level schemas only, hidden unless activated) --%>
 
     <div id="newVersionDialog" title="Create new version">
-        <stripes:form beanclass="${actionBean.class.name}" method="get">
+        <stripes:form beanclass="${actionBean['class'].name}" method="get">
 
             <div class="note-msg">
                 <strong>Note</strong>

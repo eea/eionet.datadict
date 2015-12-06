@@ -10,7 +10,7 @@
     <stripes:layout-component name="contents">
     <h1>Add root-level schema</h1>
 
-    <stripes:form method="post" beanclass="${actionBean.class.name}">
+    <stripes:form method="post" beanclass="${actionBean['class'].name}">
         <div id="outerframe">
             <table class="datatable">
                 <colgroup>

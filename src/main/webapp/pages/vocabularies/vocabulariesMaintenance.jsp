@@ -20,7 +20,7 @@
             Site prefix for current instance: ${actionBean.sitePrefix}
         </p>
 
-        <stripes:form id="vocabulariesPopulateEmptyBaseUrisForm" beanclass="${actionBean.class.name}" method="post" style="margin-top:1em">
+        <stripes:form id="vocabulariesPopulateEmptyBaseUrisForm" beanclass="${actionBean['class'].name}" method="post" style="margin-top:1em">
             <stripes:submit id="populateBtn" name="populate" value="Populate" />
         </stripes:form>
 
@@ -29,7 +29,7 @@
             If data is gathered from another source or site prefix has changed, you can use this functionality to change
             site prefix in all vocabularies (which starts with old prefix)
         </p>
-        <stripes:form id="vocabulariesChangeBaseUrisForm" beanclass="${actionBean.class.name}" method="post" style="margin-top:1em">
+        <stripes:form id="vocabulariesChangeBaseUrisForm" beanclass="${actionBean['class'].name}" method="post" style="margin-top:1em">
             <table class="datatable">
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">

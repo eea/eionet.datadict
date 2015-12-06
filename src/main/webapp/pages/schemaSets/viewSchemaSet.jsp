@@ -85,7 +85,7 @@
 
     <stripes:layout-component name="contents">
 
-    <stripes:url var="viewUrl" beanclass="${actionBean.class.name}" event="view">
+    <stripes:url var="viewUrl" beanclass="${actionBean['class'].name}" event="view">
         <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
     </stripes:url>
 
@@ -99,19 +99,19 @@
                 <ul>
                     <c:if test="${isMyWorkingCopy}">
                         <li>
-                            <stripes:link beanclass="${actionBean.class.name}" event="edit">Edit metadata
+                            <stripes:link beanclass="${actionBean['class'].name}" event="edit">Edit metadata
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                             </stripes:link>
                         </li>
                         <li>
-                            <stripes:url var="viewUrl" beanclass="${actionBean.class.name}" event="view">
+                            <stripes:url var="viewUrl" beanclass="${actionBean['class'].name}" event="view">
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                                 <stripes:param name="workingCopy" value="true"/>
                             </stripes:url>
                             <a href="${pageContext.request.contextPath}/complex_attrs.jsp?parent_id=${actionBean.schemaSet.id}&parent_type=SCS&parent_name=${actionBean.schemaSet.identifier}&parent_link=${viewUrl}">Edit complex attributes</a>
                         </li>
                         <li>
-                            <stripes:link beanclass="${actionBean.class.name}" event="editSchemas">Edit schemas
+                            <stripes:link beanclass="${actionBean['class'].name}" event="editSchemas">Edit schemas
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                             </stripes:link>
                         </li>
@@ -134,14 +134,14 @@
                             </c:when>
                             <c:otherwise>
                                 <li>
-                                   <stripes:link beanclass="${actionBean.class.name}" event="checkIn">Check in
+                                   <stripes:link beanclass="${actionBean['class'].name}" event="checkIn">Check in
                                        <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
                                    </stripes:link>
                                </li>
                             </c:otherwise>
                         </c:choose>
                         <li>
-                            <stripes:link beanclass="${actionBean.class.name}" event="undoCheckout">Undo checkout
+                            <stripes:link beanclass="${actionBean['class'].name}" event="undoCheckout">Undo checkout
                                 <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
                             </stripes:link>
                         </li>
@@ -154,7 +154,7 @@
                         </c:if>
                         <c:if test="${actionBean.checkoutAllowed}">
                             <li>
-                                <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
+                                <stripes:link beanclass="${actionBean['class'].name}" event="checkOut">Check out
                                     <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
                                 </stripes:link>
                             </li>
@@ -174,7 +174,7 @@
         <div class="note-msg">
             <strong>Note</strong>
             <p>You have a
-                <stripes:link beanclass="${actionBean.class.name}">
+                <stripes:link beanclass="${actionBean['class'].name}">
                     <stripes:param name="schemaSet.identifier" value="${schemaSetWorkingCopy.identifier}"/>
                     <stripes:param name="workingCopy" value="true"/>
                     working copy
@@ -342,7 +342,7 @@
         <h2>Other versions of this schema set</h2>
         <display:table name="${actionBean.otherVersions}" class="datatable" id="otherVersion" style="width:80%">
             <display:column title="Identifier">
-                <stripes:link beanclass="${actionBean.class.name}" title="Open schema set details">
+                <stripes:link beanclass="${actionBean['class'].name}" title="Open schema set details">
                     <stripes:param name="schemaSet.identifier" value="${otherVersion.identifier}"/>
                     <stripes:param name="workingCopy" value="${otherVersion.workingCopy}"/>
                     <c:out value="${otherVersion.identifier}"/>
@@ -364,7 +364,7 @@
     <%-- The dialog for creating a new version (a div that is hidden unless activated) --%>
 
     <div id="newVersionDialog" title="Create new version">
-        <stripes:form beanclass="${actionBean.class.name}" method="get">
+        <stripes:form beanclass="${actionBean['class'].name}" method="get">
 
             <div class="note-msg">
                 <strong>Note</strong>
@@ -385,7 +385,7 @@
     <%-- The dialog for doing the check-in (a div that is hidden unless activated) --%>
 
     <div id="checkInDialog" title="Check in">
-        <stripes:form beanclass="${actionBean.class.name}" method="get">
+        <stripes:form beanclass="${actionBean['class'].name}" method="get">
 
             <div class="note-msg">
                 <strong>Note</strong>
@@ -406,7 +406,7 @@
     <%-- The dialog for uploading a schema (a div that is hidden unless activated) --%>
 
     <div id="uploadSchemaDialog" title="Upload schema">
-        <stripes:form beanclass="${actionBean.class.name}" method="post">
+        <stripes:form beanclass="${actionBean['class'].name}" method="post">
 
             <label for="fileToUpload">File to upload*:</label>
             <stripes:file name="uploadedFile" id="fileToUpload" size="40"/>
@@ -429,7 +429,7 @@
     </div>
 
     <div id="uploadDocumentDialog" title="Upload document">
-        <stripes:form beanclass="${actionBean.class.name}" method="post">
+        <stripes:form beanclass="${actionBean['class'].name}" method="post">
 
             <label for="fileToUpload">File to upload*:</label>
             <stripes:file name="uploadedFile" id="fileToUpload" size="40"/>

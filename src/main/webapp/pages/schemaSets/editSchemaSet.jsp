@@ -18,7 +18,7 @@
         </div>
     </c:if>
 
-    <stripes:form id="form1" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
+    <stripes:form id="form1" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
         <div id="outerframe">
             <table class="datatable">
                 <colgroup>
