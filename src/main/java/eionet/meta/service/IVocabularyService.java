@@ -608,4 +608,22 @@ public interface IVocabularyService {
      *             if operation fails
      */
     List<VocabularyFolder> getRecentlyReleasedVocabularyFolders(int limit) throws ServiceException;
+
+    /**
+     * Returns the list of concept ids for the vocabulary folder
+     *
+     * @param vocabularyFolderId vocabulary folder id
+     * @return list of concept ids
+     */
+    List<Integer> getVocabularyConceptIds(int vocabularyFolderId);
+
+    /**
+     * Creates a filter for the bound data element based on the specified vocabulary concepts
+     *
+     * @param dataElementId bound data element id
+     * @param vocabularyConceptIds list of vocabulary concept ids
+     * @return dynamic filter
+     */
+    VocabularyConceptBoundElementFilter getVocabularyConceptBoundElementFilter(int dataElementId, List<Integer> vocabularyConceptIds);
+
 }

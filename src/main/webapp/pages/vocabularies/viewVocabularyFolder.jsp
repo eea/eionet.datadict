@@ -246,36 +246,128 @@
                 <stripes:hidden name="vocabularyFolder.folderName" />
                 <stripes:hidden name="vocabularyFolder.identifier" />
                 <stripes:hidden name="vocabularyFolder.workingCopy" />
-                <table class="datatable">
-                    <colgroup>
-                        <col style="width:10em;"/>
-                        <col />
-                        <col style="width:10em;"/>
-                        <col />
-                        <col />
-                    </colgroup>
+                <table class="datatable" width="100%">
                     <tr>
-                        <th scope="row" class="scope-row simple_attr_title" title="Text to filter from label, notation and definition">
-                            <label for="filterText"><span style="white-space:nowrap;">Filtering text</span></label>
-                        </th>
-                        <td class="simple_attr_value">
-                            <stripes:text class="smalltext" size="30" name="filter.text" id="filterText"/>
-                        </td>
-                        <th scope="row" class="scope-row simple_attr_title" title="Concept's status">
-                            <label for="status"><span style="white-space:nowrap;">Status</span></label>
-                        </th>
-                        <td class="simple_attr_value" style="padding-right: 5em;">
-                            <stripes:select name="filter.conceptStatusInt" id="status">
-                                <stripes:option value="255" label="All concepts"/>
-                                <stripes:options-collection collection="<%=eionet.meta.dao.domain.StandardGenericStatus.valuesAsList()%>" label="label" value="value"/>
-                            </stripes:select>
-                        </td>
                         <td>
-                            <stripes:submit name="view" value="Search" class="mediumbuttonb"/>
+                            <table id="filtersTable">
+                                <tr>
+                                    <th scope="row" class="scope-row simple_attr_title" title="Text to filter from label, notation and definition">
+                                        <label for="filterText"><span style="white-space:nowrap;">Filtering text</span></label>
+                                    </th>
+                                    <td class="simple_attr_value">
+                                        <stripes:text class="smalltext" size="30" name="filter.text" id="filterText"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="scope-row simple_attr_title" title="Concept's status">
+                                        <label for="status"><span style="white-space:nowrap;">Status</span></label>
+                                    </th>
+                                    <td class="simple_attr_value" style="padding-right: 5em;">
+                                        <stripes:select name="filter.conceptStatusInt" id="status">
+                                            <stripes:option value="255" label="All concepts"/>
+                                            <stripes:options-collection collection="<%=eionet.meta.dao.domain.StandardGenericStatus.valuesAsList()%>" label="label" value="value"/>
+                                        </stripes:select>
+                                    </td>
+                                </tr>
+                                <c:forEach items="${actionBean.boundElementFilters}" var="boundElementFilter" varStatus="loop">
+                                    <tr id="boundElementFilterRow-${boundElementFilter.id}" data-filter-id="${boundElementFilter.id}" class="boundElementFilter">
+                                        <th scope="row" class="scope-row simple_attr_title" title="${fn:escapeXml(boundElementFilter.label)}">
+                                            <label for="boundElementFilter-${boundElementFilter.id}"><span style="white-space:nowrap;"><c:out value="${boundElementFilter.label}" /></span></label>
+                                        </th>
+                                        <td class="simple_attr_value" style="padding-right: 5em;">
+                                            <stripes:hidden name="filter.boundElements[${loop.index}].id" value="${boundElementFilter.id}" class="boundElementFilterId" />
+                                            <stripes:select name="filter.boundElements[${loop.index}].value" class="boundElementFilterSelect">
+                                                <stripes:option value="" label="All" />
+                                                <stripes:options-map map="${boundElementFilter.options}" />
+                                            </stripes:select>
+                                            <c:url var="delIcon" value="/images/button_remove.gif" />
+                                            <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                <tr id="visibleDefinitionRow">
+                                    <th scope="row" class="scope-row simple_attr_title" title="Show concept's definition">
+                                        <label for="visibleDefinition"><span style="white-space:nowrap;">Show definition</span></label>
+                                    </th>
+                                    <td class="simple_attr_value">
+                                        <stripes:checkbox name="filter.visibleDefinition" id="visibleDefinition" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <stripes:submit name="view" value="Search" class="mediumbuttonb"/>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
+                        <c:if test="${fn:length(actionBean.boundElements)>0}">
+                            <td>
+                                <table>
+                                    <tr>
+                                        <th scope="row" title="Add a filter from the list">
+                                            <label for="addFilter"><span style="white-space:nowrap;">Add filter</span></label>
+                                        </th>
+                                        <td>
+                                            <select id="addFilter">
+                                                <option value=""></option>
+                                                <c:forEach var="boundElement" items="${actionBean.boundElements}">
+                                                    <option value="${boundElement.id}"<c:if test="${fn:contains(actionBean.boundElementFilterIds, boundElement.id)}">disabled="disabled"</c:if>><c:out value="${boundElement.identifier}" /></option>
+                                                </c:forEach>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </c:if>
                     </tr>
                 </table>
             </div>
+            <script type="text/javascript">
+            // <![CDATA[
+                (function($) {
+                    $(document).ready(function() {
+                        $("#addFilter").change(function() {
+                            if ($(this).val()==="") {
+                                return;
+                            }
+                            $.ajax({
+                                url: '/datadict/vocabulary',
+                                data: { 
+                                    'boundElementFilterId': $(this).val(),
+                                    'boundElementFilterIndex': $(".boundElementFilter").length,
+                                    'vocabularyFolderId': ${actionBean.vocabularyFolder.id},
+                                    '_eventName': 'constructBoundElementFilter'
+                                },
+                                success:function(data) {
+                                    $("#visibleDefinitionRow").before(data);
+                                }
+                            });
+                            var $selectedOption = $("#addFilter option:selected");
+                            $selectedOption.prop("disabled", true);
+                            $(this).val("");
+                        });
+                        
+                        $("a.delLink").live("click", function() {
+                            var $row = $(this).closest("tr.boundElementFilter");
+                            var filterId = $row.data("filterId");
+                            $('#addFilter option[value=' + filterId +']').prop('disabled', false);
+                            $row.remove();
+
+                            // recalculate bound element names
+                            $('.boundElementFilterId').each(function(index) {
+                                $(this).attr("name", "filter.boundElements[" + index + "].id");
+                            });
+                            $('.boundElementFilterSelect').each(function(index) {
+                                $(this).attr("name", "filter.boundElements[" + index + "].value");
+                            });
+                            
+                            return false;
+                        });
+                    });
+                }) (jQuery);
+            // ]]>
+            </script>
         </stripes:form>
 
         <%-- Vocabulary concepts --%>
@@ -302,7 +394,7 @@
                 <c:choose>
                     <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
                         <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view" title="${concept.label}">
-														<stripes:param name="facet" value="HTML Representation"/> <!-- Discourage people from copy-paste of the link -->
+                            <stripes:param name="facet" value="HTML Representation"/> <!-- Discourage people from copy-paste of the link -->
                             <dd:attributeValue attrValue="${concept.label}" attrLen="40"/>
                         </stripes:link>
                     </c:when>
@@ -314,6 +406,11 @@
                     </c:otherwise>
                 </c:choose>
             </display:column>
+            <c:if test="${actionBean.filter.visibleDefinition}">
+                <display:column title="Definition" escapeXml="false" style="width: 15%">
+                    <dd:attributeValue attrValue="${concept.definition}" />
+                </display:column>
+            </c:if>
             <display:column title="Status" escapeXml="false" style="width: 15%">
                 <dd:attributeValue attrValue="${concept.status.label}"/>
             </display:column>

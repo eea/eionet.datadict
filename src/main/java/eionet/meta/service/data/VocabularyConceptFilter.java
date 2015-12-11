@@ -24,6 +24,7 @@ package eionet.meta.service.data;
 import java.util.List;
 
 import eionet.meta.dao.domain.StandardGenericStatus;
+import java.util.ArrayList;
 
 /**
  * Vocabulary concept search filter.
@@ -60,19 +61,22 @@ public class VocabularyConceptFilter extends PagedRequest {
 
     /** Concept id's that get returned. */
     private List<Integer> includedIds;
-    
+
     /**
      * if true only exact match is searched in textual fields.
      */
     private boolean exactMatch = false;
+
     /**
      * if true results are search where one or more fields contain the text as a separate word.
      */
     private boolean wordMatch = false;
+
     /**
      * search from vocabulary label or identifier.
      */
     private String vocabularyText;
+
     /** vocabulary sets to not search from. */
     private List<Integer> excludedVocabularySetIds;
 
@@ -80,10 +84,21 @@ public class VocabularyConceptFilter extends PagedRequest {
      * Status of concept.
      */
     private StandardGenericStatus conceptStatus;
+
     /**
      * Status exact match.
      */
     private boolean statusExactMatch = false;
+
+    /**
+     *  list of bound element filter results
+     */
+    private List<BoundElementFilterResult> boundElements = new ArrayList<BoundElementFilterResult>();
+
+    /**
+     * True if definition should be visible in the results list
+     */
+    private boolean visibleDefinition;
 
     /**
      * @return the vocabularyFolderId
@@ -278,4 +293,52 @@ public class VocabularyConceptFilter extends PagedRequest {
     public void setStatusExactMatch(boolean statusExactMatch) {
         this.statusExactMatch = statusExactMatch;
     }
+
+    public List<BoundElementFilterResult> getBoundElements() {
+        return boundElements;
+    }
+
+    public void setBoundElements(List<BoundElementFilterResult> boundElements) {
+        this.boundElements = boundElements;
+    }
+
+    public List<Integer> getBoundElementIds() {
+        List<Integer> boundElementIds = new ArrayList<Integer>();
+        for (BoundElementFilterResult boundElement : boundElements) {
+            boundElementIds.add(boundElement.getId());
+        }
+        return boundElementIds;
+    }
+
+    public boolean isVisibleDefinition() {
+        return visibleDefinition;
+    }
+
+    public void setVisibleDefinition(boolean visibleDefinition) {
+        this.visibleDefinition = visibleDefinition;
+    }
+
+    public static class BoundElementFilterResult {
+
+        private int id;
+        private String value;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+    }
+
 }

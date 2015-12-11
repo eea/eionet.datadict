@@ -63,6 +63,7 @@ import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Triple;
@@ -991,6 +992,22 @@ public class VocabularyServiceImpl implements IVocabularyService {
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> getVocabularyConceptIds(int vocabularyFolderId) {
+        return vocabularyConceptDAO.getVocabularyConceptIds(vocabularyFolderId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public VocabularyConceptBoundElementFilter getVocabularyConceptBoundElementFilter(int dataElementId, List<Integer> vocabularyConceptIds) {
+        return dataElementDAO.getVocabularyConceptBoundElementFilter(dataElementId, vocabularyConceptIds);
     }
 
     /**

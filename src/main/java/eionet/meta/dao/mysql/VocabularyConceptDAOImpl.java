@@ -27,6 +27,7 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptFilter.BoundElementFilterResult;
 import eionet.meta.service.data.VocabularyConceptResult;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -97,10 +98,12 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("s.IDENTIFIER as VOCSET_IDENTIFIER ");
         sql.append("from VOCABULARY_CONCEPT c, VOCABULARY v, VOCABULARY_SET s ");
         sql.append("where v.VOCABULARY_ID = c.VOCABULARY_ID AND v.FOLDER_ID = s.ID ");
+
         if (filter.getVocabularyFolderId() > 0) {
             params.put("vocabularyFolderId", filter.getVocabularyFolderId());
             sql.append("and c.VOCABULARY_ID=:vocabularyFolderId ");
         }
+
         if (StringUtils.isNotEmpty(filter.getText())) {
             if (filter.isWordMatch()) {
                 params.put("text", "[[:<:]]" + filter.getText() + "[[:>:]]");
@@ -124,22 +127,27 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 sql.append("or c.IDENTIFIER like :text) ");
             }
         }
+
         if (StringUtils.isNotEmpty(filter.getIdentifier())) {
             params.put("identifier", filter.getIdentifier());
             sql.append("and c.IDENTIFIER = :identifier ");
         }
+
         if (StringUtils.isNotEmpty(filter.getDefinition())) {
             params.put("definition", filter.getDefinition());
             sql.append("and c.DEFINITION = :definition ");
         }
+
         if (StringUtils.isNotEmpty(filter.getLabel())) {
             params.put("label", filter.getLabel());
             sql.append("and c.LABEL = :label ");
         }
+
         if (filter.getExcludedIds() != null && !filter.getExcludedIds().isEmpty()) {
             params.put("excludedIds", filter.getExcludedIds());
             sql.append("and c.VOCABULARY_CONCEPT_ID not in (:excludedIds) ");
         }
+
         if (filter.getIncludedIds() != null && !filter.getIncludedIds().isEmpty()) {
             params.put("includedIds", filter.getIncludedIds());
             sql.append("and c.VOCABULARY_CONCEPT_ID in (:includedIds) ");
@@ -166,6 +174,22 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         if (filter.getExcludedVocabularySetIds() != null && filter.getExcludedVocabularySetIds().size() > 0) {
             params.put("excludedVocSetIds", filter.getExcludedVocabularySetIds());
             sql.append("AND s.ID NOT IN (:excludedVocSetIds) ");
+        }
+
+        if (!filter.getBoundElements().isEmpty()) {
+            int index = 0;
+            for (BoundElementFilterResult boundElement : filter.getBoundElements()) {
+                if (StringUtils.isNotBlank(boundElement.getValue())) {
+                    String keyParam = "key" + index;
+                    params.put(keyParam, boundElement.getId());
+                    String valueParam = "value" + index;
+                    params.put(valueParam, boundElement.getValue());
+                    sql.append("and c.VOCABULARY_CONCEPT_ID in (select e.VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT_ELEMENT e where e.DATAELEM_ID = :" + keyParam + " ");
+                    sql.append("and (e.RELATED_CONCEPT_ID = :" + valueParam + " ");
+                    sql.append("or e.ELEMENT_VALUE = :" + valueParam + ")) ");
+                    index++;
+                }
+            }
         }
 
         if (filter.isOrderByConceptId()) {
@@ -700,5 +724,23 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         return resultList;
     } // end of method getValidConceptsWithValuedElements
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> getVocabularyConceptIds(int vocabularyFolderId) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyFolderId", vocabularyFolderId);
+        
+        String sql = "select VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT where VOCABULARY_ID=:vocabularyFolderId";
+        List<Integer> resultList =
+                getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<Integer>() {
+                    @Override
+                    public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        return new Integer(rs.getInt("VOCABULARY_CONCEPT_ID"));
+                    }
+                });
+        return resultList;
+    }
 
 }
