@@ -21,6 +21,16 @@
 
 package eionet.meta.exports.json;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.exports.VocabularyOutputHelper;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import org.apache.commons.lang.StringUtils;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -28,18 +38,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.exports.VocabularyOutputHelper;
-import eionet.util.Props;
-import eionet.util.PropsIF;
 
 /**
  * Vocabulary JSON output helper.
@@ -76,6 +74,10 @@ public final class VocabularyJSONOutputHelper {
      */
     public static final String JSON_LD_CONCEPTS = "concepts";
     /**
+     * Messages keyword.
+     */
+    public static final String MESSAGES = "messages";
+    /**
      * Skos concept keyword.
      */
     public static final String SKOS_CONCEPT = "skos:Concept";
@@ -111,6 +113,7 @@ public final class VocabularyJSONOutputHelper {
      * Short data elem names to data elem identifer map.
      */
     private static final Map<String, String> DATA_ELEM_MAP = new HashMap<String, String>();
+
     static {
         DATA_ELEM_MAP.put(JSON_LD_CONCEPTS, SKOS_CONCEPT);
         DATA_ELEM_MAP.put(PREF_LABEL, SKOS_PREF_LABEL);
@@ -258,6 +261,38 @@ public final class VocabularyJSONOutputHelper {
         } // end of iteration on concepts
         generator.writeEndArray();
         // end of vocabulary name
+        generator.writeEndObject();
+
+        // close writer and stream
+        generator.close();
+        osw.close();
+    } // end of static method writeJSON
+
+    /**
+     * Writes given list of messages as JSON array.
+     *
+     * @param out      output stream
+     * @param messages message list
+     * @throws java.io.IOException if error in I/O
+     */
+    public static void writeJSON(OutputStream out, List<String> messages)
+            throws IOException {
+        OutputStreamWriter osw = new OutputStreamWriter(out, "UTF-8");
+
+        JsonFactory f = new JsonFactory();
+        JsonGenerator generator = f.createGenerator(out);
+        generator.useDefaultPrettyPrinter();
+
+        // start json object
+        generator.writeStartObject();
+        generator.writeArrayFieldStart(MESSAGES);
+        if (messages != null) {
+            for (String message : messages) {
+                generator.writeString(message);
+            }
+        }
+        generator.writeEndArray();
+        // end json object
         generator.writeEndObject();
 
         // close writer and stream
