@@ -79,7 +79,7 @@ public abstract class VocabularyImportServiceBaseImpl {
      * Purge/delete bound elements from vocabulary folder.
      *
      * @param vocabularyFolderId id of vocabulary folder
-     * @param boundElements     bound elements
+     * @param boundElements      bound elements
      * @throws ServiceException if an error occurs during operation
      */
     protected void purgeBoundElements(int vocabularyFolderId, List<DataElement> boundElements) throws ServiceException {
@@ -108,17 +108,17 @@ public abstract class VocabularyImportServiceBaseImpl {
         }
 
         for (VocabularyConcept vc : vocabularyConcepts) {
-            // STEP 1. INSERT VOCABULARY CONCEPT and UPDATE DATAELEMENT WHO ARE RELATED TO NEWLY CREATED CONCEPT
+            // STEP 1. INSERT VOCABULARY CONCEPT and UPDATE DATA ELEMENT WHO ARE RELATED TO NEWLY CREATED CONCEPT
             int id = vc.getId();
             if (id <= 0) {
                 // INSERT VOCABULARY CONCEPT
-                int insertedId = this.vocabularyService.createVocabularyConceptNonTransactional(vocabularyId, vc);
+                int insertedConceptId = this.vocabularyService.createVocabularyConceptNonTransactional(vocabularyId, vc);
                 // after insert operation get id of the vocabulary and set it!
-                vc.setId(insertedId);
+                vc.setId(insertedConceptId);
                 Set<DataElement> elementsRelatedToConcept = elementsRelatedToNotCreatedConcepts.get(id);
                 if (elementsRelatedToConcept != null) {
                     for (DataElement elem : elementsRelatedToConcept) {
-                        elem.setRelatedConceptId(insertedId);
+                        elem.setRelatedConceptId(insertedConceptId);
                     }
                 }
             }
@@ -130,6 +130,7 @@ public abstract class VocabularyImportServiceBaseImpl {
         }
 
         this.vocabularyService.fixRelatedReferenceElements(vocabularyId, vocabularyConcepts);
+        this.vocabularyService.fixRelatedLocalRefElementsForImport(vocabularyId, vocabularyConcepts);
 
     } // end of method importIntoDb
 

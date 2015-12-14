@@ -87,7 +87,7 @@
             <div class="note-msg">
                 <strong>Note</strong>
                 <p>You have a
-                    <stripes:link beanclass="${actionBean.class.name}" event="viewWorkingCopy">
+                    <stripes:link beanclass="${actionBean['class'].name}" event="viewWorkingCopy">
                         <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}"/>
                         <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}"/>
@@ -241,7 +241,7 @@
 
         <!-- Vocabulary concepts search -->
         <h2>Vocabulary concepts</h2>
-        <stripes:form method="get" id="searchForm" beanclass="${actionBean.class.name}">
+        <stripes:form method="get" id="searchForm" beanclass="${actionBean['class'].name}">
             <div id="searchframe">
                 <stripes:hidden name="vocabularyFolder.folderName" />
                 <stripes:hidden name="vocabularyFolder.identifier" />

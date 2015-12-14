@@ -21,8 +21,17 @@
 
 package eionet.meta.service;
 
-import eionet.meta.dao.domain.*;
-import eionet.meta.service.data.*;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.RdfNamespace;
+import eionet.meta.dao.domain.SimpleAttribute;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.VocabularyConceptData;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
 
 import java.util.List;
@@ -226,7 +235,7 @@ public interface IVocabularyService {
      * @throws ServiceException if operation fails
      */
     List<VocabularyConcept> getValidConceptsWithAttributes(int vocabularyFolderId, String conceptIdentifier, String label,
-            String elementIdentifier, String language, String defaultLanguage) throws ServiceException;
+                                                           String elementIdentifier, String language, String defaultLanguage) throws ServiceException;
 
     /**
      * Creates new vocabulary concept into database.
@@ -269,8 +278,8 @@ public interface IVocabularyService {
      * Updates vocabulary concept in non-transactional.
      *
      * @param vocabularyConcept concept
-     * @param handleInverse if true inverseOf relations are handled.
-     *                      Obligatory in the application bu importer it may cause problems
+     * @param handleInverse     if true inverseOf relations are handled.
+     *                          Obligatory in the application bu importer it may cause problems
      * @throws ServiceException if operation fails
      */
     void updateVocabularyConceptNonTransactional(VocabularyConcept vocabularyConcept, boolean handleInverse) throws ServiceException;
@@ -600,12 +609,19 @@ public interface IVocabularyService {
     void fixRelatedReferenceElements(int vocabularyId, List<VocabularyConcept> concepts);
 
     /**
+     * fix inverse relations in local vocabulary other concepts for import.
+     *
+     * @param vocabularyId this vocabulary ID
+     * @param concepts     concepts of the vocabulary
+     */
+    void fixRelatedLocalRefElementsForImport(int vocabularyId, List<VocabularyConcept> concepts) throws ServiceException;
+
+    /**
      * Returns list of recently released vocabulary folders.
      *
      * @param limit maximum number of vocabulary folders
      * @return list of vocabulary folders
-     * @throws ServiceException
-     *             if operation fails
+     * @throws ServiceException if operation fails
      */
     List<VocabularyFolder> getRecentlyReleasedVocabularyFolders(int limit) throws ServiceException;
 }

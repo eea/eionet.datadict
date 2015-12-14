@@ -43,7 +43,7 @@
                 ${item.regStatus.label}
             </display:column>
             <display:column title="Select" sortable="false">
-                <stripes:link beanclass="${actionBean.class.name}" event="bind" title="Click to select the vocabulary as the source for the element values">
+                <stripes:link beanclass="${actionBean['class'].name}" event="bind" title="Click to select the vocabulary as the source for the element values">
                     <stripes:param name="elementId" value="${actionBean.elementId}" />
                     <stripes:param name="vocabularyId" value="${item.id}" />
                     [Select]

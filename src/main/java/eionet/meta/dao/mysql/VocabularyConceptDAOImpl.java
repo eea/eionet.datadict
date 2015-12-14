@@ -680,6 +680,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         elem.setRelatedConceptLabel(rs.getString("RCONCEPTLABEL"));
                         elem.setRelatedConceptBaseURI(rs.getString("RVOCBASE_URI"));
                     }
+                    //TODO check here
                     // add Datatype - is used in RDF output
                     String dataType = rs.getString("DATATYPE");
                     if (dataType != null) {

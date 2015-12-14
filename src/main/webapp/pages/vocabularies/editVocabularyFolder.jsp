@@ -207,7 +207,7 @@
             </div>
         </c:if>
 
-        <stripes:form id="editVocabularyFolderForm" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
+        <stripes:form id="editVocabularyFolderForm" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
         <div id="outerframe">
             <stripes:hidden name="vocabularyFolder.id" />
             <stripes:hidden name="vocabularyFolder.workingCopy" />
@@ -375,7 +375,7 @@
         <!-- Vocabulary concepts search -->
         <h2>Vocabulary concepts</h2>
 
-        <stripes:form method="get" id="searchForm" beanclass="${actionBean.class.name}">
+        <stripes:form method="get" id="searchForm" beanclass="${actionBean['class'].name}">
             <div id="searchframe">
                 <stripes:hidden name="vocabularyFolder.folderName" />
                 <stripes:hidden name="vocabularyFolder.workingCopy" />
@@ -417,7 +417,7 @@
 
         <!-- Vocabulary concepts -->
         <c:url var="editIcon" value="/images/edit.gif" />
-        <stripes:form method="post" id="conceptsForm" beanclass="${actionBean.class.name}">
+        <stripes:form method="post" id="conceptsForm" beanclass="${actionBean['class'].name}">
             <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="concept" style="width:80%"
                 requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/edit">
                 <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
@@ -485,7 +485,7 @@
         <!-- Vocabulary concept edit forms -->
         <c:forEach var="item" items="${actionBean.vocabularyConcepts.list}" varStatus="loop">
             <div id="editConceptDiv${item.id}" title="Edit concept" style="display:none">
-                <stripes:form id="form${item.id}" method="post" beanclass="${actionBean.class.name}">
+                <stripes:form id="form${item.id}" method="post" beanclass="${actionBean['class'].name}">
 
                     <c:set var="divId" value="editConceptDiv${item.id}" />
                     <c:if test="${actionBean.editDivId eq divId}">
@@ -578,7 +578,7 @@
 
 	    <%-- The upload CSV dialog. Hidden unless activated. --%>
 	    <div id="uploadCSVDialog" title="Upload CSV">
-	        <stripes:form beanclass="${actionBean.class.name}" method="post">
+	        <stripes:form beanclass="${actionBean['class'].name}" method="post">
 	        	<stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                 <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
                 <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
@@ -614,7 +614,7 @@
 
 	    <%-- The upload RDF dialog. Hidden unless activated. --%>
 	    <div id="uploadRDFDialog" title="Upload RDF">
-	        <stripes:form id="uploadRDFForm" beanclass="${actionBean.class.name}" method="post" action="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/uploadRdf">
+	        <stripes:form id="uploadRDFForm" beanclass="${actionBean['class'].name}" method="post" action="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/uploadRdf">
 	        	<stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                 <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
                 <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />

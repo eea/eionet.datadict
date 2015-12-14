@@ -124,12 +124,12 @@
         <c:url var="collapseIcon" value="/images/collapse.png" />
         <c:url var="editIcon" value="/images/edit.gif" />
         <c:url var="rdfIcon" value="/images/rdf-icon.gif" />
-        <stripes:form id="vocabulariesForm" beanclass="${actionBean.class.name}" method="post" style="margin-top:1em">
+        <stripes:form id="vocabulariesForm" beanclass="${actionBean['class'].name}" method="post" style="margin-top:1em">
             <div class="tree-nav">
             <ul class="menu">
                 <c:forEach var="folder" items="${actionBean.folders}">
                 <li>
-                    <stripes:link beanclass="${actionBean.class.name}">
+                    <stripes:link beanclass="${actionBean['class'].name}">
                         <stripes:param name="folderId" value="${folder.id}" />
                         <stripes:param name="expand" value="${not folder.expanded}" />
                         <stripes:param name="expanded" value="${actionBean.expanded}" />
@@ -139,7 +139,7 @@
                         </c:choose>
                     </stripes:link>
 
-                    <stripes:link beanclass="${actionBean.class.name}" class="${folder.expanded ? 'expanded' : 'collapsed'}">
+                    <stripes:link beanclass="${actionBean['class'].name}" class="${folder.expanded ? 'expanded' : 'collapsed'}">
                         <stripes:param name="folderId" value="${folder.id}" />
                         <stripes:param name="expand" value="${not folder.expanded}" />
                         <stripes:param name="expanded" value="${actionBean.expanded}" />
@@ -224,7 +224,7 @@
         <c:forEach var="item" items="${actionBean.folders}" varStatus="loop">
           <c:if test="${item.expanded && not empty actionBean.user  && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'u')}">
             <div id="editFolderDiv${item.id}" title="Edit folder" class="editFolderDiv">
-                <stripes:form id="form${item.id}" method="post" beanclass="${actionBean.class.name}">
+                <stripes:form id="form${item.id}" method="post" beanclass="${actionBean['class'].name}">
 
                     <c:set var="divId" value="editFolderDiv${item.id}" />
                     <c:if test="${actionBean.editDivId eq divId}">

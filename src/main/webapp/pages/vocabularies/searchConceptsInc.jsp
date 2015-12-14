@@ -110,7 +110,7 @@
 
 <!--  Search concepts div -->
 <div id="addCH3ConceptDiv" title="Find a concept" style="display:inline">
-    <stripes:form method="post" beanclass="${actionBean.class.name}" id="frmSearchCH3Concept">
+    <stripes:form method="post" beanclass="${actionBean['class'].name}" id="frmSearchCH3Concept">
         <div>
             <stripes:hidden name="vocabularyConcept.identifier" />
             <stripes:hidden name="vocabularyFolder.folderName" />
@@ -167,7 +167,7 @@
                         </display:column>
                     </c:if>
                     <display:column title="Concept" sortable="true" sortProperty="identifier">
-                        <stripes:link beanclass="${actionBean.class.name}" event="addRelatedConcept" title="Select the concept">
+                        <stripes:link beanclass="${actionBean['class'].name}" event="addRelatedConcept" title="Select the concept">
                             <stripes:param name="conceptId" value="${item.id}" />
                             <c:if test="${not empty actionBean.elementId}">
                                 <stripes:param name="elementId" value="${actionBean.elementId}" />
@@ -192,7 +192,7 @@
 
 <!--  Search concepts div -->
 <div id="addConceptDiv" title="Step 2/2: Find concept">
-    <stripes:form method="post" beanclass="${actionBean.class.name}" id="frmSearchConcept">
+    <stripes:form method="post" beanclass="${actionBean['class'].name}" id="frmSearchConcept">
         <div>
             <stripes:hidden name="vocabularyConcept.identifier" />
             <stripes:hidden name="vocabularyFolder.folderName" />
@@ -238,7 +238,7 @@
                     <td class="simple_attr_value">
                         <c:forEach var="vocabularySet" items="${actionBean.relatedVocabularyConcepts.vocabularySets}">
                             <c:out value="${vocabularySet.label} "/>
-                            <stripes:link beanclass="${actionBean.class.name}" event="searchConcepts" title="Exclude the vocabulary set from search">
+                            <stripes:link beanclass="${actionBean['class'].name}" event="searchConcepts" title="Exclude the vocabulary set from search">
                                 <c:if test="${not empty actionBean.elementId}">
                                     <stripes:param name="elementId" value="${actionBean.elementId}" />
                                 </c:if>
@@ -313,7 +313,7 @@
                     </c:if>
                     <display:column title="Concept" sortable="true" sortProperty="identifier">
 
-                            <stripes:link beanclass="${actionBean.class.name}" event="addRelatedConcept" title="Select the concept">
+                            <stripes:link beanclass="${actionBean['class'].name}" event="addRelatedConcept" title="Select the concept">
                                 <stripes:param name="conceptId" value="${item.id}" />
                                 <c:if test="${not empty actionBean.elementId}">
                                     <stripes:param name="elementId" value="${actionBean.elementId}" />
@@ -346,7 +346,7 @@
 
 <!--  Search vocabularies div -->
 <div id="findVocabularyDiv" title="Step 1/2: Find vocabulary or concept">
-    <stripes:form method="post" beanclass="${actionBean.class.name}">
+    <stripes:form method="post" beanclass="${actionBean['class'].name}">
         <div>
             <stripes:hidden name="vocabularyFolder.folderName" />
             <stripes:hidden name="vocabularyFolder.identifier" />
@@ -395,7 +395,7 @@
                         ${item.folderName}
                     </display:column>
                     <display:column title="Vocabulary" sortable="true" sortProperty="identifier">
-                        <stripes:link beanclass="${actionBean.class.name}" event="searchConcepts" title="Show concepts">
+                        <stripes:link beanclass="${actionBean['class'].name}" event="searchConcepts" title="Show concepts">
                             <c:if test="${not empty actionBean.elementId}">
                                 <stripes:param name="elementId" value="${actionBean.elementId}" />
                             </c:if>

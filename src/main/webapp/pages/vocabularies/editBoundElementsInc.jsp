@@ -68,7 +68,7 @@
         </c:if>
     </display:column>
     <display:column>
-        <stripes:link beanclass="${actionBean.class.name}" event="removeDataElement">
+        <stripes:link beanclass="${actionBean['class'].name}" event="removeDataElement">
             <stripes:param name="elementId" value="${item.id}" />
             <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
@@ -85,7 +85,7 @@
 <br />
 
 <div id="addElementsDiv" title="Add new data element">
-    <stripes:form method="post" beanclass="${actionBean.class.name}">
+    <stripes:form method="post" beanclass="${actionBean['class'].name}">
         <div>
         <stripes:hidden name="vocabularyFolder.folderName" />
         <stripes:hidden name="vocabularyFolder.identifier" />
@@ -116,7 +116,7 @@
         <display:column title="Element" sortable="true" sortProperty="identifier">
             <c:choose>
                 <c:when test="${item.released}">
-                    <stripes:link beanclass="${actionBean.class.name}" event="addDataElement">
+                    <stripes:link beanclass="${actionBean['class'].name}" event="addDataElement">
                         <stripes:param name="elementId" value="${item.id}" />
                         <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
                         <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />

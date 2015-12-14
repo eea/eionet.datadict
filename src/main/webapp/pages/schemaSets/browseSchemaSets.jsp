@@ -26,7 +26,7 @@
                 <li><a href="${pageContext.request.contextPath}/schemasets/search/">Search schema sets</a></li>
                 <li><a href="${pageContext.request.contextPath}/schema/search/">Search schemas</a></li>
                 <c:if test="${not empty actionBean.user}">
-                    <stripes:link beanclass="${actionBean.class.name}" event="workingCopies">
+                    <stripes:link beanclass="${actionBean['class'].name}" event="workingCopies">
                         List my working copies
                     </stripes:link>
                 </c:if>

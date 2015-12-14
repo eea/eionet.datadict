@@ -40,7 +40,7 @@
                     <a href="#" id="uploadSchemaLink">Upload schema</a>
                 </li>
                 <li>
-                    <stripes:link beanclass="${actionBean.class.name}">Back to schema set
+                    <stripes:link beanclass="${actionBean['class'].name}">Back to schema set
                         <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                         <stripes:param name="workingCopy" value="${actionBean.schemaSet.workingCopy}"/>
                     </stripes:link>
@@ -48,7 +48,7 @@
             </ul>
         </div>
 
-        <stripes:url var="schemaSetUrl" beanclass="${actionBean.class.name}">
+        <stripes:url var="schemaSetUrl" beanclass="${actionBean['class'].name}">
             <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
             <stripes:param name="workingCopy" value="${actionBean.schemaSet.workingCopy}"/>
         </stripes:url>
@@ -63,7 +63,7 @@
         </c:if>
 
         <c:if test="${not empty actionBean.schemas}">
-            <stripes:form id="schemasForm" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
+            <stripes:form id="schemasForm" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
                 <stripes:hidden name="schemaSet.id"/>
                 <display:table name="${actionBean.schemas}" class="datatable" id="schema" style="width:80%">
                     <display:column>
@@ -91,7 +91,7 @@
         </c:if>
 
         <div id="uploadSchemaDialog" title="Upload schema">
-            <stripes:form beanclass="${actionBean.class.name}" method="post">
+            <stripes:form beanclass="${actionBean['class'].name}" method="post">
 
                 <label for="fileToUpload">File to upload*:</label>
                 <stripes:file name="uploadedFile" id="fileToUpload" size="40"/>

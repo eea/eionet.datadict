@@ -206,7 +206,7 @@
                 <div class="important-msg">
                     <strong>Country: ${allocations.country.definition}</strong>
                     <p>Number of allocated, used codes: <strong>${allocations.usedCodes}</strong>
-                            <stripes:link beanclass="${actionBean.class.name}" event="search">
+                            <stripes:link beanclass="${actionBean['class'].name}" event="search">
                                 <stripes:param name="filter.countryCode" value="${allocations.country.value}" />
                                 <stripes:param name="filter.allocatedUsedStatuses" value="true" />
                                 See the list
@@ -215,7 +215,7 @@
                     <c:choose>
                         <c:when test="${allocations.unusedCodes > 0}">
                             <p style="color:red">Number of allocated, unused codes: <strong>${allocations.unusedCodes}</strong>
-                            <stripes:link beanclass="${actionBean.class.name}" event="search">
+                            <stripes:link beanclass="${actionBean['class'].name}" event="search">
                                 <stripes:param name="filter.countryCode" value="${allocations.country.value}" />
                                 <stripes:param name="filter.status" value="${actionBean.allocatedStatus}" />
                                 See the list
@@ -235,7 +235,7 @@
         </c:if>
 
         <%-- Site codes search --%>
-        <stripes:form method="get" id="searchSiteCodesForm" beanclass="${actionBean.class.name}">
+        <stripes:form method="get" id="searchSiteCodesForm" beanclass="${actionBean['class'].name}">
             <h2>Search site codes</h2>
             <table class="datatable">
                 <colgroup>
@@ -341,7 +341,7 @@
                         <p>You have the following two options how to allocate new global site codes for your sites.</p>
                     </div>
 
-                    <stripes:form method="post" id="allocateSiteCodesForm" beanclass="${actionBean.class.name}">
+                    <stripes:form method="post" id="allocateSiteCodesForm" beanclass="${actionBean['class'].name}">
                         <table class="datatable">
                             <colgroup>
                                 <col style="width:1%" />
@@ -437,7 +437,7 @@
 
         <%-- Reserve site codes range --%>
         <div id="reserveSiteCodesDialog"  title="Add new site codes">
-            <stripes:form method="post" id="reserveFreeSiteCodesForm" beanclass="${actionBean.class.name}">
+            <stripes:form method="post" id="reserveFreeSiteCodesForm" beanclass="${actionBean['class'].name}">
                 <stripes:hidden name="siteCodeFolderId" />
 
                 <div class="tip-msg">
