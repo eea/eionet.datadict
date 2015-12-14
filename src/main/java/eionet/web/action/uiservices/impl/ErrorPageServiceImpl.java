@@ -17,5 +17,9 @@ public class ErrorPageServiceImpl implements ErrorPageService {
     public Resolution createErrorResolution(ErrorActionBean.ErrorType errorType, String message) {
         return new RedirectResolution(ErrorActionBean.class).addParameter("type", errorType).addParameter("message", message);
     }
-    
+
+    @Override
+    public Resolution createErrorResolution(ErrorActionBean.ErrorType errorType, String message, String event) {
+        return new RedirectResolution(ErrorActionBean.class, event).addParameter("type", errorType).addParameter("message", message);
+    }
 }

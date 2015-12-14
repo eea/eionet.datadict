@@ -26,7 +26,6 @@ import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.meta.service.IRDFVocabularyImportService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
-import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
@@ -39,7 +38,6 @@ import org.apache.commons.lang.time.StopWatch;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -197,13 +195,13 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             MissingConceptsAction missingConceptsAction = validateAndGetMissingConceptsAction(RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION, RDF_UPLOAD_DEFAULT_MISSING_CONCEPTS_ACTION);
 
             if (this.sourceFile == null) {
-                throw new ServiceException("Source file is mandatory");
+                return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, "Source file is mandatory for import operation", ErrorActionBean.RETURN_ERROR_EVENT);
             }
 
             String fileName = this.sourceFile.getFileName();
             if (StringUtils.isEmpty(fileName) ||
                     !fileName.toLowerCase().endsWith(VocabularyFolderApiActionBean.RDF_FILE_EXTENSION)) {
-                throw new ServiceException("File should be an RDF file for import API");
+                return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, "File should be an RDF file for import API", ErrorActionBean.RETURN_ERROR_EVENT);
             }
 
             VocabularyFolder workingCopy = null;
@@ -214,19 +212,27 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                 HashMap<String, Object> errorParameters = e.getErrorParameters();
                 if (errorParameters == null ||
                         !ErrorActionBean.ErrorType.NOT_FOUND_404.equals(errorParameters.get(ErrorActionBean.ERROR_TYPE_KEY))) {
-                    throw new ServiceException("Vocabulary should NOT have a working copy", e);
+                    return super.createErrorResolution(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
                 }
             }
 
             if (workingCopy != null && workingCopy.isWorkingCopy()) {
-                throw new ServiceException("Vocabulary should NOT have a working copy");
+                return super.createErrorResolution(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy", ErrorActionBean.RETURN_ERROR_EVENT);
             }
 
-            vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(),
-                    vocabularyFolder.getIdentifier(), false);
+            try {
+                vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(),
+                        vocabularyFolder.getIdentifier(), false);
+            } catch (ServiceException e) {
+                HashMap<String, Object> errorParameters = e.getErrorParameters();
+                if (errorParameters != null &&
+                        ErrorActionBean.ErrorType.NOT_FOUND_404.equals(errorParameters.get(ErrorActionBean.ERROR_TYPE_KEY))) {
+                    return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, "Vocabulary can NOT be found: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+                }
+            }
 
             if (vocabularyFolder.isWorkingCopy()) {
-                throw new ServiceException("Vocabulary should NOT have a working copy");
+                return super.createErrorResolution(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy", ErrorActionBean.RETURN_ERROR_EVENT);
             }
 
             LOGGER.debug("Starting API RDF import operation");
@@ -254,13 +260,10 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             return result;
         } catch (ServiceException e) {
             LOGGER.error("Failed to import vocabulary RDF into db", e);
-            e.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.INVALID_INPUT);
-            throw e;
+            return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
         } catch (Exception e) {
             LOGGER.error("Failed to import vocabulary RDF into db, unexpected exception: ", e);
-            ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
-            error.setErrorMessage(e.getMessage());
-            return error;
+            return super.createErrorResolution(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR, "Failed to import vocabulary RDF into db, unexpected exception: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
         }
     } // end of method uploadRDF
 
