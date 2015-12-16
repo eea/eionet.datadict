@@ -302,6 +302,7 @@
                             </table>
                         </td>
                         <c:if test="${fn:length(actionBean.boundElements)>0}">
+                            <link type="text/css" media="all" href="<c:url value="/css/spinner.css"/>"  rel="stylesheet" />
                             <td>
                                 <table>
                                     <tr>
@@ -331,6 +332,7 @@
                             if ($(this).val()==="") {
                                 return;
                             }
+                            $("#visibleDefinitionRow").before('<div class="spinner-loader">Loading...</div>');
                             $.ajax({
                                 url: '/datadict/vocabulary',
                                 data: { 
@@ -340,7 +342,14 @@
                                     '_eventName': 'constructBoundElementFilter'
                                 },
                                 success:function(data) {
+                                    $("#visibleDefinitionRow").prev("div.spinner-loader").remove();
                                     $("#visibleDefinitionRow").before(data);
+                                },
+                                error: function() {
+                                    $("#visibleDefinitionRow").prev("div.spinner-loader").removeClass().addClass("ajaxError").text("Something went wrong. Please try again.");
+                                    setTimeout(function(){
+                                        $("#visibleDefinitionRow").prev("div.ajaxError").remove();
+                                    }, 2000);
                                 }
                             });
                             var $selectedOption = $("#addFilter option:selected");
