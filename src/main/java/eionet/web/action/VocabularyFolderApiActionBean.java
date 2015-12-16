@@ -32,9 +32,9 @@ import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -162,6 +162,8 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     /**
      * Uploaded csv/rdf file to import into vocabulary.
      */
+    //TODO - obsolete
+    //KL 151216
     private FileBean sourceFile;
 
     /**
@@ -194,6 +196,12 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             UploadAction uploadAction = validateAndGetUploadAction(RDF_UPLOAD_SUPPORTED_ACTION, RDF_UPLOAD_DEFAULT_ACTION);
             MissingConceptsAction missingConceptsAction = validateAndGetMissingConceptsAction(RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION, RDF_UPLOAD_DEFAULT_MISSING_CONCEPTS_ACTION);
 
+            //Read RDF from request body
+            HttpServletRequest request = getContext().getRequest();
+
+//TODO - FileBean obsolete
+//KL 151216
+/*
             if (this.sourceFile == null) {
                 return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, "Source file is mandatory for import operation", ErrorActionBean.RETURN_ERROR_EVENT);
             }
@@ -203,6 +211,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                     !fileName.toLowerCase().endsWith(VocabularyFolderApiActionBean.RDF_FILE_EXTENSION)) {
                 return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, "File should be an RDF file for import API", ErrorActionBean.RETURN_ERROR_EVENT);
             }
+*/
 
             VocabularyFolder workingCopy = null;
             try {
@@ -236,7 +245,9 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             }
 
             LOGGER.debug("Starting API RDF import operation");
-            Reader rdfFileReader = new InputStreamReader(this.sourceFile.getInputStream(), CharEncoding.UTF_8);
+            //KL 151216
+            //Reader rdfFileReader = new InputStreamReader(this.sourceFile.getInputStream(), CharEncoding.UTF_8);
+            Reader rdfFileReader = new InputStreamReader(request.getInputStream(), CharEncoding.UTF_8);
 
             boolean purgeVocabularyData = UploadActionBefore.remove.equals(uploadActionBefore);
             boolean purgePredicateBasis = false;
