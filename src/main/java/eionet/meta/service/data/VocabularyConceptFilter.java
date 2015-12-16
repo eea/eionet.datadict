@@ -323,6 +323,13 @@ public class VocabularyConceptFilter extends PagedRequest {
         private int id;
         private String value;
 
+        public BoundElementFilterResult() {}
+
+        public BoundElementFilterResult(int id, String value) {
+            this.id = id;
+            this.value = value;
+        }
+
         public int getId() {
             return id;
         }
