@@ -191,15 +191,33 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
         try {
             StopWatch timer = new StopWatch();
             timer.start();
+
+            //KL151216 Read RDF from request body and params from url
+            HttpServletRequest request = getContext().getRequest();
+
+            //KL151216
+            //TODO redesing: no need for bean attrs, put request param names to constants etc
+            if (this.actionBefore == null && request.getParameter("actionBefore") != null) {
+                setActionBefore(request.getParameter("actionBefore"));
+            }
+
+            if (this.missingConcepts == null && request.getParameter("missingConcepts") != null) {
+                setActionBefore(request.getParameter("missingConcepts"));
+            }
+
+            if (this.missingConcepts == null && request.getParameter("uploadAction") != null) {
+                setActionBefore(request.getParameter("uploadAction"));
+            }
+
             //Validate parameters
             UploadActionBefore uploadActionBefore = validateAndGetUploadActionBefore(RDF_UPLOAD_SUPPORTED_ACTION_BEFORE, RDF_UPLOAD_DEFAULT_ACTION_BEFORE);
+            
+            //KL151216 - why these 2 are not used?
             UploadAction uploadAction = validateAndGetUploadAction(RDF_UPLOAD_SUPPORTED_ACTION, RDF_UPLOAD_DEFAULT_ACTION);
             MissingConceptsAction missingConceptsAction = validateAndGetMissingConceptsAction(RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION, RDF_UPLOAD_DEFAULT_MISSING_CONCEPTS_ACTION);
 
-            //Read RDF from request body
-            HttpServletRequest request = getContext().getRequest();
 
-//TODO - FileBean obsolete
+            //TODO - FileBean obsolete
 //KL 151216
 /*
             if (this.sourceFile == null) {
