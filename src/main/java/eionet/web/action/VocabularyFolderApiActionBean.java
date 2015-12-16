@@ -26,7 +26,6 @@ import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.meta.service.IRDFVocabularyImportService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
-import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
@@ -50,6 +49,24 @@ import java.util.List;
 @UrlBinding("/api/vocabulary/{vocabularyFolder.folderName}/{vocabularyFolder.identifier}/{$event}")
 public class VocabularyFolderApiActionBean extends AbstractActionBean {
 
+    //Constants
+    /**
+     * Request parameter name for action before.
+     */
+    public static final String ACTION_BEFORE_REQ_PARAM = "actionBefore";
+
+    /**
+     * Request parameter name for missing concepts.
+     */
+    public static final String MISSING_CONCEPTS_REQ_PARAM = "missingConcepts";
+
+    /**
+     * Request parameter name for action.
+     */
+    public static final String ACTION_REQ_PARAM = "action";
+
+    //Enum Definitions
+
     /**
      * Before actions for file upload operations. Can be extended in the future for other file operations as well.
      */
@@ -71,6 +88,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
         keep, remove, invalid, deprecated, retired, superseded
     }
 
+    //Static variables
     /**
      * Reserved API names, that cannot be vocabulary concept identifiers.
      */
@@ -133,15 +151,11 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     } // end of static block
 
     /**
-     * Extension for RDF files.
-     */
-    private static final String RDF_FILE_EXTENSION = ".rdf";
-
-    /**
      * Json output format.
      */
     public static final String JSON_FORMAT = "application/json";
 
+    //Instance members
     /**
      * Vocabulary service.
      */
@@ -160,13 +174,6 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     private IRDFVocabularyImportService vocabularyRdfImportService;
 
     /**
-     * Uploaded csv/rdf file to import into vocabulary.
-     */
-    //TODO - obsolete
-    //KL 151216
-    private FileBean sourceFile;
-
-    /**
      * Action before param.
      */
     private String actionBefore;
@@ -181,6 +188,8 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
      */
     private String missingConcepts;
 
+    //Method definitions
+
     /**
      * Imports RDF contents into vocabulary.
      *
@@ -192,44 +201,26 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             StopWatch timer = new StopWatch();
             timer.start();
 
-            //KL151216 Read RDF from request body and params from url
+            //Read RDF from request body and params from url
             HttpServletRequest request = getContext().getRequest();
 
-            //KL151216
-            //TODO redesing: no need for bean attrs, put request param names to constants etc
-            if (this.actionBefore == null && request.getParameter("actionBefore") != null) {
-                setActionBefore(request.getParameter("actionBefore"));
+            //These lines are redundant but for any case, are kept in code. Stripes handle well, request parameters.
+            if (this.actionBefore == null && request.getParameter(ACTION_BEFORE_REQ_PARAM) != null) {
+                setActionBefore(request.getParameter(ACTION_BEFORE_REQ_PARAM));
             }
 
-            if (this.missingConcepts == null && request.getParameter("missingConcepts") != null) {
-                setActionBefore(request.getParameter("missingConcepts"));
+            if (this.missingConcepts == null && request.getParameter(MISSING_CONCEPTS_REQ_PARAM) != null) {
+                setMissingConcepts(request.getParameter(MISSING_CONCEPTS_REQ_PARAM));
             }
 
-            if (this.missingConcepts == null && request.getParameter("uploadAction") != null) {
-                setActionBefore(request.getParameter("uploadAction"));
+            if (this.action == null && request.getParameter(ACTION_REQ_PARAM) != null) {
+                setAction(request.getParameter(ACTION_REQ_PARAM));
             }
 
             //Validate parameters
             UploadActionBefore uploadActionBefore = validateAndGetUploadActionBefore(RDF_UPLOAD_SUPPORTED_ACTION_BEFORE, RDF_UPLOAD_DEFAULT_ACTION_BEFORE);
-            
-            //KL151216 - why these 2 are not used?
             UploadAction uploadAction = validateAndGetUploadAction(RDF_UPLOAD_SUPPORTED_ACTION, RDF_UPLOAD_DEFAULT_ACTION);
             MissingConceptsAction missingConceptsAction = validateAndGetMissingConceptsAction(RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION, RDF_UPLOAD_DEFAULT_MISSING_CONCEPTS_ACTION);
-
-
-            //TODO - FileBean obsolete
-//KL 151216
-/*
-            if (this.sourceFile == null) {
-                return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, "Source file is mandatory for import operation", ErrorActionBean.RETURN_ERROR_EVENT);
-            }
-
-            String fileName = this.sourceFile.getFileName();
-            if (StringUtils.isEmpty(fileName) ||
-                    !fileName.toLowerCase().endsWith(VocabularyFolderApiActionBean.RDF_FILE_EXTENSION)) {
-                return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, "File should be an RDF file for import API", ErrorActionBean.RETURN_ERROR_EVENT);
-            }
-*/
 
             VocabularyFolder workingCopy = null;
             try {
@@ -263,8 +254,8 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             }
 
             LOGGER.debug("Starting API RDF import operation");
-            //KL 151216
-            //Reader rdfFileReader = new InputStreamReader(this.sourceFile.getInputStream(), CharEncoding.UTF_8);
+
+            //Reader rdfFileReader = new InputStreamReader(this.sourceFile.getInputStream(), CharEncoding.UTF_8); //KL 151216: input stream reading from request
             Reader rdfFileReader = new InputStreamReader(request.getInputStream(), CharEncoding.UTF_8);
 
             boolean purgeVocabularyData = UploadActionBefore.remove.equals(uploadActionBefore);
@@ -370,10 +361,6 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             throw new ServiceException("Invalid missing concepts action parameter: " + this.missingConcepts, e);
         }
     } // end of method validateAndGetMissingConceptsAction
-
-    public void setSourceFile(FileBean sourceFile) {
-        this.sourceFile = sourceFile;
-    }
 
     public void setActionBefore(String actionBefore) {
         this.actionBefore = actionBefore;
