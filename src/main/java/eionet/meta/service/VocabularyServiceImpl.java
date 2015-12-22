@@ -1446,4 +1446,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
             throw new ServiceException(e.getMessage());
         }
     } // end of method getRecentlyReleasedVocabularyFolders
+
+    @Override
+    public Map<Integer, List<List<DataElement>>> getVocabularyConceptsDataElementValues(int vocabularyFolderId,
+            int[] vocabularyConceptIds, boolean emptyAttributes) {
+        return dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolderId, vocabularyConceptIds, emptyAttributes);
+    }
+
 }

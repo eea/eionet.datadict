@@ -96,6 +96,16 @@ public class VocabularyConceptFilter extends PagedRequest {
     private List<BoundElementFilterResult> boundElements = new ArrayList<BoundElementFilterResult>();
 
     /**
+     *  list of visible columns
+     */
+    private List<String> visibleColumns = new ArrayList<String>();
+
+    /**
+     *  list of bound element visible columns
+     */
+    public List<String> boundElementVisibleColumns = new ArrayList<String>();
+
+    /**
      * True if definition should be visible in the results list
      */
     private boolean visibleDefinition;
@@ -316,6 +326,22 @@ public class VocabularyConceptFilter extends PagedRequest {
 
     public void setVisibleDefinition(boolean visibleDefinition) {
         this.visibleDefinition = visibleDefinition;
+    }
+
+    public List<String> getVisibleColumns() {
+        return visibleColumns;
+    }
+
+    public void setVisibleColumns(List<String> visibleColumns) {
+        this.visibleColumns = visibleColumns;
+    }
+
+    public List<String> getBoundElementVisibleColumns() {
+        return boundElementVisibleColumns;
+    }
+
+    public void setBoundElementVisibleColumns(List<String> boundElementVisibleColumns) {
+        this.boundElementVisibleColumns = boundElementVisibleColumns;
     }
 
     public static class BoundElementFilterResult {

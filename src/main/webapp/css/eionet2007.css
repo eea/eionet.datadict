@@ -373,3 +373,54 @@ d.simple_attr_title{
     border-top: 2px dotted #F0F0F0;
 }
 
+
+/*
+* Vocabulary concepts
+*/
+
+table.datatable table.addFilter {
+    float: right;
+}
+
+table.datatable table.addFilter td {
+    border: none;
+}
+
+table.datatable .cartcontainer select.left,
+table.datatable .cartcontainer select.right,
+table.datatable .cartcontainer p.middle {
+    display: block;
+    float: left;
+}
+
+table.datatable .cartcontainer select.left,
+table.datatable .cartcontainer select.right {
+    min-height: 150px;
+    min-width: 150px;
+}
+
+table.datatable .cartcontainer p.middle {
+    margin: 60px 10px 0 10px;
+}
+
+table.datatable .cartcontainer p.middle input.button {
+    display: block;
+    float: left;
+    clear: both;
+    width: 70px;
+}
+
+table.datatable .cartcontainer p.middle input.button.movedown {
+    margin-bottom: 5px;
+}
+
+span.conceptDefinition {
+    border-bottom: 1px dotted;
+    cursor: help;
+    font-size:0.8em;
+}
+
+span.noDefinition {
+    font-size:0.8em;
+    font-style: italic;
+}

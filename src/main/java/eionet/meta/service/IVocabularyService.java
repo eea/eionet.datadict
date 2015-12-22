@@ -26,6 +26,7 @@ import eionet.meta.service.data.*;
 import eionet.util.Triple;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Folder service.
@@ -625,5 +626,20 @@ public interface IVocabularyService {
      * @return dynamic filter
      */
     VocabularyConceptBoundElementFilter getVocabularyConceptBoundElementFilter(int dataElementId, List<Integer> vocabularyConceptIds);
+
+    /**
+     * Returns data element attributes for vocabulary concepts in a folder.
+     * Precondition: If emptyAttributes true then this method should be called with a single concept id, i.e.
+     *               vocabularyConceptIds.length should be 1.
+     * @param vocabularyFolderId
+     *            vocabularyID
+     * @param vocabularyConceptIds
+     *            concept IDs
+     * @param emptyAttributes
+     *            when true, then attributes that are not valued are also included.
+     * @return map of list of lists where each list contains element values of one bound element
+     */
+    Map<Integer, List<List<DataElement>>> getVocabularyConceptsDataElementValues(int vocabularyFolderId,
+            int[] vocabularyConceptIds, boolean emptyAttributes);
 
 }

@@ -77,6 +77,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang.ArrayUtils;
 
 /**
  * Edit vocabulary folder action bean.
@@ -363,6 +365,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private List<VocabularyConceptBoundElementFilter> boundElementFilters = new ArrayList<VocabularyConceptBoundElementFilter>();
 
     /**
+     * List of columns for filter
+     */
+    private List<String> columns = new ArrayList<String>();
+
+    /**
      * Navigates to view vocabulary folder page.
      *
      * @return resolution
@@ -390,9 +397,45 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
         });
 
+        // populate columns filter
+        columns.addAll(Arrays.asList(new String[] {
+           "Notation", "Status", "Status Modified", "Accepted Date", "Not Accepted Date"
+        }));
+        for (DataElement boundElement : boundElements) {
+            columns.add(boundElement.getIdentifier());
+        }
         initFilter();
 
+        for (DataElement boundElement : boundElements) {
+            if (filter.getVisibleColumns().contains(boundElement.getIdentifier())) {
+                filter.getBoundElementVisibleColumns().add(boundElement.getIdentifier());
+            }
+        }
+        if (!filter.getBoundElementIds().isEmpty()) {
+            List<Integer> cids = vocabularyService.getVocabularyConceptIds(vocabularyFolder.getId());
+            for (Integer boundElementId : filter.getBoundElementIds()) {
+                boundElementFilters.add(vocabularyService.getVocabularyConceptBoundElementFilter(boundElementId, cids));
+            }
+        }
+
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+
+        // inject data element values in filtered concepts
+        if (!vocabularyConcepts.getList().isEmpty()) {
+            List<Integer> vocabularyConceptIds = new ArrayList<Integer>();
+            for (VocabularyConcept concept : vocabularyConcepts.getList()) {
+                vocabularyConceptIds.add(concept.getId());
+            }
+            Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
+                    vocabularyService.getVocabularyConceptsDataElementValues(vocabularyFolder.getId(), 
+                    ArrayUtils.toPrimitive(vocabularyConceptIds.toArray(new Integer[vocabularyConceptIds.size()])),
+                            false);
+
+            for (VocabularyConcept concept : vocabularyConcepts.getList()) {
+                concept.setElementAttributes(vocabularyConceptsDataElementValues.get(concept.getId()));
+            }
+        }
+
         vocabularyFolderVersions =
                 vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
                         getUserName());
@@ -1464,17 +1507,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         if (filter == null) {
             filter = new VocabularyConceptFilter();
             filter.setConceptStatus(StandardGenericStatus.ACCEPTED);
+            filter.setVisibleColumns(Arrays.asList(new String[] {
+                "Notation", "Status", "Status Modified"
+            }));
         }
         filter.setVocabularyFolderId(vocabularyFolder.getId());
         filter.setPageNumber(page);
         filter.setNumericIdentifierSorting(vocabularyFolder.isNumericConceptIdentifiers());
-
-        if (!filter.getBoundElementIds().isEmpty()) {
-            List<Integer> cids = vocabularyService.getVocabularyConceptIds(vocabularyFolder.getId());
-            for (Integer boundElementId : filter.getBoundElementIds()) {
-                boundElementFilters.add(vocabularyService.getVocabularyConceptBoundElementFilter(boundElementId, cids));
-            }
-        }
     }
 
     /**
@@ -1876,6 +1915,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             boundElementFilterIds.add(currentFilter.getId());
         }
         return boundElementFilterIds;
+    }
+
+    public List<String> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<String> columns) {
+        this.columns = columns;
     }
 
 }

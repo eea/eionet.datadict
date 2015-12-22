@@ -87,7 +87,7 @@
             <div class="note-msg">
                 <strong>Note</strong>
                 <p>You have a
-                    <stripes:link beanclass="${actionBean.class.name}" event="viewWorkingCopy">
+                    <stripes:link beanclass="${actionBean['class'].name}" event="viewWorkingCopy">
                         <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}"/>
                         <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}"/>
@@ -241,12 +241,34 @@
 
         <!-- Vocabulary concepts search -->
         <h2>Vocabulary concepts</h2>
-        <stripes:form method="get" id="searchForm" beanclass="${actionBean.class.name}">
+        <stripes:form method="get" id="searchForm" beanclass="${actionBean['class'].name}">
             <div id="searchframe">
                 <stripes:hidden name="vocabularyFolder.folderName" />
                 <stripes:hidden name="vocabularyFolder.identifier" />
                 <stripes:hidden name="vocabularyFolder.workingCopy" />
                 <table class="datatable" width="100%">
+                    <c:if test="${fn:length(actionBean.boundElements)>0}">
+                        <link type="text/css" media="all" href="<c:url value="/css/spinner.css"/>"  rel="stylesheet" />
+                        <tr>
+                            <td>
+                                <table class="addFilter">
+                                    <tr>
+                                        <th scope="row" title="Add a filter from the list">
+                                            <label for="addFilter"><span style="white-space:nowrap;">Add filter</span></label>
+                                        </th>
+                                        <td>
+                                            <select id="addFilter">
+                                                <option value=""></option>
+                                                <c:forEach var="boundElement" items="${actionBean.boundElements}">
+                                                    <option value="${boundElement.id}"<c:if test="${ddfn:contains(actionBean.boundElementFilterIds, boundElement.id)}">disabled="disabled"</c:if>><c:out value="${boundElement.identifier}" /></option>
+                                                </c:forEach>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </c:if>
                     <tr>
                         <td>
                             <table id="filtersTable">
@@ -285,7 +307,17 @@
                                         </td>
                                     </tr>
                                 </c:forEach>
-                                <tr id="visibleDefinitionRow">
+                                <tr id="visibleColumnsRow">
+                                    <th scope="row" title="Columns">
+                                        <label for="visibleColumns"><span style="white-space:nowrap;">Columns</span></label>
+                                    </th>
+                                    <td colspan="2">
+                                        <stripes:select name="filter.visibleColumns" id="visibleColumns" multiple="multiple" class="buckets">
+                                            <stripes:options-collection collection="${actionBean.columns}" />
+                                        </stripes:select>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th scope="row" class="scope-row simple_attr_title" title="Show concept's definition">
                                         <label for="visibleDefinition"><span style="white-space:nowrap;">Show definition</span></label>
                                     </th>
@@ -301,29 +333,10 @@
                                 </tr>
                             </table>
                         </td>
-                        <c:if test="${fn:length(actionBean.boundElements)>0}">
-                            <link type="text/css" media="all" href="<c:url value="/css/spinner.css"/>"  rel="stylesheet" />
-                            <td>
-                                <table>
-                                    <tr>
-                                        <th scope="row" title="Add a filter from the list">
-                                            <label for="addFilter"><span style="white-space:nowrap;">Add filter</span></label>
-                                        </th>
-                                        <td>
-                                            <select id="addFilter">
-                                                <option value=""></option>
-                                                <c:forEach var="boundElement" items="${actionBean.boundElements}">
-                                                    <option value="${boundElement.id}"<c:if test="${fn:contains(actionBean.boundElementFilterIds, boundElement.id)}">disabled="disabled"</c:if>><c:out value="${boundElement.identifier}" /></option>
-                                                </c:forEach>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </c:if>
                     </tr>
                 </table>
             </div>
+            <script type="text/javascript" src="<c:url value="/scripts/jquery.balloon.min.js" />"></script>
             <script type="text/javascript">
             // <![CDATA[
                 (function($) {
@@ -332,7 +345,7 @@
                             if ($(this).val()==="") {
                                 return;
                             }
-                            $("#visibleDefinitionRow").before('<div class="spinner-loader">Loading...</div>');
+                            $("#visibleColumnsRow").before('<div class="spinner-loader">Loading...</div>');
                             $.ajax({
                                 url: '/datadict/vocabulary',
                                 data: { 
@@ -342,13 +355,13 @@
                                     '_eventName': 'constructBoundElementFilter'
                                 },
                                 success:function(data) {
-                                    $("#visibleDefinitionRow").prev("div.spinner-loader").remove();
-                                    $("#visibleDefinitionRow").before(data);
+                                    $("#visibleColumnsRow").prev("div.spinner-loader").remove();
+                                    $("#visibleColumnsRow").before(data);
                                 },
                                 error: function() {
-                                    $("#visibleDefinitionRow").prev("div.spinner-loader").removeClass().addClass("ajaxError").text("Something went wrong. Please try again.");
+                                    $("#visibleColumnsRow").prev("div.spinner-loader").removeClass().addClass("ajaxError").text("Something went wrong. Please try again.");
                                     setTimeout(function(){
-                                        $("#visibleDefinitionRow").prev("div.ajaxError").remove();
+                                        $("#visibleColumnsRow").prev("div.ajaxError").remove();
                                     }, 2000);
                                 }
                             });
@@ -373,14 +386,122 @@
                             
                             return false;
                         });
+
+                        $(".conceptDefinition").balloon({
+                            css: {
+                                border: 'solid 1px #000',
+                                padding: '10px',
+                                backgroundColor: '#f6f6f6',
+                                color: '#000'
+                            }
+                        });
+
+                        applyMultipleSelectDropdowns();
+                        function applyMultipleSelectDropdowns() {
+                            //private functions
+                            function initMultipleSelects(originalSelect, fromSelect, toSelect) {
+                                for(var i = 0, length = originalSelect.options.length; i<length; i++) {
+                                    var option = originalSelect.options[i];
+                                    var newOption = option.cloneNode(true);
+                                    newOption.selected=false;
+                                    if (option.selected) {
+                                        toSelect.appendChild(newOption);
+                                    } else {
+                                        fromSelect.appendChild(newOption);
+                                    }
+                                }
+                            }
+
+                            function transferSelected(originalSelect, fromSelect, toSelect) {
+                                for(var i = fromSelect.options.length - 1; i>=0; i--) {
+                                    var option = fromSelect.options[i];
+                                    if (option.selected) {
+                                        toSelect.appendChild(fromSelect.removeChild(option));
+                                    }
+                                }
+                            }
+
+                            function applySelected(originalSelect, cloneSelect) {
+                                for(var i=0, length=originalSelect.options.length; i<length; i++) {
+                                    var selectedOption = false;
+                                    for(var j=0, lengthj=cloneSelect.options.length; j<lengthj; j++) {
+                                        if (originalSelect.options[i].value==cloneSelect.options[j].value) {
+                                            selectedOption = true;
+                                            break;
+                                        }
+                                    }
+                                    originalSelect.options[i].selected = selectedOption;
+                                }
+                            }
+
+                            function findSelect(button)    {return button.parentNode.parentNode.getElementsByTagName("select")[0]}
+                            function findFromSelect(button){return button.parentNode.parentNode.getElementsByTagName("select")[1]}
+                            function findToSelect(button)  {return button.parentNode.parentNode.getElementsByTagName("select")[2]}
+
+                            var selects = document.getElementsByTagName("select");
+                            for (var i = selects.length-1; i >=0; i--) {
+                                if (selects[i].getAttribute("multiple") &&
+                                    selects[i].className.indexOf("buckets")>=0) {
+                                    var select = selects[i];
+                                    select.style.display='none';
+
+                                    var fromSelect;
+                                    var toSelect;
+
+                                    /*hack for IE which has a problem creating form elements http://www.webdeveloper.com/forum/archive/index.php/t-34494.html */
+                                    try{
+                                        fromSelect = document.createElement('<select multiple>');
+                                        toSelect = document.createElement('<select multiple>');
+                                    } catch(e) {
+                                        fromSelect = document.createElement('select');
+                                        toSelect = document.createElement('select');
+                                    }
+
+                                    fromSelect.setAttribute("multiple", "multiple");
+                                    fromSelect.multiple = true;
+                                    fromSelect.setAttribute("size", 7);
+                                    fromSelect.className="left";
+                                    toSelect.setAttribute("multiple", "multiple");
+                                    toSelect.setAttribute("size", 7);
+                                    toSelect.multiple = true;
+                                    toSelect.className="right";
+
+                                    initMultipleSelects(select, fromSelect, toSelect);
+
+                                    var removeButton = document.createElement("input");
+                                    var addButton = document.createElement("input");
+                                    removeButton.setAttribute("type", "button");
+                                    removeButton.setAttribute("value", "Remove");
+                                    removeButton.className="button moveup";
+                                    addButton.setAttribute("type", "button");
+                                    addButton.setAttribute("value", "Add");
+                                    addButton.className="button movedown";
+                                    var par = document.createElement("p");
+                                    par.className="middle";
+                                    removeButton.onclick=function() {
+                                        transferSelected(findSelect(this), findToSelect(this), findFromSelect(this));
+                                        applySelected(findSelect(this), findToSelect(this));
+                                    };
+                                    addButton.onclick=function() {
+                                        transferSelected(findSelect(this), findFromSelect(this), findToSelect(this));
+                                        applySelected(findSelect(this), findToSelect(this));
+                                    };
+                                    select.parentNode.appendChild(fromSelect);
+                                    par.appendChild(addButton);
+                                    par.appendChild(removeButton);
+                                    select.parentNode.appendChild(par);
+                                    select.parentNode.appendChild(toSelect);
+                                    select.parentNode.className='cartcontainer';
+                                }
+                            }
+                        }
                     });
                 }) (jQuery);
             // ]]>
             </script>
         </stripes:form>
-
         <%-- Vocabulary concepts --%>
-        <div>
+        <div style="overflow: auto;">
         <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept"
             style="width:80%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view"
             excludedParams="view vocabularyFolder.identifier vocabularyFolder.folderName">
@@ -414,19 +535,80 @@
                         </stripes:link>
                     </c:otherwise>
                 </c:choose>
+                <c:if test="${actionBean.filter.visibleDefinition}">
+                    <c:choose>
+                        <c:when test="${not empty concept.definition}">
+                            <p><span class="conceptDefinition" title="${fn:escapeXml(concept.definition)}">Definition</span></p>
+                        </c:when>
+                        <c:otherwise>
+                            <p><span class="noDefinition">No definition available</span></p>
+                        </c:otherwise>
+                    </c:choose>
+                </c:if>
             </display:column>
-            <c:if test="${actionBean.filter.visibleDefinition}">
-                <display:column title="Definition" escapeXml="false" style="width: 15%">
-                    <dd:attributeValue attrValue="${concept.definition}" />
+            <c:if test="${ddfn:contains(actionBean.filter.visibleColumns, 'Status')}">
+                <display:column title="Status" escapeXml="false" style="width: 15%">
+                    <dd:attributeValue attrValue="${concept.status.label}"/>
                 </display:column>
             </c:if>
-            <display:column title="Status" escapeXml="false" style="width: 15%">
-                <dd:attributeValue attrValue="${concept.status.label}"/>
-            </display:column>
-            <display:column title="Status Modified" escapeXml="false" style="width: 15%">
-                <fmt:formatDate value="${concept.statusModified}" pattern="dd.MM.yyyy"/>
-            </display:column>
-            <display:column title="Notation" escapeXml="true" property="notation" style="width: 10%"/>
+            <c:if test="${ddfn:contains(actionBean.filter.visibleColumns, 'Status Modified')}">
+                <display:column title="Status Modified" escapeXml="false" style="width: 15%">
+                    <fmt:formatDate value="${concept.statusModified}" pattern="dd.MM.yyyy"/>
+                </display:column>
+            </c:if>
+            <c:if test="${ddfn:contains(actionBean.filter.visibleColumns, 'Notation')}">
+                <display:column title="Notation" escapeXml="true" property="notation" style="width: 10%"/>
+            </c:if>
+            <c:if test="${ddfn:contains(actionBean.filter.visibleColumns, 'Accepted Date')}">
+                <display:column title="Accepted Date" escapeXml="false">
+                    <fmt:formatDate value="${concept.acceptedDate}" pattern="dd.MM.yyyy" />
+                </display:column>
+            </c:if>
+            <c:if test="${ddfn:contains(actionBean.filter.visibleColumns, 'Not Accepted Date')}">
+                <display:column title="Not Accepted Date" escapeXml="false">
+                    <fmt:formatDate value="${concept.notAcceptedDate}" pattern="dd.MM.yyyy" />
+                </display:column>
+            </c:if>
+            <c:forEach var="boundElementIdentifier" items="${actionBean.filter.boundElementVisibleColumns}">
+                <display:column title="${fn:escapeXml(boundElementIdentifier)}" escapeXml="false">
+                    <c:forEach var="elementValues" items="${concept.elementAttributes}">
+                        <c:set var="elementMeta" value="${elementValues[0]}"/>
+                        <c:if test="${elementMeta.identifier == boundElementIdentifier}">
+                            <c:forEach var="attr" items="${elementValues}" varStatus="innerLoop">
+                                <c:choose>
+                                    <c:when test="${attr.relationalElement}">
+                                      <c:choose>
+                                          <c:when test="${not actionBean.vocabularyFolder.workingCopy or attr.datatype eq 'reference'}">
+                                              <stripes:link href="/vocabularyconcept/${attr.relatedConceptRelativePath}/view">
+                                                  <c:out value="${attr.relatedConceptIdentifier}" />
+                                                  <c:if test="${not empty attr.relatedConceptLabel}">
+                                                      (<c:out value="${attr.relatedConceptLabel}" />)
+                                                  </c:if>
+                                                  <c:if test="${not empty attr.relatedConceptVocSet}">
+                                                      in <c:out value="${attr.relatedConceptVocSet}/${attr.relatedConceptVocabulary}" />
+                                                  </c:if>
+                                                </stripes:link>
+                                          </c:when>
+                                          <c:otherwise>
+                                            <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean">
+                                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                                                <stripes:param name="vocabularyConcept.identifier" value="${attr.relatedConceptIdentifier}" />
+                                                <dd:attributeValue attrValue="${attr.relatedConceptLabel}" attrLen="40" />
+                                            </stripes:link>
+                                          </c:otherwise>
+                                      </c:choose>
+                                    </c:when>
+                                    <c:otherwise>
+                                          <dd:linkify value="${attr.attributeValue}" /><c:if test="${not empty attr.attributeLanguage}"> [${attr.attributeLanguage}]</c:if>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:forEach>
+                        </c:if>
+                    </c:forEach>
+                </display:column>
+            </c:forEach>
         </display:table>
         </div>
     <%-- The section that displays versions of this vocabulary. --%>
