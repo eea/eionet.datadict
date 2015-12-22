@@ -345,9 +345,10 @@
                             if ($(this).val()==="") {
                                 return;
                             }
+                            <stripes:url var="url" beanclass="${actionBean['class'].name}"></stripes:url>
                             $("#visibleColumnsRow").before('<div class="spinner-loader">Loading...</div>');
                             $.ajax({
-                                url: '/datadict/vocabulary',
+                                url: '${url}',
                                 data: { 
                                     'boundElementFilterId': $(this).val(),
                                     'boundElementFilterIndex': $(".boundElementFilter").length,
