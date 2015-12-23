@@ -13,6 +13,12 @@ body {
     height:100%;
 }
 
+input, select, textarea{
+    border:1px solid gray;
+}
+select{
+    cursor: pointer;
+}
 /* styles that aren't in the central style sheet */
 #outerframe {
     padding: 3px;
@@ -384,6 +390,12 @@ table.datatable table.addFilter {
 
 table.datatable table.addFilter td {
     border: none;
+    background-color: #B0B0B0;
+}
+
+table.datatable table.addFilter label{
+    background: url(../images/expand.png) left no-repeat;
+    padding-left: 15px;
 }
 
 table.datatable .cartcontainer select.left,
@@ -391,6 +403,11 @@ table.datatable .cartcontainer select.right,
 table.datatable .cartcontainer p.middle {
     display: block;
     float: left;
+}
+
+.showHide{
+    background: url(../images/drop-arrow.gif) right no-repeat;
+    padding-right: 15px;
 }
 
 table.datatable .cartcontainer select.left,
@@ -408,10 +425,27 @@ table.datatable .cartcontainer p.middle input.button {
     float: left;
     clear: both;
     width: 70px;
+    cursor: pointer;
+}
+
+table.datatable .cartcontainer p.middle input.button.moveup {
+    margin-bottom: 5px;
+    text-indent: -5000px;
+    background: url(../images/add-remove.png) 17px  -41px no-repeat;
 }
 
 table.datatable .cartcontainer p.middle input.button.movedown {
     margin-bottom: 5px;
+    text-indent: -5000px;
+    background: url(../images/add-remove.png) 19px  0px no-repeat;
+}
+
+table.datatable p.actions .mediumbuttonb{
+    margin-left:138px;
+}
+
+#optionsTable th, #filtersTable th{
+    width:120px;
 }
 
 span.conceptDefinition {

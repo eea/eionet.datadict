@@ -247,30 +247,8 @@
                 <stripes:hidden name="vocabularyFolder.identifier" />
                 <stripes:hidden name="vocabularyFolder.workingCopy" />
                 <table class="datatable" width="100%">
-                    <c:if test="${fn:length(actionBean.boundElements)>0}">
-                        <link type="text/css" media="all" href="<c:url value="/css/spinner.css"/>"  rel="stylesheet" />
-                        <tr>
-                            <td>
-                                <table class="addFilter">
-                                    <tr>
-                                        <th scope="row" title="Add a filter from the list">
-                                            <label for="addFilter"><span style="white-space:nowrap;">Add filter</span></label>
-                                        </th>
-                                        <td>
-                                            <select id="addFilter">
-                                                <option value=""></option>
-                                                <c:forEach var="boundElement" items="${actionBean.boundElements}">
-                                                    <option value="${boundElement.id}"<c:if test="${ddfn:contains(actionBean.boundElementFilterIds, boundElement.id)}">disabled="disabled"</c:if>><c:out value="${boundElement.identifier}" /></option>
-                                                </c:forEach>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </c:if>
                     <tr>
-                        <td>
+                        <td width="70%">
                             <table id="filtersTable">
                                 <tr>
                                     <th scope="row" class="scope-row simple_attr_title" title="Text to filter from label, notation and definition">
@@ -307,6 +285,9 @@
                                         </td>
                                     </tr>
                                 </c:forEach>
+                            </table>
+                            <a class="showHide" href="#">Options</a>
+                            <table id="optionsTable">
                                 <tr id="visibleColumnsRow">
                                     <th scope="row" title="Columns">
                                         <label for="visibleColumns"><span style="white-space:nowrap;">Columns</span></label>
@@ -325,15 +306,35 @@
                                         <stripes:checkbox name="filter.visibleDefinition" id="visibleDefinition" />
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td></td>
-                                    <td>
-                                        <stripes:submit name="view" value="Search" class="mediumbuttonb"/>
-                                    </td>
-                                </tr>
                             </table>
                         </td>
+                        <c:if test="${fn:length(actionBean.boundElements)>0}">
+                            <td width="30%">
+                                <link type="text/css" media="all" href="<c:url value="/css/spinner.css"/>"  rel="stylesheet" />
+                                <table class="addFilter">
+                                    <tr>
+                                        <th scope="row" title="Add a filter from the list">
+                                            <label for="addFilter"><span style="white-space:nowrap;">Add filter</span></label>
+                                        </th>
+                                        <td>
+                                            <select id="addFilter">
+                                                <option value=""></option>
+                                                <c:forEach var="boundElement" items="${actionBean.boundElements}">
+                                                    <option value="${boundElement.id}"<c:if test="${ddfn:contains(actionBean.boundElementFilterIds, boundElement.id)}">disabled="disabled"</c:if>><c:out value="${boundElement.identifier}" /></option>
+                                                </c:forEach>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </c:if>
                     </tr>
+                    <tr>
+                        <td colspan="2">
+                            <p class="actions">
+                            <stripes:submit name="view" value="Search" class="mediumbuttonb"/>
+                        </td>
+                    </tr>     
                 </table>
             </div>
             <script type="text/javascript" src="<c:url value="/scripts/jquery.balloon.min.js" />"></script>
@@ -341,12 +342,18 @@
             // <![CDATA[
                 (function($) {
                     $(document).ready(function() {
+                        $("#optionsTable").hide();
+                        $(".showHide").click(function() {
+                            $("#optionsTable").fadeToggle("fast");
+                            return false;
+                        });
+
                         $("#addFilter").change(function() {
                             if ($(this).val()==="") {
                                 return;
                             }
                             <stripes:url var="url" beanclass="${actionBean['class'].name}"></stripes:url>
-                            $("#visibleColumnsRow").before('<div class="spinner-loader">Loading...</div>');
+                            $("#filtersTable").append('<div class="spinner-loader">Loading...</div>');
                             $.ajax({
                                 url: '${url}',
                                 data: { 
@@ -356,13 +363,13 @@
                                     '_eventName': 'constructBoundElementFilter'
                                 },
                                 success:function(data) {
-                                    $("#visibleColumnsRow").prev("div.spinner-loader").remove();
-                                    $("#visibleColumnsRow").before(data);
+                                    $("div.spinner-loader", "#filtersTable").remove();
+                                    $("#filtersTable").append(data);
                                 },
                                 error: function() {
-                                    $("#visibleColumnsRow").prev("div.spinner-loader").removeClass().addClass("ajaxError").text("Something went wrong. Please try again.");
+                                    $("div.spinner-loader", "#filtersTable").removeClass().addClass("ajaxError").text("Something went wrong. Please try again.");
                                     setTimeout(function(){
-                                        $("#visibleColumnsRow").prev("div.ajaxError").remove();
+                                        $("div.ajaxError", "#filtersTable").remove();
                                     }, 2000);
                                 }
                             });
@@ -393,7 +400,8 @@
                                 border: 'solid 1px #000',
                                 padding: '10px',
                                 backgroundColor: '#f6f6f6',
-                                color: '#000'
+                                color: '#000',
+                                width: "30%"
                             }
                         });
 
@@ -504,7 +512,7 @@
         <%-- Vocabulary concepts --%>
         <div style="overflow: auto;">
         <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept"
-            style="width:80%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view"
+            style="width:100%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view"
             excludedParams="view vocabularyFolder.identifier vocabularyFolder.folderName">
             <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
             <display:setProperty name="paging.banner.placement" value="both" />
@@ -521,7 +529,7 @@
                     </c:otherwise>
                 </c:choose>
             </display:column>
-            <display:column title="Preferred label" media="html">
+            <display:column title="Preferred label" media="html" style="width: 30%">
                 <c:choose>
                     <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
                         <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view" title="${concept.label}">
