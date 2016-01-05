@@ -21,25 +21,38 @@
 
 package eionet.web.action;
 
+import eionet.meta.dao.domain.DDApiKey;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.json.VocabularyJSONOutputHelper;
+import eionet.meta.service.IApiKeyService;
+import eionet.meta.service.IJWTService;
 import eionet.meta.service.IRDFVocabularyImportService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import net.sf.json.JSONObject;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Vocabulary folder API action bean.
@@ -64,6 +77,56 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
      * Request parameter name for action.
      */
     public static final String ACTION_REQ_PARAM = "action";
+
+    /**
+     * API key header for request.
+     */
+    public static final String JWT_API_KEY_HEADER = "X-DD-API-KEY";
+
+    /**
+     * Keyword for content type.
+     */
+    public static final String CONTENT_TYPE_HEADER = "Content-type";
+
+    /**
+     * Valid content type for RDF upload.
+     */
+    public static final String VALID_CONTENT_TYPE_FOR_RDF_UPLOAD = "application/rdf-xml";
+
+    /**
+     * API Key identifier in json.
+     */
+    public static final String API_KEY_IDENTIFIER_IN_JSON = "API_KEY";
+
+    /**
+     * Created time identifier in json.
+     */
+    public static final String TOKEN_CREATED_TIME_IDENTIFIER_IN_JSON = "iat";
+
+    /**
+     * JWT Key.
+     */
+    private static final String JWT_KEY = Props.getProperty(PropsIF.DD_VOCABULARY_API_JWT_KEY);
+
+    /**
+     * JWT Audience.
+     */
+    private static final String JWT_AUDIENCE = Props.getProperty(PropsIF.DD_VOCABULARY_API_JWT_AUDIENCE);
+
+    /**
+     * JWT Expiration in minutes for signing.
+     */
+    private static final int JWT_EXPIRATION_IN_MINUTES = Props.getIntProperty(PropsIF.DD_VOCABULARY_API_JWT_EXP_IN_MINUTES);
+
+    /**
+     * JWT Timeout in minutes for verification (used to validate if sent token is still active or deprecated).
+     */
+    private static final int JWT_TIMEOUT_IN_MINUTES = Props.getIntProperty(PropsIF.DD_VOCABULARY_API_JWT_TIMEOUT_IN_MINUTES);
+
+    /**
+     * JWT Algorithm for signing.
+     */
+    private static final String JWT_SIGNING_ALGORITHM = Props.getProperty(PropsIF.DD_VOCABULARY_ADI_JWT_ALGORITHM);
 
     //Enum Definitions
 
@@ -163,6 +226,18 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     private IVocabularyService vocabularyService;
 
     /**
+     * JWT service.
+     */
+    @SpringBean
+    private IJWTService jwtService;
+
+    /**
+     * API-Key service.
+     */
+    @SpringBean
+    private IApiKeyService apiKeyService;
+
+    /**
      * Vocabulary folder.
      */
     private VocabularyFolder vocabularyFolder;
@@ -204,6 +279,67 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             //Read RDF from request body and params from url
             HttpServletRequest request = getContext().getRequest();
 
+            LOGGER.info("uploadRdf API - called with remote address: " + request.getRemoteAddr() + ", and remote host: " + request.getRemoteHost());
+
+            String contentType = request.getHeader(CONTENT_TYPE_HEADER);
+            if (!StringUtils.equals(VALID_CONTENT_TYPE_FOR_RDF_UPLOAD, contentType)) {
+                LOGGER.error("uploadRdf API - invalid content type: " + contentType);
+                return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, "Invalid content-type for RDF upload", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+
+            String keyHeader = request.getHeader(JWT_API_KEY_HEADER);
+            if (StringUtils.isNotBlank(keyHeader)) {
+                String jsonWebToken = keyHeader;
+
+                try {
+                    JSONObject jsonObject = jwtService.verify(JWT_KEY, JWT_AUDIENCE, jsonWebToken);
+
+                    long createdTimeInSeconds = jsonObject.getLong(TOKEN_CREATED_TIME_IDENTIFIER_IN_JSON);
+
+                    long nowInSeconds = Calendar.getInstance().getTimeInMillis() / 1000l;
+                    if (nowInSeconds > (createdTimeInSeconds + (JWT_TIMEOUT_IN_MINUTES * 60))) {
+                        LOGGER.error("uploadRdf API - Deprecated token");
+                        return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Deprecated token", ErrorActionBean.RETURN_ERROR_EVENT);
+                    }
+
+                    String apiKey = jsonObject.getString(API_KEY_IDENTIFIER_IN_JSON);
+
+                    DDApiKey ddApiKey = apiKeyService.getApiKey(apiKey);
+
+                    if (ddApiKey == null) {
+                        LOGGER.error("uploadRdf API - Invalid key");
+                        return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid key", ErrorActionBean.RETURN_ERROR_EVENT);
+                    }
+
+                    //Note: Scope can also be used
+
+                    if (ddApiKey.getExpires() != null) {
+                        Date now = Calendar.getInstance().getTime();
+                        if (now.after(ddApiKey.getExpires())) {
+                            LOGGER.error("uploadRdf API - Expired key");
+                            return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Expired key", ErrorActionBean.RETURN_ERROR_EVENT);
+                        }
+                    }
+
+                    String remoteAddr = ddApiKey.getRemoteAddr();
+                    if (StringUtils.isNotBlank(remoteAddr)) {
+                        if (!StringUtils.equals(remoteAddr, request.getRemoteAddr()) && !StringUtils.equals(remoteAddr, request.getRemoteHost())) {
+                            LOGGER.error("uploadRdf API - Invalid remote end point");
+                            return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid remote end point", ErrorActionBean.RETURN_ERROR_EVENT);
+                        }
+                    }
+
+                } catch (Exception e) {
+                    LOGGER.error("uploadRdf API - Cannot verify key", e);
+                    return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+                }
+            } else {
+                LOGGER.error("uploadRdf API - Key missing");
+                return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "API Key cannot be missing", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+
+            LOGGER.info("uploadRdf API - request authorized");
+
             //These lines are redundant but for any case, are kept in code. Stripes handle well, request parameters.
             if (this.actionBefore == null && request.getParameter(ACTION_BEFORE_REQ_PARAM) != null) {
                 setActionBefore(request.getParameter(ACTION_BEFORE_REQ_PARAM));
@@ -222,6 +358,8 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             UploadAction uploadAction = validateAndGetUploadAction(RDF_UPLOAD_SUPPORTED_ACTION, RDF_UPLOAD_DEFAULT_ACTION);
             MissingConceptsAction missingConceptsAction = validateAndGetMissingConceptsAction(RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION, RDF_UPLOAD_DEFAULT_MISSING_CONCEPTS_ACTION);
 
+            LOGGER.info("uploadRdf API - parameters are valid");
+
             VocabularyFolder workingCopy = null;
             try {
                 workingCopy = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(),
@@ -230,11 +368,13 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                 HashMap<String, Object> errorParameters = e.getErrorParameters();
                 if (errorParameters == null ||
                         !ErrorActionBean.ErrorType.NOT_FOUND_404.equals(errorParameters.get(ErrorActionBean.ERROR_TYPE_KEY))) {
+                    LOGGER.error("uploadRdf API - Vocabulary has working copy", e);
                     return super.createErrorResolution(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
                 }
             }
 
             if (workingCopy != null && workingCopy.isWorkingCopy()) {
+                LOGGER.error("uploadRdf API - Vocabulary has working copy");
                 return super.createErrorResolution(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy", ErrorActionBean.RETURN_ERROR_EVENT);
             }
 
@@ -245,15 +385,17 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                 HashMap<String, Object> errorParameters = e.getErrorParameters();
                 if (errorParameters != null &&
                         ErrorActionBean.ErrorType.NOT_FOUND_404.equals(errorParameters.get(ErrorActionBean.ERROR_TYPE_KEY))) {
+                    LOGGER.error("uploadRdf API - Vocabulary can NOT be found", e);
                     return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, "Vocabulary can NOT be found: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
                 }
             }
 
             if (vocabularyFolder.isWorkingCopy()) {
+                LOGGER.error("uploadRdf API - Vocabulary has working copy");
                 return super.createErrorResolution(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy", ErrorActionBean.RETURN_ERROR_EVENT);
             }
 
-            LOGGER.debug("Starting API RDF import operation");
+            LOGGER.info("uploadRdf API - Starting RDF import operation");
 
             //Reader rdfFileReader = new InputStreamReader(this.sourceFile.getInputStream(), CharEncoding.UTF_8); //KL 151216: input stream reading from request
             Reader rdfFileReader = new InputStreamReader(request.getInputStream(), CharEncoding.UTF_8);
@@ -276,16 +418,36 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             };
 
             timer.stop();
-            LOGGER.debug("API RDF import completed in : " + timer.toString());
+            LOGGER.info("uploadRdf API - RDF import completed, total time of execution: " + timer.toString());
             return result;
         } catch (ServiceException e) {
-            LOGGER.error("Failed to import vocabulary RDF into db", e);
+            LOGGER.error("uploadRdf API - Failed to import vocabulary RDF into db", e);
             return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
         } catch (Exception e) {
-            LOGGER.error("Failed to import vocabulary RDF into db, unexpected exception: ", e);
+            LOGGER.error("uploadRdf API - Failed to import vocabulary RDF into db, unexpected exception: ", e);
             return super.createErrorResolution(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR, "Failed to import vocabulary RDF into db, unexpected exception: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
         }
     } // end of method uploadRDF
+
+    /**
+     * TODO: TEMP METHOD for testing, will be removed.
+     */
+    public Resolution testUploadRdf() throws ServiceException {
+        PostMethod post = new PostMethod(Props.getRequiredProperty(PropsIF.DD_URL) + "/api/vocabulary/test/geography/uploadRdf");
+        post.setRequestHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+
+        Map<String, String> jwtPayload = new HashMap<String, String>();
+        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "TestingAPIKey");
+
+        post.setRequestHeader(JWT_API_KEY_HEADER, jwtService.sign(JWT_KEY, JWT_AUDIENCE, jwtPayload, JWT_EXPIRATION_IN_MINUTES, JWT_SIGNING_ALGORITHM));
+        HttpClient httpClient = new HttpClient();
+        try {
+            httpClient.executeMethod(post);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    } // end of method testUploadRdf
 
     /**
      * Validator and enum value converter for upload action before parameter.
