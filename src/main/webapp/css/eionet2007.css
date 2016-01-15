@@ -556,7 +556,6 @@ span.noDefinition {
 .vocabularyConceptResults,
 h2#otherVersions {
     display: block;
-    float: left;
     clear: both;
     width: 100%;
     box-sizing: border-box;
