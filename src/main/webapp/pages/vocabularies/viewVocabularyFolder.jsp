@@ -246,105 +246,74 @@
                 <stripes:hidden name="vocabularyFolder.folderName" />
                 <stripes:hidden name="vocabularyFolder.identifier" />
                 <stripes:hidden name="vocabularyFolder.workingCopy" />
-                <table class="datatable" width="100%">
-                    <tr>
-                        <td width="70%">
-                            <table id="filtersTable">
-                                <tr>
-                                    <th scope="row" class="scope-row simple_attr_title" title="Text to filter from label, notation and definition">
-                                        <label for="filterText"><span style="white-space:nowrap;">Filtering text</span></label>
-                                    </th>
-                                    <td class="simple_attr_value">
-                                        <stripes:text class="smalltext" size="30" name="filter.text" id="filterText"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" class="scope-row simple_attr_title" title="Concept's status">
-                                        <label for="status"><span style="white-space:nowrap;">Status</span></label>
-                                    </th>
-                                    <td class="simple_attr_value" style="padding-right: 5em;">
-                                        <stripes:select name="filter.conceptStatusInt" id="status">
-                                            <stripes:option value="255" label="All concepts"/>
-                                            <stripes:options-collection collection="<%=eionet.meta.dao.domain.StandardGenericStatus.valuesAsList()%>" label="label" value="value"/>
-                                        </stripes:select>
-                                    </td>
-                                </tr>
-                                <c:forEach items="${actionBean.boundElementFilters}" var="boundElementFilter" varStatus="loop">
-                                    <tr id="boundElementFilterRow-${boundElementFilter.id}" data-filter-id="${boundElementFilter.id}" class="boundElementFilter">
-                                        <th scope="row" class="scope-row simple_attr_title" title="${fn:escapeXml(boundElementFilter.label)}">
-                                            <label for="boundElementFilter-${boundElementFilter.id}"><span style="white-space:nowrap;"><c:out value="${boundElementFilter.label}" /></span></label>
-                                        </th>
-                                        <td class="simple_attr_value" style="padding-right: 5em;">
-                                            <stripes:hidden name="filter.boundElements[${loop.index}].id" value="${boundElementFilter.id}" class="boundElementFilterId" />
-                                            <stripes:select name="filter.boundElements[${loop.index}].value" class="boundElementFilterSelect">
-                                                <stripes:option value="" label="All" />
-                                                <stripes:options-map map="${boundElementFilter.options}" />
-                                            </stripes:select>
-                                            <c:url var="delIcon" value="/images/button_remove.gif" />
-                                            <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </table>
-                            <a class="showHide" href="#">Options</a>
-                            <table id="optionsTable">
-                                <tr id="visibleColumnsRow">
-                                    <th scope="row" title="Columns">
-                                        <label for="visibleColumns"><span style="white-space:nowrap;">Columns</span></label>
-                                    </th>
-                                    <td colspan="2">
-                                        <stripes:select name="filter.visibleColumns" id="visibleColumns" multiple="multiple" class="buckets">
-                                            <stripes:options-collection collection="${actionBean.columns}" />
-                                        </stripes:select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" class="scope-row simple_attr_title" title="Show concept's definition">
-                                        <label for="visibleDefinition"><span style="white-space:nowrap;">Show definition</span></label>
-                                    </th>
-                                    <td class="simple_attr_value">
-                                        <stripes:checkbox name="filter.visibleDefinition" id="visibleDefinition" />
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
+                <fieldset id="vocabularyConceptFilters">
+                    <legend><a class="showHide expanded" href="#">Filters</a></legend>
+                    <div class="togglable" id="filterList">
                         <c:if test="${fn:length(actionBean.boundElements)>0}">
-                            <td width="30%">
-                                <link type="text/css" media="all" href="<c:url value="/css/spinner.css"/>"  rel="stylesheet" />
-                                <table class="addFilter">
-                                    <tr>
-                                        <th scope="row" title="Add a filter from the list">
-                                            <label for="addFilter"><span style="white-space:nowrap;">Add filter</span></label>
-                                        </th>
-                                        <td>
-                                            <select id="addFilter">
-                                                <option value=""></option>
-                                                <c:forEach var="boundElement" items="${actionBean.boundElements}">
-                                                    <option value="${boundElement.id}"<c:if test="${ddfn:contains(actionBean.boundElementFilterIds, boundElement.id)}">disabled="disabled"</c:if>><c:out value="${boundElement.identifier}" /></option>
-                                                </c:forEach>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
+                            <link type="text/css" media="all" href="<c:url value="/css/spinner.css"/>"  rel="stylesheet" />
+                            <div class="addFilter">
+                                <label for="addFilter"><span style="white-space:nowrap;">Add filter</span></label>
+                                <select id="addFilter">
+                                    <option value=""></option>
+                                    <c:forEach var="boundElement" items="${actionBean.boundElements}">
+                                        <option value="${boundElement.id}"<c:if test="${ddfn:contains(actionBean.boundElementFilterIds, boundElement.id)}">disabled="disabled"</c:if>><c:out value="${boundElement.identifier}" /></option>
+                                    </c:forEach>
+                                </select>
+                            </div>
                         </c:if>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <p class="actions">
-                            <stripes:submit name="view" value="Search" class="mediumbuttonb"/>
-                        </td>
-                    </tr>     
-                </table>
+                        <span class="filterItem">
+                            <label for="status"><span style="white-space:nowrap;">Status</span></label>
+                            <stripes:select name="filter.conceptStatusInt" id="status">
+                                <stripes:option value="255" label="All concepts"/>
+                                <stripes:options-collection collection="<%=eionet.meta.dao.domain.StandardGenericStatus.valuesAsList()%>" label="label" value="value"/>
+                            </stripes:select>
+                        </span>
+                        <span class="filterItem">
+                            <label for="filterText"><span style="white-space:nowrap;">Filtering text</span></label>
+                            <stripes:text class="smalltext" size="30" name="filter.text" id="filterText"/>
+                        </span>
+                        <c:forEach items="${actionBean.boundElementFilters}" var="boundElementFilter" varStatus="loop">
+                            <span class="filterItem boundElementFilter" data-filter-id="${boundElementFilter.id}">
+                                <label for="boundElementFilter-${boundElementFilter.id}"><span style="white-space:nowrap;"><c:out value="${boundElementFilter.label}" /></span></label>
+                                <stripes:hidden name="filter.boundElements[${loop.index}].id" value="${boundElementFilter.id}" class="boundElementFilterId" />
+                                <stripes:select name="filter.boundElements[${loop.index}].value" class="boundElementFilterSelect">
+                                    <stripes:option value="" label="All" />
+                                    <stripes:options-map map="${boundElementFilter.options}" />
+                                </stripes:select>
+                                <c:url var="delIcon" value="/images/button_remove.gif" />
+                                <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
+                            </span>
+                        </c:forEach>
+                    </div>
+                </fieldset>
+                <fieldset id="vovabularyConceptFilterOptions">
+                    <legend><a class="showHide" href="#">Options</a></legend>
+                    <div class="togglable" id="optionsList">
+                        <span class="optionsItem">
+                            <label for="visibleColumns"><span style="white-space:nowrap;">Columns</span></label>
+                            <stripes:select name="filter.visibleColumns" id="visibleColumns" multiple="multiple" class="buckets">
+                                <stripes:options-collection collection="${actionBean.columns}" />
+                            </stripes:select>
+                        </span>
+                        <span class="optionsItem">
+                            <label for="visibleDefinition"><span style="white-space:nowrap;">Show definition</span></label>
+                            <stripes:checkbox name="filter.visibleDefinition" id="visibleDefinition" />
+                        </span>
+                    </div>
+                </fieldset>
+                <p class="actions">
+                    <stripes:submit name="view" value="Search" class="mediumbuttonb"/>
+                </p>
             </div>
             <script type="text/javascript" src="<c:url value="/scripts/jquery.balloon.min.js" />"></script>
             <script type="text/javascript">
             // <![CDATA[
                 (function($) {
                     $(document).ready(function() {
-                        $("#optionsTable").hide();
+                        $("#optionsList").hide();
                         $(".showHide").click(function() {
-                            $("#optionsTable").fadeToggle("fast");
+                            $(this).toggleClass("expanded");
+                            $(".togglable", $(this).closest("fieldset")).slideToggle();
                             return false;
                         });
 
@@ -352,8 +321,9 @@
                             if ($(this).val()==="") {
                                 return;
                             }
+
                             <stripes:url var="url" beanclass="${actionBean['class'].name}"></stripes:url>
-                            $("#filtersTable").append('<div class="spinner-loader">Loading...</div>');
+                            $("#filterList").append('<div class="spinner-loader">Loading...</div>');
                             $.ajax({
                                 url: '${url}',
                                 data: { 
@@ -363,26 +333,27 @@
                                     '_eventName': 'constructBoundElementFilter'
                                 },
                                 success:function(data) {
-                                    $("div.spinner-loader", "#filtersTable").remove();
-                                    $("#filtersTable").append(data);
+                                    $("div.spinner-loader", "#filterList").remove();
+                                    $("#filterList").append(data);
                                 },
                                 error: function() {
-                                    $("div.spinner-loader", "#filtersTable").removeClass().addClass("ajaxError").text("Something went wrong. Please try again.");
+                                    $("div.spinner-loader", "#filterList").removeClass().addClass("ajaxError").text("Something went wrong. Please try again.");
                                     setTimeout(function(){
-                                        $("div.ajaxError", "#filtersTable").remove();
+                                        $("div.ajaxError", "#filterList").remove();
                                     }, 2000);
                                 }
                             });
+
                             var $selectedOption = $("#addFilter option:selected");
                             $selectedOption.prop("disabled", true);
                             $(this).val("");
                         });
                         
                         $("a.delLink").live("click", function() {
-                            var $row = $(this).closest("tr.boundElementFilter");
-                            var filterId = $row.data("filterId");
+                            var $filterItem = $(this).closest("span.filterItem");
+                            var filterId = $filterItem.data("filterId");
                             $('#addFilter option[value=' + filterId +']').prop('disabled', false);
-                            $row.remove();
+                            $filterItem.remove();
 
                             // recalculate bound element names
                             $('.boundElementFilterId').each(function(index) {
@@ -510,7 +481,7 @@
             </script>
         </stripes:form>
         <%-- Vocabulary concepts --%>
-        <div style="overflow: auto;">
+        <div class="vocabularyConceptResults" style="overflow: auto;">
         <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept"
             style="width:100%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view"
             excludedParams="view vocabularyFolder.identifier vocabularyFolder.folderName">
@@ -623,8 +594,8 @@
     <%-- The section that displays versions of this vocabulary. --%>
 
     <c:if test="${not empty actionBean.vocabularyFolderVersions}">
-        <h2>Other versions of this vocabulary</h2>
-        <display:table name="${actionBean.vocabularyFolderVersions}" class="datatable" id="item" style="width:80%">
+        <h2 id="otherVersions">Other versions of this vocabulary</h2>
+        <display:table name="${actionBean.vocabularyFolderVersions}" class="datatable" id="item" style="width:100%">
             <display:column title="Label">
                 <c:choose>
                     <c:when test="${item.draftStatus && empty actionBean.user}">
