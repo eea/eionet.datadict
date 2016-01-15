@@ -341,6 +341,10 @@ public class DataServiceImpl implements IDataService {
             DataElement targetDElement = dataElementDao.getDataElement(targetDElementId);
             InferenceRule rule = new InferenceRule(sourceDElement, type, targetDElement);
             
+            if (type == RuleType.INVERSE && !dataElementDao.inferenceRuleExists(rule)) {
+                // check for inverted rule
+                rule = new InferenceRule(targetDElement, type, sourceDElement);
+            }
             dataElementDao.deleteInferenceRule(rule);
         }
         catch(Exception e){

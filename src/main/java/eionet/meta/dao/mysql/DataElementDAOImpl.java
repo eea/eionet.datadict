@@ -1163,9 +1163,27 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             }
             
         });
+
+        // add inverted rules for owl:inverseOf rule type as owl:inverseOf rule is bi-directional but is stored as a single row in the database
+        sql = new StringBuilder("select * from INFERENCE_RULE where TARGET_ELEM_ID = :dataelem_id and RULE='owl:inverseOf'");
+        List<InferenceRule> invertedRules = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<InferenceRule>() {
+            @Override
+            public InferenceRule mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DataElement target = getDataElement(Integer.parseInt(rs.getString("DATAELEM_ID")));
+                InferenceRule rule = new InferenceRule(source, RuleType.fromName(rs.getString("RULE")), target);
+                return rule;
+            }
+        });
+
+        for (InferenceRule invertedRule : invertedRules) {
+            if (!result.contains(invertedRule)) {
+                result.add(invertedRule);
+            }
+        }
+
         return result;
     }
-    
+
     @Override
     public Collection<InferenceRule> listInferenceRules(DataElement parentElem){
         StringBuilder sql = new StringBuilder("select * from INFERENCE_RULE where DATAELEM_ID = :dataelem_id");

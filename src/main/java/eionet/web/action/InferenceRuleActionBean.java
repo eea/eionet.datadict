@@ -117,7 +117,7 @@ public class InferenceRuleActionBean extends AbstractActionBean {
         }
         else{
             dataService.createDataElementRule(parentElementId, type, targetElementId);
-            addSystemMessage("Inference Rule (" + type.getName() + "," + Integer.toString(targetElementId) + ") for element " + Integer.toString(parentElementId) + " already exists");
+            addSystemMessage("Inference Rule (" + type.getName() + "," + Integer.toString(targetElementId) + ") for element " + Integer.toString(parentElementId) + " was successfully created");
             return new RedirectResolution(InferenceRuleActionBean.class).addParameter("parentElementId", parentElementId);
         }
         
@@ -180,7 +180,7 @@ public class InferenceRuleActionBean extends AbstractActionBean {
             addCautionMessage("The rule (" + Integer.toString(parentElementId) + "," + type.getName() + "," + Integer.toString(targetElementId) + ") could not be deleted, because it does not exist");
         else{
             dataService.deleteDataElementRule(parentElementId, type, targetElementId);
-            addSystemMessage("Inference Rule (" + type.getName() + "," + Integer.toString(targetElementId) + ") for element " + Integer.toString(parentElementId) + "was successfully deleted");
+            addSystemMessage("Inference Rule (" + type.getName() + "," + Integer.toString(targetElementId) + ") for element " + Integer.toString(parentElementId) + " was successfully deleted");
         }
         return new RedirectResolution(InferenceRuleActionBean.class).addParameter("parentElementId", parentElementId);
     }
