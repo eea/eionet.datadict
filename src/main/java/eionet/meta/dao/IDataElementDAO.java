@@ -32,6 +32,7 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.InferenceRule;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
+import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
 import java.util.Collection;
 
 /**
@@ -85,7 +86,7 @@ public interface IDataElementDAO {
      * @return element
      */
     DataElement getDataElement(String identifier);
-    
+
     /**
      * Checks if data element with specific id exists
      * @param id
@@ -109,7 +110,7 @@ public interface IDataElementDAO {
      * @return a {@link eionet.meta.dao.domain.DataSet} instance of the parent of the data element; null if no parent is found.
      */
     DataSet getParentDataSet(int dataElementId);
-    
+
     /**
      *
      * @param dataElementId
@@ -192,7 +193,7 @@ public interface IDataElementDAO {
      *            target vocabulary id
      */
     void copyVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId);
-    
+
     /**
      * Returns data element attributes for vocabulary concepts in a folder.
      * Precondition: If emptyAttributes true then this method should be called with a single concept id, i.e.
@@ -387,33 +388,33 @@ public interface IDataElementDAO {
      * @return List of rules
      */
     Collection<InferenceRule> getInferenceRules(DataElement parentElem);
-    
+
     /**
      * Returns inference rules of specific element (not fetching Data Elements, only their IDs)
      * @param parentElem
      * @return List of rules
      */
     Collection<InferenceRule> listInferenceRules(DataElement parentElem);
-    
+
     /**
      * Creates new inference rule for specific element
      * @param rule 
      */
     void createInferenceRule(InferenceRule rule);
-    
+
     /**
      * Deletes specific inference rule
      * @param rule 
      */
     void deleteInferenceRule(InferenceRule rule);
-    
+
     /**
      * Checks if specific inference rule exists
      * @param rule 
      * @return  
      */
     boolean inferenceRuleExists(InferenceRule rule);
-    
+
     /**
      * Updates rule to newRule
      * @param rule 
@@ -427,4 +428,14 @@ public interface IDataElementDAO {
      * @return 
      */
     Collection<DataElement> grepDataElement(String pattern);
+
+    /**
+     * Creates a filter for the bound data element based on the specified vocabulary concepts
+     *
+     * @param dataElementId bound data element id
+     * @param vocabularyConceptIds list of vocabulary concept ids
+     * @return dynamic filter
+     */
+    VocabularyConceptBoundElementFilter getVocabularyConceptBoundElementFilter(int dataElementId, List<Integer> vocabularyConceptIds);
+
 }

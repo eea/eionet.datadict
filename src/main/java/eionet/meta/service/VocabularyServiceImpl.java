@@ -39,6 +39,7 @@ import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
 import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -992,6 +993,22 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
+    public List<Integer> getVocabularyConceptIds(int vocabularyFolderId) {
+        return vocabularyConceptDAO.getVocabularyConceptIds(vocabularyFolderId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public VocabularyConceptBoundElementFilter getVocabularyConceptBoundElementFilter(int dataElementId, List<Integer> vocabularyConceptIds) {
+        return dataElementDAO.getVocabularyConceptBoundElementFilter(dataElementId, vocabularyConceptIds);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public VocabularyConcept getVocabularyConcept(int vocabularyConceptId) throws ServiceException {
         try {
             return vocabularyConceptDAO.getVocabularyConcept(vocabularyConceptId);
@@ -1459,4 +1476,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
             throw new ServiceException(e.getMessage());
         }
     } // end of method getRecentlyReleasedVocabularyFolders
+
+    @Override
+    public Map<Integer, List<List<DataElement>>> getVocabularyConceptsDataElementValues(int vocabularyFolderId,
+            int[] vocabularyConceptIds, boolean emptyAttributes) {
+        return dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolderId, vocabularyConceptIds, emptyAttributes);
+    }
+
 }
