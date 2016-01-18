@@ -444,7 +444,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * Constructs new bounbd element filter
+     * Constructs new bound element filter
      *
      * @return resolution
      * @throws ServiceException
