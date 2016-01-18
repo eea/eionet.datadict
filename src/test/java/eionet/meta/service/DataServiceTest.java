@@ -1,15 +1,9 @@
 package eionet.meta.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.DataSet;
+import eionet.meta.dao.domain.InferenceRule.RuleType;
+import eionet.meta.dao.domain.VocabularyConcept;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -18,13 +12,15 @@ import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.DataSet;
-import eionet.meta.dao.domain.InferenceRule.RuleType;
-import eionet.meta.dao.domain.VocabularyConcept;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import static org.junit.Assert.*;
 
 /**
  * DataService tests.
@@ -225,7 +221,7 @@ public class DataServiceTest extends UnitilsJUnit4 {
         }
 
         try {
-            dataService.switchDataElemType(elemId, newType);
+            dataService.switchDataElemType(elemId, oldType, newType);
         } catch (Exception e) {
             Assert.fail("Unexpected exception: " + e);
         }

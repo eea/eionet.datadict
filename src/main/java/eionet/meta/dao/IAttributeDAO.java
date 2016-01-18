@@ -1,14 +1,14 @@
 package eionet.meta.dao;
 
-import java.util.List;
-import java.util.Map;
-
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.ComplexAttribute;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -144,4 +144,14 @@ public interface IAttributeDAO {
      * @return list of fixed values
      */
     public List<FixedValue> getFixedValues(int attributeId);
+
+    /**
+     * updates an attribute value.
+     * @param attrName attribute short name
+     * @param dataElemId parent object ID
+     * @param parentType parent type of an attribute
+     * @param value new attr value
+     */
+    void updateSimpleAttributeValue(String attrName, int dataElemId , String parentType, String value);
+    
 }

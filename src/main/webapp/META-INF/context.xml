@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/datadict" docBase="D:/eka-documents/projects/EEA/eionet.datadict/target/datadict">
+<Context path="/datadict" docBase="C:/projects/eionet.datadict/target/datadict">
 
     <Resource
         name="jdbc/datadict"

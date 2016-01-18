@@ -1,16 +1,5 @@
 package eionet.meta.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import eionet.meta.DElemAttribute.ParentType;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IDataElementDAO;
@@ -27,7 +16,17 @@ import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 import eionet.util.IrrelevantAttributes;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Data Service implementation.
@@ -270,7 +269,7 @@ public class DataServiceImpl implements IDataService {
      * @see eionet.meta.service.IDataService#switchDataElemType(int, java.lang.String)
      */
     @Override
-    public void switchDataElemType(int elemId, String newType) throws ServiceException {
+    public void switchDataElemType(int elemId, String oldType, String newType) throws ServiceException {
 
         // Check if the new type is at all known.
         if (!Arrays.asList("CH1", "CH2", "CH3").contains(newType)) {
@@ -296,6 +295,23 @@ public class DataServiceImpl implements IDataService {
         if (CollectionUtils.isNotEmpty(irrelevantAttrs)) {
             dataElementDao.removeSimpleAttrsByShortName(elemId, irrelevantAttrs.toArray(new String[irrelevantAttrs.size()]));
         }
+        
+        //CH3 has to be reference, CH1 and CH2 cannot be reference. Change the relevant attribute accordingly
+        DataElement element = dataElementDao.getDataElement(elemId);
+
+        String newDataType;
+        if ("CH3".equals(oldType) || "CH3".equals(newType)) {
+            Map<String, List<String>> attrValues = dataElementDao.getDataElementAttributeValues(elemId);
+            newDataType = "CH3".equals(oldType) ? "string" : "reference";
+
+            if (attrValues.containsKey("Datatype")) {
+                List<String> dataTypeList = attrValues.get("Datatype");
+                if (dataTypeList != null & !dataTypeList.isEmpty()) {
+                    attributeDao.updateSimpleAttributeValue("Datatype", elemId, "E", newDataType);
+                }
+            }
+        }
+
     }
     
     @Override

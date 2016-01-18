@@ -902,7 +902,7 @@
 
                 forceAttrMaxLen();
                 if (!checkObligations()){
-                    alert("You have not specified one of the mandatory atttributes!");
+                    alert("You have not specified one of the mandatory attributes!");
                     return false;
                 }
 
@@ -1331,11 +1331,8 @@
                                     if (!elmCommon && editDstPrm) {
                                 %>
                                     <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
-                                    <% if (!type.equals("CH3")) {
-                                        request.setAttribute("includeSwitchTypeDialog", "true");
-                                        %>
-                                        <li><a href="#" id="switchTypeLink">Switch type</a></li>
-                                    <% } %>
+                                    <% request.setAttribute("includeSwitchTypeDialog", "true"); %>
+                                    <li><a href="#" id="switchTypeLink">Switch type</a></li>
                                 <%
                                     }
                                     if (elmCommon && canCheckout) {
@@ -1357,11 +1354,8 @@
                                  // view case
                                 %>
                                     <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
-                                    <% if (!type.equals("CH3")) {
-                                        request.setAttribute("includeSwitchTypeDialog", "true");
-                                        %>
-                                        <li><a href="#" id="switchTypeLink">Switch type</a></li>
-                                    <% } %>
+                                    <% request.setAttribute("includeSwitchTypeDialog", "true"); %>
+                                    <li><a href="#" id="switchTypeLink">Switch type</a></li>
                                     <li><a href="javascript:checkIn()">Check in</a></li>
                                     <li><a href="javascript:submitForm('delete')">Undo checkout</a></li>
                                 <%

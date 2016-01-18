@@ -46,7 +46,9 @@
 	        <form id="switchTypeForm" method="post" action="<%=request.getContextPath()%>/dataelements" style="margin-top:1em">
 
                 <%
-                String curType = request.getParameter("curType");
+                String curType = request.getParameter("curType"); %>
+                <input type="hidden" name="curType" value="<%=curType %>"/>
+                <%
                 if (!"CH1".equals(curType)) { %>
                     <input type="submit" name="newTypeCH1" value="Switch to fixed values" style="display:block;margin-top:5px"/> <%
                 }
