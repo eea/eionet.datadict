@@ -27,6 +27,9 @@ import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.meta.service.IApiKeyService;
 import eionet.meta.service.IJWTService;
 import eionet.meta.service.IRDFVocabularyImportService;
+import eionet.meta.service.IVocabularyImportService.MissingConceptsAction;
+import eionet.meta.service.IVocabularyImportService.UploadAction;
+import eionet.meta.service.IVocabularyImportService.UploadActionBefore;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
@@ -128,64 +131,12 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
      */
     private static final String JWT_SIGNING_ALGORITHM = Props.getProperty(PropsIF.DD_VOCABULARY_ADI_JWT_ALGORITHM);
 
-    //Enum Definitions
-
-    /**
-     * Before actions for file upload operations. Can be extended in the future for other file operations as well.
-     */
-    public static enum UploadActionBefore {
-        keep, remove
-    }
-
-    /**
-     * Actions for file upload operations. Can be extended in the future for other file operations as well.
-     */
-    public static enum UploadAction {
-        add, delete
-    }
-
-    /**
-     * Missing concept actions for file upload operations. Can be extended in the future for other file operations.
-     */
-    public static enum MissingConceptsAction {
-        keep, remove, invalid, deprecated, retired, superseded
-    }
-
     //Static variables
     /**
      * Reserved API names, that cannot be vocabulary concept identifiers.
      */
     public static final List<String> RESERVED_VOCABULARY_API_EVENTS;
 
-    /**
-     * Supported RDF upload action before.
-     */
-    public static final List<UploadActionBefore> RDF_UPLOAD_SUPPORTED_ACTION_BEFORE;
-
-    /**
-     * RDF upload default action before value.
-     */
-    public static final UploadActionBefore RDF_UPLOAD_DEFAULT_ACTION_BEFORE = UploadActionBefore.keep;
-
-    /**
-     * Supported RDF upload action.
-     */
-    public static final List<UploadAction> RDF_UPLOAD_SUPPORTED_ACTION;
-
-    /**
-     * RDF upload default action value.
-     */
-    public static final UploadAction RDF_UPLOAD_DEFAULT_ACTION = UploadAction.add;
-
-    /**
-     * Supported RDF upload missing concepts action.
-     */
-    public static final List<MissingConceptsAction> RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION;
-
-    /**
-     * RDF upload default action before value.
-     */
-    public static final MissingConceptsAction RDF_UPLOAD_DEFAULT_MISSING_CONCEPTS_ACTION = MissingConceptsAction.keep;
 
     /**
      * Static block for initializations.
@@ -194,23 +145,6 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
         //Create supported/reserved api names
         RESERVED_VOCABULARY_API_EVENTS = new ArrayList<String>();
         RESERVED_VOCABULARY_API_EVENTS.add("uploadRdf");
-
-        //Add RDF upload params
-        RDF_UPLOAD_SUPPORTED_ACTION_BEFORE = new ArrayList<UploadActionBefore>();
-        RDF_UPLOAD_SUPPORTED_ACTION_BEFORE.add(UploadActionBefore.keep);
-        RDF_UPLOAD_SUPPORTED_ACTION_BEFORE.add(UploadActionBefore.remove);
-
-        RDF_UPLOAD_SUPPORTED_ACTION = new ArrayList<UploadAction>();
-        RDF_UPLOAD_SUPPORTED_ACTION.add(UploadAction.add);
-        RDF_UPLOAD_SUPPORTED_ACTION.add(UploadAction.delete);
-
-        RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION = new ArrayList<MissingConceptsAction>();
-        RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION.add(MissingConceptsAction.keep);
-        RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION.add(MissingConceptsAction.remove);
-        RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION.add(MissingConceptsAction.invalid);
-        RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION.add(MissingConceptsAction.deprecated);
-        RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION.add(MissingConceptsAction.retired);
-        RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION.add(MissingConceptsAction.superseded);
     } // end of static block
 
     /**
@@ -354,9 +288,15 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             }
 
             //Validate parameters
-            UploadActionBefore uploadActionBefore = validateAndGetUploadActionBefore(RDF_UPLOAD_SUPPORTED_ACTION_BEFORE, RDF_UPLOAD_DEFAULT_ACTION_BEFORE);
-            UploadAction uploadAction = validateAndGetUploadAction(RDF_UPLOAD_SUPPORTED_ACTION, RDF_UPLOAD_DEFAULT_ACTION);
-            MissingConceptsAction missingConceptsAction = validateAndGetMissingConceptsAction(RDF_UPLOAD_SUPPORTED_MISSING_CONCEPTS_ACTION, RDF_UPLOAD_DEFAULT_MISSING_CONCEPTS_ACTION);
+            UploadActionBefore uploadActionBefore =
+                    validateAndGetUploadActionBefore(vocabularyRdfImportService.getSupportedActionBefore(true),
+                            vocabularyRdfImportService.getDefaultActionBefore(true));
+            UploadAction uploadAction =
+                    validateAndGetUploadAction(vocabularyRdfImportService.getSupportedAction(true),
+                            vocabularyRdfImportService.getDefaultAction(true));
+            MissingConceptsAction missingConceptsAction =
+                    validateAndGetMissingConceptsAction(vocabularyRdfImportService.getSupportedMissingConceptsAction(true),
+                            vocabularyRdfImportService.getDefaultMissingConceptsAction(true));
 
             LOGGER.info("uploadRdf API - parameters are valid");
 
@@ -400,11 +340,8 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             //Reader rdfFileReader = new InputStreamReader(this.sourceFile.getInputStream(), CharEncoding.UTF_8); //KL 151216: input stream reading from request
             Reader rdfFileReader = new InputStreamReader(request.getInputStream(), CharEncoding.UTF_8);
 
-            boolean purgeVocabularyData = UploadActionBefore.remove.equals(uploadActionBefore);
-            boolean purgePredicateBasis = false;
-
             final List<String> systemMessages = this.vocabularyRdfImportService.importRdfIntoVocabulary(rdfFileReader,
-                    vocabularyFolder, purgeVocabularyData, purgePredicateBasis);
+                    vocabularyFolder, uploadActionBefore, uploadAction, missingConceptsAction);
             for (String systemMessage : systemMessages) {
                 addSystemMessage(systemMessage);
                 LOGGER.info(systemMessage);
@@ -482,7 +419,8 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
      * @return Converted enum value
      * @throws ServiceException when parameter is invalid or not supported.
      */
-    private UploadAction validateAndGetUploadAction(List<UploadAction> supportedUploadAction, UploadAction defaultValue)
+    private UploadAction validateAndGetUploadAction(List<UploadAction> supportedUploadAction,
+                                                    UploadAction defaultValue)
             throws ServiceException {
         if (defaultValue != null && (this.action == null || this.action.trim().length() < 1)) {
             return defaultValue;

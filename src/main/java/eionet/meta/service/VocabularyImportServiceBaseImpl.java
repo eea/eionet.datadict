@@ -21,6 +21,7 @@
 package eionet.meta.service;
 
 import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,7 +35,7 @@ import java.util.Set;
  *
  * @author enver
  */
-public abstract class VocabularyImportServiceBaseImpl {
+public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImportService {
     /**
      * Vocabulary service.
      */
@@ -79,7 +80,7 @@ public abstract class VocabularyImportServiceBaseImpl {
      * Purge/delete bound elements from vocabulary folder.
      *
      * @param vocabularyFolderId id of vocabulary folder
-     * @param boundElements     bound elements
+     * @param boundElements      bound elements
      * @throws ServiceException if an error occurs during operation
      */
     protected void purgeBoundElements(int vocabularyFolderId, List<DataElement> boundElements) throws ServiceException {
@@ -94,20 +95,22 @@ public abstract class VocabularyImportServiceBaseImpl {
      * This method import objects into DB. It creates not-existing objects and then updates values. All operation is done Spring
      * Service Layer.
      *
-     * @param vocabularyId                        vocabulary id
-     * @param vocabularyConcepts                  concepts of vocabulary
-     * @param newBoundElements                    newly bound elements
-     * @param elementsRelatedToNotCreatedConcepts data elements which are related to newly created concepts
-     * @throws ServiceException when an error occurs
+     * @param vocabularyId                        vocabulary id.
+     * @param vocabularyConceptsToUpdate          concepts of vocabulary to be updated.
+     * @param vocabularyConceptsToUpdate          concepts of vocabulary to be deleted.
+     * @param newBoundElements                    newly bound elements.
+     * @param elementsRelatedToNotCreatedConcepts data elements which are related to newly created concepts.
+     * @throws ServiceException when an error occurs.
      */
-    protected void importIntoDb(int vocabularyId, List<VocabularyConcept> vocabularyConcepts, List<DataElement> newBoundElements,
-            Map<Integer, Set<DataElement>> elementsRelatedToNotCreatedConcepts) throws ServiceException {
+    protected void importIntoDb(int vocabularyId, List<VocabularyConcept> vocabularyConceptsToUpdate,
+                                List<VocabularyConcept> vocabularyConceptsToDelete, List<DataElement> newBoundElements,
+                                Map<Integer, Set<DataElement>> elementsRelatedToNotCreatedConcepts) throws ServiceException {
         // first of all insert new bound element
         for (DataElement elem : newBoundElements) {
             this.vocabularyService.addDataElement(vocabularyId, elem.getId());
         }
 
-        for (VocabularyConcept vc : vocabularyConcepts) {
+        for (VocabularyConcept vc : vocabularyConceptsToUpdate) {
             // STEP 1. INSERT VOCABULARY CONCEPT and UPDATE DATAELEMENT WHO ARE RELATED TO NEWLY CREATED CONCEPT
             int id = vc.getId();
             if (id <= 0) {
@@ -124,13 +127,44 @@ public abstract class VocabularyImportServiceBaseImpl {
             }
         }
 
-        for (VocabularyConcept vc : vocabularyConcepts) {
-            // STEP 2. UPDATE VOCABULARY CONCEPT
+        // STEP 2. UPDATE VOCABULARY CONCEPT
+        for (VocabularyConcept vc : vocabularyConceptsToUpdate) {
             this.vocabularyService.updateVocabularyConceptNonTransactional(vc);
         }
 
-        this.vocabularyService.fixRelatedReferenceElements(vocabularyId, vocabularyConcepts);
+        // STEP 3. FIX RELATED REFERENCE ELEMENTS
+        this.vocabularyService.fixRelatedReferenceElements(vocabularyId, vocabularyConceptsToUpdate);
 
+        // STEP 4. DELETE VOCABULARY CONCEPT
+        List<Integer> toBeDeletedConceptIds = new ArrayList<Integer>();
+        for (VocabularyConcept vc : vocabularyConceptsToDelete) {
+            toBeDeletedConceptIds.add(vc.getId());
+        }
+        if (toBeDeletedConceptIds.size() > 0) {
+            this.vocabularyService.deleteVocabularyConcepts(toBeDeletedConceptIds);
+        }
     } // end of method importIntoDb
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public StandardGenericStatus getStatusForMissingConceptAction(MissingConceptsAction missingConceptsAction) {
+        switch (missingConceptsAction) {
+            case invalid:
+                return StandardGenericStatus.INVALID;
+            case retired:
+                return StandardGenericStatus.DEPRECATED_RETIRED;
+            case deprecated:
+                return StandardGenericStatus.DEPRECATED;
+            case superseded:
+                return StandardGenericStatus.DEPRECATED_SUPERSEDED;
+            case keep:
+            case remove:
+            default:
+                return null;
+
+        }
+    } // end of method getStatusForMissingConceptAction
 
 } // end of abstract class VocabularyImportServiceBaseImpl

@@ -33,6 +33,8 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
 import java.io.Reader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -57,6 +59,7 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
      * Invalid vocabulary id.
      */
     protected static final int TEST_INVALID_VOCABULARY_ID = 16;
+
     /**
      * Vocabulary service.
      */
@@ -65,6 +68,11 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
 
     @SpringBeanByType
     protected PlatformTransactionManager transactionManager;
+
+    /**
+     * Generic date formatter for test case.
+     */
+    protected DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
     /**
      * Get a reader from given RDF file location. If there is a BOM character, skip it.

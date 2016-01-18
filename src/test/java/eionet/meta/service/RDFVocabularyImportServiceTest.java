@@ -21,18 +21,14 @@
 
 package eionet.meta.service;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.sql.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.StandardGenericStatus;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyImportBaseHandler;
+import eionet.meta.service.IVocabularyImportService.MissingConceptsAction;
+import eionet.meta.service.IVocabularyImportService.UploadAction;
+import eionet.meta.service.IVocabularyImportService.UploadActionBefore;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -42,11 +38,15 @@ import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.StandardGenericStatus;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyImportBaseHandler;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * JUnit integration test with Unitils for RDF Vocabulary Import Service.
@@ -141,7 +141,326 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // compare manually updated objects with queried ones (after import operation)
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
                 ReflectionComparatorMode.LENIENT_ORDER);
-    }// end of test step testIfConceptAndElementsUpdated
+    } // end of test step testIfConceptAndElementsUpdated
+
+    /**
+     * In this test, three concepts RDF is imported with missing concepts invalid option. Concept 1 includes updated values and DataElements (no insertion, only update).
+     * Concept 2 and 3 does not include updated values.
+     * Since it's a 3 concepts vocabulary, elements shouldn't be changed.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptAndElementsUpdatedWithMissingConceptsInvalid() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_1.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, UploadActionBefore.keep, UploadAction.add, MissingConceptsAction.invalid);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // manually update initial values of concepts for comparison
+        VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
+        vc8.setLabel("rdf_test_concept_label_1_updated");
+
+        int dataElemId = 8;
+        String identifier = "skos:prefLabel";
+        List<List<DataElement>> dataElements = vc8.getElementAttributes();
+        List<DataElement> elems = null;
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        DataElement element = new DataElement();
+        element.setAttributeValue("bg_rdf_test_concept_1_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("bg");
+        elems.add(element);
+
+        element = new DataElement();
+        element.setAttributeValue("et_rdf_test_concept_1_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("et");
+        elems.add(element);
+
+        VocabularyConcept vc9 = findVocabularyConceptById(concepts, 9);
+        dataElements = vc9.getElementAttributes();
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", dataElements);
+        for (DataElement elem : elems) {
+            if (vc8.getId() == elem.getRelatedConceptId()) {
+                elem.setRelatedConceptLabel(vc8.getLabel());
+            }
+        }
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // compare manually updated objects with queried ones (after import operation)
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
+                ReflectionComparatorMode.LENIENT_ORDER);
+    } // end of test step testIfConceptAndElementsUpdatedWithMissingConceptsInvalid
+
+    /**
+     * In this test, three concepts RDF is imported with missing concepts remove option. Concept 1 includes updated values and DataElements (no insertion, only update).
+     * Concept 2 and 3 does not include updated values.
+     * Since it's a 3 concepts vocabulary, elements shouldn't be changed.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptAndElementsUpdatedWithMissingConceptsRemove() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_1.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, UploadActionBefore.keep, UploadAction.add, MissingConceptsAction.remove);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // manually update initial values of concepts for comparison
+        VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
+        vc8.setLabel("rdf_test_concept_label_1_updated");
+
+        int dataElemId = 8;
+        String identifier = "skos:prefLabel";
+        List<List<DataElement>> dataElements = vc8.getElementAttributes();
+        List<DataElement> elems = null;
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName(identifier, dataElements);
+        DataElement element = new DataElement();
+        element.setAttributeValue("bg_rdf_test_concept_1_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("bg");
+        elems.add(element);
+
+        element = new DataElement();
+        element.setAttributeValue("et_rdf_test_concept_1_updated");
+        element.setIdentifier(identifier);
+        element.setId(dataElemId);
+        element.setAttributeLanguage("et");
+        elems.add(element);
+
+        VocabularyConcept vc9 = findVocabularyConceptById(concepts, 9);
+        dataElements = vc9.getElementAttributes();
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", dataElements);
+        for (DataElement elem : elems) {
+            if (vc8.getId() == elem.getRelatedConceptId()) {
+                elem.setRelatedConceptLabel(vc8.getLabel());
+            }
+        }
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // compare manually updated objects with queried ones (after import operation)
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
+                ReflectionComparatorMode.LENIENT_ORDER);
+    } // end of test step testIfConceptAndElementsUpdatedWithMissingConceptsRemove
+
+    /**
+     * In this test, 0 concepts RDF is imported with missing concepts remove option.
+     * Since it's a 3 concepts in the vocabulary, all should be removed.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptAndElementsUpdatedWithMissingConceptsRemoveAllConcepts() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_14.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, UploadActionBefore.keep, UploadAction.add, MissingConceptsAction.remove);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Number of concepts in the vocabulary after removing missing concepts", 0, updatedConcepts.size());
+    } // end of test step testIfConceptAndElementsUpdatedWithMissingConceptsRemoveAllConcepts
+
+    /**
+     * In this test, 0 concepts RDF is imported with missing concepts invalid option.
+     * Since it's a 3 concepts in the vocabulary, all should be set to invalid.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptAndElementsUpdatedWithMissingConceptsInvalidAllConcepts() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_14.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, UploadActionBefore.keep, UploadAction.add, MissingConceptsAction.invalid);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Number of concepts in the vocabulary", concepts.size(), updatedConcepts.size());
+
+        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+        String todayFormatted = dateFormatter.format(today);
+        for (VocabularyConcept vc : updatedConcepts) {
+            Assert.assertEquals("Concept Status", StandardGenericStatus.INVALID, vc.getStatus());
+            Assert.assertEquals("Status Modified", todayFormatted, dateFormatter.format(vc.getStatusModified()));
+            Assert.assertEquals("Not Accepted Date", todayFormatted, dateFormatter.format(vc.getNotAcceptedDate()));
+        }
+    } // end of test step testIfConceptAndElementsUpdatedWithMissingConceptsInvalidAllConcepts
+
+    /**
+     * In this test, 0 concepts RDF is imported with missing concepts deprecated option.
+     * Since it's a 3 concepts in the vocabulary, all should be set to deprecated.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptAndElementsUpdatedWithMissingConceptsDeprecatedAllConcepts() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_14.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, UploadActionBefore.keep, UploadAction.add, MissingConceptsAction.deprecated);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Number of concepts in the vocabulary", concepts.size(), updatedConcepts.size());
+
+        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+        String todayFormatted = dateFormatter.format(today);
+        for (VocabularyConcept vc : updatedConcepts) {
+            Assert.assertEquals("Concept Status", StandardGenericStatus.DEPRECATED, vc.getStatus());
+            Assert.assertEquals("Status Modified", todayFormatted, dateFormatter.format(vc.getStatusModified()));
+        }
+    } // end of test step testIfConceptAndElementsUpdatedWithMissingConceptsDeprecatedAllConcepts
+
+    /**
+     * In this test, 0 concepts RDF is imported with missing concepts retired option.
+     * Since it's a 3 concepts in the vocabulary, all should be set to retired.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptAndElementsUpdatedWithMissingConceptsRetiredAllConcepts() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_14.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, UploadActionBefore.keep, UploadAction.add, MissingConceptsAction.retired);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Number of concepts in the vocabulary", concepts.size(), updatedConcepts.size());
+
+        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+        String todayFormatted = dateFormatter.format(today);
+        for (VocabularyConcept vc : updatedConcepts) {
+            Assert.assertEquals("Concept Status", StandardGenericStatus.DEPRECATED_RETIRED, vc.getStatus());
+            Assert.assertEquals("Status Modified", todayFormatted, dateFormatter.format(vc.getStatusModified()));
+        }
+    } // end of test step testIfConceptAndElementsUpdatedWithMissingConceptsRetiredAllConcepts
+
+    /**
+     * In this test, 0 concepts RDF is imported with missing concepts superseded option.
+     * Since it's a 3 concepts in the vocabulary, all should be set to superseded.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptAndElementsUpdatedWithMissingConceptsSupersededAllConcepts() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_14.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, UploadActionBefore.keep, UploadAction.add, MissingConceptsAction.superseded);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Number of concepts in the vocabulary", concepts.size(), updatedConcepts.size());
+
+        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+        String todayFormatted = dateFormatter.format(today);
+        for (VocabularyConcept vc : updatedConcepts) {
+            Assert.assertEquals("Concept Status", StandardGenericStatus.DEPRECATED_SUPERSEDED, vc.getStatus());
+            Assert.assertEquals("Status Modified", todayFormatted, dateFormatter.format(vc.getStatusModified()));
+        }
+    } // end of test step testIfConceptAndElementsUpdatedWithMissingConceptsSupersededAllConcepts
+
+    /**
+     * In this test, 0 concepts RDF is imported with missing concepts keep option.
+     * Since it's a 3 concepts in the vocabulary, all should be same as before
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptAndElementsUpdatedWithMissingConceptsKeepAllConcepts() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_14.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, UploadActionBefore.keep, UploadAction.add, MissingConceptsAction.keep);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Number of concepts in the vocabulary", concepts.size(), updatedConcepts.size());
+
+        // compare before and after objects
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
+                ReflectionComparatorMode.LENIENT_ORDER);
+
+    } // end of test step testIfConceptAndElementsUpdatedWithMissingConceptsKeepAllConcepts
 
     /**
      * In this test, two concepts RDF is imported. Concept 1 includes updated values (no insertion, only update) Concept 2 includes
@@ -346,6 +665,108 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
                 ReflectionComparatorMode.LENIENT_ORDER);
     }// end of test step testIfNewConceptAdded
+
+    /**
+     * In this test, single concept RDF is imported. concept is a non existing concept to be imported with data elements.
+     * Missing concepts should be removed.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfNewConceptAddedAndMissingConceptsRemoved() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_3.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, UploadActionBefore.keep, UploadAction.add, MissingConceptsAction.remove);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // manually create values of new concept for comparison
+        VocabularyConcept vc11 = new VocabularyConcept();
+        // vc11.setId(11); //this field will be updated after re-querying
+        vc11.setIdentifier("rdf_test_concept_4");
+        vc11.setLabel("rdf_test_concept_label_4");
+        vc11.setDefinition("rdf_test_concept_def_4");
+        vc11.setStatus(StandardGenericStatus.VALID);
+        vc11.setStatusModified(new Date(System.currentTimeMillis()));
+        vc11.setAcceptedDate(new Date(System.currentTimeMillis()));
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Updated Concepts does not include 1 vocabulary concepts", updatedConcepts.size(), 1);
+
+        // check for other fields
+        VocabularyConcept vc = updatedConcepts.get(0);
+        Assert.assertEquals("New concept identifier", vc11.getIdentifier(), vc.getIdentifier());
+        Assert.assertEquals("New concept label", vc11.getLabel(), vc.getLabel());
+        Assert.assertEquals("New concept definition", vc11.getDefinition(), vc.getDefinition());
+
+        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+        String todayFormatted = dateFormatter.format(today);
+        Assert.assertEquals("Concept Status", StandardGenericStatus.VALID, vc.getStatus());
+        Assert.assertEquals("Status Modified", todayFormatted, dateFormatter.format(vc.getStatusModified()));
+        Assert.assertEquals("Accepted Date", todayFormatted, dateFormatter.format(vc.getAcceptedDate()));
+    }// end of test step testIfNewConceptAddedAndMissingConceptsRemoved
+
+    /**
+     * In this test, single concept RDF is imported. concept is a non existing concept to be imported with data elements.
+     * Missing concepts should be deprecated.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfNewConceptAddedAndMissingConceptsDeprecated() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_3.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, UploadActionBefore.keep, UploadAction.add, MissingConceptsAction.deprecated);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // manually create values of new concept for comparison
+        VocabularyConcept vc11 = new VocabularyConcept();
+        // vc11.setId(11); //this field will be updated after re-querying
+        vc11.setIdentifier("rdf_test_concept_4");
+        vc11.setLabel("rdf_test_concept_label_4");
+        vc11.setDefinition("rdf_test_concept_def_4");
+        vc11.setStatus(StandardGenericStatus.VALID);
+        vc11.setStatusModified(new Date(System.currentTimeMillis()));
+        vc11.setAcceptedDate(new Date(System.currentTimeMillis()));
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Updated Concepts does not include 4 vocabulary concepts", updatedConcepts.size(), 4);
+
+        // check for new concept other fields
+        VocabularyConcept vc = findVocabularyConceptByIdentifier(updatedConcepts, vc11.getIdentifier());
+        Assert.assertEquals("New concept identifier", vc11.getIdentifier(), vc.getIdentifier());
+        Assert.assertEquals("New concept label", vc11.getLabel(), vc.getLabel());
+        Assert.assertEquals("New concept definition", vc11.getDefinition(), vc.getDefinition());
+
+        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+        String todayFormatted = dateFormatter.format(today);
+        Assert.assertEquals("Concept Status", StandardGenericStatus.VALID, vc.getStatus());
+        Assert.assertEquals("Status Modified", todayFormatted, dateFormatter.format(vc.getStatusModified()));
+        Assert.assertEquals("Accepted Date", todayFormatted, dateFormatter.format(vc.getAcceptedDate()));
+
+        // remove new object and check other objects
+        updatedConcepts.remove(vc);
+        for (VocabularyConcept deprecatedConcept : updatedConcepts) {
+            Assert.assertEquals("Concept Status", StandardGenericStatus.DEPRECATED, deprecatedConcept.getStatus());
+            Assert.assertEquals("Status Modified", todayFormatted, dateFormatter.format(deprecatedConcept.getStatusModified()));
+        }
+    }// end of test step testIfNewConceptAddedAndMissingConceptsRemoved
 
     /**
      * In this test, single concept RDF is imported. concept is a non existing concept to be imported with data elements after purge
@@ -639,6 +1060,112 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     } // end of test step testIfConceptsAddedAfterPurge
 
     /**
+     * In this test, two concepts RDF is imported. Concepts are derived from base RDF. Just identifiers are updated.
+     * It's called with missing concepts remove option. Third concept should be removed.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptsUpdatedAndMissingConceptsRemoved() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_4.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, UploadActionBefore.keep, UploadAction.add, MissingConceptsAction.remove);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // manually create values of new concept for comparison
+        concepts.remove(2);// remove last object
+        // there is not much object just update, no need to iterate
+        concepts.get(0).setIdentifier("rdf_test_concept_1_after_purge");
+        concepts.get(1).setIdentifier("rdf_test_concept_2_after_purge");
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
+
+        // concepts expected to be inserted in the same order as they are in rdf file, get ids from updated beans
+        concepts.get(0).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(0).getIdentifier()).getId());
+        concepts.get(1).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(1).getIdentifier()).getId());
+
+        // update related concepts
+        List<DataElement> elems =
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", concepts.get(0).getElementAttributes());
+        DataElement element = elems.get(0);
+        element.setRelatedConceptId(concepts.get(1).getId());
+        element.setRelatedConceptIdentifier(concepts.get(1).getIdentifier());
+
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", concepts.get(1).getElementAttributes());
+        element = elems.get(0);
+        element.setRelatedConceptId(concepts.get(0).getId());
+        element.setRelatedConceptIdentifier(concepts.get(0).getIdentifier());
+
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", concepts.get(1).getElementAttributes());
+        element = elems.get(0);
+        element.setRelatedConceptLabel(null);
+        element.setRelatedConceptId(null);
+        element.setRelatedConceptIdentifier(null);
+        element.setRelatedConceptVocSet(null);
+        element.setRelatedConceptBaseURI(null);
+        element.setRelatedConceptVocabulary(null);
+        element.setAttributeValue(VocabularyFolder.getBaseUri(vocabularyFolder) + "rdf_test_concept_3");
+
+        // compare manually updated objects with queried ones (after import operation)
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
+                ReflectionComparatorMode.LENIENT_ORDER);
+    } // end of test step testIfConceptsUpdatedAndMissingConceptsRemoved
+
+    /**
+     * In this test, two concepts RDF is imported. Concepts are derived from base RDF. Just identifiers are updated.
+     * It's called with missing concepts invalid option. Third concept should be invalid.
+     *
+     * @throws Exception
+     */
+    @Test
+    @Rollback
+    public void testIfConceptsUpdatedAndMissingConceptsInvalid() throws Exception {
+        // get vocabulary folder
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
+
+        // get initial values of concepts with attributes
+        List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_4.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, UploadActionBefore.keep, UploadAction.add, MissingConceptsAction.invalid);
+        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+
+        // there is not much object just update, no need to iterate
+        concepts.get(0).setIdentifier("rdf_test_concept_1_after_purge");
+        concepts.get(1).setIdentifier("rdf_test_concept_2_after_purge");
+        concepts.get(2).setStatus(StandardGenericStatus.INVALID);
+        concepts.get(2).setNotAcceptedDate(new Date(System.currentTimeMillis()));
+        concepts.get(2).setStatusModified(new Date(System.currentTimeMillis()));
+
+        // get updated values of concepts with attributes
+        List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
+        Assert.assertEquals("Updated Concepts does not include 3 vocabulary concepts", updatedConcepts.size(), 3);
+
+        // concepts expected to be inserted in the same order as they are in rdf file, get ids from updated beans
+        concepts.get(0).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(0).getIdentifier()).getId());
+        concepts.get(1).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(1).getIdentifier()).getId());
+        concepts.get(2).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(2).getIdentifier()).getId());
+
+        // compare manually updated objects with queried ones (after import operation)
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
+                ReflectionComparatorMode.LENIENT_ORDER);
+    } // end of test step testIfConceptsUpdatedAndMissingConceptsInvalid
+
+    /**
      * In this test, single concept RDF is imported. Purge per predicate basis is tested.
      *
      * @throws Exception
@@ -664,7 +1191,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Assert.assertEquals("Updated Concepts does not include 3 vocabulary concepts", updatedConcepts.size(), 3);
 
         // manually create values of new concept for comparison
-        String[] seenPredicates = new String[] {"skos:relatedMatch", "skos:related", "skos:prefLabel"};
+        String[] seenPredicates = new String[]{"skos:relatedMatch", "skos:related", "skos:prefLabel"};
         // remove elements of these predicates from first and second concepts
         for (int i = 0; i < 2; i++) {
             for (String seenPredicate : seenPredicates) {
@@ -1109,7 +1636,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         vocabularyFolder = vocabularyService.getVocabularyWithConcepts("reftest", "reftest");
 
-        Assert.assertEquals( "3 concepts have to be imported", 3, vocabularyFolder.getConcepts().size());
+        Assert.assertEquals("3 concepts have to be imported", 3, vocabularyFolder.getConcepts().size());
 
         List<VocabularyConcept> updatedConcepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
 
@@ -1121,10 +1648,10 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         List<List<DataElement>> c1002Attrs = c1002.getElementAttributes();
         List<List<DataElement>> c1003Attrs = c1003.getElementAttributes();
 
-        Assert.assertEquals( "concept 1001 should have 2 elements dct:replaces and skos:exactMatch", 2, c1001Attrs.size());
+        Assert.assertEquals("concept 1001 should have 2 elements dct:replaces and skos:exactMatch", 2, c1001Attrs.size());
         List<DataElement> dctReplacesElems = VocabularyImportBaseHandler.getDataElementValuesByName("dct:replaces", c1001Attrs);
 
-        Assert.assertEquals( "concept 1001 should have references of type dct:replaces", 2, c1001Attrs.size());
+        Assert.assertEquals("concept 1001 should have references of type dct:replaces", 2, c1001Attrs.size());
 
         boolean foundRefTo1003 = false;
         for (DataElement de : dctReplacesElems) {
@@ -1135,7 +1662,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Assert.assertTrue("Not found dct:replaces relation from 1001 to 1003", foundRefTo1003);
 
         List<DataElement> dctIsReplacedByElems = VocabularyImportBaseHandler.getDataElementValuesByName("dct:isReplacedBy", c1002Attrs);
-        Assert.assertEquals( "concept 1002 should have 1 elements dct:isReplacedBy", 1, dctIsReplacedByElems.size());
+        Assert.assertEquals("concept 1002 should have 1 elements dct:isReplacedBy", 1, dctIsReplacedByElems.size());
 
         boolean foundRefTo1001 = c1001.getId() == dctIsReplacedByElems.get(0).getRelatedConceptId();
         Assert.assertTrue("Not found dct:isReplacedBy relation from 1002 to 1001", foundRefTo1001);
@@ -1151,11 +1678,10 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // import RDF into database
         vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, true, false);
         Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
-        
-        
+
         List<VocabularyConcept> concepts = getVocabularyConceptsWithAttributes(vocabularyFolder);
         VocabularyConcept vc = findVocabularyConceptByIdentifier(concepts, "Cervus elaphus corsicanus");
-        
+
         Assert.assertNotNull(vc);
     }
 }

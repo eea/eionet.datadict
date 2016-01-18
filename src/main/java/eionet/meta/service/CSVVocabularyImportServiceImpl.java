@@ -21,21 +21,20 @@
 
 package eionet.meta.service;
 
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.imp.VocabularyCSVImportHandler;
 import eionet.util.Util;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Service implementation to import CSV into a Vocabulary Folder.
@@ -51,10 +50,10 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public List<String> importCsvIntoVocabulary(Reader content, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData,
-            boolean purgeBoundElements) throws ServiceException {
+                                                boolean purgeBoundElements) throws ServiceException {
 
         final String folderContextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
-		// check for valid base uri
+        // check for valid base uri
         if (!Util.isValidUri(folderContextRoot)) {
             throw new ServiceException("Vocabulary does not have a valid base URI");
         }
@@ -85,12 +84,11 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
             }
         }
 
-
         VocabularyCSVImportHandler handler = new VocabularyCSVImportHandler(folderContextRoot, concepts, elementToId, content);
         handler.generateUpdatedBeans();
 
-        importIntoDb(vocabularyFolder.getId(), handler.getToBeUpdatedConcepts(), handler.getNewBoundElement(),
-                handler.getElementsRelatedToNotCreatedConcepts());
+        importIntoDb(vocabularyFolder.getId(), handler.getToBeUpdatedConcepts(), new ArrayList<VocabularyConcept>(),
+                handler.getNewBoundElement(), handler.getElementsRelatedToNotCreatedConcepts());
         this.logMessages.addAll(handler.getLogMessages());
         this.logMessages.add("CSV imported into Database.");
 
