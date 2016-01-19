@@ -119,6 +119,12 @@ public class DataElement {
     /**
      * Value from VOCABULARY_CONCEPT_ELEMENT table. Expected to be IRI encoded in DB.
      */
+
+    /**
+     * id in VOCABULARY_CONCEPT_ELEMENT table 
+     */
+    private int valueId;
+    
     private String attributeValue;
     /**
      * Vocabulary concept id.
@@ -583,4 +589,11 @@ public class DataElement {
         return !relatedVocabularyWorkingCopy || (relatedVocabularyWorkingCopy && relatedConceptOriginalId == null);
     }
 
+    public int getValueId() {
+        return valueId;
+    }
+
+    public void setValueId(int valueId) {
+        this.valueId = valueId;
+    }
 }

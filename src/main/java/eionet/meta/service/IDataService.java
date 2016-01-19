@@ -278,5 +278,13 @@ public interface IDataService {
      * @throws ServiceException 
      */
     Collection<DataElement> grepDataElement(String pattern) throws ServiceException;
+
+    /**
+     * Changes element values if needed on data element type change.
+     * @param elementId current element id
+     * @param checkedOutCopyId checked out copy id
+     * @throws ServiceException if changing data fails
+     */
+    void handleElementTypeChange(String elementId, String checkedOutCopyId) throws ServiceException;
     
 }

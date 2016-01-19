@@ -6,6 +6,7 @@ import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IDataSetDAO;
 import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
+import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
@@ -13,10 +14,12 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.InferenceRule;
 import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 import eionet.util.IrrelevantAttributes;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +52,10 @@ public class DataServiceImpl implements IDataService {
     /** Data element DAO. */
     @Autowired
     private IDataElementDAO dataElementDao;
-    
+
+    @Autowired
+    private IVocabularyFolderDAO vocabularyFolderDAO;
+
     /** Fixed Value DAO */
     @Autowired
     private IFixedValueDAO fixedValueDao;
@@ -404,5 +411,77 @@ public class DataServiceImpl implements IDataService {
             throw new ServiceException("Failed to grep for data element : " + e.getMessage(), e);
         }
     }
-    
+
+
+    @Override
+    public void handleElementTypeChange(String elementId, String checkedOutCopyId) throws ServiceException {
+        
+        int newId = Integer.valueOf(elementId);
+        int oldId = Integer.valueOf(checkedOutCopyId);
+        
+        DataElement dataElement = dataElementDao.getDataElement(newId);
+        DataElement originalElement = dataElementDao.getDataElement(oldId);
+        
+        String oldType = originalElement.getType();
+        String newType = dataElement.getType();
+        
+        if (oldType.equals(newType) || (!"CH3".equals(oldType) && !"CH3".equals(newType))) {
+            return;
+        }
+        
+        //old type may have some referential entries, replace textual value with composed url
+        List<VocabularyConcept> valuedConcepts = vocabularyConceptDao.getConceptsWithValuedElement(oldId);
+        
+        //vocabularyId:[conceptIds]
+        Map<Integer, List<Integer>> vocabularyIds = new HashMap<Integer, List<Integer>>();
+        for (VocabularyConcept concept : valuedConcepts) {
+            if (!vocabularyIds.containsKey(concept.getVocabularyId())) {
+                vocabularyIds.put(concept.getVocabularyId(), new ArrayList<Integer>());
+            }
+            vocabularyIds.get(concept.getVocabularyId()).add(concept.getId());
+        }
+        Map<Integer, List<List<DataElement>>> allConceptValues = new HashMap<Integer, List<List<DataElement>>>();
+        
+        for (Integer vocabularyId : vocabularyIds.keySet()) {
+            List<Integer> conceptIdList = vocabularyIds.get(vocabularyId);
+            int[] conceptIds = new int[conceptIdList.size()];
+            for (int i = 0; i < conceptIdList.size(); i++) {
+                conceptIds[i] = conceptIdList.get(i);
+            }
+            Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
+                    dataElementDao.getVocabularyConceptsDataElementValues(vocabularyId, conceptIds, false);
+
+            allConceptValues.putAll(vocabularyConceptsDataElementValues);
+        }
+        
+        for (Integer conceptId : allConceptValues.keySet()) {
+            List<List<DataElement>> values = allConceptValues.get(conceptId);
+            for (List<DataElement> elementValues : values) {
+                if (elementValues != null && !elementValues.isEmpty()) {
+                    DataElement valueMeta = elementValues.get(0);
+                    if (valueMeta.getId() == oldId) {
+                        for (DataElement value : elementValues) {
+                            if ("CH3".equals(oldType)) {
+                                if (value.getRelatedConceptId() != null && value.getRelatedConceptId() != 0) {
+                                    String attrValue = value.getRelatedConceptBaseURI() + value.getRelatedConceptIdentifier();
+                                    dataElementDao.updateVocabularyConceptDataElementValue(value.getValueId(), attrValue, null, null);
+                                }
+                            } else if ("CH3".equals(newType)) {
+                                if (StringUtils.isNotBlank(value.getAttributeValue())) {
+                                    VocabularyFolder relatedVocabulary = vocabularyFolderDAO.getVocabularyFolder(dataElement.getVocabularyId());
+                                    String attrValue = relatedVocabulary.getBaseUri() + value.getAttributeValue();
+                                    dataElementDao.updateVocabularyConceptDataElementValue(value.getValueId(), attrValue, null, null);
+                                    
+                                }
+                            }
+                        }
+                        
+                    }
+                    
+                    
+                }
+                
+            }
+        }
+    }
 }
