@@ -2785,7 +2785,12 @@ String helpAreaName = "";
                                                         %>
                                                             <tr>
                                                                 <td><%=rule.getTypeName()%></td>
-                                                                <td><a href="<%=request.getContextPath()%>/dataelements/<%=target.getId()%>"><%=target.getIdentifier()%></a></td>
+                                                                <td>
+                                                                    <a href="<%=request.getContextPath()%>/dataelements/<%=target.getId()%>"><%=target.getIdentifier()%></a>
+                                                                    <% if (target.isWorkingCopy()) { %>
+                                                                        <span class="checkedout" title="<%=target.getWorkingUser()%>">*</span>
+                                                                    <% } %>
+                                                                </td>
                                                             </tr>
                                                         <%}
                                                     %>
