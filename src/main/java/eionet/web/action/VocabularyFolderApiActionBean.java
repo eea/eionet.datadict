@@ -216,7 +216,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             LOGGER.info("uploadRdf API - called with remote address: " + request.getRemoteAddr() + ", and remote host: " + request.getRemoteHost());
 
             String contentType = request.getHeader(CONTENT_TYPE_HEADER);
-            if (!StringUtils.equalsIgnoreCase(VALID_CONTENT_TYPE_FOR_RDF_UPLOAD, contentType)) {
+            if (!StringUtils.startsWith(contentType.toLowerCase(), VALID_CONTENT_TYPE_FOR_RDF_UPLOAD)) {
                 LOGGER.error("uploadRdf API - invalid content type: " + contentType);
                 return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, "Invalid content-type for RDF upload", ErrorActionBean.RETURN_ERROR_EVENT);
             }
