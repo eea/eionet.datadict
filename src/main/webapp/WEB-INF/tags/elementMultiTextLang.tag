@@ -64,22 +64,10 @@
 
 <div id="multiDiv${uniqueId}">
     <c:forEach var="attr" items="${dataElements}" varStatus="innerLoop">
-        <c:choose>
-            <c:when test="${!empty attr.attributeValue}">
-                <c:set var="calculatedAttributeValue" value="${attr.attributeValue}" />
-            </c:when>
-            <c:when test="${!empty attr.relatedConceptId && empty attr.attributeValue}">
-                <c:set var="calculatedAttributeValue" value="${actionBean.conceptViewPrefix}${attr.relatedConceptRelativePath}" />
-            </c:when>
-            <c:otherwise>
-                <c:set var="calculatedAttributeValue" value="" />
-            </c:otherwise>
-        </c:choose>
-
-        <c:if test="${!empty calculatedAttributeValue}">
+        <c:if test="${!empty attr.attributeValue}">
         <span id="multySpan${uniqueId}-${innerLoop.index}">
             <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
-            <input value="${calculatedAttributeValue}" name="${fieldName}[${innerLoop.index}].attributeValue" class="${fieldClass}" size="${fieldSize}" type="text" />
+            <input value="${attr.attributeValue}" name="${fieldName}[${innerLoop.index}].attributeValue" class="${fieldClass}" size="${fieldSize}" type="text" />
             <dd:selectLang value="${attr.attributeLanguage}" name="${fieldName}[${innerLoop.index}].attributeLanguage" />
             <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a><br/>
         </span>

@@ -593,9 +593,7 @@ public class VersionManager {
 
         initDataService();
         DataElement elm = loadElm(elmID);
-        //DataElement e2 = loadElm(e.getCheckedoutCopyID());
         dataService.handleElementTypeChange(elmID, elm.getCheckedoutCopyID());
-
 
         SQLTransaction tx = null;
         try {

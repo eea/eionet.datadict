@@ -20,6 +20,7 @@ import eionet.meta.service.data.DataElementsResult;
 import eionet.util.IrrelevantAttributes;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +64,9 @@ public class DataServiceImpl implements IDataService {
     /** Vocabulary concept DAO. */
     @Autowired
     private IVocabularyConceptDAO vocabularyConceptDao;
+
+    /** logger. */
+    protected static final Logger LOGGER = Logger.getLogger(DataServiceImpl.class);
 
     /**
      * {@inheritDoc}
@@ -414,6 +418,7 @@ public class DataServiceImpl implements IDataService {
 
 
     @Override
+    @Transactional(rollbackFor = ServiceException.class)
     public void handleElementTypeChange(String elementId, String checkedOutCopyId) throws ServiceException {
         
         int newId = Integer.valueOf(elementId);
@@ -453,35 +458,40 @@ public class DataServiceImpl implements IDataService {
 
             allConceptValues.putAll(vocabularyConceptsDataElementValues);
         }
-        
-        for (Integer conceptId : allConceptValues.keySet()) {
-            List<List<DataElement>> values = allConceptValues.get(conceptId);
-            for (List<DataElement> elementValues : values) {
-                if (elementValues != null && !elementValues.isEmpty()) {
-                    DataElement valueMeta = elementValues.get(0);
-                    if (valueMeta.getId() == oldId) {
-                        for (DataElement value : elementValues) {
-                            if ("CH3".equals(oldType)) {
-                                if (value.getRelatedConceptId() != null && value.getRelatedConceptId() != 0) {
-                                    String attrValue = value.getRelatedConceptBaseURI() + value.getRelatedConceptIdentifier();
-                                    dataElementDao.updateVocabularyConceptDataElementValue(value.getValueId(), attrValue, null, null);
-                                }
-                            } else if ("CH3".equals(newType)) {
-                                if (StringUtils.isNotBlank(value.getAttributeValue())) {
-                                    VocabularyFolder relatedVocabulary = vocabularyFolderDAO.getVocabularyFolder(dataElement.getVocabularyId());
-                                    String attrValue = relatedVocabulary.getBaseUri() + value.getAttributeValue();
-                                    dataElementDao.updateVocabularyConceptDataElementValue(value.getValueId(), attrValue, null, null);
-                                    
+        try {
+            for (Integer conceptId : allConceptValues.keySet()) {
+                List<List<DataElement>> values = allConceptValues.get(conceptId);
+                for (List<DataElement> elementValues : values) {
+                    if (elementValues != null && !elementValues.isEmpty()) {
+                        DataElement valueMeta = elementValues.get(0);
+                        if (valueMeta.getId() == oldId) {
+                            for (DataElement value : elementValues) {
+                                String attrValue = "";
+                                if ("CH3".equals(oldType)) {
+                                    if (value.getRelatedConceptId() != null && value.getRelatedConceptId() != 0) {
+                                        attrValue = value.getRelatedConceptBaseURI() + value.getRelatedConceptIdentifier();
+                                        dataElementDao.updateVocabularyConceptDataElementValue(value.getValueId(), attrValue, null, null);
+                                    }
+                                } else if ("CH3".equals(newType)) { // ch3 = newType is the only choice, the rest is eliminated above
+                                    if (StringUtils.isNotBlank(value.getAttributeValue())) {
+                                        VocabularyFolder relatedVocabulary = vocabularyFolderDAO.getVocabularyFolder(dataElement.getVocabularyId());
+                                        attrValue = relatedVocabulary.getBaseUri() + value.getAttributeValue();
+                                        dataElementDao.updateVocabularyConceptDataElementValue(value.getValueId(), attrValue, null, null);
+                                    }
                                 }
                             }
+
                         }
-                        
+
+
                     }
-                    
-                    
+
                 }
-                
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("", e);
+            throw new ServiceException(e.getMessage());
         }
     }
 }

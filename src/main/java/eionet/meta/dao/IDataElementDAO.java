@@ -429,7 +429,7 @@ public interface IDataElementDAO {
     Collection<DataElement> grepDataElement(String pattern);
 
     /**
-     * Updates given concept element value
+     * Updates given concept element value (VOCABULARY_CONCEPT_ELEMENT)
      * @param id id in the table
      * @param value new value
      * @param language language code
