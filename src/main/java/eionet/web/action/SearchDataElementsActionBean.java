@@ -29,6 +29,7 @@ import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
+import eionet.meta.VersionManager;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.service.IDataService;
@@ -45,8 +46,9 @@ import eionet.util.SecurityUtil;
 @UrlBinding("/searchelements/{$event}")
 public class SearchDataElementsActionBean extends AbstractActionBean {
 
-    /** Select option values. */
-    private List<String> regStatuses;
+    /** Possible registration statuses. */
+    @SuppressWarnings("unchecked")
+    private List<String> regStatuses = new ArrayList<String>(VersionManager.REGISTRATION_STATUSES);
 
     /** Select option values. */
     private List<DataSet> dataSets;
@@ -91,13 +93,6 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
 
         filter = new DataElementsFilter();
 
-        regStatuses = new ArrayList<String>();
-        regStatuses.add("Released");
-        regStatuses.add("Recorded");
-        regStatuses.add("Qualified");
-        regStatuses.add("Candidate");
-        regStatuses.add("Incomplete");
-
         dataSets = dataService.getDataSets();
 
         filter.getAttributes().add(dataService.getAttributeByName("Name"));
@@ -131,12 +126,6 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     private Resolution addAttribute() throws ServiceException {
-        regStatuses = new ArrayList<String>();
-        regStatuses.add("Released");
-        regStatuses.add("Recorded");
-        regStatuses.add("Qualified");
-        regStatuses.add("Candidate");
-        regStatuses.add("Incomplete");
 
         dataSets = dataService.getDataSets();
         addableAttributes = dataService.getDataElementAttributes();
@@ -154,12 +143,6 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     private Resolution deleteAttribute() throws ServiceException {
-        regStatuses = new ArrayList<String>();
-        regStatuses.add("Released");
-        regStatuses.add("Recorded");
-        regStatuses.add("Qualified");
-        regStatuses.add("Candidate");
-        regStatuses.add("Incomplete");
 
         dataSets = dataService.getDataSets();
         addableAttributes = dataService.getDataElementAttributes();

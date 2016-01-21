@@ -1,6 +1,6 @@
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
-<%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%> 
+<%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
@@ -1134,11 +1134,15 @@ else if (mode.equals("add"))
                                                     }
                                                     else{ %>
                                                         <select name="reg_status" onchange="form_changed('form1')"> <%
-                                                            Vector regStatuses = verMan.getRegStatuses();
-                                                            for (int i=0; i<regStatuses.size(); i++) {
-                                                                String stat = (String)regStatuses.get(i);
-                                                                String selected = stat.equals(regStatus) ? "selected='selected'" : ""; %>
-                                                                <option <%=selected%> value="<%=Util.processForDisplay(stat)%>"><%=Util.processForDisplay(stat)%></option><%
+                                                            Vector regStatuses = "add".equals(mode) ? verMan.getSettableRegStatuses() : verMan.getRegStatuses();
+                                                            for (int i = 0; i < regStatuses.size(); i++) {
+                                                                String status = (String)regStatuses.get(i);
+                                                                String selected = status.equals(regStatus) ? "selected=\"selected\"" : "";
+                                                                String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
+                                                                String title = disabled.length() > 0 ? "title=\"This status not allowed any more when adding/saving.\"" : "";
+                                                                String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
+                                                                %>
+                                                                <option <%=style%> <%=selected%> <%=disabled%> <%=title%> value="<%=Util.processForDisplay(status)%>"><%=Util.processForDisplay(status)%></option><%
                                                             } %>
                                                         </select><%
                                                     }

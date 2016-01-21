@@ -3,7 +3,7 @@
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.dao.domain.VocabularyFolder,eionet.util.*,eionet.util.sql.ConnectionUtil,java.io.*,javax.servlet.http.HttpUtils"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%> 
+<%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final int MAX_CELL_LEN = 40;%>
@@ -480,7 +480,7 @@
                             request, response);
                     return;
                 }
-                
+
                 if(mode.equals("view")){
                     DataElementDAOImpl dao = searchEngine.getSpringContext().getBean(DataElementDAOImpl.class);
                     eionet.meta.dao.domain.DataElement element = dao.getDataElement(Integer.parseInt(dataElement.getID()));
@@ -1775,15 +1775,17 @@
                                                         else {
                                                         %>
                                                             <select name="reg_status" onchange="form_changed('form1')"> <%
-     Vector regStatuses = verMan.getRegStatuses();
-                 for (int i = 0; i < regStatuses.size(); i++) {
-                     String stat = (String) regStatuses.get(i);
-                     String selected = stat.equals(elmRegStatus) ? "selected=\"selected\""
-                             : "";
- %>
-                                                                    <option <%=selected%> value="<%=Util.processForDisplay(stat)%>"><%=Util.processForDisplay(stat)%></option><%
-                                                                        }
-                                                                    %>
+                                                                    Vector regStatuses = "add".equals(mode) ? verMan.getSettableRegStatuses() : verMan.getRegStatuses();
+																	for (int i = 0; i < regStatuses.size(); i++) {
+																	    String status = (String) regStatuses.get(i);
+																	    String selected = status.equals(elmRegStatus) ? "selected=\"selected\"" : "";
+																	    String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
+		                                                                String title = disabled.length() > 0 ? "title=\"This status not allowed any more when adding/saving.\"" : "";
+		                                                                String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
+																	    %>
+                                                                        <option <%=style%> <%=selected%> <%=disabled%> <%=title%> value="<%=Util.processForDisplay(status)%>"><%=Util.processForDisplay(status)%></option><%
+                                                                    }
+                                                                %>
                                                             </select><%
                                                                 }
                                                             %>
@@ -2204,8 +2206,8 @@
                                                 <%
                                                     }
                                                 %>
-                                                
-                                            <% 
+
+                                            <%
                                                 if (vocabulary != null) {
                                             %>
                                                 <tr class="zebra<%=isOdd%>">
@@ -2230,7 +2232,7 @@
                                                         <%
                                                             String vocabularyUri = request.getContextPath() + "/vocabulary/" + vocabulary.getFolderName() + "/" + vocabulary.getIdentifier();
                                                             boolean vocabularyEditing = "edit".equals(mode);
-                                                            
+
                                                             if (vocabularyEditing) {
                                                         %>
                                                         <input type="radio" name="all_concepts_legal" value="1" <% if (allowAllConcepts) { %> checked="checked" <%}%>>
@@ -2269,7 +2271,7 @@
                                                         <%
                                                             }
                                                         %>
-                                                        
+
                                                     </td>
                                                     <%
                                                         isOdd = Util.isOdd(++displayed);
@@ -2461,7 +2463,7 @@ String helpAreaName = "";
                                                                         <td>
                                                                             <%
                                                                                 if (valueLink.length() > 0) {
-                                                                                    
+
                                                                             %>
                                                                             <a href="<%=valueLink%>">
                                                                             <%
@@ -2470,7 +2472,7 @@ String helpAreaName = "";
                                                                                 <%=Util.processForDisplay(value)%>
                                                                             <%
                                                                                 if (valueLink.length() > 0) {
-                                                                                    
+
                                                                             %>
                                                                             </a>
                                                                             <%
@@ -2757,16 +2759,16 @@ String helpAreaName = "";
                                                 <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link">
                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                 </a>
-                                            </span>    
+                                            </span>
                                             <span class="inference_rules_help">
-                                                  <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt="mandatory"/>  
+                                                  <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt="mandatory"/>
                                             </span>
                                             <span class="barfont_bordered">
                                                 <a href="<%=request.getContextPath()%>/inference_rules/<%=delem_id%>">[Click to manage rules of this element]</a>
                                             </span>
                                         </h2>
                                         <% } %>
-                                        
+
                                         <% if( mode.equals("view") ){ %>
                                             <% if( dataElementRules.size() > 0 ){ %>
                                             <h2>Rules</h2>
@@ -2794,7 +2796,7 @@ String helpAreaName = "";
                                             <% } %>
                                         <% } %>
                                         <!-- end Inference Rules -->
-                                        
+
                                         <%
                                             // other versions
                                                 if (mode.equals("view") && elmCommon && otherVersions != null

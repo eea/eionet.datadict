@@ -83,6 +83,14 @@ public class SearchSchemaActionBean extends AbstractActionBean {
     /** True, when during copying, new schema name must be asked from user. */
     private boolean askNewName;
 
+    /** Possible registration statuses. */
+    private List<String> regStatuses;
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
     @DefaultHandler
     public Resolution search() throws ServiceException {
         if (searchFilter == null) {
@@ -161,13 +169,16 @@ public class SearchSchemaActionBean extends AbstractActionBean {
      * @return
      */
     public List<String> getRegStatuses() {
-        List<String> result = new ArrayList<String>();
-        result.add("");
-        for (RegStatus rs : RegStatus.values()) {
-            result.add(rs.toString());
+
+        if (regStatuses == null) {
+            regStatuses = new ArrayList<String>();
+            regStatuses.add("");
+            for (RegStatus rs : RegStatus.values()) {
+                regStatuses.add(rs.toString());
+            }
         }
 
-        return result;
+        return regStatuses;
     }
 
     /**
