@@ -518,11 +518,6 @@ span.noDefinition {
     float: left;
 }
 
-.showHide{
-    background: url(../images/drop-arrow.gif) right no-repeat;
-    padding-right: 15px;
-}
-
 .cartcontainer select.left,
 .cartcontainer select.right {
     min-height: 150px;
