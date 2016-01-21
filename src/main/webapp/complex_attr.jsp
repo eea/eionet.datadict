@@ -206,10 +206,9 @@ private String legalizeAlert(String in){
     <head>
         <%@ include file="headerinfo.jsp" %>
         <title>Complex attribute</title>
-    <script type="text/javascript">
-    // <![CDATA[
+        <script type="text/javascript">
+        // <![CDATA[
             function submitForm(mode){
-
                 if (mode == "delete"){
                     var b = confirm("This will delete all the rows you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
                     if (b==false) return;
@@ -230,7 +229,6 @@ private String legalizeAlert(String in){
             }
 
             function doLoad(){
-
                 var attrName = document.forms["form1"].elements["attrName"].value;
                 var allowToAdd = document.forms["form1"].elements["allowToAdd"].value;
                 if (attrName!=null && (attrName=="SubmitOrganisation" || attrName=="RespOrganisation")){
@@ -241,9 +239,8 @@ private String legalizeAlert(String in){
                     }
                 }
             }
-
-    // ]]>
-    </script>
+        // ]]>
+        </script>
     </head>
 
 <%

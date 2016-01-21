@@ -235,5 +235,12 @@ public interface IVocabularyConceptDAO {
     List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
             String dataElementIdentifier, String language, String defaultLanguage);
 
+    /**
+     * Returns the list of concept ids for the vocabulary folder
+     *
+     * @param vocabularyFolderId vocabulary folder id
+     * @return list of concept ids
+     */
+    public List<Integer> getVocabularyConceptIds(int vocabularyFolderId);
 
 }

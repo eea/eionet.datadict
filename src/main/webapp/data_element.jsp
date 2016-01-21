@@ -765,10 +765,6 @@
     <title><%=pageTitle.toString()%></title>
     <script type="text/javascript" src="<%=request.getContextPath()%>/querystring.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/modal_dialog.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
-    <link type="text/css" href="<c:url value="/css/smoothness/jquery-ui-1.8.16.custom.css" />" rel="stylesheet" />
-    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-1.6.2.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-ui-1.8.16.custom.min.js"></script>
     <script type="text/javascript">
         // <![CDATA[
 
@@ -2787,7 +2783,12 @@ String helpAreaName = "";
                                                         %>
                                                             <tr>
                                                                 <td><%=rule.getTypeName()%></td>
-                                                                <td><a href="<%=request.getContextPath()%>/dataelements/<%=target.getId()%>"><%=target.getIdentifier()%></a></td>
+                                                                <td>
+                                                                    <a href="<%=request.getContextPath()%>/dataelements/<%=target.getId()%>"><%=target.getIdentifier()%></a>
+                                                                    <% if (target.isWorkingCopy()) { %>
+                                                                        <span class="checkedout" title="<%=target.getWorkingUser()%>">*</span>
+                                                                    <% } %>
+                                                                </td>
                                                             </tr>
                                                         <%}
                                                     %>
