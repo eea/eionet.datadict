@@ -1,21 +1,9 @@
 <%@ include file="/pages/common/taglibs.jsp"%>
-
-<link type="text/css" href="<c:url value="/css/smoothness/jquery-ui-1.8.16.custom.css" />" rel="stylesheet" />
-  <script type="text/javascript" src="<c:url value="/scripts/jquery-1.6.2.min.js" />"></script>
-  <script type="text/javascript" src="<c:url value="/scripts/jquery-ui-1.8.16.custom.min.js" />"></script>
-  <script type="text/javascript" src="<c:url value="/scripts/jquery-timers.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/scripts/jquery.autocomplete.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/scripts/jquery.form.min.js"/>"></script>
-
-  <script type="text/javascript">
+    <script type="text/javascript">
         // <![CDATA[
-        ( function($) {
+        (function($) {
             $(document).ready(function() {
-
-
                 $("#selectVocabularyLnk").live("click", function(event){
-
-                    var context = "<%=request.getContextPath()%>";
                     var elemId = document.getElementById("txtElemId").value;
                     $('#searchVocabulariesDiv').dialog('open');
                     $('#vocabularySearchForm').find("input[id='txtDElemId']").attr("value", elemId);
@@ -27,7 +15,6 @@
                     width: 600,
                     modal: true
                 });
-
 
                 $("#cancelBtn").click(function(){
                     $("#searchVocabulariesDiv").dialog("close");
@@ -45,13 +32,10 @@
                     $(divId).dialog("close");
                     return false;
                 }
-        });
-
-
-        } ) ( jQuery );
+            });
+        })(jQuery);
         // ]]>
-        </script>
-
+    </script>
 
     <div id="searchVocabulariesDiv" title="Search vocabularies">
         <form id="vocabularySearchForm" method="post" action="<%=request.getContextPath()%>/bindvocabulary"  style="margin-top:1em">

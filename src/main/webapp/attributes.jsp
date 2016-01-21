@@ -81,28 +81,27 @@
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-    <%@ include file="headerinfo.jsp" %>
-  <title>Data Dictionary - Attributes</title>
-  <script type="text/javascript">
-  // <![CDATA[
-        function setLocation(){
-            var o = document.forms["form1"].searchUrl;
-            if (o!=null)
-                o.value=document.location.href;
-        }
-
-  // ]]>
-  </script>
-</head>
-<body>
-<div id="container">
-    <jsp:include page="nlocation.jsp" flush="true">
-        <jsp:param name="name" value="Attributes"/>
-        <jsp:param name="helpscreen" value="attributes"/>
-    </jsp:include>
-<%@ include file="nmenu.jsp" %>
-<div id="workarea">
+    <head>
+        <%@ include file="headerinfo.jsp" %>
+        <title>Data Dictionary - Attributes</title>
+        <script type="text/javascript">
+        // <![CDATA[
+              function setLocation(){
+                  var o = document.forms["form1"].searchUrl;
+                  if (o!=null)
+                      o.value=document.location.href;
+              }
+        // ]]>
+        </script>
+    </head>
+    <body>
+        <div id="container">
+            <jsp:include page="nlocation.jsp" flush="true">
+                <jsp:param name="name" value="Attributes"/>
+                <jsp:param name="helpscreen" value="attributes"/>
+            </jsp:include>
+            <%@ include file="nmenu.jsp" %>
+            <div id="workarea">
             <%
 
             if (attributes == null || attributes.size()==0){
@@ -259,8 +258,8 @@
         </form>
             </div> <!-- workarea -->
             </div> <!-- container -->
-      <%@ include file="footer.jsp" %>
-</body>
+    <%@ include file="footer.jsp" %>
+    </body>
 </html>
 
 <%

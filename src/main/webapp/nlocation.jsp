@@ -5,10 +5,6 @@ ServletContext ctx = getServletContext();
 String appName = ctx.getInitParameter("application-name");
 %>
 
-<link type="text/css" href="<c:url value="/css/smoothness/jquery-ui-1.8.16.custom.css" />" rel="stylesheet" />
-<script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-1.6.2.min.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-ui-1.8.16.custom.min.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
 <div id="toolribbon">
     <div id="lefttools">
         <%@ include file="topleftlinks.txt" %>
