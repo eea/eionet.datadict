@@ -213,7 +213,7 @@ public interface IVocabularyConceptDAO {
     void updateReferringReferenceConcepts(int oldVocabularyId);
 
     /**
-     * Finds vocabulary concepts of the vocabulary that are accepted.
+     * Finds vocabulary concepts of the vocabulary.
      * Expects an element to have datatype attribute otherwise not included to the result
      * not included to the result.
      *
@@ -229,11 +229,12 @@ public interface IVocabularyConceptDAO {
      *            identifier as a filter, if null all languages
      * @param defaultLanguage
      *            default language (applicable when language is not null)
+     * @param acceptedOnly
+     *            returns only accepted concepts.
      *
      * @return elements with valued bound elements
      */
-    List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
-            String dataElementIdentifier, String language, String defaultLanguage);
-
-
+    List<VocabularyConcept> getConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
+                                                          String dataElementIdentifier, String language,
+                                                          String defaultLanguage, boolean acceptedOnly);
 }

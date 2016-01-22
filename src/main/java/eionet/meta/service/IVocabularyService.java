@@ -21,8 +21,17 @@
 
 package eionet.meta.service;
 
-import eionet.meta.dao.domain.*;
-import eionet.meta.service.data.*;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.RdfNamespace;
+import eionet.meta.dao.domain.SimpleAttribute;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.VocabularyConceptData;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
 
 import java.util.List;
@@ -210,11 +219,10 @@ public interface IVocabularyService {
      * @return list of valid concepts with attributes
      * @throws ServiceException if operation fails
      */
-    List<VocabularyConcept> getValidConceptsWithAttributes(int vocabularyFolderId) throws ServiceException;
+    List<VocabularyConcept> getAcceptedConceptsWithAttributes(int vocabularyFolderId) throws ServiceException;
 
     /**
-     * Returns valid vocabulary concepts of a vocabulary with additional attributes for RDF.
-     * getValidConceptsWithAttributes(vocabularyId, null, null) equals to getValidConceptsWithAttributes(vocabularyId)
+     * Returns vocabulary concepts of a vocabulary with additional attributes for RDF.
      *
      * @param vocabularyFolderId vocabulary ID
      * @param conceptIdentifier  concept identifier to search
@@ -222,11 +230,12 @@ public interface IVocabularyService {
      * @param elementIdentifier  data element identifier as a filter, if null all data elements
      * @param language           if null all languages
      * @param defaultLanguage    default language (only applicable when language is not null)
+     * @param acceptedOnly       only accepted parameters
      * @return list of concepts
      * @throws ServiceException if operation fails
      */
-    List<VocabularyConcept> getValidConceptsWithAttributes(int vocabularyFolderId, String conceptIdentifier, String label,
-            String elementIdentifier, String language, String defaultLanguage) throws ServiceException;
+    List<VocabularyConcept> getConceptsWithAttributes(int vocabularyFolderId, String conceptIdentifier, String label,
+                                                      String elementIdentifier, String language, String defaultLanguage, boolean acceptedOnly) throws ServiceException;
 
     /**
      * Creates new vocabulary concept into database.
@@ -269,8 +278,8 @@ public interface IVocabularyService {
      * Updates vocabulary concept in non-transactional.
      *
      * @param vocabularyConcept concept
-     * @param handleInverse if true inverseOf relations are handled.
-     *                      Obligatory in the application bu importer it may cause problems
+     * @param handleInverse     if true inverseOf relations are handled.
+     *                          Obligatory in the application bu importer it may cause problems
      * @throws ServiceException if operation fails
      */
     void updateVocabularyConceptNonTransactional(VocabularyConcept vocabularyConcept, boolean handleInverse) throws ServiceException;
@@ -604,8 +613,7 @@ public interface IVocabularyService {
      *
      * @param limit maximum number of vocabulary folders
      * @return list of vocabulary folders
-     * @throws ServiceException
-     *             if operation fails
+     * @throws ServiceException if operation fails
      */
     List<VocabularyFolder> getRecentlyReleasedVocabularyFolders(int limit) throws ServiceException;
 }

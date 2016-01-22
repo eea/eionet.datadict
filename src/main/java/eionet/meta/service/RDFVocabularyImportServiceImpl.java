@@ -168,7 +168,7 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
             throw new ServiceException("Vocabulary does not have a valid base URI");
         }
 
-        List<VocabularyConcept> concepts = vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
+        List<VocabularyConcept> concepts = vocabularyService.getAcceptedConceptsWithAttributes(vocabularyFolder.getId());
 
         final List<DataElement> boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 

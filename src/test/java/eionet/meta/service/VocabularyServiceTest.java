@@ -606,7 +606,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         assertEquals("Copied Base Uri is not correct!", baseUriExpected, vocabularyFolder.getBaseUri());
         assertEquals("Vocabulary status missmatch", result.getRegStatus(), original.getRegStatus());
         
-        List<VocabularyConcept> concepts = vocabularyService.getValidConceptsWithAttributes(id);
+        List<VocabularyConcept> concepts = vocabularyService.getAcceptedConceptsWithAttributes(id);
 
         assertEquals("Expected concepts size ", 4, concepts.size());
         int expectedRelatedID = 0;

@@ -60,7 +60,7 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
 
         this.logMessages = new ArrayList<String>();
         List<VocabularyConcept> concepts =
-                vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
+                vocabularyService.getAcceptedConceptsWithAttributes(vocabularyFolder.getId());
 
         List<DataElement> boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
         if (purgeVocabularyData) {

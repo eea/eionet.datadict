@@ -136,13 +136,7 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
         this.vocabularyService.fixRelatedReferenceElements(vocabularyId, vocabularyConceptsToUpdate);
 
         // STEP 4. DELETE VOCABULARY CONCEPT
-        List<Integer> toBeDeletedConceptIds = new ArrayList<Integer>();
-        for (VocabularyConcept vc : vocabularyConceptsToDelete) {
-            toBeDeletedConceptIds.add(vc.getId());
-        }
-        if (toBeDeletedConceptIds.size() > 0) {
-            this.vocabularyService.deleteVocabularyConcepts(toBeDeletedConceptIds);
-        }
+        purgeConcepts(vocabularyConceptsToDelete);
     } // end of method importIntoDb
 
     /**

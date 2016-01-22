@@ -1089,7 +1089,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 siteCodeFilter.setIdentifier(identifier);
                 concepts = siteCodeService.searchSiteCodes(siteCodeFilter).getList();
             } else {
-                concepts = vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
+                concepts = vocabularyService.getAcceptedConceptsWithAttributes(vocabularyFolder.getId());
             }
 
             final String contextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
@@ -1164,7 +1164,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
 
             final String folderContextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
-            final List<VocabularyConcept> concepts = vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
+            final List<VocabularyConcept> concepts = vocabularyService.getAcceptedConceptsWithAttributes(vocabularyFolder.getId());
             final List<Triple<String, String, Integer>> fieldNamesWithLanguage =
                     vocabularyService.getVocabularyBoundElementNamesByLanguage(vocabularyFolder);
 
@@ -1363,8 +1363,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             LOGGER.info("JSON CALL RECEIVED FOR: " + vocabularyFolder.getIdentifier() + ", with parameters: lang = " + lang);
 
             final List<VocabularyConcept> concepts =
-                    vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId(), id, label, null, null,
-                            VocabularyJSONOutputHelper.DEFAULT_LANGUAGE);
+                    vocabularyService.getConceptsWithAttributes(vocabularyFolder.getId(), id, label, null, null,
+                            VocabularyJSONOutputHelper.DEFAULT_LANGUAGE, true);
 
             StreamingResolution result = new StreamingResolution(format) {
                 @Override
