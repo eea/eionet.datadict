@@ -139,8 +139,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     } // end of test step testIfConceptAndElementsUpdated
 
     /**
@@ -202,8 +201,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     } // end of test step testIfConceptAndElementsUpdatedWithMissingConceptsInvalid
 
     /**
@@ -265,8 +263,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     } // end of test step testIfConceptAndElementsUpdatedWithMissingConceptsRemove
 
     /**
@@ -457,8 +454,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Assert.assertEquals("Number of concepts in the vocabulary", concepts.size(), updatedConcepts.size());
 
         // compare before and after objects
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
 
     } // end of test step testIfConceptAndElementsUpdatedWithMissingConceptsKeepAllConcepts
 
@@ -580,8 +576,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     }// end of test step testIfConceptsAndElementsUpdated
 
     /**
@@ -662,8 +657,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setId(updatedConcepts.get(3).getId());
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     }// end of test step testIfNewConceptAdded
 
     /**
@@ -847,8 +841,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setId(updatedConcepts.get(0).getId());
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     }// end of test step testIfNewConceptAddedAfterPurge
 
     /**
@@ -986,8 +979,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concepts.add(vc10);
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     }// end of test step testIfConceptsAndElementsUpdatedAfterPurge
 
     /**
@@ -1033,8 +1025,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concepts.get(1).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(1).getIdentifier()).getId());
 
         // update related concepts
-        List<DataElement> elems =
-                VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", concepts.get(0).getElementAttributes());
+        List<DataElement> elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", concepts.get(0).getElementAttributes());
         DataElement element = elems.get(0);
         element.setRelatedConceptId(concepts.get(1).getId());
         element.setRelatedConceptIdentifier(concepts.get(1).getIdentifier());
@@ -1055,8 +1046,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element.setAttributeValue(VocabularyFolder.getBaseUri(vocabularyFolder) + "rdf_test_concept_3");
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     } // end of test step testIfConceptsAddedAfterPurge
 
     /**
@@ -1102,8 +1092,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concepts.get(1).setId(findVocabularyConceptByIdentifier(updatedConcepts, concepts.get(1).getIdentifier()).getId());
 
         // update related concepts
-        List<DataElement> elems =
-                VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", concepts.get(0).getElementAttributes());
+        List<DataElement> elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", concepts.get(0).getElementAttributes());
         DataElement element = elems.get(0);
         element.setRelatedConceptId(concepts.get(1).getId());
         element.setRelatedConceptIdentifier(concepts.get(1).getIdentifier());
@@ -1114,18 +1103,10 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element.setRelatedConceptIdentifier(concepts.get(0).getIdentifier());
 
         elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", concepts.get(1).getElementAttributes());
-        element = elems.get(0);
-        element.setRelatedConceptLabel(null);
-        element.setRelatedConceptId(null);
-        element.setRelatedConceptIdentifier(null);
-        element.setRelatedConceptVocSet(null);
-        element.setRelatedConceptBaseURI(null);
-        element.setRelatedConceptVocabulary(null);
-        element.setAttributeValue(VocabularyFolder.getBaseUri(vocabularyFolder) + "rdf_test_concept_3");
+        concepts.get(1).getElementAttributes().remove(elems); //remove it since it is deleted from database
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     } // end of test step testIfConceptsUpdatedAndMissingConceptsRemoved
 
     /**
@@ -1152,18 +1133,25 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // there is not much object just update, no need to iterate
         concepts.get(0).setLabel("rdf_test_concept_label_1_updated");
+        List<DataElement> elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", concepts.get(0).getElementAttributes());
+        elems.get(0).setRelatedConceptLabel("rdf_test_concept_label_2_updated");
+
         concepts.get(1).setLabel("rdf_test_concept_label_2_updated");
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", concepts.get(1).getElementAttributes());
+        elems.get(0).setRelatedConceptLabel("rdf_test_concept_label_1_updated");
+
         concepts.get(2).setStatus(StandardGenericStatus.INVALID);
         concepts.get(2).setNotAcceptedDate(new Date(System.currentTimeMillis()));
         concepts.get(2).setStatusModified(new Date(System.currentTimeMillis()));
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", concepts.get(2).getElementAttributes());
+        elems.get(0).setRelatedConceptLabel("rdf_test_concept_label_2_updated");
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
         Assert.assertEquals("Updated Concepts does not include 3 vocabulary concepts", 3, updatedConcepts.size());
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     } // end of test step testIfConceptsUpdatedAndMissingConceptsInvalid
 
     /**
@@ -1190,17 +1178,24 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         // there is not much object just update, no need to iterate
         concepts.get(0).setLabel("rdf_test_concept_label_1_updated");
+        List<DataElement> elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", concepts.get(0).getElementAttributes());
+        elems.get(0).setRelatedConceptLabel("rdf_test_concept_label_2_updated");
+
         concepts.get(1).setLabel("rdf_test_concept_label_2_updated");
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", concepts.get(1).getElementAttributes());
+        elems.get(0).setRelatedConceptLabel("rdf_test_concept_label_1_updated");
+
         concepts.get(2).setStatus(StandardGenericStatus.DEPRECATED_RETIRED);
         concepts.get(2).setStatusModified(new Date(System.currentTimeMillis()));
+        elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", concepts.get(2).getElementAttributes());
+        elems.get(0).setRelatedConceptLabel("rdf_test_concept_label_2_updated");
 
         // get updated values of concepts with attributes
         List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
         Assert.assertEquals("Updated Concepts does not include 3 vocabulary concepts", updatedConcepts.size(), 3);
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     } // end of test step testIfConceptsUpdatedAndMissingConceptsRetired
 
     /**
@@ -1229,7 +1224,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Assert.assertEquals("Updated Concepts does not include 3 vocabulary concepts", updatedConcepts.size(), 3);
 
         // manually create values of new concept for comparison
-        String[] seenPredicates = new String[]{"skos:relatedMatch", "skos:related", "skos:prefLabel"};
+        String[] seenPredicates = new String[] { "skos:relatedMatch", "skos:related", "skos:prefLabel" };
         // remove elements of these predicates from first and second concepts
         for (int i = 0; i < 2; i++) {
             for (String seenPredicate : seenPredicates) {
@@ -1243,12 +1238,10 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
         VocabularyConcept vc3 = concepts.get(2);
         vc3.setDefinition("rdf_test_concept_def_3_updated");
-        List<DataElement> dataElementValuesByName =
-                VocabularyImportBaseHandler.getDataElementValuesByName("skos:relatedMatch", vc3.getElementAttributes());
+        List<DataElement> dataElementValuesByName = VocabularyImportBaseHandler.getDataElementValuesByName("skos:relatedMatch", vc3.getElementAttributes());
         DataElement elem = dataElementValuesByName.get(0);
         elem.setAttributeValue("http://test.tripledev.ee/datadict/vocabulary/test/test_another_source/another2");
-        dataElementValuesByName =
-                VocabularyImportBaseHandler.getDataElementValuesByName("skos:prefLabel", vc3.getElementAttributes());
+        dataElementValuesByName = VocabularyImportBaseHandler.getDataElementValuesByName("skos:prefLabel", vc3.getElementAttributes());
         elem = dataElementValuesByName.get(0);
         elem.setAttributeValue("bg_rdf_test_concept_3_updated");
         int count = dataElementValuesByName.size();
@@ -1257,15 +1250,13 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         }
         // skos:related is deleted from concept 2 so now it will be automatically be deleted from db
         // SEE: fixRelatedElements method in dao
-        dataElementValuesByName =
-                VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", vc3.getElementAttributes());
+        dataElementValuesByName = VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", vc3.getElementAttributes());
 
         // TODO - check how inverse should work :
         // vc3.getElementAttributes().remove(dataElementValuesByName);
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     } // end of test step testIfConceptsUpdatedAddedAfterPerPredicatePurge
 
     /**
@@ -1320,8 +1311,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     } // end of test step testIfConceptsAreSkipped
 
     /**
@@ -1383,8 +1373,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     } // end of test step testIfConceptsSetRelatedInOtherVocabularies
 
     /**
@@ -1417,8 +1406,8 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concept.setAcceptedDate(new Date(System.currentTimeMillis()));
         concept.setStatusModified(new Date(System.currentTimeMillis()));
         Assert.assertEquals("Label does not match for concept.", "en_rdf_test_concept_1", concept.getLabel());
-        Assert.assertEquals("skos:prefLabel should have 3 elements for concept.", 3, VocabularyImportBaseHandler
-                .getDataElementValuesByName("skos:prefLabel", concept.getElementAttributes()).size());
+        Assert.assertEquals("skos:prefLabel should have 3 elements for concept.", 3,
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:prefLabel", concept.getElementAttributes()).size());
 
         // Concept 2
         concept = findVocabularyConceptByIdentifier(updatedConcepts, "rdf_test_concept_2");
@@ -1427,10 +1416,10 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concept.setStatusModified(new Date(System.currentTimeMillis()));
         Assert.assertEquals("Label does not match for concept.", "rdf_test_concept_label_2", concept.getLabel());
         Assert.assertEquals("Definition does not match for concept.", "rdf_test_concept_def_2", concept.getDefinition());
-        Assert.assertEquals("skos:prefLabel should have 2 elements for concept.", 2, VocabularyImportBaseHandler
-                .getDataElementValuesByName("skos:prefLabel", concept.getElementAttributes()).size());
-        Assert.assertEquals("skos:definition should have 1 elements for concept.", 1, VocabularyImportBaseHandler
-                .getDataElementValuesByName("skos:definition", concept.getElementAttributes()).size());
+        Assert.assertEquals("skos:prefLabel should have 2 elements for concept.", 2,
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:prefLabel", concept.getElementAttributes()).size());
+        Assert.assertEquals("skos:definition should have 1 elements for concept.", 1,
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:definition", concept.getElementAttributes()).size());
 
         // Concept 3
         concept = findVocabularyConceptByIdentifier(updatedConcepts, "rdf_test_concept_3");
@@ -1439,10 +1428,10 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concept.setStatusModified(new Date(System.currentTimeMillis()));
         Assert.assertEquals("Label does not match for concept.", "bg_rdf_test_concept_3", concept.getLabel());
         Assert.assertEquals("Definition does not match for concept.", "en_rdf_test_concept_3", concept.getDefinition());
-        Assert.assertEquals("skos:prefLabel should have 2 elements for concept.", 2, VocabularyImportBaseHandler
-                .getDataElementValuesByName("skos:prefLabel", concept.getElementAttributes()).size());
-        Assert.assertEquals("skos:definition should have 2 elements for concept.", 2, VocabularyImportBaseHandler
-                .getDataElementValuesByName("skos:definition", concept.getElementAttributes()).size());
+        Assert.assertEquals("skos:prefLabel should have 2 elements for concept.", 2,
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:prefLabel", concept.getElementAttributes()).size());
+        Assert.assertEquals("skos:definition should have 2 elements for concept.", 2,
+                VocabularyImportBaseHandler.getDataElementValuesByName("skos:definition", concept.getElementAttributes()).size());
 
     } // end of test step testIfConceptsAddedAfterPurge
 
@@ -1649,8 +1638,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vc11.setId(updatedConcepts.get(3).getId());
 
         // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
-                ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
     }// end of test step testIfNewConceptAddedWithDDNamespace
 
     private Map<String, List<String>> getDatatypeElemAttrs(String type) {
