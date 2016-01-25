@@ -21,6 +21,37 @@
 
 package eionet.web.action;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ErrorResolution;
+import net.sourceforge.stripes.action.FileBean;
+import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
+import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.StreamingResolution;
+import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringUtils;
+
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
@@ -51,34 +82,6 @@ import eionet.util.StringEncoder;
 import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ErrorResolution;
-import net.sourceforge.stripes.action.FileBean;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-import net.sourceforge.stripes.validation.ValidationMethod;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.StringUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang.ArrayUtils;
 
 /**
  * Edit vocabulary folder action bean.
@@ -427,7 +430,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 vocabularyConceptIds.add(concept.getId());
             }
             Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
-                    vocabularyService.getVocabularyConceptsDataElementValues(vocabularyFolder.getId(), 
+                    vocabularyService.getVocabularyConceptsDataElementValues(vocabularyFolder.getId(),
                     ArrayUtils.toPrimitive(vocabularyConceptIds.toArray(new Integer[vocabularyConceptIds.size()])),
                             false);
 
@@ -977,7 +980,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         // Validate unique identifier
         if (vocabularyFolder.getId() == 0) {
             int folderId = FOLDER_CHOICE_NEW.equalsIgnoreCase(folderChoice) ? folder.getId() : vocabularyFolder.getFolderId();
-            
+
             if (!vocabularyService.isUniqueVocabularyFolderIdentifier(folderId, vocabularyFolder.getIdentifier())) {
                 addGlobalValidationError("Vocabulary identifier is not unique");
             }

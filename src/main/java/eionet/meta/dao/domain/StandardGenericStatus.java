@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Standard generic status which is compatible with: http://inspire.ec.europa.eu/registry/status/ and based on the principles in ISO
  * 19135. The specification operates with two base states: Accepted and Not accepted, and all selectable statuses are refinements of
@@ -67,65 +69,95 @@ public enum StandardGenericStatus {
      * </pre>
      *
      */
-    NOT_ACCEPTED("Not accepted", 64),
-    SUBMITTED("Submitted", 81),
-    RESERVED("Reserved", 97),
-    INVALID("Invalid", 113),
-    ACCEPTED("Accepted", 128),
-    VALID("Valid", 145),
-    VALID_STABLE("Valid - stable", 147),
-    VALID_EXPERIMENTAL("Valid - experimental", 149),
-    DEPRECATED("Deprecated", 161),
-    DEPRECATED_RETIRED("Deprecated - retired", 163),
-    DEPRECATED_SUPERSEDED("Deprecated - superseded", 165);
+    NOT_ACCEPTED("Not accepted", "notAccepted", 64),
+    SUBMITTED("Submitted", "submitted", 81),
+    RESERVED("Reserved", "reserved", 97),
+    INVALID("Invalid", "invalid", 113),
+    ACCEPTED("Accepted", "accepted", 128),
+    VALID("Valid", "valid", 145),
+    VALID_STABLE("Valid - stable", "stable", 147),
+    VALID_EXPERIMENTAL("Valid - experimental", "experimental", 149),
+    DEPRECATED("Deprecated", "deprecated", 161),
+    DEPRECATED_RETIRED("Deprecated - retired", "retired", 163),
+    DEPRECATED_SUPERSEDED("Deprecated - superseded", "superseded", 165);
     // @formatter:on
 
-    /**
-     * Bit mask for UI status types (LSB is 1).
-     */
+    /** Bit mask for UI status types (LSB is 1). */
     public static final int UI_ELEMENTS_MASK = 1;
+
     /**
      * Bit mask to determine when a status is changed from accepted to not accepted (or vice versa) or in same set. Value is
      * 11000000. So it consumes all 6 least significant bits and preserves SET BITS (ACCEPTED and NOT_ACCEPTED). After anding with this
      * mask, if result is greater than 0 then in same set.
      */
     public static final int IN_SAME_SET_MASK = 192;
-    /**
-     * Bit mask to match all status types.
-     */
+
+    /** Bit mask to match all status types. */
     public static final int ALL_MASK = 255;
 
-    /**
-     * Label for enum.
-     */
+    /** The status's skos:prefLabel. */
     private String label;
-    /**
-     * Value for enum.
-     */
+
+    /** The status's skos:notation. */
+    private String notation;
+
+    /** The status's numeric value as explained above. */
     private int value;
 
     /**
      * Default private constructor.
      *
-     * @param label
-     *            label of enum
-     * @param value
-     *            value of enum
+     * @param prefLabel The status's skos:prefLabel.
+     * @param notation The status's skos:notation.
+     * @param value The status's numeric value as explained above.
      */
-    private StandardGenericStatus(String label, int value) {
-        this.label = label;
-        this.value = value;
-    } // end of constructor
+    private StandardGenericStatus(String prefLabel, String notation, int value) {
 
+        if (StringUtils.isBlank(prefLabel) || StringUtils.isBlank(notation)) {
+            throw new IllegalArgumentException("Preferred label and notation must not be blank!");
+        }
+
+        if (value < 0) {
+            throw new IllegalArgumentException("Numeric value must be >= 0!");
+        }
+
+        this.label = prefLabel;
+        this.notation = notation;
+        this.value = value;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Enum#toString()
+     */
     @Override
     public String toString() {
         return this.label;
     }
 
+    /**
+     * Gets the label.
+     *
+     * @return the label
+     */
     public String getLabel() {
         return label;
     }
 
+    /**
+     * Gets the notation.
+     *
+     * @return the notation
+     */
+    public String getNotation() {
+        return notation;
+    }
+
+    /**
+     * Gets the value.
+     *
+     * @return the value
+     */
     public int getValue() {
         return value;
     }
@@ -133,8 +165,7 @@ public enum StandardGenericStatus {
     /**
      * Returns if status is super status of given status.
      *
-     * @param of
-     *            given status
+     * @param of given status
      * @return boolean
      */
     public boolean isSuperStatus(StandardGenericStatus of) {
@@ -144,8 +175,7 @@ public enum StandardGenericStatus {
     /**
      * Returns if status is a sub status of given status.
      *
-     * @param of
-     *            given status
+     * @param of given status
      * @return boolean
      */
     public boolean isSubStatus(StandardGenericStatus of) {
@@ -159,7 +189,7 @@ public enum StandardGenericStatus {
      */
     public boolean isValid() {
         return this.isSubStatus(StandardGenericStatus.VALID);
-    } // end of method isValid
+    }
 
     /**
      * Utility method to check a status is accepted.
@@ -168,24 +198,22 @@ public enum StandardGenericStatus {
      */
     public boolean isAccepted() {
         return this.isSubStatus(StandardGenericStatus.ACCEPTED);
-    } // end of method isAccepted
+    }
 
     /**
      * Returns if a status is opposite of another. This comparison is done in ACCEPTED and NOT_ACCEPTED sets.
      *
-     * @param with
-     *            comparing status
+     * @param with comparing status
      * @return if they are in same set or not same set
      */
     public boolean isSameSet(StandardGenericStatus with) {
         return (this.value & with.value & IN_SAME_SET_MASK) > 0;
-    } // end of method isSameSet
+    }
 
     /**
      * Static method to query enum from integer value.
      *
-     * @param value
-     *            integer value of enum
+     * @param value integer value of enum
      * @return found enum or null
      */
     public static StandardGenericStatus fromValue(int value) {
@@ -195,12 +223,12 @@ public enum StandardGenericStatus {
             }
         }
         return null;
-    } // end of static method StandardGenericStatus
+    }
 
     /**
      * Apply UI mask and returns statuses.
      *
-     * @return list of statuses which user can set from ui.
+     * @return list of statuses which user can set from UI.
      */
     public static StandardGenericStatus[] uiValues() {
         StandardGenericStatus[] values = StandardGenericStatus.values();
@@ -212,14 +240,13 @@ public enum StandardGenericStatus {
         }
 
         return uiValues.toArray(new StandardGenericStatus[uiValues.size()]);
-    } // end of static method uiValues
+    }
 
     /**
      * A helper method to return enum values as list.
-     * @return All enum values as list
+     * @return All enum values as list.
      */
     public static List<StandardGenericStatus> valuesAsList(){
         return Arrays.asList(StandardGenericStatus.values());
-    } //end of static method valuesAsList
-
-} // end of enum StandardGenericStatus
+    }
+}

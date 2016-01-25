@@ -161,6 +161,10 @@ public final class VocabularyOutputHelper {
          * DD namespace uri.
          */
         public static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
+
+        /** The ADMS namespace (http://lov.okfn.org/dataset/lov/vocabs/adms). */
+        public static final String ADMS_NS = "http://www.w3.org/ns/adms#";
+
         /**
          * RDF namespace prefix.
          */
@@ -185,6 +189,10 @@ public final class VocabularyOutputHelper {
          * DCTERMS namespace prefix.
          */
         public static final String DCTERMS = "dcterms";
+
+        /** Prefix for {@link #ADMS_NS}. */
+        public static final String ADMS = "adms";
+
         /**
          * default namespaces that are present in all vocabulary RDFs.
          */
@@ -199,6 +207,7 @@ public final class VocabularyOutputHelper {
             DEFAULT_NAMESPACES.put(OWL, OWL_NS);
             DEFAULT_NAMESPACES.put(DCTYPE, DCTYPE_NS);
             DEFAULT_NAMESPACES.put(DCTERMS, DCTERMS_NS);
+            DEFAULT_NAMESPACES.put(ADMS, ADMS_NS);
         }
     } // end of inner class LinkedDataNamespaces
 
