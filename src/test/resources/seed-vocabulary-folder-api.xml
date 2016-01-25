@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<dataset>
+    <T_RDF_NAMESPACE ID="1" URI="http://geonamespace.org#ws64" NAME_PREFIX="geo"/>
+
+    <VOCABULARY_SET ID="1" IDENTIFIER="common" LABEL="Common" />
+
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="1" NAME="Datatype" OBLIGATION="O" DEFINITION="Data type" SHORT_NAME="Datatype" NAMESPACE_ID="2" DISP_TYPE="select" DISP_ORDER="1" DISP_WHEN="75" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="1"/>
+
+    <VOCABULARY VOCABULARY_ID="2" CONTINUITY_ID="123" IDENTIFIER="test_vocabulary2" LABEL="test2" REG_STATUS="Released" DATE_MODIFIED="2014-05-15 20:46:40" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="1" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/common/test_vocabulary2/"/>
+    <VOCABULARY VOCABULARY_ID="3" CONTINUITY_ID="123" IDENTIFIER="test_vocabulary2" LABEL="test2" REG_STATUS="Released" DATE_MODIFIED="2014-07-17 12:05:00" WORKING_COPY="1" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="2" FOLDER_ID="1" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/common/test_vocabulary2/"/>
+
+   <API_KEY IDENTIFIER="EXPIRED" SCOPE="[NULL]" KEY="ThisKeyExpired" REMOTE_ADDR="[NULL]" EXPIRES="2014-05-15 20:46:40" NOTES="An expired API key"/>
+   <API_KEY IDENTIFIER="RESTRICTEDTODOMAIN" SCOPE="[NULL]" KEY="ThisKeyCanBeCalledFromSomeCertainDomains" REMOTE_ADDR="http://tripledev.ee/" EXPIRES="[NULL]" NOTES="A domain restriced API Key"/>
+   <API_KEY IDENTIFIER="VALID" SCOPE="[NULL]" KEY="ValidApiKey" REMOTE_ADDR="[NULL]" EXPIRES="[NULL]" NOTES="A valid api key"/>
+
+</dataset>
