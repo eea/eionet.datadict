@@ -77,12 +77,12 @@ public class ErrorActionBean extends AbstractActionBean {
 
     @DefaultHandler
     public Resolution showError() throws ServiceException {
-        return this.createHttpCodeBasedErrorResolution(getHttpCodeForErrorType(this.type));
+        return createHttpCodeBasedErrorResolution(getHttpCodeForErrorType(this.type));
     }
 
     @HandlesEvent(RETURN_ERROR_EVENT)
     public Resolution returnError() throws ServiceException {
-        return this.createHttpCodeBasedErrorResolution(getHttpCodeForErrorType(this.type), this.message);
+        return createHttpCodeBasedErrorResolution(getHttpCodeForErrorType(this.type), this.message);
     }
 
     /**
@@ -91,7 +91,7 @@ public class ErrorActionBean extends AbstractActionBean {
      * @param type internal error type.
      * @return http error code.
      */
-    private int getHttpCodeForErrorType(ErrorType type) {
+    public static int getHttpCodeForErrorType(ErrorType type) {
         int httpCode;
         switch (type) {
             case NOT_AUTHENTICATED_401:

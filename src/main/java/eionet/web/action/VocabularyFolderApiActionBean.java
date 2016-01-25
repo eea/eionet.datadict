@@ -89,7 +89,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     /**
      * Keyword for content type.
      */
-    public static final String CONTENT_TYPE_HEADER = "Content-type";
+    public static final String CONTENT_TYPE_HEADER = "Content-Type";
 
     /**
      * Valid content type for RDF upload.
@@ -216,9 +216,9 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             LOGGER.info("uploadRdf API - called with remote address: " + request.getRemoteAddr() + ", and remote host: " + request.getRemoteHost());
 
             String contentType = request.getHeader(CONTENT_TYPE_HEADER);
-            if (!StringUtils.startsWith(contentType.toLowerCase(), VALID_CONTENT_TYPE_FOR_RDF_UPLOAD)) {
+            if (!StringUtils.startsWithIgnoreCase(contentType, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD)) {
                 LOGGER.error("uploadRdf API - invalid content type: " + contentType);
-                return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, "Invalid content-type for RDF upload", ErrorActionBean.RETURN_ERROR_EVENT);
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Invalid content-type for RDF upload", ErrorActionBean.RETURN_ERROR_EVENT);
             }
 
             String keyHeader = request.getHeader(JWT_API_KEY_HEADER);
@@ -233,7 +233,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                     long nowInSeconds = Calendar.getInstance().getTimeInMillis() / 1000l;
                     if (nowInSeconds > (createdTimeInSeconds + (JWT_TIMEOUT_IN_MINUTES * 60))) {
                         LOGGER.error("uploadRdf API - Deprecated token");
-                        return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Deprecated token", ErrorActionBean.RETURN_ERROR_EVENT);
+                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Deprecated token", ErrorActionBean.RETURN_ERROR_EVENT);
                     }
 
                     String apiKey = jsonObject.getString(API_KEY_IDENTIFIER_IN_JSON);
@@ -242,7 +242,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
 
                     if (ddApiKey == null) {
                         LOGGER.error("uploadRdf API - Invalid key");
-                        return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid key", ErrorActionBean.RETURN_ERROR_EVENT);
+                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid key", ErrorActionBean.RETURN_ERROR_EVENT);
                     }
 
                     //Note: Scope can also be used
@@ -251,7 +251,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                         Date now = Calendar.getInstance().getTime();
                         if (now.after(ddApiKey.getExpires())) {
                             LOGGER.error("uploadRdf API - Expired key");
-                            return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Expired key", ErrorActionBean.RETURN_ERROR_EVENT);
+                            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Expired key", ErrorActionBean.RETURN_ERROR_EVENT);
                         }
                     }
 
@@ -259,17 +259,17 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                     if (StringUtils.isNotBlank(remoteAddr)) {
                         if (!StringUtils.equals(remoteAddr, request.getRemoteAddr()) && !StringUtils.equals(remoteAddr, request.getRemoteHost())) {
                             LOGGER.error("uploadRdf API - Invalid remote end point");
-                            return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid remote end point", ErrorActionBean.RETURN_ERROR_EVENT);
+                            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid remote end point", ErrorActionBean.RETURN_ERROR_EVENT);
                         }
                     }
 
                 } catch (Exception e) {
                     LOGGER.error("uploadRdf API - Cannot verify key", e);
-                    return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
                 }
             } else {
                 LOGGER.error("uploadRdf API - Key missing");
-                return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "API Key cannot be missing", ErrorActionBean.RETURN_ERROR_EVENT);
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "API Key cannot be missing", ErrorActionBean.RETURN_ERROR_EVENT);
             }
 
             LOGGER.info("uploadRdf API - request authorized");
@@ -309,13 +309,13 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                 if (errorParameters == null ||
                         !ErrorActionBean.ErrorType.NOT_FOUND_404.equals(errorParameters.get(ErrorActionBean.ERROR_TYPE_KEY))) {
                     LOGGER.error("uploadRdf API - Vocabulary has working copy", e);
-                    return super.createErrorResolution(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
                 }
             }
 
             if (workingCopy != null && workingCopy.isWorkingCopy()) {
                 LOGGER.error("uploadRdf API - Vocabulary has working copy");
-                return super.createErrorResolution(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy", ErrorActionBean.RETURN_ERROR_EVENT);
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy", ErrorActionBean.RETURN_ERROR_EVENT);
             }
 
             try {
@@ -326,13 +326,13 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                 if (errorParameters != null &&
                         ErrorActionBean.ErrorType.NOT_FOUND_404.equals(errorParameters.get(ErrorActionBean.ERROR_TYPE_KEY))) {
                     LOGGER.error("uploadRdf API - Vocabulary can NOT be found", e);
-                    return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, "Vocabulary can NOT be found: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_FOUND_404, "Vocabulary can NOT be found: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
                 }
             }
 
             if (vocabularyFolder.isWorkingCopy()) {
                 LOGGER.error("uploadRdf API - Vocabulary has working copy");
-                return super.createErrorResolution(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy", ErrorActionBean.RETURN_ERROR_EVENT);
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy", ErrorActionBean.RETURN_ERROR_EVENT);
             }
 
             LOGGER.info("uploadRdf API - Starting RDF import operation");
@@ -359,10 +359,10 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             return result;
         } catch (ServiceException e) {
             LOGGER.error("uploadRdf API - Failed to import vocabulary RDF into db", e);
-            return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
         } catch (Exception e) {
             LOGGER.error("uploadRdf API - Failed to import vocabulary RDF into db, unexpected exception: ", e);
-            return super.createErrorResolution(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR, "Failed to import vocabulary RDF into db, unexpected exception: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR, "Failed to import vocabulary RDF into db, unexpected exception: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
         }
     } // end of method uploadRDF
 

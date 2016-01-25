@@ -47,7 +47,7 @@ public class ApiKeyServiceImpl implements IApiKeyService {
         try {
             return apiKeyDAO.getApiKey(key);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get api key: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get api key", e);
         }
     }//end of method getApiKey
 }//end of class ApiKeyServiceImpl

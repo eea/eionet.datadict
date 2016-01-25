@@ -158,6 +158,25 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
     public List<String> importRdfIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder,
                                                 UploadActionBefore uploadActionBefore, UploadAction uploadAction,
                                                 MissingConceptsAction missingConceptsAction) throws ServiceException {
+        return importRdfIntoVocabularyInternal(contents, vocabularyFolder, uploadActionBefore, uploadAction, missingConceptsAction);
+    } // end of method importRdfIntoVocabulary
+
+    /**
+     * Internal method to be called from service end points. Needed for transactional method calls from service side
+     * and to avoid nested transactional calls.
+     *
+     * @param contents              same with @link {IRDFVocabularyImportService#importRdfIntoVocabulary}
+     * @param vocabularyFolder      same with @link {IRDFVocabularyImportService#importRdfIntoVocabulary}
+     * @param uploadActionBefore    same with @link {IRDFVocabularyImportService#importRdfIntoVocabulary}
+     * @param uploadAction          same with @link {IRDFVocabularyImportService#importRdfIntoVocabulary}
+     * @param missingConceptsAction same with @link {IRDFVocabularyImportService#importRdfIntoVocabulary}
+     * @return same with @link {IRDFVocabularyImportService#importRdfIntoVocabulary}
+     * @throws ServiceException same with @link {IRDFVocabularyImportService#importRdfIntoVocabulary}
+     * @see {IRDFVocabularyImportService#importRdfIntoVocabulary}
+     */
+    private List<String> importRdfIntoVocabularyInternal(Reader contents, VocabularyFolder vocabularyFolder,
+                                                         UploadActionBefore uploadActionBefore, UploadAction uploadAction,
+                                                         MissingConceptsAction missingConceptsAction) throws ServiceException {
         long start = System.currentTimeMillis();
         this.logMessages = new ArrayList<String>();
 
@@ -320,12 +339,13 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         this.logMessages.add("Total time of execution (msecs): " + (end - start));
 
         return this.logMessages;
-    } // end of method importRdfIntoVocabulary
+    } // end of method importRdfIntoVocabularyInternal
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @Transactional(rollbackFor = ServiceException.class)
     public List<String> importRdfIntoVocabulary(Reader contents, final VocabularyFolder vocabularyFolder,
                                                 boolean purgeVocabularyData, boolean purgePredicateBasis) throws ServiceException {
 
@@ -345,7 +365,7 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
 
         MissingConceptsAction missingConceptsAction = getDefaultMissingConceptsAction(false);
 
-        return importRdfIntoVocabulary(contents, vocabularyFolder, uploadActionBefore, uploadAction, missingConceptsAction);
+        return importRdfIntoVocabularyInternal(contents, vocabularyFolder, uploadActionBefore, uploadAction, missingConceptsAction);
     } // end of method importRdfIntoVocabulary
 
 } // end of class RDFVocabularyImportServiceImpl
