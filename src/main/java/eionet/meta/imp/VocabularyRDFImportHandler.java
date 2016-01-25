@@ -21,19 +21,6 @@
 
 package eionet.meta.imp;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.service.ServiceException;
-import eionet.util.Pair;
-import org.apache.commons.lang.StringUtils;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.rio.RDFHandler;
-import org.openrdf.rio.RDFHandlerException;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -43,11 +30,30 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
-import eionet.util.Util;
-import eionet.meta.exports.VocabularyOutputHelper;
 import net.sourceforge.stripes.util.StringUtil;
+
+import org.apache.commons.lang.StringUtils;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.rio.RDFHandler;
+import org.openrdf.rio.RDFHandlerException;
+
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.StandardGenericStatus;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.exports.VocabularyOutputHelper;
+import eionet.meta.service.ServiceException;
+import eionet.util.Pair;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.Util;
 
 /**
  * Implementation of OpenRDF's {@link RDFHandler} that will be used by implementations of
@@ -97,6 +103,10 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      * concept attribute namespaces to update concept fields instead of dataelements.
      */
     private static final List<String> SKOS_CONCEPT_ATTRIBUTES;
+
+    /** */
+    private static final String DD_OWN_STATUS_VOCABULARY_URI =
+            VocabularyFolder.OWN_VOCABULARIES_FOLDER_URI + "/" + Props.getRequiredProperty(PropsIF.DD_OWN_STATUS_VOCABULARY_IDENTIFIER);
 
     static {
         SKOS_CONCEPT_ATTRIBUTES = new ArrayList<String>();
@@ -202,6 +212,9 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      */
     private Map<String, Literal> lastCandidateForConceptAttribute = null;
 
+    /** The map containing identifier:notation pairs of concepts present in DD's own status vocabulary in the database. */
+    private Map<String, String> statusVocabularyEntries = new HashMap<String, String>();
+
     /**
      * Constructor for RDFHandler to import rdf into vocabulary.
      *
@@ -227,6 +240,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
     public VocabularyRDFImportHandler(String folderContextRoot, List<VocabularyConcept> concepts,
             Map<String, Integer> boundElementsToIds, Map<String, List<String>> boundElements, Map<String, String> boundURIs,
             boolean createNewDataElementsForPredicates, String workingLanguage, String ddNamespace) throws ServiceException {
+
         super(folderContextRoot, concepts, boundElementsToIds);
         this.boundElements = boundElements;
         this.createNewDataElementsForPredicates = createNewDataElementsForPredicates;
@@ -249,6 +263,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         } catch (NoSuchAlgorithmException e) {
             throw new ServiceException(e.getMessage());
         }
+
+        loadStatusVocabularyEntries();
     } // end of constructor
 
     @Override
@@ -321,43 +337,49 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         }
 
         String attributeIdentifier = null;
-        String predicateNS = null;
+        String predicateNsPrefix = null;
 
-        boolean candidateForConceptAttribute = false;
-        if (StringUtils.startsWith(predicateUri, VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS)) {
-            attributeIdentifier = predicateUri.replace(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "");
-            candidateForConceptAttribute = SKOS_CONCEPT_ATTRIBUTES.contains(attributeIdentifier);
-            if (candidateForConceptAttribute) {
-                predicateNS = SKOS_CONCEPT_ATTRIBUTE_NS;
+        ConceptAttribute conceptAttribute = null;
+        for (ConceptAttribute conceptAttr : ConceptAttribute.values()) {
+            String nsUri = conceptAttr.getNsUri();
+            if (StringUtils.startsWith(predicateUri, nsUri)) {
+                String identifier = StringUtils.substringAfter(predicateUri, nsUri);
+                if (StringUtils.isNotBlank(identifier)) {
+                    predicateNsPrefix = conceptAttr.getNsPrefix();
+                    attributeIdentifier = identifier;
+                    conceptAttribute = conceptAttr;
+                    break;
+                }
             }
         }
 
-        if (candidateForConceptAttribute && !(object instanceof Literal)) {
-            // this.logMessages.add(st.toString() + " NOT imported, object is not a Literal for concept attribute");
-            return;
+        boolean candidateForConceptAttribute = conceptAttribute != null;
+
+        if (candidateForConceptAttribute) {
+            if (!(object instanceof Literal) && !conceptAttribute.isResourceValueAllowed()) {
+                return;
+            }
         }
 
         if (!candidateForConceptAttribute) {
             for (String key : this.boundURIs.keySet()) {
                 if (StringUtils.startsWith(predicateUri, key)) {
                     attributeIdentifier = predicateUri.replace(key, "");
-                    predicateNS = this.boundURIs.get(key);
-                    if (!this.boundElements.get(predicateNS).contains(attributeIdentifier)) {
-                        predicateNS = null;
+                    predicateNsPrefix = this.boundURIs.get(key);
+                    if (!this.boundElements.get(predicateNsPrefix).contains(attributeIdentifier)) {
+                        predicateNsPrefix = null;
                     }
                     break;
                 }
             }
         }
 
-        if (StringUtils.isEmpty(predicateNS)) {
-            // this.logMessages.add(st.toString() + " NOT imported, predicate is not a bound URI nor a concept attribute");
+        if (StringUtils.isEmpty(predicateNsPrefix)) {
             this.notBoundPredicates.add(predicateUri);
             return;
         }
 
-        // if execution comes here so we have a valid triple to import
-        // first find the concept
+        // If reached here then we have a valid triple to import, but first find the concept.
         if (!StringUtils.equals(conceptIdentifier, this.prevConceptIdentifier)) {
             this.prevDataElemIdentifier = null;
             this.prevLang = null;
@@ -379,16 +401,18 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             }
         }
 
-        String dataElemIdentifier = predicateNS + ":" + attributeIdentifier;
-        if (StringUtils.equals(this.ddNamespace, predicateNS)) {
+        String dataElemIdentifier = predicateNsPrefix + ":" + attributeIdentifier;
+        if (StringUtils.equals(this.ddNamespace, predicateNsPrefix)) {
             dataElemIdentifier = attributeIdentifier;
         }
 
         // TODO code below can be refactored
         if (candidateForConceptAttribute
                 && !this.conceptsUpdatedForAttributes.get(dataElemIdentifier).contains(this.lastFoundConcept.getId())) {
+
             this.conceptsUpdatedForAttributes.get(dataElemIdentifier).add(this.lastFoundConcept.getId());
-            // update concept value here
+
+            // Update concept value here.
             String val = StringUtils.trimToNull(object.stringValue());
             if (StringUtils.equals(attributeIdentifier, NOTATION)) {
                 this.lastFoundConcept.setNotation(val);
@@ -397,6 +421,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                     this.lastFoundConcept.setDefinition(val);
                 } else if (StringUtils.equals(attributeIdentifier, PREF_LABEL)) {
                     this.lastFoundConcept.setLabel(val);
+                } else if (ConceptAttribute.STATUS.getNsPrefix().equals(predicateNsPrefix) && ConceptAttribute.STATUS.getIdentifier().equals(attributeIdentifier)) {
+                    setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
                 }
                 String elemLang = StringUtils.substring(((Literal) object).getLanguage(), 0, 2);
                 if (StringUtils.isNotBlank(elemLang)) {
@@ -431,6 +457,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                     this.lastFoundConcept.setDefinition(val);
                 } else if (StringUtils.equals(attributeIdentifier, PREF_LABEL)) {
                     this.lastFoundConcept.setLabel(val);
+                } else if (ConceptAttribute.STATUS.getNsPrefix().equals(predicateNsPrefix) && ConceptAttribute.STATUS.getIdentifier().equals(attributeIdentifier)) {
+                    setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
                 }
             }
         } else {
@@ -592,6 +620,114 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             this.logMessages.addAll(conceptsWithNullLabels);
         }
         this.logMessages.add("Number of updated concepts: " + this.toBeUpdatedConcepts.size());
-    } // end of method endRDF
+    }
 
-} // end of class VocabularyRDFImportHandler
+    /**
+     *
+     * @param concept
+     * @param objectValue
+     * @param isLiteralValue
+     */
+    private void setConceptStatusFromRdfObjectValue(VocabularyConcept concept, String objectValue, boolean isLiteralValue) {
+
+        if (concept == null || StringUtils.isBlank(objectValue)) {
+            return;
+        } else {
+            objectValue = StringUtils.trim(objectValue);
+        }
+
+        if (!isLiteralValue) {
+            if (objectValue.startsWith(DD_OWN_STATUS_VOCABULARY_URI + "/")) {
+
+                String statusIdentifier = StringUtils.substringAfter(objectValue, DD_OWN_STATUS_VOCABULARY_URI);
+                if (statusVocabularyEntries.keySet().contains(statusIdentifier)) {
+                    StandardGenericStatus statusValue = StandardGenericStatus.fromIdentifier(statusIdentifier);
+                    if (statusValue != null) {
+                        concept.setStatus(statusValue);
+                    }
+                }
+            }
+        } else {
+            for (Entry<String, String> entry : statusVocabularyEntries.entrySet()) {
+                if (StringUtils.equals(entry.getValue(), objectValue)) {
+                    StandardGenericStatus statusValue = StandardGenericStatus.fromIdentifier(entry.getKey());
+                    if (statusValue != null) {
+                        concept.setStatus(statusValue);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Loads {@link #statusVocabularyEntries}, see JavaDoc there.
+     *
+     * @throws ServiceException
+     */
+    private void loadStatusVocabularyEntries() throws ServiceException {
+
+        String ownVocabulariesFolderName = Props.getRequiredProperty(PropsIF.DD_OWN_VOCABULARIES_FOLDER_NAME);
+        String ownStatusVocabularyIdentifier = Props.getRequiredProperty(PropsIF.DD_OWN_STATUS_VOCABULARY_IDENTIFIER);
+
+        VocabularyFolder statusVoc = vocabularyService.getVocabularyWithConcepts(ownStatusVocabularyIdentifier, ownVocabulariesFolderName);
+        if (statusVoc != null) {
+            List<VocabularyConcept> statusConcepts = statusVoc.getConcepts();
+            for (VocabularyConcept statusConcept : statusConcepts) {
+                this.statusVocabularyEntries.put(statusConcept.getIdentifier(), statusConcept.getNotation());
+            }
+        }
+    }
+
+    /**
+     * An enum representing concept attributes directly associated with a field in the VOCABULARY_CONCEPT table.
+     *
+     * @author Jaanus Heinlaid <jaanus.heinlaid@gmail.com>
+     */
+    enum ConceptAttribute {
+
+        LABEL(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "skos", "prefLabel", false),
+        NOTATION(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "skos", "notation", false),
+        DEFINITION(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "skos", "definition", false),
+        STATUS(VocabularyOutputHelper.LinkedDataNamespaces.ADMS_NS, "adms", "status", true);
+
+        String nsUri;
+        String nsPrefix;
+        String identifier;
+        boolean resourceValueAllowed;
+
+        ConceptAttribute(String nsUri, String nsPrefix, String identifier, boolean resourceValueAllowed) {
+            this.nsUri = nsUri;
+            this.nsPrefix = nsPrefix;
+            this.identifier = identifier;
+            this.resourceValueAllowed = resourceValueAllowed;
+        }
+
+        /**
+         * @return the nsUri
+         */
+        public String getNsUri() {
+            return nsUri;
+        }
+
+        /**
+         * @return the identifier
+         */
+        public String getIdentifier() {
+            return identifier;
+        }
+
+        /**
+         * @return the nsPrefix
+         */
+        public String getNsPrefix() {
+            return nsPrefix;
+        }
+
+        /**
+         * @return the resourceValueAllowed
+         */
+        public boolean isResourceValueAllowed() {
+            return resourceValueAllowed;
+        }
+    }
+}

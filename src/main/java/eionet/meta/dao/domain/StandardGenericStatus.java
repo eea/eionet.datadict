@@ -99,7 +99,7 @@ public enum StandardGenericStatus {
     private String label;
 
     /** The status's skos:notation. */
-    private String notation;
+    private String identifier;
 
     /** The status's numeric value as explained above. */
     private int value;
@@ -108,12 +108,12 @@ public enum StandardGenericStatus {
      * Default private constructor.
      *
      * @param prefLabel The status's skos:prefLabel.
-     * @param notation The status's skos:notation.
+     * @param identifier The status's identifier.
      * @param value The status's numeric value as explained above.
      */
-    private StandardGenericStatus(String prefLabel, String notation, int value) {
+    private StandardGenericStatus(String prefLabel, String identifier, int value) {
 
-        if (StringUtils.isBlank(prefLabel) || StringUtils.isBlank(notation)) {
+        if (StringUtils.isBlank(prefLabel) || StringUtils.isBlank(identifier)) {
             throw new IllegalArgumentException("Preferred label and notation must not be blank!");
         }
 
@@ -122,7 +122,7 @@ public enum StandardGenericStatus {
         }
 
         this.label = prefLabel;
-        this.notation = notation;
+        this.identifier = identifier;
         this.value = value;
     }
 
@@ -149,8 +149,8 @@ public enum StandardGenericStatus {
      *
      * @return the notation
      */
-    public String getNotation() {
-        return notation;
+    public String getIdentifier() {
+        return identifier;
     }
 
     /**
@@ -219,6 +219,21 @@ public enum StandardGenericStatus {
     public static StandardGenericStatus fromValue(int value) {
         for (StandardGenericStatus status : StandardGenericStatus.values()) {
             if (status.value == value) {
+                return status;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Return enum matching the given identifier.
+     *
+     * @param identifier Given identifier.
+     * @return The matching enum.
+     */
+    public static StandardGenericStatus fromIdentifier(String identifier) {
+        for (StandardGenericStatus status : StandardGenericStatus.values()) {
+            if (status.identifier == identifier) {
                 return status;
             }
         }

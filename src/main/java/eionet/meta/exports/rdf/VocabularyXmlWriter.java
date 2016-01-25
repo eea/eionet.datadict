@@ -52,7 +52,7 @@ public class VocabularyXmlWriter {
 
     /** */
     public static final String OWN_STATUS_VOCABULARY_URI = VocabularyFolder.OWN_VOCABULARIES_FOLDER_URI + "/"
-            + Props.getRequiredProperty(PropsIF.DD_OWN_STATUS_VOCABULARY_NAME);
+            + Props.getRequiredProperty(PropsIF.DD_OWN_STATUS_VOCABULARY_IDENTIFIER);
 
     /** Encoding. */
     private static final String ENCODING = "UTF-8";
@@ -271,7 +271,7 @@ public class VocabularyXmlWriter {
                 writer.writeCharacters("\n");
                 writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.ADMS_NS, "status");
                 writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
-                        StringEncoder.encodeToIRI(OWN_STATUS_VOCABULARY_URI + "/" + conceptStatus.getNotation()));
+                        StringEncoder.encodeToIRI(OWN_STATUS_VOCABULARY_URI + "/" + conceptStatus.getIdentifier()));
             }
 
             writer.writeCharacters("\n");
