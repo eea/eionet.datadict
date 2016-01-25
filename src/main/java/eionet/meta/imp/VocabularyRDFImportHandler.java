@@ -63,6 +63,7 @@ import eionet.util.Util;
  * @author enver
  */
 // @Configurable
+@SuppressWarnings("rawtypes")
 public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler implements RDFHandler {
 
     /* static constants */
@@ -76,18 +77,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
     private static final Map<String, Pair<Class, String>> PREDICATE_IGNORANCE_RULES;
 
     /**
-     * notation attribute of concept.
-     */
-    private static final String NOTATION = "notation";
-    /**
-     * label attribute of concept.
-     */
-    private static final String PREF_LABEL = "prefLabel";
-    /**
-     * definition attribute of concept.
-     */
-    private static final String DEFINITION = "definition";
-    /**
      * Private static final String Hashing Algorithm for Triples.
      */
     private static final String HASHING_ALGORITHM = "MD5";
@@ -95,10 +84,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      * Used when getting bytes of a string to hash.
      */
     private static final String DEFAULT_ENCODING_OF_STRINGS = "UTF-8";
-    /**
-     * used with concept attributes.
-     */
-    private static final String SKOS_CONCEPT_ATTRIBUTE_NS = "skos";
     /**
      * concept attribute namespaces to update concept fields instead of dataelements.
      */
@@ -159,10 +144,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      * Previous successful triple's language.
      */
     private String prevLang = null;
-    /**
-     * Map to hold dataelement positions.
-     */
-    private Map<String, Map<String, Integer>> attributePositions = null;
     /**
      * Temporary object to hold last found concept not to iterate over again in lists.
      */
@@ -245,14 +226,14 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         this.boundElements = boundElements;
         this.createNewDataElementsForPredicates = createNewDataElementsForPredicates;
         this.boundURIs = boundURIs;
-        this.attributePositions = new HashMap<String, Map<String, Integer>>();
         this.predicateUpdatesAtConcepts = new HashMap<String, Set<Integer>>();
         this.notBoundPredicates = new HashSet<String>();
         this.identifierOfPredicate = new HashMap<String, String>();
         this.conceptsUpdatedForAttributes = new HashMap<String, Set<Integer>>();
-        this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + PREF_LABEL, new HashSet<Integer>());
-        this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + DEFINITION, new HashSet<Integer>());
-        this.conceptsUpdatedForAttributes.put(SKOS_CONCEPT_ATTRIBUTE_NS + ":" + NOTATION, new HashSet<Integer>());
+        this.conceptsUpdatedForAttributes.put(ConceptAttribute.LABEL.getNsPrefix() + ":" + ConceptAttribute.LABEL.getIdentifier(), new HashSet<Integer>());
+        this.conceptsUpdatedForAttributes.put(ConceptAttribute.DEFINITION.getNsPrefix() + ":" + ConceptAttribute.DEFINITION.getIdentifier(), new HashSet<Integer>());
+        this.conceptsUpdatedForAttributes.put(ConceptAttribute.NOTATION.getNsPrefix() + ":" + ConceptAttribute.NOTATION.getIdentifier(), new HashSet<Integer>());
+        this.conceptsUpdatedForAttributes.put(ConceptAttribute.STATUS.getNsPrefix() + ":" + ConceptAttribute.STATUS.getIdentifier(), new HashSet<Integer>());
         this.lastCandidateForConceptAttribute = new HashMap<String, Literal>();
         // get first two letters of working language since, it can be like en-US
         this.workingLanguage = StringUtils.substring(workingLanguage, 0, 2);
@@ -406,7 +387,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             dataElemIdentifier = attributeIdentifier;
         }
 
-        // TODO code below can be refactored
+        // TODO: code below definitely requires refactoring.
         if (candidateForConceptAttribute
                 && !this.conceptsUpdatedForAttributes.get(dataElemIdentifier).contains(this.lastFoundConcept.getId())) {
 
@@ -414,12 +395,12 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
             // Update concept value here.
             String val = StringUtils.trimToNull(object.stringValue());
-            if (StringUtils.equals(attributeIdentifier, NOTATION)) {
+            if (ConceptAttribute.NOTATION.getNsPrefix().equals(predicateNsPrefix) && ConceptAttribute.NOTATION.getIdentifier().equals(attributeIdentifier)) {
                 this.lastFoundConcept.setNotation(val);
             } else {
-                if (StringUtils.equals(attributeIdentifier, DEFINITION)) {
+                if (ConceptAttribute.DEFINITION.getNsPrefix().equals(predicateNsPrefix) && ConceptAttribute.DEFINITION.getIdentifier().equals(attributeIdentifier)) {
                     this.lastFoundConcept.setDefinition(val);
-                } else if (StringUtils.equals(attributeIdentifier, PREF_LABEL)) {
+                } else if (ConceptAttribute.LABEL.getNsPrefix().equals(predicateNsPrefix) && ConceptAttribute.LABEL.getIdentifier().equals(attributeIdentifier)) {
                     this.lastFoundConcept.setLabel(val);
                 } else if (ConceptAttribute.STATUS.getNsPrefix().equals(predicateNsPrefix) && ConceptAttribute.STATUS.getIdentifier().equals(attributeIdentifier)) {
                     setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
@@ -453,9 +434,9 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
             if (updateValue) {
                 String val = StringUtils.trimToNull(object.stringValue());
-                if (StringUtils.equals(attributeIdentifier, DEFINITION)) {
+                if (ConceptAttribute.DEFINITION.getNsPrefix().equals(predicateNsPrefix) && ConceptAttribute.DEFINITION.getIdentifier().equals(attributeIdentifier)) {
                     this.lastFoundConcept.setDefinition(val);
-                } else if (StringUtils.equals(attributeIdentifier, PREF_LABEL)) {
+                } else if (ConceptAttribute.LABEL.getNsPrefix().equals(predicateNsPrefix) && ConceptAttribute.LABEL.getIdentifier().equals(attributeIdentifier)) {
                     this.lastFoundConcept.setLabel(val);
                 } else if (ConceptAttribute.STATUS.getNsPrefix().equals(predicateNsPrefix) && ConceptAttribute.STATUS.getIdentifier().equals(attributeIdentifier)) {
                     setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
