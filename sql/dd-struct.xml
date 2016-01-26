@@ -1925,7 +1925,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
           Table will have following fields:
           - IDENTIFIER: a unique identifier for the api key
           - SCOPE: a free format scope field (e.g. vocabulary, dataelements)
-          - KEY: a value for api key (expected to be unique)
+          - KEY_VALUE: a value for api key (expected to be unique)
           - REMOTE_ADDR: remote host address or ip address (if applicable)
           - EXPIRES: API expiration date (if applicable)
           - NOTES: notes for admin
@@ -1935,7 +1935,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
               <constraints nullable="false" unique="true"/>
           </column>
           <column name="SCOPE" type="VARCHAR(100)"/>
-          <column name="KEY" type="VARCHAR(255)">
+          <column name="KEY_VALUE" type="VARCHAR(255)">
               <constraints nullable="false" unique="true"/>
           </column>
           <column name="REMOTE_ADDR" type="VARCHAR(255)"/>

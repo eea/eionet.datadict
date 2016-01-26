@@ -9,9 +9,10 @@
 
     <VOCABULARY VOCABULARY_ID="2" CONTINUITY_ID="123" IDENTIFIER="test_vocabulary2" LABEL="test2" REG_STATUS="Released" DATE_MODIFIED="2014-05-15 20:46:40" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="1" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/common/test_vocabulary2/"/>
     <VOCABULARY VOCABULARY_ID="3" CONTINUITY_ID="123" IDENTIFIER="test_vocabulary2" LABEL="test2" REG_STATUS="Released" DATE_MODIFIED="2014-07-17 12:05:00" WORKING_COPY="1" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="2" FOLDER_ID="1" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/common/test_vocabulary2/"/>
+    <VOCABULARY VOCABULARY_ID="4" CONTINUITY_ID="124" IDENTIFIER="test_vocabulary" LABEL="test" REG_STATUS="Released" DATE_MODIFIED="2014-07-17 12:05:00" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="1" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/common/test_vocabulary/"/>
 
-   <API_KEY IDENTIFIER="EXPIRED" SCOPE="[NULL]" KEY="ThisKeyExpired" REMOTE_ADDR="[NULL]" EXPIRES="2014-05-15 20:46:40" NOTES="An expired API key"/>
-   <API_KEY IDENTIFIER="RESTRICTEDTODOMAIN" SCOPE="[NULL]" KEY="ThisKeyCanBeCalledFromSomeCertainDomains" REMOTE_ADDR="http://tripledev.ee/" EXPIRES="[NULL]" NOTES="A domain restriced API Key"/>
-   <API_KEY IDENTIFIER="VALID" SCOPE="[NULL]" KEY="ValidApiKey" REMOTE_ADDR="[NULL]" EXPIRES="[NULL]" NOTES="A valid api key"/>
+   <API_KEY IDENTIFIER="EXPIRED" SCOPE="[NULL]" KEY_VALUE="ThisKeyExpired" REMOTE_ADDR="[NULL]" EXPIRES="2014-05-15 20:46:40" NOTES="An expired API key"/>
+   <API_KEY IDENTIFIER="RESTRICTEDTODOMAIN" SCOPE="[NULL]" KEY_VALUE="ThisKeyCanBeCalledFromSomeCertainDomains" REMOTE_ADDR="http://tripledev.ee/" EXPIRES="[NULL]" NOTES="A domain restricted API Key"/>
+   <API_KEY IDENTIFIER="VALID" SCOPE="[NULL]" KEY_VALUE="ValidApiKey" REMOTE_ADDR="[NULL]" EXPIRES="[NULL]" NOTES="A valid api key"/>
 
 </dataset>

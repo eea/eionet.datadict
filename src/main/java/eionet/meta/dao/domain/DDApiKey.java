@@ -38,9 +38,9 @@ public class DDApiKey {
      */
     private String scope;
     /**
-     * KEY column for API key.
+     * KEY_VALUE column for API key.
      */
-    private String key;
+    private String keyValue;
     /**
      * REMOTE_ADDR column for API key.
      */
@@ -70,12 +70,12 @@ public class DDApiKey {
         this.scope = scope;
     }
 
-    public String getKey() {
-        return key;
+    public String getKeyValue() {
+        return keyValue;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setKeyValue(String key) {
+        this.keyValue = key;
     }
 
     public String getRemoteAddr() {

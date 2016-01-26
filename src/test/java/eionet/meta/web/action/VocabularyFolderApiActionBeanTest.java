@@ -60,7 +60,6 @@ import java.util.Map.Entry;
  */
 @SpringApplicationContext("spring-context.xml")
 public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
-//public class VocabularyFolderApiActionBeanTest extends DDDatabaseTestCase {
     /**
      * Keyword for content type.
      */
@@ -122,10 +121,19 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
     public static final int UNAUTHORIZED_STATUS_CODE = HttpServletResponse.SC_UNAUTHORIZED;
 
     /**
+     * Forbidden status code.
+     */
+    public static final int FORBIDDEN_STATUS_CODE = HttpServletResponse.SC_FORBIDDEN;
+
+    /**
+     * Not found status code.
+     */
+    public static final int NOT_FOUND_STATUS_CODE = HttpServletResponse.SC_NOT_FOUND;
+
+    /**
      * A valid API key.
      */
     public static final String VALID_API_KEY = "ValidApiKey";
-
 
     /**
      * JWT service.
@@ -136,12 +144,12 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
     @BeforeClass
     public static void loadData() throws Exception {
         DBUnitHelper.loadData("seed-emptydb.xml");
-        DBUnitHelper.loadData("csv_import/seed-vocabularycsv-import.xml");
+        DBUnitHelper.loadData("seed-vocabulary-folder-api.xml");
     }
 
     @AfterClass
     public static void deleteData() throws Exception {
-        DBUnitHelper.deleteData("csv_import/seed-vocabularycsv-import.xml");
+        DBUnitHelper.deleteData("seed-vocabulary-folder-api.xml");
     }
 
     /**
@@ -158,8 +166,6 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
         filterParams.put("ActionResolver.Packages", "eionet.web.action");
 
         filterParams.put("ActionBeanContext.Class", "eionet.web.DDActionBeanContext");
-//        filterParams.put("ActionBeanPropertyBinder.Class",
-//                "eionet.meta.web.action.VocabularyFolderApiActionBeanTest$MyActionBeanPropertyBinder");
         filterParams.put("ActionBeanPropertyBinder.Class", MyActionBeanPropertyBinder.class.getName());//better to use this way, so class can be found by usages.
 
         ctx.addFilter(StripesFilter.class, "StripesFilter", filterParams);
@@ -293,7 +299,6 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
 //                "API_KEY": "NotExistingAPIKey"
 //        }
 
-        //trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0NTE2MTAwNjEsImV4cCI6MTQ1MTYxMzY2MSwiYXVkIjoiQ29udGVudFJlZ2lzdHJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6Ik5vdEV4aXN0aW5nQVBJS2V5In0.Mje0oidK35MwDr_O5CfFwvQ6brYNLRZK8jMmZaoMkAksKgzDE1mi9THHEDKw_Hb4XhpQgyHSRotrWNzj4IfhQg");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
@@ -322,7 +327,6 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
 //            "API_KEY": "NotExistingAPIKey"
 //        }
 
-        //trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0NTE2MTAwNjEsImV4cCI6NDYwNzI4NzI2MSwiYXVkIjoiQ29udGVudFJlZ2lzdHJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6Ik5vdEV4aXN0aW5nQVBJS2V5In0.0TyN0RebnKJJr28-jZ_d0R6mHUEvbsD2GY6h7tZVHsOsxuUTiC5-_cpd3DCFnWX2bhzydYEZS0EapIPG1ym-4g");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
@@ -351,7 +355,6 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
 //            "API_KEY": "NotExistingAPIKey"
 //        }
 
-        //trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjQ2MDcyODM2NjEsImV4cCI6NDYwNzI4NzI2MSwiYXVkIjoiQ29udGVudFJlZ2lzdHJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6Ik5vdEV4aXN0aW5nQVBJS2V5In0.nkKp1oRDxviYG0bsPMDNeuheJsy30oXT21KvjdoTrZ4k3WKZJLg6uaVcf571NmZpUDWrXLMVf3qFWw3XZMRO6Q");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
@@ -380,7 +383,6 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
 //            "API_KEY": " "
 //        }
 
-        //trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjQ2MDcyODM2NjEsImV4cCI6NDYwNzI4NzI2MSwiYXVkIjoiQ29udGVudFJlZ2lzdHJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6IiAifQ.Iq8KPUwAJp6R1pKuxJZCh8PHoctRZAVzgr3RHaP0bKnIK9acyhDV9a-f6AviM5E0Ua7RMzbuRW3WQ1W7y5bq5g");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
@@ -408,7 +410,6 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
 //            "sub": ""
 //        }
 
-        //trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjQ2MDcyODM2NjEsImV4cCI6NDYwNzI4NzI2MSwiYXVkIjoiQ29udGVudFJlZ2lzdHJ5Iiwic3ViIjoiIn0.2nd6OoGzcI-Xt3eB4gRuIr4M95q1-1SfvLsQKG5XJJwziutD_1l7JFH42ub-hH-uWOjcN8baiREJLKIA8zKC9Q");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
@@ -496,14 +497,14 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
         Assert.assertEquals("Error message", "Cannot authorize: Invalid remote end point", response.getErrorMessage());
     } // end of test step testApiKeyForSomeEndPoints
-    
+
     /**
-     * Call api with a valid API key.
+     * Call api with a valid API key and working copy folder.
      *
      * @throws Exception if test fails
      */
     @Test
-    public void testValidApiKey() throws Exception {
+    public void testValidApiKeyWorkingCopyVocabulary() throws Exception {
         MockServletContext ctx = ActionBeanUtils.getServletContext();
         MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
@@ -512,11 +513,113 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
         jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
 
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
+        trip.addParameter("vocabularyFolder.folderName", "common");
+        trip.addParameter("vocabularyFolder.identifier", "test_vocabulary2");
+
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Invalid remote end point", response.getErrorMessage());
-    } // end of test step testApiKeyForSomeEndPoints
+        Assert.assertEquals("Status code", FORBIDDEN_STATUS_CODE, response.getStatus());
+        Assert.assertEquals("Error message", "Vocabulary should NOT have a working copy", response.getErrorMessage());
+    } // end of test step testValidApiKeyWorkingCopyVocabulary
+
+    /**
+     * Call api with a valid API key and not existing vocabulary.
+     *
+     * @throws Exception if test fails
+     */
+    @Test
+    public void testValidApiKeyNotExistingVocabulary() throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
+        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+
+        Map<String, String> jwtPayload = new HashMap<String, String>();
+        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
+
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
+        trip.addParameter("vocabularyFolder.folderName", "common");
+        trip.addParameter("vocabularyFolder.identifier", "test_vocabulary3");
+
+        trip.execute("uploadRdf");
+        MockHttpServletResponse response = trip.getResponse();
+        Assert.assertEquals("Status code", NOT_FOUND_STATUS_CODE, response.getStatus());
+        Assert.assertEquals("Error message", "Vocabulary can NOT be found", response.getErrorMessage());
+    } // end of test step testValidApiKeyNotExistingVocabulary
+
+    /**
+     * Call api with a valid API key, valid vocabulary, invalid actionBefore.
+     *
+     * @throws Exception if test fails
+     */
+    @Test
+    public void testValidApiKeyValidVocabularyInvalidActionBefore() throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
+        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+
+        Map<String, String> jwtPayload = new HashMap<String, String>();
+        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
+
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
+        trip.addParameter("vocabularyFolder.folderName", "common");
+        trip.addParameter("vocabularyFolder.identifier", "test_vocabulary");
+        trip.addParameter("actionBefore", "kept");
+
+        trip.execute("uploadRdf");
+        MockHttpServletResponse response = trip.getResponse();
+        Assert.assertEquals("Status code", INVALID_INPUT_STATUS_CODE, response.getStatus());
+        Assert.assertEquals("Error message", "Invalid action before parameter: kept", response.getErrorMessage());
+    } // end of test step testValidApiKeyValidVocabularyInvalidActionBefore
+
+    /**
+     * Call api with a valid API key, valid vocabulary, invalid action.
+     *
+     * @throws Exception if test fails
+     */
+    @Test
+    public void testValidApiKeyValidVocabularyInvalidAction() throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
+        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+
+        Map<String, String> jwtPayload = new HashMap<String, String>();
+        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
+
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
+        trip.addParameter("vocabularyFolder.folderName", "common");
+        trip.addParameter("vocabularyFolder.identifier", "test_vocabulary");
+        trip.addParameter("action", "addd");
+
+        trip.execute("uploadRdf");
+        MockHttpServletResponse response = trip.getResponse();
+        Assert.assertEquals("Status code", INVALID_INPUT_STATUS_CODE, response.getStatus());
+        Assert.assertEquals("Error message", "Invalid action parameter: addd", response.getErrorMessage());
+    } // end of test step testValidApiKeyValidVocabularyInvalidActionBefore
+
+    /**
+     * Call api with a valid API key, valid vocabulary, invalid action.
+     *
+     * @throws Exception if test fails
+     */
+    @Test
+    public void testValidApiKeyValidVocabularyInvalidMissingConcepts() throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
+        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+
+        Map<String, String> jwtPayload = new HashMap<String, String>();
+        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
+
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
+        trip.addParameter("vocabularyFolder.folderName", "common");
+        trip.addParameter("vocabularyFolder.identifier", "test_vocabulary");
+        trip.addParameter("missingConcepts", "removed");
+
+        trip.execute("uploadRdf");
+        MockHttpServletResponse response = trip.getResponse();
+        Assert.assertEquals("Status code", INVALID_INPUT_STATUS_CODE, response.getStatus());
+        Assert.assertEquals("Error message", "Invalid missing concepts action parameter: removed", response.getErrorMessage());
+    } // end of test step testValidApiKeyValidVocabularyInvalidMissingConcepts
 
     /**
      * Extension of {@link net.sourceforge.stripes.controller.DefaultActionBeanPropertyBinder} in order to directly inject the proper file bean.

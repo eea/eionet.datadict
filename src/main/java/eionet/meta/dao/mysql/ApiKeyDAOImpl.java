@@ -48,9 +48,9 @@ public class ApiKeyDAOImpl extends GeneralDAOImpl implements IApiKeyDAO {
         params.put("key", key);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select dak.IDENTIFIER, dak.SCOPE, dak.KEY, dak.REMOTE_ADDR, dak.EXPIRES, dak.NOTES ");
+        sql.append("select dak.IDENTIFIER, dak.SCOPE, dak.KEY_VALUE, dak.REMOTE_ADDR, dak.EXPIRES, dak.NOTES ");
         sql.append("from API_KEY as dak ");
-        sql.append("where dak.KEY=:key");
+        sql.append("where dak.KEY_VALUE=:key");
 
         DDApiKey result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new ApiKeyRowMapper());
 
@@ -67,7 +67,7 @@ public class ApiKeyDAOImpl extends GeneralDAOImpl implements IApiKeyDAO {
             DDApiKey apiKey = new DDApiKey();
             apiKey.setIdentifier(resultSet.getString("IDENTIFIER"));
             apiKey.setScope(resultSet.getString("SCOPE"));
-            apiKey.setKey(resultSet.getString("KEY"));
+            apiKey.setKeyValue(resultSet.getString("KEY_VALUE"));
             apiKey.setRemoteAddr(resultSet.getString("REMOTE_ADDR"));
             apiKey.setExpires(resultSet.getDate("EXPIRES"));
             apiKey.setNotes(resultSet.getString("NOTES"));

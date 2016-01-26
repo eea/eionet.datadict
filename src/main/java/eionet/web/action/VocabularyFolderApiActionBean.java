@@ -288,15 +288,20 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             }
 
             //Validate parameters
-            UploadActionBefore uploadActionBefore =
-                    validateAndGetUploadActionBefore(vocabularyRdfImportService.getSupportedActionBefore(true),
-                            vocabularyRdfImportService.getDefaultActionBefore(true));
-            UploadAction uploadAction =
-                    validateAndGetUploadAction(vocabularyRdfImportService.getSupportedAction(true),
-                            vocabularyRdfImportService.getDefaultAction(true));
-            MissingConceptsAction missingConceptsAction =
-                    validateAndGetMissingConceptsAction(vocabularyRdfImportService.getSupportedMissingConceptsAction(true),
-                            vocabularyRdfImportService.getDefaultMissingConceptsAction(true));
+            UploadActionBefore uploadActionBefore = null;
+            UploadAction uploadAction = null;
+            MissingConceptsAction missingConceptsAction = null;
+            try {
+                uploadActionBefore = validateAndGetUploadActionBefore(vocabularyRdfImportService.getSupportedActionBefore(true),
+                        vocabularyRdfImportService.getDefaultActionBefore(true));
+                uploadAction = validateAndGetUploadAction(vocabularyRdfImportService.getSupportedAction(true),
+                        vocabularyRdfImportService.getDefaultAction(true));
+                missingConceptsAction = validateAndGetMissingConceptsAction(vocabularyRdfImportService.getSupportedMissingConceptsAction(true),
+                        vocabularyRdfImportService.getDefaultMissingConceptsAction(true));
+            } catch (IllegalArgumentException e) {
+                LOGGER.error("uploadRdf API - Illegal argument: " + e.getMessage());
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+            }
 
             LOGGER.info("uploadRdf API - parameters are valid");
 
@@ -309,7 +314,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                 if (errorParameters == null ||
                         !ErrorActionBean.ErrorType.NOT_FOUND_404.equals(errorParameters.get(ErrorActionBean.ERROR_TYPE_KEY))) {
                     LOGGER.error("uploadRdf API - Vocabulary has working copy", e);
-                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy", ErrorActionBean.RETURN_ERROR_EVENT);
                 }
             }
 
@@ -326,7 +331,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                 if (errorParameters != null &&
                         ErrorActionBean.ErrorType.NOT_FOUND_404.equals(errorParameters.get(ErrorActionBean.ERROR_TYPE_KEY))) {
                     LOGGER.error("uploadRdf API - Vocabulary can NOT be found", e);
-                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_FOUND_404, "Vocabulary can NOT be found: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_FOUND_404, "Vocabulary can NOT be found", ErrorActionBean.RETURN_ERROR_EVENT);
                 }
             }
 
@@ -359,17 +364,17 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             return result;
         } catch (ServiceException e) {
             LOGGER.error("uploadRdf API - Failed to import vocabulary RDF into db", e);
-            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR, e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
         } catch (Exception e) {
             LOGGER.error("uploadRdf API - Failed to import vocabulary RDF into db, unexpected exception: ", e);
-            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR, "Failed to import vocabulary RDF into db, unexpected exception: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Failed to import vocabulary RDF into db, unexpected exception: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
         }
     } // end of method uploadRDF
 
     /**
      * TODO: TEMP METHOD for testing, will be removed.
      */
-    public Resolution testUploadRdf() throws ServiceException {
+    private Resolution testUploadRdf() throws ServiceException {
         PostMethod post = new PostMethod(Props.getRequiredProperty(PropsIF.DD_URL) + "/api/vocabulary/test/geography/uploadRdf");
         post.setRequestHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
@@ -392,10 +397,10 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
      * @param supportedUploadActionBefore supported action before list for this upload operation.
      * @param defaultValue                a default value if this action before param missing.
      * @return Converted enum value
-     * @throws ServiceException when parameter is invalid or not supported.
+     * @throws IllegalArgumentException when parameter is invalid or not supported.
      */
     private UploadActionBefore validateAndGetUploadActionBefore(List<UploadActionBefore> supportedUploadActionBefore,
-                                                                UploadActionBefore defaultValue) throws ServiceException {
+                                                                UploadActionBefore defaultValue) throws IllegalArgumentException {
         if (defaultValue != null && (this.actionBefore == null || this.actionBefore.trim().length() < 1)) {
             return defaultValue;
         }
@@ -403,11 +408,11 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
         try {
             UploadActionBefore uploadActionBefore = UploadActionBefore.valueOf(this.actionBefore);
             if (supportedUploadActionBefore != null && !supportedUploadActionBefore.contains(uploadActionBefore)) {
-                throw new ServiceException("Not supported action before parameter: " + this.actionBefore);
+                throw new IllegalArgumentException("Not supported action before parameter: " + this.actionBefore);
             }
             return uploadActionBefore;
         } catch (IllegalArgumentException e) {
-            throw new ServiceException("Invalid action before parameter: " + this.actionBefore, e);
+            throw new IllegalArgumentException("Invalid action before parameter: " + this.actionBefore, e);
         }
     } // end of method validateUploadActionBefore
 
@@ -417,11 +422,11 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
      * @param supportedUploadAction supported action list for this upload operation.
      * @param defaultValue          a default value if this action param missing.
      * @return Converted enum value
-     * @throws ServiceException when parameter is invalid or not supported.
+     * @throws IllegalArgumentException when parameter is invalid or not supported.
      */
     private UploadAction validateAndGetUploadAction(List<UploadAction> supportedUploadAction,
                                                     UploadAction defaultValue)
-            throws ServiceException {
+            throws IllegalArgumentException {
         if (defaultValue != null && (this.action == null || this.action.trim().length() < 1)) {
             return defaultValue;
         }
@@ -429,11 +434,11 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
         try {
             UploadAction uploadAction = UploadAction.valueOf(this.action);
             if (supportedUploadAction != null && !supportedUploadAction.contains(uploadAction)) {
-                throw new ServiceException("Not supported action parameter: " + this.action);
+                throw new IllegalArgumentException("Not supported action parameter: " + this.action);
             }
             return uploadAction;
         } catch (IllegalArgumentException e) {
-            throw new ServiceException("Invalid action parameter: " + this.action, e);
+            throw new IllegalArgumentException("Invalid action parameter: " + this.action, e);
         }
     } // end of method validateAndGetUploadAction
 
@@ -443,10 +448,10 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
      * @param supportedMissingConceptsAction supported missing concepts action list for this upload operation.
      * @param defaultValue                   a default value if this missing concepts action param missing.
      * @return Converted enum value
-     * @throws ServiceException when parameter is invalid or not supported.
+     * @throws IllegalArgumentException when parameter is invalid or not supported.
      */
     private MissingConceptsAction validateAndGetMissingConceptsAction(List<MissingConceptsAction> supportedMissingConceptsAction,
-                                                                      MissingConceptsAction defaultValue) throws ServiceException {
+                                                                      MissingConceptsAction defaultValue) throws IllegalArgumentException {
         if (defaultValue != null && (this.missingConcepts == null || this.missingConcepts.trim().length() < 1)) {
             return defaultValue;
         }
@@ -454,11 +459,11 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
         try {
             MissingConceptsAction missingConceptsAction = MissingConceptsAction.valueOf(this.missingConcepts);
             if (supportedMissingConceptsAction != null && !supportedMissingConceptsAction.contains(missingConceptsAction)) {
-                throw new ServiceException("Not supported missing concepts action parameter: " + this.missingConcepts);
+                throw new IllegalArgumentException("Not supported missing concepts action parameter: " + this.missingConcepts);
             }
             return missingConceptsAction;
         } catch (IllegalArgumentException e) {
-            throw new ServiceException("Invalid missing concepts action parameter: " + this.missingConcepts, e);
+            throw new IllegalArgumentException("Invalid missing concepts action parameter: " + this.missingConcepts, e);
         }
     } // end of method validateAndGetMissingConceptsAction
 

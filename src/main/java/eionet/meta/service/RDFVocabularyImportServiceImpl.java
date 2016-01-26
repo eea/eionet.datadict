@@ -180,6 +180,10 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         long start = System.currentTimeMillis();
         this.logMessages = new ArrayList<String>();
 
+        if (UploadAction.delete.equals(uploadAction)) {
+            throw new ServiceException("Unsupported upload action delete.");
+        }
+
         final String folderCtxRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
         //check for valid base uri
