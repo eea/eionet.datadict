@@ -1370,9 +1370,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public VocabularyFolder getVocabularyWithConcepts(String identifier, String vocSet) {
         VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(vocSet, identifier, false);
-        List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(vocabulary.getId());
-
-        vocabulary.setConcepts(concepts);
+        if (vocabulary != null) {
+            List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(vocabulary.getId());
+            vocabulary.setConcepts(concepts);
+        }
 
         return vocabulary;
     }

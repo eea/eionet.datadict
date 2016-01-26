@@ -21,6 +21,20 @@
 
 package eionet.meta.dao.mysql;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
 import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.RegStatus;
@@ -30,14 +44,6 @@ import eionet.meta.dao.domain.VocabularyType;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
 
 /**
  * Vocabulary folder DAO.
@@ -349,33 +355,32 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         sql.append("left join VOCABULARY_SET f on f.ID=v.FOLDER_ID ");
         sql.append("where v.IDENTIFIER=:identifier and v.WORKING_COPY=:workingCopy and f.IDENTIFIER=:folderIdentifier");
 
-        VocabularyFolder result =
-                getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyFolder>() {
-                    @Override
-                    public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        VocabularyFolder vf = new VocabularyFolder();
-                        vf.setId(rs.getInt("v.VOCABULARY_ID"));
-                        vf.setIdentifier(rs.getString("v.IDENTIFIER"));
-                        vf.setLabel(rs.getString("v.LABEL"));
-                        vf.setRegStatus(RegStatus.fromString(rs.getString("v.REG_STATUS")));
-                        vf.setType(VocabularyType.valueOf(rs.getString("v.VOCABULARY_TYPE")));
-                        vf.setWorkingCopy(rs.getBoolean("v.WORKING_COPY"));
-                        vf.setWorkingUser(rs.getString("v.WORKING_USER"));
-                        vf.setDateModified(rs.getTimestamp("v.DATE_MODIFIED"));
-                        vf.setUserModified(rs.getString("v.USER_MODIFIED"));
-                        vf.setCheckedOutCopyId(rs.getInt("v.CHECKEDOUT_COPY_ID"));
-                        vf.setContinuityId(rs.getString("v.CONTINUITY_ID"));
-                        vf.setNumericConceptIdentifiers(rs.getBoolean("v.CONCEPT_IDENTIFIER_NUMERIC"));
-                        vf.setNotationsEqualIdentifiers(rs.getBoolean("NOTATIONS_EQUAL_IDENTIFIERS"));
-                        vf.setBaseUri(rs.getString("v.BASE_URI"));
-                        vf.setFolderId(rs.getShort("f.ID"));
-                        vf.setFolderName(rs.getString("f.IDENTIFIER"));
-                        vf.setFolderLabel(rs.getString("f.LABEL"));
-                        return vf;
-                    }
-                });
+        List<VocabularyFolder> list = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyFolder>() {
+            @Override
+            public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
+                VocabularyFolder vf = new VocabularyFolder();
+                vf.setId(rs.getInt("v.VOCABULARY_ID"));
+                vf.setIdentifier(rs.getString("v.IDENTIFIER"));
+                vf.setLabel(rs.getString("v.LABEL"));
+                vf.setRegStatus(RegStatus.fromString(rs.getString("v.REG_STATUS")));
+                vf.setType(VocabularyType.valueOf(rs.getString("v.VOCABULARY_TYPE")));
+                vf.setWorkingCopy(rs.getBoolean("v.WORKING_COPY"));
+                vf.setWorkingUser(rs.getString("v.WORKING_USER"));
+                vf.setDateModified(rs.getTimestamp("v.DATE_MODIFIED"));
+                vf.setUserModified(rs.getString("v.USER_MODIFIED"));
+                vf.setCheckedOutCopyId(rs.getInt("v.CHECKEDOUT_COPY_ID"));
+                vf.setContinuityId(rs.getString("v.CONTINUITY_ID"));
+                vf.setNumericConceptIdentifiers(rs.getBoolean("v.CONCEPT_IDENTIFIER_NUMERIC"));
+                vf.setNotationsEqualIdentifiers(rs.getBoolean("NOTATIONS_EQUAL_IDENTIFIERS"));
+                vf.setBaseUri(rs.getString("v.BASE_URI"));
+                vf.setFolderId(rs.getShort("f.ID"));
+                vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                vf.setFolderLabel(rs.getString("f.LABEL"));
+                return vf;
+            }
+        });
 
-        return result;
+        return CollectionUtils.isEmpty(list) ? null : list.iterator().next();
     }
 
     /**
@@ -853,17 +858,17 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         return items;
 
     } //end of method getRecentlyReleasedVocabularyFolders
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public VocabularySet getVocabularySet( int vocabularyID ){
         String sql = "select vs.* FROM VOCABULARY v inner join VOCABULARY_SET vs on (v.FOLDER_ID = vs.ID) where v.VOCABULARY_ID = :ID";
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("ID", vocabularyID );
-        
+
         List<VocabularySet> vocabularySet = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<VocabularySet>() {
 
             @Override
@@ -875,10 +880,10 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                 return vocabularySet;
             }
         });
-        
+
         return vocabularySet.get(0);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -890,25 +895,25 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                                    sql.append("inner join VOCABULARY_CONCEPT vc2 ");
                                    sql.append("on vce.RELATED_CONCEPT_ID = vc2.VOCABULARY_CONCEPT_ID ");
                                    sql.append("where vc.VOCABULARY_ID = :ID and vce.RELATED_CONCEPT_ID IS NOT NULL");
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("ID", vocabularyID );
-        
+
         List<Triple<Integer,Integer,Integer>> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Triple<Integer,Integer,Integer>>() {
             @Override
             public Triple<Integer,Integer,Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
                 String vocabularyID = rs.getString("vocabulary");
                 String relationshipID = rs.getString("relationship");
                 String relatedVocabularyID = rs.getString("relatedVocabulary");
-                
+
                 Triple<Integer,Integer,Integer> triple = new Triple<Integer,Integer,Integer>( Integer.parseInt(vocabularyID), Integer.parseInt(relationshipID), Integer.parseInt(relatedVocabularyID) );
-                
+
                 return triple;
             }
         });
         return result;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -920,12 +925,12 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                                    sql.append("where vce.VOCABULARY_CONCEPT_ID = :vocabularyConceptID ");
                                    sql.append("and vce.DATAELEM_ID = :relationshipElementID ");
                                    sql.append("and vc.VOCABULARY_ID = :relatedVocabularyID");
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyConceptID", vocabularyConceptID );
         params.put("relationshipElementID", relationshipElementID );
         params.put("relatedVocabularyID", relatedVocabularyID );
-        
+
         List<Integer> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {

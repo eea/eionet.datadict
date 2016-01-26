@@ -233,7 +233,7 @@ public enum StandardGenericStatus {
      */
     public static StandardGenericStatus fromIdentifier(String identifier) {
         for (StandardGenericStatus status : StandardGenericStatus.values()) {
-            if (status.identifier == identifier) {
+            if (StringUtils.equals(status.getIdentifier(), identifier)) {
                 return status;
             }
         }
