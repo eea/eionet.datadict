@@ -21,27 +21,33 @@
 
 package eionet.meta.imp;
 
-import au.com.bytecode.opencsv.CSVReader;
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.service.ServiceException;
-import eionet.meta.service.data.DataElementsFilter;
-import eionet.meta.service.data.DataElementsResult;
-import eionet.util.Pair;
-import eionet.util.Util;
-import eionet.util.VocabularyCSVOutputHelper;
-import org.apache.commons.lang.StringUtils;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import au.com.bytecode.opencsv.CSVReader;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.StandardGenericStatus;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.DataElementsFilter;
+import eionet.meta.service.data.DataElementsResult;
+import eionet.util.Pair;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.Util;
+import eionet.util.VocabularyCSVOutputHelper;
 
 /**
  * Includes code for parsing and handling CSV lines.
@@ -50,6 +56,9 @@ import java.util.Map;
  */
 // @Configurable
 public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
+
+    /** Static logger for this class. */
+    private static final Logger LOGGER = Logger.getLogger(VocabularyCSVImportHandler.class);
 
     /**
      * URI prefix to check related concept.
@@ -64,6 +73,13 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
      * Elements filter to be used in search.
      */
     private final DataElementsFilter elementsFilter;
+
+    /** The map containing identifier:notation pairs of concepts present in DD's own status vocabulary in the database. */
+    private Map<String, String> statusVocabularyEntries;
+
+    /** */
+    private static final String DD_OWN_STATUS_VOCABULARY_URI = VocabularyFolder.OWN_VOCABULARIES_FOLDER_URI + "/"
+            + Props.getRequiredProperty(PropsIF.DD_OWN_STATUS_VOCABULARY_IDENTIFIER);
 
     /**
      * @param folderContextRoot
@@ -229,7 +245,6 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     lastFoundConcept.setLabel(StringUtils.trimToNull(lineParams[conceptPropertyIndex]));
                 }
 
-
                 // check definition
                 conceptPropertyIndex = fixedHeaderIndices.get(fixedHeaders[VocabularyCSVOutputHelper.DEFINITION_INDEX]);
                 if (conceptPropertyIndex != null) {
@@ -242,7 +257,11 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     lastFoundConcept.setNotation(StringUtils.trimToNull(lineParams[conceptPropertyIndex]));
                 }
 
-                
+                conceptPropertyIndex = fixedHeaderIndices.get(fixedHeaders[VocabularyCSVOutputHelper.STATUS_INDEX]);
+                if (conceptPropertyIndex != null) {
+                    setConceptStatus(lastFoundConcept, StringUtils.trimToNull(lineParams[conceptPropertyIndex]));
+                }
+
                 // TODO: update - with merging flexible csv import
                 // check start date
                 // ignore status and accepteddate changes
@@ -355,6 +374,76 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 e.printStackTrace();
             }
         }
-    } // end of method generatedUpdatedBeans
+    }
 
-} // end of class VocabularyCSVImportHandler
+    /**
+     * Set given status to the given concept.
+     *
+     * @param concept
+     * @param status
+     * @throws ServiceException
+     */
+    private void setConceptStatus(VocabularyConcept concept, String status) throws ServiceException {
+
+        if (concept == null || StringUtils.isBlank(status)) {
+            return;
+        }
+
+        if (statusVocabularyEntries == null) {
+            loadStatusVocabularyEntries();
+        }
+
+        boolean isLiteralValue = !Util.isURL(status);
+        if (!isLiteralValue) {
+            if (status.startsWith(DD_OWN_STATUS_VOCABULARY_URI + "/")) {
+
+                String statusIdentifier = StringUtils.substringAfter(status, DD_OWN_STATUS_VOCABULARY_URI + "/");
+                if (statusVocabularyEntries.keySet().contains(statusIdentifier)) {
+                    StandardGenericStatus statusEnum = StandardGenericStatus.fromIdentifier(statusIdentifier);
+                    if (statusEnum != null) {
+                        concept.setStatus(statusEnum);
+                    }
+                }
+            }
+        } else {
+            for (Entry<String, String> entry : statusVocabularyEntries.entrySet()) {
+                if (StringUtils.equals(entry.getValue(), status)) {
+                    StandardGenericStatus statusValue = StandardGenericStatus.fromIdentifier(entry.getKey());
+                    if (statusValue != null) {
+                        concept.setStatus(statusValue);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Loads {@link #statusVocabularyEntries}, see JavaDoc there.
+     *
+     * @throws ServiceException
+     */
+    private void loadStatusVocabularyEntries() throws ServiceException {
+
+        String ownVocabulariesFolderName = Props.getRequiredProperty(PropsIF.DD_OWN_VOCABULARIES_FOLDER_NAME);
+        String ownStatusVocabularyIdentifier = Props.getRequiredProperty(PropsIF.DD_OWN_STATUS_VOCABULARY_IDENTIFIER);
+
+        statusVocabularyEntries = new HashMap<String, String>();
+
+        LOGGER.debug(String.format("Trying to find DD's own vocabulary of status (folder = %s, vocabulary=%s)", ownVocabulariesFolderName,
+                ownStatusVocabularyIdentifier));
+
+        VocabularyFolder statusVoc = vocabularyService.getVocabularyWithConcepts(ownStatusVocabularyIdentifier, ownVocabulariesFolderName);
+        if (statusVoc != null) {
+
+            List<VocabularyConcept> statusConcepts = statusVoc.getConcepts();
+            for (VocabularyConcept statusConcept : statusConcepts) {
+                this.statusVocabularyEntries.put(statusConcept.getIdentifier(), statusConcept.getNotation());
+            }
+
+            LOGGER.debug("Found DD's own vocabulary of status, found these identifier:notation pairs: " + statusVocabularyEntries);
+        } else {
+            LOGGER.warn("Did not find DD's own vocabulary of status!");
+        }
+    }
+}

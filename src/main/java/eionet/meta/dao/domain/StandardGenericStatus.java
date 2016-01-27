@@ -104,6 +104,9 @@ public enum StandardGenericStatus {
     /** The status's numeric value as explained above. */
     private int value;
 
+    /** The status's SKOS notation. By default it's the same as identifier. */
+    private String notation;
+
     /**
      * Default private constructor.
      *
@@ -112,9 +115,20 @@ public enum StandardGenericStatus {
      * @param value The status's numeric value as explained above.
      */
     private StandardGenericStatus(String prefLabel, String identifier, int value) {
+        this(prefLabel, identifier, identifier, value);
+    }
 
-        if (StringUtils.isBlank(prefLabel) || StringUtils.isBlank(identifier)) {
-            throw new IllegalArgumentException("Preferred label and notation must not be blank!");
+    /**
+     * Default private constructor.
+     *
+     * @param prefLabel The status's skos:prefLabel.
+     * @param identifier The status's identifier.
+     * @param value The status's numeric value as explained above.
+     */
+    private StandardGenericStatus(String prefLabel, String identifier, String notation, int value) {
+
+        if (StringUtils.isBlank(prefLabel) || StringUtils.isBlank(identifier) || StringUtils.isBlank(notation)) {
+            throw new IllegalArgumentException("Preferred label, identifier and notation must not be blank!");
         }
 
         if (value < 0) {
@@ -123,6 +137,7 @@ public enum StandardGenericStatus {
 
         this.label = prefLabel;
         this.identifier = identifier;
+        this.notation = notation;
         this.value = value;
     }
 
@@ -198,6 +213,13 @@ public enum StandardGenericStatus {
      */
     public boolean isAccepted() {
         return this.isSubStatus(StandardGenericStatus.ACCEPTED);
+    }
+
+    /**
+     * @return the notation
+     */
+    public String getNotation() {
+        return notation;
     }
 
     /**
