@@ -22,9 +22,6 @@
 
 package eionet.meta.service;
 
-import java.util.List;
-import java.util.Map;
-
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
@@ -34,7 +31,10 @@ import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
+
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Service for getting data objects.
@@ -202,12 +202,14 @@ public interface IDataService {
      *
      * @param elemId
      *            Given data element id.
+     * @param oldType
+     *            Current type's classifier.*
      * @param newType
      *            The new type's classifier.
      * @throws ServiceException
      *             In case an error happens.
      */
-    void switchDataElemType(int elemId, String newType) throws ServiceException;
+    void switchDataElemType(int elemId, String oldType, String newType) throws ServiceException;
     
     /**
      * Returns all inference rules of a data element
@@ -276,5 +278,13 @@ public interface IDataService {
      * @throws ServiceException 
      */
     Collection<DataElement> grepDataElement(String pattern) throws ServiceException;
+
+    /**
+     * Changes element values if needed on data element type change.
+     * @param elementId current element id
+     * @param checkedOutCopyId checked out copy id
+     * @throws ServiceException if changing data fails
+     */
+    void handleElementTypeChange(String elementId, String checkedOutCopyId) throws ServiceException;
     
 }

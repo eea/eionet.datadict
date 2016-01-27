@@ -1,22 +1,12 @@
 package eionet.meta.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import eionet.meta.DElemAttribute.ParentType;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IDataSetDAO;
 import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
+import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
@@ -24,10 +14,24 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.InferenceRule;
 import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 import eionet.util.IrrelevantAttributes;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Data Service implementation.
@@ -49,7 +53,10 @@ public class DataServiceImpl implements IDataService {
     /** Data element DAO. */
     @Autowired
     private IDataElementDAO dataElementDao;
-    
+
+    @Autowired
+    private IVocabularyFolderDAO vocabularyFolderDAO;
+
     /** Fixed Value DAO */
     @Autowired
     private IFixedValueDAO fixedValueDao;
@@ -57,6 +64,9 @@ public class DataServiceImpl implements IDataService {
     /** Vocabulary concept DAO. */
     @Autowired
     private IVocabularyConceptDAO vocabularyConceptDao;
+
+    /** logger. */
+    protected static final Logger LOGGER = Logger.getLogger(DataServiceImpl.class);
 
     /**
      * {@inheritDoc}
@@ -270,7 +280,7 @@ public class DataServiceImpl implements IDataService {
      * @see eionet.meta.service.IDataService#switchDataElemType(int, java.lang.String)
      */
     @Override
-    public void switchDataElemType(int elemId, String newType) throws ServiceException {
+    public void switchDataElemType(int elemId, String oldType, String newType) throws ServiceException {
 
         // Check if the new type is at all known.
         if (!Arrays.asList("CH1", "CH2", "CH3").contains(newType)) {
@@ -296,6 +306,23 @@ public class DataServiceImpl implements IDataService {
         if (CollectionUtils.isNotEmpty(irrelevantAttrs)) {
             dataElementDao.removeSimpleAttrsByShortName(elemId, irrelevantAttrs.toArray(new String[irrelevantAttrs.size()]));
         }
+        
+        //CH3 has to be reference, CH1 and CH2 cannot be reference. Change the relevant attribute accordingly
+        DataElement element = dataElementDao.getDataElement(elemId);
+
+        String newDataType;
+        if ("CH3".equals(oldType) || "CH3".equals(newType)) {
+            Map<String, List<String>> attrValues = dataElementDao.getDataElementAttributeValues(elemId);
+            newDataType = "CH3".equals(oldType) ? "string" : "reference";
+
+            if (attrValues.containsKey("Datatype")) {
+                List<String> dataTypeList = attrValues.get("Datatype");
+                if (dataTypeList != null & !dataTypeList.isEmpty()) {
+                    attributeDao.updateSimpleAttributeValue("Datatype", elemId, "E", newDataType);
+                }
+            }
+        }
+
     }
     
     @Override
@@ -392,5 +419,83 @@ public class DataServiceImpl implements IDataService {
             throw new ServiceException("Failed to grep for data element : " + e.getMessage(), e);
         }
     }
-    
+
+
+    @Override
+    @Transactional(rollbackFor = ServiceException.class)
+    public void handleElementTypeChange(String elementId, String checkedOutCopyId) throws ServiceException {
+        
+        int newId = Integer.valueOf(elementId);
+        int oldId = Integer.valueOf(checkedOutCopyId);
+        
+        DataElement dataElement = dataElementDao.getDataElement(newId);
+        DataElement originalElement = dataElementDao.getDataElement(oldId);
+        
+        String oldType = originalElement.getType();
+        String newType = dataElement.getType();
+        
+        if (oldType.equals(newType) || (!"CH3".equals(oldType) && !"CH3".equals(newType))) {
+            return;
+        }
+        
+        //old type may have some referential entries, replace textual value with composed url
+        List<VocabularyConcept> valuedConcepts = vocabularyConceptDao.getConceptsWithValuedElement(oldId);
+        
+        //vocabularyId:[conceptIds]
+        Map<Integer, List<Integer>> vocabularyIds = new HashMap<Integer, List<Integer>>();
+        for (VocabularyConcept concept : valuedConcepts) {
+            if (!vocabularyIds.containsKey(concept.getVocabularyId())) {
+                vocabularyIds.put(concept.getVocabularyId(), new ArrayList<Integer>());
+            }
+            vocabularyIds.get(concept.getVocabularyId()).add(concept.getId());
+        }
+        Map<Integer, List<List<DataElement>>> allConceptValues = new HashMap<Integer, List<List<DataElement>>>();
+        
+        for (Integer vocabularyId : vocabularyIds.keySet()) {
+            List<Integer> conceptIdList = vocabularyIds.get(vocabularyId);
+            int[] conceptIds = new int[conceptIdList.size()];
+            for (int i = 0; i < conceptIdList.size(); i++) {
+                conceptIds[i] = conceptIdList.get(i);
+            }
+            Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
+                    dataElementDao.getVocabularyConceptsDataElementValues(vocabularyId, conceptIds, false);
+
+            allConceptValues.putAll(vocabularyConceptsDataElementValues);
+        }
+        try {
+            for (Integer conceptId : allConceptValues.keySet()) {
+                List<List<DataElement>> values = allConceptValues.get(conceptId);
+                for (List<DataElement> elementValues : values) {
+                    if (elementValues != null && !elementValues.isEmpty()) {
+                        DataElement valueMeta = elementValues.get(0);
+                        if (valueMeta.getId() == oldId) {
+                            for (DataElement value : elementValues) {
+                                String attrValue = "";
+                                if ("CH3".equals(oldType)) {
+                                    if (value.getRelatedConceptId() != null && value.getRelatedConceptId() != 0) {
+                                        attrValue = value.getRelatedConceptBaseURI() + value.getRelatedConceptIdentifier();
+                                        dataElementDao.updateVocabularyConceptDataElementValue(value.getValueId(), attrValue, null, null);
+                                    }
+                                } else if ("CH3".equals(newType)) { // ch3 = newType is the only choice, the rest is eliminated above
+                                    if (StringUtils.isNotBlank(value.getAttributeValue())) {
+                                        VocabularyFolder relatedVocabulary = vocabularyFolderDAO.getVocabularyFolder(dataElement.getVocabularyId());
+                                        attrValue = relatedVocabulary.getBaseUri() + value.getAttributeValue();
+                                        dataElementDao.updateVocabularyConceptDataElementValue(value.getValueId(), attrValue, null, null);
+                                    }
+                                }
+                            }
+
+                        }
+
+
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("", e);
+            throw new ServiceException(e.getMessage());
+        }
+    }
 }

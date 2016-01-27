@@ -594,6 +594,10 @@ public class VersionManager {
      */
     public boolean checkInElm(String elmID, String status) throws Exception {
 
+        initDataService();
+        DataElement elm = loadElm(elmID);
+        dataService.handleElementTypeChange(elmID, elm.getCheckedoutCopyID());
+
         SQLTransaction tx = null;
         try {
             tx = SQLTransaction.begin(conn);
@@ -606,6 +610,10 @@ public class VersionManager {
         } finally {
             SQLTransaction.end(tx);
         }
+
+
+
+
     }
 
     /**
@@ -654,7 +662,7 @@ public class VersionManager {
                 gen.setTable("DATAELEM");
                 gen.setFieldExpr("DATAELEM_ID", checkedoutCopyID);
                 stmt.executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + elmID);
-
+                
                 // the id of the new copy must be changed in all relations as well
                 DataElementHandler.replaceID(elmID, checkedoutCopyID, conn);
                 elmID = checkedoutCopyID;

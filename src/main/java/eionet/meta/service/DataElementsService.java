@@ -18,5 +18,5 @@ public interface DataElementsService {
     
     DataElement getEditableDataElement(AppContextProvider contextProvider, int dataElementId)
             throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException;
-    
+
 }

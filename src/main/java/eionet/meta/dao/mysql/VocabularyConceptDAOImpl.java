@@ -21,7 +21,6 @@
 
 package eionet.meta.dao.mysql;
 
-import java.sql.Date;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.StandardGenericStatus;
@@ -35,6 +34,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -742,6 +742,29 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                     }
                 });
         return resultList;
+    }
+
+    @Override
+    public List<VocabularyConcept> getConceptsWithValuedElement(int elementId) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("elementId", elementId);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select DISTINCT VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT_ELEMENT ");
+        sql.append("where DATAELEM_ID = :elementId ");
+
+        final List<VocabularyConcept> result = new ArrayList<VocabularyConcept>();
+        getNamedParameterJdbcTemplate().query(sql.toString(), parameters, new RowCallbackHandler() {
+
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                int conceptId = rs.getInt("VOCABULARY_CONCEPT_ID");
+                VocabularyConcept concept = getVocabularyConcept(conceptId);
+                result.add(concept);
+            }
+        });
+
+        return result;
     }
 
 }

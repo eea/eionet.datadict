@@ -490,6 +490,8 @@ public class DataElementHandler extends BaseHandler {
         lastInsertID = delem_id;
         String checkIn = req.getParameter("check_in");
         String switchType = req.getParameter("switch_type");
+        
+        String elmType = req.getParameter("curType");
 
         // if check-in, do the check-in and exit
         if (checkIn != null && checkIn.equalsIgnoreCase("true")) {
@@ -522,7 +524,7 @@ public class DataElementHandler extends BaseHandler {
                 throw new UnsupportedOperationException("Could not detect the data element type to switch to!");
             }
 
-            getDataService().switchDataElemType(NumberUtils.toInt(delem_id, -1), newType);
+            getDataService().switchDataElemType(NumberUtils.toInt(delem_id, -1), elmType,  newType);
             return;
         }
 

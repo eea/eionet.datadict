@@ -21,10 +21,6 @@
 
 package eionet.meta.dao;
 
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
@@ -32,8 +28,12 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.InferenceRule;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
+
+import java.sql.SQLException;
 import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Data element DAO.
@@ -428,6 +428,15 @@ public interface IDataElementDAO {
      * @return 
      */
     Collection<DataElement> grepDataElement(String pattern);
+
+    /**
+     * Updates given concept element value (VOCABULARY_CONCEPT_ELEMENT)
+     * @param id id in the table
+     * @param value new value
+     * @param language language code
+     * @param relatedConceptId related concept id
+     */
+    void updateVocabularyConceptDataElementValue(int id, String value, String language, Integer relatedConceptId);
 
     /**
      * Creates a filter for the bound data element based on the specified vocabulary concepts

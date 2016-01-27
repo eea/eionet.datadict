@@ -21,11 +21,11 @@
 
 package eionet.meta.dao;
 
-import java.util.List;
-
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
+
+import java.util.List;
 
 /**
  * Vocabulary concept DAO interface.
@@ -243,4 +243,10 @@ public interface IVocabularyConceptDAO {
      */
     public List<Integer> getVocabularyConceptIds(int vocabularyFolderId);
 
+    /**
+     * Lists all concepts where this element is valued.
+     * @param elementId element ID
+     * @return list of VocabularyConcept entities
+     */
+    List<VocabularyConcept> getConceptsWithValuedElement(int elementId);
 }
