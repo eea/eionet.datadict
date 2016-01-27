@@ -45,8 +45,10 @@ import java.io.StringReader;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * JUnit integration test with Unitils for RDF Vocabulary Import Service.
@@ -1236,6 +1238,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
             }
         }
 
+        // build manually updated data elements values for concept (check rdf file for updated values)
         VocabularyConcept vc3 = concepts.get(2);
         vc3.setDefinition("rdf_test_concept_def_3_updated");
         List<DataElement> dataElementValuesByName = VocabularyImportBaseHandler.getDataElementValuesByName("skos:relatedMatch", vc3.getElementAttributes());
@@ -1252,8 +1255,11 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         // SEE: fixRelatedElements method in dao
         dataElementValuesByName = VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", vc3.getElementAttributes());
 
-        // TODO - check how inverse should work :
-        // vc3.getElementAttributes().remove(dataElementValuesByName);
+        //Since we implemented fixing local ref, concept with identifier 2 should have skos:related back to concept with identifier 3
+        VocabularyConcept vc2Updated = updatedConcepts.get(1);
+        dataElementValuesByName = VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", vc2Updated.getElementAttributes());
+        VocabularyConcept vc2 = concepts.get(1);
+        vc2.getElementAttributes().add(dataElementValuesByName);
 
         // compare manually updated objects with queried ones (after import operation)
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
@@ -1693,6 +1699,115 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
         boolean foundRefTo1001 = c1001.getId() == dctIsReplacedByElems.get(0).getRelatedConceptId();
         Assert.assertTrue("Not found dct:isReplacedBy relation from 1002 to 1001", foundRefTo1001);
     }
+
+    @Test
+    @Rollback
+    public void testIfLocalRefRelationsCreatedAfterImport() throws Exception {
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(9);
+
+        // get reader for RDF file
+        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_14_geography_doctored.rdf");
+
+        // import RDF into database
+        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, true, false);
+
+        vocabularyFolder = vocabularyService.getVocabularyWithConcepts("geography", "reftest");
+
+        Assert.assertEquals("6 concepts have to be imported", 6, vocabularyFolder.getConcepts().size());
+
+        List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+
+        VocabularyConcept world = findVocabularyConceptByIdentifier(updatedConcepts, "1");
+        VocabularyConcept europe = findVocabularyConceptByIdentifier(updatedConcepts, "2");
+        VocabularyConcept greece = findVocabularyConceptByIdentifier(updatedConcepts, "3");
+        VocabularyConcept denmark = findVocabularyConceptByIdentifier(updatedConcepts, "4");
+
+        VocabularyConcept africa = findVocabularyConceptByIdentifier(updatedConcepts, "5");
+        VocabularyConcept egypt = findVocabularyConceptByIdentifier(updatedConcepts, "6");
+
+        Set<Integer> worldNarrower = new HashSet<Integer>();
+        worldNarrower.add(europe.getId());
+        worldNarrower.add(africa.getId());
+
+        Set<Integer> europeNarrower = new HashSet<Integer>();
+        europeNarrower.add(greece.getId());
+        europeNarrower.add(denmark.getId());
+
+        {//World
+            List<List<DataElement>> conceptAttributes = world.getElementAttributes();
+
+            List<DataElement> skosNarrowersForConcept = VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", conceptAttributes);
+
+            Assert.assertEquals("World should have references of type skos:narrower", 2, skosNarrowersForConcept.size());
+
+            for (DataElement element : skosNarrowersForConcept) {
+                worldNarrower.remove(element.getId());
+            }
+            Assert.assertEquals("World should have references of type skos:narrower to Europe and Africa", 2, worldNarrower.size());
+        }
+
+        {//Europe
+            List<List<DataElement>> conceptAttributes = europe.getElementAttributes();
+
+            List<DataElement> skosNarrowersForConcept = VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", conceptAttributes);
+            List<DataElement> skosBroadersForConcept = VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", conceptAttributes);
+
+            Assert.assertEquals("Europe should have references of type skos:narrower", 2, skosNarrowersForConcept.size());
+            Assert.assertEquals("Europe should have references of type skos:broader", 1, skosBroadersForConcept.size());
+
+            for (DataElement element : skosNarrowersForConcept) {
+                europeNarrower.remove(element.getId());
+            }
+            Assert.assertEquals("Europe should have references of type skos:narrower to Greece and Denmark", 2, europeNarrower.size());
+            Assert.assertEquals("Europe should have references of type skos:broader to World", (int) skosBroadersForConcept.get(0).getRelatedConceptId(),
+                    world.getId());
+        }
+
+        {//Greece
+            List<List<DataElement>> conceptAttributes = greece.getElementAttributes();
+
+            List<DataElement> skosBroadersForConcept = VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", conceptAttributes);
+
+            Assert.assertEquals("Greece should have references of type skos:broader to Europe", 1, skosBroadersForConcept.size());
+            Assert.assertEquals("Greece should have references of type skos:broader to Europe", (int) skosBroadersForConcept.get(0).getRelatedConceptId(),
+                    europe.getId());
+        }
+
+        {//Denmark
+            List<List<DataElement>> conceptAttributes = denmark.getElementAttributes();
+
+            List<DataElement> skosBroadersForConcept = VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", conceptAttributes);
+
+            Assert.assertEquals("Denmark should have references of type skos:broader", 1, skosBroadersForConcept.size());
+            Assert.assertEquals("Denmark should have references of type skos:broader to Europe", (int) skosBroadersForConcept.get(0).getRelatedConceptId(),
+                    europe.getId());
+        }
+
+        {//Africa
+            List<List<DataElement>> conceptAttributes = africa.getElementAttributes();
+
+            List<DataElement> skosNarrowersForConcept = VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", conceptAttributes);
+            List<DataElement> skosBroadersForConcept = VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", conceptAttributes);
+
+            Assert.assertEquals("Africa should have references of type skos:narrower to Egypt", 1, skosNarrowersForConcept.size());
+            Assert.assertEquals("Africa should have references of type skos:broader to World", 1, skosBroadersForConcept.size());
+
+            Assert.assertEquals("Africa should have references of type skos:narrower to Egypt", (int) skosNarrowersForConcept.get(0).getRelatedConceptId(),
+                    egypt.getId());
+            Assert.assertEquals("Africa should have references of type skos:broader to World", (int) skosBroadersForConcept.get(0).getRelatedConceptId(),
+                    world.getId());
+        }
+
+        {//Egypt
+            List<List<DataElement>> conceptAttributes = egypt.getElementAttributes();
+
+            List<DataElement> skosBroadersForConcept = VocabularyImportBaseHandler.getDataElementValuesByName("skos:broader", conceptAttributes);
+
+            Assert.assertEquals("Egypt should have references of type skos:broader to Africa", 1, skosBroadersForConcept.size());
+            Assert.assertEquals("Egypt should have references of type skos:broader to Africa", (int) skosBroadersForConcept.get(0).getRelatedConceptId(),
+                    africa.getId());
+        }
+    }//end of test step testIfLocalRefRelationsCreatedAfterImport
 
     @Test
     @Rollback

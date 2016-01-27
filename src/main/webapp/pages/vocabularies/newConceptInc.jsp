@@ -34,7 +34,7 @@
 </script>
 
 <div id="addNewConceptDiv" title="New concept">
-    <stripes:form id="addNewConceptForm" method="post" beanclass="${actionBean.class.name}">
+    <stripes:form id="addNewConceptForm" method="post" beanclass="${actionBean['class'].name}">
 
     <c:set var="divId" value="addNewConceptDiv" />
     <c:if test="${actionBean.editDivId eq divId}">

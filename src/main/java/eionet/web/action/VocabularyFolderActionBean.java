@@ -41,6 +41,7 @@ import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 import eionet.meta.service.data.SiteCodeFilter;
+import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.util.Props;
@@ -72,8 +73,12 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang.ArrayUtils;
 
 /**
  * Edit vocabulary folder action bean.
@@ -87,19 +92,27 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * JSP pages for vocabulary adding.
      */
     private static final String ADD_VOCABULARY_FOLDER_JSP = "/pages/vocabularies/addVocabularyFolder.jsp";
+
     /**
      * JSP pages for vocabulary editing.
      */
     private static final String EDIT_VOCABULARY_FOLDER_JSP = "/pages/vocabularies/editVocabularyFolder.jsp";
+
     /**
      * JSP pages for vocabulary viewing.
      */
     private static final String VIEW_VOCABULARY_FOLDER_JSP = "/pages/vocabularies/viewVocabularyFolder.jsp";
 
     /**
+     * JSP page for dynamic filter response through ajax.
+     */
+    private static final String BOUND_ELEMENT_FILTER_JSP = "/pages/vocabularies/boundElementFilter.jsp";
+
+    /**
      * Popup div's id prefix on jsp page.
      */
     private static final String EDIT_DIV_ID_PREFIX = "editConceptDiv";
+
     /**
      * Pop div's id for new concept form.
      */
@@ -114,6 +127,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Folder choice value [existing].
      */
     private static final String FOLDER_CHOICE_EXISTING = "existing";
+
     /**
      * Folder choice value [new].
      */
@@ -145,14 +159,17 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Extension for CSV files.
      */
     private static final String CSV_FILE_EXTENSION = ".csv";
+
     /**
      * Extension for RDF files.
      */
     private static final String RDF_FILE_EXTENSION = ".rdf";
+
     /**
      * JSON contept type.
      */
     public static final String JSON_DEFAULT_OUTPUT_FORMAT = "application/json";
+
     /**
      * JSON file extension.
      */
@@ -288,26 +305,32 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * UI
      */
     private String origIdentifier;
+
     /**
      * Rdf purge option.
      */
     private int rdfPurgeOption;
+
     /**
      * Language for search.
      */
     private String lang;
+
     /**
      * Pref label for search.
      */
     private String label;
+
     /**
      * Identifier for search.
      */
     private String id;
+
     /**
      * Format for output type.
      */
     private String format;
+
     /**
      * JSON-LD supported output formats.
      */
@@ -315,6 +338,36 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     static {
         SUPPORTED_JSON_FORMATS.add(JSON_DEFAULT_OUTPUT_FORMAT);
     }
+
+    /**
+     * Index for the new bound element filter in the list
+     */
+    private int boundElementFilterIndex;
+
+    /**
+     * Bound element id for the new bound element filter
+     */
+    private int boundElementFilterId;
+
+    /**
+     * Vocabulary folder id for the new bound element filter
+     */
+    private int vocabularyFolderId;
+
+    /**
+     * New bound element filter
+     */
+    private VocabularyConceptBoundElementFilter boundElementFilter;
+
+    /**
+     * List of bound element filters
+     */
+    private List<VocabularyConceptBoundElementFilter> boundElementFilters = new ArrayList<VocabularyConceptBoundElementFilter>();
+
+    /**
+     * List of columns for filter
+     */
+    private List<String> columns = new ArrayList<String>();
 
     /**
      * Navigates to view vocabulary folder page.
@@ -336,16 +389,71 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             return resolution;
         }
 
+        boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+        Collections.sort(boundElements, new Comparator<DataElement>() {
+            @Override
+            public int compare(DataElement o1, DataElement o2) {
+                return (o1.getIdentifier().compareToIgnoreCase(o2.getIdentifier()));
+            }
+        });
+
+        // populate columns filter
+        columns.addAll(Arrays.asList(new String[] {
+           "Notation", "Status", "Status Modified", "Accepted Date", "Not Accepted Date"
+        }));
+        for (DataElement boundElement : boundElements) {
+            columns.add(boundElement.getIdentifier());
+        }
         initFilter();
 
+        for (DataElement boundElement : boundElements) {
+            if (filter.getVisibleColumns().contains(boundElement.getIdentifier())) {
+                filter.getBoundElementVisibleColumns().add(boundElement.getIdentifier());
+            }
+        }
+        if (!filter.getBoundElementIds().isEmpty()) {
+            List<Integer> cids = vocabularyService.getVocabularyConceptIds(vocabularyFolder.getId());
+            for (Integer boundElementId : filter.getBoundElementIds()) {
+                boundElementFilters.add(vocabularyService.getVocabularyConceptBoundElementFilter(boundElementId, cids));
+            }
+        }
+
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+
+        // inject data element values in filtered concepts
+        if (!vocabularyConcepts.getList().isEmpty()) {
+            List<Integer> vocabularyConceptIds = new ArrayList<Integer>();
+            for (VocabularyConcept concept : vocabularyConcepts.getList()) {
+                vocabularyConceptIds.add(concept.getId());
+            }
+            Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
+                    vocabularyService.getVocabularyConceptsDataElementValues(vocabularyFolder.getId(), 
+                    ArrayUtils.toPrimitive(vocabularyConceptIds.toArray(new Integer[vocabularyConceptIds.size()])),
+                            false);
+
+            for (VocabularyConcept concept : vocabularyConcepts.getList()) {
+                concept.setElementAttributes(vocabularyConceptsDataElementValues.get(concept.getId()));
+            }
+        }
+
         vocabularyFolderVersions =
                 vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
                         getUserName());
 
-        boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-
         return new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP);
+    }
+
+    /**
+     * Constructs new bound element filter
+     *
+     * @return resolution
+     * @throws ServiceException
+     *             if an error occurs
+     */
+    public Resolution constructBoundElementFilter() throws ServiceException {
+        List<Integer> cids = vocabularyService.getVocabularyConceptIds(vocabularyFolderId);
+        boundElementFilter = vocabularyService.getVocabularyConceptBoundElementFilter(boundElementFilterId, cids);
+        return new ForwardResolution(BOUND_ELEMENT_FILTER_JSP);
     }
 
     /**
@@ -1399,6 +1507,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         if (filter == null) {
             filter = new VocabularyConceptFilter();
             filter.setConceptStatus(StandardGenericStatus.ACCEPTED);
+            filter.setVisibleColumns(Arrays.asList(new String[] {
+                "Notation", "Status", "Status Modified"
+            }));
         }
         filter.setVocabularyFolderId(vocabularyFolder.getId());
         filter.setPageNumber(page);
@@ -1756,6 +1867,62 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     public void setFormat(String format) {
         this.format = format;
+    }
+
+    public int getBoundElementFilterIndex() {
+        return boundElementFilterIndex;
+    }
+
+    public void setBoundElementFilterIndex(int boundElementFilterIndex) {
+        this.boundElementFilterIndex = boundElementFilterIndex;
+    }
+
+    public int getBoundElementFilterId() {
+        return boundElementFilterId;
+    }
+
+    public void setBoundElementFilterId(int boundElementFilterId) {
+        this.boundElementFilterId = boundElementFilterId;
+    }
+
+    public int getVocabularyFolderId() {
+        return vocabularyFolderId;
+    }
+
+    public void setVocabularyFolderId(int vocabularyFolderId) {
+        this.vocabularyFolderId = vocabularyFolderId;
+    }
+
+    public VocabularyConceptBoundElementFilter getBoundElementFilter() {
+        return boundElementFilter;
+    }
+
+    public void setBoundElementFilter(VocabularyConceptBoundElementFilter boundElementFilter) {
+        this.boundElementFilter = boundElementFilter;
+    }
+
+    public List<VocabularyConceptBoundElementFilter> getBoundElementFilters() {
+        return boundElementFilters;
+    }
+
+    public void setBoundElementFilters(List<VocabularyConceptBoundElementFilter> boundElementFilters) {
+        this.boundElementFilters = boundElementFilters;
+    }
+
+    public List<Integer> getBoundElementFilterIds() {
+        List<Integer> boundElementFilterIds = new ArrayList<Integer>();
+        for (VocabularyConceptBoundElementFilter currentFilter : boundElementFilters) {
+            boundElementFilterIds.add(currentFilter.getId());
+        }
+        return boundElementFilterIds;
+    }
+
+    public List<String> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<String> columns) {
+        this.columns = columns;
     }
 
 }

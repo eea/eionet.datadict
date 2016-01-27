@@ -7,8 +7,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.ServletContext;
@@ -30,9 +34,6 @@ import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
 import eionet.util.sql.SQLTransaction;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -41,27 +42,43 @@ import java.util.Map;
  */
 public class VersionManager {
 
-    /** */
+    /** Static logger for this class. */
     private static final Logger LOGGER = Logger.getLogger(VersionManager.class);
+
+    /** Possible registration statuses of a dataset or common data element. */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static final Vector REGISTRATION_STATUSES = new Vector(Arrays.asList("Incomplete", "Candidate", "Recorded", "Qualified", "Released"));
+
+    /** Only these registration statuses can be set for a new/existing dataset or common data element. */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static final Vector SETTABLE_REGISTRATION_STATUSES = new Vector(Arrays.asList("Incomplete", "Recorded", "Released"));
 
     private Connection conn = null;
     private DDSearchEngine searchEngine = null;
     private DDUser user = null;
-    private boolean upwardsVersioning = false;
     private boolean versionUpdate = false;
 
-    /** possible registration statuses */
-    private Vector regStatuses = new Vector();
-
-    /** servlet context object if instatiated from servlet environment */
+    /** Servlet context if this object is instantiated from servlet environment. */
     private ServletContext ctx = null;
+
+    /** Servlet request parameters */
     protected Parameters servlRequestParams = null;
 
-    /** local instance of data service. */
+    /** Local instance of data service. */
     private IDataService dataService;
 
     /**
+     * Default constructor.
+     */
+    public VersionManager() {
+        // Just empty constructor.
+    }
+
+    /**
+     * Class constructor.
      *
+     * @param conn Database connection.
+     * @param user Current username.
      */
     public VersionManager(Connection conn, DDUser user) {
         this(conn, new DDSearchEngine(conn), user);
@@ -69,29 +86,15 @@ public class VersionManager {
 
     /**
      *
+     * Class constructor.
+     * @param conn Database connection.
+     * @param searchEngine DD search engine object to use.
+     * @param user Current username.
      */
     public VersionManager(Connection conn, DDSearchEngine searchEngine, DDUser user) {
-        this();
         this.conn = conn;
         this.user = user;
         this.searchEngine = searchEngine;
-    }
-
-    /**
-     *
-     */
-    public VersionManager() {
-
-        // init registration statuses vector
-        regStatuses.add("Incomplete");
-        regStatuses.add("Candidate");
-        regStatuses.add("Recorded");
-        regStatuses.add("Qualified");
-        regStatuses.add("Released");
-    }
-
-    public void setUpwardsVersioning(boolean f) {
-        this.upwardsVersioning = f;
     }
 
     /**
@@ -753,7 +756,7 @@ public class VersionManager {
 
                 // also remember the identifier-id mappings of non-common elements
                 Map<String, String> dataElementIdMap = this.mapDataElementIdentifiersToIds(checkedoutCopyID);
-                
+
                 // delete the previous copy
                 Parameters params = new Parameters();
                 params.addParameterValue("mode", "delete");
@@ -784,7 +787,7 @@ public class VersionManager {
                         DsTableHandler.replaceTableId(checkedOutTableID, tbl.getID(), this.conn);
                     }
                 }
-                
+
                 // the non-common data elements must also get the previous ids
                 this.replaceDataElementIds(checkedoutCopyID, dataElementIdMap);
             } else {
@@ -827,36 +830,36 @@ public class VersionManager {
     private Map<String, String> mapDataElementIdentifiersToIds(String dataSetId) throws SQLException {
         HashMap<String, String> result = new HashMap<String, String>();
         Collection<DataElement> dataElements = this.getDataElementsOfDataSet(dataSetId);
-        
+
         for (DataElement dataElement : dataElements) {
             String identifier = this.composeIdentifier(dataElement);
             result.put(identifier, dataElement.getID());
         }
-        
+
         return result;
     }
-    
+
     private void replaceDataElementIds(String dataSetId, Map<String, String> dataElementIdMap) throws SQLException {
         Collection<DataElement> dataElements = this.getDataElementsOfDataSet(dataSetId);
-        
+
         for (DataElement dataElement : dataElements) {
             String identifier = this.composeIdentifier(dataElement);
-            
+
             if (dataElementIdMap.containsKey(identifier)) {
                 String originalId = dataElementIdMap.get(identifier);
                 DataElementHandler.replaceID(dataElement.getID(), originalId, this.conn);
             }
         }
     }
-    
+
     private String composeIdentifier(DataElement dataElement) {
         return dataElement.getTblIdentifier() + "." + dataElement.getIdentifier();
     }
-    
+
     private Collection<DataElement> getDataElementsOfDataSet(String dataSetId) throws SQLException {
         return this.searchEngine.getDataElements(null, null, null, null, null, dataSetId);
     }
-    
+
     private void checkRequirements(DataElement elm, String status) throws Exception {
         // check Submitting Org
         DElemAttribute submOrg = elm.getAttributeByShortName("SubmitOrganisation");
@@ -1106,10 +1109,23 @@ public class VersionManager {
     }
 
     /**
+     * Return possible registration statuses for a dataset or common data element.
      *
+     * @return Vector of status strings.
      */
+    @SuppressWarnings("rawtypes")
     public Vector getRegStatuses() {
-        return regStatuses;
+        return REGISTRATION_STATUSES;
+    }
+
+    /**
+     * Return the only settable registration statuses for a dataset or common data element.
+     *
+     * @return Vector of status strings.
+     */
+    @SuppressWarnings("rawtypes")
+    public Vector getSettableRegStatuses() {
+        return SETTABLE_REGISTRATION_STATUSES;
     }
 
     /**

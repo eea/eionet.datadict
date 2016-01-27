@@ -52,6 +52,7 @@ import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.mysql.valueconverters.BooleanToYesNoConverter;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
+import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
 import java.util.Collection;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -1162,9 +1163,27 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             }
             
         });
+
+        // add inverted rules for owl:inverseOf rule type as owl:inverseOf rule is bi-directional but is stored as a single row in the database
+        sql = new StringBuilder("select * from INFERENCE_RULE where TARGET_ELEM_ID = :dataelem_id and RULE='owl:inverseOf'");
+        List<InferenceRule> invertedRules = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<InferenceRule>() {
+            @Override
+            public InferenceRule mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DataElement target = getDataElement(Integer.parseInt(rs.getString("DATAELEM_ID")));
+                InferenceRule rule = new InferenceRule(source, RuleType.fromName(rs.getString("RULE")), target);
+                return rule;
+            }
+        });
+
+        for (InferenceRule invertedRule : invertedRules) {
+            if (!result.contains(invertedRule)) {
+                result.add(invertedRule);
+            }
+        }
+
         return result;
     }
-    
+
     @Override
     public Collection<InferenceRule> listInferenceRules(DataElement parentElem){
         StringBuilder sql = new StringBuilder("select * from INFERENCE_RULE where DATAELEM_ID = :dataelem_id");
@@ -1270,5 +1289,32 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             de.setParentNamespace(parentNamespace);
         }
     }
-    
+ 
+    @Override
+    public VocabularyConceptBoundElementFilter getVocabularyConceptBoundElementFilter(int dataElementId, List<Integer> vocabularyConceptIds) {
+        DataElement dataElement = getDataElement(dataElementId);
+        if (dataElement == null) {
+            return null;
+        }
+
+        final VocabularyConceptBoundElementFilter filter = new VocabularyConceptBoundElementFilter(dataElement);
+
+        final Map<String, Object> params = new HashMap<String, Object>();
+        params.put("dataElementId", dataElementId);
+        params.put("vocabularyConceptIds", vocabularyConceptIds);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select * from (select distinct ELEMENT_VALUE as `key`, ELEMENT_VALUE as `value` from VOCABULARY_CONCEPT_ELEMENT where ELEMENT_VALUE is not null and DATAELEM_ID=:dataElementId and VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds) ");
+        sql.append("union all select distinct vce.RELATED_CONCEPT_ID, vc.LABEL from VOCABULARY_CONCEPT_ELEMENT vce, VOCABULARY_CONCEPT vc where vce.RELATED_CONCEPT_ID is not null and vce.RELATED_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID ");
+        sql.append("and vce.DATAELEM_ID=:dataElementId and vce.VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds)) as filters order by `value`");
+
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                filter.getOptions().put(rs.getString("key"), rs.getString("value"));
+            }
+        });
+        return filter;
+    }
+
 }

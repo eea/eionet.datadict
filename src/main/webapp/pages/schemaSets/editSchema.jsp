@@ -8,15 +8,11 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit schema set">
 
     <stripes:layout-component name="contents">
-        
     <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
-    <link type="text/css" href="<c:url value="/css/smoothness/jquery-ui-1.8.16.custom.css" />" rel="stylesheet" />
-    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-1.6.2.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-ui-1.8.16.custom.min.js"></script>
 
     <h1>Edit schema</h1>
 
-    <stripes:form id="form1" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
+    <stripes:form id="form1" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
         <%-- Using url parameters because schemaAction bean has default value for one parameter --%>
         <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}" />
         <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}" />

@@ -12,7 +12,7 @@
                     </li>
                 </ul>
             </div>
-            <stripes:form method="get" beanclass="${actionBean.class.name}">
+            <stripes:form method="get" beanclass="${actionBean['class'].name}">
                 <table class="datatable">
                     <tbody>
                         <stripes:hidden name="parentElementId" />

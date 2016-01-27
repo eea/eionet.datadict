@@ -29,7 +29,9 @@ import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
+import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
 import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptFilter.BoundElementFilterResult;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
@@ -47,6 +49,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -208,6 +211,47 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
         VocabularyConceptResult result = vocabularyService.searchVocabularyConcepts(filter);
         assertEquals("Result size", 2, result.getFullListSize());
+    }
+
+    @Test
+    public void testSearchVocabularyConceptsBoundElements() throws ServiceException {
+        VocabularyConceptFilter filter = new VocabularyConceptFilter();
+        filter.setVocabularyFolderId(1);
+        BoundElementFilterResult bfr1 = new BoundElementFilterResult(1, "xyz");
+        filter.getBoundElements().add(bfr1);
+        VocabularyConceptResult result = vocabularyService.searchVocabularyConcepts(filter);
+        assertEquals("Result size", 2, result.getFullListSize());
+        
+        BoundElementFilterResult bfr2 = new BoundElementFilterResult(5, "xyz");
+        filter.getBoundElements().add(bfr2);
+        result = vocabularyService.searchVocabularyConcepts(filter);
+        assertEquals("Result size", 1, result.getFullListSize());
+        
+        BoundElementFilterResult bfr3 = new BoundElementFilterResult(5, "4");
+        filter.getBoundElements().clear();
+        filter.getBoundElements().add(bfr3);
+        result = vocabularyService.searchVocabularyConcepts(filter);
+        assertEquals("Result size", 1, result.getFullListSize());
+        
+        BoundElementFilterResult bfr4 = new BoundElementFilterResult(1, "6");
+        filter.getBoundElements().add(bfr4);
+        result = vocabularyService.searchVocabularyConcepts(filter);
+        assertEquals("Result size", 0, result.getFullListSize());
+    }
+
+    @Test
+    public void testGetVocabularyConceptIds() {
+        assertEquals("Result size", 4, vocabularyService.getVocabularyConceptIds(1).size());
+        assertEquals("Result size", 2, vocabularyService.getVocabularyConceptIds(3).size());
+        assertEquals("Result size", 3, vocabularyService.getVocabularyConceptIds(4).size());
+    }
+
+    @Test
+    public void testGetVocabularyConceptBoundElementFilter() {
+        VocabularyConceptBoundElementFilter filter = vocabularyService.getVocabularyConceptBoundElementFilter(1, Arrays.asList(new Integer[] {3, 4, 5, 6}));
+        assertEquals("Options size", 4, filter.getOptions().size());
+        assertEquals("Filter id", 1, filter.getId());
+        assertEquals("Filter label", "HCO1", filter.getLabel());
     }
 
     /**

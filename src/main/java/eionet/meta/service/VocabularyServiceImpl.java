@@ -21,30 +21,6 @@
 
 package eionet.meta.service;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import eionet.meta.service.data.VocabularyConceptData;
-import eionet.meta.service.data.VocabularyConceptFilter;
-import eionet.meta.service.data.VocabularyConceptResult;
-import eionet.meta.service.data.VocabularyFilter;
-import eionet.meta.service.data.VocabularyResult;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import eionet.meta.DElemAttribute;
 import eionet.meta.DElemAttribute.ParentType;
 import eionet.meta.dao.DAOException;
@@ -63,11 +39,35 @@ import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
+import eionet.meta.service.data.VocabularyConceptData;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.meta.service.data.VocabularyFilter;
+import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.web.action.ErrorActionBean;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Vocabulary service.
@@ -353,9 +353,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
     /**
      * {@inheritDoc}
      */
-
-
-
     @Override
     public void updateVocabularyConceptNonTransactional(VocabularyConcept vocabularyConcept) throws ServiceException {
         updateVocabularyConceptNonTransactional(vocabularyConcept, false);
@@ -365,9 +362,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * updates bound element values included related bound elements.
      *
      * @param vocabularyConcept concept
-     * @param  handleInverse if to handle inverse automatically
-     * @throws ServiceException
-     *             if update of attributes fails
+     * @param handleInverse     if to handle inverse automatically
+     * @throws ServiceException if update of attributes fails
      */
     private void updateVocabularyConceptDataElementValues(VocabularyConcept vocabularyConcept, boolean handleInverse)
             throws ServiceException {
@@ -419,10 +415,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * and makes sure that the concepts are related in both sides (A related with B -> B related with A). Also when relation gets
      * deleted from one side, then we make sure to deleted it also from the other side of the relation.
      *
-     * @param vocabularyConcept
-     *            Concept to be updated
-     * @param dataElementValues
-     *            bound data elements with values
+     * @param vocabularyConcept Concept to be updated
+     * @param dataElementValues bound data elements with values
      * @throws eionet.meta.service.ServiceException if fails
      */
     private void fixRelatedLocalRefElements(VocabularyConcept vocabularyConcept, List<DataElement> dataElementValues)
@@ -676,7 +670,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                     int conceptId = concept.getId();
                     Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
                             dataElementDAO.getVocabularyConceptsDataElementValues(originalVocabularyFolderId,
-                                    new int[] {conceptId}, true);
+                                    new int[]{conceptId}, true);
                     List<List<DataElement>> elems = vocabularyConceptsDataElementValues.get(conceptId);
                     for (List<DataElement> elemMeta : elems) {
                         if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
@@ -716,11 +710,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 dataElementDAO.moveVocabularyDataElements(vocabularyFolderId, originalVocabularyFolderId);
 
                 List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(originalVocabularyFolderId);
-                for (VocabularyConcept concept : concepts) {
+                for (VocabularyConcept concept : concepts) { //Why one by one ??
                     int conceptId = concept.getId();
                     Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
                             dataElementDAO.getVocabularyConceptsDataElementValues(originalVocabularyFolderId,
-                                    new int[] {conceptId}, true);
+                                    new int[]{conceptId}, true);
                     List<List<DataElement>> elems = vocabularyConceptsDataElementValues.get(conceptId);
                     concept.setElementAttributes(elems);
                 }
@@ -751,7 +745,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public int createVocabularyFolderCopy(VocabularyFolder vocabularyFolder, int vocabularyFolderId, String userName,
-            Folder newFolder) throws ServiceException {
+                                          Folder newFolder) throws ServiceException {
         try {
             VocabularyFolder originalVocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
@@ -980,7 +974,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             int conceptId = result.getId();
             Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
-                    dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolderId, new int[] {conceptId},
+                    dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolderId, new int[]{conceptId},
                             emptyAttributes);
             result.setElementAttributes(vocabularyConceptsDataElementValues.get(conceptId));
             return result;
@@ -991,6 +985,22 @@ public class VocabularyServiceImpl implements IVocabularyService {
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> getVocabularyConceptIds(int vocabularyFolderId) {
+        return vocabularyConceptDAO.getVocabularyConceptIds(vocabularyFolderId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public VocabularyConceptBoundElementFilter getVocabularyConceptBoundElementFilter(int dataElementId, List<Integer> vocabularyConceptIds) {
+        return dataElementDAO.getVocabularyConceptBoundElementFilter(dataElementId, vocabularyConceptIds);
     }
 
     /**
@@ -1376,7 +1386,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         for (VocabularyConcept concept : concepts) {
             int conceptId = concept.getId();
             Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
-                    dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyId, new int[] {conceptId}, true);
+                    dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyId, new int[]{conceptId}, true);
             List<List<DataElement>> elems = vocabularyConceptsDataElementValues.get(conceptId);
             for (List<DataElement> elemMeta : elems) {
                 if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
@@ -1404,6 +1414,41 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     @Override
+    public void fixRelatedLocalRefElementsForImport(int vocabularyId, List<VocabularyConcept> toBeUpdatedConcepts) throws ServiceException {
+        if (toBeUpdatedConcepts == null) {
+            return;
+        }
+
+        for (VocabularyConcept concept : toBeUpdatedConcepts) {
+            List<List<DataElement>> conceptElementAttributes = concept.getElementAttributes();
+
+            if (conceptElementAttributes == null) {
+                continue;
+            }
+
+
+            for (List<DataElement> dataElementValues : conceptElementAttributes) {
+                if (dataElementValues == null) {
+                    continue;
+                }
+
+                for (DataElement elem : dataElementValues) {
+                    //for localref elements and reference elements which reside in the same vocabulary ,
+                    // create inverse links immediately to show them in the working copy as well:
+                    Integer relatedConceptId = elem.getRelatedConceptId();
+                    if (elem.getRelatedConceptId() != null && elem.getRelatedConceptId() != 0) {
+
+                        String elemType = dataElementDAO.getDataElementDataType(elem.getId());
+                        if ("localref".equals(elemType) || ("reference".equals(elemType) && getVocabularyConcept(relatedConceptId).getVocabularyId() == vocabularyId)) {
+                            dataElementDAO.createInverseElements(elem.getId(), concept.getId(), elem.getRelatedConceptId());
+                        }
+                    }
+                }
+            }//end of inner for loop
+        }//end of outer for loop
+    }//end of method fixRelatedLocalRefElementsForImport
+
+    @Override
     public int populateEmptyBaseUris(String prefix) throws ServiceException {
         try {
             return vocabularyFolderDAO.populateEmptyBaseUris(prefix);
@@ -1429,4 +1474,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
             throw new ServiceException(e.getMessage());
         }
     } // end of method getRecentlyReleasedVocabularyFolders
+
+    @Override
+    public Map<Integer, List<List<DataElement>>> getVocabularyConceptsDataElementValues(int vocabularyFolderId,
+            int[] vocabularyConceptIds, boolean emptyAttributes) {
+        return dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolderId, vocabularyConceptIds, emptyAttributes);
+    }
+
 }

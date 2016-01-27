@@ -115,13 +115,13 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
             int id = vc.getId();
             if (id <= 0) {
                 // INSERT VOCABULARY CONCEPT
-                int insertedId = this.vocabularyService.createVocabularyConceptNonTransactional(vocabularyId, vc);
+                int insertedConceptId = this.vocabularyService.createVocabularyConceptNonTransactional(vocabularyId, vc);
                 // after insert operation get id of the vocabulary and set it!
-                vc.setId(insertedId);
+                vc.setId(insertedConceptId);
                 Set<DataElement> elementsRelatedToConcept = elementsRelatedToNotCreatedConcepts.get(id);
                 if (elementsRelatedToConcept != null) {
                     for (DataElement elem : elementsRelatedToConcept) {
-                        elem.setRelatedConceptId(insertedId);
+                        elem.setRelatedConceptId(insertedConceptId);
                     }
                 }
             }
@@ -134,6 +134,7 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
 
         // STEP 3. FIX RELATED REFERENCE ELEMENTS
         this.vocabularyService.fixRelatedReferenceElements(vocabularyId, vocabularyConceptsToUpdate);
+        this.vocabularyService.fixRelatedLocalRefElementsForImport(vocabularyId, vocabularyConcepts);
 
         // STEP 4. DELETE VOCABULARY CONCEPT
         purgeConcepts(vocabularyConceptsToDelete);

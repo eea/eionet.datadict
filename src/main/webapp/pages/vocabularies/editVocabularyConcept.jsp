@@ -87,7 +87,7 @@
 
     <h1>Vocabulary concept</h1>
 
-    <stripes:form id="editForm" method="post" beanclass="${actionBean.class.name}">
+    <stripes:form id="editForm" method="post" beanclass="${actionBean['class'].name}">
 
         <div>
             <stripes:hidden name="vocabularyFolder.folderName" />

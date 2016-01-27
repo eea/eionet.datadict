@@ -27,6 +27,7 @@ import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
 import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -35,6 +36,7 @@ import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Folder service.
@@ -609,6 +611,14 @@ public interface IVocabularyService {
     void fixRelatedReferenceElements(int vocabularyId, List<VocabularyConcept> concepts);
 
     /**
+     * fix inverse relations in local vocabulary other concepts for import.
+     *
+     * @param vocabularyId this vocabulary ID
+     * @param concepts     concepts of the vocabulary
+     */
+    void fixRelatedLocalRefElementsForImport(int vocabularyId, List<VocabularyConcept> concepts) throws ServiceException;
+
+    /**
      * Returns list of recently released vocabulary folders.
      *
      * @param limit maximum number of vocabulary folders
@@ -616,4 +626,37 @@ public interface IVocabularyService {
      * @throws ServiceException if operation fails
      */
     List<VocabularyFolder> getRecentlyReleasedVocabularyFolders(int limit) throws ServiceException;
+
+    /**
+     * Returns the list of concept ids for the vocabulary folder
+     *
+     * @param vocabularyFolderId vocabulary folder id
+     * @return list of concept ids
+     */
+    List<Integer> getVocabularyConceptIds(int vocabularyFolderId);
+
+    /**
+     * Creates a filter for the bound data element based on the specified vocabulary concepts
+     *
+     * @param dataElementId bound data element id
+     * @param vocabularyConceptIds list of vocabulary concept ids
+     * @return dynamic filter
+     */
+    VocabularyConceptBoundElementFilter getVocabularyConceptBoundElementFilter(int dataElementId, List<Integer> vocabularyConceptIds);
+
+    /**
+     * Returns data element attributes for vocabulary concepts in a folder.
+     * Precondition: If emptyAttributes true then this method should be called with a single concept id, i.e.
+     *               vocabularyConceptIds.length should be 1.
+     * @param vocabularyFolderId
+     *            vocabularyID
+     * @param vocabularyConceptIds
+     *            concept IDs
+     * @param emptyAttributes
+     *            when true, then attributes that are not valued are also included.
+     * @return map of list of lists where each list contains element values of one bound element
+     */
+    Map<Integer, List<List<DataElement>>> getVocabularyConceptsDataElementValues(int vocabularyFolderId,
+            int[] vocabularyConceptIds, boolean emptyAttributes);
+
 }

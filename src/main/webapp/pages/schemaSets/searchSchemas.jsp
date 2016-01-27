@@ -128,7 +128,7 @@
 
         <div id="newNameDialog" title="New file name">
             In the schema set, there is already schema with such name.
-            <stripes:form beanclass="${actionBean.class.name}" method="get">
+            <stripes:form beanclass="${actionBean['class'].name}" method="get">
                 <stripes:hidden name="schemaSetId" />
                 <stripes:hidden name="schemaId" />
 

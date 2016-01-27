@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:dctype="http://purl.org/dc/dcmitype/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns="http://dd.uat.eionet.europa.eu/property/" xml:base="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/">
+  <skos:ConceptScheme rdf:about="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/">
+    <rdfs:label>Testing of inference rules</rdfs:label>
+    <skos:notation>geography</skos:notation>
+    <dcterms:isPartOf rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/"/>
+  </skos:ConceptScheme>
+  <skos:Concept rdf:about="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/1">
+    <skos:notation>1</skos:notation>
+    <skos:prefLabel>World</skos:prefLabel>
+    <skos:definition>The 3rd planet from the Sun</skos:definition>
+    <skos:inScheme rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/"/>
+    <skos:narrower rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/2"/>
+    <skos:narrower rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/5"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/2">
+    <skos:notation>2</skos:notation>
+    <skos:prefLabel>Europe</skos:prefLabel>
+    <skos:inScheme rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/"/>
+    <skos:broader rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/1"/>
+    <skos:narrower rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/3"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/3">
+    <skos:notation>3</skos:notation>
+    <skos:prefLabel>Greece</skos:prefLabel>
+    <skos:inScheme rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/"/>
+    <skos:broader rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/2"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/4">
+    <skos:notation>4</skos:notation>
+    <skos:prefLabel>Denmark</skos:prefLabel>
+    <skos:inScheme rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/"/>
+    <skos:broader rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/2"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/5">
+    <skos:notation>5</skos:notation>
+    <skos:prefLabel>Africa</skos:prefLabel>
+    <skos:inScheme rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/"/>
+    <skos:broader rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/1"/>
+    <skos:narrower rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/6"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/6">
+    <skos:notation>6</skos:notation>
+    <skos:prefLabel>Egypt</skos:prefLabel>
+    <skos:inScheme rdf:resource="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/"/>
+  </skos:Concept>
+</rdf:RDF>

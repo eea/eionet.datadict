@@ -12,7 +12,7 @@
     
     <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
 
-    <stripes:form method="post" beanclass="${actionBean.class.name}">
+    <stripes:form method="post" beanclass="${actionBean['class'].name}">
         <div id="outerframe">
             <table class="datatable">
                 <colgroup>
