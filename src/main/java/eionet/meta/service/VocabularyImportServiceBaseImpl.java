@@ -134,7 +134,7 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
 
         // STEP 3. FIX RELATED REFERENCE ELEMENTS
         this.vocabularyService.fixRelatedReferenceElements(vocabularyId, vocabularyConceptsToUpdate);
-        this.vocabularyService.fixRelatedLocalRefElementsForImport(vocabularyId, vocabularyConcepts);
+        this.vocabularyService.fixRelatedLocalRefElementsForImport(vocabularyId, vocabularyConceptsToUpdate);
 
         // STEP 4. DELETE VOCABULARY CONCEPT
         purgeConcepts(vocabularyConceptsToDelete);

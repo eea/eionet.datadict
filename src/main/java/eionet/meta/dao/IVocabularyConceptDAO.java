@@ -236,6 +236,7 @@ public interface IVocabularyConceptDAO {
      */
     List<VocabularyConcept> getConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
                                                           String dataElementIdentifier, String language,
+                                                          String defaultLanguage, boolean acceptedOnly);
     /**
      * Returns the list of concept ids for the vocabulary folder
      *
