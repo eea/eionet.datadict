@@ -601,12 +601,12 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     }
 
     @Override
-    public List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
-            String dataElementIdentifier, String language, String defaultLanguage) {
-
+    public List<VocabularyConcept> getConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
+                                                                 String dataElementIdentifier, String language,
+                                                                 String defaultLanguage, boolean acceptedOnly) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyId", vocabularyId);
-        params.put("acceptedStatus", StandardGenericStatus.ACCEPTED.getValue());
+
 		
         StringBuilder sql = new StringBuilder();
         sql.append("select distinct c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID, ");
@@ -622,7 +622,13 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("LEFT JOIN VOCABULARY_SET rcvs ON (rcv.FOLDER_ID = rcvs.ID ) ");
         sql.append("left join (ATTRIBUTE a, M_ATTRIBUTE ma)  on (a.DATAELEM_ID = d.DATAELEM_ID ");
         sql.append("and PARENT_TYPE = 'E' and a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME='Datatype') ");
-        sql.append("where c.VOCABULARY_ID = :vocabularyId AND c.STATUS & :acceptedStatus = :acceptedStatus ");
+        sql.append("where c.VOCABULARY_ID = :vocabularyId ");
+
+        if (acceptedOnly){
+            sql.append(" AND c.STATUS & :acceptedStatus = :acceptedStatus");
+            params.put("acceptedStatus", StandardGenericStatus.ACCEPTED.getValue());
+        }
+
         if (StringUtils.isNotBlank(conceptIdentifier)) {
             sql.append(" AND LOWER(c.IDENTIFIER) LIKE LOWER(:conceptIdentifier)");
             params.put("conceptIdentifier", conceptIdentifier + "%");
@@ -648,7 +654,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("defaultLanguage", defaultLanguage);
         }
 
-        sql.append("ORDER by c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, d.IDENTIFIER, v.LANGUAGE, rcv.IDENTIFIER ");
+        sql.append(" ORDER by c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, d.IDENTIFIER, v.LANGUAGE, rcv.IDENTIFIER ");
 
 
         final List<VocabularyConcept> resultList = new ArrayList<VocabularyConcept>();
@@ -723,7 +729,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         });
 
         return resultList;
-    } // end of method getValidConceptsWithValuedElements
+    } // end of method getConceptsWithValuedElements
 
     /**
      * {@inheritDoc}

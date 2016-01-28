@@ -108,7 +108,7 @@ public class FolderActionBean extends AbstractActionBean {
                             concepts = siteCodeService.searchSiteCodes(siteCodeFilter).getList();
                         } else {
                             concepts =
-                                    vocabularyService.getValidConceptsWithAttributes(vocabularyFolder.getId());
+                                    vocabularyService.getAcceptedConceptsWithAttributes(vocabularyFolder.getId());
                         }
 
                         final List<? extends VocabularyConcept> finalConcepts = concepts;

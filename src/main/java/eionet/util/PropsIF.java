@@ -198,4 +198,32 @@ public interface PropsIF {
      * Instead, the mechanism provided by the eionetdir.properties and the local users file defined in uit.properties is used.
      */
     String USE_CENTRAL_AUTHENTICATION_SERVICE = "useCentralAuthenticationService";
+    /**
+     * Data Dictionary Vocabulary API JWT Key.
+     */
+    String DD_VOCABULARY_API_JWT_KEY = "dd.vocabulary.api.key";
+    /**
+     * Data Dictionary Vocabulary API JWT Audience.
+     */
+    String DD_VOCABULARY_API_JWT_AUDIENCE = "dd.vocabulary.api.audience";
+    /**
+     * Data Dictionary Vocabulary API JWT Exp in minutes (used for signing).
+     */
+    String DD_VOCABULARY_API_JWT_EXP_IN_MINUTES = "dd.vocabulary.api.exp";
+    /**
+     * Data Dictionary Vocabulary API JWT Timeout in minutes.
+     */
+    String DD_VOCABULARY_API_JWT_TIMEOUT_IN_MINUTES = "dd.vocabulary.api.jwt.timeout";
+    /**
+     * Data Dictionary Vocabulary API JWT Timeout default value in minutes.
+     */
+    int DD_VOCABULARY_API_JWT_TIMEOUT_DEFAULT_VALUE_IN_MINUTES = 10;
+    /**
+     * Data Dictionary Vocabulary API JWT Signing algorithm.
+     */
+    String DD_VOCABULARY_ADI_JWT_ALGORITHM = "dd.vocabulary.api.jwt.algorithm";
+    /**
+     * Data Dictionary Vocabulary API JWT Signing algorithm default value.
+     */
+    String DD_VOCABULARY_ADI_JWT_ALGORITHM_DEFAULT_VALUE = "HS512";
 }
