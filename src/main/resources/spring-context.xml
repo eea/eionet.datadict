@@ -19,10 +19,10 @@
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
           destroy-method="close">
-        <property name="driverClassName" value="${db.driver}"/>
-        <property name="url" value="${db.jdbcurl.encoded}"/>
-        <property name="username" value="${db.user}"/>
-        <property name="password" value="${db.password}"/>
+		<property name="driverClassName" value="${db.drv}"/>
+		<property name="url" value="${db.url}"/>
+		<property name="username" value="${db.usr}"/>
+		<property name="password" value="${db.psw}"/>
         <!-- The following two properties required because MySQL kills idle
             connections after 8 hours. -->
         <property name="validationQuery" value="SELECT 1"/>
