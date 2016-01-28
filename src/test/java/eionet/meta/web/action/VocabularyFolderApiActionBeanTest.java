@@ -292,14 +292,14 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
         //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
 //        {
 //            "iss": "DDTest",
-//                "iat": 1451610061,
-//                "exp": 1451613661,
-//                "aud": "ContentRegistry",
-//                "sub": "",
-//                "API_KEY": "NotExistingAPIKey"
+//            "iat": 1422429619,
+//            "exp": 1422429933,
+//            "aud": "DataDictionary",
+//            "sub": "",
+//            "API_KEY": "NotExistingAPIKey"
 //        }
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0NTE2MTAwNjEsImV4cCI6MTQ1MTYxMzY2MSwiYXVkIjoiQ29udGVudFJlZ2lzdHJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6Ik5vdEV4aXN0aW5nQVBJS2V5In0.Mje0oidK35MwDr_O5CfFwvQ6brYNLRZK8jMmZaoMkAksKgzDE1mi9THHEDKw_Hb4XhpQgyHSRotrWNzj4IfhQg");
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0MjI0Mjk2MTksImV4cCI6MTQyMjQyOTkzMywiYXVkIjoiRGF0YURpY3Rpb25hcnkiLCJzdWIiOiIiLCJBUElfS0VZIjoiTm90RXhpc3RpbmdBUElLZXkifQ.Fs_fr9cp2o4imv8ErnXBgzdcv-ZMKpiEB6pL5cAdgm-RU0ZSJUV5i1H5Zqfe3snO65t4vos41jum7f8atHh62A");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
@@ -307,12 +307,12 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
     } // end of test step testValidAlreadyExpiredJwt
 
     /**
-     * Call api with valid but deprecated jwt.
+     * Call api with wrong audience jwt.
      *
      * @throws Exception if test fails
      */
     @Test
-    public void testValidDeprecatedJwt() throws Exception {
+    public void testWrongAudienceJwt() throws Exception {
         MockServletContext ctx = ActionBeanUtils.getServletContext();
         MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
@@ -328,6 +328,34 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
 //        }
 
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0NTE2MTAwNjEsImV4cCI6NDYwNzI4NzI2MSwiYXVkIjoiQ29udGVudFJlZ2lzdHJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6Ik5vdEV4aXN0aW5nQVBJS2V5In0.0TyN0RebnKJJr28-jZ_d0R6mHUEvbsD2GY6h7tZVHsOsxuUTiC5-_cpd3DCFnWX2bhzydYEZS0EapIPG1ym-4g");
+        trip.execute("uploadRdf");
+        MockHttpServletResponse response = trip.getResponse();
+        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+        Assert.assertEquals("Error message", "Cannot authorize: jwt audience invalid", response.getErrorMessage());
+    } // end of test step testWrongAudienceJwt
+
+    /**
+     * Call api with valid but deprecated jwt.
+     *
+     * @throws Exception if test fails
+     */
+    @Test
+    public void testValidDeprecatedJwt() throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
+        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+
+        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
+//        {
+//            "iss": "DDTest",
+//            "iat": 1422429619,
+//            "exp": 10892129133,
+//            "aud": "DataDictionary",
+//            "sub": "",
+//            "API_KEY": "NotExistingAPIKey"
+//        }
+
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0MjI0Mjk2MTksImV4cCI6MTA4OTIxMjkxMzMsImF1ZCI6IkRhdGFEaWN0aW9uYXJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6Ik5vdEV4aXN0aW5nQVBJS2V5In0.gij-9-r6PAKYGicjaBXTIiFL72Zon7LZrV_e0cQZvvCfcunWX__t5YZyS6GfZbkhJfNYDC6mhdcAOoZHSiWpQg");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
@@ -348,14 +376,14 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
         //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
 //        {
 //            "iss": "DDTest",
-//            "iat": 4607283661,
-//            "exp": 4607287261,
-//            "aud": "ContentRegistry",
+//            "iat": 10889450419,
+//            "exp": 10892129133,
+//            "aud": "DataDictionary",
 //            "sub": "",
 //            "API_KEY": "NotExistingAPIKey"
 //        }
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjQ2MDcyODM2NjEsImV4cCI6NDYwNzI4NzI2MSwiYXVkIjoiQ29udGVudFJlZ2lzdHJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6Ik5vdEV4aXN0aW5nQVBJS2V5In0.nkKp1oRDxviYG0bsPMDNeuheJsy30oXT21KvjdoTrZ4k3WKZJLg6uaVcf571NmZpUDWrXLMVf3qFWw3XZMRO6Q");
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjEwODg5NDUwNDE5LCJleHAiOjEwODkyMTI5MTMzLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsInN1YiI6IiIsIkFQSV9LRVkiOiJOb3RFeGlzdGluZ0FQSUtleSJ9.gtS_aw5GniHmu4820veWbSksv6r1cF10MhONO09hvIKAMrnKHIsVzTAvRKHa1oN96McUuMNq6-yzBaSqITrbfQ");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
@@ -376,14 +404,14 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
         //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
 //        {
 //            "iss": "DDTest",
-//            "iat": 4607283661,
-//            "exp": 4607287261,
-//            "aud": "ContentRegistry",
+//            "iat": 10889450419,
+//            "exp": 10892129133,
+//            "aud": "DataDictionary",
 //            "sub": "",
 //            "API_KEY": " "
 //        }
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjQ2MDcyODM2NjEsImV4cCI6NDYwNzI4NzI2MSwiYXVkIjoiQ29udGVudFJlZ2lzdHJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6IiAifQ.Iq8KPUwAJp6R1pKuxJZCh8PHoctRZAVzgr3RHaP0bKnIK9acyhDV9a-f6AviM5E0Ua7RMzbuRW3WQ1W7y5bq5g");
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjEwODg5NDUwNDE5LCJleHAiOjEwODkyMTI5MTMzLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsInN1YiI6IiIsIkFQSV9LRVkiOiIgIn0.YaMzqJywCpQFn7-xT-x-PevfD1eeHfzd5LeQm7-wp0lL2LWj0sFM4PbyXl4owb7vHqxvG99fpIRF--YN40473Q");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
@@ -404,13 +432,13 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
         //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
 //        {
 //            "iss": "DDTest",
-//            "iat": 4607283661,
-//            "exp": 4607287261,
-//            "aud": "ContentRegistry",
+//            "iat": 10889450419,
+//            "exp": 10892129133,
+//            "aud": "DataDictionary",
 //            "sub": ""
 //        }
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjQ2MDcyODM2NjEsImV4cCI6NDYwNzI4NzI2MSwiYXVkIjoiQ29udGVudFJlZ2lzdHJ5Iiwic3ViIjoiIn0.2nd6OoGzcI-Xt3eB4gRuIr4M95q1-1SfvLsQKG5XJJwziutD_1l7JFH42ub-hH-uWOjcN8baiREJLKIA8zKC9Q");
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjEwODg5NDUwNDE5LCJleHAiOjEwODkyMTI5MTMzLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsInN1YiI6IiJ9.GUj1BZ5KLsdiYfkVHbMbYYNQMEXTBUo8x4DehQZ5fbP_cU66jQDN8rId9l6OY_i7HnkDg2rNOxfEeOXfbHJ4Sg");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
@@ -434,6 +462,24 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
         Assert.assertEquals("Error message", "Cannot authorize: JSONObject[\"API_KEY\"] not found.", response.getErrorMessage());
     } // end of test step testValidJwtWithoutApiKeyWithOurService
+
+    /**
+     * Call api with wrong secret key encoded jwt.
+     *
+     * @throws Exception if test fails
+     */
+    @Test
+    public void testWrongSecretKeyGeneratedJwt() throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
+        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign("this is really not secret key", VALID_JWT_AUDIENCE, new HashMap(), VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
+        trip.execute("uploadRdf");
+        MockHttpServletResponse response = trip.getResponse();
+        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+        Assert.assertEquals("Error message", "Cannot authorize: signature verification failed", response.getErrorMessage());
+    } // end of test step testWrongSecretKeyGeneratedJwt
 
     /**
      * Call api with valid jwt without api key.
