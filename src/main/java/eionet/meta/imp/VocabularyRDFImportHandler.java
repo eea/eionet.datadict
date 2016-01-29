@@ -698,7 +698,12 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         LOGGER.debug(String.format("Trying to find DD's own vocabulary of status (folder = %s, vocabulary=%s)", ownVocabulariesFolderName,
                 ownStatusVocabularyIdentifier));
 
-        VocabularyFolder statusVoc = vocabularyService.getVocabularyWithConcepts(ownStatusVocabularyIdentifier, ownVocabulariesFolderName);
+        VocabularyFolder statusVoc = null;
+        try {
+            statusVoc = vocabularyService.getVocabularyWithConcepts(ownStatusVocabularyIdentifier, ownVocabulariesFolderName);
+        } catch (Exception e) {
+            // Ignore deliberately.
+        }
         if (statusVoc != null) {
 
             List<VocabularyConcept> statusConcepts = statusVoc.getConcepts();

@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
@@ -355,7 +354,8 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         sql.append("left join VOCABULARY_SET f on f.ID=v.FOLDER_ID ");
         sql.append("where v.IDENTIFIER=:identifier and v.WORKING_COPY=:workingCopy and f.IDENTIFIER=:folderIdentifier");
 
-        List<VocabularyFolder> list = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyFolder>() {
+        VocabularyFolder result =
+                getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyFolder>() {
             @Override
             public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
                 VocabularyFolder vf = new VocabularyFolder();
@@ -380,7 +380,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
             }
         });
 
-        return CollectionUtils.isEmpty(list) ? null : list.iterator().next();
+        return result;
     }
 
     /**
