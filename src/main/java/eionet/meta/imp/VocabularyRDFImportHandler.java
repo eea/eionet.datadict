@@ -398,7 +398,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         }
 
         // TODO: code below definitely requires refactoring.
-        if (candidateForConceptAttribute && !this.conceptsUpdatedForAttributes.get(dataElemIdentifier).contains(this.lastFoundConcept.getId())) {
+        Set<Integer> conceptsUpdatedForThisIdentifier = conceptsUpdatedForAttributes.get(dataElemIdentifier);
+        if (candidateForConceptAttribute && conceptsUpdatedForThisIdentifier != null && !conceptsUpdatedForThisIdentifier.contains(lastFoundConcept.getId())) {
 
             this.conceptsUpdatedForAttributes.get(dataElemIdentifier).add(this.lastFoundConcept.getId());
 

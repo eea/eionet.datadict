@@ -21,23 +21,6 @@
 
 package eionet.meta.service;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.StandardGenericStatus;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.imp.VocabularyImportBaseHandler;
-import eionet.meta.service.IVocabularyImportService.MissingConceptsAction;
-import eionet.meta.service.IVocabularyImportService.UploadAction;
-import eionet.meta.service.IVocabularyImportService.UploadActionBefore;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.test.annotation.Rollback;
-import org.unitils.reflectionassert.ReflectionAssert;
-import org.unitils.reflectionassert.ReflectionComparatorMode;
-import org.unitils.spring.annotation.SpringBeanByType;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -49,6 +32,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.test.annotation.Rollback;
+import org.unitils.reflectionassert.ReflectionAssert;
+import org.unitils.reflectionassert.ReflectionComparatorMode;
+import org.unitils.spring.annotation.SpringBeanByType;
+
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.StandardGenericStatus;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.VocabularyImportBaseHandler;
+import eionet.meta.service.IVocabularyImportService.MissingConceptsAction;
+import eionet.meta.service.IVocabularyImportService.UploadAction;
+import eionet.meta.service.IVocabularyImportService.UploadActionBefore;
 
 /**
  * JUnit integration test with Unitils for RDF Vocabulary Import Service.
@@ -76,6 +77,7 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
     /**
      * {@inheritDoc}
      */
+    @Override
     protected Reader getReaderFromResource(String resourceLoc) throws Exception {
         InputStream is = getClass().getClassLoader().getResourceAsStream(resourceLoc);
         InputStreamReader reader = new InputStreamReader(is);
@@ -1738,7 +1740,8 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
             List<DataElement> skosNarrowersForConcept = VocabularyImportBaseHandler.getDataElementValuesByName("skos:narrower", conceptAttributes);
 
-            Assert.assertEquals("World should have references of type skos:narrower", 2, skosNarrowersForConcept.size());
+            int nrOfSkosNarrowersForConcept = skosNarrowersForConcept == null ? 0 : skosNarrowersForConcept.size();
+            Assert.assertEquals("World should have references of type skos:narrower", 2, nrOfSkosNarrowersForConcept);
 
             for (DataElement element : skosNarrowersForConcept) {
                 worldNarrower.remove(element.getId());
