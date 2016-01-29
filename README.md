@@ -123,4 +123,3 @@ REFERENCES for unit testing:
  - http://realsolve.co.uk/site/tech/dbunit-quickstart.php
  - http://www.onjava.com/pub/a/onjava/2004/01/21/dbunit.html
  - http://www.dbunit.org/
-
