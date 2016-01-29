@@ -10,5 +10,6 @@ import net.sourceforge.stripes.action.Resolution;
 public interface ErrorPageService {
 
     Resolution createErrorResolution(ErrorActionBean.ErrorType errorType, String message);
-    
+    Resolution createErrorResolution(ErrorActionBean.ErrorType errorType, String message, String event);
+    Resolution createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType errorType, String message, String event);
 }

@@ -354,8 +354,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
     /**
      * {@inheritDoc}
      */
-
-
     @Override
     public void updateVocabularyConceptNonTransactional(VocabularyConcept vocabularyConcept) throws ServiceException {
         updateVocabularyConceptNonTransactional(vocabularyConcept, false);
@@ -1022,10 +1020,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public List<VocabularyConcept> getValidConceptsWithAttributes(int vocabularyFolderId) throws ServiceException {
+    public List<VocabularyConcept> getAcceptedConceptsWithAttributes(int vocabularyFolderId) throws ServiceException {
         try {
             List<VocabularyConcept> result =
-                    vocabularyConceptDAO.getValidConceptsWithValuedElements(vocabularyFolderId, null, null, null, null, null);
+                    vocabularyConceptDAO.getConceptsWithValuedElements(vocabularyFolderId, null, null, null, null, null, true);
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concepts: " + e.getMessage(), e);
@@ -1036,12 +1034,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public List<VocabularyConcept> getValidConceptsWithAttributes(int vocabularyFolderId, String conceptIdentifier, String label,
-                                                                  String elementIdentifier, String language, String defaultLanguage) throws ServiceException {
+    public List<VocabularyConcept> getConceptsWithAttributes(int vocabularyFolderId, String conceptIdentifier, String label,
+                                                             String elementIdentifier, String language, String defaultLanguage, boolean acceptedOnly) throws ServiceException {
         try {
             List<VocabularyConcept> result =
-                    vocabularyConceptDAO.getValidConceptsWithValuedElements(vocabularyFolderId, conceptIdentifier, label,
-                            elementIdentifier, language, defaultLanguage);
+                    vocabularyConceptDAO.getConceptsWithValuedElements(vocabularyFolderId, conceptIdentifier, label,
+                            elementIdentifier, language, defaultLanguage, acceptedOnly);
 
             if (StringUtils.isNotBlank(language)) {
                 // when language is not empty, some concepts are filtered, so add an additional query!!! to get filtered concepts!!

@@ -24,7 +24,7 @@ Vector entries = (Vector)request.getAttribute("entries");
             // <![CDATA[
             function submitForm(action){
                 document.forms["form1"].elements["action"].value = action;
-                document.forms["form1"].submit();h
+                document.forms["form1"].submit();
             }
             // ]]>
         </script>

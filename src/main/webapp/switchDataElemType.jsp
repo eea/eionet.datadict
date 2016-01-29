@@ -34,19 +34,19 @@
     <form id="switchTypeForm" method="post" action="<%=request.getContextPath()%>/dataelements" style="margin-top:1em">
 
         <%
-        String curType = request.getParameter("curType");
-        if (!"CH1".equals(curType)) { %>
-            <input type="submit" name="newTypeCH1" value="Switch to fixed values" style="display:block;margin-top:5px"/> <%
+            String curType = request.getParameter("curType");
+            if (!"CH1".equals(curType)) { %>
+        <input type="submit" name="newTypeCH1" value="Switch to fixed values" style="display:block;margin-top:5px"/> <%
         }
 
         if (!"CH2".equals(curType)) { %>
-            <input type="submit" name="newTypeCH2" value="Switch to quantitative values" style="display:block;margin-top:5px"/> <%
+        <input type="submit" name="newTypeCH2" value="Switch to quantitative values" style="display:block;margin-top:5px"/> <%
         }
 
         if (!"CH3".equals(curType)) { %>
-            <input type="submit" name="newTypeCH3" value="Switch to vocabulary values" style="display:block;margin-top:5px"/> <%
+        <input type="submit" name="newTypeCH3" value="Switch to vocabulary values" style="display:block;margin-top:5px"/> <%
         }
-        %>
+    %>
 
         <input type="button" id="closeSwitchTypeDialog" name="closeButton" value="Cancel" style="display:block;margin-top:5px"/>
 

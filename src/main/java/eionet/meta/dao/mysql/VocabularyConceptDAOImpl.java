@@ -21,7 +21,6 @@
 
 package eionet.meta.dao.mysql;
 
-import java.sql.Date;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.StandardGenericStatus;
@@ -35,6 +34,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -601,12 +601,12 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     }
 
     @Override
-    public List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
-            String dataElementIdentifier, String language, String defaultLanguage) {
-
+    public List<VocabularyConcept> getConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
+                                                                 String dataElementIdentifier, String language,
+                                                                 String defaultLanguage, boolean acceptedOnly) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyId", vocabularyId);
-        params.put("acceptedStatus", StandardGenericStatus.ACCEPTED.getValue());
+
 		
         StringBuilder sql = new StringBuilder();
         sql.append("select distinct c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID, ");
@@ -622,7 +622,13 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("LEFT JOIN VOCABULARY_SET rcvs ON (rcv.FOLDER_ID = rcvs.ID ) ");
         sql.append("left join (ATTRIBUTE a, M_ATTRIBUTE ma)  on (a.DATAELEM_ID = d.DATAELEM_ID ");
         sql.append("and PARENT_TYPE = 'E' and a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME='Datatype') ");
-        sql.append("where c.VOCABULARY_ID = :vocabularyId AND c.STATUS & :acceptedStatus = :acceptedStatus ");
+        sql.append("where c.VOCABULARY_ID = :vocabularyId ");
+
+        if (acceptedOnly){
+            sql.append(" AND c.STATUS & :acceptedStatus = :acceptedStatus");
+            params.put("acceptedStatus", StandardGenericStatus.ACCEPTED.getValue());
+        }
+
         if (StringUtils.isNotBlank(conceptIdentifier)) {
             sql.append(" AND LOWER(c.IDENTIFIER) LIKE LOWER(:conceptIdentifier)");
             params.put("conceptIdentifier", conceptIdentifier + "%");
@@ -648,7 +654,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("defaultLanguage", defaultLanguage);
         }
 
-        sql.append("ORDER by c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, d.IDENTIFIER, v.LANGUAGE, rcv.IDENTIFIER ");
+        sql.append(" ORDER by c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, d.IDENTIFIER, v.LANGUAGE, rcv.IDENTIFIER ");
 
 
         final List<VocabularyConcept> resultList = new ArrayList<VocabularyConcept>();
@@ -723,7 +729,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         });
 
         return resultList;
-    } // end of method getValidConceptsWithValuedElements
+    } // end of method getConceptsWithValuedElements
 
     /**
      * {@inheritDoc}
@@ -742,6 +748,29 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                     }
                 });
         return resultList;
+    }
+
+    @Override
+    public List<VocabularyConcept> getConceptsWithValuedElement(int elementId) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("elementId", elementId);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select DISTINCT VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT_ELEMENT ");
+        sql.append("where DATAELEM_ID = :elementId ");
+
+        final List<VocabularyConcept> result = new ArrayList<VocabularyConcept>();
+        getNamedParameterJdbcTemplate().query(sql.toString(), parameters, new RowCallbackHandler() {
+
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                int conceptId = rs.getInt("VOCABULARY_CONCEPT_ID");
+                VocabularyConcept concept = getVocabularyConcept(conceptId);
+                result.add(concept);
+            }
+        });
+
+        return result;
     }
 
 }

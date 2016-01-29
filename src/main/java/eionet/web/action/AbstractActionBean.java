@@ -367,5 +367,12 @@ public abstract class AbstractActionBean implements ActionBean {
     protected Resolution createErrorResolution(ErrorActionBean.ErrorType errorType, String message) {
         return this.errorPageService.createErrorResolution(errorType, message);
     }
-    
+
+    protected Resolution createErrorResolution(ErrorActionBean.ErrorType errorType, String message, String event) {
+        return this.errorPageService.createErrorResolution(errorType, message, event);
+    }
+
+    protected Resolution createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType errorType, String message, String event) {
+        return this.errorPageService.createErrorResolutionWithoutRedirect(errorType, message, event);
+    }
 }

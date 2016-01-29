@@ -1,21 +1,5 @@
 package eionet.meta.dao.mysql;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
 import eionet.meta.DElemAttribute.ParentType;
@@ -29,6 +13,21 @@ import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.mysql.valueconverters.BooleanToYesNoConverter;
 import eionet.util.Pair;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -38,6 +37,11 @@ import eionet.util.Pair;
 @Repository
 public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
 
+    /**
+     * update an attribute record.
+     */
+    private static final String UPDATE_ATTRIBUTE_SQL = "update ATTRIBUTE SET value = :value WHERE m_attribute_id = (SELECT m_attribute_id FROM m_attribute " 
+            + "WHERE name = :attrName) AND dataelem_id = :dataElemId and parent_type + :parentType";
     /** */
     private static final String COPY_SIMPLE_ATTRIBUTES_SQL =
             "insert into ATTRIBUTE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE) "
@@ -593,5 +597,17 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         });
         
         return result;
+    }
+
+    @Override
+    public void updateSimpleAttributeValue(String attrName, int dataElemId , String parentType, String value) {
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("attrName", attrName);
+        params.put("dataElemId", dataElemId);
+        params.put("parentType", parentType);
+        params.put("value", value);
+
+        getNamedParameterJdbcTemplate().update(UPDATE_ATTRIBUTE_SQL, params);
     }
 }

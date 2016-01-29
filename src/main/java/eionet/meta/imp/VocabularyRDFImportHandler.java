@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -196,6 +197,10 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      * This map store last seen candidate for DEFINITION and LABEL. Key value should be conceptId+dataelemIdentifier.
      */
     private Map<String, Literal> lastCandidateForConceptAttribute = null;
+    /**
+     * An internal flag to check operation ended.
+     */
+    private boolean endOfRdfReached = false;
 
     /** The map containing identifier:notation pairs of concepts present in DD's own status vocabulary in the database. */
     private Map<String, String> statusVocabularyEntries;
@@ -203,24 +208,15 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
     /**
      * Constructor for RDFHandler to import rdf into vocabulary.
      *
-     * @param folderContextRoot
-     *            base uri for vocabulary.
-     * @param concepts
-     *            concepts of vocabulary
-     * @param boundElements
-     *            bound elements to vocabulary.
-     * @param boundElementsToIds
-     *            bound elements ids.
-     * @param boundURIs
-     *            rdf namespaces for bound elements
-     * @param workingLanguage
-     *            working language, only first two letters are used
-     * @param createNewDataElementsForPredicates
-     *            create new data elements for seen predicates
-     * @param ddNamespace
-     *            dd instance namespace
-     * @throws ServiceException
-     *             when digest algorithm cannot be found
+     * @param folderContextRoot                  base uri for vocabulary.
+     * @param concepts                           concepts of vocabulary
+     * @param boundElements                      bound elements to vocabulary.
+     * @param boundElementsToIds                 bound elements ids.
+     * @param boundURIs                          rdf namespaces for bound elements
+     * @param workingLanguage                    working language, only first two letters are used
+     * @param createNewDataElementsForPredicates create new data elements for seen predicates
+     * @param ddNamespace                        dd instance namespace
+     * @throws ServiceException when digest algorithm cannot be found
      */
     public VocabularyRDFImportHandler(String folderContextRoot, List<VocabularyConcept> concepts, Map<String, Integer> boundElementsToIds,
             Map<String, List<String>> boundElements, Map<String, String> boundURIs, boolean createNewDataElementsForPredicates,
@@ -385,7 +381,15 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             if (!foundConceptWithFlag.getRight()) {
                 // vocabulary concept found or created, add it to list
                 this.toBeUpdatedConcepts.add(this.lastFoundConcept);
+
+                //check if the concept status is invalid, if so mark it valid
+                if (this.lastFoundConcept.getStatus() == null ||
+                        this.lastFoundConcept.getStatus().isSubStatus(StandardGenericStatus.INVALID)) {
+                    this.lastFoundConcept.setStatus(StandardGenericStatus.VALID);
+                    this.lastFoundConcept.setStatusModified(new Date(System.currentTimeMillis()));
+                    this.lastFoundConcept.setAcceptedDate(new Date(System.currentTimeMillis()));
             }
+        }
         }
 
         String dataElemIdentifier = predicateNsPrefix + ":" + attributeIdentifier;
@@ -572,7 +576,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                     }
                 }
             }
-            // 2. do it for untouched concepts
+            // 2. do it for untouched concepts (aka - missing concepts in the rdf file).
+            //NOTE: this can be imported for: getMissingConcepts function.
             for (VocabularyConcept concept : this.concepts) {
                 boolean conceptUpdated = false;
                 for (String key : this.predicateUpdatesAtConcepts.keySet()) {
@@ -611,7 +616,24 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             this.logMessages.addAll(conceptsWithNullLabels);
         }
         this.logMessages.add("Number of updated concepts: " + this.toBeUpdatedConcepts.size());
-    }
+        endOfRdfReached = true;
+    } // end of method endRDF
+
+    /**
+     * Returns the list of missing concepts (which are found in database but not in rdf file).
+     * NOTE: Please check endRDF {@link VocabularyRDFImportHandler#endRDF} method, some of the missing concepts may be
+     * added to toBeUpdatedConcepts list as well (for purge per predicate option).
+     *
+     * @return list of missing concepts (null if operation not finished yet).
+     */
+    public List<VocabularyConcept> getMissingConcepts() {
+        //After end operation
+        if (endOfRdfReached) {
+            return new ArrayList<VocabularyConcept>(this.concepts);
+        }
+
+        return null;
+    } // end of method getMissingConcepts
 
     /**
      *

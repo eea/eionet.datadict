@@ -3,38 +3,44 @@
  */
 package eionet.util;
 
+import eionet.meta.DDRuntimeException;
+import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.log4j.Logger;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.apache.commons.lang.LocaleUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.apache.log4j.Logger;
-
-import eionet.meta.DDRuntimeException;
-
 /**
  * Utility class for retrieving the configured properties of this application.
  *
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
- *
  */
 public class Props implements PropsIF {
 
-    /** Static logger for this class. */
+    /**
+     * Static logger for this class.
+     */
     private static final Logger LOGGER = Logger.getLogger(Props.class);
 
-    /** The resource bundle where to look for the configured properties. */
+    /**
+     * The resource bundle where to look for the configured properties.
+     */
     private ResourceBundle bundle = null;
 
-    /** A hash-table of default values for the properties. To be initialized at first required instance. */
+    /**
+     * A hash-table of default values for the properties. To be initialized at first required instance.
+     */
     @SuppressWarnings("rawtypes")
     private Hashtable defaults = null;
 
-    /** The instance of this class. */
+    /**
+     * The instance of this class.
+     */
     private static volatile Props instance = null;
 
     /**
@@ -96,8 +102,7 @@ public class Props implements PropsIF {
      * Returns the value of the given property. If no property is found, the default is returned if one exists. If no default is
      * found either, returns null.
      *
-     * @param name
-     *            Given property name.
+     * @param name Given property name.
      * @return The value.
      */
     public static synchronized String getProperty(String name) {
@@ -108,8 +113,7 @@ public class Props implements PropsIF {
      * Returns the value of the given property as integer. If no property is found, the default is returned if one exists. If no
      * default is found either, returns 0.
      *
-     * @param name
-     *            Given property name.
+     * @param name Given property name.
      * @return The value.
      */
     public static synchronized int getIntProperty(String name) {
@@ -128,8 +132,7 @@ public class Props implements PropsIF {
     /**
      * Returns the value of the given property. If no value is found, an no default either, then throws {@link DDRuntimeException}.
      *
-     * @param name
-     *            Given property name.
+     * @param name Given property name.
      * @return The value.
      */
     public static String getRequiredProperty(String name) {
@@ -144,8 +147,7 @@ public class Props implements PropsIF {
     /**
      * Internal worker method for the public property getter methods in this class.
      *
-     * @param name
-     *            Given property name.
+     * @param name Given property name.
      * @return The value.
      */
     protected final String getPropertyInternal(String name) {
@@ -180,10 +182,8 @@ public class Props implements PropsIF {
     /**
      * Get property value of time in milliseconds presented by time value and unit suffix (1h, 30m, 15s etc).
      *
-     * @param key
-     *            property name
-     * @param defaultValue
-     *            default value to be returned if file does not contain the property
+     * @param key          property name
+     * @param defaultValue default value to be returned if file does not contain the property
      * @return propertyValue
      */
     public static synchronized Long getTimePropertyMilliseconds(final String key, Long defaultValue) {
@@ -227,8 +227,7 @@ public class Props implements PropsIF {
     /**
      * Sets the default properties.
      *
-     * @param defaults
-     *            The hash-table of defaults to populate.
+     * @param defaults The hash-table of defaults to populate.
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void setDefaults(Hashtable defaults) {
@@ -249,6 +248,8 @@ public class Props implements PropsIF {
         defaults.put(DD_RECENTLY_RELEASED_VOCABULARIES_KEY, DD_DEFAULT_RECENTLY_RELEASED_VOCABULARIES_VALUE);
         defaults.put(DD_RECENTLY_RELEASED_SCHEMAS_KEY, DD_DEFAULT_RECENTLY_RELEASED_SCHEMAS_VALUE);
         defaults.put(DD_RECENTLY_RELEASED_DATASETS_KEY, DD_DEFAULT_RECENTLY_RELEASED_DATASETS_VALUE);
+        defaults.put(DD_VOCABULARY_API_JWT_TIMEOUT_IN_MINUTES, DD_VOCABULARY_API_JWT_TIMEOUT_DEFAULT_VALUE_IN_MINUTES);
+        defaults.put(DD_VOCABULARY_ADI_JWT_ALGORITHM, DD_VOCABULARY_ADI_JWT_ALGORITHM_DEFAULT_VALUE);
     }
 
     /**

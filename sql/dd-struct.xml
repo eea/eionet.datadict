@@ -1856,7 +1856,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
 
   <changeSet author="nakasnik" id="rev-139">
       <comment>
-          Calculates the actual modification date of the schema-set with the given id, 
+          Calculates the actual modification date of the schema-set with the given id,
           based both on the date_modified field of the schema-set, as well as its child
           schemas.
       </comment>
@@ -1900,24 +1900,51 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
           <sql>drop function if exists func_getSchemaSetModificationDate</sql>
       </rollback>
   </changeSet>
-  
+
   <changeSet author="nakasnik" id="rev-140">
       <comment>
           Revert rev-139 whose logic turned out to be unnecessary.
       </comment>
       <sql>drop function if exists func_getSchemaSetModificationDate</sql>
   </changeSet>
-  
+
   <changeSet author="nakasnik" id="rev-141" dbms="mysql">
       <sql>
           alter table INFERENCE_RULE ENGINE = InnoDB;
       </sql>
   </changeSet>
-  
+
   <changeSet author="nakasnik" id="rev-142" dbms="mysql">
       <sql>
           alter table INFERENCE_RULE convert to character set utf8 collate utf8_unicode_ci;
       </sql>
+  </changeSet>
+
+  <changeSet author="enverveli" id="rev-143">
+      <comment>Create a table to store API keys to be used authentication for external end points.
+          Table will have following fields:
+          - IDENTIFIER: a unique identifier for the api key
+          - SCOPE: a free format scope field (e.g. vocabulary, dataelements)
+          - KEY_VALUE: a value for api key (expected to be unique)
+          - REMOTE_ADDR: remote host address or ip address (if applicable)
+          - EXPIRES: API expiration date (if applicable)
+          - NOTES: notes for admin
+      </comment>
+      <createTable tableName="API_KEY">
+          <column name="IDENTIFIER" type="VARCHAR(100)">
+              <constraints nullable="false" unique="true"/>
+          </column>
+          <column name="SCOPE" type="VARCHAR(100)"/>
+          <column name="KEY_VALUE" type="VARCHAR(255)">
+              <constraints nullable="false" unique="true"/>
+          </column>
+          <column name="REMOTE_ADDR" type="VARCHAR(255)"/>
+          <column name="EXPIRES" type="DATETIME"/>
+          <column name="NOTES" type="VARCHAR(255)"/>
+      </createTable>
+      <modifySql dbms="mysql">
+          <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+      </modifySql>
   </changeSet>
 
 </databaseChangeLog>

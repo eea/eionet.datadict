@@ -21,11 +21,11 @@
 
 package eionet.meta.dao;
 
-import java.util.List;
-
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
+
+import java.util.List;
 
 /**
  * Vocabulary concept DAO interface.
@@ -213,7 +213,7 @@ public interface IVocabularyConceptDAO {
     void updateReferringReferenceConcepts(int oldVocabularyId);
 
     /**
-     * Finds vocabulary concepts of the vocabulary that are accepted.
+     * Finds vocabulary concepts of the vocabulary.
      * Expects an element to have datatype attribute otherwise not included to the result
      * not included to the result.
      *
@@ -229,12 +229,14 @@ public interface IVocabularyConceptDAO {
      *            identifier as a filter, if null all languages
      * @param defaultLanguage
      *            default language (applicable when language is not null)
+     * @param acceptedOnly
+     *            returns only accepted concepts.
      *
      * @return elements with valued bound elements
      */
-    List<VocabularyConcept> getValidConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
-            String dataElementIdentifier, String language, String defaultLanguage);
-
+    List<VocabularyConcept> getConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
+                                                          String dataElementIdentifier, String language,
+                                                          String defaultLanguage, boolean acceptedOnly);
     /**
      * Returns the list of concept ids for the vocabulary folder
      *
@@ -243,4 +245,10 @@ public interface IVocabularyConceptDAO {
      */
     public List<Integer> getVocabularyConceptIds(int vocabularyFolderId);
 
+    /**
+     * Lists all concepts where this element is valued.
+     * @param elementId element ID
+     * @return list of VocabularyConcept entities
+     */
+    List<VocabularyConcept> getConceptsWithValuedElement(int elementId);
 }

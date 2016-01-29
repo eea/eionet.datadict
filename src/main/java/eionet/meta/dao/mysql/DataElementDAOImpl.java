@@ -21,40 +21,40 @@
 
 package eionet.meta.dao.mysql;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DElemAttribute;
+import eionet.meta.dao.IDataElementDAO;
+import eionet.meta.dao.domain.Attribute;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.DataSet;
+import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.InferenceRule;
+import eionet.meta.dao.domain.InferenceRule.RuleType;
+import eionet.meta.dao.domain.RegStatus;
+import eionet.meta.dao.mysql.valueconverters.BooleanToYesNoConverter;
+import eionet.meta.service.data.DataElementsFilter;
+import eionet.meta.service.data.DataElementsResult;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
-import eionet.meta.DDSearchEngine;
-import eionet.meta.DElemAttribute;
-import eionet.meta.dao.domain.InferenceRule;
-import eionet.meta.dao.IDataElementDAO;
-import eionet.meta.dao.domain.Attribute;
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.DataSet;
-import eionet.meta.dao.domain.FixedValue;
-import eionet.meta.dao.domain.InferenceRule.RuleType;
-import eionet.meta.dao.domain.RegStatus;
-import eionet.meta.dao.mysql.valueconverters.BooleanToYesNoConverter;
-import eionet.meta.service.data.DataElementsFilter;
-import eionet.meta.service.data.DataElementsResult;
 import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
 import java.util.Collection;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.stereotype.Repository;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Data element DAO.
@@ -718,6 +718,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setRelatedConceptOriginalId(rs.getInt("rc.ORIGINAL_CONCEPT_ID"));
                 de.setRelatedVocabularyStatus(rs.getString("rcv.REG_STATUS"));
                 de.setRelatedVocabularyWorkingCopy(rs.getInt("rcv.WORKING_COPY") == 1);
+                de.setValueId(rs.getInt("v.ID"));
                 List<FixedValue> fxvs = getFixedValues(de.getId());
                 de.setFixedValues(fxvs);
                 de.setElemAttributeValues(getDataElementAttributeValues(dataElemId));
@@ -1289,6 +1290,22 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             de.setParentNamespace(parentNamespace);
         }
     }
+
+    @Override
+    public void updateVocabularyConceptDataElementValue(int id, String value, String language, Integer relatedConceptId) {
+        String sql = "update VOCABULARY_CONCEPT_ELEMENT SET ELEMENT_VALUE = :attributeValue, LANGUAGE= :language, "
+                + "RELATED_CONCEPT_ID = :relatedConceptId where ID = :id";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("attributeValue", value);
+        params.put("relatedConceptId", relatedConceptId);
+        params.put("language", language);
+
+        params.put("id", id);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
  
     @Override
     public VocabularyConceptBoundElementFilter getVocabularyConceptBoundElementFilter(int dataElementId, List<Integer> vocabularyConceptIds) {

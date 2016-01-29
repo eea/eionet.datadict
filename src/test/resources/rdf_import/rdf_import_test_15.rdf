@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:dctype="http://purl.org/dc/dcmitype/"
+   xmlns:owl="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+   xmlns:dcterms="http://purl.org/dc/terms/"
+   xmlns:geo="http://geo.org#ws64"
+   xmlns="http://127.0.0.1:8080/datadict/property/"
+   xml:base="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/">
+
+   <skos:ConceptScheme rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/">
+      <rdfs:label>rdf_header_vocab_test</rdfs:label>
+      <skos:notation>rdf_header_vocab</skos:notation>
+      <dcterms:isPartOf rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/"/>
+   </skos:ConceptScheme>
+
+   <!-- Concept 1 -->
+   <skos:Concept rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_1">
+      <skos:prefLabel>rdf_test_concept_label_1_updated</skos:prefLabel>
+      <skos:inScheme rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
+      <skos:prefLabel xml:lang="bg">bg_rdf_test_concept_1</skos:prefLabel>
+      <skos:prefLabel xml:lang="bg">bg2_rdf_test_concept_1</skos:prefLabel>
+      <skos:prefLabel xml:lang="en">en_rdf_test_concept_1</skos:prefLabel>
+      <skos:prefLabel xml:lang="et">et_rdf_test_concept_1</skos:prefLabel>
+      <skos:broader rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_2"/>
+   </skos:Concept>
+
+   <!-- Concept 2 -->
+   <skos:Concept rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_2">
+      <skos:prefLabel>rdf_test_concept_label_2_updated</skos:prefLabel>
+      <skos:definition>rdf_test_concept_def_2</skos:definition>
+      <skos:inScheme rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
+      <skos:related rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_3"/>
+      <skos:definition xml:lang="de">de_rdf_test_concept_2</skos:definition>
+      <skos:definition xml:lang="de">de2_rdf_test_concept_2</skos:definition>
+      <skos:narrower rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_1"/>
+   </skos:Concept>
+</rdf:RDF>
