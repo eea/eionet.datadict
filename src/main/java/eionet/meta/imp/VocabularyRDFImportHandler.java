@@ -327,7 +327,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             String nsUri = conceptAttr.getNsUri();
             if (StringUtils.startsWith(predicateUri, nsUri)) {
                 String identifier = StringUtils.substringAfter(predicateUri, nsUri);
-                if (StringUtils.isNotBlank(identifier)) {
+                if (StringUtils.equals(identifier, conceptAttr.getIdentifier())) {
                     predicateNsPrefix = conceptAttr.getNsPrefix();
                     attributeIdentifier = identifier;
                     conceptAttribute = conceptAttr;

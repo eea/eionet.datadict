@@ -366,7 +366,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
             throw new ServiceException(e.getMessage());
         } catch (RuntimeException e) {
             e.printStackTrace();
-            throw new ServiceException(e.getMessage());
+            throw new ServiceException(e.getMessage(), e);
         } finally {
             try {
                 reader.close();
@@ -433,7 +433,12 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
         LOGGER.debug(String.format("Trying to find DD's own vocabulary of status (folder = %s, vocabulary=%s)", ownVocabulariesFolderName,
                 ownStatusVocabularyIdentifier));
 
-        VocabularyFolder statusVoc = vocabularyService.getVocabularyWithConcepts(ownStatusVocabularyIdentifier, ownVocabulariesFolderName);
+        VocabularyFolder statusVoc = null;
+        try {
+            statusVoc = vocabularyService.getVocabularyWithConcepts(ownStatusVocabularyIdentifier, ownVocabulariesFolderName);
+        } catch (Exception e) {
+            LOGGER.info("Could not find DD's own status vocabulary: " + e.toString());
+        }
         if (statusVoc != null) {
 
             List<VocabularyConcept> statusConcepts = statusVoc.getConcepts();

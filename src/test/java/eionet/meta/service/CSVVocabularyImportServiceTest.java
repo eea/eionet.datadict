@@ -21,12 +21,16 @@
 
 package eionet.meta.service;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.StandardGenericStatus;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.exports.VocabularyOutputHelper;
-import eionet.meta.imp.VocabularyImportBaseHandler;
+import static org.junit.Assert.fail;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -36,13 +40,12 @@ import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.StandardGenericStatus;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.exports.VocabularyOutputHelper;
+import eionet.meta.imp.VocabularyImportBaseHandler;
 
 /**
  * JUnit integration test with Unitils for CSV Vocabulary Import Service.
@@ -70,6 +73,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
     /**
      * {@inheritDoc} This method skips BOM character
      */
+    @Override
     protected Reader getReaderFromResource(String resourceLoc) throws Exception {
 
         InputStream is = getClass().getClassLoader().getResourceAsStream(resourceLoc);
@@ -105,9 +109,12 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Reader reader = getReaderFromResource("csv_import/csv_import_test_1.csv");
 
         // import CSV into database
-        vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
-        // transactionManager.getTransaction(null).flush();
-        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        try {
+            vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Was not expecting this exception: " + e);
+        }
 
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
@@ -159,8 +166,13 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Reader reader = getReaderFromResource("csv_import/csv_import_test_2.csv");
 
         // import CSV into database
-        vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
-        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        try {
+            vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Was not expecting this exception: " + e);
+
+        }
 
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
@@ -233,8 +245,12 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Reader reader = getReaderFromResource("csv_import/csv_import_test_3.csv");
 
         // import CSV into database
-        vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
-        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        try {
+            vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Was not expecting this exception: " + e);
+        }
 
         // manually create values of new concept for comparison
         VocabularyConcept vc11 = new VocabularyConcept();
@@ -316,8 +332,12 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Reader reader = getReaderFromResource("csv_import/csv_import_test_13.csv");
 
         // import CSV into database
-        vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
-        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        try {
+            vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Was not expecting this exception: " + e);
+        }
 
         // manually create values of new concept for comparison
         VocabularyConcept vc11 = new VocabularyConcept();
@@ -398,8 +418,12 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Reader reader = getReaderFromResource("csv_import/csv_import_test_3.csv");
 
         // import CSV into database
-        vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
-        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        try {
+            vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Was not expecting this exception: " + e);
+        }
 
         // manually create values of new concept for comparison
         VocabularyConcept vc11 = new VocabularyConcept();
@@ -482,8 +506,12 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Reader reader = getReaderFromResource("csv_import/csv_import_test_2.csv");
 
         // import CSV into database
-        vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
-        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        try {
+            vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Was not expecting this exception: " + e.toString());
+        }
 
         // manually update initial values of concepts for comparison
         VocabularyConcept vc8 = findVocabularyConceptById(concepts, 8);
@@ -553,8 +581,12 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Reader reader = getReaderFromResource("csv_import/csv_import_test_4.csv");
 
         // import CSV into database
-        vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
-        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        try {
+            vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Was not expecting this exception: " + e);
+        }
 
         // manually create values of new concept for comparison
         concepts.remove(2);// remove last object
@@ -600,8 +632,12 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Reader reader = getReaderFromResource("csv_import/csv_import_test_4.csv");
 
         // import CSV into database
-        vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
-        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        try {
+            vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Was not expecting this exception: " + e);
+        }
 
         // manually create values of new concept for comparison
         concepts.remove(2);// remove last object
@@ -647,8 +683,12 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Reader reader = getReaderFromResource("csv_import/csv_import_test_5.csv");
 
         // import CSV into database
-        vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
-        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        try {
+            vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Was not expecting this exception: " + e);
+        }
 
         // manually create values for data elements
         String[] boundElementIdentifiers =
@@ -896,8 +936,13 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         Reader reader = getReaderFromResource("csv_import/csv_import_test_6.csv");
 
         // import CSV into database
-        List<String> logMessages = vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, true);
-        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
+        List<String> logMessages = new ArrayList<String>();
+        try {
+            logMessages = vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Was not expecting this exception: " + e);
+        }
 
         // manually update initial values of concepts for comparison
         // only vocabulary concept 1 should change
