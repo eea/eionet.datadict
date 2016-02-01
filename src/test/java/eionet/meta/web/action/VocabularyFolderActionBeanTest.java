@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;
 
-import eionet.meta.dao.domain.StandardGenericStatus;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.FileBean;
@@ -35,6 +34,7 @@ import eionet.DDDatabaseTestCase;
 import eionet.meta.ActionBeanUtils;
 import eionet.meta.DDUser;
 import eionet.meta.FakeUser;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.exports.VocabularyOutputHelper;
 import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.meta.service.ServiceException;
@@ -154,9 +154,9 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
         // 5. column
         header.add("Status");
-        concept1.add(StandardGenericStatus.VALID.getLabel());
-        concept2.add(StandardGenericStatus.VALID.getLabel());
-        concept3.add(StandardGenericStatus.VALID.getLabel());
+        concept1.add(StandardGenericStatus.VALID.getNotation());
+        concept2.add(StandardGenericStatus.VALID.getNotation());
+        concept3.add(StandardGenericStatus.VALID.getNotation());
 
         // 6. column
         header.add("AcceptedDate");
@@ -308,8 +308,8 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
         // 5. column
         header.add("Status");
-        concept1.add(StandardGenericStatus.VALID.getLabel());
-        concept2.add(StandardGenericStatus.VALID.getLabel());
+        concept1.add(StandardGenericStatus.VALID.getNotation());
+        concept2.add(StandardGenericStatus.VALID.getNotation());
 
         // 6. column
         header.add("AcceptedDate");

@@ -36,9 +36,14 @@ import eionet.util.PropsIF;
  */
 public class VocabularyFolder {
 
-    /**
-     * Properties.
-     */
+    /** Base URI of all vocabularies. */
+    public static final String VOCABULARY_FOLDERS_BASE_URI = Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/";
+
+    /** URI of the folder of DD's own vocabularies. */
+    public static final String OWN_VOCABULARIES_FOLDER_URI = VOCABULARY_FOLDERS_BASE_URI
+            + Props.getRequiredProperty(PropsIF.DD_OWN_VOCABULARIES_FOLDER_NAME);
+
+    /** Properties. */
     private int id;
     private String identifier;
     private String continuityId;
@@ -56,7 +61,7 @@ public class VocabularyFolder {
     private boolean notationsEqualIdentifiers;
 
     /**
-     * Includes valid reg status values for a vocabulary.
+     * Includes valid reg. status values for a vocabulary.
      */
     public static final RegStatus[] VALID_REG_STATUS = new RegStatus[] {RegStatus.DRAFT, RegStatus.PUBLIC_DRAFT, RegStatus.RELEASED};
 
@@ -287,8 +292,8 @@ public class VocabularyFolder {
      */
     public void setBaseUri(String baseUri) {
         this.baseUri = StringUtils.trimToNull(baseUri);
-        if (StringUtils.isNotBlank(this.baseUri) && !StringUtils.endsWith(this.baseUri, "/")
-                && !StringUtils.endsWith(this.baseUri, ":") && !StringUtils.endsWith(this.baseUri, "#")) {
+        if (StringUtils.isNotBlank(this.baseUri) && !StringUtils.endsWith(this.baseUri, "/") && !StringUtils.endsWith(this.baseUri, ":")
+                && !StringUtils.endsWith(this.baseUri, "#")) {
             this.baseUri = this.baseUri + "/";
         }
     }
@@ -390,14 +395,17 @@ public class VocabularyFolder {
     /**
      * Utility method to return baseUri for folder context.
      *
-     * @param vf
-     *            Vocabulary folder
-     * @return base uri
+     * @param vf Vocabulary folder.
+     * @return Base URI.
      */
     public static String getBaseUri(VocabularyFolder vf) {
-        return StringUtils.isNotEmpty(vf.getBaseUri()) ? vf.getBaseUri() : Props.getRequiredProperty(PropsIF.DD_URL)
-                + "/vocabulary/" + vf.getFolderName() + "/" + vf.getIdentifier() + "/";
-    } // end of static method getBaseUri
+
+        String result = vf.getBaseUri();
+        if (StringUtils.isBlank(result)) {
+            result = VOCABULARY_FOLDERS_BASE_URI + vf.getFolderName() + "/" + vf.getIdentifier() + "/";
+        }
+        return result;
+    }
 
     /**
      * Returns valid reg status enum values for a vocabulary.

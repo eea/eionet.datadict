@@ -21,6 +21,9 @@
 
 package eionet.meta.service;
 
+import java.util.List;
+import java.util.Map;
+
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
@@ -34,9 +37,6 @@ import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Folder service.
@@ -158,7 +158,6 @@ public interface IVocabularyService {
      * Returns vocabulary information with attributes and WITHOUT concepts.
      *
      * @param folderName  vocabulary name vocabulary name
-     * @param identifier
      * @param identifier  vocabulary identifier
      * @param workingCopy true if working copy is needed
      * @return vocabulary information without concepts
@@ -575,9 +574,7 @@ public interface IVocabularyService {
     /**
      * Returns a vocabulary with ALL concepts - obsolete and valid.
      *
-     * @param identifier
      * @param identifier    vocabulary identifier
-     * @param vocabularySet
      * @param vocabularySet vocabulary set identifier
      * @return vocabulary entity with all concepts assigned
      */
@@ -659,4 +656,14 @@ public interface IVocabularyService {
     Map<Integer, List<List<DataElement>>> getVocabularyConceptsDataElementValues(int vocabularyFolderId,
             int[] vocabularyConceptIds, boolean emptyAttributes);
 
+    /**
+     * Returns true the given vocabulary concept exists in the given vocabulary in the given vocabulary set.
+     *
+     * @param vocabularySet
+     * @param vocabularyIdentifier
+     * @param conceptIdentifier
+     * @return
+     * @throws ServiceException
+     */
+    boolean vocabularyConceptExists(String vocabularySet, String vocabularyIdentifier, String conceptIdentifier) throws ServiceException;
 }

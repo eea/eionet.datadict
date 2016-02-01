@@ -21,6 +21,25 @@
 
 package eionet.meta.service;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import eionet.meta.DElemAttribute;
 import eionet.meta.DElemAttribute.ParentType;
 import eionet.meta.dao.DAOException;
@@ -50,24 +69,6 @@ import eionet.util.PropsIF;
 import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.web.action.ErrorActionBean;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Vocabulary service.
@@ -1367,9 +1368,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public VocabularyFolder getVocabularyWithConcepts(String identifier, String vocSet) {
         VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(vocSet, identifier, false);
-        List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(vocabulary.getId());
-
-        vocabulary.setConcepts(concepts);
+        if (vocabulary != null) {
+            List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(vocabulary.getId());
+            vocabulary.setConcepts(concepts);
+        }
 
         return vocabulary;
     }
@@ -1481,4 +1483,19 @@ public class VocabularyServiceImpl implements IVocabularyService {
         return dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolderId, vocabularyConceptIds, emptyAttributes);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see eionet.meta.service.IVocabularyService#vocabularyConceptExists(java.lang.String, java.lang.String, java.lang.String)
+     */
+    @Override
+    public boolean vocabularyConceptExists(String vocabularySet, String vocabularyIdentifier, String conceptIdentifier) throws ServiceException {
+
+        VocabularyFolder vocabulary = getVocabularyFolder(vocabularySet, vocabularyIdentifier, false);
+        if (vocabulary != null) {
+            VocabularyConcept concept = getVocabularyConcept(vocabulary.getId(), conceptIdentifier, false);
+            return concept != null;
+        }
+
+        return false;
+    }
 }

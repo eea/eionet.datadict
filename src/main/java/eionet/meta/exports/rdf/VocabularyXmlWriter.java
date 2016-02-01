@@ -21,22 +21,27 @@
 
 package eionet.meta.exports.rdf;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.Folder;
-import eionet.meta.dao.domain.RdfNamespace;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.exports.VocabularyOutputHelper;
-import eionet.meta.service.data.SiteCode;
-import eionet.util.StringEncoder;
-import org.apache.commons.lang.StringUtils;
+import java.io.OutputStream;
+import java.util.Calendar;
+import java.util.List;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import java.io.OutputStream;
-import java.util.Calendar;
-import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.RdfNamespace;
+import eionet.meta.dao.domain.StandardGenericStatus;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.exports.VocabularyOutputHelper;
+import eionet.meta.service.data.SiteCode;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.StringEncoder;
 
 /**
  * Vocabulary RDF-XML writer.
@@ -45,25 +50,28 @@ import java.util.List;
  */
 public class VocabularyXmlWriter {
 
-    /**
-     * Encoding.
-     */
+    /** */
+    public static final String OWN_STATUS_VOCABULARY_URI = VocabularyFolder.OWN_VOCABULARIES_FOLDER_URI + "/"
+            + Props.getRequiredProperty(PropsIF.DD_OWN_STATUS_VOCABULARY_IDENTIFIER);
+
+    /** Encoding. */
     private static final String ENCODING = "UTF-8";
 
-    /**
-     * XMLWriter to write XML to.
-     */
-    private XMLStreamWriter writer = null;
+    /** XMLWriter to write XML to. */
+    private XMLStreamWriter writer;
 
     /**
-     * Class constructor.
+     * Default constructor.
      *
-     * @param out
-     *            output stream
-     * @throws XMLStreamException
-     *             if writing fails
+     * @param out Output stream.
+     * @throws XMLStreamException If writing fails.
      */
     public VocabularyXmlWriter(OutputStream out) throws XMLStreamException {
+
+        if (out == null) {
+            throw new IllegalArgumentException("Output stream must not be null!");
+        }
+
         writer = XMLOutputFactory.newInstance().createXMLStreamWriter(out, ENCODING);
     }
 
@@ -85,9 +93,8 @@ public class VocabularyXmlWriter {
      * @throws XMLStreamException
      *             if streaming fails
      */
-    public void writeRDFXml(String commonElemsUri, String folderContextRoot, String contextRoot,
-            VocabularyFolder vocabularyFolder, List<? extends VocabularyConcept> vocabularyConcepts,
-            List<RdfNamespace> rdfNamespaces) throws XMLStreamException {
+    public void writeRDFXml(String commonElemsUri, String folderContextRoot, String contextRoot, VocabularyFolder vocabularyFolder,
+            List<? extends VocabularyConcept> vocabularyConcepts, List<RdfNamespace> rdfNamespaces) throws XMLStreamException {
 
         writeXmlStart(vocabularyFolder.isSiteCodeType(), commonElemsUri, contextRoot, rdfNamespaces);
 
@@ -139,8 +146,7 @@ public class VocabularyXmlWriter {
             writer.writeNamespace("dd", VocabularyOutputHelper.LinkedDataNamespaces.DD_SCHEMA_NS);
         }
         writer.writeDefaultNamespace(commonElemsUri);
-        writer.writeAttribute("xml", VocabularyOutputHelper.LinkedDataNamespaces.XML_NS, "base",
-                VocabularyOutputHelper.escapeIRI(contextRoot));
+        writer.writeAttribute("xml", VocabularyOutputHelper.LinkedDataNamespaces.XML_NS, "base", VocabularyOutputHelper.escapeIRI(contextRoot));
     }
 
     /**
@@ -155,13 +161,11 @@ public class VocabularyXmlWriter {
      * @throws XMLStreamException
      *             if rdf output fails
      */
-    public void writeFolderXml(String folderContext, Folder folder, List<? extends VocabularyFolder> vocabularies)
-            throws XMLStreamException {
+    public void writeFolderXml(String folderContext, Folder folder, List<? extends VocabularyFolder> vocabularies) throws XMLStreamException {
         // dctype:Collection for Folder:
         writer.writeCharacters("\n");
         writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.DCTYPE_NS, "Collection");
-        writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "about",
-                StringEncoder.encodeToIRI(folderContext));
+        writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "about", StringEncoder.encodeToIRI(folderContext));
 
         writer.writeCharacters("\n");
         writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.RDFS_NS, "label");
@@ -212,12 +216,11 @@ public class VocabularyXmlWriter {
      * @throws XMLStreamException
      *             when an error occurs during write operation
      */
-    public void writeVocabularyFolderXml(String folderContextRoot, String vocabularyContextRoot,
-            VocabularyFolder vocabularyFolder, List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
+    public void writeVocabularyFolderXml(String folderContextRoot, String vocabularyContextRoot, VocabularyFolder vocabularyFolder,
+            List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
         writer.writeCharacters("\n");
         writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "ConceptScheme");
-        writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "about",
-                StringEncoder.encodeToIRI(vocabularyContextRoot));
+        writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "about", StringEncoder.encodeToIRI(vocabularyContextRoot));
 
         writer.writeCharacters("\n");
         writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.RDFS_NS, "label");
@@ -231,13 +234,13 @@ public class VocabularyXmlWriter {
 
         writer.writeCharacters("\n");
         writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.DCTERMS_NS, "isPartOf");
-        writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
-                StringEncoder.encodeToIRI(folderContextRoot));
+        writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource", StringEncoder.encodeToIRI(folderContextRoot));
 
         writer.writeCharacters("\n");
         writer.writeEndElement(); // End ConceptScheme
 
         for (VocabularyConcept vc : vocabularyConcepts) {
+
             writer.writeCharacters("\n");
             writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "Concept");
             writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "about",
@@ -262,11 +265,21 @@ public class VocabularyXmlWriter {
                 writer.writeEndElement();
             }
 
+            // Write concept status if it's not null;
+            StandardGenericStatus conceptStatus = vc.getStatus();
+            if (conceptStatus != null) {
+                writer.writeCharacters("\n");
+                writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.ADMS_NS, "status");
+                writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
+                        StringEncoder.encodeToIRI(OWN_STATUS_VOCABULARY_URI + "/" + conceptStatus.getIdentifier()));
+            }
+
             writer.writeCharacters("\n");
             writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "inScheme");
             writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
                     StringEncoder.encodeToIRI(vocabularyContextRoot));
 
+            // Write site code data or bound elements as last block.
             if (vocabularyFolder.isSiteCodeType()) {
                 writeSiteCodeData((SiteCode) vc);
             } else {
@@ -335,8 +348,7 @@ public class VocabularyXmlWriter {
     private void writeSiteCodeData(SiteCode sc) throws XMLStreamException {
         writer.writeCharacters("\n");
         writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.DD_SCHEMA_NS, "siteCode");
-        writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "datatype",
-                "http://www.w3.org/2001/XMLSchema#int");
+        writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "datatype", "http://www.w3.org/2001/XMLSchema#int");
         writer.writeCharacters(sc.getIdentifier());
         writer.writeEndElement();
 
@@ -362,8 +374,7 @@ public class VocabularyXmlWriter {
             created.setTime(sc.getDateCreated());
             writer.writeCharacters("\n");
             writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.DD_SCHEMA_NS, "yearCreated");
-            writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "datatype",
-                    "http://www.w3.org/2001/XMLSchema#gYear");
+            writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "datatype", "http://www.w3.org/2001/XMLSchema#gYear");
             writer.writeCharacters(Integer.toString(created.get(Calendar.YEAR)));
             writer.writeEndElement();
         }
@@ -384,8 +395,7 @@ public class VocabularyXmlWriter {
 
         writer.writeCharacters("\n");
         writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "type");
-        writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
-                "http://dd.eionet.europa.eu/schema.rdf#SiteCode");
+        writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource", "http://dd.eionet.europa.eu/schema.rdf#SiteCode");
 
     }
 }

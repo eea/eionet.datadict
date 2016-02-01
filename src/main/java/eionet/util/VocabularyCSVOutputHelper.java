@@ -71,7 +71,7 @@ public final class VocabularyCSVOutputHelper {
      * index of end date in header list.
      */
     public static final int ACCEPTED_DATE_INDEX = 5;
-    
+
     /**
      * Prevent public initialization.
      */
@@ -136,7 +136,7 @@ public final class VocabularyCSVOutputHelper {
             entries[LABEL_INDEX] = c.getLabel();
             entries[DEFINITION_INDEX] = c.getDefinition();
             entries[NOTATION_INDEX] = c.getNotation();
-            entries[STATUS_INDEX] = c.getStatus().getLabel();
+            entries[STATUS_INDEX] = c.getStatus() == null ? "": c.getStatus().getNotation();
             entries[ACCEPTED_DATE_INDEX] = c.getAcceptedDate() != null ? dateFormatter.format(c.getAcceptedDate()) : "";
 
             // add extra fields

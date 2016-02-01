@@ -29,7 +29,6 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.imp.VocabularyRDFImportHandler;
 import eionet.util.Props;
 import eionet.util.PropsIF;
-import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.openrdf.rio.ParseErrorListener;
 import org.openrdf.rio.ParserConfig;
@@ -46,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import eionet.util.Util;
 
 /**
  * Service implementation to import RDF into a Vocabulary Folder.
@@ -334,8 +334,7 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
                     new ArrayList<DataElement>(), rdfHandler.getElementsRelatedToNotCreatedConcepts());
         } catch (Exception e) {
             // all exceptions should cause rollback operation
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage());
+            throw new ServiceException(e.getMessage(), e);
         }
 
         this.logMessages.add("RDF imported to database.");
