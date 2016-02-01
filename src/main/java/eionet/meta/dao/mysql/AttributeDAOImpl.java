@@ -40,12 +40,12 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
     /**
      * update an attribute record.
      */
-    private static final String UPDATE_ATTRIBUTE_SQL = "update ATTRIBUTE SET value = :value WHERE M_ATTRIBUTE_ID = (SELECT M_ATTRIBUTE_ID FROM m_attribute "
-            + "WHERE name = :attrName) AND DATAELEM_ID = :dataElemId and PARENT_TYPE + :parentType";
+    private static final String UPDATE_ATTRIBUTE_SQL = "update ATTRIBUTE SET value = :value WHERE M_ATTRIBUTE_ID = (SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE "
+            + "WHERE NAME = :attrName) AND DATAELEM_ID = :dataElemId and PARENT_TYPE = :parentType";
     /** */
     private static final String COPY_SIMPLE_ATTRIBUTES_SQL =
             "insert into ATTRIBUTE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE) "
-                    + "select :newParentId, PARENT_TYPE, M_ATTRIBUTE_ID, VALUE from ATTRIBUTE where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType";
+                    + "select :newParentId, PARENT_TYPE, M_ATTRIBUTE_ID, VALUE from ATTRIBUTE where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType ";
 
     /**
      * @see eionet.meta.dao.IAttributeDAO#copySimpleAttributes(int, java.lang.String, int)
