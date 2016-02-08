@@ -40,7 +40,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
     /**
      * update an attribute record.
      */
-    private static final String UPDATE_ATTRIBUTE_SQL = "update ATTRIBUTE SET value = :value WHERE M_ATTRIBUTE_ID = (SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE "
+    private static final String UPDATE_ATTRIBUTE_SQL = "update ATTRIBUTE SET VALUE = :value WHERE M_ATTRIBUTE_ID = (SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE "
             + "WHERE NAME = :attrName) AND DATAELEM_ID = :dataElemId and PARENT_TYPE = :parentType";
     /** */
     private static final String COPY_SIMPLE_ATTRIBUTES_SQL =
