@@ -302,9 +302,9 @@
                     new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, oper, "=");
 
                 if (oper!= null && oper.trim().equalsIgnoreCase("like")) {
-                    param.addValue("'%" + parValue + "%'");
+                    param.addValue("%" + parValue + "%");
                 } else {
-                    param.addValue("'" + parValue + "'");
+                    param.addValue(parValue);
                 }
                 params.add(param);
             }
