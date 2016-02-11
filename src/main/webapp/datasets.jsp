@@ -4,8 +4,41 @@
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String oSearchCacheAttrName="datasets_search_cache";%>
 <%!final static String oSearchUrlAttrName="datasets_search_url";%>
-<%!private Vector attributes=null;%>
 <%!private boolean restore = false;%>
+<%!
+    private Vector attrs = null;
+    private Vector def_attrs = null;
+    private Vector attr_ids = null;
+    private Hashtable inputAttributes = null;
+
+    private String getAttributeIdByName(String name) {
+        for (int i=0; i<attrs.size(); i++) {
+            DElemAttribute attr = (DElemAttribute)attrs.get(i);
+            if (attr.getName().equalsIgnoreCase(name)) {
+                return attr.getID();
+            }
+        }
+        return null;
+    }
+
+    private String getAttributeNameById(String id) {
+        for (int i=0; i<attrs.size(); i++){
+            DElemAttribute attr = (DElemAttribute)attrs.get(i);
+            if (attr.getID().equals(id)) {
+                return attr.getName();
+            }
+        }
+        return null;
+    }
+
+    private String setDefaultAttrs(String name) {
+        String id = getAttributeIdByName(name);
+        if (id != null) {
+            def_attrs.add(id);
+        }  
+        return null;
+    }
+%>
 
 <%@ include file="history.jsp" %>
 <%@ include file="sorting.jsp" %>
@@ -19,8 +52,8 @@
     public Vector oTables;
     public String oIdentifier;
 
-    private String oCompStr=null;
-    private int iO=0;
+    private String oCompStr = null;
+    private int iO = 0;
 
     private String regStatus = "";
     private String sortableStatus = "";
@@ -29,27 +62,25 @@
     public boolean canDelete = false;
 
     public c_SearchResultEntry(String _oID, String _oShortName, String _oVersion, String _oFName, Vector _oTables) {
+        oID = _oID == null ? "" : _oID;
+        oShortName = _oShortName==null ? "" : _oShortName;
+        oFName = _oFName==null ? "" : _oFName;
+        oVersion = _oVersion==null ? "" : _oVersion;
+        oTables = _oTables;
+        oFullName = oFName;
 
-            oID    = _oID==null ? "" : _oID;
-            oShortName    = _oShortName==null ? "" : _oShortName;
-            oFName    = _oFName==null ? "" : _oFName;
-            oVersion    = _oVersion==null ? "" : _oVersion;
-            oTables    = _oTables;
+        if (oFName.length() > 64) {
+            oFName = oFName.substring(0,60) + " ...";
+        }
+    }
 
-            oFullName = oFName;
-
-            if (oFName.length() > 64)
-                oFName = oFName.substring(0,60) + " ...";
-    };
-
-    public void setComp(int i,int o) {
+    public void setComp(int i, int o) {
         switch(i) {
             case 1: oCompStr=oFName; break;
             case 2: oCompStr=sortableStatus; break;
             case 3: oCompStr=oID; break;
             default: oCompStr=oFName; break;
         }
-
         iO=o;
     }
 
@@ -61,26 +92,25 @@
         return iO*oCompStr.compareToIgnoreCase(oC1.toString());
     }
 
-    public void setRegStatus(String stat){
+    public void setRegStatus(String stat) {
         regStatus = stat;
     }
 
-    public String getRegStatus(){
+    public String getRegStatus() {
         return regStatus;
     }
 
-    public void setSortableStatus(String sortableStatus){
+    public void setSortableStatus(String sortableStatus) {
         this.sortableStatus = sortableStatus;
     }
 }%>
 
 <%!class c_SearchResultSet {
-    private boolean isSorted=false;
     private int iSortColumn=0;
     private int iSortOrder=0;
     public boolean isAuth = false;
-
     public Vector oElements;
+
     public boolean SortByColumn(Integer oCol,Integer oOrder) {
         if ((iSortColumn!=oCol.intValue()) || (iSortOrder!=oOrder.intValue())) {
             for(int i=0; i<oElements.size(); i++) {
@@ -105,23 +135,23 @@
 
     Integer oSortCol=null;
     Integer oSortOrder=null;
+    
     try {
         oSortCol=new Integer(request.getParameter("sort_column"));
         oSortOrder=new Integer(request.getParameter("sort_order"));
-    }
-    catch(Exception e){
+    } catch(Exception e) {
         oSortCol=null;
         oSortOrder=null;
     }
 
     // if this is no sorting request, then remember the query string in session in order to come back if needed
-    if (oSortCol==null){
+    if (oSortCol==null) {
         String query = request.getQueryString() == null ? "" : request.getQueryString();
         String searchUrl =  request.getRequestURI() + "?" + query;
-           session.setAttribute(oSearchUrlAttrName, searchUrl);
-       }
+        session.setAttribute(oSearchUrlAttrName, searchUrl);
+    }
 
-    Vector datasets=null;
+    Vector datasets = null;
     DDSearchEngine searchEngine = null;
     Connection conn = null;
     DDUser user = SecurityUtil.getUser(request);
@@ -147,129 +177,189 @@
     }
 
     try { // start the whole page try block
+        
+        String search_precision = request.getParameter("search_precision");
+        String attrID = null;
+        String attrValue = null;
+        String attrName = null;
+        StringBuffer collect_attrs = new StringBuffer();
+        HashSet displayedCriteria = new HashSet();
+        String sel_attr = request.getParameter("sel_attr");
+        String sel_type = request.getParameter("sel_type");
+        String short_name = request.getParameter("short_name");
+        String idfier = request.getParameter("idfier");
+        
+        if (pageMode.equals("search")) {
+            conn = ConnectionUtil.getConnection();
 
-        if (pageMode.equals("search")){
-
-        conn = ConnectionUtil.getConnection();
-
-        if (request.getMethod().equals("POST")){
-
-            if (user==null){ %>
-                <b>Not allowed!</b> <%
-                return;
-            }
-            else{
-                String[] ds_ids = request.getParameterValues("ds_id");
-                for (int i=0; ds_ids!=null && i<ds_ids.length; i++){
-                    String dsIdf = request.getParameter("ds_idf_" + ds_ids[i]);
-                    if (dsIdf==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "d")){ %>
-                        <b>Not allowed!</b><%
+            if (request.getMethod().equals("POST")) {
+                if (user==null) { %>
+                    <b>Not allowed!</b> <%
+                    return;
+                } else {
+                    String[] ds_ids = request.getParameterValues("ds_id");
+                    for (int i=0; ds_ids!=null && i<ds_ids.length; i++) {
+                        String dsIdf = request.getParameter("ds_idf_" + ds_ids[i]);
+                        if (dsIdf==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "d")){ %>
+                            <b>Not allowed!</b><%
+                        }
                     }
+                }
+
+                Connection userConn = null;
+                DatasetHandler handler = null;
+
+                try {
+                    userConn = user.getConnection();
+                    handler = new DatasetHandler(userConn, request, ctx);
+                    handler.setUser(user);
+                    handler.execute();
+                } finally {
+                    handler.cleanup();
+                    try {
+                        if (userConn!=null) {
+                            userConn.close();
+                        }
+                    } catch (SQLException e) {}
                 }
             }
 
-              Connection userConn = null;
-              DatasetHandler handler = null;
+            session.removeAttribute(oSearchCacheAttrName);
 
-              try{
-                  userConn = user.getConnection();
-                handler = new DatasetHandler(userConn, request, ctx);
-                handler.setUser(user);
-                handler.execute();
+            searchEngine = new DDSearchEngine(conn, "");
+            searchEngine.setUser(user);
+            
+            // Begin search_dataset.jsp
+            attrs = searchEngine.getDElemAttributes();
+            if (attrs == null) {
+                attrs = new Vector();
             }
-            finally{
-                handler.cleanup();
-                try { if (userConn!=null) userConn.close();
-                } catch (SQLException e) {}
+
+            attr_ids = new Vector();
+            def_attrs = new Vector();
+
+            setDefaultAttrs("Name");
+            setDefaultAttrs("Definition");
+            setDefaultAttrs("Keywords");
+            setDefaultAttrs("EEAissue");
+
+            if (sel_attr == null) {
+                sel_attr = "";
+            }
+            if (sel_type == null) {
+                sel_type = "";
+            }
+            if (short_name == null) {
+                short_name = "";
+            }
+            if (idfier == null) {
+                idfier = "";
+            }
+            if (search_precision == null) {
+                search_precision = "substr";
+            }
+
+            ///get inserted attributes
+            String input_attr;
+            inputAttributes = new Hashtable();
+            for (int i=0; i<attrs.size(); i++) {
+                DElemAttribute attribute = (DElemAttribute)attrs.get(i);
+                String attr_id = attribute.getID();
+
+                input_attr = request.getParameter("attr_" + attr_id);
+                if (input_attr!=null) {
+                    inputAttributes.put(attr_id, input_attr);
+                    attr_ids.add(attr_id);
+                }
+            }
+    
+            // end
+            
+
+            String srchType = request.getParameter("search_precision");
+            String oper = "=";
+            if (srchType != null && srchType.equals("free")) {
+                oper = " match ";
+            }
+            if (srchType != null && srchType.equals("substr")) {
+                oper = " like ";
+            }
+
+            Vector params = new Vector();
+            Enumeration parNames = request.getParameterNames();
+            while (parNames.hasMoreElements()) {
+                String parName = (String)parNames.nextElement();
+                if (!parName.startsWith(ATTR_PREFIX)) {
+                    continue;
+                }
+
+                String parValue = request.getParameter(parName);
+                if (parValue.length()==0) {
+                    continue;
+                }
+
+                DDSearchParameter param =
+                    new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, oper, "=");
+
+                if (oper!= null && oper.trim().equalsIgnoreCase("like")) {
+                    param.addValue("'%" + parValue + "%'");
+                } else {
+                    param.addValue("'" + parValue + "'");
+                }
+                params.add(param);
+            }
+           // String short_name = request.getParameter("short_name");
+           //  String idfier = request.getParameter("idfier");
+            String version = request.getParameter("version");
+
+            // see if looking for deleted datasets
+            String _restore = request.getParameter("restore");
+            if (_restore!=null && _restore.equals("true")) {
+                if (user==null || !user.isAuthentic()) {
+                    Exception e = new Exception("User not authorized!");
+                    String msg = e.getMessage();
+                    ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+                    e.printStackTrace(new PrintStream(bytesOut));
+                    String trace = bytesOut.toString(response.getCharacterEncoding());
+
+                    String backLink = history.getBackUrl();
+
+                    request.setAttribute("DD_ERR_MSG", msg);
+                    request.setAttribute("DD_ERR_TRC", trace);
+                    request.setAttribute("DD_ERR_BACK_LINK", backLink);
+
+                    request.getRequestDispatcher("error.jsp").forward(request, response);
+                    return;
+                }
+                restore = true;
+                datasets = searchEngine.getDeletedDatasets();
+            } else {
+                HashSet statuses = null;
+                String requestedStatus = request.getParameter("reg_status");
+                if (requestedStatus!=null && requestedStatus.length()>0) {
+                    statuses = new HashSet();
+                    statuses.add(requestedStatus);
+                }
+                datasets = searchEngine.getDatasets(params, short_name, idfier, version, oper, isSearchForWorkingCopies, isIncludeHistoricVersions, statuses);
             }
         }
-
-           session.removeAttribute(oSearchCacheAttrName);
-
-           searchEngine = new DDSearchEngine(conn, "");
-           searchEngine.setUser(user);
-
-        String srchType = request.getParameter("search_precision");
-        String oper="=";
-        if (srchType != null && srchType.equals("free"))
-            oper=" match ";
-        if (srchType != null && srchType.equals("substr"))
-            oper=" like ";
-
-
-        Vector params = new Vector();
-        Enumeration parNames = request.getParameterNames();
-        while (parNames.hasMoreElements()){
-            String parName = (String)parNames.nextElement();
-            if (!parName.startsWith(ATTR_PREFIX))
-                continue;
-
-            String parValue = request.getParameter(parName);
-            if (parValue.length()==0)
-                continue;
-
-            DDSearchParameter param =
-                new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, oper, "=");
-
-            if (oper!= null && oper.trim().equalsIgnoreCase("like"))
-                param.addValue("'%" + parValue + "%'");
-            else
-                param.addValue("'" + parValue + "'");
-            params.add(param);
-        }
-        String short_name = request.getParameter("short_name");
-        String idfier = request.getParameter("idfier");
-        String version = request.getParameter("version");
-
-        // see if looking for deleted datasets
-        String _restore = request.getParameter("restore");
-        if (_restore!=null && _restore.equals("true")){
-            if (user==null || !user.isAuthentic()){
-                Exception e = new Exception("User not authorized!");
-                String msg = e.getMessage();
-                ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-                e.printStackTrace(new PrintStream(bytesOut));
-                String trace = bytesOut.toString(response.getCharacterEncoding());
-
-                String backLink = history.getBackUrl();
-
-                request.setAttribute("DD_ERR_MSG", msg);
-                request.setAttribute("DD_ERR_TRC", trace);
-                request.setAttribute("DD_ERR_BACK_LINK", backLink);
-
-                request.getRequestDispatcher("error.jsp").forward(request, response);
-                return;
-            }
-            restore = true;
-            datasets = searchEngine.getDeletedDatasets();
-        }
-        else{
-            HashSet statuses = null;
-            String requestedStatus = request.getParameter("reg_status");
-            if (requestedStatus!=null && requestedStatus.length()>0){
-                statuses = new HashSet();
-                statuses.add(requestedStatus);
-            }
-            datasets = searchEngine.getDatasets(params, short_name, idfier, version, oper, isSearchForWorkingCopies, isIncludeHistoricVersions, statuses);
-        }
-}
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-        <%@ include file="headerinfo.jsp" %>
+    <%@ include file="headerinfo.jsp" %>
     <title>Datasets - Data Dictionary</title>
     <script type="text/javascript" src="modal_dialog.js"></script>
     <script type="text/javascript">
     // <![CDATA[
-
-        function setLocation(){
-            if (document.forms["form1"].searchUrl)
+        function setLocation() {
+            if (document.forms["form1"].searchUrl) {
                 document.forms["form1"].searchUrl.value = document.location.href;
+            }
         }
 
-        function goTo(mode){
-            if (mode == "add"){
+        function goTo(mode) {
+            if (mode == "add") {
                 document.location.assign("<%=request.getContextPath()%>/datasets/add");
             }
         }
@@ -283,118 +373,134 @@
             }
         }
 
-        function deleteDataset(){
+        function deleteDataset() {
             // first confirm if the deletetion is about to take place at all
             var b = confirm("Selected datasets will be deleted! You will be given a chance to delete them permanently or save them for restoring later. Click OK, if you want to continue. Otherwise click Cancel.");
-            if (b == false)
+            if (b == false) {
                 return;
+            }
             
-            //get all checkboxes and control if there is any cannot delete or released dataset
+            // get all checkboxes and control if there is any cannot delete or released dataset
             var cannotDeletedDatasetIds = new Array();
             var releasedDatasetIds = new Array();
             var checkboxes = document.getElementsByName("ds_id");  
             var found = false;
-            for (var i = 0; i < checkboxes.length; i++){
-            	if (checkboxes[i].checked){
-            		var datasetId = checkboxes[i].value;
-            		var canDeleteThisDataset = document.getElementById("can_delete_ds_idf_" + datasetId);
-            		//if there is an attempt to delete unauthorized datasets, uncheck them
-            		if (canDeleteThisDataset.value == 'false'){
-            			checkboxes[i].checked = false;
-            			cannotDeletedDatasetIds.push(datasetId);
-            			continue;
-            		}
+            for (var i = 0; i < checkboxes.length; i++) {
+            	if (checkboxes[i].checked) {
+                    var datasetId = checkboxes[i].value;
+                    var canDeleteThisDataset = document.getElementById("can_delete_ds_idf_" + datasetId);
+                    //if there is an attempt to delete unauthorized datasets, uncheck them
+                    if (canDeleteThisDataset.value == 'false') {
+                        checkboxes[i].checked = false;
+                        cannotDeletedDatasetIds.push(datasetId);
+                        continue;
+                    }
             		
-            		if(document.getElementById("released_ds_idf_" + datasetId).value == 'true'){
-            			releasedDatasetIds.push(datasetId);
-            		}            		
-            		found = true;
+                    if(document.getElementById("released_ds_idf_" + datasetId).value == 'true') {
+                        releasedDatasetIds.push(datasetId);
+                    }            		
+                    found = true;
             	}
             }
             
-            //if there is an attempt to delete unauthorized datasets, notify user
-            if (cannotDeletedDatasetIds.length > 0){
+            // if there is an attempt to delete unauthorized datasets, notify user
+            if (cannotDeletedDatasetIds.length > 0) {
             	var promptMessage = "You don't have permission to delete following datasets: ";
-            	for (var i = 0; i < cannotDeletedDatasetIds.length; i++ ){
-            		promptMessage += "\n  -  " + document.getElementById("ds_idf_" + cannotDeletedDatasetIds[i]).value;
+            	for (var i = 0; i < cannotDeletedDatasetIds.length; i++ ) {
+                    promptMessage += "\n  -  " + document.getElementById("ds_idf_" + cannotDeletedDatasetIds[i]).value;
             	}
                 alert(promptMessage);
             }
-            
-            //if nothing selected no need to continue
-            if (!found){
+
+            // if nothing selected no need to continue
+            if (!found) {
             	alert("Select at least one Dataset to continue");
             	return;
             }
             
-            //if there is an attempt to delete released datasets, ask user for confirmation
+            // if there is an attempt to delete released datasets, ask user for confirmation
             if (releasedDatasetIds.length > 0){
-            	var promptMessage = "Following datasets are RELEASED: ";
-            	for (var i = 0; i < releasedDatasetIds.length; i++ ){
-            		promptMessage += "\n  -  " + document.getElementById("ds_idf_" + releasedDatasetIds[i]).value;
+                var promptMessage = "Following datasets are RELEASED: ";
+            	for (var i = 0; i < releasedDatasetIds.length; i++ ) {
+                    promptMessage += "\n  -  " + document.getElementById("ds_idf_" + releasedDatasetIds[i]).value;
             	}
             	promptMessage += "\nAre you sure you want to delete?\nClick OK, if you want to continue. Otherwise click Cancel.";
             	var b2 = confirm(promptMessage);
-            	if (b2 == false){
+            	if (b2 == false) {
                     return;
             	}
             }
 
             // now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
             openNoYes("yesno_dialog.html", "Do you want the selected datasets to be deleted permanently?\n(Note that working copies will always be permanently deleted)", delDialogReturn,100, 400);
-        }//end of function deleteDataset
-        
-        function generateCombinedPdf(){
-        	 var checkboxes = document.getElementsByName("ds_id");  
-        	 var checkedDatasets = new Array();             
-             for (var i = 0; i < checkboxes.length; i++){
-             	if (checkboxes[i].checked){             		
-             		checkedDatasets.push(checkboxes[i].value);
-             	}
-             }
-             
-             //if nothing selected no need to continue
-             if (checkedDatasets == 0){
-             	alert("Select at least one Dataset to continue");
-             	return;
-             }
-             
-             var objectIds = "obj_id=";
-             for (var i = 0; i < checkedDatasets.length; i++){
-            	 objectIds += checkedDatasets[i] + ":";
-             }
-             
-             var urlSuffix = "/GetPrintout?format=PDF&obj_type=DST&" + objectIds + "&out_type=GDLN";
-             var ctx = "${pageContext.request.contextPath}";
-             
-             window.location = (ctx + urlSuffix);
-        }//end of function generateCombinedPdf
+        }
 
-        function delDialogReturn(){
+        function generateCombinedPdf() {
+            var checkboxes = document.getElementsByName("ds_id");  
+            var checkedDatasets = new Array();             
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {             		
+                    checkedDatasets.push(checkboxes[i].value);
+                }
+            }
+             
+            // if nothing selected no need to continue
+            if (checkedDatasets == 0) {
+               alert("Select at least one Dataset to continue");
+               return;
+            }
+             
+            var objectIds = "obj_id=";
+            for (var i = 0; i < checkedDatasets.length; i++) {
+                objectIds += checkedDatasets[i] + ":";
+            }
+             
+            var urlSuffix = "/GetPrintout?format=PDF&obj_type=DST&" + objectIds + "&out_type=GDLN";
+            var ctx = "${pageContext.request.contextPath}";
+            window.location = (ctx + urlSuffix);
+        }
+
+        function delDialogReturn() {
             var v = dialogWin.returnValue;
-            if (v==null || v=="" || v=="cancel")
+            if (v==null || v=="" || v=="cancel") {
                 return;
-
+            }
             document.forms["form1"].elements["complete"].value = v;
             deleteDatasetReady();
         }
 
-        function deleteDatasetReady(){
+        function deleteDatasetReady() {
             document.forms["form1"].elements["mode"].value = "delete";
-               document.forms["form1"].submit();
+            document.forms["form1"].submit();
         }
 
-        function restoreDataset(){
+        function restoreDataset() {
             document.forms["form1"].elements["mode"].value = "restore";
-               document.forms["form1"].submit();
+            document.forms["form1"].submit();
         }
 
-        function alertReleased(chkbox){
-            if (chkbox.checked==true)
+        function alertReleased(chkbox) {
+            if (chkbox.checked==true) {
                 alert("Please note that you selected a dataset in Released status!");
+            }
         }
 
-        function doLoad(){
+        function doLoad() {
+            <%
+                if (search_precision != null) {
+                %>
+                    var sPrecision = '<%=search_precision%>';
+                    var o = document.forms["searchDatasetsForm"].search_precision;
+                    for (i=0; o!=null && i<o.length; i++){
+                        if (o[i].value == sPrecision) {
+                            o[i].checked = true;
+                            break;
+                        }
+                    }
+                <%
+                }
+            %>
+
             if (document.forms["form1"] && document.forms["form1"].elements["count_checkboxes"] && document.forms["form1"].elements["del_button"]){
                 if (document.forms["form1"].elements["count_checkboxes"].value <= 0){
                     document.forms["form1"].elements["del_button"].disabled = true;
@@ -402,6 +508,16 @@
             }
         }
 
+        function submitForm(action){
+            document.forms["searchDatasetsForm"].action=action;
+            document.forms["searchDatasetsForm"].submit();
+        }
+
+        function selAttr(id, type){
+            document.forms["searchDatasetsForm"].sel_attr.value=id;
+            document.forms["searchDatasetsForm"].sel_type.value=type;
+            submitForm('datasets.jsp');
+        }
     // ]]>
     </script>
 </head>
@@ -412,14 +528,13 @@
         <jsp:param name="helpscreen" value="datasets"/>
     </jsp:include>
     <%@ include file="nmenu.jsp" %>
-<div id="workarea">
-
-                <!-- search, restore -->
-                <div id="drop-operations">
-                <h2>Operations</h2>
-                <ul>
-                    <li><a href="search_dataset.jsp" title="Search datasets">Search</a></li>
-                    <%
+    <div id="workarea">
+        <!-- search, restore -->
+        <div id="drop-operations">
+        <h2>Operations</h2>
+        <ul>
+            <li><a href="search_dataset.jsp" title="Search datasets">Search</a></li>
+            <%
             if (user != null){
             %>
                     <%
@@ -473,6 +588,241 @@
                 <p class="advise-msg">Note: Datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
             }
             %>
+            
+            <form id="searchDatasetsForm" action="datasets.jsp" method="get">
+                <h1>Search datasets</h1>
+                <table width="600" cellspacing="0" style="padding-top:10px">
+                    <col style="width: 14em"/>
+                    <col style="width: 16px"/>
+                    <col span="2"/>
+                    <tr>
+                        <td align="right">
+                            <label for="reg_status" class="question">Registration Status</label>
+                        </td>
+                        <td>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=regstatus">
+                                <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
+                            </a>
+                        </td>
+                        <td colspan="2">
+                            <select name="reg_status" id="reg_status" class="small">
+                                <option value="">All</option>
+                                <option value="Released" ${param.reg_status eq 'Released' ? 'selected="selected"' : ''}>Released</option>
+                                <option value="Recorded" ${param.reg_status eq 'Recorded' ? 'selected="selected"' : ''}>Recorded</option>
+                                <option value="Qualified" ${param.reg_status eq 'Qualified' ? 'selected="selected"' : ''}>Qualified</option>
+                                <option value="Candidate" ${param.reg_status eq 'Candidate' ? 'selected="selected"' : ''}>Candidate</option>
+                                <option value="Incomplete" ${param.reg_status eq 'Incomplete' ? 'selected="selected"' : ''}>Incomplete</option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr style="vertical-align:top">
+                        <td align="right">
+                            <label for="short_name" class="question">Short name</label>
+                        </td>
+                        <td>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
+                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+                            </a>
+                        </td>
+                        <td colspan="2">
+                            <input type="text" class="smalltext" size="59" name="short_name" id="short_name" value="<%=Util.processForDisplay(short_name, true)%>"/>
+                        </td>
+                    </tr>
+
+                    <tr style="vertical-align:top">
+                        <td align="right">
+                            <label class="question">Identifier</label>
+                        </td>
+                        <td>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier">
+                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+                            </a>
+                        </td>
+                        <td colspan="2">
+                            <input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>"/>
+                        </td>
+                    </tr>
+                    <%
+                        // get default attributes, which are always on the page (defined above)
+                        if (def_attrs!=null) {
+                            for (int i=0; i < def_attrs.size(); i++) {
+                                attrID = (String) def_attrs.get(i);
+                                attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
+                                attrName = getAttributeNameById(attrID);
+
+                                if (inputAttributes.containsKey(attrID)) {
+                                    inputAttributes.remove(attrID);
+                                }
+
+                                if (attrID!=null) {
+                                    collect_attrs.append(attrID + "|");
+                                    displayedCriteria.add(attrID);
+                    %>
+                    <tr style="vertical-align:top">
+                        <td align="right">
+                            <label class="question"><%=Util.processForDisplay(attrName)%></label>
+                        </td>
+                        <td>
+                            <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+                            </a>
+                        </td>
+                        <td colspan="2">
+                            <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.processForDisplay(attrValue, true)%>"/>
+                        </td>
+                    </tr>
+                    <%
+                                }
+                            }
+                        }
+                        // get attributes selected from picked list (get the ids from url)
+                        if (attr_ids!=null) {
+                            for (int i=0; i < attr_ids.size(); i++) {
+                                attrID = (String)attr_ids.get(i);
+
+                                if (!inputAttributes.containsKey(attrID)) {
+                                    continue;
+                                }
+                                if (sel_type.equals("remove") && attrID.equals(sel_attr)) {
+                                    continue;
+                                }
+
+                                attrName = getAttributeNameById(attrID);
+
+                                attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
+                                if (attrValue == null) {
+                                    attrValue = "";
+                                }
+                                collect_attrs.append(attrID + "|");
+                                displayedCriteria.add(attrID);
+                    %>
+                    <tr style="vertical-align:top">
+                        <td align="right">
+                            <label class="question"><%=Util.processForDisplay(attrName)%></label>
+                        </td>
+                        <td>
+                            <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+                            </a>
+                        </td>
+                        <td>
+                            <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value="<%=Util.processForDisplay(attrValue, true)%>"/>
+                        </td>
+                        <td>
+                            <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
+                        </td>
+                    </tr>
+                    <%
+                            }
+                        }
+                        // add the last selection
+                        if (sel_type!=null && sel_attr!=null) {
+                            if (sel_type.equals("add")) {
+                                attrID = sel_attr;
+                                collect_attrs.append(attrID + "|");
+                                displayedCriteria.add(attrID);
+                                attrName = getAttributeNameById(attrID);
+                    %>
+                    <tr style="vertical-align:top">
+                        <td align="right">
+                            <label class="question"><%=Util.processForDisplay(attrName)%></label>
+                        </td>
+                        <td>
+                            <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+                            </a>
+                        </td>
+                        <td>
+                            <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
+                        </td>
+                        <td>
+                            <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
+                        </td>
+                    </tr>
+                    <%
+                            }
+                        }
+                    %>
+                    <tr>
+                        <td colspan="2">&nbsp;</td>
+                        <td colspan="2">
+                            <input type="radio" name="search_precision" id="ssubstr" value="substr" ${param.search_precision ne 'exact' ? 'checked="checked"' : ''} /><label for="ssubstr">Substring search</label>
+                            <input type="radio" name="search_precision" id="sexact" value="exact" ${param.search_precision eq 'exact' ? 'checked="checked"' : ''} /><label for="sexact">Exact search</label>
+                        </td>
+                    </tr>
+                    <%
+                        // if authenticated user, enable to get working copies only
+                        if (user!=null && user.isAuthentic()) {
+                    %>
+                    <tr style="vertical-align:top">
+                        <td colspan="2"></td>
+                        <td colspan="2">
+                            <input type="checkbox" name="wrk_copies" id="wrk_copies" value="true" ${param.wrk_copies eq 'true' ? 'checked="checked"' : ''} />
+                            <label for="wrk_copies" class="smallfont">Working copies only</label>
+                        </td>
+                    </tr>
+                    <%
+                        }
+                    %>
+                    <tr style="vertical-align:top">
+                        <td colspan="2"></td>
+                        <td colspan="2">
+                            <input type="checkbox" name="incl_histver" id="incl_histver" value="true" ${param.incl_histver eq 'true' ? 'checked="checked"' : ''} />
+                            <label for="incl_histver" class="smallfont">Include historic versions</label>
+                        </td>
+                    </tr>
+                    <tr style="vertical-align:top">
+                        <td colspan="2"></td>
+                        <td>
+                            <input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('datasets.jsp')"/>
+                            <input class="mediumbuttonb" type="reset" value="Reset"/>
+                        </td>
+                    </tr>
+                    <%
+                        Vector addCriteria = new Vector();
+                        for (int i=0; attrs!=null && i<attrs.size(); i++) {
+                            DElemAttribute attribute = (DElemAttribute) attrs.get(i);
+                            if (!attribute.displayFor("DST")) {
+                                continue;
+                            }
+
+                            if (!displayedCriteria.contains(attribute.getID())) {
+                                Hashtable hash = new Hashtable();
+                                hash.put("id", attribute.getID());
+                                hash.put("name", attribute.getName());
+                                addCriteria.add(hash);
+                            }
+                        }
+
+                        if (addCriteria.size()>0) {
+                    %>
+                    <tr>
+                        <td colspan="4" style="text-align:right">
+                            <label for="add_criteria">Add criteria</label>
+                            <select name="add_criteria" id="add_criteria" onchange="selAttr(this.options[this.selectedIndex].value, 'add')">
+                                <option value=""></option>
+                                <%
+                                    for (int i=0; i<addCriteria.size(); i++) {
+                                        Hashtable hash = (Hashtable)addCriteria.get(i);
+                                %>
+                                    <option value="<%=hash.get("id")%>"><%=hash.get("name")%></option>
+                                <%}%>
+                            </select>
+                        </td>
+                    </tr>
+                    <%}%>
+                </table>
+                <!-- table for 'Add' -->
+                <div style="display:none">
+                    <input type="hidden" name="sel_attr" value=""/>
+                    <input type="hidden" name="sel_type" value=""/>
+                    <input type="hidden" name="type" value="DST"/>
+                    <!-- collect all the attributes already used in criterias -->
+                    <input type="hidden" name="collect_attrs" value="<%=Util.processForDisplay(collect_attrs.toString(), true)%>"/>
+                </div>
+            </form>
+            
             <form id="form1" method="post" action="datasets.jsp" onsubmit="setLocation()">
             <!-- the buttons part -->
                 <%
@@ -896,9 +1246,11 @@
 
 <%
 // end the whole page try block
-}
-finally {
-    try { if (conn!=null) conn.close();
+} finally {
+    try { 
+        if (conn!=null) {
+            conn.close();
+        }
     } catch (SQLException e) {}
 }
 %>
