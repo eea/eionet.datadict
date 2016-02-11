@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
+ <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
@@ -386,7 +386,7 @@
             var checkboxes = document.getElementsByName("ds_id");  
             var found = false;
             for (var i = 0; i < checkboxes.length; i++) {
-            	if (checkboxes[i].checked) {
+                if (checkboxes[i].checked) {
                     var datasetId = checkboxes[i].value;
                     var canDeleteThisDataset = document.getElementById("can_delete_ds_idf_" + datasetId);
                     //if there is an attempt to delete unauthorized datasets, uncheck them
@@ -395,40 +395,40 @@
                         cannotDeletedDatasetIds.push(datasetId);
                         continue;
                     }
-            		
+
                     if(document.getElementById("released_ds_idf_" + datasetId).value == 'true') {
                         releasedDatasetIds.push(datasetId);
-                    }            		
+                    }
                     found = true;
-            	}
+                }
             }
-            
+
             // if there is an attempt to delete unauthorized datasets, notify user
             if (cannotDeletedDatasetIds.length > 0) {
-            	var promptMessage = "You don't have permission to delete following datasets: ";
-            	for (var i = 0; i < cannotDeletedDatasetIds.length; i++ ) {
+                var promptMessage = "You don't have permission to delete following datasets: ";
+                for (var i = 0; i < cannotDeletedDatasetIds.length; i++ ) {
                     promptMessage += "\n  -  " + document.getElementById("ds_idf_" + cannotDeletedDatasetIds[i]).value;
-            	}
+                }
                 alert(promptMessage);
             }
 
             // if nothing selected no need to continue
             if (!found) {
-            	alert("Select at least one Dataset to continue");
-            	return;
+                alert("Select at least one Dataset to continue");
+                return;
             }
-            
+
             // if there is an attempt to delete released datasets, ask user for confirmation
-            if (releasedDatasetIds.length > 0){
+            if (releasedDatasetIds.length > 0) {
                 var promptMessage = "Following datasets are RELEASED: ";
-            	for (var i = 0; i < releasedDatasetIds.length; i++ ) {
+                for (var i = 0; i < releasedDatasetIds.length; i++ ) {
                     promptMessage += "\n  -  " + document.getElementById("ds_idf_" + releasedDatasetIds[i]).value;
-            	}
-            	promptMessage += "\nAre you sure you want to delete?\nClick OK, if you want to continue. Otherwise click Cancel.";
-            	var b2 = confirm(promptMessage);
-            	if (b2 == false) {
+                }
+                promptMessage += "\nAre you sure you want to delete?\nClick OK, if you want to continue. Otherwise click Cancel.";
+                var b2 = confirm(promptMessage);
+                if (b2 == false) {
                     return;
-            	}
+                }
             }
 
             // now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
@@ -436,25 +436,25 @@
         }
 
         function generateCombinedPdf() {
-            var checkboxes = document.getElementsByName("ds_id");  
-            var checkedDatasets = new Array();             
+            var checkboxes = document.getElementsByName("ds_id");
+            var checkedDatasets = new Array(); 
             for (var i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i].checked) {             		
+                if (checkboxes[i].checked) {
                     checkedDatasets.push(checkboxes[i].value);
                 }
             }
-             
+
             // if nothing selected no need to continue
             if (checkedDatasets == 0) {
                alert("Select at least one Dataset to continue");
                return;
             }
-             
+
             var objectIds = "obj_id=";
             for (var i = 0; i < checkedDatasets.length; i++) {
                 objectIds += checkedDatasets[i] + ":";
             }
-             
+
             var urlSuffix = "/GetPrintout?format=PDF&obj_type=DST&" + objectIds + "&out_type=GDLN";
             var ctx = "${pageContext.request.contextPath}";
             window.location = (ctx + urlSuffix);
@@ -588,7 +588,7 @@
                 <p class="advise-msg">Note: Datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
             }
             %>
-            
+
             <form id="searchDatasetsForm" action="datasets.jsp" method="get">
                 <h1>Search datasets</h1>
                 <table width="600" cellspacing="0" style="padding-top:10px">
@@ -826,13 +826,13 @@
             <form id="form1" method="post" action="datasets.jsp" onsubmit="setLocation()">
             <!-- the buttons part -->
                 <%
-                if (pageMode.equals("search")){
+                if (pageMode.equals("search")) {
 
                     // check if any results found
-                    if (datasets == null || datasets.size()==0){
+                    if (datasets == null || datasets.size()==0) {
 
                         // see if this is a search or just listing all the datasets
-                        if (Util.isEmpty(request.getParameter("search_precision"))){ // listing all the datasets
+                        if (Util.isEmpty(request.getParameter("search_precision"))) { // listing all the datasets
                             %>
                             <b>No dataset definitions were found!</b><%
                         }
@@ -862,7 +862,7 @@
             if (isDisplayVersionColumn)
                 colSpan++;
 
-            if (isDisplayHelperColumn){ %>
+            if (isDisplayHelperColumn) { %>
                 <col style="width: 3%"/>
                 <col style="width: 32%"/><%
             }
@@ -870,12 +870,11 @@
                 <col style="width: 35%"/><%
             }
 
-            if (isDisplayVersionColumn){ %>
+            if (isDisplayVersionColumn) { %>
                 <col style="width: 10%"/>
                 <col style="width: 15%"/>
                 <col style="width: 40%"/><%
-            }
-            else { %>
+            } else { %>
                 <col style="width: 20%"/>
                 <col style="width: 45%"/><%
             }
@@ -885,7 +884,7 @@
        <thead>
             <tr>
                 <%
-                if (isDisplayHelperColumn){%>
+                if (isDisplayHelperColumn) { %>
                     <th></th><%
                 }
                 String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
@@ -898,7 +897,7 @@
                     </a>
                 </th>
                 <%
-                if (isDisplayVersionColumn){
+                if (isDisplayVersionColumn) {
                     sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
                     sortedLink = getSortedLink(3, oSortCol, oSortOrder);
                     sortedAlt  = getSortedAlt(sortedImg);
@@ -912,9 +911,9 @@
                 %>
                 <th>
                     <%
-                    sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
+                    sortedImg = getSortedImg(2, oSortCol, oSortOrder);
                     sortedLink = getSortedLink(2, oSortCol, oSortOrder);
-                    sortedAlt  = getSortedAlt(sortedImg);
+                    sortedAlt = getSortedAlt(sortedImg);
                     %>
                     <a title="Sort on Status" href="<%=Util.processForDisplay(sortedLink,true)%>">
                           Status&nbsp;<img src="<%=Util.processForDisplay(sortedImg,true)%>" width="12" height="12" alt="<%=Util.processForDisplay(sortedAlt,true)%>"/>
@@ -930,17 +929,14 @@
             <%
             DElemAttribute attr = null;
             int countCheckboxes = 0;
-            if (pageMode.equals("search")){
-
+            if (pageMode.equals("search")) {
                 c_SearchResultSet oResultSet=new c_SearchResultSet();
                 oResultSet.isAuth = user!=null;
                 oResultSet.oElements=new Vector();
                 session.setAttribute(oSearchCacheAttrName,oResultSet);
 
-                for (int i=0; i<datasets.size(); i++){
-
+                for (int i=0; i<datasets.size(); i++) {
                     Dataset dataset = (Dataset)datasets.get(i);
-
                     String ds_id = dataset.getID();
                     Vector tables = searchEngine.getDatasetTables(ds_id, true);
                     String regStatus = dataset.getStatus();
@@ -961,20 +957,17 @@
                     boolean released = regStatus.equals("Released");
 
                     boolean canDelete = !dataset.isWorkingCopy() && workingUser==null && regStatus!=null && user!=null;
-                    if (canDelete){
+                    if (canDelete) {
                         boolean editPrm = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
                         boolean editReleasedPrm = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "er");
-                        if (regStatus.equals("Released") || regStatus.equals("Recorded"))
+                        if (regStatus.equals("Released") || regStatus.equals("Recorded")) {
                             canDelete = editReleasedPrm;
-                        else
+                        } else {
                             canDelete = editPrm || editReleasedPrm;
+                        }
                     }
 
-                    c_SearchResultEntry oEntry = new c_SearchResultEntry(ds_id,
-                                                                            ds_name,
-                                                                            dsVersion,
-                                                                            dsFullName,
-                                                                         tables);
+                    c_SearchResultEntry oEntry = new c_SearchResultEntry(ds_id, ds_name, dsVersion, dsFullName, tables);
                     oEntry.setRegStatus(regStatus);
                     oEntry.workingUser = workingUser;
                     oEntry.setSortableStatus(Util.getStatusSortString(regStatus));
@@ -988,13 +981,12 @@
                     <tr valign="top" class="<%=zebraClass%>">
                         <%
                         // the 1st column: checkbox, red asterisk or nbsp
-                        if (isDisplayHelperColumn){ %>
+                        if (isDisplayHelperColumn) { %>
                             <td align="right">
-                                <%                                
-                                if (workingUser!=null){ %>
+                                <%
+                                if (workingUser!=null) { %>
                                     <div title="<%=Util.processForDisplay(workingUser,true)%>" class="checkedout">*</div><%
-                                }
-                                else{ %>
+                                } else { %>
                                 <input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>" />
                                 <input type="hidden" name="ds_idf_<%=ds_id%>" id="ds_idf_<%=ds_id%>" value="<%=dataset.getIdentifier()%>"/>
                                 <input type="hidden" id="can_delete_ds_idf_<%=ds_id%>" value="<%=canDelete%>"/>
@@ -1007,12 +999,11 @@
                         }
 
                         // the 2nd column: full name link
-                        if (clickable==false){%>
+                        if (clickable==false) { %>
                             <td title="<%=Util.processForDisplay(dsFullName,true)%>" class="disabled">
                                 <%=Util.processForDisplay(dsFullName, true)%>
                             </td><%
-                        }
-                        else{ %>
+                        } else { %>
                             <td title="<%=Util.processForDisplay(dsFullName,true)%>">
                                 <a href="<%=Util.processForDisplay(dsLink,true)%>">
                                     <%=Util.processForDisplay(dsFullName, true)%>
@@ -1023,7 +1014,7 @@
 
                         <%
                         // 3rd column: version aka CheckInNo
-                        if (isDisplayVersionColumn){ %>
+                        if (isDisplayVersionColumn) { %>
                             <td>
                                 <%=dataset.getID()%>
                             </td><%
@@ -1033,10 +1024,9 @@
                         %>
                         <td>
                             <%
-                            if (clickable){ %>
+                            if (clickable) { %>
                                 <img style="border:0" src="<%=Util.processForDisplay(statusImg)%>" width="56" height="12" title="<%=regStatus%>" alt="<%=regStatus%>"/><%
-                            }
-                            else{ %>
+                            } else { %>
                                 <span style="color:gray;text-decoration:none;font-size:8pt" title="<%=regStatus%>">
                                     <strong><%=statusTxt%></strong>
                                 </span><%
@@ -1048,23 +1038,20 @@
                         %>
                         <td>
                             <%
-                            for (int c=0; tables!=null && c<tables.size(); c++){
-
+                            for (int c=0; tables!=null && c<tables.size(); c++) {
                                 DsTable table = (DsTable)tables.get(c);
                                 StringBuffer tableLink = new StringBuffer(request.getContextPath());
                                 tableLink.append("/tables/").append(table.getID());
 
                                 // it is probably less confusing if there are no links for tables of working copies
-                                if (isSearchForWorkingCopies){ %>
+                                if (isSearchForWorkingCopies) { %>
                                     <%=Util.processForDisplay(table.getShortName())%><%
-                                }
-                                else{
-                                    if (clickable){ %>
+                                } else {
+                                    if (clickable) { %>
                                         <a href="<%=tableLink%>">
                                             <%=Util.processForDisplay(table.getShortName())%>
                                         </a><%
-                                    }
-                                    else{ %>
+                                    } else { %>
                                         <span class="disabled"><%=Util.processForDisplay(table.getShortName())%></span><%
                                     }
                                 }
@@ -1080,22 +1067,19 @@
         </tbody>
         </table>
         <p>Total results: <%=datasets.size()%></p><%
-            }
-            else {
-
+            } else {
                 // No search - return from another result set or a total stranger...
                 c_SearchResultSet oResultSet=(c_SearchResultSet)session.getAttribute(oSearchCacheAttrName);
                 if (oResultSet==null) {
                     %><p>This page has experienced a time-out. Try searching again.</p><%
                 }
                 else {
-
-                    if ((oSortCol!=null) && (oSortOrder!=null))
+                    if ((oSortCol!=null) && (oSortOrder!=null)) {
                         oResultSet.SortByColumn(oSortCol,oSortOrder);
+                    }
 
                     c_SearchResultEntry oEntry;
-                    for (int i=0;i<oResultSet.oElements.size();i++) {
-
+                    for (int i=0; i<oResultSet.oElements.size(); i++) {
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
                         String linkDisabled = oEntry.clickable ? "" : "class=\"disabled\"";
                         String dsLink = oEntry.clickable ? request.getContextPath() + "/datasets/" + oEntry.oID : "#";
@@ -1106,16 +1090,14 @@
                         boolean released = oEntry.getRegStatus().equals("Released");
                         %>
                         <tr valign="top" class="<%=zebraClass%>">
-
                             <%
                             // the 1st column: checkbox, red asterisk or nbsp
-                            if (isDisplayHelperColumn){%>
+                            if (isDisplayHelperColumn) { %>
                                 <td align="right">
                                     <%
-                                    if (oEntry.workingUser!=null){%>
+                                    if (oEntry.workingUser!=null) { %>
                                         <div title="<%=Util.processForDisplay(oEntry.workingUser,true)%>" class="checkedout">*</div><%
-                                    }
-                                    else{ %>
+                                    } else { %>
                                         <input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>" />
                                         <input type="hidden" name="ds_idf_<%=oEntry.oID%>" id="ds_idf_<%=oEntry.oID%>" value="<%=Util.processForDisplay(oEntry.oIdentifier,true)%>"/>                                        
                                         <input type="hidden" id="can_delete_ds_idf_<%=oEntry.oID%>" value="<%=oEntry.canDelete%>"/>
@@ -1128,12 +1110,11 @@
                             }
 
                             // 2nd column: full name link
-                            if (oEntry.clickable==false){%>
+                            if (oEntry.clickable==false) { %>
                                 <td title="<%=Util.processForDisplay(oEntry.oFullName,true)%>" class="disabled">
                                     <%=Util.processForDisplay(oEntry.oFullName, true)%>
                                 </td><%
-                            }
-                            else{%>
+                            } else { %>
                                 <td title="<%=Util.processForDisplay(oEntry.oFullName,true)%>">
                                     <a href="<%=Util.processForDisplay(dsLink,true)%>">
                                         <%=Util.processForDisplay(oEntry.oFullName, true)%>
@@ -1142,7 +1123,7 @@
                             }
 
                             // 3nd column: version aka CheckInNo
-                            if (isDisplayVersionColumn){ %>
+                            if (isDisplayVersionColumn) { %>
                                 <td>
                                     <%=oEntry.oID%>
                                 </td><%
@@ -1152,10 +1133,9 @@
                             %>
                             <td>
                                 <%
-                                if (oEntry.clickable){ %>
+                                if (oEntry.clickable) { %>
                                     <img style="border:0" src="<%=Util.processForDisplay(statusImg)%>" width="56" height="12" title="<%=oEntry.getRegStatus()%>" alt="<%=oEntry.getRegStatus()%>"/><%
-                                }
-                                else{ %>
+                                } else { %>
                                     <span style="color:gray;text-decoration:none;font-size:8pt" title="<%=oEntry.getRegStatus()%>">
                                         <strong><%=statusTxt%></strong>
                                     </span><%
@@ -1168,23 +1148,20 @@
                             <td>
                                 <%
                                 Vector tables = oEntry.oTables;
-                                for (int c=0; tables!=null && c<tables.size(); c++){
-
+                                for (int c=0; tables!=null && c<tables.size(); c++) {
                                     DsTable table = (DsTable)tables.get(c);
                                     StringBuffer tableLink = new StringBuffer(request.getContextPath());
                                     tableLink.append("/tables/").append(table.getID());
 
                                     // it is probbaly less confusing if there are no links for tables of working copies
-                                    if (isSearchForWorkingCopies){ %>
+                                    if (isSearchForWorkingCopies) { %>
                                         <%=Util.processForDisplay(table.getShortName())%><%
-                                    }
-                                    else{
-                                        if (oEntry.clickable){%>
+                                    } else {
+                                        if (oEntry.clickable) { %>
                                             <a href="<%=tableLink%>">
                                                 <%=Util.processForDisplay(table.getShortName())%>
                                             </a><%
-                                        }
-                                        else{%>
+                                        } else { %>
                                             <span class="disabled"><%=Util.processForDisplay(table.getShortName())%></span><%
                                         }
                                     }
@@ -1211,10 +1188,10 @@
                 <input type="hidden" name="mode" value="view"/>
                 <input type="hidden" name="complete" value="false"/>
                 <%
-                if (isSearchForWorkingCopies){ %>
+                if (isSearchForWorkingCopies) { %>
                     <input name="wrk_copies" type="hidden" value="true"/><%
                 }
-                if (isIncludeHistoricVersions){%>
+                if (isIncludeHistoricVersions) { %>
                     <input name="incl_histver" type="hidden" value="true"/><%
                 }
                 // helper hidden input so that we can disable delete button if no checkboxes were displayed
@@ -1225,13 +1202,13 @@
 
         <form id="sort_form" action="datasets.jsp" method="get">
             <div style="display:none">
-                <input name="sort_column" type="hidden" value="<%=(oSortCol==null)? "":oSortCol.toString()%>"/>
-                <input name="sort_order" type="hidden" value="<%=(oSortOrder==null)? "":oSortOrder.toString()%>"/>
+                <input name="sort_column" type="hidden" value="<%=(oSortCol==null) ? "" : oSortCol.toString()%>"/>
+                <input name="sort_order" type="hidden" value="<%=(oSortOrder==null) ? "" : oSortOrder.toString()%>"/>
                 <%
-                if (isSearchForWorkingCopies){ %>
+                if (isSearchForWorkingCopies) { %>
                     <input name="wrk_copies" type="hidden" value="true"/><%
                 }
-                if (isIncludeHistoricVersions){%>
+                if (isIncludeHistoricVersions) { %>
                     <input name="incl_histver" type="hidden" value="true"/><%
                 }
                 %>
