@@ -526,6 +526,16 @@
             document.forms["searchDatasetsForm"].sel_type.value=type;
             submitForm('datasets.jsp');
         }
+
+        $(function() {
+            $(".selectable").click(function () {
+                if ($(this).is(":checked")) {
+                    $(this).parents("tr").addClass("selected");
+                } else {
+                    $(this).parents("tr").removeClass("selected");
+                }
+            });
+        });
     // ]]>
     </script>
 </head>
@@ -537,6 +547,31 @@
     </jsp:include>
     <%@ include file="nmenu.jsp" %>
     <div id="workarea">
+        <%
+                    if (feedbackValue != null) {
+                    %>
+                        <div class="system-msg">
+                        <%= feedbackValue %>
+                        </div>
+                    <%
+                    }
+
+                    if (!restore && isSearchForWorkingCopies){ %>
+                        <h1>Working copies of dataset definitions</h1><%
+                    }
+                    else if (!restore){
+                        String strAllOrLatest = isIncludeHistoricVersions ? "All " : "Latest";
+                        %>
+                        <h1><%=strAllOrLatest%> versions of datasets in any status</h1><%
+                    }
+                    else{%>
+                        <h1>Restore datasets</h1><%
+                    }
+            if (user == null) { %>
+                <p class="advise-msg">Note: Datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
+            }
+            %>
+        
         <!-- search, restore -->
         <div id="drop-operations">
         <h2>Operations</h2>
@@ -572,31 +607,6 @@
             %>
                 </ul>
                 </div>
-            <%
-                    if (feedbackValue != null) {
-                    %>
-                        <div class="system-msg">
-                        <%= feedbackValue %>
-                        </div>
-                    <%
-                    }
-
-                    if (!restore && isSearchForWorkingCopies){ %>
-                        <h1>Working copies of dataset definitions</h1><%
-                    }
-                    else if (!restore){
-                        String strAllOrLatest = isIncludeHistoricVersions ? "All " : "Latest";
-                        %>
-                        <h1><%=strAllOrLatest%> versions of datasets in any status</h1><%
-                    }
-                    else{%>
-                        <h1>Restore datasets</h1><%
-                    }
-            if (user == null) { %>
-                <p class="advise-msg">Note: Datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
-            }
-            %>
-
             <form id="searchDatasetsForm" action="datasets.jsp" method="get">
                 <h1>Search datasets</h1>
                 <table width="600" cellspacing="0" style="padding-top:10px">
@@ -1023,7 +1033,7 @@
                                 if (workingUser!=null) { %>
                                     <div title="<%=Util.processForDisplay(workingUser,true)%>" class="checkedout">*</div><%
                                 } else { %>
-                                <input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>" />
+                                <input type="checkbox" class="selectable" style="height:13;width:13" name="ds_id" value="<%=ds_id%>" />
                                 <input type="hidden" name="ds_idf_<%=ds_id%>" id="ds_idf_<%=ds_id%>" value="<%=dataset.getIdentifier()%>"/>
                                 <input type="hidden" id="can_delete_ds_idf_<%=ds_id%>" value="<%=canDelete%>"/>
                                 <input type="hidden" id="released_ds_idf_<%=ds_id%>" value="<%=released%>"/>

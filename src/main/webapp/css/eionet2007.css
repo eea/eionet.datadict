@@ -1,4 +1,4 @@
-/* BASIC STYLES */
+/* BASIC MAIN AREAS STYLES */
 #container {
 	background: #ECF4F5;
 	border-left: 1px solid #CFE3E4;
@@ -74,6 +74,98 @@
 	font-weight: bold;	
 }
 
+/* WORKAREA */
+
+#workarea h1 {
+	color: #000000;
+	font-size: 155%;
+}
+
+/* DROP OPERATIONS */
+
+#drop-operations {
+	display: block;
+	float: left !important;
+	clear: both;
+	height: 80px;
+	width: 920px !important;
+}
+
+#drop-operations > ul {
+	position: relative !important;	
+	display: block !important;
+	background: none !important;
+}
+
+#drop-operations > ul li {
+	display: inline-block;
+	background: none !important;
+	border: none !important;
+}
+
+#drop-operations > ul li a {
+	color: #00446A !important;
+	text-transform: uppercase;
+	font-size: 80%;
+	padding-left: 30px !important;
+}
+
+#drop-operations > ul li a:hover {
+	background: none !important;	
+}
+
+/* TABLE STYLES */
+
+#workarea table {
+	border-collapse: collapse;
+}
+#workarea table a {
+	text-decoration: none;
+	color: #00446A;
+}
+
+#workarea table thead tr {
+	background: #306886;
+	border: 1px solid #00446A;
+}
+
+#workarea table th {
+	background: transparent;
+	border: none;
+	color: #FFFFFF;
+	padding: 7px;
+}
+
+#workarea table th a {
+	color: #FFFFFF;	
+}
+
+#workarea table tbody {
+	border-left: 1px solid #CFE3E4;
+	border-right: 1px solid #CFE3E4;
+}
+
+#workarea table td {
+	border-bottom: 1px solid #CFE3E4;
+	padding: 7px;	
+}
+
+#workarea table tr.zebraeven {
+	background: #ECF4F5;	
+}
+
+#workarea table tr.zebraodd.selected {
+	background-color: rgba(206,220,50,0.4);
+}
+
+#workarea table tr.zebraeven.selected {
+	background-color: rgba(212,217,145,0.6);
+}
+
+
+
+
+/* end */
 
 div.form fieldset {
     border: 0px;
