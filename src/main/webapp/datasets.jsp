@@ -1,4 +1,5 @@
- <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
+<%@ page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.dao.domain.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil,org.apache.commons.lang.StringUtils"%>
+<%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
@@ -63,9 +64,9 @@
 
     public c_SearchResultEntry(String _oID, String _oShortName, String _oVersion, String _oFName, Vector _oTables) {
         oID = _oID == null ? "" : _oID;
-        oShortName = _oShortName==null ? "" : _oShortName;
-        oFName = _oFName==null ? "" : _oFName;
-        oVersion = _oVersion==null ? "" : _oVersion;
+        oShortName = _oShortName == null ? "" : _oShortName;
+        oFName = _oFName == null ? "" : _oFName;
+        oVersion = _oVersion == null ? "" : _oVersion;
         oTables = _oTables;
         oFullName = oFName;
 
@@ -160,8 +161,6 @@
     boolean isIncludeHistoricVersions = request.getParameter("incl_histver")!=null && request.getParameter("incl_histver").equals("true");
     String feedbackValue = null;
 
-    String pageMode = request.getParameter("sort_column")!=null ? "sort" : "search";
-
      // Feedback messages
     if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("checkout")) {
         feedbackValue = "Working copy successfully created!";
@@ -189,159 +188,168 @@
         String short_name = request.getParameter("short_name");
         String idfier = request.getParameter("idfier");
         
-        if (pageMode.equals("search")) {
-            conn = ConnectionUtil.getConnection();
+        conn = ConnectionUtil.getConnection();
 
-            if (request.getMethod().equals("POST")) {
-                if (user==null) { %>
-                    <b>Not allowed!</b> <%
-                    return;
-                } else {
-                    String[] ds_ids = request.getParameterValues("ds_id");
-                    for (int i=0; ds_ids!=null && i<ds_ids.length; i++) {
-                        String dsIdf = request.getParameter("ds_idf_" + ds_ids[i]);
-                        if (dsIdf==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "d")){ %>
-                            <b>Not allowed!</b><%
-                        }
+        if (request.getMethod().equals("POST")) {
+            if (user==null) { %>
+                <b>Not allowed!</b> <%
+                return;
+            } else {
+                String[] ds_ids = request.getParameterValues("ds_id");
+                for (int i=0; ds_ids!=null && i<ds_ids.length; i++) {
+                    String dsIdf = request.getParameter("ds_idf_" + ds_ids[i]);
+                    if (dsIdf==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "d")){ %>
+                        <b>Not allowed!</b><%
                     }
                 }
+            }
 
-                Connection userConn = null;
-                DatasetHandler handler = null;
+            Connection userConn = null;
+            DatasetHandler handler = null;
 
+            try {
+                userConn = user.getConnection();
+                handler = new DatasetHandler(userConn, request, ctx);
+                handler.setUser(user);
+                handler.execute();
+            } finally {
+                handler.cleanup();
                 try {
-                    userConn = user.getConnection();
-                    handler = new DatasetHandler(userConn, request, ctx);
-                    handler.setUser(user);
-                    handler.execute();
-                } finally {
-                    handler.cleanup();
-                    try {
-                        if (userConn!=null) {
-                            userConn.close();
-                        }
-                    } catch (SQLException e) {}
-                }
+                    if (userConn!=null) {
+                        userConn.close();
+                    }
+                } catch (SQLException e) {}
+            }
+        }
+
+        session.removeAttribute(oSearchCacheAttrName);
+
+        searchEngine = new DDSearchEngine(conn, "");
+        searchEngine.setUser(user);
+
+        // Begin search_dataset.jsp
+        attrs = searchEngine.getDElemAttributes();
+        if (attrs == null) {
+            attrs = new Vector();
+        }
+
+        attr_ids = new Vector();
+        def_attrs = new Vector();
+
+        setDefaultAttrs("Name");
+        setDefaultAttrs("Definition");
+        setDefaultAttrs("Keywords");
+        setDefaultAttrs("EEAissue");
+
+        if (sel_attr == null) {
+            sel_attr = "";
+        }
+        if (sel_type == null) {
+            sel_type = "";
+        }
+        if (short_name == null) {
+            short_name = "";
+        }
+        if (idfier == null) {
+            idfier = "";
+        }
+        if (search_precision == null) {
+            search_precision = "substr";
+        }
+
+        // get inserted attributes
+        String input_attr;
+        inputAttributes = new Hashtable();
+        for (int i=0; i<attrs.size(); i++) {
+            DElemAttribute attribute = (DElemAttribute)attrs.get(i);
+            String attr_id = attribute.getID();
+
+            input_attr = request.getParameter("attr_" + attr_id);
+            if (input_attr!=null) {
+                inputAttributes.put(attr_id, input_attr);
+                attr_ids.add(attr_id);
+            }
+        }
+
+        String srchType = request.getParameter("search_precision");
+        String oper = "=";
+        if (srchType != null && srchType.equals("free")) {
+            oper = " match ";
+        }
+        if (srchType != null && srchType.equals("substr")) {
+            oper = " like ";
+        }
+
+        Vector params = new Vector();
+        Enumeration parNames = request.getParameterNames();
+        while (parNames.hasMoreElements()) {
+            String parName = (String)parNames.nextElement();
+            if (!parName.startsWith(ATTR_PREFIX)) {
+                continue;
             }
 
-            session.removeAttribute(oSearchCacheAttrName);
-
-            searchEngine = new DDSearchEngine(conn, "");
-            searchEngine.setUser(user);
-            
-            // Begin search_dataset.jsp
-            attrs = searchEngine.getDElemAttributes();
-            if (attrs == null) {
-                attrs = new Vector();
+            String parValue = request.getParameter(parName);
+            if (parValue.length()==0) {
+                continue;
             }
 
-            attr_ids = new Vector();
-            def_attrs = new Vector();
+            DDSearchParameter param =
+                new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, oper, "=");
 
-            setDefaultAttrs("Name");
-            setDefaultAttrs("Definition");
-            setDefaultAttrs("Keywords");
-            setDefaultAttrs("EEAissue");
-
-            if (sel_attr == null) {
-                sel_attr = "";
-            }
-            if (sel_type == null) {
-                sel_type = "";
-            }
-            if (short_name == null) {
-                short_name = "";
-            }
-            if (idfier == null) {
-                idfier = "";
-            }
-            if (search_precision == null) {
-                search_precision = "substr";
-            }
-
-            ///get inserted attributes
-            String input_attr;
-            inputAttributes = new Hashtable();
-            for (int i=0; i<attrs.size(); i++) {
-                DElemAttribute attribute = (DElemAttribute)attrs.get(i);
-                String attr_id = attribute.getID();
-
-                input_attr = request.getParameter("attr_" + attr_id);
-                if (input_attr!=null) {
-                    inputAttributes.put(attr_id, input_attr);
-                    attr_ids.add(attr_id);
-                }
-            }
-    
-            // end
-            
-
-            String srchType = request.getParameter("search_precision");
-            String oper = "=";
-            if (srchType != null && srchType.equals("free")) {
-                oper = " match ";
-            }
-            if (srchType != null && srchType.equals("substr")) {
-                oper = " like ";
-            }
-
-            Vector params = new Vector();
-            Enumeration parNames = request.getParameterNames();
-            while (parNames.hasMoreElements()) {
-                String parName = (String)parNames.nextElement();
-                if (!parName.startsWith(ATTR_PREFIX)) {
-                    continue;
-                }
-
-                String parValue = request.getParameter(parName);
-                if (parValue.length()==0) {
-                    continue;
-                }
-
-                DDSearchParameter param =
-                    new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, oper, "=");
-
-                if (oper!= null && oper.trim().equalsIgnoreCase("like")) {
-                    param.addValue("%" + parValue + "%");
-                } else {
-                    param.addValue(parValue);
-                }
-                params.add(param);
-            }
-           // String short_name = request.getParameter("short_name");
-           //  String idfier = request.getParameter("idfier");
-            String version = request.getParameter("version");
-
-            // see if looking for deleted datasets
-            String _restore = request.getParameter("restore");
-            if (_restore!=null && _restore.equals("true")) {
-                if (user==null || !user.isAuthentic()) {
-                    Exception e = new Exception("User not authorized!");
-                    String msg = e.getMessage();
-                    ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-                    e.printStackTrace(new PrintStream(bytesOut));
-                    String trace = bytesOut.toString(response.getCharacterEncoding());
-
-                    String backLink = history.getBackUrl();
-
-                    request.setAttribute("DD_ERR_MSG", msg);
-                    request.setAttribute("DD_ERR_TRC", trace);
-                    request.setAttribute("DD_ERR_BACK_LINK", backLink);
-
-                    request.getRequestDispatcher("error.jsp").forward(request, response);
-                    return;
-                }
-                restore = true;
-                datasets = searchEngine.getDeletedDatasets();
+            if (oper!= null && oper.trim().equalsIgnoreCase("like")) {
+                param.addValue("%" + parValue + "%");
             } else {
-                HashSet statuses = null;
-                String requestedStatus = request.getParameter("reg_status");
-                if (requestedStatus!=null && requestedStatus.length()>0) {
-                    statuses = new HashSet();
-                    statuses.add(requestedStatus);
-                }
-                datasets = searchEngine.getDatasets(params, short_name, idfier, version, oper, isSearchForWorkingCopies, isIncludeHistoricVersions, statuses);
+                param.addValue(parValue);
             }
+            params.add(param);
+        }
+       // String short_name = request.getParameter("short_name");
+       //  String idfier = request.getParameter("idfier");
+        String version = request.getParameter("version");
+
+        // see if looking for deleted datasets
+        String _restore = request.getParameter("restore");
+        if (_restore!=null && _restore.equals("true")) {
+            if (user==null || !user.isAuthentic()) {
+                Exception e = new Exception("User not authorized!");
+                String msg = e.getMessage();
+                ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+                e.printStackTrace(new PrintStream(bytesOut));
+                String trace = bytesOut.toString(response.getCharacterEncoding());
+
+                String backLink = history.getBackUrl();
+
+                request.setAttribute("DD_ERR_MSG", msg);
+                request.setAttribute("DD_ERR_TRC", trace);
+                request.setAttribute("DD_ERR_BACK_LINK", backLink);
+
+                request.getRequestDispatcher("error.jsp").forward(request, response);
+                return;
+            }
+            restore = true;
+            datasets = searchEngine.getDeletedDatasets();
+        } else {
+            HashSet statuses = null;
+            String requestedStatus = request.getParameter("regStatus");
+            if (requestedStatus!=null && requestedStatus.length()>0) {
+                statuses = new HashSet();
+                statuses.add(requestedStatus);
+            }
+            datasets = searchEngine.getDatasets(params, short_name, idfier, version, oper, isSearchForWorkingCopies, isIncludeHistoricVersions, statuses);
+            request.setAttribute("registrationStatuses", DatasetRegStatus.values());
+            request.setAttribute("viewName", "datasets");
+
+            DataSetSort sort = null;
+            String sortName = (String) request.getParameter("sort_name");
+            if (StringUtils.isNotBlank(sortName) && DataSetSort.valueOf(sortName) != null) {
+                sort = DataSetSort.valueOf(sortName);
+            } else {
+                sort = DataSetSort.NAME; // fall-back
+            }
+            String sortOrder = (String) request.getParameter("sort_order");
+            boolean descending = StringUtils.isNotBlank(sortOrder) && sortOrder.equals("desc");
+            Collections.sort(datasets, sort.getComparator(descending));
+            request.setAttribute("user", user);
         }
 %>
 
@@ -364,7 +372,7 @@
             }
         }
 
-        function showSortedList(clmn,ordr) {
+        function showSortedList(clmn, ordr) {
             if ((document.forms["sort_form"].elements["sort_column"].value != clmn)
                    || (document.forms["sort_form"].elements["sort_order"].value != ordr)) {
                 document.forms["sort_form"].elements["sort_column"].value=clmn;
@@ -597,7 +605,7 @@
                     <col span="2"/>
                     <tr>
                         <td align="right">
-                            <label for="reg_status" class="question">Registration Status</label>
+                            <label for="regStatus" class="question">Registration Status</label>
                         </td>
                         <td>
                             <a class="helpButton" href="help.jsp?screen=dataset&amp;area=regstatus">
@@ -605,13 +613,11 @@
                             </a>
                         </td>
                         <td colspan="2">
-                            <select name="reg_status" id="reg_status" class="small">
+                            <select name="regStatus" id="regStatus" class="small">
                                 <option value="">All</option>
-                                <option value="Released" ${param.reg_status eq 'Released' ? 'selected="selected"' : ''}>Released</option>
-                                <option value="Recorded" ${param.reg_status eq 'Recorded' ? 'selected="selected"' : ''}>Recorded</option>
-                                <option value="Qualified" ${param.reg_status eq 'Qualified' ? 'selected="selected"' : ''}>Qualified</option>
-                                <option value="Candidate" ${param.reg_status eq 'Candidate' ? 'selected="selected"' : ''}>Candidate</option>
-                                <option value="Incomplete" ${param.reg_status eq 'Incomplete' ? 'selected="selected"' : ''}>Incomplete</option>
+                                <c:forEach items="${registrationStatuses}" var="status">
+                                    <option value="${fn:escapeXml(status.name)}" ${param.regStatus eq status.name ? 'selected="selected"' : ''}>${fn:escapeXml(status.name)}</option>
+                                </c:forEach>
                             </select>
                         </td>
                     </tr>
@@ -626,7 +632,7 @@
                             </a>
                         </td>
                         <td colspan="2">
-                            <input type="text" class="smalltext" size="59" name="short_name" id="short_name" value="<%=Util.processForDisplay(short_name, true)%>"/>
+                            <input type="text" class="smalltext" size="59" name="short_name" id="short_name" value="${fn:escapeXml(param.short_name)}"/>
                         </td>
                     </tr>
 
@@ -640,12 +646,12 @@
                             </a>
                         </td>
                         <td colspan="2">
-                            <input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>"/>
+                            <input type="text" class="smalltext" size="59" name="idfier" value="${fn:escapeXml(param.idfier)}"/>
                         </td>
                     </tr>
                     <%
                         // get default attributes, which are always on the page (defined above)
-                        if (def_attrs!=null) {
+                    if (def_attrs!=null) {
                             for (int i=0; i < def_attrs.size(); i++) {
                                 attrID = (String) def_attrs.get(i);
                                 attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
@@ -822,12 +828,9 @@
                     <input type="hidden" name="collect_attrs" value="<%=Util.processForDisplay(collect_attrs.toString(), true)%>"/>
                 </div>
             </form>
-            
             <form id="form1" method="post" action="datasets.jsp" onsubmit="setLocation()">
             <!-- the buttons part -->
                 <%
-                if (pageMode.equals("search")) {
-
                     // check if any results found
                     if (datasets == null || datasets.size()==0) {
 
@@ -846,7 +849,6 @@
                         <%
                         return;
                     }
-                }
                 %>
 
         <table class="sortable" width="100%" style="clear:both">
@@ -891,8 +893,19 @@
                 String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
                 String sortedAlt  = getSortedAlt(sortedImg);
                 %>
+                <c:url var="nameSortingUrl" value="/datasets.jsp">
+                    <c:forEach items="${param}" var="entry">
+                        <c:if test="${entry.key != 'sort_name' and entry.key != 'sort_order'}">
+                            <c:param name="${entry.key}" value="${entry.value}" />
+                        </c:if>
+                    </c:forEach>
+                    <c:param name="sort_name" value="NAME" />
+                    <c:if test="${param.sort_name eq 'NAME' and param.sort_order ne 'desc'}">
+                        <c:param name="sort_order" value="desc" />
+                    </c:if>
+                </c:url>
                 <th>
-                    <a title="Sort on Dataset" href="<%=Util.processForDisplay(sortedLink,true)%>">
+                    <a title="Sort on Dataset" href="${nameSortingUrl}">
                         Dataset&nbsp;<img src="<%=Util.processForDisplay(sortedImg,true)%>" width="12" height="12" alt="<%=Util.processForDisplay(sortedAlt,true)%>"/>
                     </a>
                 </th>
@@ -902,8 +915,19 @@
                     sortedLink = getSortedLink(3, oSortCol, oSortOrder);
                     sortedAlt  = getSortedAlt(sortedImg);
                     %>
+                    <c:url var="idSortingUrl" value="/datasets.jsp">
+                        <c:forEach items="${param}" var="entry">
+                            <c:if test="${entry.key != 'sort_name' and entry.key != 'sort_order'}">
+                                <c:param name="${entry.key}" value="${entry.value}" />
+                            </c:if>
+                        </c:forEach>
+                        <c:param name="sort_name" value="ID" />
+                        <c:if test="${param.sort_name eq 'ID' and param.sort_order ne 'desc'}">
+                            <c:param name="sort_order" value="desc" />
+                        </c:if>
+                    </c:url>
                     <th>
-                        <a title="Sort on Version" href="<%=Util.processForDisplay(sortedLink,true)%>">
+                        <a title="Sort on Version" href="${idSortingUrl}">
                           Version&nbsp;<img src="<%=Util.processForDisplay(sortedImg,true)%>" width="12" height="12" alt="<%=Util.processForDisplay(sortedAlt,true)%>"/>
                         </a>
                     </th><%
@@ -915,9 +939,22 @@
                     sortedLink = getSortedLink(2, oSortCol, oSortOrder);
                     sortedAlt = getSortedAlt(sortedImg);
                     %>
-                    <a title="Sort on Status" href="<%=Util.processForDisplay(sortedLink,true)%>">
-                          Status&nbsp;<img src="<%=Util.processForDisplay(sortedImg,true)%>" width="12" height="12" alt="<%=Util.processForDisplay(sortedAlt,true)%>"/>
+                    
+                    <c:url var="regStatusSortingUrl" value="/datasets.jsp">
+                        <c:forEach items="${param}" var="entry">
+                            <c:if test="${entry.key != 'sort_name' and entry.key != 'sort_order'}">
+                                <c:param name="${entry.key}" value="${entry.value}" />
+                            </c:if>
+                        </c:forEach>
+                        <c:param name="sort_name" value="STATUS" />
+                        <c:if test="${param.sort_name eq 'STATUS' and param.sort_order ne 'desc'}">
+                            <c:param name="sort_order" value="desc" />
+                        </c:if>
+                    </c:url>
+                    <a title="Sort on Status" href="${regStatusSortingUrl}">
+                        Status&nbsp;<img src="<%=Util.processForDisplay(sortedImg,true)%>" width="12" height="12" alt="<%=Util.processForDisplay(sortedAlt,true)%>"/>
                     </a>
+                    
                 </th>
                 <th>
                     Tables
@@ -929,54 +966,53 @@
             <%
             DElemAttribute attr = null;
             int countCheckboxes = 0;
-            if (pageMode.equals("search")) {
-                c_SearchResultSet oResultSet=new c_SearchResultSet();
-                oResultSet.isAuth = user!=null;
-                oResultSet.oElements=new Vector();
-                session.setAttribute(oSearchCacheAttrName,oResultSet);
+            c_SearchResultSet oResultSet=new c_SearchResultSet();
+            oResultSet.isAuth = user!=null;
+            oResultSet.oElements=new Vector();
+            session.setAttribute(oSearchCacheAttrName,oResultSet);
 
-                for (int i=0; i<datasets.size(); i++) {
-                    Dataset dataset = (Dataset)datasets.get(i);
-                    String ds_id = dataset.getID();
-                    Vector tables = searchEngine.getDatasetTables(ds_id, true);
-                    String regStatus = dataset.getStatus();
-                    boolean clickable = searchEngine.skipByRegStatus(regStatus) ? false : true;
-                    String linkDisabled = clickable ? "" : "class=\"disabled\"";
-                    String dsVersion = dataset.getVersion()==null ? "" : dataset.getVersion();
-                    String ds_name = Util.processForDisplay(dataset.getShortName());
-                    String dsLink = clickable ? request.getContextPath() + "/datasets/" + ds_id : "#";
-                    String dsFullName=dataset.getName();
-                    if (dsFullName!=null && dsFullName.length()>64)
-                        dsFullName = dsFullName.substring(0,60) + " ...";
-                    String workingUser = dataset.getWorkingUser();
+            for (int i=0; i<datasets.size(); i++) {
+                Dataset dataset = (Dataset)datasets.get(i);
+                String ds_id = dataset.getID();
+                Vector tables = searchEngine.getDatasetTables(ds_id, true);
+                String regStatus = dataset.getStatus();
+                boolean clickable = searchEngine.skipByRegStatus(regStatus) ? false : true;
+                String linkDisabled = clickable ? "" : "class=\"disabled\"";
+                String dsVersion = dataset.getVersion()==null ? "" : dataset.getVersion();
+                String ds_name = Util.processForDisplay(dataset.getShortName());
+                String dsLink = clickable ? request.getContextPath() + "/datasets/" + ds_id : "#";
+                String dsFullName=dataset.getName();
+                if (dsFullName!=null && dsFullName.length()>64)
+                    dsFullName = dsFullName.substring(0,60) + " ...";
+                String workingUser = dataset.getWorkingUser();
 
-                    String statusImg   = "images/" + Util.getStatusImage(regStatus);
-                    String statusTxt   = Util.getStatusRadics(regStatus);
-                    String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
-                    String alertReleased = regStatus.equals("Released") ? "onclick=\"alertReleased(this)\"" : "";
-                    boolean released = regStatus.equals("Released");
+                String statusImg   = "images/" + Util.getStatusImage(regStatus);
+                String statusTxt   = Util.getStatusRadics(regStatus);
+                String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+                String alertReleased = regStatus.equals("Released") ? "onclick=\"alertReleased(this)\"" : "";
+                boolean released = regStatus.equals("Released");
 
-                    boolean canDelete = !dataset.isWorkingCopy() && workingUser==null && regStatus!=null && user!=null;
-                    if (canDelete) {
-                        boolean editPrm = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
-                        boolean editReleasedPrm = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "er");
-                        if (regStatus.equals("Released") || regStatus.equals("Recorded")) {
-                            canDelete = editReleasedPrm;
-                        } else {
-                            canDelete = editPrm || editReleasedPrm;
-                        }
+                boolean canDelete = !dataset.isWorkingCopy() && workingUser==null && regStatus!=null && user!=null;
+                if (canDelete) {
+                    boolean editPrm = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
+                    boolean editReleasedPrm = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "er");
+                    if (regStatus.equals("Released") || regStatus.equals("Recorded")) {
+                        canDelete = editReleasedPrm;
+                    } else {
+                        canDelete = editPrm || editReleasedPrm;
                     }
+                }
 
-                    c_SearchResultEntry oEntry = new c_SearchResultEntry(ds_id, ds_name, dsVersion, dsFullName, tables);
-                    oEntry.setRegStatus(regStatus);
-                    oEntry.workingUser = workingUser;
-                    oEntry.setSortableStatus(Util.getStatusSortString(regStatus));
-                    oEntry.clickable = clickable;
-                    oEntry.oIdentifier = dataset.getIdentifier();
-                    oEntry.canDelete = canDelete;
+                c_SearchResultEntry oEntry = new c_SearchResultEntry(ds_id, ds_name, dsVersion, dsFullName, tables);
+                oEntry.setRegStatus(regStatus);
+                oEntry.workingUser = workingUser;
+                oEntry.setSortableStatus(Util.getStatusSortString(regStatus));
+                oEntry.clickable = clickable;
+                oEntry.oIdentifier = dataset.getIdentifier();
+                oEntry.canDelete = canDelete;
 
-                    oResultSet.oElements.add(oEntry);
-                    %>
+                oResultSet.oElements.add(oEntry);
+                %>
 
                     <tr valign="top" class="<%=zebraClass%>">
                         <%
@@ -1066,122 +1102,7 @@
                 %>
         </tbody>
         </table>
-        <p>Total results: <%=datasets.size()%></p><%
-            } else {
-                // No search - return from another result set or a total stranger...
-                c_SearchResultSet oResultSet=(c_SearchResultSet)session.getAttribute(oSearchCacheAttrName);
-                if (oResultSet==null) {
-                    %><p>This page has experienced a time-out. Try searching again.</p><%
-                }
-                else {
-                    if ((oSortCol!=null) && (oSortOrder!=null)) {
-                        oResultSet.SortByColumn(oSortCol,oSortOrder);
-                    }
-
-                    c_SearchResultEntry oEntry;
-                    for (int i=0; i<oResultSet.oElements.size(); i++) {
-                        oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
-                        String linkDisabled = oEntry.clickable ? "" : "class=\"disabled\"";
-                        String dsLink = oEntry.clickable ? request.getContextPath() + "/datasets/" + oEntry.oID : "#";
-                        String statusImg = "images/" + Util.getStatusImage(oEntry.getRegStatus());
-                        String statusTxt   = Util.getStatusRadics(oEntry.getRegStatus());
-                                  String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
-                        String alertReleased = oEntry.getRegStatus().equals("Released") ? "onclick=\"alertReleased(this)\"" : "";                        
-                        boolean released = oEntry.getRegStatus().equals("Released");
-                        %>
-                        <tr valign="top" class="<%=zebraClass%>">
-                            <%
-                            // the 1st column: checkbox, red asterisk or nbsp
-                            if (isDisplayHelperColumn) { %>
-                                <td align="right">
-                                    <%
-                                    if (oEntry.workingUser!=null) { %>
-                                        <div title="<%=Util.processForDisplay(oEntry.workingUser,true)%>" class="checkedout">*</div><%
-                                    } else { %>
-                                        <input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>" />
-                                        <input type="hidden" name="ds_idf_<%=oEntry.oID%>" id="ds_idf_<%=oEntry.oID%>" value="<%=Util.processForDisplay(oEntry.oIdentifier,true)%>"/>                                        
-                                        <input type="hidden" id="can_delete_ds_idf_<%=oEntry.oID%>" value="<%=oEntry.canDelete%>"/>
-                                        <input type="hidden" id="released_ds_idf_<%=oEntry.oID%>" value="<%=released%>"/>
-                                        <%
-                                        countCheckboxes++;
-                                    }
-                                    %>
-                                </td><%
-                            }
-
-                            // 2nd column: full name link
-                            if (oEntry.clickable==false) { %>
-                                <td title="<%=Util.processForDisplay(oEntry.oFullName,true)%>" class="disabled">
-                                    <%=Util.processForDisplay(oEntry.oFullName, true)%>
-                                </td><%
-                            } else { %>
-                                <td title="<%=Util.processForDisplay(oEntry.oFullName,true)%>">
-                                    <a href="<%=Util.processForDisplay(dsLink,true)%>">
-                                        <%=Util.processForDisplay(oEntry.oFullName, true)%>
-                                    </a>
-                                </td><%
-                            }
-
-                            // 3nd column: version aka CheckInNo
-                            if (isDisplayVersionColumn) { %>
-                                <td>
-                                    <%=oEntry.oID%>
-                                </td><%
-                            }
-
-                            // 4th column: Registration status
-                            %>
-                            <td>
-                                <%
-                                if (oEntry.clickable) { %>
-                                    <img style="border:0" src="<%=Util.processForDisplay(statusImg)%>" width="56" height="12" title="<%=oEntry.getRegStatus()%>" alt="<%=oEntry.getRegStatus()%>"/><%
-                                } else { %>
-                                    <span style="color:gray;text-decoration:none;font-size:8pt" title="<%=oEntry.getRegStatus()%>">
-                                        <strong><%=statusTxt%></strong>
-                                    </span><%
-                                }
-                                %>
-                            </td>
-                            <%
-                            // 5th column: tables in this dataset
-                            %>
-                            <td>
-                                <%
-                                Vector tables = oEntry.oTables;
-                                for (int c=0; tables!=null && c<tables.size(); c++) {
-                                    DsTable table = (DsTable)tables.get(c);
-                                    StringBuffer tableLink = new StringBuffer(request.getContextPath());
-                                    tableLink.append("/tables/").append(table.getID());
-
-                                    // it is probbaly less confusing if there are no links for tables of working copies
-                                    if (isSearchForWorkingCopies) { %>
-                                        <%=Util.processForDisplay(table.getShortName())%><%
-                                    } else {
-                                        if (oEntry.clickable) { %>
-                                            <a href="<%=tableLink%>">
-                                                <%=Util.processForDisplay(table.getShortName())%>
-                                            </a><%
-                                        } else { %>
-                                            <span class="disabled"><%=Util.processForDisplay(table.getShortName())%></span><%
-                                        }
-                                    }
-                                    %>
-                                    <br/><%
-                                }
-                                %>
-                            </td>
-                        </tr>
-                    <%
-                    }
-                    %>
-            </tbody>
-            </table>
-            <p>
-                Total results: <%=oResultSet.oElements.size()%>
-            </p><%
-                }
-            }
-            %>
+        <p>Total results: <%=datasets.size()%></p>
 
             <div style="display:none">
                 <input type="hidden" name="searchUrl" value=""/>
