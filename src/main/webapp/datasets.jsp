@@ -3,8 +3,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
-<%!final static String oSearchCacheAttrName="datasets_search_cache";%>
-<%!final static String oSearchUrlAttrName="datasets_search_url";%>
 <%!
     private Vector attrs = null;
     private Vector def_attrs = null;
@@ -52,49 +50,14 @@
 
     ServletContext ctx = getServletContext();
 
-    Integer oSortCol=null;
-    Integer oSortOrder=null;
-    
-    try {
-        oSortCol=new Integer(request.getParameter("sort_column"));
-        oSortOrder=new Integer(request.getParameter("sort_order"));
-    } catch(Exception e) {
-        oSortCol=null;
-        oSortOrder=null;
-    }
-
-    // if this is no sorting request, then remember the query string in session in order to come back if needed
-    if (oSortCol==null) {
-        String query = request.getQueryString() == null ? "" : request.getQueryString();
-        String searchUrl =  request.getRequestURI() + "?" + query;
-        session.setAttribute(oSearchUrlAttrName, searchUrl);
-    }
-
     Vector<Dataset> datasets = null;
     DDSearchEngine searchEngine = null;
     Connection conn = null;
     DDUser user = SecurityUtil.getUser(request);
     boolean isSearchForWorkingCopies = request.getParameter("wrk_copies") != null && request.getParameter("wrk_copies").equals("true");
     boolean isIncludeHistoricVersions = request.getParameter("incl_histver") != null && request.getParameter("incl_histver").equals("true");
-    String feedbackValue = null;
-
-    // Feedback messages
-    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("checkout")) {
-        feedbackValue = "Working copy successfully created!";
-    }
-    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("checkin")) {
-        feedbackValue = "Check-in successful!";
-    }
-    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("undo_checkout")) {
-        feedbackValue = "Working copy successfully discarded!";
-    }
-    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("delete")) {
-        feedbackValue = "Deletion successful!";
-    }
 
     try { // start the whole page try block
-        
-        String search_precision = request.getParameter("search_precision");
         String attrID = null;
         String attrValue = null;
         String attrName = null;
@@ -138,12 +101,9 @@
             }
         }
 
-        session.removeAttribute(oSearchCacheAttrName);
-
         searchEngine = new DDSearchEngine(conn, "");
         searchEngine.setUser(user);
 
-        // Begin search_dataset.jsp
         attrs = searchEngine.getDElemAttributes();
         if (attrs == null) {
             attrs = new Vector();
@@ -162,15 +122,6 @@
         }
         if (sel_type == null) {
             sel_type = "";
-        }
-        if (short_name == null) {
-            short_name = "";
-        }
-        if (idfier == null) {
-            idfier = "";
-        }
-        if (search_precision == null) {
-            search_precision = "substr";
         }
 
         // get inserted attributes
@@ -421,17 +372,7 @@
         <jsp:param name="helpscreen" value="datasets"/>
     </jsp:include>
     <%@ include file="nmenu.jsp" %>
-    <div id="workarea">${user}
-        <%
-                if (feedbackValue != null) {
-                    %>
-                        <div class="system-msg">
-                        <%= feedbackValue %>
-                        </div>
-                    <%
-                    }%>
-
-                    
+    <div id="workarea">
         <c:choose>
             <c:when test="${param.wrk_copies eq 'true'}">
                 <h1>Working copies of dataset definitions</h1>
@@ -623,20 +564,15 @@
                         <input type="radio" name="search_precision" id="sexact" value="exact" ${param.search_precision eq 'exact' ? 'checked="checked"' : ''} /><label for="sexact">Exact search</label>
                     </td>
                 </tr>
-                <%
-                    // if authenticated user, enable to get working copies only
-                    if (user!=null && user.isAuthentic()) {
-                %>
-                <tr style="vertical-align:top">
-                    <td colspan="2"></td>
-                    <td colspan="2">
-                        <input type="checkbox" name="wrk_copies" id="wrk_copies" value="true" ${param.wrk_copies eq 'true' ? 'checked="checked"' : ''} />
-                        <label for="wrk_copies" class="smallfont">Working copies only</label>
-                    </td>
-                </tr>
-                <%
-                    }
-                %>
+                <c:if test="${not empty user and user.authentic}">
+                    <tr style="vertical-align:top">
+                        <td colspan="2"></td>
+                        <td colspan="2">
+                            <input type="checkbox" name="wrk_copies" id="wrk_copies" value="true" ${param.wrk_copies eq 'true' ? 'checked="checked"' : ''} />
+                            <label for="wrk_copies" class="smallfont">Working copies only</label>
+                        </td>
+                    </tr>
+                </c:if>
                 <tr style="vertical-align:top">
                     <td colspan="2"></td>
                     <td colspan="2">
@@ -734,61 +670,44 @@
                         <!-- the table itself -->
                    <thead>
                         <tr>
-                            <%
-                            if (isDisplayHelperColumn) { %>
-                                <th></th><%
-                            }
-                            String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
-                            String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
-                            String sortedAlt  = getSortedAlt(sortedImg);
-                            %>
-                            <c:url var="nameSortingUrl" value="/datasets.jsp">
-                                <c:forEach items="${param}" var="entry">
-                                    <c:if test="${entry.key != 'sort_name' and entry.key != 'sort_order'}">
-                                        <c:param name="${entry.key}" value="${entry.value}" />
-                                    </c:if>
-                                </c:forEach>
-                                <c:param name="sort_name" value="NAME" />
-                                <c:if test="${param.sort_name eq 'NAME' and param.sort_order ne 'desc'}">
-                                    <c:param name="sort_order" value="desc" />
-                                </c:if>
-                            </c:url>
+                            <c:if test="${not empty user}">
+                                <th></th>
+                            </c:if>
                             <th>
-                                <a title="Sort on Dataset" href="${nameSortingUrl}">
-                                    Dataset&nbsp;<img src="<%=Util.processForDisplay(sortedImg,true)%>" width="12" height="12" alt="<%=Util.processForDisplay(sortedAlt,true)%>"/>
-                                </a>
-                            </th>
-                            <%
-                            if (isDisplayVersionColumn) {
-                                sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
-                                sortedLink = getSortedLink(3, oSortCol, oSortOrder);
-                                sortedAlt  = getSortedAlt(sortedImg);
-                                %>
-                                <c:url var="idSortingUrl" value="/datasets.jsp">
+                                <c:url var="nameSortingUrl" value="/datasets.jsp">
                                     <c:forEach items="${param}" var="entry">
                                         <c:if test="${entry.key != 'sort_name' and entry.key != 'sort_order'}">
                                             <c:param name="${entry.key}" value="${entry.value}" />
                                         </c:if>
                                     </c:forEach>
-                                    <c:param name="sort_name" value="ID" />
-                                    <c:if test="${param.sort_name eq 'ID' and param.sort_order ne 'desc'}">
+                                    <c:param name="sort_name" value="NAME" />
+                                    <c:if test="${param.sort_name eq 'NAME' and param.sort_order ne 'desc'}">
                                         <c:param name="sort_order" value="desc" />
                                     </c:if>
                                 </c:url>
+                                <a title="Sort on Dataset" href="${nameSortingUrl}" <c:if test="${param.sort_name eq 'NAME'}">class="${param.sort_order eq 'desc' ? 'desc': 'asc'}"</c:if>>
+                                    Dataset
+                                </a>
+                            </th>
+                            <c:if test="${param.incl_histver eq 'true'}">
                                 <th>
-                                    <a title="Sort on Version" href="${idSortingUrl}">
-                                      Version&nbsp;<img src="<%=Util.processForDisplay(sortedImg,true)%>" width="12" height="12" alt="<%=Util.processForDisplay(sortedAlt,true)%>"/>
+                                    <c:url var="idSortingUrl" value="/datasets.jsp">
+                                        <c:forEach items="${param}" var="entry">
+                                            <c:if test="${entry.key != 'sort_name' and entry.key != 'sort_order'}">
+                                                <c:param name="${entry.key}" value="${entry.value}" />
+                                            </c:if>
+                                        </c:forEach>
+                                        <c:param name="sort_name" value="ID" />
+                                        <c:if test="${param.sort_name eq 'ID' and param.sort_order ne 'desc'}">
+                                            <c:param name="sort_order" value="desc" />
+                                        </c:if>
+                                    </c:url>
+                                    <a title="Sort on Version" href="${idSortingUrl}" <c:if test="${param.sort_name eq 'ID'}">class="${param.sort_order eq 'desc' ? 'desc': 'asc'}"</c:if>>
+                                        Version
                                     </a>
-                                </th><%
-                            }
-                            %>
+                                </th>
+                            </c:if>
                             <th>
-                                <%
-                                sortedImg = getSortedImg(2, oSortCol, oSortOrder);
-                                sortedLink = getSortedLink(2, oSortCol, oSortOrder);
-                                sortedAlt = getSortedAlt(sortedImg);
-                                %>
-
                                 <c:url var="regStatusSortingUrl" value="/datasets.jsp">
                                     <c:forEach items="${param}" var="entry">
                                         <c:if test="${entry.key != 'sort_name' and entry.key != 'sort_order'}">
@@ -800,10 +719,9 @@
                                         <c:param name="sort_order" value="desc" />
                                     </c:if>
                                 </c:url>
-                                <a title="Sort on Status" href="${regStatusSortingUrl}">
-                                    Status&nbsp;<img src="<%=Util.processForDisplay(sortedImg,true)%>" width="12" height="12" alt="<%=Util.processForDisplay(sortedAlt,true)%>"/>
+                                <a title="Sort on Status" href="${regStatusSortingUrl}" <c:if test="${param.sort_name eq 'STATUS'}">class="${param.sort_order eq 'desc' ? 'desc': 'asc'}"</c:if>>
+                                    Status
                                 </a>
-
                             </th>
                             <th>
                                 Tables
