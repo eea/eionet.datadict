@@ -221,7 +221,7 @@
 <head>
     <%@ include file="headerinfo.jsp" %>
     <title>Datasets - Data Dictionary</title>
-    <script type="text/javascript" src="modal_dialog.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/modal_dialog.js"></script>
     <script type="text/javascript">
     // <![CDATA[
         function setLocation() {
@@ -361,6 +361,11 @@
                     $(this).parents("tr").removeClass("selected");
                 }
             });
+
+            $(".searchButton").click(function () {
+                $("#searchDatasetsForm").slideToggle("slw");
+                return false;
+            });
         });
     // ]]>
     </script>
@@ -387,13 +392,13 @@
 
         <div id="drop-operations">
             <ul>
-                <li><a href="search_dataset.jsp" title="Search datasets">Search</a></li>
+                <li><a class="searchButton" href="#" title="Search datasets">Search</a></li>
                 <c:if test="${not empty user}">
                     <c:if test="${user.authentic}">
-                        <li><a href="restore_datasets.jsp?SearchType=SEARCH&amp;restore=true" title="Restore datasets">Restore</a></li>
+                        <li><a href="${pageContext.request.contextPath}/restore_datasets.jsp?SearchType=SEARCH&amp;restore=true" title="Restore datasets">Restore</a></li>
                     </c:if>
                     <c:if test="${param.wrk_copies ne 'true' and not empty canAddDataset}">
-                        <li><a href="<%=request.getContextPath()%>/datasets/add">Add</a></li>
+                        <li><a href="${pageContext.request.contextPath}/datasets/add">Add</a></li>
                     </c:if>
                     <c:if test="${param.wrk_copies ne 'true'}">
                         <li><a href="javascript:deleteDataset()">Delete selected</a></li>
@@ -404,8 +409,7 @@
                 </c:if>
             </ul>
         </div>
-        <form id="searchDatasetsForm" action="datasets.jsp" method="get">
-            <h1>Search datasets</h1>
+        <form id="searchDatasetsForm" action="${pageContext.request.contextPath}/datasets.jsp" method="get">
             <table class="filter" width="600" cellspacing="0" style="padding-top:10px">
                 <col style="width: 14em"/>
                 <col style="width: 16px"/>
@@ -415,8 +419,8 @@
                         <label for="regStatus" class="question">Registration Status</label>
                     </td>
                     <td>
-                        <a class="helpButton" href="help.jsp?screen=dataset&amp;area=regstatus">
-                            <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus">
+                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" alt="Help" width="16" height="16"/>
                         </a>
                     </td>
                     <td colspan="2">
@@ -434,8 +438,8 @@
                         <label for="short_name" class="question">Short name</label>
                     </td>
                     <td>
-                        <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
-                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=short_name">
+                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt=""/>
                         </a>
                     </td>
                     <td colspan="2">
@@ -448,8 +452,8 @@
                         <label class="question">Identifier</label>
                     </td>
                     <td>
-                        <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier">
-                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier">
+                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt=""/>
                         </a>
                     </td>
                     <td colspan="2">
@@ -477,8 +481,8 @@
                         <label class="question"><%=Util.processForDisplay(attrName)%></label>
                     </td>
                     <td>
-                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt=""/>
                         </a>
                     </td>
                     <td colspan="2">
@@ -515,15 +519,15 @@
                         <label class="question"><%=Util.processForDisplay(attrName)%></label>
                     </td>
                     <td>
-                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt=""/>
                         </a>
                     </td>
                     <td>
                         <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value="<%=Util.processForDisplay(attrValue, true)%>"/>
                     </td>
                     <td>
-                        <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
+                        <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="${pageContext.request.contextPath}/images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
                     </td>
                 </tr>
                 <%
@@ -542,15 +546,15 @@
                         <label class="question"><%=Util.processForDisplay(attrName)%></label>
                     </td>
                     <td>
-                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt=""/>
                         </a>
                     </td>
                     <td>
                         <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
                     </td>
                     <td>
-                        <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
+                        <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="${pageContext.request.contextPath}/images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
                     </td>
                 </tr>
                 <%
@@ -750,7 +754,7 @@
                             <c:set var="clickable" value="${not empty dataset.status and (empty user or not user.authentic) and (dataset.status eq 'Incomplete' or dataset.status eq 'Candidate' or dataset.status eq 'Qualified') ? false : true}" />
                             <td title="${fn:escapeXml(dataset.name)}">
                                 <c:if test="${clickable}">
-                                    <a href="datasets/${dataset.ID}">
+                                    <a href="${pageContext.request.contextPath}/datasets/${dataset.ID}">
                                 </c:if>
                                     ${fn:escapeXml(dataset.name)}
                                 <c:if test="${clickable}"></a></c:if>
@@ -769,7 +773,7 @@
                                         </c:when>
                                         <c:otherwise>
                                             <c:if test="${clickable}">
-                                                <a href="tables/${table.ID}">
+                                                <a href="${pageContext.request.contextPath}/tables/${table.ID}">
                                             </c:if>
                                                 ${fn:escapeXml(table.shortName)}
                                             <c:if test="${clickable}"></a></c:if>
