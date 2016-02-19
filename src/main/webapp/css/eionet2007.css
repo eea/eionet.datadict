@@ -42,6 +42,15 @@
 	float: left;
 }
 
+#menuribbon #dropdowns li ul li {
+	background: #ECF4F5;	
+}
+
+#menuribbon #dropdowns li ul li a:link,
+#menuribbon #dropdowns li ul li a:visited {
+	padding: 10px 15px;	
+}
+
 
 /* LEFT MENU */
 
@@ -85,84 +94,136 @@
 
 #drop-operations {
 	display: block;
-	float: left !important;
+	float: left;
 	clear: both;
-	height: 80px;
-	width: 920px !important;
+	margin-top: 20px;
+	border-top: 1px solid #CFE3E4;
+	width: 920px;
 }
 
 #drop-operations > ul {
-	position: relative !important;	
-	display: block !important;
-	background: none !important;
+	position: relative;	
+	display: block;
+	background: none;
+	margin: 0;
 }
 
 #drop-operations > ul li {
 	display: inline-block;
-	background: none !important;
-	border: none !important;
+	background: none;
+	border: none;
 }
 
 #drop-operations > ul li a {
-	color: #00446A !important;
+	display: block;
+	color: #00446A;
 	text-transform: uppercase;
 	font-size: 80%;
-	padding-left: 30px !important;
+	padding: 20px 0 20px 30px;
+	text-decoration: none;
 }
 
 #drop-operations > ul li a:hover {
-	background: none !important;	
+	background: none;	
 }
 
-/* TABLE STYLES */
+/* FILTERS STYLES */
 
-#workarea table {
+#workarea table.filter {
+	width: 100%;
+	background: #F9FCFC;
+	border: 1px solid #CFE3E4;
+	padding: 30px;
+	margin-bottom: 25px;
+}
+
+#workarea table.filter td input,
+#workarea table.filter td select {
+	background: #FFFFFF;
+	border: 1px solid #9AC4C6;
+	padding: 5px 8px;
+	width: 300px;
+}
+
+#workarea table.filter td label.question {
+	display: block;
+	width: 260px;	
+	font-weight: normal;
+	color: #00446A;
+}
+
+#workarea table.filter td input.mediumbuttonb {
+	width: auto;
+	border: 1px solid #CFE3E4;	
+	background: #FFFFFF;
+	color: #00446A;
+}
+
+#workarea table.filter td input.mediumbuttonb.searchButton {
+	border: 1px solid #13446B;	
+	background: #13446B;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
+/* RESULT TABLE STYLES */
+
+#workarea table.results {
 	border-collapse: collapse;
 }
-#workarea table a {
+#workarea table.results a {
 	text-decoration: none;
 	color: #00446A;
 }
 
-#workarea table thead tr {
+#workarea table.results thead tr {
 	background: #306886;
 	border: 1px solid #00446A;
 }
 
-#workarea table th {
+#workarea table.results th {
 	background: transparent;
 	border: none;
 	color: #FFFFFF;
 	padding: 7px;
 }
 
-#workarea table th a {
+#workarea table.results th a {
 	color: #FFFFFF;	
 }
 
-#workarea table tbody {
+#workarea table.results tbody {
 	border-left: 1px solid #CFE3E4;
 	border-right: 1px solid #CFE3E4;
 }
 
-#workarea table td {
+#workarea table.results td {
 	border-bottom: 1px solid #CFE3E4;
 	padding: 7px;	
+	vertical-align: top;
 }
 
-#workarea table tr.zebraeven {
+#workarea table.results tr.even {
 	background: #ECF4F5;	
 }
 
-#workarea table tr.zebraodd.selected {
+#workarea table.results tr.odd.selected {
 	background-color: rgba(206,220,50,0.4);
 }
 
-#workarea table tr.zebraeven.selected {
+#workarea table.results tr.even.selected {
 	background-color: rgba(212,217,145,0.6);
 }
 
+/* NOT FOUND */
 
+p.not-found {
+	padding: 8px 12px 8px 25px;
+	background: #F9FCFC;
+	border-bottom: 3px solid #9AC4C6;
+	font-weight: bold;
+}
 
 
 /* end */
@@ -444,64 +505,7 @@ div .multiselect{
 }
 
 /* Dropdown operations */
-#drop-operations {
-    float: right;
-    width: 140px;
-    font-family: verdana, helvetica, sans-serif;
-}
-#drop-operations h2 {
-    font-size: 100%;
-    background: #b0b0b0 url(images/drop-arrow.gif) 2px center no-repeat;
-    font-weight: bold;
-    padding: 0.2em 0px 0.2em 12px;
-    margin: 0;
-}
-#drop-operations:hover h2 {
-    background-image: none;
-}
-#drop-operations a:link, #drop-operations a:visited {
-    display: block;
-    text-decoration: none;
-    padding: 0.1em 0.5em;
-    color: #000;
-}
 
-#drop-operations ul {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-    list-style-image: none;
-    display: none;
-    position: absolute;
-    top: 1em;
-    left: 0;
-    background-color: #ccc;
-}
-
-#drop-operations > ul { /* For Opera and Firefox */
-    top: auto;
-    left: auto;
-}
-
-#drop-operations ul li {
-    float: none;
-    border-right: 0 none transparent;
-    border-bottom: 1px dotted #000;
-    background-color: #ccc;
-    text-transform: none;
-    margin: 0;
-    padding: 0.1em 0;
-    color: #000;
-}
-
-#drop-operations li a:hover {
-    background-color: #eee;
-}
-
-div#drop-operations:hover ul, .over ul {
-    display: block;
-    width: 140px;
-}
 
 img.scaled2 {
     width: 100%;

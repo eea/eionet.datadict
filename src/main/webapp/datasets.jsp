@@ -362,7 +362,7 @@
                 }
             });
 
-            $(".searchButton").click(function () {
+            $(".searchSection").click(function () {
                 $("#searchDatasetsForm").slideToggle("slw");
                 return false;
             });
@@ -376,8 +376,10 @@
         <jsp:param name="name" value="Datasets"/>
         <jsp:param name="helpscreen" value="datasets"/>
     </jsp:include>
+
     <c:set var="currentSection" value="datasets" />
     <%@ include file="/pages/common/navigation.jsp" %>
+
     <div id="workarea">
         <c:choose>
             <c:when test="${param.wrk_copies eq 'true'}">
@@ -393,7 +395,7 @@
 
         <div id="drop-operations">
             <ul>
-                <li><a class="searchButton" href="#" title="Search datasets">Search</a></li>
+                <li><a class="searchSection" href="#" title="Search datasets">Search</a></li>
                 <c:if test="${not empty user}">
                     <c:if test="${user.authentic}">
                         <li><a href="${pageContext.request.contextPath}/restore_datasets.jsp?SearchType=SEARCH&amp;restore=true" title="Restore datasets">Restore</a></li>
@@ -411,12 +413,12 @@
             </ul>
         </div>
         <form id="searchDatasetsForm" action="${pageContext.request.contextPath}/datasets.jsp" method="get">
-            <table class="filter" width="600" cellspacing="0" style="padding-top:10px">
-                <col style="width: 14em"/>
-                <col style="width: 16px"/>
-                <col span="2"/>
+            <table class="filter" cellspacing="0">
+                <col />
+                <col />
+                <col />
                 <tr>
-                    <td align="right">
+                    <td>
                         <label for="regStatus" class="question">Registration Status</label>
                     </td>
                     <td>
@@ -433,9 +435,8 @@
                         </select>
                     </td>
                 </tr>
-
-                <tr style="vertical-align:top">
-                    <td align="right">
+                <tr>
+                    <td>
                         <label for="short_name" class="question">Short name</label>
                     </td>
                     <td>
@@ -447,9 +448,8 @@
                         <input type="text" class="smalltext" size="59" name="short_name" id="short_name" value="${fn:escapeXml(param.short_name)}"/>
                     </td>
                 </tr>
-
-                <tr style="vertical-align:top">
-                    <td align="right">
+                <tr>
+                    <td>
                         <label class="question">Identifier</label>
                     </td>
                     <td>
@@ -477,8 +477,8 @@
                                 collect_attrs.append(attrID + "|");
                                 displayedCriteria.add(attrID);
                 %>
-                <tr style="vertical-align:top">
-                    <td align="right">
+                <tr>
+                    <td>
                         <label class="question"><%=Util.processForDisplay(attrName)%></label>
                     </td>
                     <td>
@@ -515,8 +515,8 @@
                             collect_attrs.append(attrID + "|");
                             displayedCriteria.add(attrID);
                 %>
-                <tr style="vertical-align:top">
-                    <td align="right">
+                <tr>
+                    <td>
                         <label class="question"><%=Util.processForDisplay(attrName)%></label>
                     </td>
                     <td>
@@ -542,8 +542,8 @@
                             displayedCriteria.add(attrID);
                             attrName = getAttributeNameById(attrID);
                 %>
-                <tr style="vertical-align:top">
-                    <td align="right">
+                <tr>
+                    <td>
                         <label class="question"><%=Util.processForDisplay(attrName)%></label>
                     </td>
                     <td>
@@ -570,7 +570,7 @@
                     </td>
                 </tr>
                 <c:if test="${not empty user and user.authentic}">
-                    <tr style="vertical-align:top">
+                    <tr>
                         <td colspan="2"></td>
                         <td colspan="2">
                             <input type="checkbox" name="wrk_copies" id="wrk_copies" value="true" ${param.wrk_copies eq 'true' ? 'checked="checked"' : ''} />
@@ -578,17 +578,17 @@
                         </td>
                     </tr>
                 </c:if>
-                <tr style="vertical-align:top">
+                <tr>
                     <td colspan="2"></td>
                     <td colspan="2">
                         <input type="checkbox" name="incl_histver" id="incl_histver" value="true" ${param.incl_histver eq 'true' ? 'checked="checked"' : ''} />
                         <label for="incl_histver" class="smallfont">Include historic versions</label>
                     </td>
                 </tr>
-                <tr style="vertical-align:top">
+                <tr>
                     <td colspan="2"></td>
                     <td>
-                        <input class="mediumbuttonb" type="submit" value="Search" />
+                        <input class="mediumbuttonb searchButton" type="submit" value="Search" />
                         <input class="mediumbuttonb" type="reset" value="Reset" />
                     </td>
                 </tr>
@@ -655,20 +655,20 @@
                             colSpan++;
 
                         if (isDisplayHelperColumn) { %>
-                            <col style="width: 3%"/>
-                            <col style="width: 32%"/><%
+                            <col />
+                            <col /><%
                         }
                         else { %>
-                            <col style="width: 35%"/><%
+                            <col /><%
                         }
 
                         if (isDisplayVersionColumn) { %>
-                            <col style="width: 10%"/>
-                            <col style="width: 15%"/>
-                            <col style="width: 40%"/><%
+                            <col />
+                            <col />
+                            <col /><%
                         } else { %>
-                            <col style="width: 20%"/>
-                            <col style="width: 45%"/><%
+                            <col />
+                            <col /><%
                         }
                         %>
 
@@ -736,9 +736,9 @@
                   <tbody>
                     <c:forEach items="${datasets}" var="entry" varStatus="row">
                         <c:set var="dataset" value="${entry.key}" />
-                        <tr valign="top" class="${row.index % 2 != 0 ? 'zebraeven' : 'zebraodd'}">
+                        <tr class="${row.index % 2 != 0 ? 'even' : 'odd'}">
                             <c:if test="${not empty user}">
-                                <td align="right">
+                                <td>
                                     <c:choose>
                                         <c:when test="${not empty dataset.workingUser}">
                                             <div title="${fn:escapeXml(dataset.workingUser)}" class="checkedout">*</div>
