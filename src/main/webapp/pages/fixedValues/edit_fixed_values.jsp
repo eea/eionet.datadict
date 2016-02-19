@@ -2,7 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Fixed Values">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Fixed Values" currentSection="dataElements">
     <stripes:layout-component name="head">
 
         <script type="text/javascript">

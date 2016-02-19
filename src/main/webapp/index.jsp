@@ -58,7 +58,7 @@ finally{
 <body class="threecolumns">
 <div id="container">
     <jsp:include page="nlocation.jsp" flush="false" />
-    <%@ include file="nmenu.jsp" %>
+    <%@ include file="/pages/common/navigation.jsp" %>
     <div id="rightcolumn" class="quickjumps">
         <%=Helps.get("front_page", "news")%>
     </div>

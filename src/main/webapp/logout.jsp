@@ -68,7 +68,7 @@ List<VocabularyFolder> vocabularies = null;
 <jsp:include page="nlocation.jsp" flush="true">
     <jsp:param name="name" value="Logout"/>
 </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<%@ include file="/pages/common/navigation.jsp" %>
 
 <div id="workarea">
     <h1>Logging out</h1>

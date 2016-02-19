@@ -376,7 +376,8 @@
         <jsp:param name="name" value="Datasets"/>
         <jsp:param name="helpscreen" value="datasets"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <c:set var="currentSection" value="datasets" />
+    <%@ include file="/pages/common/navigation.jsp" %>
     <div id="workarea">
         <c:choose>
             <c:when test="${param.wrk_copies eq 'true'}">

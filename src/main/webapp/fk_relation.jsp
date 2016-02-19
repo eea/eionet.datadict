@@ -118,7 +118,8 @@ String disabled = user == null ? "disabled" : "";
         <jsp:param name="name" value="Foreign key relation"/>
         <jsp:param name="helpscreen" value="foreign_key_rel"/>
     </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="dataElements" />
+<%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
     <form id="form1" method="post" action="fk_relation.jsp">
   <h1>Foreign key relation</h1>

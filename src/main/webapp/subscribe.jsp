@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%@ page import="java.util.*" %>
 <%@ page import="java.sql.*" %>
@@ -98,7 +99,8 @@ finally {
     <jsp:include page="nlocation.jsp" flush="true">
         <jsp:param name="name" value="Subscribe"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <c:set var="currentSection" value="subscribe" />
+    <%@ include file="/pages/common/navigation.jsp" %>
 
     <div id="workarea">
 

@@ -44,7 +44,7 @@ else{
         <jsp:include page="nlocation.jsp" flush="true">
             <jsp:param name="isError" value="true"/>
         </jsp:include>
-        <%@ include file="nmenu.jsp" %>
+        <%@ include file="/pages/common/navigation.jsp" %>
         <div id="workarea"><%
 }
 %>

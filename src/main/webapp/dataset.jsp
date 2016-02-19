@@ -665,7 +665,8 @@ else if (mode.equals("add"))
     <jsp:param name="name" value="Dataset"/>
     <jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
 </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="datasets" />
+<%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
             <%
                 boolean goToNewest = false;

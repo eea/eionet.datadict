@@ -159,7 +159,8 @@ private String setDefaultAttrs(String name){
     <jsp:param name="name" value="Search datasets"/>
     <jsp:param name="helpscreen" value="search_dataset"/>
 </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="datasets" />
+<%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
 
         <%

@@ -143,7 +143,8 @@
         <jsp:param name="name" value="Image attribute"/>
         <jsp:param name="helpscreen" value="img_attr"/>
     </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="dataElements" />
+<%@ include file="/pages/common/navigation.jsp" %>
 
 <div id="workarea" style="clear:right;">
 <div id="operations">

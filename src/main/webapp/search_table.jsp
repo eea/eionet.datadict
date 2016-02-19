@@ -175,7 +175,8 @@ if (!isPopup){
         <jsp:param name="name" value="Search tables"/>
         <jsp:param name="helpscreen" value="search_table"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %><%
+    <c:set var="currentSection" value="tables" />
+    <%@ include file="/pages/common/navigation.jsp" %><%
 }
 else {
     %>

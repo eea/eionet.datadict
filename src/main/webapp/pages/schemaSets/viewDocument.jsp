@@ -2,7 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="View schema set">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="View schema set" currentSection="schemas">
 
     <stripes:layout-component name="head">
         <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>

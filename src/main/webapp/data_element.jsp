@@ -1278,7 +1278,8 @@
             <jsp:param name="name" value="Data element"/>
             <jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
         </jsp:include>
-        <%@ include file="nmenu.jsp" %>
+        <c:set var="currentSection" value="dataElements" />
+        <%@ include file="/pages/common/navigation.jsp" %>
         <div id="workarea">
 <%
     } // end if popup

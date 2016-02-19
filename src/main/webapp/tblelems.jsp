@@ -447,7 +447,8 @@
         <jsp:param name="name" value="Table elements"/>
         <jsp:param name="helpscreen" value="table_elements"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <c:set var="currentSection" value="tables" />
+    <%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
 
 <%

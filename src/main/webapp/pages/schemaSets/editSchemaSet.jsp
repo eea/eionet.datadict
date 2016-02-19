@@ -5,7 +5,7 @@
 <%@page import="eionet.meta.dao.domain.RegStatus"%>
 <%@page import="eionet.meta.DElemAttribute"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit schema set">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit schema set" currentSection="schemas">
 
     <stripes:layout-component name="contents">
         

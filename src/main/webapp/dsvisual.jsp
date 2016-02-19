@@ -142,7 +142,8 @@ if (dsVisual!=null && dsVisual.length()!=0){
     <jsp:param name="name" value="Dataset Model"/>
     <jsp:param name="helpscreen" value="dataset_model"/>
 </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="datasets" />
+<%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
     <h1>
         Data model of

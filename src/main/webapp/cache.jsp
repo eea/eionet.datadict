@@ -35,7 +35,7 @@ Vector entries = (Vector)request.getAttribute("entries");
                 <jsp:param name="name" value="Cache"/>
                 <jsp:param name="helpscreen" value="cache"/>
             </jsp:include>
-            <%@ include file="nmenu.jsp" %>
+            <%@ include file="/pages/common/navigation.jsp" %>
             <div id="workarea">
                 <h1>Cached articles for <%=StringEscapeUtils.escapeXml(request.getAttribute("object_type").toString())%>: <em><%=StringEscapeUtils.escapeXml(idf)%></em></h1>
                 <br/>

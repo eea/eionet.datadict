@@ -151,7 +151,8 @@
         <jsp:param name="name" value="Tables"/>
         <jsp:param name="helpscreen" value="tables"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <c:set var="currentSection" value="tables" />
+    <%@ include file="/pages/common/navigation.jsp" %>
 
 <div id="workarea">
 

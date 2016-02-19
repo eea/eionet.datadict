@@ -23,7 +23,7 @@
     <jsp:include page="nlocation.jsp" flush="true">
         <jsp:param name="name" value="Import results"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <%@ include file="/pages/common/navigation.jsp" %>
     <div id="workarea">
         <h1>Import results</h1>
         <p><a href="javascript:openPDF()">Save import results into PDF file</a></p>

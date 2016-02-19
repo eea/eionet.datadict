@@ -99,8 +99,8 @@
                     </c:choose>
                     <div class="breadcrumbtail"></div>
                 </div>
-
                 <stripes:layout-component name="navigation">
+                    <c:set var="currentSection" value="${currentSection}" scope="request" />
                     <jsp:include page="/pages/common/navigation.jsp"/>
                 </stripes:layout-component>
 

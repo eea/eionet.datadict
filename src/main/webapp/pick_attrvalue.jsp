@@ -80,7 +80,8 @@
     <jsp:include page="nlocation.jsp" flush="true">
         <jsp:param name="name" value="Pick attribute value"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <c:set var="currentSection" value="attributes" />
+    <%@ include file="/pages/common/navigation.jsp" %>
 
     <div id="workarea">
 

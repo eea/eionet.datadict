@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
+<%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
@@ -320,7 +321,8 @@
         <jsp:param name="name" value="Restore datasets"/>
         <jsp:param name="helpscreen" value="restore_datasets"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <c:set var="currentSection" value="datasets" />
+    <%@ include file="/pages/common/navigation.jsp" %>
     <div id="workarea">
 
         <%

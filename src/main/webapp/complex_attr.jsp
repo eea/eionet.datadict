@@ -253,7 +253,8 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
         <jsp:param name="name" value="Complex attribute"/>
         <jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
     </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="attributes" />
+<%@ include file="/pages/common/navigation.jsp" %>
 
 <div id="workarea">
 

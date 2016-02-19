@@ -4,7 +4,7 @@
 
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schema sets">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schema sets" currentSection="schemas">
 
     <stripes:layout-component name="contents">
 

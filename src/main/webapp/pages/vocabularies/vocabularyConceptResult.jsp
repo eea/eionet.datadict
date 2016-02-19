@@ -5,7 +5,7 @@
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabulary Concepts">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabulary Concepts" currentSection="vocabularies">
 
     <stripes:layout-component name="contents">
         <div id="drop-operations">

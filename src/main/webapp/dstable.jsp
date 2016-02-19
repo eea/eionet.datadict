@@ -605,7 +605,8 @@ else if (mode.equals("add"))
         <jsp:param name="name" value="Dataset table"/>
         <jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <c:set var="currentSection" value="tables" />
+    <%@ include file="/pages/common/navigation.jsp" %>
 
     <div id="workarea">
 

@@ -125,7 +125,8 @@
         <jsp:param name="name" value="Foreign keys"/>
         <jsp:param name="helpscreen" value="foreign_keys"/>
     </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="dataElements" />
+<%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
 
 <form accept-charset="UTF-8" id="form1" method="post" action="foreign_keys.jsp">

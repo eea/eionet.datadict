@@ -170,7 +170,8 @@
     <jsp:param name="name" value="Dataset tables"/>
     <jsp:param name="helpscreen" value="dataset_tables"/>
 </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="tables" />
+<%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
 <form id="form1" method="post" action="dstables.jsp">
 

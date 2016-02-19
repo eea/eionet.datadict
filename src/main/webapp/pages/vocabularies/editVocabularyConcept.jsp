@@ -3,7 +3,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp"  pageTitle="Edit vocabulary concept">
+<stripes:layout-render name="/pages/common/template.jsp"  pageTitle="Edit vocabulary concept" currentSection="vocabularies">
 
 <stripes:layout-component name="head">
     <script type="text/javascript">

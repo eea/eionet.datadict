@@ -5,7 +5,7 @@
 <%@page import="eionet.meta.dao.domain.Schema"%>
 <%@page import="eionet.meta.DElemAttribute"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Add schema">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Add schema" currentSection="schemas">
 
     <stripes:layout-component name="contents">
     <h1>Add root-level schema</h1>

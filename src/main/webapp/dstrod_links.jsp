@@ -102,7 +102,8 @@ try{
                 <jsp:param name="name" value="Rod links"/>
                 <jsp:param name="helpscreen" value="dataset_rod"/>
             </jsp:include>
-            <%@ include file="nmenu.jsp" %>
+            <c:set var="currentSection" value="datasets" />
+            <%@ include file="/pages/common/navigation.jsp" %>
             <div id="workarea"> <!-- start work area -->
                 <form id="rodlinks" action="dstrod_links.jsp" method="post">
                     <h1>ROD obligations corresponding to <a href="<%=request.getContextPath()%>/datasets/<%=dstID%>"><%=Util.processForDisplay(dstName)%></a> dataset</h1>

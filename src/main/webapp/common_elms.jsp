@@ -242,7 +242,8 @@ else{ %>
             <jsp:param name="name" value="Search results"/>
             <jsp:param name="helpscreen" value="common_element_search_results"/>
         </jsp:include>
-        <%@ include file="nmenu.jsp" %>
+        <c:set var="currentSection" value="dataElements" />
+        <%@ include file="/pages/common/navigation.jsp" %>
         <div id="workarea">
         <%
 }

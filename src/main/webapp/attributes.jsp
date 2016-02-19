@@ -1,6 +1,7 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%!static int iPageLen=0;%>
 
 <%@ include file="history.jsp" %>
@@ -100,7 +101,8 @@
                 <jsp:param name="name" value="Attributes"/>
                 <jsp:param name="helpscreen" value="attributes"/>
             </jsp:include>
-            <%@ include file="nmenu.jsp" %>
+            <c:set var="currentSection" value="attributes" />
+            <%@ include file="/pages/common/navigation.jsp" %>
             <div id="workarea">
             <%
 

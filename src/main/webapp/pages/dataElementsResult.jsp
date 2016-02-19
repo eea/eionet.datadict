@@ -4,7 +4,7 @@
 
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Data elements">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Data elements" currentSection="dataElements">
 
     <stripes:layout-component name="contents">
     <h1>Data elements</h1>

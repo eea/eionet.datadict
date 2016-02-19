@@ -177,7 +177,8 @@ private String legalizeAlert(String in){
         <jsp:param name="name" value="Complex attribute field"/>
         <jsp:param name="helpscreen" value="complex_attr_field"/>
     </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="attributes" />
+<%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
     <%
     String backURL = "" + "/m_attr_fields.jsp?attr_id=" + attr_id + "&attr_name=" + attr_name;

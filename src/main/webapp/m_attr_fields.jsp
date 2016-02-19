@@ -177,7 +177,8 @@ private String legalizeAlert(String in){
             <jsp:param name="name" value="Complex attribute fields"/>
             <jsp:param name="helpscreen" value="complex_attr_fields"/>
         </jsp:include>
-        <%@ include file="nmenu.jsp" %>
+        <c:set var="currentSection" value="attributes" />
+        <%@ include file="/pages/common/navigation.jsp" %>
         <div id="workarea">
             <form id="form1" method="post" action="m_attr_fields.jsp">
                 <h1>Fields of <em><%=Util.processForDisplay(attr_name)%></em></h1>

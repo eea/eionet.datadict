@@ -193,7 +193,8 @@ private String legalizeAlert(String in){
         <jsp:param name="name" value="Complex attributes"/>
         <jsp:param name="helpscreen" value="complex_attrs"/>
     </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="attributes" />
+<%@ include file="/pages/common/navigation.jsp" %>
 
 <div id="workarea">
 

@@ -5,7 +5,7 @@
 <%@page import="eionet.meta.dao.domain.SchemaSet"%>
 <%@page import="eionet.meta.DElemAttribute"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Add schema set">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Add schema set" currentSection="schemas">
 
     <stripes:layout-component name="contents">
         <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>

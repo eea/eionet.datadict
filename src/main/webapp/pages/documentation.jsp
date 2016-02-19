@@ -1,9 +1,9 @@
 <%@page contentType="text/html;charset=UTF-8"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Documentation">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Documentation" currentSection="documentation">
     <stripes:layout-component name="contents">
-
+        <c:set var="menuSection" value="documentation" scope="request" />
             <c:if test='${ddfn:userHasPermission(actionBean.user.userName, "/documentation", "u")}'>
     			<div id="tabbedmenu">
 	                <ul>

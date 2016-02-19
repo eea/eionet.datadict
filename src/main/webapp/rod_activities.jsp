@@ -67,7 +67,7 @@ if (dstName == null || dstName.length()==0)
 <jsp:include page="nlocation.jsp" flush="true">
     <jsp:param name="name" value="Rod links"/>
 </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
     <form id="reload" action="InServices?client=webrod&amp;method=reload_activities" method="get">
         <div style="display:none">

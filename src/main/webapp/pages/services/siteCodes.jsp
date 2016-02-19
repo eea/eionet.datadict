@@ -2,7 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Site codes">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Site codes" currentSection="services">
 
     <stripes:layout-component name="head">
         <script type="text/javascript">

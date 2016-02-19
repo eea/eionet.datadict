@@ -4,7 +4,7 @@
 
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Search tables">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Search tables" currentSection="tables">
 
     <stripes:layout-component name="contents">
         

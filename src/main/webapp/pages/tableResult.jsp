@@ -4,7 +4,7 @@
 
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Tables">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Tables" currentSection="tables">
 
     <stripes:layout-component name="contents">
         <div id="drop-operations">

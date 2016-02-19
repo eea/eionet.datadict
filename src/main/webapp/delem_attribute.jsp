@@ -384,7 +384,8 @@ else
             <jsp:param name="name" value="Attribute"/>
             <jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
         </jsp:include>
-        <%@ include file="nmenu.jsp" %>
+        <c:set var="currentSection" value="attributes" />
+        <%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
 
             <form id="form1" method="post" action="delem_attribute.jsp">

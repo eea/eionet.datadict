@@ -244,7 +244,8 @@ if (!isPopup){
         <jsp:param name="name" value="Search dataelements"/>
         <jsp:param name="helpscreen" value="search_element"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <c:set var="currentSection" value="dataElements" />
+    <%@ include file="/pages/common/navigation.jsp" %>
     <div id="workarea">
 <%
 }

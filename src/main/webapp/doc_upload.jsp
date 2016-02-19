@@ -44,7 +44,8 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
         <jsp:param name="name" value="Upload document"/>
         <jsp:param name="helpscreen" value="doc_upload"/>
     </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="datasets" />
+<%@ include file="/pages/common/navigation.jsp" %>
 
 <div id="workarea">
 

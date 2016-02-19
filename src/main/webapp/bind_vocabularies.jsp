@@ -5,7 +5,7 @@
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabularies">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabularies" currentSection="dataElements">
 
     <stripes:layout-component name="contents">
         <h1>Set Vocabulary for fixed values</h1>

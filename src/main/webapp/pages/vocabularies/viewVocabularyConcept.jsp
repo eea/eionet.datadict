@@ -2,8 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp"
-    pageTitle="Vocabulary">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabulary" currentSection="vocabularies">
 
     <stripes:layout-component name="contents">
 

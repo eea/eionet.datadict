@@ -22,7 +22,7 @@
 	<jsp:include page="nlocation.jsp" flush="true">
 	    <jsp:param name="name" value="Login"/>
 	</jsp:include>
-	<%@ include file="nmenu.jsp" %>
+	<%@ include file="/pages/common/navigation.jsp" %>
 
 	<div id="workarea">
 
