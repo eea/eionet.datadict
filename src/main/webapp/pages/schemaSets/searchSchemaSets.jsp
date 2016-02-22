@@ -48,7 +48,7 @@
 
             <br />
 
-            <display:table name="actionBean.schemaSetsResult" class="sortable" id="item" requestURI="/schemasets/search/">
+            <display:table name="actionBean.schemaSetsResult" class="sortable results" id="item" requestURI="/schemasets/search/">
                 <display:column title="Name" sortable="true" sortName="sortName" sortProperty="NAME_ATTR">
                     <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
                         <stripes:param name="schemaSet.identifier" value="${item.identifier}" />

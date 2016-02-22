@@ -482,7 +482,7 @@
         </stripes:form>
         <%-- Vocabulary concepts --%>
         <div class="vocabularyConceptResults" style="overflow: auto;">
-        <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept"
+        <display:table name="actionBean.vocabularyConcepts" class="datatable results" id="concept"
             style="width:100%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view"
             excludedParams="view vocabularyFolder.identifier vocabularyFolder.folderName">
             <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
@@ -595,7 +595,7 @@
 
     <c:if test="${not empty actionBean.vocabularyFolderVersions}">
         <h2 id="otherVersions">Other versions of this vocabulary</h2>
-        <display:table name="${actionBean.vocabularyFolderVersions}" class="datatable" id="item" style="width:100%">
+        <display:table name="${actionBean.vocabularyFolderVersions}" class="datatable results" id="item" style="width:100%">
             <display:column title="Label">
                 <c:choose>
                     <c:when test="${item.draftStatus && empty actionBean.user}">

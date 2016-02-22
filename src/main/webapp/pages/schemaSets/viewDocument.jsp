@@ -288,14 +288,14 @@
         <h2>
             Complex attributes
         </h2>
-        <table class="datatable">
+        <table class="datatable results">
 
             <col style="width:29%"/>
             <col style="width:4%"/>
             <col style="width:63%"/>
 
             <c:forEach items="${actionBean.complexAttributes}" var="complexAttr" varStatus="complexAttrsLoop">
-                <tr class="zebra${complexAttrsLoop.index % 2 != 0 ? 'odd' : 'even'}">
+                <tr class="${(complexAttrsLoop.index + 1) % 2 != 0 ? 'odd' : 'even'}">
                     <td>
                         <a href="${pageContext.request.contextPath}/complex_attr.jsp?attr_id=${complexAttr.ID}&amp;parent_id=${actionBean.schema.id}&amp;parent_type=SCH&amp;parent_name=${actionBean.schema.fileName}&amp;parent_link=${viewUrl}">
                             <c:out value="${complexAttr.shortName}"/>
@@ -326,7 +326,7 @@
 
     <c:if test="${actionBean.rootLevelSchema && not empty actionBean.otherVersions}">
         <h2>Other versions of this schema</h2>
-        <display:table name="${actionBean.otherVersions}" class="datatable" id="otherVersion" style="width:80%">
+        <display:table name="${actionBean.otherVersions}" class="datatable results" id="otherVersion" style="width:80%">
             <display:column title="File name">
                 <stripes:link beanclass="${actionBean['class'].name}" title="Open schema details">
                     <stripes:param name="schema.id" value="${otherVersion.id}"/>

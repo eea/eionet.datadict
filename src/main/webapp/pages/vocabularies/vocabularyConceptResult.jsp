@@ -22,7 +22,7 @@
             Note: Unauthenticated users can only see vocabulary concepts of vocabularies in <em>Released</em> and <em>Public Draft</em> statuses.
         </p>
 
-        <display:table name="${actionBean.vocabularyConceptResult}" class="sortable" id="item" requestURI="/vocabularies/searchConcepts"  pagesize="20">
+        <display:table name="${actionBean.vocabularyConceptResult}" class="sortable results" id="item" requestURI="/vocabularies/searchConcepts"  pagesize="20">
             <display:column title="Vocabulary Set" sortable="true" sortProperty="vocabularySetIdentifier" >
                 <c:out value="${item.vocabularySetIdentifier}" />
             </display:column>

@@ -1541,15 +1541,14 @@
                                         <!-- attributes -->
 
                                         <%
-                                            int displayed = 0;
-                                                int colspan = mode.equals("view") ? 3 : 4;
-                                                String titleWidth = colspan == 3 ? "30" : "26";
-                                                String valueWidth = colspan == 3 ? "66" : "62";
-
-                                                String isOdd = Util.isOdd(displayed);
+                                            int displayed = 1;
+                                            int colspan = mode.equals("view") ? 3 : 4;
+                                            String titleWidth = colspan == 3 ? "30" : "26";
+                                            String valueWidth = colspan == 3 ? "66" : "62";
+                                            String isOdd = Util.isOdd(displayed);
                                         %>
 
-                                        <table class="datatable">
+                                        <table class="datatable results">
                                             <col style="width: <%=titleWidth%>%"/>
                                             <col style="width: 4%"/>
                                             <%
@@ -1563,7 +1562,7 @@
 
                                             <!-- Identifier -->
 
-                                            <tr class="zebra<%=isOdd%>">
+                                            <tr class="<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">
                                                     Identifier
                                                 </th>
@@ -1599,7 +1598,7 @@
                                             </tr>
 
                                               <!-- short name -->
-                                            <tr id="short_name_row">
+                                            <tr id="short_name_row" class="<%=isOdd%>">
                                                 <th scope="row" class="scope-row short_name">Short name</th>
                                                 <td class="short_name simple_attr_help">
                                                     <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name">
@@ -1642,7 +1641,7 @@
 
                                                         // dataset
                                             %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Dataset
                                                         </th>
@@ -1681,7 +1680,7 @@
                                                 <%
                                                     // table
                                                 %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Table
                                                     </th>
@@ -1718,7 +1717,7 @@
                                             <%
                                                 if (elmCommon) {
                                             %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         RegistrationStatus
                                                     </th>
@@ -1795,7 +1794,7 @@
                                             if (mode.equals("view") && jspUrlPrefix != null) {
                                                 String refUrl = dataElement.getReferenceURL();
                                                 %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Reference URL
                                                     </th>
@@ -1938,7 +1937,7 @@
                                                             }
                                                         }
                                             %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         <%=Util.processForDisplay(attribute.getName())%>
                                                     </th>
@@ -2169,7 +2168,7 @@
                                                     if (elmCommon && !mode.equals("add")) {
                                                         String elmVersion = dataElement.getVersion();
                                             %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         CheckInNo
                                                     </th>
@@ -2201,7 +2200,7 @@
                                             <%
                                                 if (vocabulary != null) {
                                             %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Vocabulary
                                                     </th>
@@ -2680,7 +2679,7 @@ String helpAreaName = "";
                                                                                             attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
                                                                 %>
 
-                                                                    <tr class="zebra<%=isOdd%>">
+                                                                    <tr class="<%=isOdd%>">
                                                                         <td>
                                                                             <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.processForDisplay(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
                                                                                 <%=Util.processForDisplay(attrName)%>
@@ -2801,7 +2800,7 @@ String helpAreaName = "";
                                             <h2>
                                                 Other versions<a id="versions"></a>
                                             </h2>
-                                            <table class="datatable" id="other-versions">
+                                            <table class="datatable results" id="other-versions">
                                                 <col style="width:25%"/>
                                                 <col style="width:25%"/>
                                                 <col style="width:25%"/>
@@ -2836,8 +2835,9 @@ String helpAreaName = "";
                                                         releaseDate = "";
                                                         releaseDateHint = "";
                                                     }
+                                                    String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                                                 %>
-                                                    <tr>
+                                                    <tr class="<%=zebraClass%>">
                                                         <td><%=otherVer.getID()%></td>
                                                         <td><%=status%></td>
                                                         <td><%=releaseDate%></td>

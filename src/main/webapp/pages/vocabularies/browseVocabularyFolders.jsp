@@ -164,7 +164,7 @@
 
                         <ul class="menu" style="margin-left: 1.2em">
                             <c:forEach var="item" items="${folder.items}" varStatus="itemLoop">
-                                <li class="zebra${itemLoop.index % 2 != 0 ? 'odd' : 'even'}">
+                                <li class="{(itemLoop.index + 1) % 2 != 0 ? 'odd' : 'even'}">
                                     <c:if test="${not empty actionBean.user  && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'd')}">
                                         <stripes:checkbox name="folderIds" value="${item.id}" disabled="${item.workingCopy || not empty item.workingUser}" />
                                     </c:if>

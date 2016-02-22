@@ -72,7 +72,7 @@
 
             <br />
 
-            <display:table name="actionBean.schemasResult" class="sortable" id="item" requestURI="/schema/search/">
+            <display:table name="actionBean.schemasResult" class="sortable results" id="item" requestURI="/schema/search/">
                 <c:if test="${actionBean.schemaSetId != 0}">
                     <display:column title="" sortable="false">
                         <stripes:radio value="${item.id}" name="schemaId" />

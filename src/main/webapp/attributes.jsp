@@ -148,7 +148,7 @@
             <%}%>
         </p>
 
-        <table class="datatable">
+        <table class="datatable results">
             <tr>
                 <th scope="col" class="scope-col">
                                 Short name
@@ -212,9 +212,9 @@
                 }
 
                 String attrTypeDisp = "Simple";
+                String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                 %>
-
-                <tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
+                <tr class="<%=zebraClass%>">
                     <%
                     if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
                         attrTypeDisp = "Complex";

@@ -21,7 +21,7 @@
             <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.
         </p>
 
-        <display:table name="${actionBean.dataSetTables}" class="sortable" id="item" sort="list"
+        <display:table name="${actionBean.dataSetTables}" class="sortable results" id="item" sort="list"
             decorator="eionet.web.decorators.TableResultDecorator" requestURI="/tableSearch.action">
             <display:column title="Full name" sortable="true">
                 <c:choose>

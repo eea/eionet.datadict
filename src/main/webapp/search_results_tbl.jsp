@@ -176,7 +176,7 @@
             %>
 
         <!-- the result table -->
-        <table width="100%" class="sortable" style="clear:both">
+        <table width="100%" class="sortable results" style="clear:both">
          <col style="width:34%"/>
          <col style="width:22%"/>
          <col style="width:22%"/>
@@ -315,7 +315,7 @@
 
                         tableLink = request.getContextPath() + "/tables/" + table_id;
 
-                        String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+                        String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                         String regStatus = table.getDstStatus();
                         boolean clickable = regStatus!=null ? !searchEngine.skipByRegStatus(regStatus) : true;
                         String strDisabled = clickable ? "" : " class=\"disabled\"";
@@ -410,7 +410,7 @@
 
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
                         String strDisabled = oEntry.clickable ? "" : " class=\"disabled\"";
-                        String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+                        String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                         tableLink = request.getContextPath() + "/tables/" + oEntry.oID;
                         String statusImg   = "images/" + Util.getStatusImage(oEntry.regStatus);
                         String statusTxt   = Util.getStatusRadics(oEntry.regStatus);

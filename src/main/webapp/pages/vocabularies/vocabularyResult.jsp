@@ -22,7 +22,7 @@
             Note: Unauthenticated users can only see vocabularies in <em>Released</em> and <em>Public Draft</em> statuses.
         </p>
 
-        <display:table name="${actionBean.vocabularyResult.list}" class="sortable" id="item" requestURI="/vocabularies/search"  pagesize="20">
+        <display:table name="${actionBean.vocabularyResult.list}" class="sortable results" id="item" requestURI="/vocabularies/search"  pagesize="20">
             <display:column title="Vocabulary Set" sortable="true" sortProperty="folderName">
                 ${item.folderName}
             </display:column>

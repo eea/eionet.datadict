@@ -884,7 +884,7 @@ else if (mode.equals("add"))
                                     <!-- attributes -->
 
                                     <%
-                                    int displayed = 0;
+                                    int displayed = 1;
                                     int colspan = mode.equals("view") ? 3 : 4;
                                     String titleWidth = colspan==3 ? "30" : "26";
                                     String valueWidth = colspan==3 ? "66" : "62";
@@ -892,7 +892,7 @@ else if (mode.equals("add"))
                                     String isOdd = Util.isOdd(displayed);
                                     %>
 
-                                    <table class="datatable" width="100%">
+                                    <table class="datatable results" width="100%">
                                             <col style="width:<%=titleWidth%>%"/>
                                             <col style="width:4%"/>
                                             <% if (colspan==4){ %>
@@ -903,7 +903,7 @@ else if (mode.equals("add"))
                                           <!-- static attributes -->
 
                                         <!-- Identifier -->
-                                        <tr class="zebra<%=isOdd%>">
+                                        <tr class="<%=isOdd%>">
                                             <th scope="row" class="scope-row simple_attr_title">
                                                 Identifier
                                             </th>
@@ -935,7 +935,7 @@ else if (mode.equals("add"))
                                         </tr>
 
                                         <!-- short name -->
-                                        <tr id="short_name_row">
+                                        <tr id="short_name_row" class="<%=isOdd%>">
                                             <th scope="row" class="scope-row short_name">Short name</th>
                                             <td class="short_name simple_attr_help">
                                                 <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name">
@@ -970,7 +970,7 @@ else if (mode.equals("add"))
 
                                         <!-- dataset -->
 
-                                        <tr class="zebra<%=isOdd%>">
+                                        <tr class="<%=isOdd%>">
                                             <th scope="row" class="scope-row simple_attr_title">
                                                 Dataset
                                             </th>
@@ -1006,7 +1006,7 @@ else if (mode.equals("add"))
 
                                             String refUrl = dsTable.getReferenceURL();
                                             %>
-                                            <tr class="zebra<%=isOdd%>">
+                                            <tr class="<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">
                                                     Reference URL
                                                 </th>
@@ -1090,7 +1090,7 @@ else if (mode.equals("add"))
 
                                             %>
 
-                                            <tr class="zebra<%=isOdd%>">
+                                            <tr class="<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">
                                                     <%=Util.processForDisplay(attribute.getName())%>
                                                 </th>
@@ -1529,7 +1529,7 @@ else if (mode.equals("add"))
                                                                 Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
                                                                 %>
 
-                                                                <tr class="zebra<%=isOdd%>">
+                                                                <tr class="<%=isOdd%>">
                                                                     <td>
                                                                         <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
                                                                             <%=Util.processForDisplay(attrName)%>

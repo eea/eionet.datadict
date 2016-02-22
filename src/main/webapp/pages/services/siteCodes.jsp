@@ -304,7 +304,7 @@
         <c:if test="${actionBean.context.eventName == 'search'}">
         <c:set var="exporttext"><div class="exportlinks"> Download all results as: {0} </div></c:set>
 
-        <display:table name="actionBean.siteCodeResult" class="datatable" id="siteCode" style="width:80%"
+        <display:table name="actionBean.siteCodeResult" class="datatable results" id="siteCode" style="width:80%"
         requestURI="/services/siteCodes/search" export="true">
             <display:setProperty name="basic.msg.empty_list" value="No site codes found." />
 

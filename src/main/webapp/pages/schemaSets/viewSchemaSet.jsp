@@ -285,7 +285,7 @@
     </c:if>
 
     <c:if test="${not empty actionBean.schemas}">
-        <display:table name="${actionBean.schemas}" class="datatable" id="schema" style="width:80%">
+        <display:table name="${actionBean.schemas}" class="datatable results" id="schema" style="width:80%">
             <display:column title="File name">
                 <stripes:link beanclass="eionet.web.action.SchemaActionBean" title="Open schema details">
                     <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
@@ -303,14 +303,14 @@
         <h2>
             Complex attributes
         </h2>
-        <table class="datatable">
+        <table class="datatable results">
 
             <col style="width:29%"/>
             <col style="width:4%"/>
             <col style="width:63%"/>
 
             <c:forEach items="${actionBean.complexAttributes}" var="complexAttr" varStatus="complexAttrsLoop">
-                <tr class="zebra${complexAttrsLoop.index % 2 != 0 ? 'odd' : 'even'}">
+                <tr class="${(complexAttrsLoop.index + 1) % 2 != 0 ? 'odd' : 'even'}">
                     <td>
                         <a href="${pageContext.request.contextPath}/complex_attr.jsp?attr_id=${complexAttr.ID}&amp;parent_id=${actionBean.schemaSet.id}&amp;parent_type=SCS&amp;parent_name=${actionBean.schemaSet.identifier}&amp;parent_link=${viewUrl}">
                             <c:out value="${complexAttr.name}"/>
@@ -341,7 +341,7 @@
 
     <c:if test="${not empty actionBean.otherVersions}">
         <h2>Other versions of this schema set</h2>
-        <display:table name="${actionBean.otherVersions}" class="datatable" id="otherVersion" style="width:80%">
+        <display:table name="${actionBean.otherVersions}" class="datatable results" id="otherVersion" style="width:80%">
             <display:column title="Identifier">
                 <stripes:link beanclass="${actionBean['class'].name}" title="Open schema set details">
                     <stripes:param name="schemaSet.identifier" value="${otherVersion.identifier}"/>

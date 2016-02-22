@@ -417,7 +417,7 @@
         <!-- Vocabulary concepts -->
         <c:url var="editIcon" value="/images/edit.gif" />
         <stripes:form method="post" id="conceptsForm" beanclass="${actionBean['class'].name}">
-            <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="concept" style="width:80%"
+            <display:table name="${actionBean.vocabularyConcepts}" class="datatable results" id="concept" style="width:80%"
                 requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/edit">
                 <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
                 <display:setProperty name="paging.banner.placement" value="both" />

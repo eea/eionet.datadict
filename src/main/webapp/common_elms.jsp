@@ -280,7 +280,7 @@ else{ %>
 
             <!-- result table -->
 
-            <table class="sortable" style="width:auto;clear:right">
+            <table class="sortable results" style="width:auto;clear:right">
             <%
             boolean isDisplayVersionColumn = isIncludeHistoricVersions;
             %>
@@ -337,7 +337,7 @@ else{ %>
 
             <%
             int displayed = 0;
-            if (pageMode.equals("search")){
+            if (pageMode.equals("search")) {
 
                 // set up the search result set
                 c_SearchResultSet oResultSet=new c_SearchResultSet();
@@ -408,7 +408,7 @@ else{ %>
                     oEntry.selectLink = selectLink.toString();
                     oResultSet.oElements.add(oEntry);
 
-                    String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+                    String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                     %>
 
                     <tr class="<%=zebraClass%>">
@@ -472,8 +472,7 @@ else{ %>
             </tbody>
         </table>
         <p>Total results: <%=dataElements.size()%></p><%
-            }
-            else{
+            } else {
                 // No search - return from another result set or a total stranger...
                 c_SearchResultSet oResultSet=(c_SearchResultSet)session.getAttribute(attrCommonElms);
                 if (oResultSet==null) {
@@ -491,7 +490,7 @@ else{ %>
                         String statusImg   = "images/" + Util.getStatusImage(oEntry.status);
                         String statusTxt   = Util.getStatusRadics(oEntry.status);
 
-                        String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+                        String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                         %>
                         <tr class="<%=zebraClass%>">
                             <td<%=strDisabled%>>

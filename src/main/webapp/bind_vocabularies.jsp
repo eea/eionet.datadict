@@ -10,7 +10,7 @@
     <stripes:layout-component name="contents">
         <h1>Set Vocabulary for fixed values</h1>
 
-        <display:table name="${actionBean.vocabularies.list}" class="sortable" id="item" requestURI="/bindvocabulary"  pagesize="20">
+        <display:table name="${actionBean.vocabularies.list}" class="sortable results" id="item" requestURI="/bindvocabulary"  pagesize="20">
             <display:column title="Vocabulary Set" sortable="true" sortProperty="folderName">
                 ${item.folderName}
             </display:column>

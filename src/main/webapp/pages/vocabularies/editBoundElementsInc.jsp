@@ -34,7 +34,7 @@
 
 <h2>Bound elements for concepts</h2>
 
-<display:table name="actionBean.boundElements" class="sortable" id="item"
+<display:table name="actionBean.boundElements" class="sortable results" id="item"
     requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/edit">
     <display:column title="Element" sortable="true" sortProperty="identifier">
         <c:choose>
@@ -111,7 +111,7 @@
         </table>
     </stripes:form>
 
-    <display:table name="actionBean.elementsResult.dataElements" class="sortable" id="item" pagesize="20"
+    <display:table name="actionBean.elementsResult.dataElements" class="sortable results" id="item" pagesize="20"
         requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/searchDataElements">
         <display:column title="Element" sortable="true" sortProperty="identifier">
             <c:choose>

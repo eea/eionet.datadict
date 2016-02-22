@@ -342,7 +342,7 @@ else{ %>
 
             <!-- search results table -->
 
-            <table width="700" class="sortable" style="display:block">
+            <table width="700" class="sortable results" style="display:block">
             <%
             boolean isDisplayDstVersionColumn = isIncludeHistoricVersions;
             if (isDisplayDstVersionColumn){%>
@@ -491,7 +491,7 @@ else{ %>
                     oEntry.href = href.toString();
                     oResultSet.oElements.add(oEntry);
 
-                    String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+                    String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                     %>
 
                     <tr class="<%=zebraClass%>">
@@ -566,7 +566,7 @@ else{ %>
                         String statusImg   = "images/" + Util.getStatusImage(oEntry.dstRegStatus);
                         String statusTxt   = Util.getStatusRadics(oEntry.dstRegStatus);
 
-                        String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+                        String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                         %>
                         <tr class="<%=zebraClass%>">
                             <td<%=strDisabled%>>

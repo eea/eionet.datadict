@@ -65,7 +65,7 @@
         <c:if test="${not empty actionBean.schemas}">
             <stripes:form id="schemasForm" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
                 <stripes:hidden name="schemaSet.id"/>
-                <display:table name="${actionBean.schemas}" class="datatable" id="schema" style="width:80%">
+                <display:table name="${actionBean.schemas}" class="datatable results" id="schema" style="width:80%">
                     <display:column>
                         <stripes:checkbox name="schemaIds" value="${schema.id}" />
                     </display:column>

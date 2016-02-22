@@ -362,7 +362,7 @@
         </div>
 
         <!--  result table -->
-        <table width="700" class="sortable">
+        <table width="700" class="sortable results">
 
             <thead>
             <tr>
@@ -441,9 +441,7 @@
                                         (dataset.isWorkingCopy() &&
                                         workingUser!=null && user!=null &&
                                         workingUser.equals(user.getUserName()));
-
-                    String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
-
+                    String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                     %>
 
                     <tr valign="top" class="<%=zebraClass%>">
@@ -513,9 +511,8 @@
                     c_SearchResultEntry oEntry;
                     for (int i=0;i<oResultSet.oElements.size();i++) {
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
-
-                                                String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
-
+                        int rowIndex = i + 1;
+                        String zebraClass  = rowIndex % 2 != 0 ? "odd" : "even";
                         %>
                         <tr valign="top" class="<%=zebraClass%>">
                             <%

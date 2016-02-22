@@ -998,7 +998,7 @@ else if (mode.equals("add"))
                                         <!-- attributes -->
 
                                         <%
-                                        int displayed = 0;
+                                        int displayed = 1;
                                         int colspan = mode.equals("view") ? 3 : 4;
                                         String titleWidth = colspan==3 ? "30" : "26";
                                         String valueWidth = colspan==3 ? "66" : "62";
@@ -1006,7 +1006,7 @@ else if (mode.equals("add"))
                                         String isOdd = Util.isOdd(displayed);
                                         %>
 
-                                        <table class="datatable">
+                                        <table class="datatable results">
                                             <col style="width:<%=titleWidth%>%"/>
                                             <col style="width:4%"/>
                                             <% if (colspan==4) { %>
@@ -1018,7 +1018,7 @@ else if (mode.equals("add"))
                                               <!-- static attributes -->
 
                                             <!-- Identifier -->
-                                            <tr class="zebra<%=isOdd%>">
+                                            <tr class="<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">
                                                     Identifier
                                                 </th>
@@ -1050,7 +1050,7 @@ else if (mode.equals("add"))
                                             </tr>
 
                                             <!-- short name -->
-                                            <tr id="short_name_row">
+                                            <tr id="short_name_row" class="<%=isOdd%>">
                                                 <th class="scope-row short_name">Short name</th>
                                                 <td class="short_name simple_attr_help">
                                                     <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name">
@@ -1085,7 +1085,7 @@ else if (mode.equals("add"))
 
                                             <!-- RegistrationStatus -->
 
-                                            <tr class="zebra<%=isOdd%>">
+                                            <tr class="<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">
                                                     Registration status
                                                 </th>
@@ -1154,7 +1154,7 @@ else if (mode.equals("add"))
                                             if (mode.equals("view")) {
                                                 String refUrl = dataset.getReferenceURL();
                                                 %>
-                                              <tr class="zebra<%=isOdd%>">
+                                              <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Reference URL
                                                     </th>
@@ -1217,7 +1217,7 @@ else if (mode.equals("add"))
 
                                                 %>
 
-                                            <tr class="zebra<%=isOdd%>">
+                                            <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         <%=Util.processForDisplay(attribute.getName())%>
                                                     </th>
@@ -1386,7 +1386,7 @@ else if (mode.equals("add"))
                                                 String checkedMDB = dataset.displayCreateLink("MDB") ? "checked='checked'" : "";
                                                 String checkedXmlSchema = dataset.displayCreateLink("XMLSCHEMA") ? "checked='checked'" : "";
                                                 %>
-                                              <tr class="zebra<%=isOdd%>">
+                                              <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Public outputs
                                                     </th>
@@ -1444,7 +1444,7 @@ else if (mode.equals("add"))
                                             // display only in non-add mode and for users with edit prm
                                             if (!mode.equals("add") && editPrm) {
                                                 %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Dataset number
                                                     </th>
@@ -1546,7 +1546,7 @@ else if (mode.equals("add"))
                                             <h2 id="tables">
                                                 Dataset tables
                                             </h2>
-                                                <table class="datatable" id="dataset-tables">
+                                                <table class="datatable results" id="dataset-tables">
                                                     <col style="width:50%"/>
                                                     <col style="width:50%"/>
                                                     <thead>
@@ -1579,8 +1579,9 @@ else if (mode.equals("add"))
                                                         if (tblFullName!=null && tblFullName.length()>40)
                                                             tblFullName = tblFullName.substring(0,40) + " ...";
                                                         String escapedFullName = Util.processForDisplay(tblFullName,true,true);
+                                                        String zebraClass  = (i + 1) % 2 != 0 ? "odd" : "even";
                                                         %>
-                                                        <tr>
+                                                        <tr class="<%=zebraClass%>">
                                                             <td>
                                                                 <a href="<%=tableLink%>" title="<%=escapedFullName%>">
                                                                     <%=escapedFullName%>
@@ -1665,7 +1666,7 @@ else if (mode.equals("add"))
                                                 <h2 id="cattrs">
                                                     Complex attributes
                                                 </h2>
-                                                            <table class="datatable" id="dataset-attributes">
+                                                            <table class="datatable results" id="dataset-attributes">
                                                                 <col style="width:29%"/>
                                                                 <col style="width:4%"/>
                                                                 <col style="width:63%"/>
@@ -1680,7 +1681,7 @@ else if (mode.equals("add"))
                                                                     Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
                                                                     %>
 
-                                                                    <tr class="zebra<%=isOdd%>">
+                                                                    <tr class="<%=isOdd%>">
                                                                         <td>
                                                                             <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.processForDisplay(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
                                                                                 <%=Util.processForDisplay(attrName)%>
@@ -1737,7 +1738,7 @@ else if (mode.equals("add"))
                                                 <h2 id="versions">
                                                     Other versions
                                                 </h2>
-                                                <table class="datatable" id="other-versions">
+                                                <table class="datatable results" id="other-versions">
                                                     <col style="width:25%"/>
                                                     <col style="width:25%"/>
                                                     <col style="width:25%"/>
@@ -1770,8 +1771,9 @@ else if (mode.equals("add"))
                                                             releaseDate = "";
                                                             releaseDateHint = "";
                                                         }
+                                                        String zebraClass  = (i + 1) % 2 != 0 ? "odd" : "even";
                                                         %>
-                                                        <tr>
+                                                        <tr class="<%=zebraClass%>">
                                                             <td><%=otherVer.getID()%></td>
                                                             <td><%=status%></td>
                                                             <td title="<%=releaseDateHint%>"><%=releaseDate%></td>

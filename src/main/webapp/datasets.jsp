@@ -736,7 +736,7 @@
                   <tbody>
                     <c:forEach items="${datasets}" var="entry" varStatus="row">
                         <c:set var="dataset" value="${entry.key}" />
-                        <tr class="${row.index % 2 != 0 ? 'even' : 'odd'}">
+                        <tr class="${(row.index + 1) % 2 != 0 ? 'odd' : 'even'}">
                             <c:if test="${not empty user}">
                                 <td>
                                     <c:choose>
