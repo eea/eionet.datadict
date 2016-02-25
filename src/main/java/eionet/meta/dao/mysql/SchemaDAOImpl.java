@@ -122,7 +122,12 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         params.put("checkedOutCopyId", schema.getCheckedOutCopyId() <= 0 ? null : schema.getCheckedOutCopyId());
         params.put("otherDocument", schema.isOtherDocument());
 
+       
+        
+        if (schemaExists(schema.getFileName(), schema.getSchemaSetId())==false) {
         getNamedParameterJdbcTemplate().update(INSERT_SQL, params);
+
+        }
 
         return getLastInsertId();
     }

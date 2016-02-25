@@ -51,6 +51,8 @@ import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
 import eionet.meta.service.data.SchemasResult;
 import eionet.util.SecurityUtil;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 
 /**
  * Schema service implementation.
@@ -428,7 +430,7 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     @Override
-    @Transactional(rollbackFor = ServiceException.class)
+    @Transactional(  isolation = Isolation.SERIALIZABLE,  rollbackFor = ServiceException.class)
     public int addSchema(Schema schema, Map<Integer, Set<String>> attributes) throws ServiceException {
         if (schema.getSchemaSetId() == 0) {
             schema.setRegStatus(RegStatus.DRAFT);
