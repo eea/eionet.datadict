@@ -430,7 +430,7 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     @Override
-    @Transactional(  isolation = Isolation.SERIALIZABLE,  rollbackFor = ServiceException.class)
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = ServiceException.class)
     public int addSchema(Schema schema, Map<Integer, Set<String>> attributes) throws ServiceException {
         if (schema.getSchemaSetId() == 0) {
             schema.setRegStatus(RegStatus.DRAFT);
