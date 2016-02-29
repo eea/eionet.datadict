@@ -1,11 +1,11 @@
 <%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,eionet.util.Util,java.sql.*,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="history.jsp" %>
 
 <%
     request.setCharacterEncoding("UTF-8");
-
     DDUser user = SecurityUtil.getUser(request);
 %>
 
@@ -133,7 +133,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
             imgVisual = true;
     }
 }
-
+request.setAttribute("currentSection", "datasets");
 %>
 
 <body>
