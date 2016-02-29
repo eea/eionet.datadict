@@ -695,7 +695,7 @@ else if (mode.equals("add"))
                         <%
                         if (goToNewest) {
                             %>
-                                <li><a href="<%=request.getContextPath()%>/datasets/<%=latestID%>">Go to newest</a></li>
+                                <li class="newest"><a href="<%=request.getContextPath()%>/datasets/<%=latestID%>">Go to newest</a></li>
                             <%
                         }
                         if (isDisplayOperations) {
@@ -706,31 +706,31 @@ else if (mode.equals("add"))
                                 <%
                                 String dstrodLink = request.getContextPath() + "/dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&amp;dst_id=" + dataset.getID() + "&amp;dst_name=" + dataset.getShortName();
                                 %>
-                                <li><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/edit">Edit metadata</a></li>
-                                <li><a href="<%=request.getContextPath()%>/complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.processForDisplay(ds_name)%>&amp;ds=true">Edit complex attributes</a></li>
-                                <li><a href="<%=request.getContextPath()%>/dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.processForDisplay(ds_name)%>">Manage tables</a></li>
-                                <li><a href="<%=request.getContextPath()%>/dsvisual.jsp?ds_id=<%=ds_id%>">Manage model</a></li>
-                                <li><a href="<%=dstrodLink%>">Manage links to ROD</a></li>
-                                <li><a href="javascript:checkIn()">Check in</a></li>
-                                <li><a href="javascript:submitForm('delete')">Undo checkout</a></li>
+                                <li class="edit"><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/edit">Edit metadata</a></li>
+                                <li class="edit"><a href="<%=request.getContextPath()%>/complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.processForDisplay(ds_name)%>&amp;ds=true">Edit complex attributes</a></li>
+                                <li class="manage"><a href="<%=request.getContextPath()%>/dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.processForDisplay(ds_name)%>">Manage tables</a></li>
+                                <li class="manage"><a href="<%=request.getContextPath()%>/dsvisual.jsp?ds_id=<%=ds_id%>">Manage model</a></li>
+                                <li class="manage"><a href="<%=dstrodLink%>">Manage links to ROD</a></li>
+                                <li class="checkin"><a href="javascript:checkIn()">Check in</a></li>
+                                <li class="undo"><a href="javascript:submitForm('delete')">Undo checkout</a></li>
                             <%
                                 }
                             }
                             if (mode.equals("view")) {
                                 if (canNewVersion) {
                             %>
-                                <li><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/newversion">New version</a></li>
+                                <li class="newVersion"><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/newversion">New version</a></li>
                             <%
                                 }
                                 if (canCheckout) {
                             %>
-                                <li><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/checkout">Check out</a></li>
-                                <li><a href="javascript:submitForm('delete')">Delete</a></li>
+                                <li class="checkout"><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/checkout">Check out</a></li>
+                                <li class="delete"><a href="javascript:submitForm('delete')">Delete</a></li>
                             <%
                                 }
                             }
                             if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null && !dataset.isWorkingCopy()) {%>
-                                <li><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/subscribe">Subscribe</a><%
+                                <li class="delete"><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/subscribe">Subscribe</a></li><%
                             }
                         }
                         %>

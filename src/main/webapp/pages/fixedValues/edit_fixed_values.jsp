@@ -34,13 +34,13 @@
             <%@ include file="/pages/fixedValues/fixed_values_header.jsp"%>
             <div id="operations">
                 <ul>
-                    <li>
+                    <li class="add">
                         <stripes:link beanclass="${actionBean.viewModel.actionBeanName}" event="add">
                             <stripes:param name="ownerId" value="${actionBean.ownerId}" />
                             Add value
                         </stripes:link>
                     </li>
-                    <li>
+                    <li class="import">
                         <stripes:link href="/import.jsp">
                             <stripes:param name="mode" value="FXV" />
                             <stripes:param name="delem_id" value="${actionBean.viewModel.owner.id}" />
@@ -48,7 +48,7 @@
                             Import values
                         </stripes:link>
                     </li>
-                    <li>
+                    <li class="delete">
                         <stripes:link id="btnDeleteAllFixedValues" beanclass="${actionBean.viewModel.actionBeanName}" event="delete">
                             <stripes:param name="ownerId" value="${actionBean.ownerId}" />
                             Delete all values

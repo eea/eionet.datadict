@@ -102,13 +102,13 @@
             <div id="drop-operations">
                 <h2>Operations:</h2>
                 <ul>
-                    <li><stripes:link id="searchLnk" href="#">Search vocabularies</stripes:link></li>
-                    <li><stripes:link id="searchConceptLnk" href="#">Search concepts</stripes:link></li>
+                    <li class="search"><stripes:link id="searchLnk" href="#">Search vocabularies</stripes:link></li>
+                    <li class="search"><stripes:link id="searchConceptLnk" href="#">Search concepts</stripes:link></li>
                     <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
-                        <li><stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">Add vocabulary</stripes:link></li>
+                        <li class="add"><stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">Add vocabulary</stripes:link></li>
                     </c:if>
                     <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
-                        <li><stripes:link id="maintainLnk"  href="#">Maintain vocabularies</stripes:link></li>
+                        <li class="maintain"><stripes:link id="maintainLnk"  href="#">Maintain vocabularies</stripes:link></li>
                     </c:if>
                 </ul>
             </div>

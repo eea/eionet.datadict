@@ -320,7 +320,7 @@ else{ %>
                 %>
                 <div id="operations">
                     <ul>
-                        <li><a href="javascript:window.close();">Close</a></li>
+                        <li class="close"><a href="javascript:window.close();">Close</a></li>
                         <li class="help"><a class="helpButton" href="help.jsp?screen=elements&amp;area=pagehelp">Page help</a></li>
                     </ul>
                 </div><%

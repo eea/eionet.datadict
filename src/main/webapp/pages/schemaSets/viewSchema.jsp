@@ -87,14 +87,14 @@
                 <c:if test="${isMySchemaWorkingCopy || isMySchemaSetWorkingCopy || isNonCheckedOutSchema}">
 
                     <c:if test="${isMySchemaWorkingCopy || isMySchemaSetWorkingCopy}">
-                        <li>
+                        <li class="edit">
                             <stripes:link beanclass="${actionBean['class'].name}" event="edit">Edit metadata
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                                 <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
                                 <stripes:param name="workingCopy" value="true"/>
                             </stripes:link>
                         </li>
-                        <li>
+                        <li class="view">
                             <stripes:url var="viewUrl" beanclass="${actionBean['class'].name}" event="view">
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                                 <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
@@ -102,7 +102,7 @@
                             </stripes:url>
                             <a href="${pageContext.request.contextPath}/complex_attrs.jsp?parent_id=${actionBean.schema.id}&parent_type=SCH&parent_name=${actionBean.schema.fileName}&parent_link=${viewUrl}">Edit complex attributes</a>
                         </li>
-                        <li>
+                        <li class="upload">
                             <a href="#" id="uploadSchemaLink">Re-upload file</a>
                         </li>
                     </c:if>
@@ -110,19 +110,19 @@
                         <c:if test="${isMySchemaWorkingCopy}">
                             <c:choose>
                                 <c:when test="${actionBean.checkInCommentsRequired}">
-                                    <li>
+                                    <li class="checkin">
                                         <a href="#" id="checkInLink">Check in</a>
                                     </li>
                                 </c:when>
                                 <c:otherwise>
-                                    <li>
+                                    <li class="checkin">
                                         <stripes:link beanclass="${actionBean['class'].name}" event="checkIn">Check in
                                             <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
                                         </stripes:link>
                                     </li>
                                 </c:otherwise>
                             </c:choose>
-                            <li>
+                            <li class="checkout">
                                 <stripes:link beanclass="${actionBean['class'].name}" event="undoCheckout">Undo checkout
                                     <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
                                 </stripes:link>
@@ -130,12 +130,12 @@
                         </c:if>
                         <c:if test="${isNonCheckedOutSchema && (actionBean.createAllowed || actionBean.checkoutAllowed)}">
                             <c:if test="${actionBean.createAllowed}">
-                                <li>
+                                <li class="newVersion">
                                     <a href="#" id="newVersionLink">New version</a>
                                 </li>
                             </c:if>
                             <c:if test="${actionBean.checkoutAllowed}">
-                                <li>
+                                <li class="checkout">
                                     <stripes:link beanclass="${actionBean['class'].name}" event="checkOut">Check out
                                         <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
                                     </stripes:link>
@@ -145,7 +145,7 @@
                     </c:if>
                 </c:if>
 
-                <li>
+                <li class="validate">
                     <stripes:link beanclass="${actionBean['class'].name}" event="validate">Validate
                         <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                             <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>

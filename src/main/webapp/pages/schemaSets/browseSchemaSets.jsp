@@ -13,21 +13,23 @@
             <h2>Operations:</h2>
             <ul>
                 <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemasets', 'i')}">
-                    <li>
+                    <li class="add">
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" event="add">Add schema set</stripes:link>
                     </li>
                 </c:if>
                 <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemas', 'i')}">
-                    <li>
+                    <li class="add">
                         <stripes:link beanclass="eionet.web.action.SchemaActionBean" event="add">Add root-level schema</stripes:link>
                     </li>
                 </c:if>
-                <li><a href="${pageContext.request.contextPath}/schemasets/search/">Search schema sets</a></li>
-                <li><a href="${pageContext.request.contextPath}/schema/search/">Search schemas</a></li>
+                <li class="search"><a href="${pageContext.request.contextPath}/schemasets/search/">Search schema sets</a></li>
+                <li class="search"><a href="${pageContext.request.contextPath}/schema/search/">Search schemas</a></li>
                 <c:if test="${not empty actionBean.user}">
-                    <stripes:link beanclass="${actionBean['class'].name}" event="workingCopies">
-                        List my working copies
-                    </stripes:link>
+                    <li class="list">
+                        <stripes:link beanclass="${actionBean['class'].name}" event="workingCopies">
+                            List my working copies
+                        </stripes:link>
+                    </li>
                 </c:if>
             </ul>
         </div>

@@ -69,7 +69,7 @@ else{
                 %>
                 <div id="operations">
                     <ul>
-                        <li>
+                        <li class="back">
                             <a href="<%=backLink%>">&lt; back</a>
                         </li>
                     </ul>

@@ -395,19 +395,19 @@
 
         <div id="drop-operations">
             <ul>
-                <li><a class="searchSection" href="#" title="Search datasets">Search</a></li>
+                <li class="search"><a class="searchSection" href="#" title="Search datasets">Search</a></li>
                 <c:if test="${not empty user}">
                     <c:if test="${user.authentic}">
-                        <li><a href="${pageContext.request.contextPath}/restore_datasets.jsp?SearchType=SEARCH&amp;restore=true" title="Restore datasets">Restore</a></li>
+                        <li class="restore"><a href="${pageContext.request.contextPath}/restore_datasets.jsp?SearchType=SEARCH&amp;restore=true" title="Restore datasets">Restore</a></li>
                     </c:if>
                     <c:if test="${param.wrk_copies ne 'true' and not empty canAddDataset}">
-                        <li><a href="${pageContext.request.contextPath}/datasets/add">Add</a></li>
+                        <li class="add"><a href="${pageContext.request.contextPath}/datasets/add">Add</a></li>
                     </c:if>
                     <c:if test="${param.wrk_copies ne 'true'}">
-                        <li><a href="javascript:deleteDataset()">Delete selected</a></li>
+                        <li class="delete"><a href="javascript:deleteDataset()">Delete selected</a></li>
                     </c:if>
                     <c:if test="${user.authentic}">
-                        <li><a href="javascript:generateCombinedPdf()">Generate PDF of selected</a></li>
+                        <li class="pdf"><a href="javascript:generateCombinedPdf()">Generate PDF of selected</a></li>
                     </c:if>
                 </c:if>
             </ul>

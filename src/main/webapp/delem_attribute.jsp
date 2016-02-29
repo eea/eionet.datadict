@@ -413,7 +413,7 @@ else
                     <div id="drop-operations">
                     <h2>Operations:</h2>
                         <ul>
-                            <li><a href="javascript:goToEdit()">Edit</a></li>
+                            <li class="edit"><a href="javascript:goToEdit()">Edit</a></li>
                         </ul>
                     </div><%
                 }

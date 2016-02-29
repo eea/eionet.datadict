@@ -11,8 +11,8 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <li><stripes:link id="searchLnk" href="#">Search again</stripes:link></li>
-                <li><stripes:link href="/vocabularies" event="form">Back to vocabularies</stripes:link></li>
+                <li class="search"><stripes:link id="searchLnk" href="#">Search again</stripes:link></li>
+                <li class="back"><stripes:link href="/vocabularies" event="form">Back to vocabularies</stripes:link></li>
             </ul>
         </div>
 

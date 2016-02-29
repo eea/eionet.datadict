@@ -7,7 +7,7 @@
             <h1>New Inference Rule for element <stripes:link href="/dataelements/${actionBean.parentElement.id}">${actionBean.parentElement.shortName}</stripes:link></h1>
             <div id="operations">
                 <ul>
-                    <li>
+                    <li class="back">
                         <stripes:link href="/inference_rules/${actionBean.parentElement.id}">back to rules</stripes:link>
                     </li>
                 </ul>

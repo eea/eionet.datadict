@@ -635,18 +635,18 @@ else if (mode.equals("add"))
                     <%
                     if (mode.equals("view") && editDstPrm==true) {
                     %>
-                    <li><a href="<%=request.getContextPath()%>/tables/<%=tableID%>/edit/?ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">Edit metadata</a></li>
+                    <li class="edit"><a href="<%=request.getContextPath()%>/tables/<%=tableID%>/edit/?ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">Edit metadata</a></li>
                     <%
                     // elements link
                     String elemLink = request.getContextPath() + "/tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
                     %>
-                    <li><a href="<%=request.getContextPath()%>/complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Edit complex attributes</a></li>
-                    <li><a href="<%=elemLink%>">Manage elements</a></li>
-                    <li><a href="javascript:submitForm('delete')">Delete</a></li>
+                    <li class="edit"><a href="<%=request.getContextPath()%>/complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Edit complex attributes</a></li>
+                    <li class="manage"><a href="<%=elemLink%>">Manage elements</a></li>
+                    <li class="delete"><a href="javascript:submitForm('delete')">Delete</a></li>
                     <%
                     }
                     if (subscribe) {%>
-                           <li><a href="<%=request.getContextPath()%>/tables/<%=tableID%>/subscribe">Subscribe</a></li><%
+                           <li class="subscribe"><a href="<%=request.getContextPath()%>/tables/<%=tableID%>/subscribe">Subscribe</a></li><%
                        }
                     %>
                 </ul>

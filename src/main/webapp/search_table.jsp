@@ -198,7 +198,7 @@ else {
           %>
           <div id="operations">
             <ul>
-                <li><a href="javascript:window.close();">Close</a></li>
+                <li class="search"><a href="javascript:window.close();">Close</a></li>
                 <li class="help"><a class="helpButton" href="help.jsp?screen=search_table&amp;area=pagehelp" title="Get some help on this page">Page help</a></li>
               </ul>
     </div><%

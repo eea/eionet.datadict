@@ -9,7 +9,7 @@
 
             <div id="operations">
                 <ul>
-                    <li>
+                    <li class="edit">
                         <stripes:link beanclass="${actionBean.viewModel.actionBeanName}" event="edit">
                             <stripes:param name="ownerId" value="${actionBean.viewModel.owner.id}" />
                             back to 

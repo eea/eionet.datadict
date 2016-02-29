@@ -162,7 +162,7 @@
                 <div id="drop-operations">
                 <h2>Operations:</h2>
                     <ul>
-                        <li><a href="search_table.jsp">Search</a></li>
+                        <li class="search"><a href="search_table.jsp">Search</a></li>
                     </ul>
                 </div>
 

@@ -73,7 +73,7 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <li>
+                <li class="new">
                     <stripes:link href="/dataelements/add/">
                         <stripes:param name="common" value="true" />
                         New common element

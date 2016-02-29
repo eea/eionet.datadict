@@ -10,7 +10,7 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <li><stripes:link href="/tableSearch.action" event="form">Search</stripes:link></li>
+                <li class="search"><stripes:link href="/tableSearch.action" event="form">Search</stripes:link></li>
             </ul>
         </div>
 

@@ -149,7 +149,7 @@
 <div id="workarea" style="clear:right;">
 <div id="operations">
     <ul>
-        <li><a href="<%=Util.processForDisplay(titleLink, true)%>">&lt; back to the <%=titleType%></a></li>
+        <li class="back"><a href="<%=Util.processForDisplay(titleLink, true)%>">&lt; back to the <%=titleType%></a></li>
     </ul>
 </div>
 <form id="Upload" action="ImgUpload" method="post" enctype="multipart/form-data">

@@ -270,12 +270,12 @@ if (isDisplayOperations){
         <ul>
             <%
             if (isPopup){ %>
-                <li><a href="javascript:window.close();">Close</a></li>
+                <li class="close"><a href="javascript:window.close();">Close</a></li>
                 <li class="help"><a class="helpButton" href="help.jsp?screen=search_element&amp;area=pagehelp" title="Get some help on this page">Page help</a></li><%
             }
             else if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements", "i")){
                 %>
-                <li><a title="Add a definition of a new common element" href="<%=request.getContextPath()%>/dataelements/add/?common=true">New common element</a></li><%
+                <li class="add"><a title="Add a definition of a new common element" href="<%=request.getContextPath()%>/dataelements/add/?common=true">New common element</a></li><%
             }
             %>
         </ul>

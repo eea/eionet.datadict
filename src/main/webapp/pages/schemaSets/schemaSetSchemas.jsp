@@ -36,10 +36,10 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <li>
+                <li class="upload">
                     <a href="#" id="uploadSchemaLink">Upload schema</a>
                 </li>
-                <li>
+                <li class="back">
                     <stripes:link beanclass="${actionBean['class'].name}">Back to schema set
                         <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                         <stripes:param name="workingCopy" value="${actionBean.schemaSet.workingCopy}"/>

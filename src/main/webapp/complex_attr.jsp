@@ -315,7 +315,7 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
             <ul>
                 <%
                 if (user != null && isWorkingCopy && mode.equals("view")){ %>
-                    <li><a href="<%=Util.processForDisplay(redirUrl, true, true)%>">Edit</a></li> <%
+                    <li class="edit"><a href="<%=Util.processForDisplay(redirUrl, true, true)%>">Edit</a></li> <%
                 }
                 %>
             </ul>
@@ -325,7 +325,7 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
         %>
         <div id="operations">
         <ul>
-            <li><a href="javascript:window.location.replace('<%=backURLEscaped%>')">&lt; back to attributes</a></li>
+            <li class="back"><a href="javascript:window.location.replace('<%=backURLEscaped%>')">&lt; back to attributes</a></li>
         </ul>
         </div>
         <%

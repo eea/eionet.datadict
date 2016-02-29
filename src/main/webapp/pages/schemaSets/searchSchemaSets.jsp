@@ -12,7 +12,7 @@
             <div id="drop-operations">
                 <h2>Operations:</h2>
                 <ul>
-                    <li>
+                    <li class="add">
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" event="add">Add schema set</stripes:link>
                     </li>
                 </ul>

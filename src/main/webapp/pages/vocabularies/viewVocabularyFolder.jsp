@@ -9,64 +9,64 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <li>
+                <li class="back">
                     <stripes:link beanclass="eionet.web.action.VocabularyFoldersActionBean">
                         <stripes:param name="folderId" value="${actionBean.vocabularyFolder.folderId}" />
                         <stripes:param name="expand" value="true" />
                         <stripes:param name="expanded" value="" />
-                                Back to set
+                            Back to set
                     </stripes:link>
                 </li>
                 <c:if test="${not empty actionBean.user}">
-                  <c:if test="${not actionBean.vocabularyFolder.siteCodeType}">
-                      <li>
-                          <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">
-                              <stripes:param name="copyId" value="${actionBean.vocabularyFolder.id}" />
-                              Create new copy
-                          </stripes:link>
-                      </li>
-                  </c:if>
-                  <c:if test="${actionBean.userWorkingCopy}">
-                  <li>
-                      <a href="#" id="addNewConceptLink">Add new concept</a>
-                  </li>
-                  <li>
-                      <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="edit">
-                          <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                          <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                          <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                          Edit vocabulary
-                      </stripes:link>
-                  </li>
-                  <li>
-                      <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkIn">
-                          <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
-                          <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                          <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                          <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                          Check in
-                      </stripes:link>
-                  </li>
-                  <li>
-                      <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="undoCheckOut">
-                          <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
-                          <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                          <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                          Undo checkout
-                      </stripes:link>
-                  </li>
-                  </c:if>
-                  <c:if test="${not actionBean.vocabularyFolder.workingCopy}">
-                  <li>
-                      <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkOut">
-                          <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
-                          <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                          <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                          <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                          Check out
-                      </stripes:link>
-                  </li>
-                  </c:if>
+                    <c:if test="${not actionBean.vocabularyFolder.siteCodeType}">
+                        <li class="add">
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">
+                                <stripes:param name="copyId" value="${actionBean.vocabularyFolder.id}" />
+                                Create new copy
+                            </stripes:link>
+                        </li>
+                    </c:if>
+                    <c:if test="${actionBean.userWorkingCopy}">
+                        <li class="add">
+                            <a href="#" id="addNewConceptLink">Add new concept</a>
+                        </li>
+                        <li class="edit">
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="edit">
+                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                                Edit vocabulary
+                            </stripes:link>
+                        </li>
+                        <li class="checkin">
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkIn">
+                                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                                Check in
+                            </stripes:link>
+                        </li>
+                        <li class="undo">
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="undoCheckOut">
+                                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                Undo checkout
+                            </stripes:link>
+                        </li>
+                    </c:if>
+                    <c:if test="${not actionBean.vocabularyFolder.workingCopy}">
+                        <li class="checkout">
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkOut">
+                                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                                Check out
+                            </stripes:link>
+                        </li>
+                    </c:if>
                 </c:if>
             </ul>
         </div>

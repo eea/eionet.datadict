@@ -34,8 +34,8 @@
             <div id="drop-operations">
                 <h2>Operations:</h2>
                 <ul>
-                <li><stripes:link beanclass="eionet.web.action.SchemaActionBean" event="add">Add root-level schema</stripes:link></li>
-            </ul>
+                    <li class="add"><stripes:link beanclass="eionet.web.action.SchemaActionBean" event="add">Add root-level schema</stripes:link></li>
+                </ul>
             </div>
         </c:if>
 

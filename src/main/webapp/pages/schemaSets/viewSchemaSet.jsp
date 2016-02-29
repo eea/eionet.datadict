@@ -99,49 +99,49 @@
                 <h2>Operations:</h2>
                 <ul>
                     <c:if test="${isMyWorkingCopy}">
-                        <li>
+                        <li class="edit">
                             <stripes:link beanclass="${actionBean['class'].name}" event="edit">Edit metadata
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                             </stripes:link>
                         </li>
-                        <li>
+                        <li class="view">
                             <stripes:url var="viewUrl" beanclass="${actionBean['class'].name}" event="view">
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                                 <stripes:param name="workingCopy" value="true"/>
                             </stripes:url>
                             <a href="${pageContext.request.contextPath}/complex_attrs.jsp?parent_id=${actionBean.schemaSet.id}&parent_type=SCS&parent_name=${actionBean.schemaSet.identifier}&parent_link=${viewUrl}">Edit complex attributes</a>
                         </li>
-                        <li>
+                        <li class="edit">
                             <stripes:link beanclass="${actionBean['class'].name}" event="editSchemas">Edit schemas
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                             </stripes:link>
                         </li>
-                        <li>
+                        <li class="upload">
                             <a href="#" id="uploadSchemaLink">Upload schema</a>
                         </li>
-                        <li>
+                        <li class="upload">
                             <a href="#" id="uploadDocumentLink">Upload other document</a>
                         </li>
-                        <li>
+                        <li class="copy">
                             <stripes:link beanclass="eionet.web.action.SearchSchemaActionBean" event="search">Copy existing schema
                                 <stripes:param name="schemaSetId" value="${actionBean.schemaSet.id}"/>
                             </stripes:link>
                         </li>
                         <c:choose>
                             <c:when test="${actionBean.checkInCommentsRequired}">
-                                <li>
+                                <li class="checkin">
                                     <a href="#" id="checkInLink">Check in</a>
                                 </li>
                             </c:when>
                             <c:otherwise>
-                                <li>
+                                <li class="checkin">
                                    <stripes:link beanclass="${actionBean['class'].name}" event="checkIn">Check in
                                        <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
                                    </stripes:link>
                                </li>
                             </c:otherwise>
                         </c:choose>
-                        <li>
+                        <li class="undo">
                             <stripes:link beanclass="${actionBean['class'].name}" event="undoCheckout">Undo checkout
                                 <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
                             </stripes:link>
@@ -149,12 +149,12 @@
                     </c:if>
                     <c:if test="${empty actionBean.schemaSet.workingUser && (actionBean.createAllowed || actionBean.checkoutAllowed)}">
                         <c:if test="${actionBean.createAllowed}">
-                            <li>
+                            <li class="newVersion">
                                 <a href="#" id="newVersionLink">New version</a>
                             </li>
                         </c:if>
                         <c:if test="${actionBean.checkoutAllowed}">
-                            <li>
+                            <li class="checkout">
                                 <stripes:link beanclass="${actionBean['class'].name}" event="checkOut">Check out
                                     <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
                                 </stripes:link>

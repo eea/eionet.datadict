@@ -126,7 +126,7 @@
            		<c:when test='${actionBean.pageId == "contents" && ddfn:userHasPermission(actionBean.user.userName, "/documentation", "u")}'>
            			<div id="operations">
 	                    <ul>
-	                        <li>
+	                        <li class="add">
 	                            <stripes:link href="/documentation">
 	                            	Add new file
 	                            	<stripes:param name="event" value="add"/>

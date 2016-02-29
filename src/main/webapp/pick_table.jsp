@@ -133,8 +133,8 @@
     </div> <!-- pagehead -->
     <div id="operations" style="margin-top:10px">
         <ul>
-            <li><a href="javascript:window.close();">Close</a></li>
-            <li><a href="<%=backUrl%>">back to search</a></li>
+            <li class="close"><a href="javascript:window.close();">Close</a></li>
+            <li class="back"><a href="<%=backUrl%>">back to search</a></li>
         </ul>
     </div>
 

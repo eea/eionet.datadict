@@ -1311,7 +1311,7 @@
                             }
                             if (elmCommon && canNewVersion) {
                             %>
-                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/newversion">New version</a></li><%
+                                    <li class="newVersion"><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/newversion">New version</a></li><%
                             }
                             if (mode.equals("view") && elmCommon
                                     && !dataElement.isWorkingCopy()) {
@@ -1319,7 +1319,7 @@
                                     if (latestID != null
                                             && !latestID.equals(dataElement.getID())) {
                             %>
-                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=latestID%>">Go to newest</a></li><%
+                                    <li class="newest"><a href="<%=request.getContextPath()%>/dataelements/<%=latestID%>">Go to newest</a></li><%
                                     }
                                 }
                             }
@@ -1327,40 +1327,40 @@
                                 //The buttons displayed in view mode
                                     if (!elmCommon && editDstPrm) {
                                 %>
-                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
+                                    <li class="edit"><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
                                     <% request.setAttribute("includeSwitchTypeDialog", "true"); %>
-                                    <li><a href="#" id="switchTypeLink">Switch type</a></li>
+                                    <li class="switch"><a href="#" id="switchTypeLink">Switch type</a></li>
                                 <%
                                     }
                                     if (elmCommon && canCheckout) {
                                 %>
-                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/checkout">Check out</a></li>
+                                    <li class="checkout"><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/checkout">Check out</a></li>
                                 <%
                                     }
                                     if ((elmCommon && canCheckout)
                                                     || (!elmCommon && editDstPrm)) {
                                 %>
-                                    <li><a href="javascript:submitForm('delete')">Delete</a></li>
+                                    <li class="delete"><a href="javascript:submitForm('delete')">Delete</a></li>
                                 <%
                                     }
                                     if (!elmCommon && editDstPrm){
-                                        %><li><a href="<%=request.getContextPath()%>/dataelements/add/?table_id=<%=tableID%>&ds_id=<%=dsID%>">Add new element to table</a></li><%
+                                        %><li class="add"><a href="<%=request.getContextPath()%>/dataelements/add/?table_id=<%=tableID%>&ds_id=<%=dsID%>">Add new element to table</a></li><%
                                     }
                                }
                             if (mode.equals("view") && isMyWorkingCopy) {
                                  // view case
                                 %>
-                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
+                                    <li class="edit"><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
                                     <% request.setAttribute("includeSwitchTypeDialog", "true"); %>
-                                    <li><a href="#" id="switchTypeLink">Switch type</a></li>
-                                    <li><a href="javascript:checkIn()">Check in</a></li>
-                                    <li><a href="javascript:submitForm('delete')">Undo checkout</a></li>
+                                    <li class="switch"><a href="#" id="switchTypeLink">Switch type</a></li>
+                                    <li class="checkin"><a href="javascript:checkIn()">Check in</a></li>
+                                    <li class="undo"><a href="javascript:submitForm('delete')">Undo checkout</a></li>
                                 <%
                               }
                             if (mode.equals("view") && user != null && dataElement != null
                                     && elmCommon && dataElement.getIdentifier() != null && !dataElement.isWorkingCopy()) {
                             %>
-                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/subscribe">Subscribe</a></li>
+                                    <li class="subscribe"><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/subscribe">Subscribe</a></li>
                             <%
                             }
                             %>
