@@ -668,6 +668,7 @@ else if (mode.equals("add"))
 <c:set var="currentSection" value="datasets" />
 <%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
+    <h1>${param.mode eq 'add' ? 'Add' : (param.mode eq 'edit' ? 'Edit' : 'View')} dataset definition</h1>
             <%
                 boolean goToNewest = false;
                 if (mode.equals("view") && !dataset.isWorkingCopy()) {
@@ -677,11 +678,6 @@ else if (mode.equals("add"))
                         }
                     }
                 }
-            String verb = "View";
-            if (mode.equals("add"))
-                verb = "Add";
-            else if (mode.equals("edit"))
-                verb = "Edit";
 
             boolean isDisplayOperations = mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null;
             if (isDisplayOperations==false)
@@ -690,7 +686,6 @@ else if (mode.equals("add"))
             if (isDisplayOperations || goToNewest) {
                 %>
                 <div id="drop-operations">
-                <h2>Operations:</h2>
                     <ul>
                         <%
                         if (goToNewest) {
@@ -748,8 +743,6 @@ else if (mode.equals("add"))
             }
 
             %>
-
-            <h1><%=Util.processForDisplay(verb)%> dataset definition</h1>
 
             <form id="form1" method="post" action="<%=request.getContextPath()%>/datasets" style="clear:both">
                 <div style="display:none">
