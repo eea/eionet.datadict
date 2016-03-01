@@ -41,7 +41,7 @@ import eionet.meta.service.data.TableFilter;
  *
  * @author Juhan Voolaid
  */
-@UrlBinding("/tableSearch.action")
+@UrlBinding("/searchtables")
 public class TableSearchActionBean extends AbstractActionBean {
 
     /** Logger. */
@@ -58,17 +58,6 @@ public class TableSearchActionBean extends AbstractActionBean {
     private ITableService tableService;
 
     /**
-     * Handles the form page view.
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution form() throws ServiceException {
-        initTableFilter();
-        return new ForwardResolution("/pages/tableSearch.jsp");
-    }
-
-    /**
      * Handles the searching action.
      *
      * @return
@@ -80,7 +69,7 @@ public class TableSearchActionBean extends AbstractActionBean {
             initTableFilter();
         }
         dataSetTables = tableService.searchTables(tableFilter);
-        return new ForwardResolution("/pages/tableResult.jsp");
+        return new ForwardResolution("/pages/search_tables.jsp");
     }
 
     /**
