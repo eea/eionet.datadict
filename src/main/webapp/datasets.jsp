@@ -363,7 +363,7 @@
             });
 
             $(".searchSection").click(function () {
-                $("#searchDatasetsForm").slideToggle("slw");
+                $("#searchDatasetsForm").slideToggle("slow");
                 return false;
             });
         });
