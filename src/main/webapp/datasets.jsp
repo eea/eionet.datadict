@@ -413,57 +413,46 @@
             </ul>
         </div>
         <form id="searchDatasetsForm" action="${pageContext.request.contextPath}/datasets.jsp" method="get">
-            <table class="filter" cellspacing="0">
-                <col />
-                <col />
-                <col />
-                <tr>
-                    <td>
-                        <label for="regStatus" class="question">Registration Status</label>
-                    </td>
-                    <td>
-                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus">
-                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" alt="Help" width="16" height="16"/>
-                        </a>
-                    </td>
-                    <td colspan="2">
-                        <select name="regStatus" id="regStatus" class="small">
-                            <option value="">All</option>
-                            <c:forEach items="${registrationStatuses}" var="status">
-                                <option value="${fn:escapeXml(status.name)}" ${param.regStatus eq status.name ? 'selected="selected"' : ''}>${fn:escapeXml(status.name)}</option>
-                            </c:forEach>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="short_name" class="question">Short name</label>
-                    </td>
-                    <td>
-                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=short_name">
-                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt=""/>
-                        </a>
-                    </td>
-                    <td colspan="2">
-                        <input type="text" class="smalltext" size="59" name="short_name" id="short_name" value="${fn:escapeXml(param.short_name)}"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label class="question">Identifier</label>
-                    </td>
-                    <td>
-                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier">
-                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt=""/>
-                        </a>
-                    </td>
-                    <td colspan="2">
-                        <input type="text" class="smalltext" size="59" name="idfier" value="${fn:escapeXml(param.idfier)}"/>
-                    </td>
-                </tr>
-                <%
-                    // get default attributes, which are always on the page (defined above)
-                if (def_attrs!=null) {
+            <div id="filters">
+                <table class="filter" cellspacing="0">
+                    <col />
+                    <col />
+                    <col />
+                    <tr>
+                        <td class="label">
+                            <label for="regStatus">Registration Status</label>
+                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus"></a>
+                        </td>
+                        <td class="input">
+                            <select name="regStatus" id="regStatus" class="small">
+                                <option value="">All</option>
+                                <c:forEach items="${registrationStatuses}" var="status">
+                                    <option value="${fn:escapeXml(status.name)}" ${param.regStatus eq status.name ? 'selected="selected"' : ''}>${fn:escapeXml(status.name)}</option>
+                                </c:forEach>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <label for="short_name">Short name</label>
+                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=short_name"></a>
+                        </td>
+                        <td class="input">
+                            <input type="text" class="smalltext" size="59" name="short_name" id="short_name" value="${fn:escapeXml(param.short_name)}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <label for="idfier">Identifier</label>
+                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier"></a>
+                        </td>
+                        <td class="input">
+                            <input type="text" class="smalltext" size="59" name="idfier" id="idfier" value="${fn:escapeXml(param.idfier)}"/>
+                        </td>
+                    </tr>
+                    <%
+                        // get default attributes, which are always on the page (defined above)
+                    if (def_attrs!=null) {
                         for (int i=0; i < def_attrs.size(); i++) {
                             attrID = (String) def_attrs.get(i);
                             attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
@@ -476,163 +465,145 @@
                             if (attrID!=null) {
                                 collect_attrs.append(attrID + "|");
                                 displayedCriteria.add(attrID);
-                %>
-                <tr>
-                    <td>
-                        <label class="question"><%=Util.processForDisplay(attrName)%></label>
-                    </td>
-                    <td>
-                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt=""/>
-                        </a>
-                    </td>
-                    <td colspan="2">
-                        <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.processForDisplay(attrValue, true)%>"/>
-                    </td>
-                </tr>
-                <%
-                            }
-                        }
-                    }
-                    // get attributes selected from picked list (get the ids from url)
-                    if (attr_ids!=null) {
-                        for (int i=0; i < attr_ids.size(); i++) {
-                            attrID = (String)attr_ids.get(i);
-
-                            if (!inputAttributes.containsKey(attrID)) {
-                                continue;
-                            }
-                            if (sel_type.equals("remove") && attrID.equals(sel_attr)) {
-                                continue;
-                            }
-
-                            attrName = getAttributeNameById(attrID);
-
-                            attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
-                            if (attrValue == null) {
-                                attrValue = "";
-                            }
-                            collect_attrs.append(attrID + "|");
-                            displayedCriteria.add(attrID);
-                %>
-                <tr>
-                    <td>
-                        <label class="question"><%=Util.processForDisplay(attrName)%></label>
-                    </td>
-                    <td>
-                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt=""/>
-                        </a>
-                    </td>
-                    <td>
-                        <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value="<%=Util.processForDisplay(attrValue, true)%>"/>
-                    </td>
-                    <td>
-                        <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="${pageContext.request.contextPath}/images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
-                    </td>
-                </tr>
-                <%
-                        }
-                    }
-                    // add the last selection
-                    if (sel_type!=null && sel_attr!=null) {
-                        if (sel_type.equals("add")) {
-                            attrID = sel_attr;
-                            collect_attrs.append(attrID + "|");
-                            displayedCriteria.add(attrID);
-                            attrName = getAttributeNameById(attrID);
-                %>
-                <tr>
-                    <td>
-                        <label class="question"><%=Util.processForDisplay(attrName)%></label>
-                    </td>
-                    <td>
-                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt=""/>
-                        </a>
-                    </td>
-                    <td>
-                        <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
-                    </td>
-                    <td>
-                        <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="${pageContext.request.contextPath}/images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
-                    </td>
-                </tr>
-                <%
-                        }
-                    }
-                %>
-                <tr>
-                    <td colspan="2">&nbsp;</td>
-                    <td colspan="2">
-                        <input type="radio" name="search_precision" id="ssubstr" value="substr" ${param.search_precision ne 'exact' ? 'checked="checked"' : ''} /><label for="ssubstr">Substring search</label>
-                        <input type="radio" name="search_precision" id="sexact" value="exact" ${param.search_precision eq 'exact' ? 'checked="checked"' : ''} /><label for="sexact">Exact search</label>
-                    </td>
-                </tr>
-                <c:if test="${not empty user and user.authentic}">
+                    %>
                     <tr>
-                        <td colspan="2"></td>
-                        <td colspan="2">
-                            <input type="checkbox" name="wrk_copies" id="wrk_copies" value="true" ${param.wrk_copies eq 'true' ? 'checked="checked"' : ''} />
-                            <label for="wrk_copies" class="smallfont">Working copies only</label>
+                        <td class="label">
+                            <label for="attr_<%=attrID%>"><%=Util.processForDisplay(attrName)%></label>
+                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
+                        </td>
+                        <td class="input">
+                            <input type="text" class="smalltext" name="attr_<%=attrID%>" id="attr_<%=attrID%>" size="59"  value="<%=Util.processForDisplay(attrValue, true)%>"/>
                         </td>
                     </tr>
-                </c:if>
-                <tr>
-                    <td colspan="2"></td>
-                    <td colspan="2">
-                        <input type="checkbox" name="incl_histver" id="incl_histver" value="true" ${param.incl_histver eq 'true' ? 'checked="checked"' : ''} />
-                        <label for="incl_histver" class="smallfont">Include historic versions</label>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2"></td>
-                    <td>
-                        <input class="mediumbuttonb searchButton" type="submit" value="Search" />
-                        <input class="mediumbuttonb" type="reset" value="Reset" />
-                    </td>
-                </tr>
-                <%
-                    Vector addCriteria = new Vector();
-                    for (int i=0; attrs!=null && i<attrs.size(); i++) {
-                        DElemAttribute attribute = (DElemAttribute) attrs.get(i);
-                        if (!attribute.displayFor("DST")) {
-                            continue;
+                    <%
+                                }
+                            }
+                        }
+                        // get attributes selected from picked list (get the ids from url)
+                        if (attr_ids!=null) {
+                            for (int i=0; i < attr_ids.size(); i++) {
+                                attrID = (String)attr_ids.get(i);
+
+                                if (!inputAttributes.containsKey(attrID)) {
+                                    continue;
+                                }
+                                if (sel_type.equals("remove") && attrID.equals(sel_attr)) {
+                                    continue;
+                                }
+
+                                attrName = getAttributeNameById(attrID);
+
+                                attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
+                                if (attrValue == null) {
+                                    attrValue = "";
+                                }
+                                collect_attrs.append(attrID + "|");
+                                displayedCriteria.add(attrID);
+                    %>
+                    <tr>
+                        <td class="label">
+                            <label for="attr_<%=attrID%>"><%=Util.processForDisplay(attrName)%></label>
+                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
+                        </td>
+                        <td class="input">
+                            <input type="text" class="smalltext" name="attr_<%=attrID%>" id="attr_<%=attrID%>" size="59" value="<%=Util.processForDisplay(attrValue, true)%>"/>
+                            <a class="deleteButton" title="Remove attribute from search criteria" href="javascript:selAttr(<%=attrID%>, 'remove');"></a>
+                        </td>
+                    </tr>
+                    <%
+                            }
+                        }
+                        // add the last selection
+                        if (sel_type!=null && sel_attr!=null) {
+                            if (sel_type.equals("add")) {
+                                attrID = sel_attr;
+                                collect_attrs.append(attrID + "|");
+                                displayedCriteria.add(attrID);
+                                attrName = getAttributeNameById(attrID);
+                    %>
+                    <tr>
+                        <td class="label">
+                            <label for="attr_<%=attrID%>"><%=Util.processForDisplay(attrName)%></label>
+                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
+                        </td>
+                        <td class="input">
+                            <input type="text" class="smalltext" name="attr_<%=attrID%>" id="attr_<%=attrID%>" size="59" value=""/>
+                            <a class="deleteButton" title="Remove attribute from search criteria" href="javascript:selAttr(<%=attrID%>, 'remove');"></a>
+                        </td>
+                    </tr>
+                    <%
+                            }
+                        }
+                        Vector addCriteria = new Vector();
+                        for (int i=0; attrs!=null && i<attrs.size(); i++) {
+                            DElemAttribute attribute = (DElemAttribute) attrs.get(i);
+                            if (!attribute.displayFor("DST")) {
+                                continue;
+                            }
+
+                            if (!displayedCriteria.contains(attribute.getID())) {
+                                Hashtable hash = new Hashtable();
+                                hash.put("id", attribute.getID());
+                                hash.put("name", attribute.getName());
+                                addCriteria.add(hash);
+                            }
                         }
 
-                        if (!displayedCriteria.contains(attribute.getID())) {
-                            Hashtable hash = new Hashtable();
-                            hash.put("id", attribute.getID());
-                            hash.put("name", attribute.getName());
-                            addCriteria.add(hash);
-                        }
-                    }
-
-                    if (addCriteria.size()>0) {
-                %>
-                <tr>
-                    <td colspan="4" style="text-align:right">
-                        <label for="add_criteria">Add criteria</label>
-                        <select name="add_criteria" id="add_criteria" onchange="selAttr(this.options[this.selectedIndex].value, 'add')">
-                            <option value=""></option>
-                            <%
-                                for (int i=0; i<addCriteria.size(); i++) {
-                                    Hashtable hash = (Hashtable)addCriteria.get(i);
-                            %>
-                                <option value="<%=hash.get("id")%>"><%=hash.get("name")%></option>
-                            <%}%>
-                        </select>
-                    </td>
-                </tr>
-                <%}%>
-            </table>
-                <!-- table for 'Add' -->
-                <div style="display:none">
-                    <input type="hidden" name="sel_attr" value=""/>
-                    <input type="hidden" name="sel_type" value=""/>
-                    <input type="hidden" name="type" value="DST"/>
-                    <!-- collect all the attributes already used in criterias -->
-                    <input type="hidden" name="collect_attrs" value="<%=Util.processForDisplay(collect_attrs.toString(), true)%>"/>
+                        if (addCriteria.size()>0) {
+                    %>
+                    <tr>
+                        <td></td>
+                        <td class="input">
+                            <select name="add_criteria" id="add_criteria" onchange="selAttr(this.options[this.selectedIndex].value, 'add')">
+                                <option value="">Add criteria</option>
+                                <%
+                                    for (int i=0; i<addCriteria.size(); i++) {
+                                        Hashtable hash = (Hashtable)addCriteria.get(i);
+                                %>
+                                    <option value="<%=hash.get("id")%>"><%=hash.get("name")%></option>
+                                <%}%>
+                            </select>
+                        </td>
+                    </tr>
+                    <%}%>
+                    <tr>
+                        <td class="label">Search method</td>
+                        <td class="input">
+                            <input type="radio" name="search_precision" id="ssubstr" value="substr" ${param.search_precision ne 'exact' ? 'checked="checked"' : ''} /><label for="ssubstr">Substring search</label>
+                            <input type="radio" name="search_precision" id="sexact" value="exact" ${param.search_precision eq 'exact' ? 'checked="checked"' : ''} /><label for="sexact">Exact search</label>
+                        </td>
+                    </tr>
+                    <c:if test="${not empty user and user.authentic}">
+                        <tr>
+                            <td class="label"><label for="wrk_copies">Working copies only</label></td>
+                            <td class="input">
+                                <input type="checkbox" name="wrk_copies" id="wrk_copies" value="true" ${param.wrk_copies eq 'true' ? 'checked="checked"' : ''} />
+                                <label for="wrk_copies" class="smallfont">Yes</label>
+                            </td>
+                        </tr>
+                    </c:if>
+                    <tr>
+                        <td class="label"><label for="incl_histver">Include historic versions</label></td>
+                        <td class="input">
+                            <input type="checkbox" name="incl_histver" id="incl_histver" value="true" ${param.incl_histver eq 'true' ? 'checked="checked"' : ''} />
+                            <label for="incl_histver" class="smallfont">Yes</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input class="mediumbuttonb searchButton" type="submit" value="Search" />
+                            <input class="mediumbuttonb" type="reset" value="Reset" />
+                        </td>
+                    </tr>
+                </table>
+                    <!-- table for 'Add' -->
+                    <div style="display:none">
+                        <input type="hidden" name="sel_attr" value=""/>
+                        <input type="hidden" name="sel_type" value=""/>
+                        <input type="hidden" name="type" value="DST"/>
+                        <!-- collect all the attributes already used in criterias -->
+                        <input type="hidden" name="collect_attrs" value="<%=Util.processForDisplay(collect_attrs.toString(), true)%>"/>
+                    </div>
                 </div>
             </form>
             <c:choose>

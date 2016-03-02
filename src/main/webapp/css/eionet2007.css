@@ -179,26 +179,36 @@
 	font-size: 80%;
 	padding: 20px 0 20px 30px;
 	text-decoration: none;
+    position: relative;
 }
 
-#drop-operations > ul li. {
-
+#drop-operations > ul li a:before {
+    color: #B1B50F;
+    font-size: 14px;
+    font-family: 'eea';
+    position: absolute;
+    top: 19px;
+    left: 12px;
 }
 
-#drop-operations > ul li. {
-    
+#drop-operations > ul li.search a:before {
+     content: "\e90f";
 }
 
-#drop-operations > ul li. {
-    
+#drop-operations > ul li.restore a:before {
+     content: "\e90d";
 }
 
-#drop-operations > ul li. {
-    
+#drop-operations > ul li.add a:before {
+    content: "\e916";
 }
 
-#drop-operations > ul li. {
-    
+#drop-operations > ul li.delete a:before {
+    content: "\e905";
+}
+
+#drop-operations > ul li.pdf a:before {
+    content: "\e90c";
 }
 
 #drop-operations > ul li a:hover {
@@ -207,12 +217,23 @@
 
 /* FILTERS STYLES */
 
+#workarea #filters {
+    width: 860px;
+    display: block;
+    float: left;
+    background: #F9FCFC;
+    border: 1px solid #CFE3E4;
+    padding: 30px;
+    margin: 25px 0; 
+}
+
 #workarea table.filter {
-	width: 100%;
-	background: #F9FCFC;
-	border: 1px solid #CFE3E4;
-	padding: 30px;
-	margin-bottom: 25px;
+    background: none;	
+}
+
+#workarea table.filter td {
+    vertical-align: middle;
+    padding: 4px 0px;
 }
 
 #workarea table.filter td input,
@@ -220,14 +241,32 @@
 	background: #FFFFFF;
 	border: 1px solid #9AC4C6;
 	padding: 5px 8px;
-	width: 300px;
 }
 
-#workarea table.filter td label.question {
-	display: block;
-	width: 260px;	
-	font-weight: normal;
-	color: #00446A;
+#workarea table.filter td input { 
+    width: 260px;
+}
+
+#workarea table.filter td input[type='checkbox'],
+#workarea table.filter td input[type='radio'] {
+    width: auto;
+}
+
+#workarea table.filter td select {
+  width: 280px;  
+}
+
+#workarea table.filter td.label {
+    width: 270px;   
+    color: #00446A;
+}
+
+#workarea table.filter td.input {
+    width: 310px;   
+}
+
+#workarea table.filter td.label label.question {
+    font-weight: normal;
 }
 
 #workarea table.filter td input.mediumbuttonb {
@@ -242,7 +281,28 @@
 	background: #13446B;
 	color: #FFFFFF;
 	text-transform: uppercase;
-	font-weight: bold;
+	font-weight: bold
+}
+
+/* HELP - ADD - REMOVE FILTERS */
+
+a.helpButton:after  {
+    font-family: 'eea';
+    content: "\e909";
+    color: #B1B50F;
+    font-size: 14px;
+    display: inline-block;
+    float: right;
+    margin-right: 5px;
+}
+
+a.deleteButton:after {
+    font-family: 'eea';
+    content: "\e905";
+    color: #C1272D;
+    font-size: 16px;
+    display: inline-block;
+    float: right;
 }
 
 /* RESULT TABLE STYLES */
@@ -301,7 +361,8 @@ p.not-found {
 	background: #F9FCFC;
 	border-bottom: 3px solid #9AC4C6;
 	font-weight: bold;
-    color: #00446a
+    color: #00446a;
+    clear: both;
 }
 
 p.not-found:before {
