@@ -109,8 +109,7 @@
                     <display:column property="shortName" title="Short name" sortable="true" />
                     <display:column property="dataSetName" title="Dataset" sortable="true" />
                     <display:column title="Dataset status" sortable="true">
-                        <c:url var="imgSrc" value="/images/${item.statusImage}" />
-                        <img src="${imgSrc}" border="0" title="${item.dataSetStatus}" />
+                        <span class="${fn:escapeXml(item.dataSetStatus)}">${fn:escapeXml(item.dataSetStatus)}</span>
                     </display:column>
                 </display:table>
             </c:otherwise>
