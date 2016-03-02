@@ -320,9 +320,7 @@ if (isDisplayOperations){
                                 <strong>RegistrationStatus</strong>
                             </td>
                             <td>
-                                <a class="helpButton" href="help.jsp?screen=dataset&area=regstatus">
-                                    <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                                </a>
+                                <a class="helpButton" href="help.jsp?screen=dataset&area=regstatus"></a>
                             </td>
                             <td colspan="2">
                                 <select name="reg_status" class="small">
@@ -344,9 +342,7 @@ if (isDisplayOperations){
                                 <b>Dataset</b>
                             </td>
                             <td>
-                                <a class="helpButton" href="help.jsp?screen=search_element&amp;area=dataset">
-                                    <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                                </a>
+                                <a class="helpButton" href="help.jsp?screen=search_element&amp;area=dataset"></a>
                             </td>
                             <td colspan="2">
                                 <select name="dataset_idf" class="small">
@@ -372,9 +368,7 @@ if (isDisplayOperations){
                             <b>Type</b>
                         </td>
                         <td>
-                            <a class="helpButton" href="help.jsp?screen=element&amp;area=type">
-                                <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                            </a>
+                            <a class="helpButton" href="help.jsp?screen=element&amp;area=type"></a>
                         </td>
                         <td colspan="2">
                             <select name="type" class="small">
@@ -391,9 +385,7 @@ if (isDisplayOperations){
                             <b>Short name</b>
                         </td>
                         <td>
-                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
-                                <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                            </a>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name"></a>
                         </td>
                         <td colspan="2">
                             <input type="text" class="smalltext" size="59" name="short_name" value="<%=Util.processForDisplay(short_name, true)%>"/>
@@ -405,9 +397,7 @@ if (isDisplayOperations){
                             <b>Identifier</b>
                         </td>
                         <td>
-                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier">
-                                <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                            </a>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier"></a>
                         </td>
                         <td colspan="2">
                             <input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>"/>
@@ -439,7 +429,7 @@ if (isDisplayOperations){
                                 <span class="mainfont"><b>Language</b></span>
                             </td>
                             <td align="right" style="padding-right:10">
-                                <a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit"><img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/></a>&nbsp;
+                                <a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit"></a>&nbsp;
                             </td>
                             <td colspan="2">
                                 <select name="attr_<%=attrID%>" class="small">
@@ -527,9 +517,7 @@ if (isDisplayOperations){
                                         <b><%=Util.processForDisplay(attrName)%></b>
                                     </td>
                                     <td>
-                                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                            <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                                        </a>
+                                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                     </td>
                                     <td colspan="2">
                                         <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.processForDisplay(attrValue, true)%>"/>
@@ -559,9 +547,7 @@ if (isDisplayOperations){
                                     <b><%=Util.processForDisplay(attrName)%></b>
                                 </td>
                                 <td>
-                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                        <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                                    </a>
+                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                 </td>
                                 <td>
                                     <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.processForDisplay(attrValue, true)%>"/>
@@ -586,9 +572,7 @@ if (isDisplayOperations){
                                     <b><%=Util.processForDisplay(attrName)%></b>
                                 </td>
                                 <td>
-                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                        <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                                    </a>
+                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                 </td>
                                 <td>
                                     <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>

@@ -204,9 +204,7 @@
                     Identifier
                 </th>
                 <td class="simple_attr_help">
-                    <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier">
-                        <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
-                    </a>
+                    <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier"></a>
                 </td>
                 <td class="simple_attr_value">
                     <c:out value="${actionBean.schemaSet.identifier}"/>
@@ -217,9 +215,7 @@
                     Registration status
                 </th>
                 <td class="simple_attr_help">
-                    <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus">
-                        <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
-                    </a>
+                    <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus"></a>
                 </td>
                 <td class="simple_attr_value">
                     <fmt:setLocale value="en_GB" />
@@ -258,9 +254,7 @@
                             <c:out value="${attribute.name}"/>
                         </th>
                         <td class="simple_attr_help">
-                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE">
-                                <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                            </a>
+                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE"></a>
                         </td>
                         <td style="word-wrap:break-word;wrap-option:emergency" class="simple_attr_value">
                             <c:if test="${not attribute.displayMultiple}">
@@ -317,9 +311,7 @@
                         </a>
                     </td>
                     <td>
-                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${complexAttr.ID}&amp;attrtype=COMPLEX">
-                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                        </a>
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${complexAttr.ID}&amp;attrtype=COMPLEX"></a>
                     </td>
                     <td>
                         <c:forEach items="${complexAttr.rows}" var="complexAttrRow" varStatus="complexAttrRowsLoop">

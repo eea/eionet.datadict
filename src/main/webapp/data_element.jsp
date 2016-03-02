@@ -1501,9 +1501,7 @@
                                     <%
                                     if (mode.equals("add") && (type == null || type.length() == 0)) {
                                         %>
-                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type">
-                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                        </a>
+                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type"></a>
                                         <br/><input type="radio" name="type" value="CH2" onclick="javascript:fixType(this)" checked="checked">Data element with quantitative values (e.g. measurements)</input>
                                         <br/><input type="radio" name="type" value="CH1" onclick="javascript:fixType(this)">Data element with fixed values (codes)</input>
                                         <br/><input type="radio" name="type" value="CH3" onclick="javascript:fixType(this)">Data element with values from a vocabulary</input><%
@@ -1526,9 +1524,8 @@
                                             <b>DATA ELEMENT WITH QUANTITATIVE VALUES</b><%
                                         }
                                         %>
-                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type">
-                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                        </a><%
+                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type"></a>
+                                    <%
                                     }
                                     %>
                                 </div>
@@ -1567,9 +1564,7 @@
                                                     Identifier
                                                 </th>
                                                 <td class="simple_attr_help">
-                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier">
-                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                    </a>
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier"></a>
                                                 </td>
                                                 <%
                                                     if (colspan == 4) {
@@ -1601,9 +1596,7 @@
                                             <tr id="short_name_row" class="<%=isOdd%>">
                                                 <th scope="row" class="scope-row short_name">Short name</th>
                                                 <td class="short_name simple_attr_help">
-                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name">
-                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                    </a>
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name"></a>
                                                 </td>
                                                 <%
                                                     if (colspan == 4) {
@@ -1646,9 +1639,7 @@
                                                         Dataset
                                                         </th>
                                                     <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=dataset">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=dataset"></a>
                                                     </td>
                                                     <%
                                                         if (colspan == 4) {
@@ -1685,9 +1676,7 @@
                                                         Table
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=table">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=table"></a>
                                                     </td>
                                                     <%
                                                         if (colspan == 4) {
@@ -1722,9 +1711,7 @@
                                                         RegistrationStatus
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=regstatus">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=regstatus"></a>
                                                     </td>
                                                     <%
                                                         if (colspan == 4) {
@@ -1799,9 +1786,7 @@
                                                         Reference URL
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl"></a>
                                                     </td>
                                                     <td class="simple_attr_value">
                                                         <small><a href="<%=refUrl%>"><%=refUrl%></a></small>
@@ -1942,9 +1927,7 @@
                                                         <%=Util.processForDisplay(attribute.getName())%>
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                                     </td>
                                                     <%
                                                         if (colspan == 4) {
@@ -2136,9 +2119,7 @@
                          }
  %>
                                                                     </select>
-                                                                    <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>">
-                                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                                    </a>
+                                                                    <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>"></a>
                                                                     <%
                                                                         } else {
                                                                     %>
@@ -2173,9 +2154,7 @@
                                                         CheckInNo
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=check_in_no">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=check_in_no"></a>
                                                     </td>
                                                     <%
                                                         if (colspan == 4) {
@@ -2205,9 +2184,7 @@
                                                         Vocabulary
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=vocabulary_link">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=vocabulary_link"></a>
                                                     </td>
                                                     <%
                                                         if (colspan == 4) {
@@ -2354,9 +2331,7 @@ String helpAreaName = "";
                                                         if (!mode.equals("view")) {
                                                     %>
                                                         <span class="simple_attr_help">
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=<%=Util.processForDisplay(helpAreaName)%>">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=<%=Util.processForDisplay(helpAreaName)%>"></a>
                                                         </span>
                                                         <span class="simple_attr_help">
                                                             <% if (type.equals("CH3")) { %>
@@ -2499,9 +2474,7 @@ String helpAreaName = "";
                                                         if (!mode.equals("view")) {
                                                     %>
                                                         <span class="simple_attr_help">
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=fks_link">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=fks_link"></a>
                                                         </span>
                                                         <span class="simple_attr_help">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt="optional"/>
@@ -2638,9 +2611,7 @@ String helpAreaName = "";
                                                         if (!mode.equals("view")) {
                                                     %>
                                                         <span class="simple_attr_help">
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link"></a>
                                                         </span>
                                                         <span class="simple_attr_help">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt="mandatory"/>
@@ -2686,9 +2657,7 @@ String helpAreaName = "";
                                                                             </a>
                                                                         </td>
                                                                         <td>
-                                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
-                                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                                            </a>
+                                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX"></a>
                                                                         </td>
                                                                         <td>
                                                                             <%
@@ -2746,9 +2715,7 @@ String helpAreaName = "";
                                         <h2>Rules
                                             <!-- Eionet styling -->
                                             <span class="inference_rules_help">
-                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link">
-                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                                                </a>
+                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link"></a>
                                             </span>
                                             <span class="inference_rules_help">
                                                   <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt="mandatory"/>

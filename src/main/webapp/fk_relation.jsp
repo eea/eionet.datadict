@@ -176,9 +176,7 @@ String disabled = user == null ? "disabled" : "";
                         }
                         %>
                     </select>&nbsp;
-                    <a class="helpButton" href="help.jsp?screen=foreign_key_rel&amp;area=cardinality">
-                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Get help on this item"/>
-                    </a>
+                    <a class="helpButton" href="help.jsp?screen=foreign_key_rel&amp;area=cardinality"></a>
                 </td>
             </tr>
 

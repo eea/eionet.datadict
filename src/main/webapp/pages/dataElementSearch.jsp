@@ -83,7 +83,6 @@
         </div>
     </c:if>
 
-    <c:url value="/images/info_icon.gif" var="infoIcon" />
     <c:url value="/images/button_remove.gif" var="removeIcon" />
 
     <stripes:form id="searchForm" beanclass="eionet.web.action.SearchDataElementsActionBean" method="get">
@@ -93,9 +92,7 @@
                     <label for="regStatusSelect" class="question">Registration status</label>
                 </td>
                 <td>
-                    <a class="helpButton" href="help.jsp?screen=dataset&area=regstatus">
-                        <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
-                    </a>
+                    <a class="helpButton" href="help.jsp?screen=dataset&area=regstatus"></a>
                 </td>
                 <td colspan="2">
                     <stripes:select id="regStatusSelect" name="filter.regStatus" class="small">
@@ -109,9 +106,7 @@
                     <label for="datasetSelect" class="question">Dataset</label>
                 </td>
                 <td>
-                    <a class="helpButton" href="help.jsp?screen=search_element&amp;area=dataset">
-                        <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
-                    </a>
+                    <a class="helpButton" href="help.jsp?screen=search_element&amp;area=dataset"></a>
                 </td>
                 <td colspan="2">
                     <stripes:select id="datasetSelect" name="filter.dataSet" class="small">
@@ -125,9 +120,7 @@
                     <label for="typeSelect" class="question">Type</label>
                 </td>
                 <td>
-                    <a class="helpButton" href="help.jsp?screen=element&amp;area=type">
-                        <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
-                    </a>
+                    <a class="helpButton" href="help.jsp?screen=element&amp;area=type"></a>
                 </td>
                 <td colspan="2">
                     <stripes:select name="filter.type" class="small" id="typeSelect">
@@ -143,9 +136,7 @@
                     <label for="txtShortName" class="question">Short name</label>
                 </td>
                 <td>
-                    <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
-                        <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
-                    </a>
+                    <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name"></a>
                 </td>
                 <td colspan="2">
                     <stripes:text name="filter.shortName" class="smalltext" size="59" id="txtShortName"/>
@@ -156,9 +147,7 @@
                     <label for="txtIdentifier" class="question">Identifier</label>
                 </td>
                 <td>
-                    <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier">
-                        <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
-                    </a>
+                    <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier"></a>
                 </td>
                 <td colspan="2">
                     <stripes:text name="filter.identifier" class="smalltext" size="59" id="txtIdentifier"/>
@@ -170,9 +159,7 @@
                         <label for="txtFilterAttr_${attr.id}_${row.index}" class="question"><c:out value="${attr.shortName}" /></label>
                     </td>
                     <td>
-                        <a class="helpButton" href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE">
-                            <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
-                        </a>
+                        <a class="helpButton" href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE"></a>
                     </td>
                     <td colspan="2">
                         <stripes:hidden name="filter.attributes[${row.index}].id" />
@@ -188,9 +175,7 @@
                         <label for="txtAddedAttr_${attr.id}_${row.index}" class="question"><c:out value="${attr.name}" /></label>
                     </td>
                     <td>
-                        <a class="helpButton" href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE">
-                            <img style="border:0" src="${infoIcon}" alt="Help" width="16" height="16"/>
-                        </a>
+                        <a class="helpButton" href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE"></a>
                     </td>
                     <td colspan="2">
                         <stripes:hidden name="addedAttributes[${row.index}].id" />

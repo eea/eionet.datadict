@@ -214,9 +214,7 @@ else {
                             <b>Short name</b>
                         </td>
                         <td>
-                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
-                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                            </a>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name"></a>
                         </td>
                         <td colspan="2">
                             <input type="text" class="smalltext" size="59" name="short_name" value="<%=Util.processForDisplay(short_name)%>"/>
@@ -228,9 +226,7 @@ else {
                             <b>Identifier</b>
                         </td>
                         <td>
-                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier">
-                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                            </a>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier"></a>
                         </td>
                         <td colspan="2">
                             <input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>"/>
@@ -276,9 +272,7 @@ else {
                                         <b><%=Util.processForDisplay(attrName)%></b>
                                     </td>
                                     <td>
-                                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                                        </a>
+                                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                     </td>
                                     <td colspan="2">
                                         <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.processForDisplay(attrValue, true)%>"/>
@@ -308,9 +302,7 @@ else {
                                     <b><%=Util.processForDisplay(attrName)%></b>
                                 </td>
                                 <td>
-                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                                    </a>
+                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                 </td>
                                 <td>
                                     <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.processForDisplay(attrValue, true)%>"/>
@@ -335,10 +327,8 @@ else {
                                     <b><%=Util.processForDisplay(attrName)%></b>
                                 </td>
                                 <td>
-                                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                                        </a>
-                                    </td>
+                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
+                                </td>
                                 <td>
                                     <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
                                 </td>

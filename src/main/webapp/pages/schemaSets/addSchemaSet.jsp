@@ -25,9 +25,7 @@
                         Identifier
                     </th>
                     <td class="simple_attr_help">
-                        <a class="helpButton" href="/help.jsp?screen=dataset&amp;area=identifier">
-                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                        </a>
+                        <a class="helpButton" href="/help.jsp?screen=dataset&amp;area=identifier"></a>
                     </td>
                     <td class="simple_attr_help">
                         <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
@@ -44,9 +42,7 @@
                                 <c:out value="${attribute.shortName}"/>
                             </th>
                             <td class="simple_attr_help">
-                                <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE">
-                                    <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                                </a>
+                                <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE"></a>
                             </td>
                             <td class="simple_attr_help">
                                 <c:if test="${attribute.obligation=='M'}">
