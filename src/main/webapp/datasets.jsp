@@ -414,10 +414,7 @@
         </div>
         <form id="searchDatasetsForm" action="${pageContext.request.contextPath}/datasets.jsp" method="get">
             <div id="filters">
-                <table class="filter" cellspacing="0">
-                    <col />
-                    <col />
-                    <col />
+                <table class="filter">
                     <tr>
                         <td class="label">
                             <label for="regStatus">Registration Status</label>
@@ -590,7 +587,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2">
+                        <td>
                             <input class="mediumbuttonb searchButton" type="submit" value="Search" />
                             <input class="mediumbuttonb" type="reset" value="Reset" />
                         </td>
@@ -611,6 +608,7 @@
                     <p class="not-found">No dataset definitions were found!</p>
                 </c:when>    
                 <c:otherwise>
+                    <h2 class="results">Total results: ${fn:length(datasets)}</h2>
                     <form id="form1" method="post" action="datasets.jsp" onsubmit="setLocation()">
                         <table class="results" width="100%" style="clear:both">
 
@@ -758,7 +756,6 @@
                     </c:forEach>
                 </tbody>
             </table>
-                        <p>Total results: <%=datasets.size()%></p>
 
                         <div style="display:none">
                             <input type="hidden" name="searchUrl" value=""/>

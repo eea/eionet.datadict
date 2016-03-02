@@ -45,6 +45,12 @@
 	border-right: 1px solid #cedc32;
 }
 
+/* HEADER */
+
+#toolribbon #righttools a.helpButton:after  {
+    content: none;
+}
+
 /* MENU */
 
 #menuribbon {
@@ -146,6 +152,13 @@
 #workarea h1 {
 	color: #000000;
 	font-size: 155%;
+}
+
+#workarea h2.results {
+    background: none;
+    border: none;
+    display: block;
+    float: left;
 }
 
 /* DROP OPERATIONS */
@@ -263,10 +276,6 @@
 
 #workarea table.filter td.input {
     width: 310px;   
-}
-
-#workarea table.filter td.label label.question {
-    font-weight: normal;
 }
 
 #workarea table.filter td input.mediumbuttonb {
