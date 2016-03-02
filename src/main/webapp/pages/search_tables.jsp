@@ -35,58 +35,47 @@
         </div>
 
         <stripes:form method="get" id="searchTablesForm" beanclass="${actionBean['class'].name}">
-            <table class="filter" cellspacing="0">
-                <tr>
-                    <td>
-                        <b>Short name</b>
-                    </td>
-                    <td>
-                        <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
-                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                        </a>
-                    </td>
-                    <td colspan="2">
-                        <stripes:text id="shortName" name="tableFilter.shortName" class="smalltext" size="59" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <b>Identifier</b>
-                    </td>
-                    <td>
-                        <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
-                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                        </a>
-                    </td>
-                    <td colspan="2">
-                        <stripes:text id="identifier" name="tableFilter.identifier" class="smalltext" size="59" />
-                    </td>
-                </tr>
-                <c:forEach var="attr" items="${actionBean.tableFilter.attributes}" varStatus="row">
+            <div id="filters">
+                <table class="filter">
                     <tr>
-                        <td>
-                            <b><c:out value="${attr.name}" /></b>
+                        <td class="label">
+                            <label for="shortName">Short name</label>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name"></a>
                         </td>
-                        <td>
-                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
-                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                            </a>
-                        </td>
-                        <td colspan="2">
-                            <stripes:text id="attr${row.index}" name="tableFilter.attributes[${row.index}].value" class="smalltext" size="59" />
-                            <stripes:hidden name="tableFilter.attributes[${row.index}].id" />
-                            <stripes:hidden name="tableFilter.attributes[${row.index}].name" />
+                        <td class="input">
+                            <stripes:text id="shortName" name="tableFilter.shortName" class="smalltext" size="59" />
                         </td>
                     </tr>
-                </c:forEach>
-                <tr>
-                    <td colspan="2">&nbsp;</td>
-                    <td colspan="2">
-                        <stripes:submit name="search" value="Search" class="mediumbuttonb searchButton" />
-                        <input class="mediumbuttonb" type="reset" value="Reset" />
-                    </td>
-                </tr>
-            </table>
+                    <tr>
+                        <td class="label">
+                            <label for="identifier">Identifier</label>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name"></a>
+                        </td>
+                        <td class="input">
+                            <stripes:text id="identifier" name="tableFilter.identifier" class="smalltext" size="59" />
+                        </td>
+                    </tr>
+                    <c:forEach var="attr" items="${actionBean.tableFilter.attributes}" varStatus="row">
+                        <tr>
+                            <td class="label">
+                                <label for="attr${row.index}">${fn:escapeXml(attr.name)}</label>
+                                <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name"></a>
+                            </td>
+                            <td class="input">
+                                <stripes:text id="attr${row.index}" name="tableFilter.attributes[${row.index}].value" class="smalltext" size="59" />
+                                <stripes:hidden name="tableFilter.attributes[${row.index}].id" />
+                                <stripes:hidden name="tableFilter.attributes[${row.index}].name" />
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <tr>
+                        <td>
+                            <stripes:submit name="search" value="Search" class="mediumbuttonb searchButton" />
+                            <input class="mediumbuttonb" type="reset" value="Reset" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </stripes:form>
 
         <c:choose>
@@ -94,6 +83,7 @@
                 <p class="not-found">No tables found!</p>
             </c:when>    
             <c:otherwise>
+                <h2 class="results">Total results: ${fn:length(actionBean.dataSetTables)}</h2>
                 <display:table name="${actionBean.dataSetTables}" class="sortable results" id="item" sort="list"
                     decorator="eionet.web.decorators.TableResultDecorator" requestURI="/searchtables" style="width:100%">
                     <display:column title="Full name" sortable="true">
