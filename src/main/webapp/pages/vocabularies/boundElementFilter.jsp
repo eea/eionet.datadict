@@ -8,7 +8,6 @@
             <stripes:option value="" label="All" />
             <stripes:options-map map="${actionBean.boundElementFilter.options}" />
         </stripes:select>
-        <c:url var="delIcon" value="/images/button_remove.gif" />
-        <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
+        <a href="#" class="deleteButton"></a>
     </span>
 </stripes:form>

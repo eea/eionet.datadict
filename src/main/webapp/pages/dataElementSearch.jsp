@@ -83,8 +83,6 @@
         </div>
     </c:if>
 
-    <c:url value="/images/button_remove.gif" var="removeIcon" />
-
     <stripes:form id="searchForm" beanclass="eionet.web.action.SearchDataElementsActionBean" method="get">
         <table width="auto" cellspacing="0" style="clear:right">
             <tr valign="top">
@@ -182,7 +180,7 @@
                         <stripes:hidden name="addedAttributes[${row.index}].name" />
                         <stripes:hidden name="addedAttributes[${row.index}].shortName" />
                         <stripes:text name="addedAttributes[${row.index}].value" class="smalltext" size="59" id="txtAddedAttr_${attr.id}_${row.index}"/>
-                        <img src="${removeIcon}" border="0" onclick="deleteAttribute(${attr.id})" />
+                        <a class="deleteButton" href="#" onclick="deleteAttribute(${attr.id})" title="Remove attribute from search criteria" /></a>
                     </td>
                 </tr>
             </c:forEach>

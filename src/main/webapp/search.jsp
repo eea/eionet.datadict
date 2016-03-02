@@ -553,7 +553,7 @@ if (isDisplayOperations){
                                     <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.processForDisplay(attrValue, true)%>"/>
                                 </td>
                                 <td>
-                                    <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
+                                    <a class="deleteButton" href="javascript:selAttr(<%=attrID%>, 'remove');" title="Remove attribute from search criteria"></a>
                                 </td>
                             </tr>
                             <%
@@ -578,7 +578,7 @@ if (isDisplayOperations){
                                     <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
                                 </td>
                                 <td>
-                                    <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
+                                    <a class="deleteButton" href="javascript:selAttr(<%=attrID%>, 'remove');" title="Remove attribute from search criteria"></a>
                                 </td>
                             </tr>
                             <%

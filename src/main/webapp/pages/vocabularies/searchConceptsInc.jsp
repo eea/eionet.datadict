@@ -1,5 +1,4 @@
 <%@ include file="/pages/common/taglibs.jsp"%>
-<c:url var="delIcon" value="/images/button_remove.gif" />
 <script type="text/javascript">
     <!--
     ( function($) {
@@ -238,7 +237,7 @@
                     <td class="simple_attr_value">
                         <c:forEach var="vocabularySet" items="${actionBean.relatedVocabularyConcepts.vocabularySets}">
                             <c:out value="${vocabularySet.label} "/>
-                            <stripes:link beanclass="${actionBean['class'].name}" event="searchConcepts" title="Exclude the vocabulary set from search">
+                            <stripes:link class="deleteButton" beanclass="${actionBean['class'].name}" event="searchConcepts" title="Exclude the vocabulary set from search">
                                 <c:if test="${not empty actionBean.elementId}">
                                     <stripes:param name="elementId" value="${actionBean.elementId}" />
                                 </c:if>
@@ -254,8 +253,6 @@
                                 <stripes:param name="excludedVocSetLabels" value="${actionBean.excludedVocSetLabels}" />
 
                                 <stripes:param name="relatedConceptsFilter.text" value="${actionBean.relatedConceptsFilter.text}" />
-
-                                <img style='border:0' src='${delIcon}' alt=""/>
                             </stripes:link>
                             <br/>
 
