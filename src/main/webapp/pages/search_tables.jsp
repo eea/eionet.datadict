@@ -49,7 +49,7 @@
                     <tr>
                         <td class="label">
                             <label for="identifier">Identifier</label>
-                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name"></a>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier"></a>
                         </td>
                         <td class="input">
                             <stripes:text id="identifier" name="tableFilter.identifier" class="smalltext" size="59" />
@@ -59,7 +59,7 @@
                         <tr>
                             <td class="label">
                                 <label for="attr${row.index}">${fn:escapeXml(attr.name)}</label>
-                                <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name"></a>
+                                <a class="helpButton" href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE"></a>
                             </td>
                             <td class="input">
                                 <stripes:text id="attr${row.index}" name="tableFilter.attributes[${row.index}].value" class="smalltext" size="59" />
