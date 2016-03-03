@@ -32,9 +32,16 @@
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">
+        <h1>Edit schemas of schema set <a href="${fn:escapeXml(schemaSetUrl)}">${actionBean.schemaSet.identifier}</a></h1>
+
+        <c:if test="${actionBean.schemaSet.deprecatedStatus}">
+            <div class="note-msg">
+                <strong>Note</strong>
+                <p>This schema set is deprecated. It is not valid anymore!</p>
+            </div>
+        </c:if>
 
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
                 <li class="upload">
                     <a href="#" id="uploadSchemaLink">Upload schema</a>
@@ -52,15 +59,6 @@
             <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
             <stripes:param name="workingCopy" value="${actionBean.schemaSet.workingCopy}"/>
         </stripes:url>
-
-        <h1>Edit schemas of schema set <a href="${fn:escapeXml(schemaSetUrl)}">${actionBean.schemaSet.identifier}</a></h1>
-
-        <c:if test="${actionBean.schemaSet.deprecatedStatus}">
-            <div class="note-msg">
-                <strong>Note</strong>
-                <p>This schema set is deprecated. It is not valid anymore!</p>
-            </div>
-        </c:if>
 
         <c:if test="${not empty actionBean.schemas}">
             <stripes:form id="schemasForm" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">

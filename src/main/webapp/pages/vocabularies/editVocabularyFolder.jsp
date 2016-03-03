@@ -159,9 +159,19 @@
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">
+        <h1>Edit vocabulary</h1>
 
+        <c:if test="${actionBean.vocabularyFolder.workingCopy && actionBean.vocabularyFolder.siteCodeType}">
+            <div class="note-msg">
+                <strong>Notice</strong>
+                <p>
+                For checked out site codes, vocabulary concepts are not visible. To view them, see the
+                <stripes:link href="/services/siteCodes">site codes page</stripes:link>.
+                </p>
+            </div>
+        </c:if>
+        
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
                 <li class="checkin">
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkIn">
@@ -193,18 +203,6 @@
                 </li>
             </ul>
         </div>
-
-        <h1>Edit vocabulary</h1>
-
-        <c:if test="${actionBean.vocabularyFolder.workingCopy && actionBean.vocabularyFolder.siteCodeType}">
-            <div class="note-msg">
-                <strong>Notice</strong>
-                <p>
-                For checked out site codes, vocabulary concepts are not visible. To view them, see the
-                <stripes:link href="/services/siteCodes">site codes page</stripes:link>.
-                </p>
-            </div>
-        </c:if>
 
         <stripes:form id="editVocabularyFolderForm" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
         <div id="outerframe">

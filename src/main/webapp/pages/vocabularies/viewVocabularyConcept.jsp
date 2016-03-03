@@ -5,9 +5,9 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabulary" currentSection="vocabularies">
 
     <stripes:layout-component name="contents">
+        <h1>Concept: <em><c:out value="${actionBean.vocabularyConcept.label}" /></em> in the <em><c:out value="${actionBean.vocabularyFolder.identifier}" /></em> vocabulary</h1>
 
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
                 <li class="back">
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="view">
@@ -31,8 +31,6 @@
                 </c:if>
             </ul>
         </div>
-
-        <h1>Concept: <em><c:out value="${actionBean.vocabularyConcept.label}" /></em> in the <em><c:out value="${actionBean.vocabularyFolder.identifier}" /></em> vocabulary</h1>
 
         <!-- Vocabulary folder -->
         <div id="outerframe" style="padding-top: 20px">

@@ -98,26 +98,25 @@
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">
-
-            <div id="drop-operations">
-                <h2>Operations:</h2>
-                <ul>
-                    <li class="search"><stripes:link id="searchLnk" href="#">Search vocabularies</stripes:link></li>
-                    <li class="search"><stripes:link id="searchConceptLnk" href="#">Search concepts</stripes:link></li>
-                    <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
-                        <li class="add"><stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">Add vocabulary</stripes:link></li>
-                    </c:if>
-                    <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
-                        <li class="maintain"><stripes:link id="maintainLnk"  href="#">Maintain vocabularies</stripes:link></li>
-                    </c:if>
-                </ul>
-            </div>
-
         <h1>Browse vocabularies</h1>
+        <c:if test="${empty actionBean.user}">
+            <p class="advise-msg">
+                Note: Unauthenticated users can only see vocabularies in <em>Released</em> and <em>Public Draft</em> statuses.
+            </p>
+        </c:if>
 
-        <p class="advise-msg">
-            Note: Unauthenticated users can only see vocabularies in <em>Released</em> and <em>Public Draft</em> statuses.
-        </p>
+        <div id="drop-operations">
+            <ul>
+                <li class="search"><stripes:link id="searchLnk" href="#">Search vocabularies</stripes:link></li>
+                <li class="search"><stripes:link id="searchConceptLnk" href="#">Search concepts</stripes:link></li>
+                <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
+                    <li class="add"><stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">Add vocabulary</stripes:link></li>
+                </c:if>
+                <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
+                    <li class="maintain"><stripes:link id="maintainLnk"  href="#">Maintain vocabularies</stripes:link></li>
+                </c:if>
+            </ul>
+        </div>
 
         <c:url var="expandIcon" value="/images/expand.png" />
         <c:url var="collapseIcon" value="/images/collapse.png" />

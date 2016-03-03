@@ -71,7 +71,6 @@
 
     <c:if test="${actionBean.permissionToAdd}">
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
                 <li class="new">
                     <stripes:link href="/dataelements/add/">

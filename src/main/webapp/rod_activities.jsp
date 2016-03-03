@@ -80,7 +80,6 @@ if (dstName == null || dstName.length()==0)
         </div>    
     </form>
     <div id="drop-operations">
-        <h2>Operations:</h2>
         <ul>
             <li class="reload"><a href="javascript:document.forms['reload'].submit();">Reload</a></li>
         </ul>

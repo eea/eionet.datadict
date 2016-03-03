@@ -179,7 +179,7 @@
         Tables in <em><a href="<%=request.getContextPath()%>/datasets/<%=dsID%>"><%=Util.processForDisplay(dataset.getShortName())%></a></em> dataset
     </h1>
 
-        <table width="100%" cellspacing="0"  style="border:0">
+    <table width="100%" cellspacing="0"  style="border:0">
         <tr>
 
             <!-- table of elements -->

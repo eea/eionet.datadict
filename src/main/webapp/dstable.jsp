@@ -625,12 +625,13 @@ else if (mode.equals("add"))
         else if (mode.equals("edit"))
             pageHeadingVerb = "Edit";
         %>
+        <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="<%=request.getContextPath()%>/datasets/<%=dsID%>"><%=Util.processForDisplay(dsName)%></a> dataset<%}%></h1>
+
         <!-- The buttons displayed in view mode -->
             <%
             if ((mode.equals("view") && editDstPrm==true) || subscribe) {
             %>
             <div id="drop-operations">
-                <h2>Operations:</h2>
                 <ul>
                     <%
                     if (mode.equals("view") && editDstPrm==true) {
@@ -660,8 +661,6 @@ else if (mode.equals("add"))
                 <div class="system-msg"><%= feedbackValue %></div><%
             }
             %>
-
-        <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="<%=request.getContextPath()%>/datasets/<%=dsID%>"><%=Util.processForDisplay(dsName)%></a> dataset<%}%></h1>
 
         <form id="form1" method="post" action="<%=request.getContextPath()%>/tables" style="clear:both">
 

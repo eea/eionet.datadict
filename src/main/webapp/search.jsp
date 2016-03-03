@@ -266,7 +266,6 @@ if (isDisplayOperations==false)
 if (isDisplayOperations){
     %>
     <div id="drop-operations">
-    <h2>Operations:</h2>
         <ul>
             <%
             if (isPopup){ %>

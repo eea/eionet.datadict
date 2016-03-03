@@ -8,19 +8,20 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabularies" currentSection="vocabularies">
 
     <stripes:layout-component name="contents">
+        <h1>Vocabularies</h1>
+
+        <c:if test="${empty actionBean.user}">
+            <p class="advise-msg">
+                Note: Unauthenticated users can only see vocabularies in <em>Released</em> and <em>Public Draft</em> statuses.
+            </p>
+        </c:if>
+
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
                 <li class="search"><stripes:link id="searchLnk" href="#">Search again</stripes:link></li>
                 <li class="back"><stripes:link href="/vocabularies" event="form">Back to vocabularies</stripes:link></li>
             </ul>
         </div>
-
-        <h1>Vocabularies</h1>
-
-        <p class="advise-msg">
-            Note: Unauthenticated users can only see vocabularies in <em>Released</em> and <em>Public Draft</em> statuses.
-        </p>
 
         <display:table name="${actionBean.vocabularyResult.list}" class="sortable results" id="item" requestURI="/vocabularies/search"  pagesize="20">
             <display:column title="Vocabulary Set" sortable="true" sortProperty="folderName">

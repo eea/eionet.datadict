@@ -128,10 +128,10 @@
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">
+        <h1>Site codes</h1>
 
         <c:if test="${actionBean.allocateRight || actionBean.createRight}">
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
                 <c:if test="${actionBean.createRight}">
                     <li class="add"><a href="#" onClick="openPopup('#reserveSiteCodesDialog')">Add new site codes</a></li>
@@ -143,7 +143,6 @@
         </div>
         </c:if>
 
-        <h1>Site codes</h1>
 
         <%-- Info text --%>
         <c:if test="${actionBean.context.eventName == 'view'}">

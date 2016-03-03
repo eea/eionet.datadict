@@ -5,9 +5,32 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabulary" currentSection="vocabularies">
 
     <stripes:layout-component name="contents">
+        <h1>Vocabulary: <em><c:out value="${actionBean.vocabularyFolder.label}" /></em></h1>
 
+        <c:if test="${actionBean.vocabularyFolder.workingCopy && actionBean.vocabularyFolder.siteCodeType}">
+            <div class="note-msg">
+                <strong>Notice</strong>
+                <p>
+                For checked out site codes, vocabulary concepts are not visible. To view them, see the
+                <stripes:link href="/services/siteCodes">site codes page</stripes:link>.
+                </p>
+            </div>
+        </c:if>
+
+        <c:if test="${actionBean.checkedOutByUser}">
+            <div class="note-msg">
+                <strong>Note</strong>
+                <p>You have a
+                    <stripes:link beanclass="${actionBean['class'].name}" event="viewWorkingCopy">
+                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}"/>
+                        <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}"/>
+                        working copy
+                    </stripes:link> of this vocabulary!</p>
+            </div>
+        </c:if>
+        
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
                 <li class="back">
                     <stripes:link beanclass="eionet.web.action.VocabularyFoldersActionBean">
@@ -70,31 +93,6 @@
                 </c:if>
             </ul>
         </div>
-
-        <h1>Vocabulary: <em><c:out value="${actionBean.vocabularyFolder.label}" /></em></h1>
-
-        <c:if test="${actionBean.vocabularyFolder.workingCopy && actionBean.vocabularyFolder.siteCodeType}">
-            <div class="note-msg">
-                <strong>Notice</strong>
-                <p>
-                For checked out site codes, vocabulary concepts are not visible. To view them, see the
-                <stripes:link href="/services/siteCodes">site codes page</stripes:link>.
-                </p>
-            </div>
-        </c:if>
-
-        <c:if test="${actionBean.checkedOutByUser}">
-            <div class="note-msg">
-                <strong>Note</strong>
-                <p>You have a
-                    <stripes:link beanclass="${actionBean['class'].name}" event="viewWorkingCopy">
-                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}"/>
-                        <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}"/>
-                        working copy
-                    </stripes:link> of this vocabulary!</p>
-            </div>
-        </c:if>
 
         <c:if test="${not actionBean.vocabularyFolder.draftStatus && not actionBean.vocabularyFolder.workingCopy}">
         <c:url var="rdfIconUrl" value="/images/rdf-icon.gif" />

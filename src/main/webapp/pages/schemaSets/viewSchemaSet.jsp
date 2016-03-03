@@ -85,6 +85,28 @@
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">
+        <%-- Page heading --%>
+        <h1>View schema set</h1>
+
+        <c:set var="schemaSetWorkingCopy" value="${actionBean.schemaSetWorkingCopy}"/>
+        <c:if test="${not empty schemaSetWorkingCopy}">
+            <div class="note-msg">
+                <strong>Note</strong>
+                <p>You have a
+                    <stripes:link beanclass="${actionBean['class'].name}">
+                        <stripes:param name="schemaSet.identifier" value="${schemaSetWorkingCopy.identifier}"/>
+                        <stripes:param name="workingCopy" value="true"/>
+                        working copy
+                    </stripes:link> of this schema set!</p>
+            </div>
+        </c:if>
+
+    <c:if test="${actionBean.schemaSet.deprecatedStatus}">
+        <div class="note-msg">
+            <strong>Note</strong>
+            <p>This schema set is deprecated. It is not valid anymore!</p>
+        </div>
+    </c:if>
 
     <stripes:url var="viewUrl" beanclass="${actionBean['class'].name}" event="view">
         <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
@@ -96,7 +118,6 @@
         <c:set var="isMyWorkingCopy" value="${actionBean.schemaSet.workingCopy && actionBean.userName==actionBean.schemaSet.workingUser}"/>
         <c:if test="${empty actionBean.schemaSet.workingUser || isMyWorkingCopy}">
             <div id="drop-operations">
-                <h2>Operations:</h2>
                 <ul>
                     <c:if test="${isMyWorkingCopy}">
                         <li class="edit">
@@ -164,30 +185,6 @@
                 </ul>
             </div>
         </c:if>
-    </c:if>
-
-    <%-- Page heading --%>
-
-    <h1>View schema set</h1>
-
-    <c:set var="schemaSetWorkingCopy" value="${actionBean.schemaSetWorkingCopy}"/>
-    <c:if test="${not empty schemaSetWorkingCopy}">
-        <div class="note-msg">
-            <strong>Note</strong>
-            <p>You have a
-                <stripes:link beanclass="${actionBean['class'].name}">
-                    <stripes:param name="schemaSet.identifier" value="${schemaSetWorkingCopy.identifier}"/>
-                    <stripes:param name="workingCopy" value="true"/>
-                    working copy
-                </stripes:link> of this schema set!</p>
-        </div>
-    </c:if>
-
-    <c:if test="${actionBean.schemaSet.deprecatedStatus}">
-        <div class="note-msg">
-            <strong>Note</strong>
-            <p>This schema set is deprecated. It is not valid anymore!</p>
-        </div>
     </c:if>
 
     <%-- Attributes div --%>

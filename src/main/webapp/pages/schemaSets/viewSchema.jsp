@@ -67,6 +67,28 @@
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">
+        <%-- Page heading --%>
+        <h1>View schema</h1>
+
+        <c:if test="${actionBean.schemaSet.deprecatedStatus}">
+            <div class="note-msg">
+                <strong>Note</strong>
+                <p>This schema set is deprecated. It is not valid anymore!</p>
+            </div>
+        </c:if>
+
+        <c:set var="schemaWorkingCopy" value="${actionBean.schemaWorkingCopy}"/>
+        <c:if test="${not empty schemaWorkingCopy}">
+            <div class="note-msg">
+                <strong>Note</strong>
+                <p>You have a
+                    <stripes:link beanclass="${actionBean['class'].name}">
+                        <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
+                        <stripes:param name="workingCopy" value="true"/>
+                        working copy
+                    </stripes:link> of this schema!</p>
+            </div>
+        </c:if>
 
     <%-- Dropdown operations menu --%>
 
@@ -78,7 +100,6 @@
     <c:if test="${not empty actionBean.userName}">
 
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
                 <c:set var="isMySchemaWorkingCopy" value="${actionBean.schema.workingCopy && actionBean.userName==actionBean.schema.workingUser}"/>
                 <c:set var="isMySchemaSetWorkingCopy" value="${!actionBean.rootLevelSchema && actionBean.mySchemaSetWorkingCopy}"/>
@@ -153,30 +174,6 @@
                     </stripes:link>
                 </li>
             </ul>
-        </div>
-    </c:if>
-
-    <%-- Page heading --%>
-
-    <h1>View schema</h1>
-
-    <c:if test="${actionBean.schemaSet.deprecatedStatus}">
-        <div class="note-msg">
-            <strong>Note</strong>
-            <p>This schema set is deprecated. It is not valid anymore!</p>
-        </div>
-    </c:if>
-
-    <c:set var="schemaWorkingCopy" value="${actionBean.schemaWorkingCopy}"/>
-    <c:if test="${not empty schemaWorkingCopy}">
-        <div class="note-msg">
-            <strong>Note</strong>
-            <p>You have a
-                <stripes:link beanclass="${actionBean['class'].name}">
-                    <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
-                    <stripes:param name="workingCopy" value="true"/>
-                    working copy
-                </stripes:link> of this schema!</p>
         </div>
     </c:if>
 

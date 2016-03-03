@@ -65,9 +65,9 @@
 </stripes:layout-component>
 
 <stripes:layout-component name="contents">
+    <h1>Vocabulary concept</h1>
 
     <div id="drop-operations">
-        <h2>Operations:</h2>
         <ul>
             <li class="back">
                 <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="edit">
@@ -86,8 +86,6 @@
             </li>
         </ul>
     </div>
-
-    <h1>Vocabulary concept</h1>
 
     <stripes:form id="editForm" method="post" beanclass="${actionBean['class'].name}">
 

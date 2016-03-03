@@ -8,9 +8,9 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schema sets" currentSection="schemas">
 
     <stripes:layout-component name="contents">
+        <h1>Browse schema sets and schemas</h1>
 
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
                 <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemasets', 'i')}">
                     <li class="add">
@@ -34,7 +34,6 @@
             </ul>
         </div>
 
-        <h1>Browse schema sets and schemas</h1>
 
         <c:if test="${empty actionBean.schemaSets && empty actionBean.schemas}">
             <div style="margin-top:1em">

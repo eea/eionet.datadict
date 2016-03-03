@@ -192,6 +192,7 @@ else {
 %>
 
 <div id="workarea">
+    <h1>Search tables</h1>
 
     <%
       if (isPopup){
@@ -205,7 +206,6 @@ else {
       }
       %>
 
-    <h1>Search tables</h1>
         <form id="form1" action="search_results_tbl.jsp" method="get">
 
                 <table width="auto" cellspacing="0" style="margin-top:10px">

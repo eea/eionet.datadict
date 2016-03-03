@@ -155,25 +155,22 @@
     <%@ include file="/pages/common/navigation.jsp" %>
 
 <div id="workarea">
+    <h1>Tables from latest versions of datasets in any status</h1>
+    <%
+    if (user==null){%>
+        <p class="advise-msg">
+            Note: Tables from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.
+        </p><%
+    }
+    %>
 
+    <!-- search buttons -->
+    <div id="drop-operations">
+        <ul>
+            <li class="search"><a href="search_table.jsp">Search</a></li>
+        </ul>
+    </div>
 
-                <!-- search buttons -->
-
-                <div id="drop-operations">
-                <h2>Operations:</h2>
-                    <ul>
-                        <li class="search"><a href="search_table.jsp">Search</a></li>
-                    </ul>
-                </div>
-
-            <h1>Tables from latest versions of datasets in any status</h1>
-            <%
-            if (user==null){%>
-                <p class="advise-msg">
-                    Note: Tables from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.
-                </p><%
-            }
-            %>
 
         <!-- the result table -->
         <table width="100%" class="sortable results" style="clear:both">

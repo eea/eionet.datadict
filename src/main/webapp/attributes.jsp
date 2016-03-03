@@ -125,7 +125,6 @@
                 if (addPrm){
                     %>
                     <div id="drop-operations">
-                    <h2>Operations:</h2>
                         <ul>
                             <li class="add"><a href="delem_attribute.jsp?mode=add">Add attribute</a></li>
                         </ul>

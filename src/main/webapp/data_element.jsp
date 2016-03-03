@@ -1298,11 +1298,12 @@
                     else if (mode.equals("edit"))
                         verb = "Edit";
                     String strCommon = elmCommon ? "common" : "";
-
+                %>
+                <h1><%=verb%> <%=strCommon%> element definition</h1>
+                <%
                     if (mode.equals("view") && user!=null) {
                     %>
                         <div id="drop-operations">
-                        <h2>Operations:</h2>
                             <ul>
                             <%
                             if (popup) {
@@ -1368,9 +1369,7 @@
                         </div>
                     <%
                     }
-                    %>
-                        <h1><%=verb%> <%=strCommon%> element definition</h1>
-            <%
+
                 if (mode.equals("add")) {
             %>
                 <p>

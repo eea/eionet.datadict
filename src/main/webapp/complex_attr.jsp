@@ -311,7 +311,6 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
     if (user != null && isWorkingCopy && mode.equals("view")){
         %>
         <div id="drop-operations">
-        <h2>Operations:</h2>
             <ul>
                 <%
                 if (user != null && isWorkingCopy && mode.equals("view")){ %>
