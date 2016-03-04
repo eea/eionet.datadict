@@ -79,14 +79,13 @@
         </stripes:form>
 
         <c:choose>
-            <c:when test="${empty actionBean.dataSetTables}">
+            <c:when test="${empty actionBean.tableResult.list}">
                 <p class="not-found">No tables found!</p>
             </c:when>    
             <c:otherwise>
-                <h2 class="results">Total results: ${fn:length(actionBean.dataSetTables)}</h2>
-                <display:table name="${actionBean.dataSetTables}" class="sortable results" id="item" sort="list"
+                <display:table name="${actionBean.tableResult}" class="sortable results" id="item"
                     decorator="eionet.web.decorators.TableResultDecorator" requestURI="/searchtables" style="width:100%">
-                    <display:column title="Full name" sortable="true">
+                    <display:column title="Full name" sortable="true" sortProperty="NAME">
                         <c:choose>
                             <c:when test="${item.statusReleased || actionBean.userLoggedIn}">
                                 <stripes:link href="/tables/${item.id}"><c:out value="${item.name}" /></stripes:link>
@@ -96,9 +95,9 @@
                             </c:otherwise>
                         </c:choose>
                     </display:column>
-                    <display:column property="shortName" title="Short name" sortable="true" />
-                    <display:column property="dataSetName" title="Dataset" sortable="true" />
-                    <display:column title="Dataset status" sortable="true">
+                    <display:column property="shortName" title="Short name" sortable="true" sortProperty="SHORT_NAME" />
+                    <display:column property="dataSetName" title="Dataset" sortable="true" sortProperty="DATASET" />
+                    <display:column title="Dataset status" sortable="true" sortProperty="DATASET_STATUS">
                         <span class="${fn:escapeXml(item.dataSetStatus)}">${fn:escapeXml(item.dataSetStatus)}</span>
                     </display:column>
                 </display:table>

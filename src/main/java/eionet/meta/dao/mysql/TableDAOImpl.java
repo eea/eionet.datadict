@@ -113,8 +113,6 @@ public class TableDAOImpl extends GeneralDAOImpl implements ITableDAO {
 
         sql.append("order by ds.IDENTIFIER asc, ds.DATASET_ID desc, dst.IDENTIFIER asc, dst.TABLE_ID desc");
 
-        // LOGGER.debug("SQL: " + sql.toString());
-
         final List<DataSetTable> resultList = new ArrayList<DataSetTable>();
 
         getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
@@ -153,8 +151,6 @@ public class TableDAOImpl extends GeneralDAOImpl implements ITableDAO {
             }
 
         });
-
-        Collections.sort(resultList);
         return resultList;
     }
 
