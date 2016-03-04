@@ -213,6 +213,16 @@ public interface IVocabularyConceptDAO {
     void updateReferringReferenceConcepts(int oldVocabularyId);
 
     /**
+     * Retrieves all the concepts of a vocabulary that have an accepted status. Also
+     * for each concept, attribute values are retrieved (if such values exist). 
+     * 
+     * @param vocabularyId the internal id of the vocabulary whose concepts to retrieve.
+     * 
+     * @return a list of vocabulary concepts with populated attribute values.
+     */
+    List<VocabularyConcept> getAcceptedConceptsWithAttributeValues(int vocabularyId);
+    
+    /**
      * Finds vocabulary concepts of the vocabulary.
      * Expects an element to have datatype attribute otherwise not included to the result
      * not included to the result.

@@ -57,8 +57,9 @@ public class VocabularyFolder {
     private boolean numericConceptIdentifiers;
     private String baseUri;
     private VocabularyType type;
-    private int folderId;
     private boolean notationsEqualIdentifiers;
+    
+    private VocabularySet vocabularySet;
 
     /**
      * Includes valid reg. status values for a vocabulary.
@@ -347,7 +348,9 @@ public class VocabularyFolder {
      * @return the folderId
      */
     public int getFolderId() {
-        return folderId;
+        VocabularySet vocabularySet = this.getVocabularySet();
+        
+        return vocabularySet == null ? 0 : vocabularySet.getId();
     }
 
     /**
@@ -355,9 +358,24 @@ public class VocabularyFolder {
      *            the folderId to set
      */
     public void setFolderId(int folderId) {
-        this.folderId = folderId;
+        VocabularySet vocabularySet = this.getVocabularySet();
+        
+        if (vocabularySet == null) {
+            vocabularySet = new VocabularySet();
+            this.setVocabularySet(vocabularySet);
+        }
+        
+        vocabularySet.setId(folderId);
     }
 
+    public VocabularySet getVocabularySet() {
+        return this.vocabularySet;
+    }
+    
+    public void setVocabularySet(VocabularySet vocabularySet) {
+        this.vocabularySet = vocabularySet;
+    }
+    
     /**
      * @return the folderLabel
      */

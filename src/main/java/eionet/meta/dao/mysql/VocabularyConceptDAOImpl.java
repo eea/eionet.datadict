@@ -25,6 +25,8 @@ import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.dao.domain.VocabularySet;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptFilter.BoundElementFilterResult;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -38,9 +40,14 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 /**
  * Vocabulary concept DAO.
@@ -601,6 +608,15 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     }
 
     @Override
+    public List<VocabularyConcept> getAcceptedConceptsWithAttributeValues(int vocabularyId) {
+        Map<Integer, DataElement> conceptAttributes = this.getVocabularyConceptAttributes(vocabularyId);
+        List<VocabularyConcept> concepts = this.getAcceptedConcepts(vocabularyId);
+        this.attachConceptAttributeValues(vocabularyId, conceptAttributes, concepts);
+        
+        return concepts;
+    }
+    
+    @Override
     public List<VocabularyConcept> getConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
                                                                  String dataElementIdentifier, String language,
                                                                  String defaultLanguage, boolean acceptedOnly) {
@@ -609,7 +625,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
 		
         StringBuilder sql = new StringBuilder();
-        sql.append("select distinct c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID, ");
+        sql.append("select c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID, ");
         sql.append("d.IDENTIFIER AS ELEMIDENTIFIER, a.VALUE as DATATYPE, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, ");
         sql.append("c.DEFINITION, c.NOTATION, c.STATUS, c.ACCEPTED_DATE, c.NOT_ACCEPTED_DATE, c.STATUS_MODIFIED, ");
         sql.append("rcvs.IDENTIFIER as RVOCSETIDENTIFIER, rcv.IDENTIFIER as RVOCIDENTIFIER, rcv.BASE_URI as RVOCBASE_URI, ");
@@ -773,4 +789,268 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         return result;
     }
 
+    protected Map<Integer, DataElement> getVocabularyConceptAttributes(int vocabularyId) {
+        String sql = 
+            "select v2e.DATAELEM_ID Id, d.IDENTIFIER Identifier, attrs.VALUE as DataType \n" +
+            "from VOCABULARY2ELEM v2e \n" +
+            "inner join DATAELEM d on v2e.DATAELEM_ID = d.DATAELEM_ID \n" +
+            "left join ( \n" +
+            "	select a.DATAELEM_ID, a.PARENT_TYPE, ma.NAME, a.VALUE \n" +
+            "	from ATTRIBUTE a inner join M_ATTRIBUTE ma \n" +
+            "       on a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME = 'DataType' \n" +
+            "	where a.PARENT_TYPE = 'E' \n" +
+            ") attrs on v2e.DATAELEM_ID = attrs.DATAELEM_ID \n" +
+            "where v2e.VOCABULARY_ID = :vocabularyId \n" +
+            "order by v2e.DATAELEM_ID";
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyId", vocabularyId);
+        List<DataElement> conceptAttributes = this.getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<DataElement>() {
+
+            @Override
+            public DataElement mapRow(ResultSet rs, int i) throws SQLException {
+                DataElement conceptAttribute = new DataElement();
+                conceptAttribute.setId(rs.getInt("Id"));
+                conceptAttribute.setIdentifier(rs.getString("Identifier"));
+                
+                String dataType = rs.getString("DataType");
+                
+                if (dataType != null) {
+                    Map<String, List<String>> attributeValues = new HashMap<String, List<String>>();
+                    List<String> dataTypeValues = new ArrayList<String>();
+                    dataTypeValues.add(dataType);
+                    attributeValues.put("Datatype", dataTypeValues);
+                    conceptAttribute.setElemAttributeValues(attributeValues);
+                }
+                
+                return conceptAttribute;
+            }
+        });
+        Map<Integer, DataElement> result = new HashMap<Integer, DataElement>();
+        
+        for (DataElement conceptAttribute : conceptAttributes) {
+            result.put(conceptAttribute.getId(), conceptAttribute);
+        }
+        
+        return result;
+    }
+    
+    protected List<VocabularyConcept> getAcceptedConcepts(int vocabularyId) {
+        String sql =
+            "select \n" +
+            "	c.VOCABULARY_CONCEPT_ID, \n" +
+            "	c.IDENTIFIER,\n" +
+            "	c.LABEL, \n" +
+            "	c.DEFINITION, \n" +
+            "	c.NOTATION, \n" +
+            "	c.STATUS, \n" +
+            "	c.ACCEPTED_DATE, \n" +
+            "	c.NOT_ACCEPTED_DATE, \n" +
+            "	c.STATUS_MODIFIED \n" +
+            "from \n" +
+            "	VOCABULARY_CONCEPT c \n" +
+            "where \n" +
+            "	c.VOCABULARY_ID = :vocabularyId AND c.STATUS & :status = :status \n" +
+            "order by \n" +
+            "   c.VOCABULARY_CONCEPT_ID";
+        
+        Map<String, Object> params = this.composeParamsForAcceptedConcepts(vocabularyId);
+        
+        return this.getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<VocabularyConcept>() {
+
+            @Override
+            public VocabularyConcept mapRow(ResultSet rs, int i) throws SQLException {
+                VocabularyConcept concept = new VocabularyConcept();
+                concept.setId(rs.getInt("VOCABULARY_CONCEPT_ID"));
+                concept.setIdentifier(rs.getString("IDENTIFIER"));
+                concept.setLabel(rs.getString("LABEL"));
+                concept.setDefinition(rs.getString("DEFINITION"));
+                concept.setNotation(rs.getString("NOTATION"));
+                concept.setStatus(rs.getInt("STATUS"));
+                concept.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
+                concept.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
+                concept.setStatusModified(rs.getDate("STATUS_MODIFIED"));
+                concept.setElementAttributes(new ArrayList<List<DataElement>>());
+                
+                return concept;
+            }
+        });
+    }
+    
+    protected void attachConceptAttributeValues(final int vocabularyId, final Map<Integer, DataElement> conceptAttributes, List<VocabularyConcept> targetConcepts) {
+        String sql =
+            "select\n" +
+            "	c.VOCABULARY_CONCEPT_ID as ConceptId, \n" +
+            "	v.DATAELEM_ID as AttributeId, \n" +
+            "	v.ELEMENT_VALUE as AttributeValue, \n" +
+            "	v.LANGUAGE as AttributeLanguage, \n" +
+            "	rc.VOCABULARY_ID as RelatedConceptVocabularyId,\n" +
+            "	v.RELATED_CONCEPT_ID RelatedConceptId,\n" +
+            "	rc.IDENTIFIER as RelatedConceptIdentifier, \n" +
+            "	rc.LABEL as RelatedConceptLabel\n" +
+            "from \n" +
+            "	VOCABULARY_CONCEPT c \n" +
+            "		inner join VOCABULARY_CONCEPT_ELEMENT v on v.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID \n" +
+            "		left join VOCABULARY_CONCEPT rc on v.RELATED_CONCEPT_ID = rc.VOCABULARY_CONCEPT_ID \n" +
+            "where \n" +
+            "	c.VOCABULARY_ID = :vocabularyId and c.STATUS & :status = :status \n" +
+            "order by \n" +
+            "   c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.LANGUAGE";
+        
+        Map<String, Object> params = this.composeParamsForAcceptedConcepts(vocabularyId);
+        final Iterator<VocabularyConcept> conceptIterator = targetConcepts.iterator();
+        final Map<Integer, Integer> relatedConceptIdToVocabularyIdMappings = new HashMap<Integer, Integer>();
+        final Set<Integer> relatedConceptVocabularyIds = new HashSet<Integer>();
+        
+        this.getNamedParameterJdbcTemplate().query(sql, params, new RowCallbackHandler() {
+
+            VocabularyConcept workingConcept;
+            List<DataElement> workingConceptAttributeValues;
+            
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                int conceptId = rs.getInt("ConceptId");
+                
+                while (workingConcept == null || workingConcept.getId() < conceptId) {
+                    if (conceptIterator.hasNext()) {
+                        workingConcept = conceptIterator.next();
+                        workingConceptAttributeValues = null;
+                    }
+                    else {
+                        return;
+                    }
+                }
+
+                if (workingConcept.getId() > conceptId) {
+                    return;
+                }
+
+                DataElement conceptAttributeValue = new DataElement();
+                conceptAttributeValue.setId(rs.getInt("AttributeId"));
+                conceptAttributeValue.setAttributeValue(rs.getString("AttributeValue"));
+                conceptAttributeValue.setAttributeLanguage(rs.getString("AttributeLanguage"));
+
+                if (!conceptAttributes.containsKey(conceptAttributeValue.getId())) {
+                    String msgFormat = "Could not find vocabulary concept attribute definition; vocabulary id: %d; concept id: %d; bound element id: %d";
+                    String msg = String.format(msgFormat, vocabularyId, conceptId, conceptAttributeValue.getId());
+                    throw new IllegalStateException(msg);
+                }
+                
+                DataElement conceptAttribute = conceptAttributes.get(conceptAttributeValue.getId());
+                conceptAttributeValue.setIdentifier(conceptAttribute.getIdentifier());
+                conceptAttributeValue.setElemAttributeValues(conceptAttribute.getElemAttributeValues());
+
+                int relatedConceptVocabularyId = rs.getInt("RelatedConceptVocabularyId");
+
+                if (!rs.wasNull()) {
+                    relatedConceptVocabularyIds.add(relatedConceptVocabularyId);
+                    conceptAttributeValue.setRelatedConceptId(rs.getInt("RelatedConceptId"));
+                    conceptAttributeValue.setRelatedConceptIdentifier(rs.getString("RelatedConceptIdentifier"));
+                    conceptAttributeValue.setRelatedConceptLabel(rs.getString("RelatedConceptLabel"));
+                    
+                    if (!relatedConceptIdToVocabularyIdMappings.containsKey(conceptAttributeValue.getRelatedConceptId())) {
+                        relatedConceptIdToVocabularyIdMappings.put(conceptAttributeValue.getRelatedConceptId(), relatedConceptVocabularyId);
+                    }
+                }
+                
+                if (workingConceptAttributeValues == null || workingConceptAttributeValues.get(0).getId() != conceptAttributeValue.getId()) {
+                    workingConceptAttributeValues = new ArrayList<DataElement>();
+                    workingConcept.getElementAttributes().add(workingConceptAttributeValues);
+                }
+                
+                workingConceptAttributeValues.add(conceptAttributeValue);
+            }
+        });
+        
+        this.attachRelatedConceptVocabularyInfo(relatedConceptVocabularyIds, relatedConceptIdToVocabularyIdMappings, targetConcepts);
+    }
+    
+    protected void attachRelatedConceptVocabularyInfo(Set<Integer> relatedConceptVocabularyIds, 
+            Map<Integer, Integer> relatedConceptIdToVocabularyIdMappings, List<VocabularyConcept> targetConcepts) {
+        Integer[] vocabularyIds = relatedConceptVocabularyIds.toArray(new Integer[relatedConceptVocabularyIds.size()]);
+        final int maxBatchSize = 80;
+        int index = 0;
+        
+        while (index < vocabularyIds.length) {
+            int batchSize = Math.min(maxBatchSize, vocabularyIds.length - index);
+            Integer[] vocabularyIdBatch = Arrays.copyOfRange(vocabularyIds, index, index + batchSize);
+            Map<Integer, VocabularyFolder> relatedVocabularyInfo = this.getRelatedConceptVocabularyInfo(vocabularyIdBatch);
+            this.applyRelatedConceptVocabularyInfo(relatedVocabularyInfo, relatedConceptIdToVocabularyIdMappings, targetConcepts);
+            index += batchSize;
+        }
+    }
+    
+    protected Map<Integer, VocabularyFolder> getRelatedConceptVocabularyInfo(Integer[] relatedConceptVocabularyIds) {
+        String sql =
+            "select \n" +
+            "	vs.IDENTIFIER as VocabularySetIdentifier, \n" +
+            "	v.VOCABULARY_ID as VocabularyId, \n" +
+            "	v.IDENTIFIER as VocabularyIdentifier, \n" +
+            "	v.BASE_URI as VocabularyBaseUri \n" +
+            "from \n" +
+            "	VOCABULARY v inner join VOCABULARY_SET vs \n" +
+            "		on v.FOLDER_ID = vs.ID \n" +
+            "where \n" +
+            "	v.VOCABULARY_ID in ( :vocabularyIds )";
+        
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("vocabularyIds", Arrays.asList(relatedConceptVocabularyIds));
+        final Map<Integer, VocabularyFolder> vocabularies = new HashMap<Integer, VocabularyFolder>();
+        
+        this.getNamedParameterJdbcTemplate().query(sql, params, new RowCallbackHandler() {
+
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                VocabularyFolder vocabulary = new VocabularyFolder();
+                vocabulary.setId(rs.getInt("VocabularyId"));
+                vocabulary.setIdentifier(rs.getString("VocabularyIdentifier"));
+                vocabulary.setBaseUri(rs.getString("VocabularyBaseUri"));
+                
+                VocabularySet vocabularySet = new VocabularySet();
+                vocabularySet.setIdentifier(rs.getString("VocabularySetIdentifier"));
+                vocabulary.setVocabularySet(vocabularySet);
+                
+                vocabularies.put(vocabulary.getId(), vocabulary);
+            }
+        });
+        
+        return vocabularies;
+    }
+    
+    protected void applyRelatedConceptVocabularyInfo(Map<Integer, VocabularyFolder> vocabularies, 
+            Map<Integer, Integer> relatedConceptIdToVocabularyIdMappings, List<VocabularyConcept> targetConcepts) {
+        
+        
+        for (VocabularyConcept concept : targetConcepts) {
+            for (List<DataElement> conceptAttributeValues : concept.getElementAttributes()) {
+                for (DataElement conceptAttributeValue : conceptAttributeValues) {
+                    if (conceptAttributeValue.getRelatedConceptId() == null) {
+                        continue;
+                    }
+                    
+                    int vocabularyId = relatedConceptIdToVocabularyIdMappings.get(conceptAttributeValue.getRelatedConceptId());
+                    
+                    if (!vocabularies.containsKey(vocabularyId)) {
+                        String msgFormat = "Failed to resolve vocabulary for related concept with id %d. Vocabulary with id %d was not found.";
+                        String msg = String.format(msgFormat, conceptAttributeValue.getRelatedConceptId(), vocabularyId);
+                        throw new IllegalStateException(msg);
+                    }
+                    
+                    VocabularyFolder vocabulary = vocabularies.get(vocabularyId);
+                    conceptAttributeValue.setRelatedConceptVocabulary(vocabulary.getIdentifier());
+                    conceptAttributeValue.setRelatedConceptBaseURI(vocabulary.getBaseUri());
+                    conceptAttributeValue.setRelatedConceptVocSet(vocabulary.getVocabularySet().getIdentifier());
+                }
+            }
+        }
+    }
+    
+    private Map<String, Object> composeParamsForAcceptedConcepts(int vocabularyId) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyId", vocabularyId);
+        params.put("status", StandardGenericStatus.ACCEPTED.getValue());
+        
+        return params;
+    }
+    
 }

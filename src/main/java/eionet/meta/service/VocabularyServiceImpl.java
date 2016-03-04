@@ -1022,8 +1022,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public List<VocabularyConcept> getAcceptedConceptsWithAttributes(int vocabularyFolderId) throws ServiceException {
         try {
-            List<VocabularyConcept> result =
-                    vocabularyConceptDAO.getConceptsWithValuedElements(vocabularyFolderId, null, null, null, null, null, true);
+            List<VocabularyConcept> result = vocabularyConceptDAO.getAcceptedConceptsWithAttributeValues(vocabularyFolderId);
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concepts: " + e.getMessage(), e);

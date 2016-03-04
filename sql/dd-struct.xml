@@ -1947,4 +1947,10 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
       </modifySql>
   </changeSet>
 
+    <changeSet author="nakasnik" id="rev-144">
+        <createIndex indexName="IDX_M_ATTRIBUTE_NAME" tableName="M_ATTRIBUTE" unique="false">
+            <column name="NAME"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

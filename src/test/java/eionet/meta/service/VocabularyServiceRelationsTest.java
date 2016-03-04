@@ -100,7 +100,7 @@ public class VocabularyServiceRelationsTest extends UnitilsJUnit4 {
         VocabularyConcept concept31 = concepts3.get(0);
 
         //both relations should be deleted as requested by "false" parameter in delete()
-        Assert.assertTrue(concept31.getElementAttributes().get(0).isEmpty());
+        Assert.assertTrue(concept31.getElementAttributes().isEmpty());
 
     }
 
