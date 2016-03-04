@@ -182,11 +182,9 @@
         request.setAttribute("registrationStatuses", DatasetRegStatus.values());
         request.setAttribute("viewName", "datasets");
 
-        DataSetSort sort = null;
         String sortName = (String) request.getParameter("sort_name");
-        if (StringUtils.isNotBlank(sortName) && DataSetSort.valueOf(sortName) != null) {
-            sort = DataSetSort.valueOf(sortName);
-        } else {
+        DataSetSort sort = DataSetSort.fromString(sortName);
+        if (sort == null) {
             sort = DataSetSort.NAME; // fall-back
         }
         String sortOrder = (String) request.getParameter("sort_order");

@@ -9,6 +9,7 @@ package eionet.meta.dao.domain;
 import eionet.meta.Dataset;
 import eionet.util.Util;
 import java.util.Comparator;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -17,7 +18,7 @@ import java.util.Comparator;
 public enum DataSetSort {
     
     NAME, STATUS, ID;
-        
+
     public Comparator<Dataset> getComparator(final boolean descending) {
         if (this == ID) {
             return new Comparator<Dataset>() {
@@ -44,6 +45,18 @@ public enum DataSetSort {
                         d1.getName().compareToIgnoreCase(d2.getName());
             }
         };
+    }
+
+    public static DataSetSort fromString(String name) {
+        if (StringUtils.isBlank(name)) {
+            return null;
+        }
+        for (DataSetSort value : DataSetSort.values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
     }
 
 }
