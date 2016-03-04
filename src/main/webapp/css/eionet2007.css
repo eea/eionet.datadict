@@ -224,6 +224,23 @@
     content: "\e90c";
 }
 
+#drop-operations > ul li.subscribe a:before {
+     content: "\e90e";
+}
+
+#drop-operations > ul li.newVersion a:before {
+     content: "\e912";
+}
+
+#drop-operations > ul li.edit a:before {
+     content: "\e907";
+}
+
+#drop-operations > ul li.back a:before {
+     content: "\e901";
+}
+
+
 #drop-operations > ul li a:hover {
 	background: none;	
 }
@@ -334,10 +351,37 @@ a.deleteButton:after {
 	border: none;
 	color: #FFFFFF;
 	padding: 7px;
+    text-align: left;
+}
+
+#workarea table.results th.selected,
+#workarea table.results td.selected {
+    background: rgba(166,202,205,0.3);
 }
 
 #workarea table.results th a {
 	color: #FFFFFF;	
+}
+
+#workarea table.results th a.order1:after {
+    font-family: 'eea';
+    content: "\e917";
+    color: #FFFFFF;
+    font-size: 6px;
+    display: inline-block;
+    float: right;
+    margin-top: 6px;
+}
+
+
+#workarea table.results th a.order2:after {
+   font-family: 'eea';
+    content: "\e918";
+    color: #FFFFFF;
+    font-size: 6px;
+    display: inline-block;
+    float: right;
+    margin-top: 6px;
 }
 
 #workarea table.results tbody {
@@ -362,6 +406,62 @@ a.deleteButton:after {
 #workarea table.results tr.even.selected {
 	background-color: rgba(212,217,145,0.6);
 }
+
+
+
+#workarea table.results td div.status {
+    color: #FFFFFF;
+    text-align: center;
+    padding: 5px 8px;
+    width: 80px;
+    height: 30px;
+}
+
+#workarea table.results td div.status.incomplete {
+    background: #E2923B;
+}
+
+#workarea table.results td div.status.candidate {
+    background: #FBB03B;
+}
+
+#workarea table.results td div.status.recorded {
+    background: #AEB5B5;
+}
+
+#workarea table.results td div.status.qualified {
+    background: #29CC76;
+}
+
+
+#workarea table.results td div.status.released {
+    background: #21A563;
+}
+
+
+#workarea table.results td div.status span {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+#workarea table.results td div.status ul {
+    list-style: none;
+    margin: 0;
+}
+
+#workarea table.results td div.status ul li {
+    display: inline-block;
+    width: 10px;
+    height: 3px;
+    background: rgba(255,255,255,0.4);
+    font-size: 0;
+}
+
+#workarea table.results td div.status ul li.done {
+    background: rgba(255,255,255,1);
+}
+
+
 
 /* NOT FOUND */
 
