@@ -23,7 +23,7 @@
             </ul>
         </div>
 
-        <display:table name="${actionBean.vocabularyResult.list}" class="sortable results" id="item" requestURI="/vocabularies/search"  pagesize="20">
+        <display:table name="${actionBean.vocabularyResult.list}" class="sortable results" id="item" requestURI="/vocabularies/search" pagesize="20">
             <display:column title="Vocabulary Set" sortable="true" sortProperty="folderName">
                 ${item.folderName}
             </display:column>
