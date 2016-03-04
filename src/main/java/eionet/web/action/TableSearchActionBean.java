@@ -79,10 +79,11 @@ public class TableSearchActionBean extends AbstractActionBean {
         int dataSetTablesSize = dataSetTables.size();
 
         // sorting
-        if (StringUtils.isNotBlank(sort) && DataSetTableSort.fromString(sort) != null) {
-            DataSetTableSort dataSetTableSort = DataSetTableSort.fromString(sort);
+        DataSetTableSort dataSetTableSort = DataSetTableSort.fromString(sort);
+        if (dataSetTableSort != null) {
             boolean descending = StringUtils.isNotBlank(dir) && dir.equals("desc");
-            // feed sort order to display tag
+            // feed sort info to display tag
+            tableFilter.setSortProperty(sort);
             tableFilter.setSortOrder(descending ? SortOrderEnum.DESCENDING : SortOrderEnum.ASCENDING);
             Collections.sort(dataSetTables, dataSetTableSort.getComparator(descending));
         }

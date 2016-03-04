@@ -8,6 +8,7 @@ package eionet.meta.dao.domain;
 
 import eionet.util.Util;
 import java.util.Comparator;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -55,6 +56,9 @@ public enum DataSetTableSort {
     }
 
     public static DataSetTableSort fromString(String name) {
+        if (StringUtils.isBlank(name)) {
+            return null;
+        }
         for (DataSetTableSort value : DataSetTableSort.values()) {
             if (value.name().equalsIgnoreCase(name)) {
                 return value;
