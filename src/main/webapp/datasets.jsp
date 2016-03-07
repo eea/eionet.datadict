@@ -352,7 +352,7 @@
         }
 
         $(function() {
-            $(".selectable").click(function () {
+            $(".selectable").click(function() {
                 if ($(this).is(":checked")) {
                     $(this).parents("tr").addClass("selected");
                 } else {
@@ -360,7 +360,7 @@
                 }
             });
 
-            $(".searchSection").click(function () {
+            $(".searchSection").click(function() {
                 $("#searchDatasetsForm").slideToggle("slow");
                 return false;
             });
@@ -603,7 +603,7 @@
             </form>
             <c:choose>
                 <c:when test="${empty datasets}">
-                    <p class="not-found">No dataset definitions were found!</p>
+                    <p class="not-found">No dataset definitions were found.</p>
                 </c:when>    
                 <c:otherwise>
                     <h2 class="results">Total results: ${fn:length(datasets)}</h2>
@@ -645,7 +645,7 @@
                             <c:if test="${not empty user}">
                                 <th></th>
                             </c:if>
-                            <th>
+                            <th<c:if test="${param.sort_name eq 'NAME'}"> class="selected"</c:if>>
                                 <c:url var="nameSortingUrl" value="/datasets.jsp">
                                     <c:forEach items="${param}" var="entry">
                                         <c:if test="${entry.key != 'sort_name' and entry.key != 'sort_order'}">
@@ -657,12 +657,12 @@
                                         <c:param name="sort_order" value="desc" />
                                     </c:if>
                                 </c:url>
-                                <a title="Sort on Dataset" href="${nameSortingUrl}" <c:if test="${param.sort_name eq 'NAME'}">class="${param.sort_order eq 'desc' ? 'desc': 'asc'}"</c:if>>
+                                <a title="Sort on Dataset" href="${nameSortingUrl}" <c:if test="${param.sort_name eq 'NAME'}">class="${param.sort_order eq 'desc' ? 'order2': 'order1'}"</c:if>>
                                     Dataset
                                 </a>
                             </th>
                             <c:if test="${param.incl_histver eq 'true'}">
-                                <th>
+                                <th<c:if test="${param.sort_name eq 'ID'}"> class="selected"</c:if>>
                                     <c:url var="idSortingUrl" value="/datasets.jsp">
                                         <c:forEach items="${param}" var="entry">
                                             <c:if test="${entry.key != 'sort_name' and entry.key != 'sort_order'}">
@@ -674,12 +674,12 @@
                                             <c:param name="sort_order" value="desc" />
                                         </c:if>
                                     </c:url>
-                                    <a title="Sort on Version" href="${idSortingUrl}" <c:if test="${param.sort_name eq 'ID'}">class="${param.sort_order eq 'desc' ? 'desc': 'asc'}"</c:if>>
+                                    <a title="Sort on Version" href="${idSortingUrl}" <c:if test="${param.sort_name eq 'ID'}">class="${param.sort_order eq 'desc' ? 'order2': 'order1'}"</c:if>>
                                         Version
                                     </a>
                                 </th>
                             </c:if>
-                            <th>
+                            <th<c:if test="${param.sort_name eq 'STATUS'}"> class="selected"</c:if>>
                                 <c:url var="regStatusSortingUrl" value="/datasets.jsp">
                                     <c:forEach items="${param}" var="entry">
                                         <c:if test="${entry.key != 'sort_name' and entry.key != 'sort_order'}">
@@ -691,7 +691,7 @@
                                         <c:param name="sort_order" value="desc" />
                                     </c:if>
                                 </c:url>
-                                <a title="Sort on Status" href="${regStatusSortingUrl}" <c:if test="${param.sort_name eq 'STATUS'}">class="${param.sort_order eq 'desc' ? 'desc': 'asc'}"</c:if>>
+                                <a title="Sort on Status" href="${regStatusSortingUrl}" <c:if test="${param.sort_name eq 'STATUS'}">class="${param.sort_order eq 'desc' ? 'order2': 'order1'}"</c:if>>
                                     Status
                                 </a>
                             </th>
@@ -720,7 +720,7 @@
                                 </td>
                             </c:if>
                             <c:set var="clickable" value="${not empty dataset.status and (empty user or not user.authentic) and (dataset.status eq 'Incomplete' or dataset.status eq 'Candidate' or dataset.status eq 'Qualified') ? false : true}" />
-                            <td title="${fn:escapeXml(dataset.name)}">
+                            <td title="${fn:escapeXml(dataset.name)}"<c:if test="${param.sort_name eq 'NAME'}"> class="selected"</c:if>>
                                 <c:if test="${clickable}">
                                     <a href="${pageContext.request.contextPath}/datasets/${dataset.ID}">
                                 </c:if>
@@ -728,10 +728,10 @@
                                 <c:if test="${clickable}"></a></c:if>
                             </td>
                             <c:if test="${param.incl_histver eq 'true'}">
-                                <td>${dataset.ID}</td>
+                                <td<c:if test="${param.sort_name eq 'ID'}"> class="selected"</c:if>>${dataset.ID}</td>
                             </c:if>
-                            <td>
-                                <span class="${fn:escapeXml(dataset.status)}">${fn:escapeXml(dataset.status)}</span>
+                            <td<c:if test="${param.sort_name eq 'STATUS'}"> class="selected"</c:if>>
+                                <dd:datasetRegStatus value="${dataset.status}" />
                             </td>
                             <td>
                                 <c:forEach items="${entry.value}" var="table">

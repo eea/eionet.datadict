@@ -42,7 +42,7 @@
                 </li>
                 <c:if test="${not empty actionBean.user}">
                     <c:if test="${not actionBean.vocabularyFolder.siteCodeType}">
-                        <li class="add">
+                        <li class="create">
                             <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">
                                 <stripes:param name="copyId" value="${actionBean.vocabularyFolder.id}" />
                                 Create new copy

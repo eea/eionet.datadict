@@ -10,10 +10,13 @@
             // <![CDATA[
             (function($) {
                 $(document).ready(function() {
-                    $(".searchSection").click(function () {
+                    $(".searchSection").click(function() {
                         $("#searchTablesForm").slideToggle("slow");
                         return false;
                     });
+                    $("th.sorted").addClass("selected");
+                    var selectedColumnIndex = $("th.sorted").index() + 1;
+                    $('table.sortable tr td:nth-child('+ selectedColumnIndex +')').addClass("selected");
                 });
             })(jQuery);
             
@@ -78,31 +81,26 @@
             </div>
         </stripes:form>
 
-        <c:choose>
-            <c:when test="${empty actionBean.tableResult.list}">
-                <p class="not-found">No tables found!</p>
-            </c:when>    
-            <c:otherwise>
-                <display:table name="${actionBean.tableResult}" class="sortable results" id="item"
-                    decorator="eionet.web.decorators.TableResultDecorator" requestURI="/searchtables" style="width:100%">
-                    <display:column title="Full name" sortable="true" sortProperty="NAME">
-                        <c:choose>
-                            <c:when test="${item.statusReleased || actionBean.userLoggedIn}">
-                                <stripes:link href="/tables/${item.id}"><c:out value="${item.name}" /></stripes:link>
-                            </c:when>
-                            <c:otherwise>
-                                <c:out value="${item.name}" />
-                            </c:otherwise>
-                        </c:choose>
-                    </display:column>
-                    <display:column property="shortName" title="Short name" sortable="true" sortProperty="SHORT_NAME" />
-                    <display:column property="dataSetName" title="Dataset" sortable="true" sortProperty="DATASET" />
-                    <display:column title="Dataset status" sortable="true" sortProperty="DATASET_STATUS">
-                        <span class="${fn:escapeXml(item.dataSetStatus)}">${fn:escapeXml(item.dataSetStatus)}</span>
-                    </display:column>
-                </display:table>
-            </c:otherwise>
-        </c:choose>
+        <display:table name="${actionBean.tableResult}" class="sortable results" id="item"
+            decorator="eionet.web.decorators.TableResultDecorator" requestURI="/searchtables" style="width:100%">
+            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No tables found.</p>" />
+            <display:column title="Full name" sortable="true" sortProperty="NAME">
+                <c:choose>
+                    <c:when test="${item.statusReleased || actionBean.userLoggedIn}">
+                        <stripes:link href="/tables/${item.id}"><c:out value="${item.name}" /></stripes:link>
+                    </c:when>
+                    <c:otherwise>
+                        <c:out value="${item.name}" />
+                    </c:otherwise>
+                </c:choose>
+            </display:column>
+            <display:column property="shortName" title="Short name" sortable="true" sortProperty="SHORT_NAME" />
+            <display:column property="dataSetName" title="Dataset" sortable="true" sortProperty="DATASET" />
+            <display:column title="Dataset status" sortable="true" sortProperty="DATASET_STATUS">
+                <dd:datasetRegStatus value="${item.dataSetStatus}" />
+            </display:column>
+        </display:table>
+
     </stripes:layout-component>
 
 </stripes:layout-render>
