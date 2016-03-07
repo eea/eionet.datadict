@@ -645,7 +645,7 @@
                             <c:if test="${not empty user}">
                                 <th></th>
                             </c:if>
-                            <th<c:if test="${param.sort_name eq 'NAME'}"> class="selected"</c:if>>
+                            <th<c:if test="${param.sort_name eq 'NAME'}"> class="selected ${param.sort_order eq 'desc' ? 'desc': 'asc'}"</c:if>>
                                 <c:url var="nameSortingUrl" value="/datasets.jsp">
                                     <c:forEach items="${param}" var="entry">
                                         <c:if test="${entry.key != 'sort_name' and entry.key != 'sort_order'}">
@@ -657,12 +657,10 @@
                                         <c:param name="sort_order" value="desc" />
                                     </c:if>
                                 </c:url>
-                                <a title="Sort on Dataset" href="${nameSortingUrl}" <c:if test="${param.sort_name eq 'NAME'}">class="${param.sort_order eq 'desc' ? 'order2': 'order1'}"</c:if>>
-                                    Dataset
-                                </a>
+                                <a title="Sort on Dataset" href="${nameSortingUrl}">Dataset</a>
                             </th>
                             <c:if test="${param.incl_histver eq 'true'}">
-                                <th<c:if test="${param.sort_name eq 'ID'}"> class="selected"</c:if>>
+                                <th<c:if test="${param.sort_name eq 'ID'}"> class="selected ${param.sort_order eq 'desc' ? 'desc': 'asc'}"</c:if>>
                                     <c:url var="idSortingUrl" value="/datasets.jsp">
                                         <c:forEach items="${param}" var="entry">
                                             <c:if test="${entry.key != 'sort_name' and entry.key != 'sort_order'}">
@@ -674,12 +672,10 @@
                                             <c:param name="sort_order" value="desc" />
                                         </c:if>
                                     </c:url>
-                                    <a title="Sort on Version" href="${idSortingUrl}" <c:if test="${param.sort_name eq 'ID'}">class="${param.sort_order eq 'desc' ? 'order2': 'order1'}"</c:if>>
-                                        Version
-                                    </a>
+                                    <a title="Sort on Version" href="${idSortingUrl}">Version</a>
                                 </th>
                             </c:if>
-                            <th<c:if test="${param.sort_name eq 'STATUS'}"> class="selected"</c:if>>
+                            <th<c:if test="${param.sort_name eq 'STATUS'}"> class="selected ${param.sort_order eq 'desc' ? 'desc': 'asc'}"</c:if>>
                                 <c:url var="regStatusSortingUrl" value="/datasets.jsp">
                                     <c:forEach items="${param}" var="entry">
                                         <c:if test="${entry.key != 'sort_name' and entry.key != 'sort_order'}">
@@ -691,9 +687,7 @@
                                         <c:param name="sort_order" value="desc" />
                                     </c:if>
                                 </c:url>
-                                <a title="Sort on Status" href="${regStatusSortingUrl}" <c:if test="${param.sort_name eq 'STATUS'}">class="${param.sort_order eq 'desc' ? 'order2': 'order1'}"</c:if>>
-                                    Status
-                                </a>
+                                <a title="Sort on Status" href="${regStatusSortingUrl}">Status</a>
                             </th>
                             <th>
                                 Tables

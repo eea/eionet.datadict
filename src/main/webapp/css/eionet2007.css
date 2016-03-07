@@ -363,7 +363,7 @@ a.deleteButton:after {
 	color: #FFFFFF;	
 }
 
-#workarea table.results th a.order1:after {
+#workarea table.results th.asc:after {
     font-family: 'eea';
     content: "\e917";
     color: #FFFFFF;
@@ -374,7 +374,7 @@ a.deleteButton:after {
 }
 
 
-#workarea table.results th a.order2:after {
+#workarea table.results th.desc:after {
    font-family: 'eea';
     content: "\e918";
     color: #FFFFFF;
