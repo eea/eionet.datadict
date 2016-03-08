@@ -21,6 +21,7 @@
 
 package eionet.meta.dao;
 
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -213,14 +214,15 @@ public interface IVocabularyConceptDAO {
     void updateReferringReferenceConcepts(int oldVocabularyId);
 
     /**
-     * Retrieves all the concepts of a vocabulary that have an accepted status. Also
+     * Retrieves all the concepts of a vocabulary that have the specified status. Also
      * for each concept, attribute values are retrieved (if such values exist). 
      * 
      * @param vocabularyId the internal id of the vocabulary whose concepts to retrieve.
+     * @param conceptStatus the status of the concepts to be fetched.
      * 
      * @return a list of vocabulary concepts with populated attribute values.
      */
-    List<VocabularyConcept> getAcceptedConceptsWithAttributeValues(int vocabularyId);
+    List<VocabularyConcept> getConceptsWithAttributeValues(int vocabularyId, StandardGenericStatus conceptStatus);
     
     /**
      * Finds vocabulary concepts of the vocabulary.

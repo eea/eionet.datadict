@@ -608,10 +608,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     }
 
     @Override
-    public List<VocabularyConcept> getAcceptedConceptsWithAttributeValues(int vocabularyId) {
+    public List<VocabularyConcept> getConceptsWithAttributeValues(int vocabularyId, StandardGenericStatus conceptStatus) {
         Map<Integer, DataElement> conceptAttributes = this.getVocabularyConceptAttributes(vocabularyId);
-        List<VocabularyConcept> concepts = this.getAcceptedConcepts(vocabularyId);
-        this.attachConceptAttributeValues(vocabularyId, conceptAttributes, concepts);
+        List<VocabularyConcept> concepts = this.getVocabularyConcepts(vocabularyId, conceptStatus);
+        this.attachConceptAttributeValues(vocabularyId, conceptStatus, conceptAttributes, concepts);
         
         return concepts;
     }
@@ -628,8 +628,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("select c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID, ");
         sql.append("d.IDENTIFIER AS ELEMIDENTIFIER, a.VALUE as DATATYPE, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, ");
         sql.append("c.DEFINITION, c.NOTATION, c.STATUS, c.ACCEPTED_DATE, c.NOT_ACCEPTED_DATE, c.STATUS_MODIFIED, ");
-        sql.append("rcvs.IDENTIFIER as RVOCSETIDENTIFIER, rcv.IDENTIFIER as RVOCIDENTIFIER, rcv.BASE_URI as RVOCBASE_URI, ");
-        sql.append("rc.IDENTIFIER AS RCONCEPTIDENTIFIER, rc.LABEL as RCONCEPTLABEL ");
+        sql.append("rcvs.IDENTIFIER as RVOCSETIDENTIFIER, rcvs.LABEL as RVOCSETLABEL, rcv.IDENTIFIER as RVOCIDENTIFIER, rcv.LABEL as RVOCLABEL, rcv.BASE_URI as RVOCBASE_URI, ");
+        sql.append("rc.IDENTIFIER AS RCONCEPTIDENTIFIER, rc.LABEL as RCONCEPTLABEL, rc.NOTATION as RCONCEPTNOTATION, rc.DEFINITION as RCONCEPTDEFINITION ");
         sql.append("from VOCABULARY_CONCEPT c ");
         sql.append("left join VOCABULARY_CONCEPT_ELEMENT v on v.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID ");
         sql.append("LEFT JOIN DATAELEM d ON (v.DATAELEM_ID = d.DATAELEM_ID) ");
@@ -721,9 +721,13 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                     if (relatedConceptId != 0) {
                         elem.setRelatedConceptId(relatedConceptId);
                         elem.setRelatedConceptVocSet(rs.getString("RVOCSETIDENTIFIER"));
+                        elem.setRelatedConceptVocSetLabel(rs.getString("RVOCSETLABEL"));
                         elem.setRelatedConceptVocabulary(rs.getString("RVOCIDENTIFIER"));
+                        elem.setRelatedConceptVocabularyLabel(rs.getString("RVOCLABEL"));
                         elem.setRelatedConceptIdentifier(rs.getString("RCONCEPTIDENTIFIER"));
                         elem.setRelatedConceptLabel(rs.getString("RCONCEPTLABEL"));
+                        elem.setRelatedConceptNotation(rs.getString("RCONCEPTNOTATION"));
+                        elem.setRelatedConceptDefinition(rs.getString("RCONCEPTDEFINITION"));
                         elem.setRelatedConceptBaseURI(rs.getString("RVOCBASE_URI"));
                     }
                     //TODO check here
@@ -791,13 +795,13 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
     protected Map<Integer, DataElement> getVocabularyConceptAttributes(int vocabularyId) {
         String sql = 
-            "select v2e.DATAELEM_ID Id, d.IDENTIFIER Identifier, attrs.VALUE as DataType \n" +
+            "select v2e.DATAELEM_ID Id, d.IDENTIFIER Identifier, attrs.Name as AttributeName, attrs.VALUE as AttributeValue \n" +
             "from VOCABULARY2ELEM v2e \n" +
             "inner join DATAELEM d on v2e.DATAELEM_ID = d.DATAELEM_ID \n" +
             "left join ( \n" +
             "	select a.DATAELEM_ID, a.PARENT_TYPE, ma.NAME, a.VALUE \n" +
             "	from ATTRIBUTE a inner join M_ATTRIBUTE ma \n" +
-            "       on a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME = 'DataType' \n" +
+            "       on a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME in ('Datatype', 'Name') \n" +
             "	where a.PARENT_TYPE = 'E' \n" +
             ") attrs on v2e.DATAELEM_ID = attrs.DATAELEM_ID \n" +
             "where v2e.VOCABULARY_ID = :vocabularyId \n" +
@@ -805,26 +809,39 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyId", vocabularyId);
-        List<DataElement> conceptAttributes = this.getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<DataElement>() {
+        final List<DataElement> conceptAttributes = new ArrayList<DataElement>();
+        this.getNamedParameterJdbcTemplate().query(sql, params, new RowCallbackHandler() {
 
+            DataElement workingConceptAttribute;
+            
             @Override
-            public DataElement mapRow(ResultSet rs, int i) throws SQLException {
-                DataElement conceptAttribute = new DataElement();
-                conceptAttribute.setId(rs.getInt("Id"));
-                conceptAttribute.setIdentifier(rs.getString("Identifier"));
+            public void processRow(ResultSet rs) throws SQLException {
+                int currentAttributeId = rs.getInt("Id");
                 
-                String dataType = rs.getString("DataType");
-                
-                if (dataType != null) {
-                    Map<String, List<String>> attributeValues = new HashMap<String, List<String>>();
-                    List<String> dataTypeValues = new ArrayList<String>();
-                    dataTypeValues.add(dataType);
-                    attributeValues.put("Datatype", dataTypeValues);
-                    conceptAttribute.setElemAttributeValues(attributeValues);
+                if (workingConceptAttribute == null || workingConceptAttribute.getId() != currentAttributeId) {
+                    workingConceptAttribute = new DataElement();
+                    workingConceptAttribute.setId(currentAttributeId);
+                    workingConceptAttribute.setIdentifier(rs.getString("Identifier"));
+                    conceptAttributes.add(workingConceptAttribute);
                 }
                 
-                return conceptAttribute;
+                String attributeName = rs.getString("AttributeName");
+                
+                if (attributeName != null) {
+                    String attributeValue = rs.getString("AttributeValue");
+
+                    if (workingConceptAttribute.getElemAttributeValues() == null) {
+                        workingConceptAttribute.setElemAttributeValues(new HashMap<String, List<String>>());
+                    }
+                    
+                    if (!workingConceptAttribute.getElemAttributeValues().containsKey(attributeName)) {
+                        workingConceptAttribute.getElemAttributeValues().put(attributeName, new ArrayList<String>());
+                    }
+
+                    workingConceptAttribute.getElemAttributeValues().get(attributeName).add(attributeValue);
+                }
             }
+
         });
         Map<Integer, DataElement> result = new HashMap<Integer, DataElement>();
         
@@ -835,7 +852,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         return result;
     }
     
-    protected List<VocabularyConcept> getAcceptedConcepts(int vocabularyId) {
+    protected List<VocabularyConcept> getVocabularyConcepts(int vocabularyId, StandardGenericStatus conceptStatus) {
         String sql =
             "select \n" +
             "	c.VOCABULARY_CONCEPT_ID, \n" +
@@ -854,7 +871,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             "order by \n" +
             "   c.VOCABULARY_CONCEPT_ID";
         
-        Map<String, Object> params = this.composeParamsForAcceptedConcepts(vocabularyId);
+        Map<String, Object> params = this.composeParamsForConcepts(vocabularyId, conceptStatus);
         
         return this.getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<VocabularyConcept>() {
 
@@ -877,7 +894,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         });
     }
     
-    protected void attachConceptAttributeValues(final int vocabularyId, final Map<Integer, DataElement> conceptAttributes, List<VocabularyConcept> targetConcepts) {
+    protected void attachConceptAttributeValues(final int vocabularyId, StandardGenericStatus conceptStatus, 
+            final Map<Integer, DataElement> conceptAttributes, List<VocabularyConcept> targetConcepts) {
         String sql =
             "select\n" +
             "	c.VOCABULARY_CONCEPT_ID as ConceptId, \n" +
@@ -887,7 +905,9 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             "	rc.VOCABULARY_ID as RelatedConceptVocabularyId,\n" +
             "	v.RELATED_CONCEPT_ID RelatedConceptId,\n" +
             "	rc.IDENTIFIER as RelatedConceptIdentifier, \n" +
-            "	rc.LABEL as RelatedConceptLabel\n" +
+            "	rc.LABEL as RelatedConceptLabel, \n" +
+            "	rc.NOTATION as RelatedConceptNotation, \n" +
+            "	rc.DEFINITION as RelatedConceptDefinition \n" +
             "from \n" +
             "	VOCABULARY_CONCEPT c \n" +
             "		inner join VOCABULARY_CONCEPT_ELEMENT v on v.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID \n" +
@@ -897,7 +917,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             "order by \n" +
             "   c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.LANGUAGE";
         
-        Map<String, Object> params = this.composeParamsForAcceptedConcepts(vocabularyId);
+        Map<String, Object> params = this.composeParamsForConcepts(vocabularyId, conceptStatus);
         final Iterator<VocabularyConcept> conceptIterator = targetConcepts.iterator();
         final Map<Integer, Integer> relatedConceptIdToVocabularyIdMappings = new HashMap<Integer, Integer>();
         final Set<Integer> relatedConceptVocabularyIds = new HashSet<Integer>();
@@ -914,6 +934,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 while (workingConcept == null || workingConcept.getId() < conceptId) {
                     if (conceptIterator.hasNext()) {
                         workingConcept = conceptIterator.next();
+                        workingConcept.setElementAttributes(new ArrayList<List<DataElement>>());
                         workingConceptAttributeValues = null;
                     }
                     else {
@@ -947,6 +968,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                     conceptAttributeValue.setRelatedConceptId(rs.getInt("RelatedConceptId"));
                     conceptAttributeValue.setRelatedConceptIdentifier(rs.getString("RelatedConceptIdentifier"));
                     conceptAttributeValue.setRelatedConceptLabel(rs.getString("RelatedConceptLabel"));
+                    conceptAttributeValue.setRelatedConceptNotation(rs.getString("RelatedConceptNotation"));
+                    conceptAttributeValue.setRelatedConceptDefinition(rs.getString("RelatedConceptDefinition"));
                     
                     if (!relatedConceptIdToVocabularyIdMappings.containsKey(conceptAttributeValue.getRelatedConceptId())) {
                         relatedConceptIdToVocabularyIdMappings.put(conceptAttributeValue.getRelatedConceptId(), relatedConceptVocabularyId);
@@ -984,8 +1007,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         String sql =
             "select \n" +
             "	vs.IDENTIFIER as VocabularySetIdentifier, \n" +
+            "	vs.LABEL as VocabularySetLabel, \n" +
             "	v.VOCABULARY_ID as VocabularyId, \n" +
             "	v.IDENTIFIER as VocabularyIdentifier, \n" +
+            "	v.LABEL as VocabularyLabel, \n" +
             "	v.BASE_URI as VocabularyBaseUri \n" +
             "from \n" +
             "	VOCABULARY v inner join VOCABULARY_SET vs \n" +
@@ -1004,10 +1029,12 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 VocabularyFolder vocabulary = new VocabularyFolder();
                 vocabulary.setId(rs.getInt("VocabularyId"));
                 vocabulary.setIdentifier(rs.getString("VocabularyIdentifier"));
+                vocabulary.setLabel(rs.getString("VocabularyLabel"));
                 vocabulary.setBaseUri(rs.getString("VocabularyBaseUri"));
                 
                 VocabularySet vocabularySet = new VocabularySet();
                 vocabularySet.setIdentifier(rs.getString("VocabularySetIdentifier"));
+                vocabularySet.setLabel(rs.getString("VocabularySetLabel"));
                 vocabulary.setVocabularySet(vocabularySet);
                 
                 vocabularies.put(vocabulary.getId(), vocabulary);
@@ -1038,17 +1065,19 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                     
                     VocabularyFolder vocabulary = vocabularies.get(vocabularyId);
                     conceptAttributeValue.setRelatedConceptVocabulary(vocabulary.getIdentifier());
+                    conceptAttributeValue.setRelatedConceptVocabularyLabel(vocabulary.getLabel());
                     conceptAttributeValue.setRelatedConceptBaseURI(vocabulary.getBaseUri());
                     conceptAttributeValue.setRelatedConceptVocSet(vocabulary.getVocabularySet().getIdentifier());
+                    conceptAttributeValue.setRelatedConceptVocSetLabel(vocabulary.getVocabularySet().getLabel());
                 }
             }
         }
     }
     
-    private Map<String, Object> composeParamsForAcceptedConcepts(int vocabularyId) {
+    private Map<String, Object> composeParamsForConcepts(int vocabularyId, StandardGenericStatus conceptStatus) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyId", vocabularyId);
-        params.put("status", StandardGenericStatus.ACCEPTED.getValue());
+        params.put("status", conceptStatus.getValue());
         
         return params;
     }

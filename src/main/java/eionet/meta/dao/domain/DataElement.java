@@ -146,14 +146,25 @@ public class DataElement {
      * Related concept label.
      */
     private String relatedConceptLabel;
+    
+    private String relatedConceptNotation;
+    
+    private String relatedConceptDefinition;
+    
     /**
      * Related concept vocabulary identifier.
      */
     private String relatedConceptVocabulary;
+    
+    private String relatedConceptVocabularyLabel;
+    
     /**
      * Related concept vocabulary set identifier.
      */
     private String relatedConceptVocSet;
+    
+    private String relatedConceptVocSetLabel;
+    
     /**
      * Related concept vocabulary base URI.
      */
@@ -390,6 +401,23 @@ public class DataElement {
         this.relatedConceptLabel = relatedConceptLabel;
     }
 
+    // nakasnik: hate myself for commiting this
+    public String getRelatedConceptNotation() {
+        return relatedConceptNotation;
+    }
+
+    public void setRelatedConceptNotation(String relatedConceptNotation) {
+        this.relatedConceptNotation = relatedConceptNotation;
+    }
+
+    public String getRelatedConceptDefinition() {
+        return relatedConceptDefinition;
+    }
+
+    public void setRelatedConceptDefinition(String relatedConceptDefinition) {
+        this.relatedConceptDefinition = relatedConceptDefinition;
+    }
+    
     /**
      * Generate the relative path to a concept in a different vocabulary in the same data dictionary. The path looks like
      * "common/nuts/AT111".
@@ -422,7 +450,7 @@ public class DataElement {
     public void setRelatedConceptVocabulary(String relatedConceptVocabulary) {
         this.relatedConceptVocabulary = relatedConceptVocabulary;
     }
-
+    
     public String getRelatedConceptVocSet() {
         return relatedConceptVocSet;
     }
@@ -431,6 +459,22 @@ public class DataElement {
         this.relatedConceptVocSet = relatedConceptVocSet;
     }
 
+    public String getRelatedConceptVocabularyLabel() {
+        return relatedConceptVocabularyLabel;
+    }
+
+    public void setRelatedConceptVocabularyLabel(String relatedConceptVocabularyLabel) {
+        this.relatedConceptVocabularyLabel = relatedConceptVocabularyLabel;
+    }
+
+    public String getRelatedConceptVocSetLabel() {
+        return relatedConceptVocSetLabel;
+    }
+
+    public void setRelatedConceptVocSetLabel(String relatedConceptVocSetLabel) {
+        this.relatedConceptVocSetLabel = relatedConceptVocSetLabel;
+    }
+    
     public String getRelatedConceptBaseURI() {
         return relatedConceptBaseURI;
     }
