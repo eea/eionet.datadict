@@ -17,7 +17,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum DataSetSort {
     
-    NAME, STATUS, ID;
+    NAME, SHORT_NAME, STATUS, ID;
 
     public Comparator<Dataset> getComparator(final boolean descending) {
         if (this == ID) {
@@ -35,6 +35,15 @@ public enum DataSetSort {
                 public int compare(Dataset d1, Dataset d2) {
                     return descending ? -Util.getStatusSortString(d1.getStatus()).compareTo(Util.getStatusSortString(d2.getStatus())) :
                             Util.getStatusSortString(d1.getStatus()).compareTo(Util.getStatusSortString(d2.getStatus()));
+                }
+            };
+        }
+        if (this == SHORT_NAME) {
+            return new Comparator<Dataset>() {
+                @Override
+                public int compare(Dataset d1, Dataset d2) {
+                     return descending ? -d1.getShortName().compareToIgnoreCase(d2.getShortName()) :
+                        d1.getShortName().compareToIgnoreCase(d2.getShortName());
                 }
             };
         }
