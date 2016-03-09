@@ -39,7 +39,6 @@
 %>
 
 <%@ include file="history.jsp" %>
-<%@ include file="sorting.jsp" %>
 
 <%
     response.setHeader("Pragma", "No-cache");
@@ -180,7 +179,6 @@
         }
         datasets = searchEngine.getDatasets(params, short_name, idfier, version, oper, isSearchForWorkingCopies, isIncludeHistoricVersions, statuses);
         request.setAttribute("registrationStatuses", DatasetRegStatus.values());
-        request.setAttribute("viewName", "datasets");
 
         String sortName = (String) request.getParameter("sort_name");
         DataSetSort sort = DataSetSort.fromString(sortName);
@@ -222,12 +220,6 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/modal_dialog.js"></script>
     <script type="text/javascript">
     // <![CDATA[
-        function setLocation() {
-            if (document.forms["form1"].searchUrl) {
-                document.forms["form1"].searchUrl.value = document.location.href;
-            }
-        }
-
         function deleteDataset() {
             // first confirm if the deletetion is about to take place at all
             var b = confirm("Selected datasets will be deleted! You will be given a chance to delete them permanently or save them for restoring later. Click OK, if you want to continue. Otherwise click Cancel.");
@@ -269,7 +261,7 @@
 
             // if nothing selected no need to continue
             if (!found) {
-                alert("Select at least one Dataset to continue");
+                alert("Select at least one dataset to continue");
                 return;
             }
 
@@ -607,19 +599,13 @@
                 </c:when>    
                 <c:otherwise>
                     <h2 class="results">Total results: ${fn:length(datasets)}</h2>
-                    <form id="form1" method="post" action="datasets.jsp" onsubmit="setLocation()">
+                    <form id="form1" method="post" action="datasets.jsp">
                         <table class="results" width="100%" style="clear:both">
 
                         <%
                         // temporarly we do not display version aka CheckInNo, because for the time being it doesn't function properly anyway
                         boolean isDisplayVersionColumn = isIncludeHistoricVersions;//false;//user!=null;
                         boolean isDisplayHelperColumn = user!=null;
-
-                        int colSpan = 3;
-                        if (isDisplayHelperColumn)
-                            colSpan++;
-                        if (isDisplayVersionColumn)
-                            colSpan++;
 
                         if (isDisplayHelperColumn) { %>
                             <col />
@@ -750,7 +736,6 @@
             </table>
 
                         <div style="display:none">
-                            <input type="hidden" name="searchUrl" value=""/>
                             <input type="hidden" name="mode" value="view"/>
                             <input type="hidden" name="complete" value="false"/>
                             <%
