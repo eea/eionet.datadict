@@ -84,7 +84,9 @@ public class DocumentationActionBean extends AbstractActionBean {
 
         if (isUserLoggedIn()) {
             if (isPostRequest()) {
-                this.attachFileInfoToPageObject();
+                if (this.fileToSave != null) {
+                    this.attachFileInfoToPageObject();
+                }
                 this.documentationService.editContent(pageObject);
                 addSystemMessage("Successfully saved!");
             }
@@ -101,19 +103,23 @@ public class DocumentationActionBean extends AbstractActionBean {
      * @throws DAOException
      */
     public Resolution addContent() throws Exception {
+        String pid = pageObject.getPid();
         if (isUserLoggedIn()) {
             if (isPostRequest()) {
                 this.attachFileInfoToPageObject();
-                this.documentationService.addContent(pageObject);
+                pid = this.documentationService.addContent(pageObject);
             }
         } else {
             addWarningMessage("You are not logged in!");
         }
-        return new RedirectResolution("/documentation/" + pageObject.getPid() + "/edit");
+        return new RedirectResolution("/documentation/" + pid + "/edit");
     }
 
     @ValidationMethod(on = {"addContent"})
     public void validatePageId(ValidationErrors errors) throws Exception {
+        if (this.pageObject == null) {
+            this.pageObject = new DocPageDTO();
+        }
         this.attachFileInfoToPageObject();
         // Expects that first parameter is named "pageObject" in this actionBean class
         // Does two validations:
