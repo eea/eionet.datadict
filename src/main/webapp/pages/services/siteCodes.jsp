@@ -280,10 +280,10 @@
         <%-- Site codes table --%>
         <c:if test="${actionBean.context.eventName == 'search'}">
         <c:set var="exporttext"><div class="exportlinks"> Download all results as: {0} </div></c:set>
-        <display:table name="actionBean.siteCodeResult" class="datatable sortable results" id="siteCode" style="width:100%" requestURI="/services/siteCodes/search" export="true">
+        <display:table name="actionBean.siteCodeResult" class="datatable results" id="siteCode" style="width:100%" requestURI="/services/siteCodes/search" export="true">
             <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No site codes found.</p>" />
 
-            <display:column title="Site code" property="identifier" escapeXml="true" class="number" style="width: 1%" sortable="true" sortProperty="identifier" />
+            <display:column title="Site code" property="identifier" escapeXml="true" class="number" sortable="true" sortProperty="identifier" />
             <display:column title="Site name" escapeXml="true" property="label" sortable="true" sortProperty="label" />
             <display:column title="Status" sortable="true" sortProperty="status">
                 <c:out value="${siteCode.siteCodeStatus.label}" />
