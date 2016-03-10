@@ -248,7 +248,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         int nameAttrId = getNameAttributeId();
 
         StringBuilder sql =
-            new StringBuilder().append("select ").append("S.*, SS.*, ATR1.VALUE as NAME_ATTR, atr2.VALUE as SS_NAME_ATTR, ")
+            new StringBuilder().append("select ").append("SQL_CALC_FOUND_ROWS S.*, SS.*, ATR1.VALUE as NAME_ATTR, atr2.VALUE as SS_NAME_ATTR, ")
             .append("if(SS.SCHEMA_SET_ID is null, S.WORKING_COPY, SS.WORKING_COPY) as WCOPY, ")
             .append("if(SS.SCHEMA_SET_ID is null, S.WORKING_USER, SS.WORKING_USER) as WUSER, ")
             .append("if(SS.SCHEMA_SET_ID is null, S.REG_STATUS, SS.REG_STATUS) as REGSTAT ").append("from ")
