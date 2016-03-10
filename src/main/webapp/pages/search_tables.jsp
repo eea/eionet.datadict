@@ -16,7 +16,7 @@
                     });
                     $("th.sorted").addClass("selected");
                     var selectedColumnIndex = $("th.sorted").index() + 1;
-                    $('table.sortable tr td:nth-child('+ selectedColumnIndex +')').addClass("selected");
+                    $('table.results tr td:nth-child('+ selectedColumnIndex +')').addClass("selected");
                 });
             })(jQuery);
             
@@ -81,7 +81,7 @@
             </div>
         </stripes:form>
 
-        <display:table name="${actionBean.tableResult}" class="sortable results" id="item"
+        <display:table name="${actionBean.tableResult}" class="results" id="item"
             decorator="eionet.web.decorators.TableResultDecorator" requestURI="/searchtables" style="width:100%">
             <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No tables found.</p>" />
             <display:column title="Full name" sortable="true" sortProperty="NAME">
