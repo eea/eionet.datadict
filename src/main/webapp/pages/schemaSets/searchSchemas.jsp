@@ -2,28 +2,29 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<%@page import="net.sourceforge.stripes.action.ActionBean"%>
-
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schema sets" currentSection="schemas">
 
     <stripes:layout-component name="head">
         <script type="text/javascript">
         // <![CDATA[
-            ( function($) {
-                $(document).ready(
-                    function(){
-
-                        $('#newNameDialog').dialog({
-                            autoOpen: ${actionBean.askNewName},
-                            width: 500
-                        });
-
-                        $("#closeNewNameDialog").click(function() {
-                            $('#newNameDialog').dialog('close');
-                            return true;
-                        });
+            (function($) {
+                $(document).ready(function() {
+                    $('#newNameDialog').dialog({
+                        autoOpen: ${actionBean.askNewName},
+                        width: 500
                     });
-            } ) ( jQuery );
+
+                    $("#closeNewNameDialog").click(function() {
+                        $('#newNameDialog').dialog('close');
+                        return true;
+                    });
+
+                    $(".searchSection").click(function() {
+                        $("#searchResultsForm").slideToggle("slow");
+                        return false;
+                    });
+                });
+            })(jQuery);
         // ]]>
         </script>
     </stripes:layout-component>
@@ -31,13 +32,14 @@
     <stripes:layout-component name="contents">
         <h1>Search schemas</h1>
 
-        <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemas', 'i')}">
-            <div id="drop-operations">
-                <ul>
+        <div id="drop-operations">
+            <ul>
+                <li class="search"><a class="searchSection" href="#" title="Search schemas">Search</a></li>
+                <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemas', 'i')}">
                     <li class="add"><stripes:link beanclass="eionet.web.action.SchemaActionBean" event="add">Add root-level schema</stripes:link></li>
-                </ul>
-            </div>
-        </c:if>
+                </c:if>
+            </ul>
+        </div>
 
         <stripes:form id="searchResultsForm" action="/schema/search/" method="get">
             <div id="filters">
@@ -101,7 +103,8 @@
             </div>
         </stripes:form>
 
-        <display:table name="actionBean.schemasResult" class="sortable results" id="item" requestURI="/schema/search/" style="width:100%">
+        <display:table name="actionBean.schemasResult" class="results" id="item" requestURI="/schema/search/" style="width:100%">
+            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No schemas found.</p>" />
             <c:if test="${actionBean.schemaSetId != 0}">
                 <display:column title="" sortable="false">
                     <stripes:radio value="${item.id}" name="schemaId" />

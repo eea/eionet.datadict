@@ -34,7 +34,6 @@
             </ul>
         </div>
 
-
         <c:if test="${empty actionBean.schemaSets && empty actionBean.schemas}">
             <div style="margin-top:1em">
                 <c:choose>
@@ -53,7 +52,7 @@
         </c:if>
 
         <c:if test="${not empty actionBean.user && actionBean.context.eventName!='workingCopies'}">
-            <div class="advice-msg" style="margin-top:1em;font-size:0.8em">
+            <div class="advice-msg" style="margin-top:7em;margin-bottom:1em;font-size:0.8em">
                 Hint: red asterisk marks your working copies, if you have any.
             </div>
         </c:if>
@@ -104,7 +103,7 @@
                     </c:forEach>
                     <c:if test="${outerLoop.index == 0}">
                         <h3>Deprecated schema sets</h3>
-                        <div class="advice-msg" style="margin-top:1em;font-size:0.8em">
+                        <div class="advice-msg" style="margin-top:1em;margin-bottom:1em;font-size:0.8em">
                             Hint: Following schema sets are deprecated. They are not valid anymore!
                         </div>
                     </c:if>

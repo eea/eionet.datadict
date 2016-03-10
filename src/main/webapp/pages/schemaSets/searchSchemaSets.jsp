@@ -2,22 +2,36 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<%@page import="net.sourceforge.stripes.action.ActionBean"%>
-
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schema sets" currentSection="schemas">
+
+    <stripes:layout-component name="head">
+        <script type="text/javascript">
+            // <![CDATA[
+            (function($) {
+                $(document).ready(function() {
+                    $(".searchSection").click(function() {
+                        $("#searchResultsForm").slideToggle("slow");
+                        return false;
+                    });
+                });
+            })(jQuery);
+            // ]]>
+        </script>
+    </stripes:layout-component>
 
     <stripes:layout-component name="contents">
         <h1>Search schema sets</h1>
 
-        <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemasets', 'i')}">
-            <div id="drop-operations">
-                <ul>
+        <div id="drop-operations">
+            <ul>
+                <li class="search"><a class="searchSection" href="#" title="Search schema sets">Search</a></li>
+                <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemasets', 'i')}">
                     <li class="add">
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" event="add">Add schema set</stripes:link>
                     </li>
-                </ul>
-            </div>
-        </c:if>
+                </c:if>
+            </ul>
+        </div>
 
         <stripes:form id="searchResultsForm" action="/schemasets/search/" method="get">
             <div id="filters">
@@ -67,7 +81,8 @@
             </div>
         </stripes:form>
 
-        <display:table name="actionBean.schemaSetsResult" class="sortable results" id="item" requestURI="/schemasets/search/" style="width:100%">
+        <display:table name="actionBean.schemaSetsResult" class="results" id="item" requestURI="/schemasets/search/" style="width:100%">
+            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No schema sets found.</p>" />
             <display:column title="Name" sortable="true" sortName="sortName" sortProperty="NAME_ATTR">
                 <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
                     <stripes:param name="schemaSet.identifier" value="${item.identifier}" />
