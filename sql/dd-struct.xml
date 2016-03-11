@@ -1952,5 +1952,16 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column name="NAME"/>
         </createIndex>
     </changeSet>
-
+    
+    <changeSet author="kopanalk" id="rev-145">
+        <addForeignKeyConstraint baseColumnNames="DATAELEM_ID" baseTableName="INFERENCE_RULE"
+          constraintName="FK_DATAELEM_ID" deferrable="false" initiallyDeferred="false"
+          onDelete="CASCADE" onUpdate="CASCADE"
+          referencedColumnNames="DATAELEM_ID" referencedTableName="DATAELEM" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="TARGET_ELEM_ID" baseTableName="INFERENCE_RULE"
+          constraintName="FK_TARGET_ELEM_ID" deferrable="false" initiallyDeferred="false"
+          onDelete="CASCADE" onUpdate="CASCADE"
+          referencedColumnNames="DATAELEM_ID" referencedTableName="DATAELEM" referencesUniqueColumn="false"/>
+    </changeSet>
+    
 </databaseChangeLog>
