@@ -27,6 +27,7 @@ import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularySet;
+import eionet.meta.dao.mysql.concepts.util.ConceptsWithAttributesQueryBuilder;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptFilter.BoundElementFilterResult;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -609,148 +610,19 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
     @Override
     public List<VocabularyConcept> getConceptsWithAttributeValues(int vocabularyId, StandardGenericStatus conceptStatus) {
+        return this.getConceptsWithAttributeValues(vocabularyId, conceptStatus, null, null);
+    }
+    
+    @Override
+    public List<VocabularyConcept> getConceptsWithAttributeValues(int vocabularyId, StandardGenericStatus conceptStatus, String conceptIdentifier, String conceptLabel) {
         Map<Integer, DataElement> conceptAttributes = this.getVocabularyConceptAttributes(vocabularyId);
-        List<VocabularyConcept> concepts = this.getVocabularyConcepts(vocabularyId, conceptStatus);
-        this.attachConceptAttributeValues(vocabularyId, conceptStatus, conceptAttributes, concepts);
+        ConceptsWithAttributesQueryBuilder queryBuilder = new ConceptsWithAttributesQueryBuilder(vocabularyId, conceptIdentifier, conceptLabel, conceptStatus);
+        List<VocabularyConcept> concepts = this.getVocabularyConcepts(queryBuilder);
+        this.attachConceptAttributeValues(queryBuilder, conceptAttributes, concepts);
         
         return concepts;
     }
     
-    @Override
-    public List<VocabularyConcept> getConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
-                                                                 String dataElementIdentifier, String language,
-                                                                 String defaultLanguage, boolean acceptedOnly) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("vocabularyId", vocabularyId);
-
-		
-        StringBuilder sql = new StringBuilder();
-        sql.append("select c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.ELEMENT_VALUE, v.LANGUAGE, v.RELATED_CONCEPT_ID, ");
-        sql.append("d.IDENTIFIER AS ELEMIDENTIFIER, a.VALUE as DATATYPE, c.VOCABULARY_ID, c.IDENTIFIER, c.LABEL, ");
-        sql.append("c.DEFINITION, c.NOTATION, c.STATUS, c.ACCEPTED_DATE, c.NOT_ACCEPTED_DATE, c.STATUS_MODIFIED, ");
-        sql.append("rcvs.IDENTIFIER as RVOCSETIDENTIFIER, rcvs.LABEL as RVOCSETLABEL, rcv.IDENTIFIER as RVOCIDENTIFIER, rcv.LABEL as RVOCLABEL, rcv.BASE_URI as RVOCBASE_URI, ");
-        sql.append("rc.IDENTIFIER AS RCONCEPTIDENTIFIER, rc.LABEL as RCONCEPTLABEL, rc.NOTATION as RCONCEPTNOTATION, rc.DEFINITION as RCONCEPTDEFINITION ");
-        sql.append("from VOCABULARY_CONCEPT c ");
-        sql.append("left join VOCABULARY_CONCEPT_ELEMENT v on v.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID ");
-        sql.append("LEFT JOIN DATAELEM d ON (v.DATAELEM_ID = d.DATAELEM_ID) ");
-        sql.append("LEFT JOIN VOCABULARY_CONCEPT rc on v.RELATED_CONCEPT_ID = rc.VOCABULARY_CONCEPT_ID ");
-        sql.append("LEFT JOIN VOCABULARY rcv ON rc.VOCABULARY_ID = rcv.VOCABULARY_ID ");
-        sql.append("LEFT JOIN VOCABULARY_SET rcvs ON (rcv.FOLDER_ID = rcvs.ID ) ");
-        sql.append("left join (ATTRIBUTE a, M_ATTRIBUTE ma)  on (a.DATAELEM_ID = d.DATAELEM_ID ");
-        sql.append("and PARENT_TYPE = 'E' and a.M_ATTRIBUTE_ID = ma.M_ATTRIBUTE_ID and ma.NAME='Datatype') ");
-        sql.append("where c.VOCABULARY_ID = :vocabularyId ");
-
-        if (acceptedOnly){
-            sql.append(" AND c.STATUS & :acceptedStatus = :acceptedStatus");
-            params.put("acceptedStatus", StandardGenericStatus.ACCEPTED.getValue());
-        }
-
-        if (StringUtils.isNotBlank(conceptIdentifier)) {
-            sql.append(" AND LOWER(c.IDENTIFIER) LIKE LOWER(:conceptIdentifier)");
-            params.put("conceptIdentifier", conceptIdentifier + "%");
-        }
-        if (StringUtils.isNotBlank(label)) {
-            sql.append(" AND (LOWER(c.LABEL) LIKE LOWER(:label) OR ");
-            sql.append(" (d.IDENTIFIER LIKE :skosPrefLabel AND LOWER(ELEMENT_VALUE) LIKE LOWER(:label))) ");
-            params.put("label", label + "%");
-            params.put("skosPrefLabel", "skos:prefLabel");
-        }
-        if (StringUtils.isNotBlank(dataElementIdentifier)) {
-            sql.append(" AND (d.IDENTIFIER LIKE :dataElementIdentifier ");
-            if (StringUtils.isNotBlank(label)) {
-                sql.append("OR d.IDENTIFIER LIKE :skosPrefLabel");
-            }
-            sql.append(" ) ");
-            params.put("dataElementIdentifier", StringUtils.trimToEmpty(dataElementIdentifier));
-        }
-
-        if (StringUtils.isNotBlank(language)) {
-            sql.append(" AND v.LANGUAGE in (:language, :defaultLanguage) ");
-            params.put("language", StringUtils.trimToEmpty(language));
-            params.put("defaultLanguage", defaultLanguage);
-        }
-
-        sql.append(" ORDER by c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, d.IDENTIFIER, v.LANGUAGE, rcv.IDENTIFIER ");
-
-
-        final List<VocabularyConcept> resultList = new ArrayList<VocabularyConcept>();
-        getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
-            int previousConceptId = -1;
-            int previousElemId = -1;
-            VocabularyConcept vc;
-            List<DataElement> oneElementValues;
-            List<List<DataElement>> elementValues;
-
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                int conceptId = rs.getInt("VOCABULARY_CONCEPT_ID");
-
-                // concept changed:
-                if (conceptId != previousConceptId) {
-                    vc = new VocabularyConcept();
-                    vc.setId(conceptId);
-                    vc.setLabel(rs.getString("LABEL"));
-                    vc.setIdentifier(rs.getString("IDENTIFIER"));
-                    vc.setDefinition(rs.getString("DEFINITION"));
-                    vc.setNotation(rs.getString("NOTATION"));
-                    vc.setStatus(rs.getInt("STATUS"));
-                    vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
-                    vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
-                    vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
-                    elementValues = new ArrayList<List<DataElement>>();
-                    vc.setElementAttributes(elementValues);
-                    resultList.add(vc);
-                }
-
-                int elemId = rs.getInt("DATAELEM_ID");
-
-                if (elemId != previousElemId || conceptId != previousConceptId) {
-                    oneElementValues = new ArrayList<DataElement>();
-                    elementValues.add(oneElementValues);
-                }
-
-                if (elemId > 0) {
-                    DataElement elem = new DataElement();
-                    elem.setId(elemId);
-                    elem.setIdentifier(rs.getString("ELEMIDENTIFIER"));
-                    elem.setAttributeLanguage(rs.getString("LANGUAGE"));
-                    elem.setAttributeValue(rs.getString("ELEMENT_VALUE"));
-
-                    Integer relatedConceptId = rs.getInt("RELATED_CONCEPT_ID");
-
-                    if (relatedConceptId != 0) {
-                        elem.setRelatedConceptId(relatedConceptId);
-                        elem.setRelatedConceptVocSet(rs.getString("RVOCSETIDENTIFIER"));
-                        elem.setRelatedConceptVocSetLabel(rs.getString("RVOCSETLABEL"));
-                        elem.setRelatedConceptVocabulary(rs.getString("RVOCIDENTIFIER"));
-                        elem.setRelatedConceptVocabularyLabel(rs.getString("RVOCLABEL"));
-                        elem.setRelatedConceptIdentifier(rs.getString("RCONCEPTIDENTIFIER"));
-                        elem.setRelatedConceptLabel(rs.getString("RCONCEPTLABEL"));
-                        elem.setRelatedConceptNotation(rs.getString("RCONCEPTNOTATION"));
-                        elem.setRelatedConceptDefinition(rs.getString("RCONCEPTDEFINITION"));
-                        elem.setRelatedConceptBaseURI(rs.getString("RVOCBASE_URI"));
-                    }
-                    //TODO check here
-                    // add Datatype - is used in RDF output
-                    String dataType = rs.getString("DATATYPE");
-                    if (dataType != null) {
-                        Map<String, List<String>> elemAttributeValues = new HashMap<String, List<String>>();
-                        List<String> elemDatatypeValues = new ArrayList<String>();
-                        elemDatatypeValues.add(dataType);
-                        elemAttributeValues.put("Datatype", elemDatatypeValues);
-                        elem.setElemAttributeValues(elemAttributeValues);
-                    }
-
-                    oneElementValues.add(elem);
-                }
-                previousConceptId = conceptId;
-                previousElemId = elemId;
-            }
-        });
-
-        return resultList;
-    } // end of method getConceptsWithValuedElements
-
     /**
      * {@inheritDoc}
      */
@@ -852,26 +724,9 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         return result;
     }
     
-    protected List<VocabularyConcept> getVocabularyConcepts(int vocabularyId, StandardGenericStatus conceptStatus) {
-        String sql =
-            "select \n" +
-            "	c.VOCABULARY_CONCEPT_ID, \n" +
-            "	c.IDENTIFIER,\n" +
-            "	c.LABEL, \n" +
-            "	c.DEFINITION, \n" +
-            "	c.NOTATION, \n" +
-            "	c.STATUS, \n" +
-            "	c.ACCEPTED_DATE, \n" +
-            "	c.NOT_ACCEPTED_DATE, \n" +
-            "	c.STATUS_MODIFIED \n" +
-            "from \n" +
-            "	VOCABULARY_CONCEPT c \n" +
-            "where \n" +
-            "	c.VOCABULARY_ID = :vocabularyId AND c.STATUS & :status = :status \n" +
-            "order by \n" +
-            "   c.VOCABULARY_CONCEPT_ID";
-        
-        Map<String, Object> params = this.composeParamsForConcepts(vocabularyId, conceptStatus);
+    protected List<VocabularyConcept> getVocabularyConcepts(ConceptsWithAttributesQueryBuilder queryBuilder) {
+        String sql = queryBuilder.buildConceptsSqlQuery();
+        Map<String, Object> params = queryBuilder.buildConceptsSqlQueryParameters();
         
         return this.getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<VocabularyConcept>() {
 
@@ -894,30 +749,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         });
     }
     
-    protected void attachConceptAttributeValues(final int vocabularyId, StandardGenericStatus conceptStatus, 
+    protected void attachConceptAttributeValues(final ConceptsWithAttributesQueryBuilder queryBuilder, 
             final Map<Integer, DataElement> conceptAttributes, List<VocabularyConcept> targetConcepts) {
-        String sql =
-            "select\n" +
-            "	c.VOCABULARY_CONCEPT_ID as ConceptId, \n" +
-            "	v.DATAELEM_ID as AttributeId, \n" +
-            "	v.ELEMENT_VALUE as AttributeValue, \n" +
-            "	v.LANGUAGE as AttributeLanguage, \n" +
-            "	rc.VOCABULARY_ID as RelatedConceptVocabularyId,\n" +
-            "	v.RELATED_CONCEPT_ID RelatedConceptId,\n" +
-            "	rc.IDENTIFIER as RelatedConceptIdentifier, \n" +
-            "	rc.LABEL as RelatedConceptLabel, \n" +
-            "	rc.NOTATION as RelatedConceptNotation, \n" +
-            "	rc.DEFINITION as RelatedConceptDefinition \n" +
-            "from \n" +
-            "	VOCABULARY_CONCEPT c \n" +
-            "		inner join VOCABULARY_CONCEPT_ELEMENT v on v.VOCABULARY_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID \n" +
-            "		left join VOCABULARY_CONCEPT rc on v.RELATED_CONCEPT_ID = rc.VOCABULARY_CONCEPT_ID \n" +
-            "where \n" +
-            "	c.VOCABULARY_ID = :vocabularyId and c.STATUS & :status = :status \n" +
-            "order by \n" +
-            "   c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.LANGUAGE";
-        
-        Map<String, Object> params = this.composeParamsForConcepts(vocabularyId, conceptStatus);
+        String sql = queryBuilder.buildConceptAttributesSqlQuery();
+        Map<String, Object> params = queryBuilder.buildConceptAttributesSqlQueryParameters();
         final Iterator<VocabularyConcept> conceptIterator = targetConcepts.iterator();
         final Map<Integer, Integer> relatedConceptIdToVocabularyIdMappings = new HashMap<Integer, Integer>();
         final Set<Integer> relatedConceptVocabularyIds = new HashSet<Integer>();
@@ -953,7 +788,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
                 if (!conceptAttributes.containsKey(conceptAttributeValue.getId())) {
                     String msgFormat = "Could not find vocabulary concept attribute definition; vocabulary id: %d; concept id: %d; bound element id: %d";
-                    String msg = String.format(msgFormat, vocabularyId, conceptId, conceptAttributeValue.getId());
+                    String msg = String.format(msgFormat, queryBuilder.getVocabularyId(), conceptId, conceptAttributeValue.getId());
                     throw new IllegalStateException(msg);
                 }
                 
@@ -1072,14 +907,6 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 }
             }
         }
-    }
-    
-    private Map<String, Object> composeParamsForConcepts(int vocabularyId, StandardGenericStatus conceptStatus) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("vocabularyId", vocabularyId);
-        params.put("status", conceptStatus.getValue());
-        
-        return params;
     }
     
 }

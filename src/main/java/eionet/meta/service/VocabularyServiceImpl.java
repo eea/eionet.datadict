@@ -1033,55 +1033,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public List<VocabularyConcept> getConceptsWithAttributes(int vocabularyFolderId, String conceptIdentifier, String label,
-                                                             String elementIdentifier, String language, String defaultLanguage, boolean acceptedOnly) throws ServiceException {
+    public List<VocabularyConcept> getConceptsWithAttributes(int vocabularyFolderId, String conceptIdentifier, String label, boolean acceptedOnly) throws ServiceException {
         try {
-            List<VocabularyConcept> result =
-                    vocabularyConceptDAO.getConceptsWithValuedElements(vocabularyFolderId, conceptIdentifier, label,
-                            elementIdentifier, language, defaultLanguage, acceptedOnly);
-
-            if (StringUtils.isNotBlank(language)) {
-                // when language is not empty, some concepts are filtered, so add an additional query!!! to get filtered concepts!!
-                VocabularyConceptFilter filter = new VocabularyConceptFilter();
-                filter.setVocabularyFolderId(vocabularyFolderId);
-                filter.setConceptStatus(StandardGenericStatus.VALID);
-                filter.setUsePaging(false);
-                filter.setIdentifier(conceptIdentifier);
-                filter.setLabel(label);
-                List<Integer> excludedIds = new ArrayList<Integer>();
-                int listSize = result.size();
-                for (int i = 0; i < listSize; i++) {
-                    excludedIds.add(result.get(i).getId());
-                }
-                filter.setExcludedIds(excludedIds);
-                filter.setOrderByConceptId(true);
-
-                VocabularyConceptResult vocabularyConceptResult = vocabularyConceptDAO.searchVocabularyConcepts(filter);
-                List<VocabularyConcept> conceptList = vocabularyConceptResult.getList();
-
-                listSize = conceptList.size();
-                int[] conceptListIds = new int[listSize];
-
-                for (int i = 0; i < listSize; i++) {
-                    conceptListIds[i] = conceptList.get(i).getId();
-                }
-
-                // TODO: This will return with all dataelements. Method should be updated not to return all identifier for future
-                // usage.
-                Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
-                        dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolderId, conceptListIds, false);
-
-                int resultListSize = result.size();
-                for (int i = 0, j = 0; i < listSize; i++, j++) {
-                    VocabularyConcept concept = conceptList.get(i);
-                    int conceptId = concept.getId();
-                    concept.setElementAttributes(vocabularyConceptsDataElementValues.get(conceptId));
-                    for (; j < resultListSize && result.get(j).getId() < conceptId; j++) {
-                    }
-                    result.add(j, concept);
-                }
-            }
-            return result;
+            StandardGenericStatus conceptStatus = acceptedOnly ? StandardGenericStatus.ACCEPTED : null;
+            
+            return this.vocabularyConceptDAO.getConceptsWithAttributeValues(vocabularyFolderId, conceptStatus, conceptIdentifier, label);
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
         }
