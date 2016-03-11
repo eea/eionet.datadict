@@ -407,8 +407,6 @@ a.deleteButton:after {
 	background-color: rgba(212,217,145,0.6);
 }
 
-
-
 #workarea table.results td div.status {
     color: #FFFFFF;
     text-align: center;
@@ -432,7 +430,6 @@ a.deleteButton:after {
 #workarea table.results td div.status.qualified {
     background: #29CC76;
 }
-
 
 #workarea table.results td div.status.released {
     background: #21A563;
@@ -461,6 +458,20 @@ a.deleteButton:after {
     background: rgba(255,255,255,1);
 }
 
+
+/* ICONS */
+
+span.check {
+    font-size: 0;
+}
+
+span.check:after {
+    font-family: 'eea';
+    content: "\e919";
+    color: #898c20;
+    font-size: 14px;
+
+}
 
 
 /* NOT FOUND */

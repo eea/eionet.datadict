@@ -202,26 +202,26 @@
                         </td>
                         <td><%=Util.processForDisplay(attrTypeDisp)%></td>
                         <td class="center">
-                            <% if (attribute.displayFor("DST")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                            <% if (attribute.displayFor("DST")){ %><span class="check">Yes</span><%}%>
                         </td>
                         <td class="center">
-                            <% if (attribute.displayFor("TBL")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                            <% if (attribute.displayFor("TBL")){ %><span class="check">Yes</span><%}%>
                         </td>
                         <td class="center">
                             <!--  CH1 and CH3 attributes are same -->
-                            <% if (attribute.displayFor("CH1") || attribute.displayFor("CH3")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                            <% if (attribute.displayFor("CH1") || attribute.displayFor("CH3")){ %><span class="check">Yes</span><%}%>
                         </td>
                         <td class="center">
-                            <% if (attribute.displayFor("CH2")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                            <% if (attribute.displayFor("CH2")){ %><span class="check">Yes</span><%}%>
                         </td>
                         <td class="center">
-                            <% if (attribute.displayFor(DElemAttribute.ParentType.SCHEMA.toString())){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                            <% if (attribute.displayFor(DElemAttribute.ParentType.SCHEMA.toString())){ %><span class="check">Yes</span><%}%>
                         </td>
                         <td class="center">
-                            <% if (attribute.displayFor(DElemAttribute.ParentType.SCHEMA_SET.toString())){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                            <% if (attribute.displayFor(DElemAttribute.ParentType.SCHEMA_SET.toString())){ %><span class="check">Yes</span><%}%>
                         </td>
                         <td class="center">
-                            <% if (attribute.displayFor(DElemAttribute.ParentType.VOCABULARY_FOLDER.toString())){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                            <% if (attribute.displayFor(DElemAttribute.ParentType.VOCABULARY_FOLDER.toString())){ %><span class="check">Yes</span><%}%>
                         </td>
                     </tr>
                 </tbody>
