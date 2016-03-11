@@ -104,7 +104,7 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
      * @throws Exception if an error occurs
      */
     protected List<VocabularyConcept> getAllVocabularyConceptsWithAttributes(VocabularyFolder vf) throws Exception {
-        return vocabularyService.getConceptsWithAttributes(vf.getId(), null, null, null, null, null, false);
+        return vocabularyService.getConceptsWithAttributes(vf.getId(), null, null, false);
     }// end of method getVocabularyConceptsWithAttributes
 
     /**

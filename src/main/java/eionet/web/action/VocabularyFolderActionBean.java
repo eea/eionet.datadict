@@ -1473,9 +1473,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             LOGGER.info("JSON CALL RECEIVED FOR: " + vocabularyFolder.getIdentifier() + ", with parameters: lang = " + lang);
 
-            final List<VocabularyConcept> concepts =
-                    vocabularyService.getConceptsWithAttributes(vocabularyFolder.getId(), id, label, null, null,
-                            VocabularyJSONOutputHelper.DEFAULT_LANGUAGE, true);
+            final List<VocabularyConcept> concepts = vocabularyService.getConceptsWithAttributes(vocabularyFolder.getId(), id, label, true);
 
             StreamingResolution result = new StreamingResolution(format) {
                 @Override

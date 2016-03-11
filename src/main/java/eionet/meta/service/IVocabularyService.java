@@ -228,15 +228,11 @@ public interface IVocabularyService {
      * @param vocabularyFolderId vocabulary ID
      * @param conceptIdentifier  concept identifier to search
      * @param label              concept label or pref label to search
-     * @param elementIdentifier  data element identifier as a filter, if null all data elements
-     * @param language           if null all languages
-     * @param defaultLanguage    default language (only applicable when language is not null)
      * @param acceptedOnly       only accepted parameters
      * @return list of concepts
      * @throws ServiceException if operation fails
      */
-    List<VocabularyConcept> getConceptsWithAttributes(int vocabularyFolderId, String conceptIdentifier, String label,
-                                                      String elementIdentifier, String language, String defaultLanguage, boolean acceptedOnly) throws ServiceException;
+    List<VocabularyConcept> getConceptsWithAttributes(int vocabularyFolderId, String conceptIdentifier, String label, boolean acceptedOnly) throws ServiceException;
 
     /**
      * Creates new vocabulary concept into database.

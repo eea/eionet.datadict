@@ -220,35 +220,23 @@ public interface IVocabularyConceptDAO {
      * @param vocabularyId the internal id of the vocabulary whose concepts to retrieve.
      * @param conceptStatus the status of the concepts to be fetched.
      * 
-     * @return a list of vocabulary concepts with populated attribute values.
+     * @return a list of vocabulary concepts with populated attribute values. 
      */
     List<VocabularyConcept> getConceptsWithAttributeValues(int vocabularyId, StandardGenericStatus conceptStatus);
     
     /**
-     * Finds vocabulary concepts of the vocabulary.
-     * Expects an element to have datatype attribute otherwise not included to the result
-     * not included to the result.
-     *
-     * @param vocabularyId
-     *            vocabulary ID
-     * @param conceptIdentifier
-     *            concept identifier
-     * @param label
-     *            concept label
-     * @param dataElementIdentifier
-     *            data element identifier as a filter, if null all data elements
-     * @param language
-     *            identifier as a filter, if null all languages
-     * @param defaultLanguage
-     *            default language (applicable when language is not null)
-     * @param acceptedOnly
-     *            returns only accepted concepts.
-     *
-     * @return elements with valued bound elements
+     * Retrieves all the concepts of a vocabulary that match the criteria provided. 
+     * Attribute values are retrieved for each concept as well (if such values exist).
+     * 
+     * @param vocabularyId the internal id of the vocabulary whose concepts to retrieve.
+     * @param conceptStatus the status of the concepts to be fetched.
+     * @param conceptIdentifier the pattern of the identifier of the concepts to be fetched.
+     * @param conceptLabel the pattern of the label of the concepts to be fetched.
+     * 
+     * @return a list of vocabulary concepts with populated attribute values. 
      */
-    List<VocabularyConcept> getConceptsWithValuedElements(int vocabularyId, String conceptIdentifier, String label,
-                                                          String dataElementIdentifier, String language,
-                                                          String defaultLanguage, boolean acceptedOnly);
+    List<VocabularyConcept> getConceptsWithAttributeValues(int vocabularyId, StandardGenericStatus conceptStatus, String conceptIdentifier, String conceptLabel);
+    
     /**
      * Returns the list of concept ids for the vocabulary folder
      *
