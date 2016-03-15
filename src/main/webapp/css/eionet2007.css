@@ -240,6 +240,27 @@
      content: "\e901";
 }
 
+#drop-operations > ul li.maintain a:before,
+#drop-operations > ul li.manage a:before {
+     content: "\e910";
+}
+
+#drop-operations > ul li.checkin a:before {
+     content: "\e91a";
+}
+
+#drop-operations > ul li.checkout a:before {
+     content: "\e902";
+}
+
+#drop-operations > ul li.undo a:before {
+     content: "\e91b";
+}
+
+#drop-operations > ul li.newest a:before {
+     content: "\e91c";
+}
+
 
 #drop-operations > ul li a:hover {
 	background: none;	
