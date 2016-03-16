@@ -156,3 +156,9 @@ function addMultiSelectRow(addValue, checkboxName, multiSelectDivName){
         div.appendChild(label);
     }
 }
+
+(function($) {
+    $(document).ready(function() {
+        $("th.sorted").addClass("selected");
+    });
+})(jQuery);

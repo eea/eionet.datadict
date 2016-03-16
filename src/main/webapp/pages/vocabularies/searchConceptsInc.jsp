@@ -155,8 +155,9 @@
         </table>
         <div id="ch3SearchResults" style='display:none'>
             <c:if test="${not empty actionBean.relatedVocabularyConcepts and not empty actionBean.editDivId}">
-                <display:table name="actionBean.relatedVocabularyConcepts.list" class="sortable results" id="item" pagesize="20"
+                <display:table name="actionBean.relatedVocabularyConcepts.list" class="results" id="item" pagesize="20" style="width:100%"
                                requestURI="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/${actionBean.searchEventName}">
+                    <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No vocabulary concepts found.</p>" />
                     <c:if test="${empty actionBean.relatedVocabulary}">
                         <display:column title="Vocabulary Set" sortable="true" sortProperty="vocabularySetLabel">
                             ${item.vocabularySetLabel}
@@ -298,7 +299,7 @@
         </table>
         <div>
             <c:if test="${not empty actionBean.relatedVocabularyConcepts}">
-                <display:table name="actionBean.relatedVocabularyConcepts.list" class="sortable results" id="item" pagesize="20"
+                <display:table name="actionBean.relatedVocabularyConcepts.list" class="results" id="item" pagesize="20"
                                requestURI="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/${actionBean.searchEventName}">
                     <c:if test="${empty actionBean.relatedVocabulary}">
                         <display:column title="Vocabulary Set" sortable="true" sortProperty="vocabularySetLabel">
@@ -386,7 +387,7 @@
 
         <div>
             <c:if test="${not empty actionBean.vocabularies}">
-                <display:table name="actionBean.vocabularies.list" class="sortable results" id="item" pagesize="20"
+                <display:table name="actionBean.vocabularies.list" class="results" id="item" pagesize="20"
                                requestURI="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/searchVocabularies">
                     <display:column title="Vocabulary Set" sortable="true" sortProperty="folderName">
                         ${item.folderName}

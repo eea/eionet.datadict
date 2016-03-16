@@ -98,9 +98,6 @@
                     $("#searchSiteCodesForm").slideToggle("slow");
                     return false;
                 });
-                $("th.sorted").addClass("selected");
-                var selectedColumnIndex = $("th.sorted").index() + 1;
-                $('table.sortable tr td:nth-child('+ selectedColumnIndex +')').addClass("selected");
             });
         })(jQuery);
         // ]]>

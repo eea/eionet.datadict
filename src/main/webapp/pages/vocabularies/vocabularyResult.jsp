@@ -18,12 +18,13 @@
 
         <div id="drop-operations">
             <ul>
-                <li class="search"><stripes:link id="searchLnk" href="#">Search again</stripes:link></li>
                 <li class="back"><stripes:link href="/vocabularies" event="form">Back to vocabularies</stripes:link></li>
+                <li class="search"><stripes:link id="searchLnk" href="#">Search again</stripes:link></li>
             </ul>
         </div>
 
-        <display:table name="${actionBean.vocabularyResult.list}" class="sortable results" id="item" requestURI="/vocabularies/search" pagesize="20">
+        <display:table name="${actionBean.vocabularyResult.list}" class="results" id="item" requestURI="/vocabularies/search" pagesize="20" style="width:100%">
+            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No vocabularies found.</p>" />
             <display:column title="Vocabulary Set" sortable="true" sortProperty="folderName">
                 ${item.folderName}
             </display:column>

@@ -700,7 +700,7 @@
                                 </td>
                             </c:if>
                             <c:set var="clickable" value="${not empty dataset.status and (empty user or not user.authentic) and (dataset.status eq 'Incomplete' or dataset.status eq 'Candidate' or dataset.status eq 'Qualified') ? false : true}" />
-                            <td title="${fn:escapeXml(dataset.name)}"<c:if test="${param.sort_name eq 'NAME'}"> class="selected"</c:if>>
+                            <td title="${fn:escapeXml(dataset.name)}">
                                 <c:if test="${clickable}">
                                     <a href="${pageContext.request.contextPath}/datasets/${dataset.ID}">
                                 </c:if>
@@ -708,9 +708,9 @@
                                 <c:if test="${clickable}"></a></c:if>
                             </td>
                             <c:if test="${param.incl_histver eq 'true'}">
-                                <td<c:if test="${param.sort_name eq 'ID'}"> class="selected"</c:if>>${dataset.ID}</td>
+                                <td>${dataset.ID}</td>
                             </c:if>
-                            <td<c:if test="${param.sort_name eq 'STATUS'}"> class="selected"</c:if>>
+                            <td>
                                 <dd:datasetRegStatus value="${dataset.status}" />
                             </td>
                             <td>

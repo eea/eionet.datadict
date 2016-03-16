@@ -34,8 +34,9 @@
 
 <h2>Bound elements for concepts</h2>
 
-<display:table name="actionBean.boundElements" class="sortable results" id="item"
+<display:table name="actionBean.boundElements" class="results" id="item" style="width:100%"
     requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/edit">
+    <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No bound elements found.</p>" />
     <display:column title="Element" sortable="true" sortProperty="identifier">
         <c:choose>
             <c:when test="${item.released && empty actionBean.user}">
@@ -58,9 +59,7 @@
         <c:if test="${item.type == 'CH3'}">Vocabulary</c:if>
     </display:column>
     <display:column title="Status" sortable="true">
-        <c:url var="imgSrc" value="/images/${item.statusImage}" />
-        <img src="${imgSrc}" title="${item.status}" alt="Status"/>
-
+        <dd:datasetRegStatus value="${item.status}" />
         <c:if test="${item.released}">
             <fmt:setLocale value="en_GB" />
             <fmt:formatDate pattern="dd MMM yyyy" value="${item.modified}" var="dateFormatted"/>
@@ -111,8 +110,9 @@
         </table>
     </stripes:form>
 
-    <display:table name="actionBean.elementsResult.dataElements" class="sortable results" id="item" pagesize="20"
-        requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/searchDataElements">
+    <display:table name="actionBean.elementsResult.dataElements" class="results" id="item" pagesize="20" style="width:100%"
+        requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/searchDataElemens">
+        <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No data elements found.</p>" />
         <display:column title="Element" sortable="true" sortProperty="identifier">
             <c:choose>
                 <c:when test="${item.released}">
@@ -142,9 +142,7 @@
             <c:if test="${item.type == 'CH3'}">Vocabulary</c:if>
         </display:column>
         <display:column title="Status" sortable="true">
-            <c:url var="imgSrc" value="/images/${item.statusImage}" />
-            <img src="${imgSrc}" border="0" title="${item.status}" />
-
+            <dd:datasetRegStatus value="${item.status}" />
             <c:if test="${item.released}">
                 <fmt:setLocale value="en_GB" />
                 <fmt:formatDate pattern="dd MMM yyyy" value="${item.modified}" var="dateFormatted"/>
