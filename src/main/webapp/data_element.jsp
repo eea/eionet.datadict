@@ -1301,6 +1301,32 @@
                 %>
                 <h1><%=verb%> <%=strCommon%> element definition</h1>
                 <%
+                    // set up fixed values
+                    fixedValues = mode.equals("add") ? null : searchEngine.getFixedValuesOrderedByValue(delem_id, "elem");
+
+                    // set up foreign key relations (if non-common element)
+                    Vector fKeys = null;
+                    if (!mode.equals("add") && !elmCommon && dataset != null) {
+                        fKeys = searchEngine.getFKRelationsElm(delem_id, dataset.getID());
+                    }
+                    if (mode.equals("view")) {
+                        Vector quicklinks = new Vector();
+
+                        if (fixedValues != null && fixedValues.size() > 0) {
+                            String s = type.equals("CH1") ? "Allowable values" : "Suggested values";
+                            quicklinks.add(s + " | values");
+                        }
+                        if (fKeys != null && fKeys.size() > 0) {
+                            quicklinks.add("Foreign key relations | fkeys");
+                        }
+                        if (complexAttrs != null && complexAttrs.size() > 0) {
+                            quicklinks.add("Complex attributes | cattrs");
+                        }
+                        request.setAttribute("quicklinks", quicklinks);
+                %>
+                    <jsp:include page="quicklinks.jsp" flush="true" />
+                <%
+                    }
                     if (mode.equals("view") && user!=null) {
                     %>
                         <div id="drop-operations">
@@ -1403,39 +1429,7 @@
                                 <!-- quick links -->
 
                                 <%
-                                    // set up fixed values
-                                        fixedValues = mode.equals("add") ? null : searchEngine
-                                                .getFixedValuesOrderedByValue(delem_id, "elem");
-
-                                        // set up foreign key relations (if non-common element)
-                                        Vector fKeys = null;
-                                        if (!mode.equals("add") && !elmCommon && dataset != null)
-                                            fKeys = searchEngine.getFKRelationsElm(delem_id,
-                                                    dataset.getID());
-
-                                        if (mode.equals("view")) {
-                                            Vector quicklinks = new Vector();
-
-                                            if (fixedValues != null && fixedValues.size() > 0) {
-                                                String s = type.equals("CH1") ? "Allowable values"
-                                                        : "Suggested values";
-                                                quicklinks.add(s + " | values");
-                                            }
-                                            if (fKeys != null && fKeys.size() > 0)
-                                                quicklinks.add("Foreign key relations | fkeys");
-                                            if (complexAttrs != null && complexAttrs.size() > 0)
-                                                quicklinks.add("Complex attributes | cattrs");
-
-                                            request.setAttribute("quicklinks", quicklinks);
-                                %>
-                                    <jsp:include page="quicklinks.jsp" flush="true" />
-                                    <%
-                                        }
-                                    %>
-
-                                <!-- schema && codelist links-->
-
-                                <%
+                                    // schema && codelist links
                                     // display schema link only in view mode and only for users that have a right to edit a dataset
                                         if (mode.equals("view")) {
                                             boolean dispOutputs = elmCommon;

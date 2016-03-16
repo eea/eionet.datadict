@@ -627,8 +627,22 @@ else if (mode.equals("add"))
         %>
         <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="<%=request.getContextPath()%>/datasets/<%=dsID%>"><%=Util.processForDisplay(dsName)%></a> dataset<%}%></h1>
 
-        <!-- The buttons displayed in view mode -->
-            <%
+        <!-- quick links -->
+        <%
+            if (mode.equals("view")) {
+                Vector quicklinks = new Vector();
+
+                if (elems != null && elems.size() > 0) {
+                    quicklinks.add("Elements | elements");
+                }
+                if (complexAttrs != null && complexAttrs.size() > 0) {
+                    quicklinks.add("Complex attributes | cattrs");
+                }
+                request.setAttribute("quicklinks", quicklinks);
+        %>
+                <jsp:include page="quicklinks.jsp" flush="true" />
+        <%
+            }
             if ((mode.equals("view") && editDstPrm==true) || subscribe) {
             %>
             <div id="drop-operations">
@@ -674,27 +688,7 @@ else if (mode.equals("add"))
 
                 <tr>
                     <td style="width:100%;height:10" colspan="2">
-
-                            <!-- quick links -->
-
-                            <%
-                            if (mode.equals("view")){
-                                Vector quicklinks = new Vector();
-
-                                if (elems!=null && elems.size()>0)
-                                    quicklinks.add("Elements | elements");
-                                if (complexAttrs!=null && complexAttrs.size()>0)
-                                    quicklinks.add("Complex attributes | cattrs");
-
-                                request.setAttribute("quicklinks", quicklinks);
-                                %>
-                                <jsp:include page="quicklinks.jsp" flush="true" />
-                                <%
-                            }
-                            %>
-
                             <!-- schema, MS Excel template, XForm, XmlInst, etc -->
-
                             <%
                             if (mode.equals("view")){
 

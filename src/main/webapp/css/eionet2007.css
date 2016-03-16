@@ -161,6 +161,43 @@
     float: left;
 }
 
+/* Quick Links */
+
+#quickbar {
+    margin-top:  20px;
+}
+
+#quickbar ul {
+    list-style: none;
+    margin: 0;
+}
+
+#quickbar ul li {
+    display: inline-block;
+}
+
+#quickbar ul li a {
+    display: block;
+    color: #00446A;
+    font-size: 80%;
+    padding: 0 0 0 30px;
+    text-decoration: none;
+    position: relative;
+}
+
+#quickbar ul li a:before {
+    color: #B1B50F;
+    font-size: 14px;
+    font-family: 'eea';
+    position: absolute;
+    top: 0px;
+    left: 12px;
+}
+
+#quickbar ul li.quickLink a:before {
+    content: "\e90a";
+}
+
 /* DROP OPERATIONS */
 
 #drop-operations {
@@ -188,7 +225,6 @@
 #drop-operations > ul li a {
 	display: block;
 	color: #00446A;
-	text-transform: uppercase;
 	font-size: 80%;
 	padding: 20px 0 20px 30px;
 	text-decoration: none;
@@ -266,6 +302,44 @@
 	background: none;	
 }
 
+/* Create box */
+
+#createbox {
+    border: 1px solid #91aa73;
+    margin-top: 10px;
+    padding: 15px;
+}
+
+#createbox ul {
+    list-style: none;
+    margin: 0;
+}
+
+#createbox ul li {
+    display: inline-block;
+    background: none;
+    border: none;
+    width: 49%;
+}
+
+#createbox ul li a {
+    display: block;
+    float: left;
+    color: #00446A;
+    font-size: 79%;
+    padding-left: 30px;
+}
+
+#createbox ul li a.helpButton {
+    font-size: 0;
+    padding-left: 0;
+    margin-left: 5px;
+}
+
+#createbox ul li a:before {
+    
+}
+
 /* FILTERS STYLES */
 
 #workarea #filters {
@@ -332,6 +406,10 @@
 }
 
 /* HELP - ADD - REMOVE FILTERS */
+
+a.helpButton {
+    font-size: 0;
+}
 
 a.helpButton:after  {
     font-family: 'eea';
@@ -555,29 +633,7 @@ select{
     -moz-border-radius: 6px;/* Mozilla */
 }
 
-#quickbar {
-    border: 1px solid #91aa73;
-    background-color:#FFFFFF;
-    padding: 3px;
-    font-family: Verdana, Arial, "MS Sans Serif", sans-serif;
-    font-size: 7pt;
-    font-style: normal;
-    line-height: normal;
-    text-decoration: none
-}
 
-#createbox {
-    border: 1px solid #91aa73;
-    margin-top: 10px;
-}
-
-/* Create box */
-#outputsmenu {
-    border: 0px;
-    width: 100%;
-    text-align: left;
-    vertical-align: middle;
-}
 
 
 /* Tables table */
@@ -794,6 +850,7 @@ div .multiselect{
     color: black;
     padding:0px 3px;
 }
+
 
 /* Dropdown operations */
 

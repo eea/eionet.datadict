@@ -669,15 +669,37 @@ else if (mode.equals("add"))
 <%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
     <h1>${param.mode eq 'add' ? 'Add' : (param.mode eq 'edit' ? 'Edit' : 'View')} dataset definition</h1>
-            <%
-                boolean goToNewest = false;
-                if (mode.equals("view") && !dataset.isWorkingCopy()) {
-                    if (user!=null || (user == null && !isLatestRequested)) {
-                        if (latestID!=null && !latestID.equals(dataset.getID())) {
-                            goToNewest = true;
-                        }
+        <!-- quick links -->
+        <%
+            if (mode.equals("view")) {
+                Vector quicklinks = new Vector();
+
+                if (dataset!=null && dataset.getVisual() != null) {
+                    quicklinks.add("Data model | model");
+                }
+                if (tables != null && tables.size() > 0) {
+                    quicklinks.add("Tables | tables");
+                }
+                if (complexAttrs != null && complexAttrs.size() > 0) {
+                    quicklinks.add("Complex attributes | cattrs");
+                }
+                if (rodLinks != null && rodLinks.size( )> 0) {
+                    quicklinks.add("Obligations in ROD | rodlinks");
+                }
+                request.setAttribute("quicklinks", quicklinks);
+        %>
+            <jsp:include page="quicklinks.jsp" flush="true" />
+        <%
+            }
+
+            boolean goToNewest = false;
+            if (mode.equals("view") && !dataset.isWorkingCopy()) {
+                if (user!=null || (user == null && !isLatestRequested)) {
+                    if (latestID!=null && !latestID.equals(dataset.getID())) {
+                        goToNewest = true;
                     }
                 }
+            }
 
             boolean isDisplayOperations = mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null;
             if (isDisplayOperations==false)
@@ -760,29 +782,6 @@ else if (mode.equals("add"))
                 <!--=======================-->
                 <!-- main table inside div -->
                 <!--=======================-->
-
-
-                                <!-- quick links -->
-
-                                <%
-                                if (mode.equals("view")) {
-                                    Vector quicklinks = new Vector();
-
-                                    if (dataset!=null && dataset.getVisual()!=null)
-                                        quicklinks.add("Data model | model");
-                                    if (tables!=null && tables.size()>0)
-                                        quicklinks.add("Tables | tables");
-                                    if (complexAttrs!=null && complexAttrs.size()>0)
-                                        quicklinks.add("Complex attributes | cattrs");
-                                    if (rodLinks!=null && rodLinks.size()>0)
-                                        quicklinks.add("Obligations in ROD | rodlinks");
-
-                                    request.setAttribute("quicklinks", quicklinks);
-                                    %>
-                                    <jsp:include page="quicklinks.jsp" flush="true" />
-                                    <%
-                                }
-                                %>
 
                                 <!-- pdfs & schema & docs -->
 
