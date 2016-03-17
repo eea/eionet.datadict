@@ -1953,7 +1953,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         </createIndex>
     </changeSet>
     
-    <changeSet author="kopanalk" id="rev-145">
+     <changeSet author="kopanalk" id="rev-145">
         <addForeignKeyConstraint baseColumnNames="DATAELEM_ID" baseTableName="INFERENCE_RULE"
           constraintName="FK_DATAELEMENT_ID" deferrable="false" initiallyDeferred="false"
           onDelete="CASCADE" onUpdate="CASCADE"
@@ -1963,5 +1963,56 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
           onDelete="CASCADE" onUpdate="CASCADE"
           referencedColumnNames="DATAELEM_ID" referencedTableName="DATAELEM" referencesUniqueColumn="false"/>
     </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-146">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="FK_DATAELEMENT_ID"/>
+        </preConditions>
+        <comment>
+            Revert rev-145. Drop foreign key "FK_DATAELEMENT_ID"
+        </comment>
+        <dropForeignKeyConstraint baseTableName="INFERENCE_RULE" constraintName="FK_DATAELEMENT_ID"/>
+    </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-147">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="FK_TARGET_ELEMENT_ID"/>
+        </preConditions>
+        <comment>
+            Revert rev-145. Drop foreign key "FK_TARGET_ELEMENT_ID"
+        </comment>
+        <dropForeignKeyConstraint baseTableName="INFERENCE_RULE" constraintName="FK_TARGET_ELEMENT_ID"/>
+    </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-148">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_DATAELEM_ID"/>
+            </not>
+        </preConditions>
+        <comment>
+            Create foreign key constraint FK_DATAELEM_ID for INFERENECE_RULE. 
+        </comment>
+        <addForeignKeyConstraint  baseColumnNames="DATAELEM_ID" baseTableName="INFERENCE_RULE"
+          constraintName="FK_DATAELEM_ID" deferrable="false" initiallyDeferred="false"
+          onDelete="CASCADE" onUpdate="CASCADE"
+          referencedColumnNames="DATAELEM_ID" referencedTableName="DATAELEM" referencesUniqueColumn="false"/>
+    </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-149">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_TARGET_ELEM_ID"/>
+            </not>
+        </preConditions>
+        <comment>
+            Create foreign key constraint FK_TARGET_ELEM_ID for INFERENECE_RULE.
+        </comment>
+        <addForeignKeyConstraint baseColumnNames="TARGET_ELEM_ID" baseTableName="INFERENCE_RULE"
+          constraintName="FK_TARGET_ELEM_ID" deferrable="false" initiallyDeferred="false"
+          onDelete="CASCADE" onUpdate="CASCADE"
+          referencedColumnNames="DATAELEM_ID" referencedTableName="DATAELEM" referencesUniqueColumn="false"/>
+    </changeSet>
+    
     
 </databaseChangeLog>
