@@ -38,7 +38,7 @@ public class ExportStatics {
     static final String CSV_DELIMITER_COMMA = ",";
     static final String CSV_DELIMITER_SPACE = " ";
     static final String CSV_DELIMITER_LABEL = ":";
-    static final String CSV_NEW_LINE = "\n";
+    static final String CSV_NEW_LINE = "\r\n";
     
     static final String DD_NAMESPACE = "http://dd.eionet.europa.eu";
     static final String XSI_NAMESPACE = "http://www.w3.org/2001/XMLSchema-instance";
