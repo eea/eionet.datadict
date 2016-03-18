@@ -168,10 +168,10 @@ public class ExportMocks {
 
     static String commonDataElementWithVocabularyValuesWithRelationshipsExportCSV() {
         return 
-            "Element:languageCode Type:vocabulary\n" +
-            "\"Code\",\"Label\",\"Definition\",\"similar language\",\"language of country\"\n" +
-            "\"el\",\"Greek\",\"Greek \"\"language\"\"\",\"EU taxonomies::Languages::el/cy,el/it\",\"EU taxonomies::Countries::GR\"\n" +
-            "\"en\",\"English\",\"English language\",\"\",\"EU taxonomies::Countries::US,UK\"\n\n";
+            "Element:languageCode Type:vocabulary\r\n" +
+            "\"Code\",\"Label\",\"Definition\",\"similar language\",\"language of country\"\r\n" +
+            "\"el\",\"Greek\",\"Greek \"\"language\"\"\",\"EU taxonomies::Languages::el/cy,el/it\",\"EU taxonomies::Countries::GR\"\r\n" +
+            "\"en\",\"English\",\"English language\",\"\",\"EU taxonomies::Countries::US,UK\"\r\n\r\n";
     }
 
     static String uncommonDataElementWithVocabularyValuesWithRelationshipsExportXML() {
@@ -270,10 +270,10 @@ public class ExportMocks {
 
     static String commonDataElementWithVocabularyValuesExportCSV() {
         return 
-            "Element:inCountry Type:vocabulary\n" +
-            "\"Code\",\"Label\",\"Definition\"\n" +
-            "\"TJ\",\"Tajikistan\",\"\"\n" +
-            "\"TK\",\"Tokelau\",\"\"\n\n";
+            "Element:inCountry Type:vocabulary\r\n" +
+            "\"Code\",\"Label\",\"Definition\"\r\n" +
+            "\"TJ\",\"Tajikistan\",\"\"\r\n" +
+            "\"TK\",\"Tokelau\",\"\"\r\n\r\n";
     }
 
     static List<eionet.meta.DataElement> commonFixedValueDataElement() {
@@ -369,15 +369,15 @@ public class ExportMocks {
 
     static String commonDataElementWithFixedValuesExportCSV() {
         return 
-            "Element:ageGroup Type:fixed\n" +
-            "\"Code\",\"Label\",\"Definition\"\n" +
-            "\"00\",\"up to 15\",\"\"\n" +
-            "\"01\",\"15-20\",\"\"\n" +
-            "\"02\",\"20-25\",\"\"\n" +
-            "\"03\",\"25-30\",\"\"\n" +
-            "\"04\",\"30-40\",\"\"\n" +
-            "\"05\",\"40-50\",\"\"\n" +
-            "\"06\",\"60+\",\"\"\n\n";
+            "Element:ageGroup Type:fixed\r\n" +
+            "\"Code\",\"Label\",\"Definition\"\r\n" +
+            "\"00\",\"up to 15\",\"\"\r\n" +
+            "\"01\",\"15-20\",\"\"\r\n" +
+            "\"02\",\"20-25\",\"\"\r\n" +
+            "\"03\",\"25-30\",\"\"\r\n" +
+            "\"04\",\"30-40\",\"\"\r\n" +
+            "\"05\",\"40-50\",\"\"\r\n" +
+            "\"06\",\"60+\",\"\"\r\n\r\n";
     }
 
     static String quantitativeValuesExportXML() {
@@ -418,11 +418,11 @@ public class ExportMocks {
 
     static String quantitativeValuesExportCSV() {
         return 
-            "Element:test-quantitative Type:quantitative\n" +
-            "\"Code\",\"Label\",\"Definition\"\n" +
-            "\"a\",\"aa\",\"aaa\"\n" +
-            "\"b\",\"bb\",\"bbb\"\n" +
-            "\"c\",\"cc\",\"ccc\"\n\n";
+            "Element:test-quantitative Type:quantitative\r\n" +
+            "\"Code\",\"Label\",\"Definition\"\r\n" +
+            "\"a\",\"aa\",\"aaa\"\r\n" +
+            "\"b\",\"bb\",\"bbb\"\r\n" +
+            "\"c\",\"cc\",\"ccc\"\r\n\r\n";
     }
 
     static String uncommonDataElementWithFixedValuesExportXML() {
