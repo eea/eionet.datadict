@@ -82,21 +82,15 @@ public final class VocabularyCSVOutputHelper {
     /**
      * Writes CSV to output stream.
      *
-     * @param out
-     *            outputstream
-     * @param uriPrefix
-     *            uri prefix for teh element identifiers
-     * @param folderContextRoot
-     *            parent vocabulary folder root for related identifiers
-     * @param concepts
-     *            list of vocabulary concepts
-     * @param attributesMeta
-     *            list of field names to the CSV header row
-     * @throws IOException
-     *             if error in I/O
+     * @param out               outputstream
+     * @param uriPrefix         uri prefix for teh element identifiers
+     * @param folderContextRoot parent vocabulary folder root for related identifiers
+     * @param concepts          list of vocabulary concepts
+     * @param attributesMeta    list of field names to the CSV header row
+     * @throws IOException if error in I/O
      */
     public static void writeCSV(OutputStream out, String uriPrefix, String folderContextRoot, List<VocabularyConcept> concepts,
-            List<Triple<String, String, Integer>> attributesMeta) throws IOException {
+                                List<Triple<String, String, Integer>> attributesMeta) throws IOException {
 
         OutputStreamWriter osw = new OutputStreamWriter(out, "UTF-8");
         addBOM(out);
@@ -136,7 +130,7 @@ public final class VocabularyCSVOutputHelper {
             entries[LABEL_INDEX] = c.getLabel();
             entries[DEFINITION_INDEX] = c.getDefinition();
             entries[NOTATION_INDEX] = c.getNotation();
-            entries[STATUS_INDEX] = c.getStatus() == null ? "": c.getStatus().getNotation();
+            entries[STATUS_INDEX] = c.getStatus() == null ? "" : c.getStatus().getNotation();
             entries[ACCEPTED_DATE_INDEX] = c.getAcceptedDate() != null ? dateFormatter.format(c.getAcceptedDate()) : "";
 
             // add extra fields
@@ -180,10 +174,8 @@ public final class VocabularyCSVOutputHelper {
     /**
      * Writes utf-8 BOM in the given writer.
      *
-     * @param out
-     *            current outputstream
-     * @throws IOException
-     *             if connection fails
+     * @param out current outputstream
+     * @throws IOException if connection fails
      */
     private static void addBOM(OutputStream out) throws IOException {
         byte[] bomByteArray = VocabularyOutputHelper.getBomByteArray();
@@ -195,8 +187,7 @@ public final class VocabularyCSVOutputHelper {
     /**
      * Adds pre-defined entries to the array.
      *
-     * @param entries
-     *            array for CSV output
+     * @param entries array for CSV output
      */
     public static void addFixedEntryHeaders(String[] entries) {
         entries[URI_INDEX] = "URI";
