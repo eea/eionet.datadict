@@ -130,8 +130,8 @@ finally {
                    subscriptionsUrl = subscriptionsUrl + Props.getProperty(Subscriber.PROP_UNS_CHANNEL_NAME);
                    %>
 
-                <div class="note-msg">
-                       <strong>Note</strong>
+                <div class="system-msg">
+                    <strong>Note</strong>
                     <p>This will make an additional subscription even if you have subscribed before.
                     To change or delete your existing subscriptions, go to the <a href="<%=subscriptionsUrl%>">Unified Notification Service (UNS)</a>.
                     </p>

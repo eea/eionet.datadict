@@ -71,7 +71,7 @@
         <h1>View schema</h1>
 
         <c:if test="${actionBean.schemaSet.deprecatedStatus}">
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>This schema set is deprecated. It is not valid anymore!</p>
             </div>
@@ -79,7 +79,7 @@
 
         <c:set var="schemaWorkingCopy" value="${actionBean.schemaWorkingCopy}"/>
         <c:if test="${not empty schemaWorkingCopy}">
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>You have a
                     <stripes:link beanclass="${actionBean['class'].name}">
@@ -368,7 +368,7 @@
     <div id="checkInDialog" title="Check in">
         <stripes:form beanclass="${actionBean['class'].name}" method="get">
 
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>A check-in comment is required. Please enter it below.</p>
             </div>
@@ -391,7 +391,7 @@
             <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}" />
             <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}" />
 
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>
                     The schema's file name will not be changed, regardless of the name of the file you upload.
@@ -415,7 +415,7 @@
     <div id="newVersionDialog" title="Create new version">
         <stripes:form beanclass="${actionBean['class'].name}" method="get">
 
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>A new version requires a new file with a new name:</p>
             </div>

@@ -188,7 +188,7 @@
         <%-- Info text --%>
         <c:if test="${actionBean.context.eventName == 'view'}">
             <c:if test="${actionBean.userLoggedIn and not actionBean.allocateRight}">
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>
                   You are not authorized to allocate site codes. Please contact responsible NRC or NFP if this is needed.
@@ -231,7 +231,7 @@
             </div>
 
             <c:if test="${empty actionBean.user}">
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>
                 Please <a href="https://sso.eionet.europa.eu/login?service=http%3A%2F%2Fdd.eionet.europa.eu%2Flogin">log-in</a> with your Eionet

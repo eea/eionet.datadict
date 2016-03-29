@@ -90,7 +90,7 @@
 
         <c:set var="schemaSetWorkingCopy" value="${actionBean.schemaSetWorkingCopy}"/>
         <c:if test="${not empty schemaSetWorkingCopy}">
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>You have a
                     <stripes:link beanclass="${actionBean['class'].name}">
@@ -102,7 +102,7 @@
         </c:if>
 
     <c:if test="${actionBean.schemaSet.deprecatedStatus}">
-        <div class="note-msg">
+        <div class="system-msg">
             <strong>Note</strong>
             <p>This schema set is deprecated. It is not valid anymore!</p>
         </div>
@@ -356,7 +356,7 @@
     <div id="newVersionDialog" title="Create new version">
         <stripes:form beanclass="${actionBean['class'].name}" method="get">
 
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>A new version requires a new identifier. Please enter it below.</p>
             </div>
@@ -377,7 +377,7 @@
     <div id="checkInDialog" title="Check in">
         <stripes:form beanclass="${actionBean['class'].name}" method="get">
 
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>A check-in comment is required. Please enter it below.</p>
             </div>

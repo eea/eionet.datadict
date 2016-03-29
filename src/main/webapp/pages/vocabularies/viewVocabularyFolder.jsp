@@ -8,8 +8,8 @@
         <h1>Vocabulary: <em><c:out value="${actionBean.vocabularyFolder.label}" /></em></h1>
 
         <c:if test="${actionBean.vocabularyFolder.workingCopy && actionBean.vocabularyFolder.siteCodeType}">
-            <div class="note-msg">
-                <strong>Notice</strong>
+            <div class="system-msg">
+                <strong>Note</strong>
                 <p>
                 For checked out site codes, vocabulary concepts are not visible. To view them, see the
                 <stripes:link href="/services/siteCodes">site codes page</stripes:link>.
@@ -18,7 +18,7 @@
         </c:if>
 
         <c:if test="${actionBean.checkedOutByUser}">
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>You have a
                     <stripes:link beanclass="${actionBean['class'].name}" event="viewWorkingCopy">

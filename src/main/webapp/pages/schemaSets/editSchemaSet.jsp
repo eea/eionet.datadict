@@ -14,7 +14,7 @@
     <h1>Edit schema set</h1>
 
     <c:if test="${actionBean.schemaSet.deprecatedStatus}">
-        <div class="note-msg">
+        <div class="system-msg">
             <strong>Note</strong>
             <p>This schema set is deprecated. It is not valid anymore!</p>
         </div>

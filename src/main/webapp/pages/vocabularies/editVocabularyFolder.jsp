@@ -162,8 +162,8 @@
         <h1>Edit vocabulary</h1>
 
         <c:if test="${actionBean.vocabularyFolder.workingCopy && actionBean.vocabularyFolder.siteCodeType}">
-            <div class="note-msg">
-                <strong>Notice</strong>
+            <div class="system-msg">
+                <strong>Note</strong>
                 <p>
                 For checked out site codes, vocabulary concepts are not visible. To view them, see the
                 <stripes:link href="/services/siteCodes">site codes page</stripes:link>.
@@ -581,7 +581,7 @@
                 <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                 <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
 
-	            <div class="note-msg">
+	            <div class="system-msg">
                     CSV Import
                     <br><br>The CSV file should contain a header row for element names and data rows for concepts.
                     <br>It is strongly recommended to use an exported CSV file as a template for bulk editing. Columns and rows can be added to or deleted from the template file.
@@ -616,7 +616,7 @@
                 <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
                 <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                 <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                <div class="note-msg">
+                <div class="system-msg">
 				    <strong>Note</strong>
 				       <ul>
 				          <li>With this operation, contents of RDF file will be imported into vocabulary folder.</li>

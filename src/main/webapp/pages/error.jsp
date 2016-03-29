@@ -13,7 +13,7 @@
                         <c:out value="${actionBean.message}" />
                     </c:when>
                     <c:otherwise>
-                        Error message not specified ...
+                        Error message not specified...
                     </c:otherwise>
                 </c:choose>
             </strong>

@@ -206,7 +206,7 @@ List<VocabularyFolder> vocabularies = null;
         </tbody>
     </table>
     <br/>
-    <div class="note-msg">
+    <div class="system-msg">
         <strong>Note</strong>
         <p>
         This is a reminder that you have the above objects checked out.<br/>
