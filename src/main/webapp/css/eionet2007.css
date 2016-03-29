@@ -434,6 +434,7 @@ a.deleteButton:after {
 
 #workarea table.results {
 	border-collapse: collapse;
+    word-break: break-all;;
 }
 #workarea table.results a {
 	text-decoration: none;
@@ -453,8 +454,7 @@ a.deleteButton:after {
     text-align: left;
 }
 
-#workarea table.results th.selected,
-#workarea table.results td.selected {
+#workarea table.results th.selected {
     background: rgba(166,202,205,0.3);
 }
 
@@ -558,6 +558,84 @@ a.deleteButton:after {
 }
 
 
+/* DATASETS TABLE */
+
+#workarea table.datatable.results th,
+#workarea table.datatable.results td {
+    border: 1px solid #cfe3e4;
+}
+
+#workarea table.datatable.results th.scope-row {
+    width: 250px;
+    color: #666666;
+}
+
+#workarea table.datatable.results th.scope-row a.helpButton:after {
+    margin-left: 5px;
+    margin-right: 0px;
+}
+
+/* PAGINATOR */
+
+.paginator {
+    display: block;
+    float: left;
+    margin: 1em 0;
+    width: 100%;
+}
+ 
+
+.paginator .pagebanner {
+    float: left;
+    font-weight: bold;
+}
+
+.paginator .pagelinks {
+    float: right;
+}
+
+.paginator .pagelinks a,
+.paginator .pagelinks strong {
+    background: #ECF4F5;
+    border: 1px solid #CFE3E4;
+    padding: 0.5em;
+    text-decoration: none;
+}
+
+.paginator .pagelinks strong {
+    color: #FFFFFF;  
+    background: #306886;
+    border: 1px solid #00446A;
+}
+
+.paginator .pagelinks a.first:before {
+    font-family: 'eea';
+    content: "\e91f";
+    font-size: 12px;
+    margin-right: 3px;
+}
+
+.paginator .pagelinks a.previous:before {
+     font-family: 'eea';
+    content: "\e91e";
+    font-size: 12px;
+    margin-right: 3px;
+}
+
+.paginator .pagelinks a.next:after {
+    font-family: 'eea';
+    content: "\e920";
+    font-size: 12px;
+    margin-left: 3px;
+}
+
+.paginator .pagelinks a.last:after {
+    font-family: 'eea';
+    content: "\e921";
+    font-size: 12px;
+    margin-left: 3px;
+}
+
 /* ICONS */
 
 span.check {
@@ -593,6 +671,105 @@ p.not-found:before {
     height: 25px;
     display: inline-block;
 }
+
+/* UPLOAD FORM */
+
+form#Upload {
+    width: 860px;
+    display: block;
+    float: left;
+    background: #F9FCFC;
+    border: 1px solid #CFE3E4;
+    padding: 30px;
+    margin: 25px 0;
+}
+
+form#Upload table {
+    background: none;
+}
+
+form#Upload table input {
+    background: #FFFFFF;
+    border: 1px solid #9AC4C6;
+    padding: 5px 8px;
+}
+
+   
+    
+
+
+/* MESSAGES */
+
+.tip-msg,
+.note-msg,
+.important-msg,
+.caution-msg,
+.warning-msg,
+.error-msg,
+.system-msg {
+    margin: 0.5em 0;
+    border: 1px solid;
+    font-size: 100%;
+    position: relative;
+    padding: 1.5em 2.8em 1.5em 3.6em;
+    clear: both;
+}
+
+ul.messages li {
+    font-weight: normal;
+    margin: 0.5em 0;
+}
+
+.error-msg{
+    background: #ce8484;
+    color: #893030;
+    border-color: #893030;
+}
+
+.error-msg strong:before {
+    content: "\e91d";
+    font-family: 'eea';
+    position: absolute;
+    top: 19px;
+    left: 12px;
+    font-size: 30px;
+}
+
+.system-msg {
+    background: #e9ebf2;  
+    border-color: #b4bfdb;  
+    color: #7f8799;
+}
+
+.system-msg strong:before {
+    content: "\e909";
+    font-family: 'eea';
+    position: absolute;
+    top: 15px;
+    left: 12px;
+    font-size: 30px;
+}
+
+.caution-msg,
+.warning-msg  {
+    background: #dbb97b;
+    color: #8c6328;
+    border-color: #8c6328;
+}
+
+.caution-msg strong:before,
+.warning-msg strong:before {
+    content: "\e913";
+    font-family: 'eea';
+    position: absolute;
+    top: 19px;
+    left: 12px;
+    font-size: 30px;
+}
+
+
+
+
 
 
 /* end */

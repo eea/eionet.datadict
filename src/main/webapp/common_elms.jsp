@@ -270,7 +270,7 @@ else{ %>
             if (pageMode.equals("search")){
                 if (dataElements==null || dataElements.size()==0){
                     %>
-                    <div class="system-msg">No results matching the search criteria were found!</div>
+                    <div class="system-msg"><strong>No results matching the search criteria were found!</strong></div>
                     </div></body></html>
                     <%
                     return;

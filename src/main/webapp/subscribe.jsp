@@ -110,7 +110,7 @@ finally {
         if (user==null){
             %>
             <div class="error-msg">
-                You must <a href="<%=SecurityUtil.getLoginURL(request)%>">log in</a> to be able to subscribe to any notifications!
+                <strong>You must <a href="<%=SecurityUtil.getLoginURL(request)%>">log in</a> to be able to subscribe to any notifications!</strong>
             </div>
             <%
         }
@@ -123,7 +123,7 @@ finally {
                    if (success!=null){
                        session.removeAttribute("SUCCESS");
                        %>
-                       <div class="system-msg">Subscription successful!</div>
+                       <div class="system-msg"><strong>Subscription successful!</strong></div>
                        <%
                    }
                    String subscriptionsUrl = Props.getProperty(Subscriber.PROP_UNS_SUBSCRIPTIONS_URL);

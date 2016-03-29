@@ -308,7 +308,7 @@ else{ %>
                     // prepare message trailer for un-authenticated users
                     String msgTrailer = user==null ? " for unauthenticated users" : "";
                     %>
-                    <div class="error-msg">No element definitions matching the search criteria were found<%=Util.processForDisplay(msgTrailer)%>!</div>
+                    <div class="error-msg"><strong>No element definitions matching the search criteria were found<%=Util.processForDisplay(msgTrailer)%>!</strong></div>
                     </div></body></html> <%
                     return;
                 }

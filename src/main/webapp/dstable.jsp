@@ -672,7 +672,7 @@ else if (mode.equals("add"))
 
             <%
             if (feedbackValue != null) {%>
-                <div class="system-msg"><%= feedbackValue %></div><%
+                <div class="system-msg"><strong><%= feedbackValue %></strong></div><%
             }
             %>
 

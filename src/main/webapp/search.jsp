@@ -288,7 +288,7 @@ if (isDisplayOperations){
                 if (feedbackValue != null) {
                 %>
                 <div class="system-msg">
-                    <%= feedbackValue %>
+                    <strong><%= feedbackValue %></strong>
                 </div>
                 <%
                 }

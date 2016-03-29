@@ -113,18 +113,19 @@
                     <stripes:layout-component name="messages">
                         <c:if test="${not empty systemMessages}">
                             <div id="sysMsgDiv" class="system-msg">
+                                <strong>System Message</strong>
                                 <stripes:messages key="systemMessages"/>
                             </div>
                         </c:if>
                         <c:if test="${not empty cautionMessages}">
                             <div class="caution-msg">
-                                <strong>Caution ...</strong>
+                                <strong>Caution</strong>
                                 <stripes:messages key="cautionMessages"/>
                             </div>
                         </c:if>
                         <c:if test="${not empty warningMessages}">
                             <div class="warning-msg">
-                                <strong>Warning ...</strong>
+                                <strong>Warning</strong>
                                 <stripes:messages key="warningMessages"/>
                             </div>
                         </c:if>

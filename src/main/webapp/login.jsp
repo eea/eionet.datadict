@@ -32,8 +32,10 @@
 	    if (request.getParameter("err") != null) {
 	        %>
 	        <div class="error-msg">
-                There was a login error!<br/>
-                Please check your username/password and try again. If the problem persists, please contact system administrators.
+                    <strong>
+                        There was a login error!<br/>
+                        Please check your username/password and try again. If the problem persists, please contact system administrators.
+                    </strong>
 	        </div>
 	        <%
 	    }

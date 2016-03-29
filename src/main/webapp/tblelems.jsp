@@ -455,7 +455,7 @@
 String messages = RequestMessages.get(request, RequestMessages.system, RequestMessages.htmlLineBreak);
 if (messages.trim().length()>0){
     %>
-    <div class="system-msg"><%=messages%></div><%
+    <div class="system-msg"><strong><%=messages%></strong></div><%
 }
 %>
 
