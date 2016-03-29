@@ -585,51 +585,55 @@ a.deleteButton:after {
 }
  
 
-.paginator .pagebanner {
+.pagebanner {
+    display: block;
+    margin: 1em 0;
     float: left;
     font-weight: bold;
 }
 
-.paginator .pagelinks {
+.pagelinks {
+    display: block;
+    margin: 1em 0;
     float: right;
 }
 
-.paginator .pagelinks a,
-.paginator .pagelinks strong {
+.pagelinks a,
+.pagelinks strong {
     background: #ECF4F5;
     border: 1px solid #CFE3E4;
     padding: 0.5em;
     text-decoration: none;
 }
 
-.paginator .pagelinks strong {
+.pagelinks strong {
     color: #FFFFFF;  
     background: #306886;
     border: 1px solid #00446A;
 }
 
-.paginator .pagelinks a.first:before {
+.pagelinks a.first:before {
     font-family: 'eea';
     content: "\e91f";
     font-size: 12px;
     margin-right: 3px;
 }
 
-.paginator .pagelinks a.previous:before {
+.pagelinks a.previous:before {
      font-family: 'eea';
     content: "\e91e";
     font-size: 12px;
     margin-right: 3px;
 }
 
-.paginator .pagelinks a.next:after {
+.pagelinks a.next:after {
     font-family: 'eea';
     content: "\e920";
     font-size: 12px;
     margin-left: 3px;
 }
 
-.paginator .pagelinks a.last:after {
+.pagelinks a.last:after {
     font-family: 'eea';
     content: "\e921";
     font-size: 12px;
