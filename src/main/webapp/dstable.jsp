@@ -741,20 +741,6 @@ else if (mode.equals("add"))
                                                     </tr><%
                                                 }
 
-                                                // XForm link
-                                                if (dispAll || dispXForm){ %>
-                                                    <tr>
-                                                        <td>
-                                                            Create an XForm for this table
-                                                        </td>
-                                                        <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXForm?id=<%=tableID%>">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
-                                                            </a>
-                                                        </td>
-                                                    </tr><%
-                                                }
-
                                                 // MS Excel link
                                                 if (dispAll || dispXLS){
                                                 %>

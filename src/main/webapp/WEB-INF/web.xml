@@ -345,10 +345,7 @@
         <servlet-name>GetXmlInstance</servlet-name>
         <servlet-class>eionet.meta.exports.xmlinst.XmlInstServlet</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>GetXForm</servlet-name>
-        <servlet-class>eionet.meta.exports.xforms.XFormServlet</servlet-class>
-    </servlet>
+
     <servlet>
         <servlet-name>XlsServlet</servlet-name>
         <servlet-class>eionet.meta.exports.xls.XlsServlet</servlet-class>
@@ -476,10 +473,7 @@
         <servlet-name>GetXmlInstance</servlet-name>
         <url-pattern>/GetXmlInstance</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetXForm</servlet-name>
-        <url-pattern>/GetXForm</url-pattern>
-    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>XlsServlet</servlet-name>
         <url-pattern>/GetXls</url-pattern>
