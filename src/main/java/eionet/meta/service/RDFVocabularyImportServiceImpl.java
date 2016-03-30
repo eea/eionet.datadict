@@ -26,6 +26,7 @@ import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.imp.CreateVocabularyRDFImportHandler;
 import eionet.meta.imp.VocabularyRDFImportHandler;
 import eionet.util.Props;
 import eionet.util.PropsIF;
@@ -46,6 +47,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import eionet.util.Util;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
 
 /**
  * Service implementation to import RDF into a Vocabulary Folder.
@@ -370,5 +376,70 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
 
         return importRdfIntoVocabularyInternal(contents, vocabularyFolder, uploadActionBefore, uploadAction, missingConceptsAction);
     } // end of method importRdfIntoVocabulary
+
+    @Override
+    @Transactional(rollbackFor = ServiceException.class)
+    public List<String> importRdfIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder) throws ServiceException {
+
+        this.logMessages = new ArrayList<String>();
+
+        // parse RDF from contents passed in the method:
+        CreateVocabularyRDFImportHandler rdfHandler = new CreateVocabularyRDFImportHandler();
+
+        RDFParser parser = new RDFXMLParser();
+
+        parser.setRDFHandler(rdfHandler);
+
+        ParserConfig config = parser.getParserConfig();
+        if (config == null) {
+            config = new ParserConfig();
+        }
+        config.addNonFatalError(BasicParserSettings.DATATYPE_HANDLERS);
+        config.addNonFatalError(BasicParserSettings.VERIFY_DATATYPE_VALUES);
+        parser.setParserConfig(config);
+        final List<String> errorLogMessages = new ArrayList<String>();
+        parser.setParseErrorListener(new ParseErrorListener() {
+            @Override
+            public void warning(String arg0, int arg1, int arg2) {
+                errorLogMessages.add("Warning: " + arg0);
+            }
+
+            @Override
+            public void fatalError(String arg0, int arg1, int arg2) {
+                // TODO to throw ServiceException or not to throw?
+                errorLogMessages.add("Fatal Error: " + arg0);
+            }
+
+            @Override
+            public void error(String arg0, int arg1, int arg2) {
+                errorLogMessages.add("Error: " + arg0);
+            }
+        });
+
+        try {
+            parser.parse(contents, "folderContextRoot");
+            //        this.logMessages.addAll(rdfHandler.getLogMessages());
+            
+            // If Parsing is successfull, we can start importing parsed data from the rdfHandler to the vocabularyFolder
+
+            vocabularyFolder.setNotationsEqualIdentifiers(rdfHandler.isNotationsEqualIdentifier());
+            vocabularyFolder.setNumericConceptIdentifiers(rdfHandler.isNumericConceptIdentifier());
+            vocabularyFolder.setType(rdfHandler.getType());
+            // the third parameter  of the method below
+            //refers to the username of the user which did the creation. We have yet to find out which 
+            // user is that, and if we can obtain such info from the Authentication scheme.
+            vocabularyService.createVocabularyFolder(vocabularyFolder, null, "test");
+
+        } catch (IOException ex) {
+            Logger.getLogger(RDFVocabularyImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RDFParseException ex) {
+            Logger.getLogger(RDFVocabularyImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RDFHandlerException ex) {
+            Logger.getLogger(RDFVocabularyImportServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return this.logMessages;
+
+    }
 
 } // end of class RDFVocabularyImportServiceImpl

@@ -1,20 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/datadict" docBase="C:/projects/eionet.datadict/target/datadict">
-
-    <Resource
-        name="jdbc/datadict"
-        auth="Container"
-        type="javax.sql.DataSource"
-        maxActive="100"
-        maxIdle="30"
-        maxWait="10000"
-        username="${db.user}"
-        password="${db.password}"
-        driverClassName="${db.driver}"
-        url="${db.jdbcurl.encoded}"
-        validationQuery="SELECT 1"
-        testOnBorrow="true"
-        >
+<Context docBase="C:/projects/eionet.datadict/target/datadict" path="/datadict">
+  <Resource auth="Container" driverClassName="${db.driver}" maxActive="100" maxIdle="30" maxWait="10000" name="jdbc/datadict" password="${db.password}" testOnBorrow="true" type="javax.sql.DataSource" url="${db.jdbcurl.encoded}" username="${db.user}" validationQuery="SELECT 1">
     </Resource>
-
 </Context>
