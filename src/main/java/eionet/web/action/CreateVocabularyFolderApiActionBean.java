@@ -344,7 +344,7 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
      *Set the URL RequestParam vocabularyFolderLabel to the vocabularyFolder object instantiated in the Bean's Constructor
      */
     public void setVocabularyFolderLabel(String vocabularyFolderLabel) {
-        this.vocabularyFolder.setFolderLabel(vocabularyFolderLabel);
+        this.vocabularyFolder.setLabel(vocabularyFolderLabel);
         this.vocabularyFolderLabel = vocabularyFolderLabel;
     }
 
