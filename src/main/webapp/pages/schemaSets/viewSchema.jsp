@@ -182,32 +182,27 @@
     <div id="outerframe" style="padding-top:20px">
         <table class="datatable">
             <colgroup>
-                <col style="width:26%"/>
-                <col style="width:4%"/>
-                <col style="width:62%"/>
+                <col style="width:30%"/>
+                <col style="width:70%"/>
             </colgroup>
             <c:if test="${!actionBean.schema.workingCopy && !(actionBean.schemaSet!=null && actionBean.schemaSet.workingCopy)}">
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Schema URL
-                    </th>
-                    <td class="simple_attr_help">
                         <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=url"></a>
-                    </td>
+                    </th>
                     <td class="simple_attr_value">
                         <a href="${actionBean.schemaUrl}">
                             <c:out value="${actionBean.schemaUrl}"/>
                         </a>
                     </td>
-            </tr>
+                </tr>
             </c:if>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title">
                     File name
-                </th>
-                <td class="simple_attr_help">
                     <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=filename"></a>
-                </td>
+                </th>
                 <td class="simple_attr_value">
                     <a href="${actionBean.schemaDownloadLink}">
                         <c:out value="${actionBean.schema.fileName}"/>
@@ -218,10 +213,8 @@
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Schema set
-                    </th>
-                    <td class="simple_attr_help">
                         <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=schemaSet"></a>
-                    </td>
+                    </th>
                     <td class="simple_attr_value">
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" title="Open schema set details">
                             <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
@@ -238,10 +231,8 @@
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Registration status
-                    </th>
-                    <td class="simple_attr_help">
                         <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus"></a>
-                    </td>
+                    </th>
                     <td class="simple_attr_value">
                         <fmt:setLocale value="en_GB" />
                         <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schema.dateModified}" var="dateFormatted"/>
@@ -267,10 +258,8 @@
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">
                             <c:out value="${attribute.name}"/>
-                        </th>
-                        <td class="simple_attr_help">
                             <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE"></a>
-                        </td>
+                        </th>
                         <td style="word-wrap:break-word;wrap-option:emergency" class="simple_attr_value">
                             <c:if test="${not attribute.displayMultiple}">
                                 <c:out value="${attribute.value}"/>
@@ -287,14 +276,11 @@
 
     <%-- Display complex attributes if any. --%>
     <c:if test="${not empty actionBean.complexAttributes}">
-        <h2>
-            Complex attributes
-        </h2>
-        <table class="datatable results">
+        <h2>Complex attributes</h2>
 
-            <col style="width:29%"/>
-            <col style="width:4%"/>
-            <col style="width:63%"/>
+        <table class="datatable results">
+            <col style="width:30%"/>
+            <col style="width:70%"/>
 
             <c:forEach items="${actionBean.complexAttributes}" var="complexAttr" varStatus="complexAttrsLoop">
                 <tr class="{(complexAttrsLoop.index + 1) % 2 != 0 ? 'odd' : 'even'}">
@@ -302,8 +288,6 @@
                         <a href="${pageContext.request.contextPath}/complex_attr.jsp?attr_id=${complexAttr.ID}&amp;parent_id=${actionBean.schema.id}&amp;parent_type=SCH&amp;parent_name=${actionBean.schema.fileName}&amp;parent_link=${viewUrl}">
                             <c:out value="${complexAttr.name}"/>
                         </a>
-                    </td>
-                    <td>
                         <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${complexAttr.ID}&amp;attrtype=COMPLEX"></a>
                     </td>
                     <td>
@@ -318,7 +302,6 @@
                     </td>
                </tr>
             </c:forEach>
-
         </table>
     </c:if>
 

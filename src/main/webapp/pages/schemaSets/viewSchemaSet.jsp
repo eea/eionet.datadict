@@ -192,17 +192,14 @@
     <div id="outerframe" style="padding-top:20px">
         <table class="datatable">
             <colgroup>
-                <col style="width:26%"/>
-                <col style="width:4%"/>
-                <col style="width:62%"/>
+                <col style="width:30%"/>
+                <col style="width:70%"/>
             </colgroup>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title">
                     Identifier
-                </th>
-                <td class="simple_attr_help">
                     <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier"></a>
-                </td>
+                </th>
                 <td class="simple_attr_value">
                     <c:out value="${actionBean.schemaSet.identifier}"/>
                 </td>
@@ -210,10 +207,8 @@
             <tr>
                 <th scope="row" class="scope-row simple_attr_title">
                     Registration status
-                </th>
-                <td class="simple_attr_help">
                     <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus"></a>
-                </td>
+                </th>
                 <td class="simple_attr_value">
                     <fmt:setLocale value="en_GB" />
                     <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schemaSet.dateModified}" var="dateFormatted"/>
@@ -237,8 +232,6 @@
                 <th scope="row" class="scope-row simple_attr_title">
                     Status changed
                 </th>
-                <td class="simple_attr_help">
-                </td>
                 <td class="simple_attr_value">
                     ${statusDateFormatted}
                 </td>
@@ -249,10 +242,8 @@
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">
                             <c:out value="${attribute.name}"/>
-                        </th>
-                        <td class="simple_attr_help">
                             <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE"></a>
-                        </td>
+                        </th>
                         <td style="word-wrap:break-word;wrap-option:emergency" class="simple_attr_value">
                             <c:if test="${not attribute.displayMultiple}">
                                 <c:out value="${attribute.value}"/>
@@ -296,9 +287,8 @@
         </h2>
         <table class="datatable results">
 
-            <col style="width:29%"/>
-            <col style="width:4%"/>
-            <col style="width:63%"/>
+            <col style="width:30%"/>
+            <col style="width:70%"/>
 
             <c:forEach items="${actionBean.complexAttributes}" var="complexAttr" varStatus="complexAttrsLoop">
                 <tr class="${(complexAttrsLoop.index + 1) % 2 != 0 ? 'odd' : 'even'}">
@@ -306,8 +296,6 @@
                         <a href="${pageContext.request.contextPath}/complex_attr.jsp?attr_id=${complexAttr.ID}&amp;parent_id=${actionBean.schemaSet.id}&amp;parent_type=SCS&amp;parent_name=${actionBean.schemaSet.identifier}&amp;parent_link=${viewUrl}">
                             <c:out value="${complexAttr.name}"/>
                         </a>
-                    </td>
-                    <td>
                         <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${complexAttr.ID}&amp;attrtype=COMPLEX"></a>
                     </td>
                     <td>

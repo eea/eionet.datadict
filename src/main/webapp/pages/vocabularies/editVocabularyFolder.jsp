@@ -582,7 +582,7 @@
                 <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
 
 	            <div class="system-msg">
-                    CSV Import
+                    <strong>CSV Import</strong>
                     <br><br>The CSV file should contain a header row for element names and data rows for concepts.
                     <br>It is strongly recommended to use an exported CSV file as a template for bulk editing. Columns and rows can be added to or deleted from the template file.
                     <br>A concept can be ignored by prepending a double-slash '//' to the concept row in the CSV

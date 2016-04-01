@@ -986,39 +986,23 @@ else if (mode.equals("add"))
                                 <!-- start dotted -->
 
                                     <div id="outerframe">
-
                                         <!-- attributes -->
-
                                         <%
                                         int displayed = 1;
-                                        int colspan = mode.equals("view") ? 3 : 4;
-                                        String titleWidth = colspan==3 ? "30" : "26";
-                                        String valueWidth = colspan==3 ? "66" : "62";
-
                                         String isOdd = Util.isOdd(displayed);
                                         %>
 
                                         <table class="datatable results">
-                                            <col style="width:<%=titleWidth%>%"/>
-                                            <col style="width:4%"/>
-                                            <% if (colspan==4) { %>
-                                            <col style="width:4%"/>
-                                            <% } %>
-                                            <col style="width:<%=valueWidth%>%"/>
-
-
-                                              <!-- static attributes -->
+                                            <!-- static attributes -->
 
                                             <!-- Identifier -->
                                             <tr class="<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">
                                                     Identifier
-                                                </th>
-                                                <td class="simple_attr_help">
                                                     <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier"></a>
-                                                </td>
+                                                </th>
                                                 <%
-                                                if (colspan==4) {%>
+                                                if (!mode.equals("view")) {%>
                                                     <td class="simple_attr_help">
                                                         <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
                                                     </td><%
@@ -1035,18 +1019,17 @@ else if (mode.equals("add"))
                                                     }
                                                     %>
                                                 </td>
-
                                                 <%isOdd = Util.isOdd(++displayed);%>
                                             </tr>
 
                                             <!-- short name -->
                                             <tr id="short_name_row" class="<%=isOdd%>">
-                                                <th class="scope-row short_name">Short name</th>
-                                                <td class="short_name simple_attr_help">
+                                                <th class="scope-row short_name">
+                                                    Short name
                                                     <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name"></a>
-                                                </td>
+                                                </th>
                                                 <%
-                                                if (colspan==4) {
+                                                if (!mode.equals("view")) {
                                                     %>
                                                     <td class="short_name simple_attr_help">
                                                         <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
@@ -1076,12 +1059,10 @@ else if (mode.equals("add"))
                                             <tr class="<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">
                                                     Registration status
-                                                </th>
-                                                <td class="simple_attr_help">
                                                     <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=regstatus"></a>
-                                                </td>
+                                                </th>
                                                 <%
-                                                if (colspan==4) {%>
+                                                if (!mode.equals("view")) {%>
                                                     <td class="simple_attr_help">
                                                         <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory"  title="Mandatory"/>
                                                     </td><%
@@ -1143,10 +1124,8 @@ else if (mode.equals("add"))
                                               <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Reference URL
-                                                    </th>
-                                                    <td class="simple_attr_help">
                                                         <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl"></a>
-                                                    </td>
+                                                    </th>
                                                     <td class="simple_attr_value">
                                                         <small><a  href="<%=refUrl%>"><%=refUrl%></a></small>
                                                     </td>
@@ -1156,9 +1135,7 @@ else if (mode.equals("add"))
                                             }
                                             %>
 
-
                                             <!-- dynamic attributes -->
-
                                             <%
                                             for (int i=0; mAttributes!=null && i<mAttributes.size(); i++) {
 
@@ -1201,15 +1178,13 @@ else if (mode.equals("add"))
 
                                                 %>
 
-                                            <tr class="<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         <%=Util.processForDisplay(attribute.getName())%>
-                                                    </th>
-                                                    <td class="simple_attr_help">
                                                         <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
-                                                    </td>
+                                                    </th>
                                                     <%
-                                                    if (colspan==4) {%>
+                                                    if (!mode.equals("view")) {%>
                                                         <td class="simple_attr_help">
                                                             <img src="<%=request.getContextPath()%>/images/<%=Util.processForDisplay(obligImg)%>" alt="<%=Util.processForDisplay(obligTxt)%>" title="<%=Util.processForDisplay(obligTxt)%>"/>
                                                         </td><%
@@ -1218,7 +1193,7 @@ else if (mode.equals("add"))
 
                                                     <!-- dynamic attribute value display -->
 
-                                                    <td style="word-wrap:break-word;wrap-option:emergency" class="simple_attr_value">
+                                                    <td class="simple_attr_value">
                                                         <%
 
                                                         // if mode is 'view', display simple a text, otherwise an input
@@ -1350,10 +1325,7 @@ else if (mode.equals("add"))
 
                                                     <%isOdd = Util.isOdd(++displayed);%>
                                                 </tr>
-
-
                                                 <!-- end of dynamic attribute row -->
-
                                                 <%
                                             }
                                             %>
@@ -1368,15 +1340,13 @@ else if (mode.equals("add"))
                                                 String checkedMDB = dataset.displayCreateLink("MDB") ? "checked='checked'" : "";
                                                 String checkedXmlSchema = dataset.displayCreateLink("XMLSCHEMA") ? "checked='checked'" : "";
                                                 %>
-                                              <tr class="<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Public outputs
-                                                    </th>
-                                                    <td class="simple_attr_help">
                                                         <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=public_outputs"></a>
-                                                    </td>
+                                                    </th>
                                                     <%
-                                                    if (colspan==4) {%>
+                                                    if (!mode.equals("view")) {%>
                                                         <td class="simple_attr_help">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt="optional"/>
                                                         </td><%
@@ -1427,12 +1397,10 @@ else if (mode.equals("add"))
                                                 <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Dataset number
-                                                    </th>
-                                                    <td class="simple_attr_help">
                                                         <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=dataset_number"></a>
-                                                    </td>
+                                                    </th>
                                                     <%
-                                                    if (colspan==4) {%>
+                                                    if (!mode.equals("view")) {%>
                                                         <td class="simple_attr_help">
                                                             <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
                                                         </td><%
@@ -1446,40 +1414,36 @@ else if (mode.equals("add"))
                                                 </tr><%
                                             }
                                             %>
-                                            <tr>
-                                                <th></th>
-                                                <td colspan="3">
-                                                 <!-- add, save, check-in, undo check-out buttons -->
-                                                   <%
-                                                   // add case
-                                                   if (mode.equals("add")) { %>
-                                                       <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
-                                                       <%
-                                                   }
-                                                   // edit case
-                                                   else if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy()) {
-                                                       if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())) {
-                                                           %>
-                                                           <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-                                                           <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
-                                                           <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=ds_id%>')"/>
-                                                           <%
-                                                       }
-                                                   }
-                                                   %>
-                                                </td>
-                                            </tr>
-
+                                            <!-- add, save, check-in, undo check-out buttons -->
+                                            <%
+                                            // add case
+                                            if (mode.equals("add")) { %>
+                                                <tr>
+                                                    <th></th>
+                                                    <td colspan="3"><input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/></td>
+                                                </tr>
+                                            <%
+                                            }
+                                            // edit case
+                                            else if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy()) {
+                                                if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())) {
+                                                    %>
+                                                    <tr>
+                                                        <th></th>
+                                                        <td colspan="3">
+                                                            <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
+                                                            <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
+                                                            <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=ds_id%>')"/>
+                                                        </td>
+                                                    </tr>
+                                                    <%
+                                                }
+                                            }
+                                            %>
                                         </table>
-
                                         <!-- end of attributes -->
 
-                                        <%
-                                        boolean separ1displayed = false;
-                                        %>
-
                                         <!-- data model -->
-
                                         <%
                                         if ((mode.equals("edit") && user!=null) || (mode.equals("view") && dataset.getVisual()!=null)) {
                                             // thumbnail
@@ -1636,8 +1600,6 @@ else if (mode.equals("add"))
 
                                         <%
                                         if ((mode.equals("edit") && user!=null) || (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0)) {
-
-                                            colspan = user == null ? 1 : 2;
                                                 // the table
                                                 if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0) {
                                                     %>
@@ -1645,9 +1607,8 @@ else if (mode.equals("add"))
                                                     Complex attributes
                                                 </h2>
                                                             <table class="datatable results" id="dataset-attributes">
-                                                                <col style="width:29%"/>
-                                                                <col style="width:4%"/>
-                                                                <col style="width:63%"/>
+                                                                <col style="width:30%"/>
+                                                                <col style="width:70%"/>
                                                                 <%
                                                                 displayed = 1;
                                                                 isOdd = Util.isOdd(displayed);
@@ -1664,8 +1625,6 @@ else if (mode.equals("add"))
                                                                             <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.processForDisplay(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
                                                                                 <%=Util.processForDisplay(attrName)%>
                                                                             </a>
-                                                                        </td>
-                                                                        <td>
                                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX"></a>
                                                                         </td>
                                                                         <td>

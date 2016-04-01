@@ -308,7 +308,7 @@
                 <c:when test="${actionBean.updateRight ||
                     (actionBean.allocateRightAsCountry && fn:length(actionBean.allocations) > 0 &&
                     actionBean.allocations[0].unusedCodes < actionBean.maxAllocateAmount)}">
-                    <div class="tip-msg">
+                    <div class="system-msg">
                         <strong>Tip</strong>
                         <p>You have the following two options how to allocate new global site codes for your sites.</p>
                     </div>
@@ -412,7 +412,7 @@
             <stripes:form method="post" id="reserveFreeSiteCodesForm" beanclass="${actionBean['class'].name}">
                 <stripes:hidden name="siteCodeFolderId" />
 
-                <div class="tip-msg">
+                <div class="system-msg">
                     <strong>Tip</strong>
                     <p>Insert the range of new site codes. All the new site codes falling inclusively between range start and range end will be availabel for countries to be allocated.
                     </p>

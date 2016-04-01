@@ -163,7 +163,7 @@ request.setAttribute("currentSection", "datasets");
     </div>
     <br style="clear:left" />
 
-                <table width="500">
+                <table>
 
                     <%
                     if (dsVisual==null){
@@ -219,25 +219,26 @@ request.setAttribute("currentSection", "datasets");
                 if (user!=null){
                     %>
                     <form id="Upload" action="DsVisualUpload" method="post" enctype="multipart/form-data">
-
-                        <table width="auto" cellspacing="0">
-
+                        <table>
                             <tr>
-                                <td align="left" style="padding-right:5">
-                                    <input type="radio" name="fileORurl" value="file" checked="checked"/>&nbsp;File:</td>
-                                <td align="left">
-                                    <input type="file" class="smalltext" name="file_input" size="40"/>
+                                <td>
+                                    <input type="radio" name="fileORurl" value="file" checked="checked"/>
+                                    <label for="file_input" class="question">File</label></td>
+                                </td>
+                                <td>
+                                    <input type="file" class="smalltext" id="file_input" name="file_input" size="40"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td align="left" style="padding-right:5">
-                                    <input type="radio" class="smalltext" name="fileORurl" value="url"/>&nbsp;URL:
+                                <td>
+                                    <input type="radio" class="smalltext" name="fileORurl" value="url"/>
+                                    <label for="url_input" class="question">URL</label></td>
                                 </td>
-                                <td align="left">
-                                    <input type="text" class="smalltext" name="url_input" size="52"/>
+                                <td>
+                                    <input type="text" class="smalltext" id="url_input" name="url_input" size="52"/>
                                 </td>
                             </tr>
-                            <tr style="height:10px;"><td colspan="2"></td></tr>
+                            <tr><td colspan="2"></td></tr>
                             <tr>
                                 <td></td>
                                 <td align="left">
@@ -255,7 +256,6 @@ request.setAttribute("currentSection", "datasets");
                                 <%
                             }
                             %>
-
                             <input type="hidden" name="str_type" value="<%=type%>"/>
                         </div>
                     </form>
