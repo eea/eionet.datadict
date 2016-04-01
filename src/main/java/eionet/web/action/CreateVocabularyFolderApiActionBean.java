@@ -206,9 +206,8 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
     
     /** 
     Test URLS for Rest Calls:
-    http://localhost:8080/datadict/restapi/vocabulary/createFolderAndVocabulary?folderIdentifier=folderIdentifier
-    http://localhost:8080/datadict/restapi/vocabulary/createVocabulary?folderIdentifier=NewFolderIdentifier&folderLabel=NewFolderLabel&vocabularyFolderIdentifier=newVocFoldIdent&vocabularyFolderLabel=newVOcFoldLab
-    Long story short, we pass parameters the usual HTTP GET Way
+    * http://localhost:8080/datadict/restapi/vocabulary/createFolderAndVocabulary?folderIdentifier=folderIDent1&folderLabel=foldLab1&vocabularyFolderIdentifier=vocabIdentifier8&vocabularyFolderLabel=vocabLabel8
+     Long story short, we pass parameters the usual HTTP GET Way
      Then stripes will open the Bean, examine it through reflection at runtime, and bind
      the passed parameters to the bean's properties if they exist and if of course there are 
     
@@ -506,7 +505,7 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
                     // Check if Token is expired because it was created before a specific time limit 
                     long nowInSeconds = Calendar.getInstance().getTimeInMillis() / 1000l;
                     if (nowInSeconds > (createdTimeInSeconds + (JWT_TIMEOUT_IN_MINUTES * 60))) {
-                        LOGGER.error("Create Vocabulary API- Deprecated token");
+                        LOGGER.error("Mark Vocabulary To Be Deleted API- Deprecated token");
                         return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Deprecated token", ErrorActionBean.RETURN_ERROR_EVENT);
                     }
 
@@ -515,7 +514,7 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
                     DDApiKey ddApiKey = apiKeyService.getApiKey(apiKey);
 
                     if (ddApiKey == null) {
-                        LOGGER.error("Create Vocabulary API- Invalid key");
+                        LOGGER.error("Mark Vocabulary To Be Deleted API- Invalid key");
                         return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid key", ErrorActionBean.RETURN_ERROR_EVENT);
                     }
 
@@ -524,7 +523,7 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
                     if (ddApiKey.getExpires() != null) {
                         Date now = Calendar.getInstance().getTime();
                         if (now.after(ddApiKey.getExpires())) {
-                            LOGGER.error("Create Vocabulary API - Expired key");
+                            LOGGER.error("Mark Vocabulary To Be Deleted API - Expired key");
                             return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Expired key", ErrorActionBean.RETURN_ERROR_EVENT);
                         }
                     }
@@ -532,38 +531,39 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
                     String remoteAddr = ddApiKey.getRemoteAddr();
                     if (StringUtils.isNotBlank(remoteAddr)) {
                         if (!StringUtils.equals(remoteAddr, request.getRemoteAddr()) && !StringUtils.equals(remoteAddr, request.getRemoteHost())) {
-                            LOGGER.error("Create Vocabulary API - Invalid remote end point");
+                            LOGGER.error("Mark Vocabulary To Be Deleted API - Invalid remote end point");
                             return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid remote end point", ErrorActionBean.RETURN_ERROR_EVENT);
                         }
                     }
                     tokenUser = jsonObject.getString(JWT_ISSUER);
                     if (StringUtils.isEmpty(tokenUser)) {
-                        LOGGER.error("Create Vocabulary API - jwt issuer missing");
+                        LOGGER.error("Mark Vocabulary To Be Deleted API - jwt issuer missing");
                       return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: empty jwt issuer", ErrorActionBean.RETURN_ERROR_EVENT);
                     }
 
                 } catch (Exception e) {
-                    LOGGER.error("Create Vocabulary API- Cannot verify key", e);
+                    LOGGER.error("Mark Vocabulary To Be Deleted API- Cannot verify key", e);
                     return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
                 }
                  
                  
              }else {
-                LOGGER.error("Create Vocabulary API - Key missing");
+                LOGGER.error("Mark Vocabulary To Be Deleted API - Key missing");
                 return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "API Key cannot be missing", ErrorActionBean.RETURN_ERROR_EVENT);
             }
         
          // If the JWT Verification is right, we can now validate the passed parameters and then start the Vocabulary Creation
          
-        LOGGER.info("create Vocabulary API - Request authorized");
+        LOGGER.info("Mark Vocabulary TO Be Deleted API - Request authorized");
           
           
          List<Integer> folderIds = new ArrayList<Integer>();
           folderIds.add(vocabularyId);
           
-          vocabularyService.deleteVocabularyFolders(folderIds, keepRelationsOnDelete);
+          //vocabularyService.deleteVocabularyFolders(folderIds, keepRelationsOnDelete);
+          vocabularyService.markVocabularyFolderToBeDeleted(vocabularyId);
 
-           StreamingResolution stResol = new StreamingResolution(CONTENT_TYPE_HEADER, "Undo the kind words !");
+           StreamingResolution stResol = new StreamingResolution(CONTENT_TYPE_HEADER, "Vocabulary Marked to be deleted successfully !");
       
            return stResol;
       }
