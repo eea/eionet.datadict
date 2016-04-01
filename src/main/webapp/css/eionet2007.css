@@ -387,7 +387,12 @@
 }
 
 #workarea table.filter td.input {
-    width: 310px;   
+    width: 270px;   
+}
+
+#workarea table.filter td.input.bordered {
+    background: #FFFFFF;
+    border: 1px solid #9AC4C6;
 }
 
 #workarea table.filter td input.mediumbuttonb {
@@ -432,21 +437,21 @@ a.deleteButton:after {
 
 /* RESULT TABLE STYLES */
 
-#workarea table.results {
+table.results {
 	border-collapse: collapse;
-    word-break: break-all;;
+    /* word-break: break-all; */
 }
-#workarea table.results a {
+table.results a {
 	text-decoration: none;
 	color: #00446A;
 }
 
-#workarea table.results thead tr {
+table.results thead tr {
 	background: #306886;
 	border: 1px solid #00446A;
 }
 
-#workarea table.results th {
+table.results th {
 	background: transparent;
 	border: none;
 	color: #FFFFFF;
@@ -454,15 +459,15 @@ a.deleteButton:after {
     text-align: left;
 }
 
-#workarea table.results th.selected {
+table.results th.selected {
     background: rgba(166,202,205,0.3);
 }
 
-#workarea table.results th a {
+table.results th a {
 	color: #FFFFFF;	
 }
 
-#workarea table.results th.asc:after {
+table.results th.asc:after {
     font-family: 'eea';
     content: "\e917";
     color: #FFFFFF;
@@ -473,7 +478,7 @@ a.deleteButton:after {
 }
 
 
-#workarea table.results th.desc:after {
+table.results th.desc:after {
    font-family: 'eea';
     content: "\e918";
     color: #FFFFFF;
@@ -483,30 +488,30 @@ a.deleteButton:after {
     margin-top: 6px;
 }
 
-#workarea table.results tbody {
+table.results tbody {
 	border-left: 1px solid #CFE3E4;
 	border-right: 1px solid #CFE3E4;
 }
 
-#workarea table.results td {
+table.results td {
 	border-bottom: 1px solid #CFE3E4;
 	padding: 7px;	
 	vertical-align: top;
 }
 
-#workarea table.results tr.even {
+table.results tr.even {
 	background: #ECF4F5;	
 }
 
-#workarea table.results tr.odd.selected {
+table.results tr.odd.selected {
 	background-color: rgba(206,220,50,0.4);
 }
 
-#workarea table.results tr.even.selected {
+table.results tr.even.selected {
 	background-color: rgba(212,217,145,0.6);
 }
 
-#workarea table.results td div.status {
+table.results td div.status {
     color: #FFFFFF;
     text-align: center;
     padding: 5px 8px;
@@ -514,38 +519,40 @@ a.deleteButton:after {
     height: 30px;
 }
 
-#workarea table.results td div.status.incomplete {
+table.results td div.status.incomplete {
     background: #E2923B;
 }
 
-#workarea table.results td div.status.candidate {
+table.results td div.status.candidate {
     background: #FBB03B;
 }
 
-#workarea table.results td div.status.recorded {
+table.results td div.status.recorded {
     background: #AEB5B5;
 }
 
-#workarea table.results td div.status.qualified {
+table.results td div.status.qualified {
     background: #29CC76;
 }
 
-#workarea table.results td div.status.released {
+table.results td div.status.released {
     background: #21A563;
 }
 
 
-#workarea table.results td div.status span {
+table.results td div.status span {
     font-size: 12px;
     font-weight: bold;
 }
 
-#workarea table.results td div.status ul {
+table.results td div.status ul {
     list-style: none;
-    margin: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 0.5;
 }
 
-#workarea table.results td div.status ul li {
+table.results td div.status ul li {
     display: inline-block;
     width: 10px;
     height: 3px;
@@ -553,8 +560,15 @@ a.deleteButton:after {
     font-size: 0;
 }
 
-#workarea table.results td div.status ul li.done {
+table.results td div.status ul li.done {
     background: rgba(255,255,255,1);
+}
+
+table.results td sup.commonelm {
+    display: block;
+    text-align: center;
+    width: 95px;
+    margin-top: 0.5em;
 }
 
 
@@ -599,11 +613,17 @@ a.deleteButton:after {
 }
 
 .pagelinks a,
-.pagelinks strong {
-    background: #ECF4F5;
-    border: 1px solid #CFE3E4;
+.pagelinks strong,
+.pagelinks span {
     padding: 0.5em;
     text-decoration: none;
+    margin: 0 0.2em;
+}
+
+.pagelinks a {
+    color: #2a6495;  
+    background: #ecf4f5;
+    border: 1px solid #cfe3e4;
 }
 
 .pagelinks strong {
@@ -612,28 +632,34 @@ a.deleteButton:after {
     border: 1px solid #00446A;
 }
 
-.pagelinks a.first:before {
+.pagelinks span {
+    color: #c4c4c4;  
+    background: #ededed;
+    border: 1px solid #c4c4c4;
+}
+
+.pagelinks .first:before {
     font-family: 'eea';
     content: "\e91f";
     font-size: 12px;
     margin-right: 3px;
 }
 
-.pagelinks a.previous:before {
+.pagelinks .previous:before {
      font-family: 'eea';
     content: "\e91e";
     font-size: 12px;
     margin-right: 3px;
 }
 
-.pagelinks a.next:after {
+.pagelinks .next:after {
     font-family: 'eea';
     content: "\e920";
     font-size: 12px;
     margin-left: 3px;
 }
 
-.pagelinks a.last:after {
+.pagelinks .last:after {
     font-family: 'eea';
     content: "\e921";
     font-size: 12px;
@@ -696,6 +722,78 @@ form#Upload table input {
     background: #FFFFFF;
     border: 1px solid #9AC4C6;
     padding: 5px 8px;
+}
+
+
+/* POP UPS */
+
+.ui-widget-content a {
+    color: #2a6495 !important;
+}
+
+.ui-dialog {
+    padding: 0 !important;
+    border: 1px solid #00446a !important;
+}
+
+.ui-dialog.ui-corner-all {
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -khtml-border-radius: 0px;
+    border-radius: 0px;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+    border: none;
+    background: #306886;
+    color: #FFFFFF;
+    padding: 1em !important;
+    font-size: 1.1em;
+    moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -khtml-border-radius: 0px;
+    border-radius: 0px;
+}
+
+
+.ui-dialog form {
+    width: 100% ;
+    border: 1px solid #CFE3E4;
+    background: #F9FCFC;
+    padding: 1em;
+    box-sizing: border-box;
+    margin: 2em 0;
+}
+
+.ui-dialog form .datatable {
+    background: none;
+    border: none;
+}
+
+.ui-dialog form .datatable th {
+    background: none;
+    text-align: left;
+    color: #000000;
+    border: none;
+    vertical-align: middle;
+}
+
+.ui-dialog form .datatable td {
+    border: none;
+    vertical-align: middle;
+}
+
+.ui-dialog form .datatable input {
+    background: #FFFFFF;
+    border: 1px solid #9AC4C6;
+    padding: 5px 8px;
+}
+
+.ui-dialog form .datatable input.mediumbuttonb {
+    border:none;
+    background: #13446B;
+    color: #FFFFFF;
+    font-weight: bold;
 }
 
    

@@ -181,7 +181,7 @@
                 </tr>
                 <tr>
                     <td class="label">Class</td>
-                    <td class="input">
+                    <td class="input bordered">
                         <stripes:radio id="nonCommonRadio" name="filter.elementType" value="${actionBean.filter.nonCommonElementType}" checked="${actionBean.filter.nonCommonElementType}" /><label for="nonCommonRadio">Non-common elements</label>
                         <stripes:radio id="commonRadio" name="filter.elementType" value="${actionBean.filter.commonElementType}" /><label for="commonRadio">Common elements</label>
                     </td>
@@ -190,7 +190,7 @@
                     <td class="label">
                         <label for="chkInclHistoricVersions">Include historic versions</label>
                     </td>
-                    <td class="input">
+                    <td class="input bordered">
                         <stripes:checkbox name="filter.includeHistoricVersions" id="chkInclHistoricVersions"/>
                         <label for="chkInclHistoricVersions" class="smallfont">Yes</label>
                     </td>

@@ -555,7 +555,7 @@
                     <%}%>
                     <tr>
                         <td class="label">Search method</td>
-                        <td class="input">
+                        <td class="input bordered">
                             <input type="radio" name="search_precision" id="ssubstr" value="substr" ${param.search_precision ne 'exact' ? 'checked="checked"' : ''} /><label for="ssubstr">Substring search</label>
                             <input type="radio" name="search_precision" id="sexact" value="exact" ${param.search_precision eq 'exact' ? 'checked="checked"' : ''} /><label for="sexact">Exact search</label>
                         </td>
@@ -563,7 +563,7 @@
                     <c:if test="${not empty user and user.authentic}">
                         <tr>
                             <td class="label"><label for="wrk_copies">Working copies only</label></td>
-                            <td class="input">
+                            <td class="input bordered">
                                 <input type="checkbox" name="wrk_copies" id="wrk_copies" value="true" ${param.wrk_copies eq 'true' ? 'checked="checked"' : ''} />
                                 <label for="wrk_copies" class="smallfont">Yes</label>
                             </td>
@@ -571,7 +571,7 @@
                     </c:if>
                     <tr>
                         <td class="label"><label for="incl_histver">Include historic versions</label></td>
-                        <td class="input">
+                        <td class="input bordered">
                             <input type="checkbox" name="incl_histver" id="incl_histver" value="true" ${param.incl_histver eq 'true' ? 'checked="checked"' : ''} />
                             <label for="incl_histver" class="smallfont">Yes</label>
                         </td>
