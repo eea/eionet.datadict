@@ -1462,6 +1462,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     @Override
+    @Transactional(rollbackFor = ServiceException.class)
     public void markVocabularyFolderToBeDeleted(Integer vocabularyFolderId) throws ServiceException {
 
         try {
