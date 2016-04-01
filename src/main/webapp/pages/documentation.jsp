@@ -124,7 +124,7 @@
 		            </stripes:form>
            		</c:when>
            		<c:when test='${actionBean.pageId == "contents" && ddfn:userHasPermission(actionBean.user.userName, "/documentation", "u")}'>
-           			<div id="operations">
+           			<div id="drop-operations">
 	                    <ul>
 	                        <li class="add">
 	                            <stripes:link href="/documentation">

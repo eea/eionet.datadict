@@ -5,10 +5,10 @@
     <stripes:layout-component name="contents">
         <c:if test="${(empty actionBean.context.validationErrors) || (not empty actionBean.parentElement)}">
             <h1>New Inference Rule for element <stripes:link href="/dataelements/${actionBean.parentElement.id}">${actionBean.parentElement.shortName}</stripes:link></h1>
-            <div id="operations">
+            <div id="drop-operations">
                 <ul>
                     <li class="back">
-                        <stripes:link href="/inference_rules/${actionBean.parentElement.id}">back to rules</stripes:link>
+                        <stripes:link href="/inference_rules/${actionBean.parentElement.id}">Back to rules</stripes:link>
                     </li>
                 </ul>
             </div>

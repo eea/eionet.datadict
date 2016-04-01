@@ -146,9 +146,9 @@
                 <h1>
                     <%=Util.processForDisplay(attrName)%> of <a href="<%=Util.processForDisplay(titleLink, true)%>"><%=Util.processForDisplay(objName, true)%></a> <%=Util.processForDisplay(titleType)%>
                 </h1>
-                <div id="operations">
+                <div id="drop-operations">
                     <ul>
-                        <li class="back"><a href="<%=Util.processForDisplay(titleLink, true)%>">&lt; back to the <%=titleType%></a></li>
+                        <li class="back"><a href="<%=Util.processForDisplay(titleLink, true)%>">Back to the <%=titleType%></a></li>
                     </ul>
                 </div>
     

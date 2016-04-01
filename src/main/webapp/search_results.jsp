@@ -318,7 +318,7 @@ else{ %>
             <%
             if (popup){
                 %>
-                <div id="operations">
+                <div id="drop-operations">
                     <ul>
                         <li class="close"><a href="javascript:window.close();">Close</a></li>
                         <li class="help"><a class="helpButton" href="help.jsp?screen=elements&amp;area=pagehelp">Page help</a></li>

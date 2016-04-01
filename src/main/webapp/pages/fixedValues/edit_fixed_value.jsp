@@ -7,12 +7,12 @@
         <c:if test="${empty actionBean.context.validationErrors}">
             <%@ include file="/pages/fixedValues/fixed_value_header.jsp"%>
 
-            <div id="operations">
+            <div id="drop-operations">
                 <ul>
-                    <li class="edit">
+                    <li class="back">
                         <stripes:link beanclass="${actionBean.viewModel.actionBeanName}" event="edit">
                             <stripes:param name="ownerId" value="${actionBean.viewModel.owner.id}" />
-                            back to 
+                            Back to 
                             <c:out value="${actionBean.viewModel.fixedValueCategoryLower}" /> 
                             values
                         </stripes:link>

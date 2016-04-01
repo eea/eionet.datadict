@@ -252,9 +252,9 @@ else{ %>
             <%
             if (popup){
                 %>
-                <div id="operations">
+                <div id="drop-operations">
                     <ul>
-                        <li><a href="javascript:window.close();">Close</a></li>
+                        <li class="close"><a href="javascript:window.close();">Close</a></li>
                     </ul>
                 </div><%
             }

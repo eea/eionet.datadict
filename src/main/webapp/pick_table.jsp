@@ -131,10 +131,10 @@
         <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
         <div id="sitetagline">This service is part of Reportnet</div>
     </div> <!-- pagehead -->
-    <div id="operations" style="margin-top:10px">
+    <div id="drop-operations">
         <ul>
             <li class="close"><a href="javascript:window.close();">Close</a></li>
-            <li class="back"><a href="<%=backUrl%>">back to search</a></li>
+            <li class="back"><a href="<%=backUrl%>">Back to search</a></li>
         </ul>
     </div>
 

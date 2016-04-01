@@ -408,15 +408,6 @@ else
                 </div>
 
                 <%
-                if (user!=null && mode.equals("view") && editPrm){
-                    %>
-                    <div id="drop-operations">
-                        <ul>
-                            <li class="edit"><a href="javascript:goToEdit()">Edit</a></li>
-                        </ul>
-                    </div><%
-                }
-
                 if (mode.equals("add")){ %>
                     <h1>Add an attribute definition</h1> <%
                 }
@@ -426,6 +417,15 @@ else
                 else{ %>
                     <h1>View attribute definition</h1>
                     <%
+                }
+
+                if (user!=null && mode.equals("view") && editPrm){
+                    %>
+                    <div id="drop-operations">
+                        <ul>
+                            <li class="edit"><a href="javascript:goToEdit()">Edit</a></li>
+                        </ul>
+                    </div><%
                 }
 
                 if (!mode.equals("view") && type==null){ %>

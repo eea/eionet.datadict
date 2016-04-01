@@ -32,7 +32,7 @@
     <stripes:layout-component name="contents">
         <c:if test="${empty actionBean.context.validationErrors}">
             <%@ include file="/pages/fixedValues/fixed_values_header.jsp"%>
-            <div id="operations">
+            <div id="drop-operations">
                 <ul>
                     <li class="add">
                         <stripes:link beanclass="${actionBean.viewModel.actionBeanName}" event="add">
@@ -58,10 +58,12 @@
             </div>
             <c:choose>
                 <c:when test="${empty actionBean.viewModel.fixedValues}">
+                    <p class="not-found">
                     There are no 
                     <c:out value="${actionBean.viewModel.fixedValueCategoryLower}" /> 
                     values for this 
                     <c:out value="${actionBean.viewModel.owner.entityName}" />
+                    </p>
                 </c:when>
                 <c:otherwise>
                     <table class="datatable">

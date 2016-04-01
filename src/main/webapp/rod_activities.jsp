@@ -69,21 +69,6 @@ if (dstName == null || dstName.length()==0)
 </jsp:include>
 <%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
-    <form id="reload" action="InServices?client=webrod&amp;method=reload_activities" method="get">
-        <div style="display:none">
-            <input type="hidden" name="client" value="webrod"/>
-            <input type="hidden" name="method" value="reload_activities"/>
-            
-            <input type="hidden" name="dst_id" value="<%=dstID%>"/>
-            <input type="hidden" name="dst_idf" value="<%=dstIdf%>"/>
-            <input type="hidden" name="dst_name" value="<%=dstName%>"/>
-        </div>    
-    </form>
-    <div id="drop-operations">
-        <ul>
-            <li class="reload"><a href="javascript:document.forms['reload'].submit();">Reload</a></li>
-        </ul>
-    </div>
     <%
     if (activities==null || activities.size()==0){
         %>
@@ -99,6 +84,22 @@ if (dstName == null || dstName.length()==0)
             <h1>You are linking ROD obligations with dataset</h1><%
         }
         %>
+        <form id="reload" action="InServices?client=webrod&amp;method=reload_activities" method="get">
+            <div style="display:none">
+                <input type="hidden" name="client" value="webrod"/>
+                <input type="hidden" name="method" value="reload_activities"/>
+
+                <input type="hidden" name="dst_id" value="<%=dstID%>"/>
+                <input type="hidden" name="dst_idf" value="<%=dstIdf%>"/>
+                <input type="hidden" name="dst_name" value="<%=dstName%>"/>
+            </div>    
+        </form>
+        <div id="drop-operations">
+            <ul>
+                <li class="reload"><a href="javascript:document.forms['reload'].submit();">Reload</a></li>
+            </ul>
+        </div>
+
         <div style="font-size:0.7em;clear:right;margin-bottom:10px;margin-top:10px">
             Below is the list of obligations in ROD.<br/>
             Click Title to link obligation with the dataset.<br/>

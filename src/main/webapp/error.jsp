@@ -67,10 +67,10 @@ else{
             <%
             if (!isPopup){
                 %>
-                <div id="operations">
+                <div id="drop-operations">
                     <ul>
                         <li class="back">
-                            <a href="<%=backLink%>">&lt; back</a>
+                            <a href="<%=backLink%>">&lt; Back</a>
                         </li>
                     </ul>
                 </div><%
