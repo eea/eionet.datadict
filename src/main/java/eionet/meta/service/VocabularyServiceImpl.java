@@ -53,6 +53,7 @@ import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
+import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.StandardGenericStatus;
@@ -150,6 +151,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
     }
 
+   
+    
+    
+    
+    
+    
     /**
      * {@inheritDoc}
      */
@@ -1453,4 +1460,23 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
         return false;
     }
+
+    @Override
+    public void markVocabularyFolderToBeDeleted(Integer vocabularyFolderId) throws ServiceException {
+
+        try {
+            VocabularyFolder vocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
+
+            vocabularyFolder.setRegStatus(RegStatus.DEPRECATED);
+
+            vocabularyFolderDAO.updateVocabularyFolder(vocabularyFolder);
+
+        } catch (Exception e) {
+            throw new ServiceException("Failed to mark vocabulary folder as deprecated: " + e.getMessage(), e);
+        }
+
+    }
+    
+    
+    
 }

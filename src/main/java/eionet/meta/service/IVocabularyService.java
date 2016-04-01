@@ -314,13 +314,21 @@ public interface IVocabularyService {
      */
     void markConceptsValid(List<Integer> ids) throws ServiceException;
 
+     /**
+     * Find the Specified VocabularyFolderAnd Mark it as to be deleted.
+     *
+     * @param vocabularyFolderId the id of the vocabulary Folder
+     */
+    void markVocabularyFolderToBeDeleted(Integer vocabularyFolderId) throws ServiceException;
+
     /**
      * Deletes vocabulary folders.
      *
      * @param ids
-     * @param ids               IDs of folderst to be deleted
+     * @param ids IDs of folderst to be deleted
      * @param preserveRelations
-     * @param preserveRelations shows if to replace relation IDs with baseURi/concept in the related vocabularies the related vocabularies
+     * @param preserveRelations shows if to replace relation IDs with
+     * baseURi/concept in the related vocabularies the related vocabularies
      * @throws ServiceException if operation fails
      */
     void deleteVocabularyFolders(List<Integer> ids, boolean preserveRelations) throws ServiceException;

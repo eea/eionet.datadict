@@ -1,5 +1,6 @@
 package eionet.web.action;
 
+import eionet.meta.dao.domain.DDApiKey;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
@@ -16,9 +17,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.json.JSONObject;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
@@ -62,8 +67,13 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
     /**
      * Valid content type for RDF upload.
      */
-    public static final String VALID_CONTENT_TYPE_FOR_RDF_UPLOAD = "application/rdf+xml";
+    public static final String VALID_CONTENT_TYPE_FOR_RDF_PAYLOAD = "application/rdf+xml";
 
+    
+    
+    public static final String JWT_ISSUER ="iss";
+    
+    
     /**
      * API Key identifier in json.
      */
@@ -146,6 +156,7 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
     private IRDFVocabularyImportService vocabularyRdfImportService;
 
 
+    
 
     /**
      * Vocabulary folder id, from which the copy is made of.
@@ -210,10 +221,127 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
      * Keep in mind that we also need the label of the vocabulary which is not included in the current context,
      * so we have just disabled the NotNull constraint from our Local MySQL DataDict Database Vocabulary Table 
      */
-    public Resolution createFolderAndVocabulary() throws ServiceException {
+    public Resolution createFolderAndVocabulary() throws ServiceException, UnsupportedEncodingException, IOException {
 
-        vocabularyService.createVocabularyFolder(vocabularyFolder, folder, getUserName());
+        
+          HttpServletRequest request = getContext().getRequest();
 
+      LOGGER.info("Create Folder and Vocabulary API call invocation from remote address: " + request.getRemoteAddr() + ", and remote host: " + request.getRemoteHost());
+      
+      
+        // Ensure that the request has the right header:
+          String contentType = request.getHeader(CONTENT_TYPE_HEADER);
+
+            if (!StringUtils.startsWithIgnoreCase(contentType, VALID_CONTENT_TYPE_FOR_RDF_PAYLOAD)) {
+                LOGGER.error("uploadRdf API - invalid content type: " + contentType);
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Invalid content-type for RDF upload", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+          
+        
+            //Security Handling with JWT:
+            String keyHeader = request.getHeader(JWT_API_KEY_HEADER);
+            String tokenUser;
+
+             if (StringUtils.isNotBlank(keyHeader)) {
+                 
+                 String jsonWebToken = keyHeader;
+
+                try {
+                    JSONObject jsonObject = jwtService.verify(JWT_KEY, JWT_AUDIENCE, jsonWebToken);
+
+                    long createdTimeInSeconds = jsonObject.getLong(TOKEN_CREATED_TIME_IDENTIFIER_IN_JSON);
+
+                    // Check if Token is expired because it was created before a specific time limit 
+                    long nowInSeconds = Calendar.getInstance().getTimeInMillis() / 1000l;
+                    if (nowInSeconds > (createdTimeInSeconds + (JWT_TIMEOUT_IN_MINUTES * 60))) {
+                        LOGGER.error("Create Vocabulary API- Deprecated token");
+                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Deprecated token", ErrorActionBean.RETURN_ERROR_EVENT);
+                    }
+
+                    String apiKey = jsonObject.getString(API_KEY_IDENTIFIER_IN_JSON);
+
+                    DDApiKey ddApiKey = apiKeyService.getApiKey(apiKey);
+
+                    if (ddApiKey == null) {
+                        LOGGER.error("Create Vocabulary API- Invalid key");
+                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid key", ErrorActionBean.RETURN_ERROR_EVENT);
+                    }
+
+                    //Note: Scope can also be used
+
+                    if (ddApiKey.getExpires() != null) {
+                        Date now = Calendar.getInstance().getTime();
+                        if (now.after(ddApiKey.getExpires())) {
+                            LOGGER.error("Create Vocabulary API - Expired key");
+                            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Expired key", ErrorActionBean.RETURN_ERROR_EVENT);
+                        }
+                    }
+
+                    String remoteAddr = ddApiKey.getRemoteAddr();
+                    if (StringUtils.isNotBlank(remoteAddr)) {
+                        if (!StringUtils.equals(remoteAddr, request.getRemoteAddr()) && !StringUtils.equals(remoteAddr, request.getRemoteHost())) {
+                            LOGGER.error("Create Vocabulary API - Invalid remote end point");
+                            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid remote end point", ErrorActionBean.RETURN_ERROR_EVENT);
+                        }
+                    }
+                    tokenUser = jsonObject.getString(JWT_ISSUER);
+                    if (StringUtils.isEmpty(tokenUser)) {
+                        LOGGER.error("Create Vocabulary API - jwt issuer missing");
+                      return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: empty jwt issuer", ErrorActionBean.RETURN_ERROR_EVENT);
+                    }
+
+                } catch (Exception e) {
+                    LOGGER.error("Create Vocabulary API- Cannot verify key", e);
+                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+                }
+                 
+                 
+             }else {
+                LOGGER.error("Create Vocabulary API - Key missing");
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "API Key cannot be missing", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+        
+         // If the JWT Verification is right, we can now validate the passed parameters and then start the Vocabulary Creation
+         
+        LOGGER.info("create Folder and  Vocabulary API - Request authorized");
+        
+       // vocabularyService.createVocabularyFolder(vocabularyFolder, folder, getUserName());
+
+        Reader rdfFileReader = new InputStreamReader(request.getInputStream(), CharEncoding.UTF_8);
+        
+        // So the trick here is to pass into the method below, 2 things:
+        // a vocabularyFolder object which will have some values to it through Stripes Bean mechanism by populating some
+        // of its fields from request parameters in the POST call
+        // also it includes the rdfPayload which will be parsed for additional data. 
+        
+        final List<String> systemMessages = this.vocabularyRdfImportService.createFolderAndVocabularyFromRDF(rdfFileReader, folder, vocabularyFolder,tokenUser);
+
+        for (String systemMessage : systemMessages) {
+            addSystemMessage(systemMessage);
+            LOGGER.info(systemMessage);
+        }
+
+        StreamingResolution result = new StreamingResolution(JSON_FORMAT) {
+            @Override
+            public void stream(HttpServletResponse response) throws Exception {
+                VocabularyJSONOutputHelper.writeJSON(response.getOutputStream(), systemMessages);
+            }
+        };
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         StreamingResolution streamingResolution = new StreamingResolution(CONTENT_TYPE_HEADER, "Folder and Vocabulary Created Successfully");
 
         return streamingResolution;
@@ -243,13 +371,88 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
         //Read RDF from request body and params from url
         HttpServletRequest request = getContext().getRequest();
 
-        Reader rdfFileReader = new InputStreamReader(request.getInputStream(), CharEncoding.UTF_8);
+         // Ensure that the request has the right header:
+          String contentType = request.getHeader(CONTENT_TYPE_HEADER);
 
+            if (!StringUtils.startsWithIgnoreCase(contentType, VALID_CONTENT_TYPE_FOR_RDF_PAYLOAD)) {
+                LOGGER.error("create Vocabulary  API - invalid content type: " + contentType);
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Invalid content-type for RDF upload", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+        
+            //Security Handling with JWT:
+            String keyHeader = request.getHeader(JWT_API_KEY_HEADER);
+            String tokenUser;
+
+             if (StringUtils.isNotBlank(keyHeader)) {
+                 
+                 String jsonWebToken = keyHeader;
+
+                try {
+                    JSONObject jsonObject = jwtService.verify(JWT_KEY, JWT_AUDIENCE, jsonWebToken);
+
+                    long createdTimeInSeconds = jsonObject.getLong(TOKEN_CREATED_TIME_IDENTIFIER_IN_JSON);
+
+                    // Check if Token is expired because it was created before a specific time limit 
+                    long nowInSeconds = Calendar.getInstance().getTimeInMillis() / 1000l;
+                    if (nowInSeconds > (createdTimeInSeconds + (JWT_TIMEOUT_IN_MINUTES * 60))) {
+                        LOGGER.error("Create Vocabulary API- Deprecated token");
+                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Deprecated token", ErrorActionBean.RETURN_ERROR_EVENT);
+                    }
+
+                    String apiKey = jsonObject.getString(API_KEY_IDENTIFIER_IN_JSON);
+
+                    DDApiKey ddApiKey = apiKeyService.getApiKey(apiKey);
+
+                    if (ddApiKey == null) {
+                        LOGGER.error("Create Vocabulary API- Invalid key");
+                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid key", ErrorActionBean.RETURN_ERROR_EVENT);
+                    }
+
+                    //Note: Scope can also be used
+
+                    if (ddApiKey.getExpires() != null) {
+                        Date now = Calendar.getInstance().getTime();
+                        if (now.after(ddApiKey.getExpires())) {
+                            LOGGER.error("Create Vocabulary API - Expired key");
+                            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Expired key", ErrorActionBean.RETURN_ERROR_EVENT);
+                        }
+                    }
+
+                    String remoteAddr = ddApiKey.getRemoteAddr();
+                    if (StringUtils.isNotBlank(remoteAddr)) {
+                        if (!StringUtils.equals(remoteAddr, request.getRemoteAddr()) && !StringUtils.equals(remoteAddr, request.getRemoteHost())) {
+                            LOGGER.error("Create Vocabulary API - Invalid remote end point");
+                            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid remote end point", ErrorActionBean.RETURN_ERROR_EVENT);
+                        }
+                    }
+                    tokenUser = jsonObject.getString(JWT_ISSUER);
+                    if (StringUtils.isEmpty(tokenUser)) {
+                        LOGGER.error("Create Vocabulary API - jwt issuer missing");
+                      return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: empty jwt issuer", ErrorActionBean.RETURN_ERROR_EVENT);
+                    }
+
+                } catch (Exception e) {
+                    LOGGER.error("Create Vocabulary API- Cannot verify key", e);
+                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+                }
+                 
+                 
+             }else {
+                LOGGER.error("Create Vocabulary API - Key missing");
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "API Key cannot be missing", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+        
+         // If the JWT Verification is right, we can now validate the passed parameters and then start the Vocabulary Creation
+         
+        LOGGER.info("create Vocabulary API - Request authorized");
+        Reader rdfFileReader = new InputStreamReader(request.getInputStream(), CharEncoding.UTF_8);
+        
         // So the trick here is to pass into the method below, 2 things:
         // a vocabularyFolder object which will have some values to it through Stripes Bean mechanism by populating some
         // of its fields from request parameters in the POST call
         // also it includes the rdfPayload which will be parsed for additional data. 
-        final List<String> systemMessages = this.vocabularyRdfImportService.importRdfIntoVocabulary(rdfFileReader, vocabularyFolder);
+        
+        final List<String> systemMessages = this.vocabularyRdfImportService.createVocabularyFromRDF(rdfFileReader, vocabularyFolder,tokenUser);
 
         for (String systemMessage : systemMessages) {
             addSystemMessage(systemMessage);
@@ -268,6 +471,104 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
     }
     
  
+    
+    /**
+       *vocabularyId is the required parameter in order to know which vocabulary to delete.
+       * keepRelationsOnDelete refers to the baseUris and whether they should replace the relations
+       * or we should delete the relations completely
+       */
+      public Resolution deleteVocabulary() throws ServiceException{
+      
+          //Read RDF from request body and params from url
+        HttpServletRequest request = getContext().getRequest();
+
+         // Ensure that the request has the right header:
+          String contentType = request.getHeader(CONTENT_TYPE_HEADER);
+
+            if (!StringUtils.startsWithIgnoreCase(contentType, VALID_CONTENT_TYPE_FOR_RDF_PAYLOAD)) {
+                LOGGER.error("create Vocabulary  API - invalid content type: " + contentType);
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Invalid content-type for RDF upload", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+        
+            //Security Handling with JWT:
+            String keyHeader = request.getHeader(JWT_API_KEY_HEADER);
+            String tokenUser;
+
+             if (StringUtils.isNotBlank(keyHeader)) {
+                 
+                 String jsonWebToken = keyHeader;
+
+                try {
+                    JSONObject jsonObject = jwtService.verify(JWT_KEY, JWT_AUDIENCE, jsonWebToken);
+
+                    long createdTimeInSeconds = jsonObject.getLong(TOKEN_CREATED_TIME_IDENTIFIER_IN_JSON);
+
+                    // Check if Token is expired because it was created before a specific time limit 
+                    long nowInSeconds = Calendar.getInstance().getTimeInMillis() / 1000l;
+                    if (nowInSeconds > (createdTimeInSeconds + (JWT_TIMEOUT_IN_MINUTES * 60))) {
+                        LOGGER.error("Create Vocabulary API- Deprecated token");
+                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Deprecated token", ErrorActionBean.RETURN_ERROR_EVENT);
+                    }
+
+                    String apiKey = jsonObject.getString(API_KEY_IDENTIFIER_IN_JSON);
+
+                    DDApiKey ddApiKey = apiKeyService.getApiKey(apiKey);
+
+                    if (ddApiKey == null) {
+                        LOGGER.error("Create Vocabulary API- Invalid key");
+                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid key", ErrorActionBean.RETURN_ERROR_EVENT);
+                    }
+
+                    //Note: Scope can also be used
+
+                    if (ddApiKey.getExpires() != null) {
+                        Date now = Calendar.getInstance().getTime();
+                        if (now.after(ddApiKey.getExpires())) {
+                            LOGGER.error("Create Vocabulary API - Expired key");
+                            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Expired key", ErrorActionBean.RETURN_ERROR_EVENT);
+                        }
+                    }
+
+                    String remoteAddr = ddApiKey.getRemoteAddr();
+                    if (StringUtils.isNotBlank(remoteAddr)) {
+                        if (!StringUtils.equals(remoteAddr, request.getRemoteAddr()) && !StringUtils.equals(remoteAddr, request.getRemoteHost())) {
+                            LOGGER.error("Create Vocabulary API - Invalid remote end point");
+                            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid remote end point", ErrorActionBean.RETURN_ERROR_EVENT);
+                        }
+                    }
+                    tokenUser = jsonObject.getString(JWT_ISSUER);
+                    if (StringUtils.isEmpty(tokenUser)) {
+                        LOGGER.error("Create Vocabulary API - jwt issuer missing");
+                      return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: empty jwt issuer", ErrorActionBean.RETURN_ERROR_EVENT);
+                    }
+
+                } catch (Exception e) {
+                    LOGGER.error("Create Vocabulary API- Cannot verify key", e);
+                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+                }
+                 
+                 
+             }else {
+                LOGGER.error("Create Vocabulary API - Key missing");
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "API Key cannot be missing", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+        
+         // If the JWT Verification is right, we can now validate the passed parameters and then start the Vocabulary Creation
+         
+        LOGGER.info("create Vocabulary API - Request authorized");
+          
+          
+         List<Integer> folderIds = new ArrayList<Integer>();
+          folderIds.add(vocabularyId);
+          
+          vocabularyService.deleteVocabularyFolders(folderIds, keepRelationsOnDelete);
+
+           StreamingResolution stResol = new StreamingResolution(CONTENT_TYPE_HEADER, "Undo the kind words !");
+      
+           return stResol;
+      }
+    
+    
     
     
     

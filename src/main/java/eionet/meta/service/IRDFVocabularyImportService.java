@@ -20,6 +20,7 @@
  */
 package eionet.meta.service;
 
+import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IVocabularyImportService.MissingConceptsAction;
 import eionet.meta.service.IVocabularyImportService.UploadAction;
@@ -30,20 +31,35 @@ import java.util.List;
 
 /**
  * This interface contains methods to import csv contents to bulk edit a
- * vocabulary.
+ * vocabulary or create a Vocabulary From RDF.
  *
  * @author enver
  */
 public interface IRDFVocabularyImportService {
 
+    
+     /**
+     * Transactional method to create a folder and a vocabulary from a Rest Call using a mix
+     * of Request Params and RDF Payload
+     *
+     * @param contents Reader object to read file content 
+     * @param folder 
+     * @param vocabularyFolder 
+     * @param username the username of the creator of the vocabulary 
+     */
+    List<String> createFolderAndVocabularyFromRDF(Reader contents,Folder folder,  VocabularyFolder vocabularyFolder, String username) throws ServiceException;
+    
+    
+    
     /**
      * Transactional method to create a vocabulary from a Rest Call using a mix
      * of Request Params and RDF Payload
      *
      * @param contents Reader object to read file content 
      * @param vocabularyFolder 
+     * @param username the username of the creator of the vocabulary 
      */
-    List<String> importRdfIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder) throws ServiceException;
+    List<String> createVocabularyFromRDF(Reader contents, VocabularyFolder vocabularyFolder, String username) throws ServiceException;
 
     /**
      * A Transactional method to import RDF file contents into a vocabulary
