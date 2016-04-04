@@ -157,6 +157,24 @@ function addMultiSelectRow(addValue, checkboxName, multiSelectDivName){
     }
 }
 
+function applySearchToggle(searchFormId) {
+    jQuery("a.searchSection").click(function() {
+        jQuery("#" + searchFormId).slideToggle("slow");
+        jQuery(this).parent("li.search").toggleClass("open");
+        return false;
+    });
+}
+
+function applyRowSelectionStyle() {
+    jQuery(".selectable").click(function() {
+        if (jQuery(this).is(":checked")) {
+            jQuery(this).parents("tr").addClass("selected");
+        } else {
+            jQuery(this).parents("tr").removeClass("selected");
+        }
+    });
+}
+
 (function($) {
     $(document).ready(function() {
         $("th.sorted").addClass("selected");

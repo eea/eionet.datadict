@@ -92,13 +92,7 @@ try{
                 }
 
                 $(function() {
-                    $(".selectable").click(function() {
-                        if ($(this).is(":checked")) {
-                            $(this).parents("tr").addClass("selected");
-                        } else {
-                            $(this).parents("tr").removeClass("selected");
-                        }
-                    });
+                    applyRowSelectionStyle();
                 });
             // ]]>
             </script>

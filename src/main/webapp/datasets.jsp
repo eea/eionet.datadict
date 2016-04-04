@@ -344,19 +344,8 @@
         }
 
         $(function() {
-            $(".selectable").click(function() {
-                if ($(this).is(":checked")) {
-                    $(this).parents("tr").addClass("selected");
-                } else {
-                    $(this).parents("tr").removeClass("selected");
-                }
-            });
-
-            $(".searchSection").click(function() {
-                $("#searchDatasetsForm").slideToggle("slow");
-                $(this).parent("li.search").toggleClass("open");
-                return false;
-            });
+            applyRowSelectionStyle();
+            applySearchToggle("searchDatasetsForm");
         });
     // ]]>
     </script>

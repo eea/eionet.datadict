@@ -94,11 +94,7 @@
                     return false;
                 }
 
-                $(".searchSection").click(function() {
-                    $("#searchSiteCodesForm").slideToggle("slow");
-                    $(this).parent("li.search").toggleClass("open");
-                    return false;
-                });
+                applySearchToggle("searchSiteCodesForm");
             });
         })(jQuery);
         // ]]>

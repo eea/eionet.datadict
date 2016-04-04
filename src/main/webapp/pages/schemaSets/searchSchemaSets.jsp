@@ -9,11 +9,7 @@
             // <![CDATA[
             (function($) {
                 $(document).ready(function() {
-                    $(".searchSection").click(function() {
-                        $("#searchResultsForm").slideToggle("slow");
-                        $(this).parent("li.search").toggleClass("open");
-                        return false;
-                    });
+                    applySearchToggle("searchResultsForm");
                 });
             })(jQuery);
             // ]]>
