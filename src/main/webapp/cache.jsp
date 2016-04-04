@@ -26,6 +26,10 @@ Vector entries = (Vector)request.getAttribute("entries");
                 document.forms["form1"].elements["action"].value = action;
                 document.forms["form1"].submit();
             }
+
+            $(function() {
+                applyRowSelectionStyle();
+            });
             // ]]>
         </script>
     </head>
@@ -44,7 +48,7 @@ Vector entries = (Vector)request.getAttribute("entries");
                         <input type="button" class="smallbutton" value="Update selected" onclick="submitForm('update')"/>
                         <input type="button" class="smallbutton" value="Remove selected" onclick="submitForm('clear')"/>
                     </div>
-                    <table class="datatable" style="width:auto">
+                    <table class="datatable results">
                         <thead>
                         <tr>
                             <th>&nbsp;</th>
@@ -61,10 +65,11 @@ Vector entries = (Vector)request.getAttribute("entries");
                             String text = (String)hash.get("text");
                             Long created = (Long)hash.get("created");
                             String date = created==null ? "-- not in cache --" : Util.historyDate(created.longValue());
+                            String isOdd = Util.isOdd(i + 1);
                             %>
-                            <tr>
+                            <tr class="<%=isOdd%>">
                                 <td class="center">
-                                    <input type="checkbox" name="article" value="<%=Util.processForDisplay(article, true)%>"/>
+                                    <input type="checkbox" class="selectable" name="article" value="<%=Util.processForDisplay(article, true)%>"/>
                                 </td>
                                 <td style="padding-right:10px">
                                     <%=Util.processForDisplay(text)%>
