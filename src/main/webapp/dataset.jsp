@@ -1488,7 +1488,7 @@ else if (mode.equals("add"))
                                             <h2 id="tables">
                                                 Dataset tables
                                             </h2>
-                                                <table class="datatable results" id="dataset-tables">
+                                                <table class="datatable results">
                                                     <col style="width:50%"/>
                                                     <col style="width:50%"/>
                                                     <thead>
@@ -1557,15 +1557,17 @@ else if (mode.equals("add"))
                                                 <h2 id="rodlinks">
                                                         Obligations in ROD
                                                 </h2>
-                                                            <table class="datatable subtable">
+                                                            <table class="datatable results">
                                                                 <col style="width:20%"/>
                                                                 <col style="width:40%"/>
                                                                 <col style="width:40%"/>
-                                                                <tr>
-                                                                    <th>Obligation</th>
-                                                                    <th>Legal instrument</th>
-                                                                    <th>Details</th>
-                                                                </tr>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Obligation</th>
+                                                                        <th>Legal instrument</th>
+                                                                        <th>Details</th>
+                                                                    </tr>
+                                                                </thead>
                                                                 <%
                                                                 // rows
                                                                 for (int i=0; i<rodLinks.size(); i++) {
@@ -1673,7 +1675,7 @@ else if (mode.equals("add"))
                                                 <h2 id="versions">
                                                     Other versions
                                                 </h2>
-                                                <table class="datatable results" id="other-versions">
+                                                <table class="datatable results">
                                                     <col style="width:25%"/>
                                                     <col style="width:25%"/>
                                                     <col style="width:25%"/>

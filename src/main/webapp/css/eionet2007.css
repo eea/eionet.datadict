@@ -226,7 +226,7 @@
 	display: block;
 	color: #00446A;
 	font-size: 80%;
-	padding: 20px 0 20px 30px;
+	padding: 20px 20px 20px 30px;
 	text-decoration: none;
     position: relative;
 }
@@ -243,6 +243,15 @@
 #drop-operations > ul li.search a:before {
      content: "\e90f";
 }
+
+#drop-operations > ul li.search.open {
+    background: #F9FCFC;
+    border-left: 1px solid #CFE3E4;
+    border-right: 1px solid #CFE3E4;
+    z-index: 100;
+}
+
+
 
 #drop-operations > ul li.restore a:before,
 #drop-operations > ul li.upload a:before {
@@ -383,7 +392,7 @@
     background: #F9FCFC;
     border: 1px solid #CFE3E4;
     padding: 30px;
-    margin: 25px 0; 
+    margin: -1px 0 25px 0; 
 }
 
 #workarea table.filter {
@@ -948,68 +957,6 @@ select{
     border: 1px solid #d8e1ce;
     border-radius: 6px;/* CSS3 */
     -moz-border-radius: 6px;/* Mozilla */
-}
-
-
-
-
-/* Tables table */
-#dataset-tables {
-    width: 100%;
-    font-size: 90%;
-}
-
-#dataset-tables th {
-    font-weight: bold;
-    color: #FFFFFF;
-    background: #666666;
-    text-decoration: none;
-}
-
-#dataset-tables td {
-    background: #FFFFFF;
-    text-decoration: none;
-    text-align: left;
-}
-
-/* Other versions table */
-#other-versions {
-    width: 100%;
-    font-size: 90%;
-}
-
-#other-versions th {
-    font-weight: bold;
-    color: #FFFFFF;
-    background: #666666;
-    text-decoration: none;
-}
-
-#other-versions td {
-    background: #FFFFFF;
-    text-decoration: none;
-    text-align: left;
-}
-
-/* Dataset table "Obligations in ROD" */
-.subtable {
-    width: 100%;
-    padding: 2px;
-    font-size: 70%;
-}
-
-.subtable th {
-    font-weight: bold;
-    color: #FFFFFF;
-    background: #808080;
-    text-decoration: none;
-}
-
-.subtable td {
-    font-weight: normal;
-    background: #FFFFFF;
-    text-decoration: none;
-    vertical-align: top;
 }
 
 /* Dataset table "Complex attributes" */

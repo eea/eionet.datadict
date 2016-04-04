@@ -1301,16 +1301,17 @@ else if (mode.equals("add"))
                                                     types.put("CH2", "Quantitative");
                                                     types.put("CH3", "Vocabulary");
                                                     %>
-                                                              <table class="datatable subtable">
+                                                              <table class="datatable results">
                                                                     <col style="width:<%=widthShortName%>"/>
                                                                     <col style="width:<%=widthDatatype%>"/>
                                                                     <col style="width:<%=widthElemtype%>"/>
-                                                                <tr>
-                                                                    <th>Element name</th>
-                                                                    <th>Datatype</th>
-                                                                    <th>Element type</th>
-                                                                </tr>
-
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Element name</th>
+                                                                        <th>Datatype</th>
+                                                                        <th>Element type</th>
+                                                                    </tr>
+                                                                </thead>
                                                                 <%
                                                                 // rows loop
                                                                 for (int i=0; i<elems.size(); i++){

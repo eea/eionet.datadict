@@ -2323,15 +2323,17 @@ String helpAreaName = "";
                                                     if (mode.equals("view") && fixedValues != null
                                                                     && fixedValues.size() > 0) {
                                                 %>
-                                                            <table class="datatable subtable">
+                                                            <table class="datatable results">
                                                                 <col style="width:20%"/>
                                                                 <col style="width:40%"/>
                                                                 <col style="width:40%"/>
-                                                                <tr>
-                                                                    <th>Code</th>
-                                                                    <th>Label</th>
-                                                                    <th>Definition</th>
-                                                                </tr>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Code</th>
+                                                                        <th>Label</th>
+                                                                        <th>Definition</th>
+                                                                    </tr>
+                                                                </thead>
                                                                 <%
                                                                     // rows
                                                                                 for (int i = 0; i < fixedValues.size()
@@ -2494,15 +2496,17 @@ String helpAreaName = "";
                                                 </h2>
 
                                                 <!-- table part -->
-                                                        <table class="datatable subtable">
+                                                        <table class="datatable results">
                                                             <col style="width: 43%"/>
                                                             <col style="width: 43%"/>
                                                             <col style="width: 14%"/>
-                                                            <tr>
-                                                                <th>Table</th>
-                                                                <th>Dataset</th>
-                                                                <th>Owner</th>
-                                                            </tr>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Table</th>
+                                                                    <th>Dataset</th>
+                                                                    <th>Owner</th>
+                                                                </tr>
+                                                            </thead>
                                                             <%
                                                                 // rows
                                                                         for (int i = 0; i < refTables.size(); i++) {
@@ -2712,7 +2716,7 @@ String helpAreaName = "";
                                             <h2>
                                                 Other versions<a id="versions"></a>
                                             </h2>
-                                            <table class="datatable results" id="other-versions">
+                                            <table class="datatable results">
                                                 <col style="width:25%"/>
                                                 <col style="width:25%"/>
                                                 <col style="width:25%"/>
