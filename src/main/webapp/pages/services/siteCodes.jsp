@@ -96,6 +96,7 @@
 
                 $(".searchSection").click(function() {
                     $("#searchSiteCodesForm").slideToggle("slow");
+                    $(this).parent("li.search").toggleClass("open");
                     return false;
                 });
             });
@@ -109,7 +110,7 @@
 
         <div id="drop-operations">
             <ul>
-                <li class="search"><a class="searchSection" href="#" title="Search site codes">Search</a></li>
+                <li class="search open"><a class="searchSection" href="#" title="Search site codes">Search</a></li>
                 <c:if test="${actionBean.createRight}">
                     <li class="add"><a href="#" onClick="openPopup('#reserveSiteCodesDialog')">Add new site codes</a></li>
                 </c:if>

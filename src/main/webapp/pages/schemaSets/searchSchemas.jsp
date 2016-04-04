@@ -21,6 +21,7 @@
 
                     $(".searchSection").click(function() {
                         $("#searchResultsForm").slideToggle("slow");
+                        $(this).parent("li.search").toggleClass("open");
                         return false;
                     });
                 });
@@ -34,7 +35,7 @@
 
         <div id="drop-operations">
             <ul>
-                <li class="search"><a class="searchSection" href="#" title="Search schemas">Search</a></li>
+                <li class="search open"><a class="searchSection" href="#" title="Search schemas">Search</a></li>
                 <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemas', 'i')}">
                     <li class="add"><stripes:link beanclass="eionet.web.action.SchemaActionBean" event="add">Add root-level schema</stripes:link></li>
                 </c:if>

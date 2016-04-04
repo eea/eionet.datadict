@@ -542,7 +542,7 @@ table.results td {
 	border-bottom: 1px solid #CFE3E4;
 	padding: 7px;	
 	vertical-align: top;
-    word-break: break-word;
+    word-break: break-all;
 }
 
 table.results tr.even {

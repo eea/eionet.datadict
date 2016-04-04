@@ -12,6 +12,7 @@
                 $(document).ready(function() {
                     $(".searchSection").click(function() {
                         $("#searchTablesForm").slideToggle("slow");
+                        $(this).parent("li.search").toggleClass("open");
                         return false;
                     });
                 });
@@ -29,7 +30,7 @@
         </c:if>
         <div id="drop-operations">
             <ul>
-                <li class="search"><a class="searchSection" href="#" title="Search tables">Search</a></li>
+                <li class="search open"><a class="searchSection" href="#" title="Search tables">Search</a></li>
             </ul>
         </div>
 

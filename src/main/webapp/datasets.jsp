@@ -354,6 +354,7 @@
 
             $(".searchSection").click(function() {
                 $("#searchDatasetsForm").slideToggle("slow");
+                $(this).parent("li.search").toggleClass("open");
                 return false;
             });
         });
@@ -385,7 +386,7 @@
 
         <div id="drop-operations">
             <ul>
-                <li class="search"><a class="searchSection" href="#" title="Search datasets">Search</a></li>
+                <li class="search open"><a class="searchSection" href="#" title="Search datasets">Search</a></li>
                 <c:if test="${not empty user}">
                     <c:if test="${user.authentic}">
                         <li class="restore"><a href="${pageContext.request.contextPath}/restore_datasets.jsp?SearchType=SEARCH&amp;restore=true" title="Restore datasets">Restore</a></li>
