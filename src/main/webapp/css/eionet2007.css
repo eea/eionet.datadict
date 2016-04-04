@@ -18,6 +18,10 @@
 	border-right: 1px solid #CFE3E4;	
 }
 
+#workarea {
+    overflow: hidden;
+}
+
 #workarea,
 .breadcrumbtrail {
 	background: #FFFFFF;	
@@ -54,7 +58,7 @@
 /* MENU */
 
 #menuribbon {
-	padding: 1em 0;
+	padding: 0;
 	box-sizing: border-box;	
 	height: auto;
 	display: block;
@@ -63,13 +67,13 @@
 
 #menuribbon #dropdowns li {
     width: 12em;
+    background: #00446a;
+
 }
 
 #menuribbon #dropdowns li a:link {
     padding: 0.5em 2em;
-    border-right: 1px solid #00446a;
-    border-top: 1px solid #00446a;
-    border-left: 1px solid #00446a;
+    
 }
 
 #menuribbon #dropdowns li:hover {
@@ -78,16 +82,12 @@
 
 #menuribbon #dropdowns li:hover a {
     color: #00446a; 
-    border-right: 1px solid #CFE3E4;
-    border-top: 1px solid #CFE3E4;
-    border-left: 1px solid #CFE3E4;
+    
 }
 
 #menuribbon #dropdowns li a:hover {
     color: #00446a;
-    border-right: 1px solid #CFE3E4;
-    border-top: 1px solid #CFE3E4;
-    border-left: 1px solid #CFE3E4;
+   
     background: #ECF4F5;
 }
 
@@ -244,11 +244,13 @@
      content: "\e90f";
 }
 
-#drop-operations > ul li.restore a:before {
+#drop-operations > ul li.restore a:before,
+#drop-operations > ul li.upload a:before {
      content: "\e90d";
 }
 
-#drop-operations > ul li.add a:before {
+#drop-operations > ul li.add a:before,
+#drop-operations > ul li.create a:before {
     content: "\e916";
 }
 
@@ -260,11 +262,16 @@
     content: "\e90c";
 }
 
+#drop-operations > ul li.copy a:before {
+    content: "\e903";
+}
+
 #drop-operations > ul li.subscribe a:before {
      content: "\e90e";
 }
 
-#drop-operations > ul li.newVersion a:before {
+#drop-operations > ul li.newVersion a:before,
+#drop-operations > ul li.new a:before {
      content: "\e912";
 }
 
@@ -281,12 +288,35 @@
      content: "\e910";
 }
 
-#drop-operations > ul li.checkin a:before {
+#drop-operations > ul li.checkin a:before,
+#drop-operations > ul li.import a:before {
      content: "\e91a";
 }
 
 #drop-operations > ul li.checkout a:before {
      content: "\e902";
+}
+
+#drop-operations > ul li.close a:before {
+     content: "\e91d";
+}
+
+#drop-operations > ul li.reload a:before {
+     content: "\e923";
+}
+
+#drop-operations > ul li.switch a:before {
+     content: "\e924";
+}
+
+
+
+#drop-operations > ul li.help a:before {
+     content: "\e909";
+}
+
+#drop-operations > ul li.help a.helpButton:after {
+    content: none;
 }
 
 #drop-operations > ul li.undo a:before {
@@ -295,6 +325,10 @@
 
 #drop-operations > ul li.newest a:before {
      content: "\e91c";
+}
+
+#drop-operations > ul li.allocate a:before {
+     content: "\e922";
 }
 
 
@@ -369,7 +403,7 @@
 }
 
 #workarea table.filter td input { 
-    width: 260px;
+    width: 322px;
 }
 
 #workarea table.filter td input[type='checkbox'],
@@ -378,7 +412,7 @@
 }
 
 #workarea table.filter td select {
-  width: 280px;  
+  width: 340px;  
 }
 
 #workarea table.filter td.label {
@@ -439,8 +473,10 @@ a.deleteButton:after {
 
 table.results {
 	border-collapse: collapse;
-    /* word-break: break-all; */
+    word-break: break-word;
+    width: 100%;
 }
+
 table.results a {
 	text-decoration: none;
 	color: #00446A;
@@ -497,6 +533,7 @@ table.results td {
 	border-bottom: 1px solid #CFE3E4;
 	padding: 7px;	
 	vertical-align: top;
+    word-break: break-word;
 }
 
 table.results tr.even {
@@ -582,6 +619,7 @@ table.results td sup.commonelm {
 #workarea table.datatable.results th.scope-row {
     width: 250px;
     color: #666666;
+    text-align: left;
 }
 
 #workarea table.datatable.results th.scope-row a.helpButton:after {
