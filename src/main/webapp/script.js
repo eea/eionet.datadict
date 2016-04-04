@@ -165,12 +165,12 @@ function applySearchToggle(searchFormId) {
     });
 }
 
-function applyRowSelectionStyle() {
+function applySelectionStyle() {
     jQuery(".selectable").click(function() {
         if (jQuery(this).is(":checked")) {
-            jQuery(this).parents("tr").addClass("selected");
+            jQuery(this).parent("li").length ? jQuery(this).parent("li").addClass("selected") : jQuery(this).closest("tr").addClass("selected");
         } else {
-            jQuery(this).parents("tr").removeClass("selected");
+            jQuery(this).parent("li").length ? jQuery(this).parent("li").removeClass("selected") : jQuery(this).closest("tr").removeClass("selected");
         }
     });
 }
@@ -178,5 +178,6 @@ function applyRowSelectionStyle() {
 (function($) {
     $(document).ready(function() {
         $("th.sorted").addClass("selected");
+        applySelectionStyle();
     });
 })(jQuery);

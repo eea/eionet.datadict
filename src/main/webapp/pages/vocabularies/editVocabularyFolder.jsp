@@ -7,23 +7,27 @@
     <stripes:layout-component name="head">
         <script type="text/javascript">
         // <![CDATA[
-        ( function($) {
+        (function($) {
             $(document).ready(function() {
+                $("#toggleSelectAll").click(function() {
+                    toggleSelectAll('conceptsForm');
+                    $(this).val() === "Select all" ? $("tr", "#concept").removeClass("selected") : $("tr", "#concept").addClass("selected");
+                    return false;
+                });
 
-            	$("#uploadCSVLink").click(function() {
+                $("#uploadCSVLink").click(function() {
                     $('#uploadCSVDialog').dialog('open');
                     return false;
                 });
 
-            	$("#purgeVocabularyData").click(function() {
-            		if ($('input#purgeVocabularyData').is(':checked')) {
-	                   alert("If you check this option all data will be deleted! If you are not sure about this, please uncheck it!");
-	                   $('input#purgeBoundElements').removeAttr("disabled");
-            		}
-            		else{
-            		   $('input#purgeBoundElements').attr("disabled", true);
-            		   $('input#purgeBoundElements').attr("checked", false);
-            		}
+                $("#purgeVocabularyData").click(function() {
+                    if ($('input#purgeVocabularyData').is(':checked')) {
+                       alert("If you check this option all data will be deleted! If you are not sure about this, please uncheck it!");
+                       $('input#purgeBoundElements').removeAttr("disabled");
+                    } else {
+                       $('input#purgeBoundElements').attr("disabled", true);
+                       $('input#purgeBoundElements').attr("checked", false);
+                    }
                     return true;
                 });
 
@@ -92,7 +96,6 @@
 
                 handleFolderChoice();
 
-
                 $(".delLink").click(function() {
                     this.parentElement.remove();
                 });
@@ -122,8 +125,7 @@
                     openPopup("#${actionBean.editDivId}");
                 </c:if>
             });
-
-        } ) ( jQuery );
+        })(jQuery);
 
         /**
         * require user confirmation if noattions equal identifier is set to tru during this edit session
@@ -423,9 +425,9 @@
                 <display:setProperty name="paging.banner.items_name" value="concepts" />
 
                 <display:column style="width: 1%">
-                    <stripes:checkbox name="conceptIds" value="${concept.id}" />
+                    <stripes:checkbox name="conceptIds" class="selectable" value="${concept.id}" />
                 </display:column>
-                <display:column title="Id" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%">
+                <display:column title="Id" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 10%">
                     <c:choose>
                     <c:when test="${!concept.status.accepted}">
                         <span style="text-decoration:line-through"><c:out value="${concept.identifier}" /></span>
@@ -460,7 +462,7 @@
                     <stripes:hidden name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                     <stripes:hidden name="vocabularyFolder.identifier" />
                     <stripes:hidden name="vocabularyFolder.workingCopy" />
-                    <input type="button" onclick="toggleSelectAll('conceptsForm');return false" value="Select all" name="selectAll">
+                    <input type="button" id="toggleSelectAll" value="Select all" name="selectAll">
                     <stripes:submit name="deleteConcepts" value="Delete" />
                     <stripes:submit name="markConceptsInvalid" value="Mark invalid" />
                     <stripes:submit name="markConceptsValid" value="Mark valid" />

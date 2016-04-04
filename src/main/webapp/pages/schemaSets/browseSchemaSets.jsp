@@ -7,6 +7,22 @@
 
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schema sets" currentSection="schemas">
 
+    <stripes:layout-component name="head">
+        <script type="text/javascript">
+        // <![CDATA[
+            (function($) {
+                $(document).ready(function() {
+                    $("#toggleSelectAll").click(function() {
+                        toggleSelectAll('schemaSetsForm');
+                        $(this).val() === "Select all" ? $("li", ".menu").removeClass("selected") : $("li", ".menu").not(".disabled").addClass("selected");
+                        return false;
+                    });
+                });
+            })(jQuery);
+        // ]]>
+        </script>
+    </stripes:layout-component>
+
     <stripes:layout-component name="contents">
         <h1>Browse schema sets and schemas</h1>
 
@@ -65,11 +81,11 @@
                         <c:if test="${schemaSet.deprecatedStatus eq (outerLoop.index eq 1)}">
                             <c:set var="schemaSetName" value="${schemaSet.attributeValues!=null ? ddfn:join(schemaSet.attributeValues['Name'],'') : ''}"/>
                             <c:set var="displayName" value="${not empty schemaSetName ? schemaSetName : schemaSet.identifier}"/>
-                            <li>
+                            <li${ddfn:contains(actionBean.deletableSchemaSets,schemaSet.id) ? '' : ' class="disabled"'}>
                                 <c:if test="${not empty actionBean.user}">
                                     <c:choose>
                                         <c:when test="${ddfn:contains(actionBean.deletableSchemaSets,schemaSet.id)}">
-                                            <stripes:checkbox name="selectedSchemaSets" value="${schemaSet.id}" />
+                                            <stripes:checkbox class="selectable" name="selectedSchemaSets" value="${schemaSet.id}" />
                                         </c:when>
                                         <c:otherwise>
                                             <input type="checkbox" disabled="disabled" title="Schema set in registered status or currently checked out"/>
@@ -153,7 +169,7 @@
                 <c:choose>
                     <c:when test="${not empty actionBean.deletableSchemaSets || not empty actionBean.deletableSchemas}">
                         <stripes:submit name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete the selected schema sets and/or schemas?');"/>
-                        <input type="button" onclick="toggleSelectAll('schemaSetsForm');return false" value="Select all" name="selectAll" />
+                        <input type="button" id="toggleSelectAll" value="Select all" name="selectAll" />
                     </c:when>
                     <c:otherwise>
                         <stripes:submit disabled="disabled" name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete the selected schema sets and/or schemas?');"/>

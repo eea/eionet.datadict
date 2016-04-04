@@ -90,10 +90,6 @@ try{
                     document.forms["rodlinks"].elements["li_title"].value = liTitle;
                     document.forms["rodlinks"].submit();
                 }
-
-                $(function() {
-                    applyRowSelectionStyle();
-                });
             // ]]>
             </script>
         </head>

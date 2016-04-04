@@ -26,10 +26,6 @@ Vector entries = (Vector)request.getAttribute("entries");
                 document.forms["form1"].elements["action"].value = action;
                 document.forms["form1"].submit();
             }
-
-            $(function() {
-                applyRowSelectionStyle();
-            });
             // ]]>
         </script>
     </head>

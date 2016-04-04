@@ -344,7 +344,6 @@
         }
 
         $(function() {
-            applyRowSelectionStyle();
             applySearchToggle("searchDatasetsForm");
         });
     // ]]>

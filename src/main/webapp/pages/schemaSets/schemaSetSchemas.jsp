@@ -7,26 +7,30 @@
     <stripes:layout-component name="head">
         <script type="text/javascript">
         // <![CDATA[
-            ( function($) {
-                $(document).ready(
-                    function(){
-
-                        $("#uploadSchemaLink").click(function() {
-                            $('#uploadSchemaDialog').dialog('open');
-                            return false;
-                        });
-
-                        $('#uploadSchemaDialog').dialog({
-                            autoOpen: false,
-                            width: 500
-                        });
-
-                        $("#closeUploadSchemaDialog").click(function() {
-                            $('#uploadSchemaDialog').dialog("close");
-                            return true;
-                        });
+            (function($) {
+                $(document).ready(function() {
+                    $("#toggleSelectAll").click(function() {
+                        toggleSelectAll('schemasForm');
+                        $(this).val() === "Select all" ? $("tr", "#schema").removeClass("selected") : $("tr", "#schema").addClass("selected");
+                        return false;
                     });
-            } ) ( jQuery );
+
+                    $("#uploadSchemaLink").click(function() {
+                        $('#uploadSchemaDialog').dialog('open');
+                        return false;
+                    });
+
+                    $('#uploadSchemaDialog').dialog({
+                        autoOpen: false,
+                        width: 500
+                    });
+
+                    $("#closeUploadSchemaDialog").click(function() {
+                        $('#uploadSchemaDialog').dialog("close");
+                        return true;
+                    });
+                });
+            })(jQuery);
         // ]]>
         </script>
     </stripes:layout-component>
@@ -65,7 +69,7 @@
                 <stripes:hidden name="schemaSet.id"/>
                 <display:table name="${actionBean.schemas}" class="datatable results" id="schema" style="width:80%">
                     <display:column>
-                        <stripes:checkbox name="schemaIds" value="${schema.id}" />
+                        <stripes:checkbox class="selectable" name="schemaIds" value="${schema.id}" />
                     </display:column>
                     <display:column title="File name">
                         <stripes:link beanclass="eionet.web.action.SchemaActionBean" title="Open schema details">
@@ -79,7 +83,7 @@
                 </display:table>
 
                 <stripes:submit name="deleteSchemas" value="Delete" />
-                <input type="button" onclick="toggleSelectAll('schemasForm');return false" value="Select all" name="selectAll">
+                <input type="button" id="toggleSelectAll" value="Select all" name="selectAll">
 
             </stripes:form>
         </c:if>

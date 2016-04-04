@@ -82,10 +82,6 @@
     <title>Restore datasets - Data Dictionary</title>
     <script type="text/javascript">
     // <![CDATA[
-        $(function() {
-            applyRowSelectionStyle();
-        });
-
         function deleteDataset() {
             if ($(".selectable:checked").length === 0) {
                 alert("Select at least one dataset to continue");

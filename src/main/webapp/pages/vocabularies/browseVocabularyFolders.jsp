@@ -9,6 +9,12 @@
         // <![CDATA[
         ( function($) {
             $(document).ready(function() {
+                $("#toggleSelectAll").click(function() {
+                    toggleSelectAll('vocabulariesForm');
+                    $(this).val() === "Select all" ? $("li", ".menu").removeClass("selected") : $("li", ".menu").not(".disabled").addClass("selected");
+                    return false;
+                });
+
                 $("#keep-relations").dialog({
                         autoOpen: false,
                         resizable: false,
@@ -32,14 +38,11 @@
                 });
 
                 $("#deleteBtn").click(function() {
-
-
                     var deleteOk = confirm('Are you sure you want to delete the selected vocabularies?');
                     var vocabularyIdsBaseUri = [<c:forEach items='${actionBean.vocabulariesWithBaseUri}' var='id'>'${id}',</c:forEach>];
                     var keepRelations = false;
 
                     if (deleteOk==true) {
-
                         var vocabularyIds = document.getElementsByName("folderIds");
                         var containsVocabularyWithBaseUri = false;
 
@@ -60,7 +63,6 @@
                             $( "#vocabulariesForm" ).attr('action', 'vocabularies/delete').submit();
                         }
                     }
-
                     return false;
                 });
 
@@ -91,7 +93,7 @@
                 </c:if>
             });
 
-        } ) ( jQuery );
+        })(jQuery);
 
         // ]]>
         </script>
@@ -163,9 +165,9 @@
 
                         <ul class="menu" style="margin-left: 1.2em">
                             <c:forEach var="item" items="${folder.items}" varStatus="itemLoop">
-                                <li class="{(itemLoop.index + 1) % 2 != 0 ? 'odd' : 'even'}">
+                                <li${item.workingCopy || not empty item.workingUser ? ' class="disabled"' : ''}>
                                     <c:if test="${not empty actionBean.user  && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'd')}">
-                                        <stripes:checkbox name="folderIds" value="${item.id}" disabled="${item.workingCopy || not empty item.workingUser}" />
+                                        <stripes:checkbox class="selectable" name="folderIds" value="${item.id}" disabled="${item.workingCopy || not empty item.workingUser}" />
                                     </c:if>
                                     <c:choose>
                                         <c:when test="${item.draftStatus && empty actionBean.user}">
@@ -212,7 +214,7 @@
              <stripes:hidden id="txtKeepRelations" name="keepRelationsOnDelete" value="false"></stripes:hidden>
              <c:if test="${not empty actionBean.user && actionBean.visibleEditableVocabularies && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'd')}">
                  <stripes:button id="deleteBtn" name="delete" value="Delete" />
-                 <input type="button" onclick="toggleSelectAll('vocabulariesForm');return false" value="Select all" name="selectAll" />
+                 <input type="button" id="toggleSelectAll" value="Select all" name="selectAll" />
              </c:if>
              </div>
          </stripes:form>
