@@ -2678,13 +2678,15 @@ String helpAreaName = "";
                                         <% if( mode.equals("view") ){ %>
                                             <% if( dataElementRules.size() > 0 ){ %>
                                             <h2>Rules</h2>
-                                            <table class="datatable" id="element-rules">
+                                            <table class="datatable results" id="element-rules">
                                                 <col style="width: 27%"/>
                                                 <col style="width: 63%"/>
-                                                <tr>
-                                                    <th>Inference Rule</th>
-                                                    <th>Element</th>
-                                                </tr>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Inference Rule</th>
+                                                        <th>Element</th>
+                                                    </tr>
+                                                </thead>
                                                 <tbody>
                                                     <%
                                                         eionet.meta.dao.domain.DataElement target;

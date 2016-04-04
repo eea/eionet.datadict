@@ -682,12 +682,6 @@ else if (mode.equals("add"))
             <!-- main table inside div -->
             <!--=======================-->
 
-            <table cellspacing="0" cellpadding="0" style="clear:right;border:0">
-
-                <!-- main table body -->
-
-                <tr>
-                    <td style="width:100%;height:10" colspan="2">
                             <!-- schema, MS Excel template, XForm, XmlInst, etc -->
                             <%
                             if (mode.equals("view")){
@@ -1524,14 +1518,6 @@ else if (mode.equals("add"))
 
                             <!-- end dotted -->
             </div>
-                    </td>
-                </tr>
-
-
-            </table>
-
-                <!-- end main table body -->
-            <!-- end main table -->
 
             <div style="display:none">
                 <%
