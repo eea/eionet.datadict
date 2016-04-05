@@ -100,16 +100,18 @@ if (dstName == null || dstName.length()==0)
             </ul>
         </div>
 
-        <div style="font-size:0.7em;clear:right;margin-bottom:10px;margin-top:10px">
-            Below is the list of obligations in ROD.<br/>
+        <div class="system-msg">
+            <strong>Below is the list of obligations in ROD.</strong><br />
             Click Title to link obligation with the dataset.<br/>
             Click Details to open the obligation's details in ROD.
         </div>
-        <table class="datatable" cellspacing="0" cellpadding="0" style="width:auto">
-            <tr>
-                <th style="padding-left:5px;padding-right:10px">Title</th>
-                <th style="padding-left:5px;padding-right:10px">Details</th>
-            </tr>
+        <table class="datatable results">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
             <%
             int displayed = 0;
             for (int i=0; i<activities.size(); i++){

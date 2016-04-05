@@ -115,7 +115,7 @@ try{
                         </p>
                     </div>
                     <% if (rodLinks!=null && rodLinks.size()>0) { %>
-                    <table class="results" style="width:100%">
+                    <table class="datatable results">
                         <thead>
                             <tr>
                                 <th>&nbsp;</th>
