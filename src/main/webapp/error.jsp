@@ -11,8 +11,6 @@
 
     request.setCharacterEncoding("UTF-8");
 
-    DDUser user = SecurityUtil.getUser(request);
-
     String bodyClass = request.getParameter("class");
     boolean isPopup = bodyClass!=null && bodyClass.equals("popup");
 %>
@@ -48,7 +46,7 @@ else{
         <div id="workarea"><%
 }
 %>
-
+        <h1>Error page</h1>
         <form id="form1" action="index.jsp" method="get">
 
             <%
@@ -70,15 +68,17 @@ else{
                 <div id="drop-operations">
                     <ul>
                         <li class="back">
-                            <a href="<%=backLink%>">&lt; Back</a>
+                            <a href="<%=backLink%>">Back</a>
                         </li>
                     </ul>
                 </div><%
             }
             %>
 
-            <h1>Error:</h1>
-            <p><strong><%=StringEscapeUtils.escapeXml(msg)%></strong></p>
+            <div class="error-msg">
+                <strong>Error</strong><br />
+                <%=StringEscapeUtils.escapeXml(msg)%>
+            </div>
             <% if (elements != null) {
                     for (DataElement elem : elements) {  %>
                         <a href="<%=request.getContextPath()%>/dataelements/<%=elem.getId()%>"><%=elem.getIdentifier()%></a><br/>
