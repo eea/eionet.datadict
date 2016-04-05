@@ -4,9 +4,8 @@
  * Created on Feb 12, 2016
  *            www.eworx.gr
  */
-package eionet.meta.dao.domain;
+package eionet.meta;
 
-import eionet.meta.Dataset;
 import eionet.util.Util;
 import java.util.Comparator;
 import org.apache.commons.lang.StringUtils;
@@ -24,8 +23,8 @@ public enum DataSetSort {
             return new Comparator<Dataset>() {
                 @Override
                 public int compare(Dataset d1, Dataset d2) {
-                    return descending ? -d1.getIdentifier().compareToIgnoreCase(d2.getIdentifier()) : 
-                            d1.getIdentifier().compareToIgnoreCase(d2.getIdentifier());
+                    return descending ? -Integer.valueOf(d1.getID()).compareTo(Integer.valueOf(d2.getID())) : 
+                            Integer.valueOf(d1.getID()).compareTo(Integer.valueOf(d2.getID()));
                 }
             };
         }

@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.dao.domain.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil,org.apache.commons.lang.StringUtils"%>
+<%@ page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.dao.domain.DatasetRegStatus,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil,org.apache.commons.lang.StringUtils"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
@@ -589,7 +589,7 @@
                 <c:otherwise>
                     <h2 class="results">Total results: ${fn:length(datasets)}</h2>
                     <form id="form1" method="post" action="datasets.jsp">
-                        <table class="results" width="100%" style="clear:both">
+                        <table class="datatable results">
 
                         <%
                         // temporarly we do not display version aka CheckInNo, because for the time being it doesn't function properly anyway
