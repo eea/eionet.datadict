@@ -8,8 +8,6 @@
 <%!final static String oSearchCacheAttrName="elms_search_cache";%>
 <%!final static String oSearchUrlAttrName="elms_search_url";%>
 
-<%!private int reqno = 0;%>
-
 <%@ include file="history.jsp" %>
 <%@ include file="sorting.jsp" %>
 
@@ -308,7 +306,7 @@ else{ %>
                     // prepare message trailer for un-authenticated users
                     String msgTrailer = user==null ? " for unauthenticated users" : "";
                     %>
-                    <div class="error-msg"><strong>No element definitions matching the search criteria were found<%=Util.processForDisplay(msgTrailer)%>!</strong></div>
+                    <p class='not-found'>No element definitions matching the search criteria were found<%=Util.processForDisplay(msgTrailer)%>.</p>
                     </div></body></html> <%
                     return;
                 }
