@@ -304,6 +304,32 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
          
         LOGGER.info("create Folder and  Vocabulary API - Request authorized");
         
+        // Validate Parameters Passed
+        
+        if ( StringUtils.isEmpty(folderIdentifier)) {
+                LOGGER.error("create Folder and  Vocabulary API- folderIdentifier Parameter missing");
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Vocabulary API- folderIdentifier Parameter missing", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+        
+        
+        if (StringUtils.isEmpty(folderLabel) ) {
+                LOGGER.error("Create Folder and Vocabulary Api - folderLabel parameter missing");
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Vocabulary Api - folderLabel parameter missing", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+        
+        if (StringUtils.isEmpty(vocabularyFolderIdentifier)) {
+                LOGGER.error("Create Folder and Vocabulary API - vocabularyFolderIdentifier missing");
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Vocabulary API - vocabularyFolderIdentifier missing", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+        
+        if ( StringUtils.isEmpty(vocabularyFolderLabel)) {
+                LOGGER.error("Create Folder and Vocabulary API - vocabularyFolderLabel missing");
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Vocabulary API - vocabularyFolderLabel missing", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+  
+        
+        
+        
        // vocabularyService.createVocabularyFolder(vocabularyFolder, folder, getUserName());
 
         Reader rdfFileReader = new InputStreamReader(request.getInputStream(), CharEncoding.UTF_8);
@@ -444,6 +470,35 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
          // If the JWT Verification is right, we can now validate the passed parameters and then start the Vocabulary Creation
          
         LOGGER.info("create Vocabulary API - Request authorized");
+        
+        
+             // Validate Parameters Passed
+        
+        
+        if (folderId==0 ) {
+                LOGGER.error("Create Vocabulary Api - folderId parameter missing");
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Vocabulary Api - folderId parameter missing", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+        
+        if (StringUtils.isEmpty(vocabularyFolderIdentifier)) {
+                LOGGER.error("Create Vocabulary API - vocabularyFolderIdentifier missing");
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Vocabulary API - vocabularyFolderIdentifier missing", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+        
+        if ( StringUtils.isEmpty(vocabularyFolderLabel)) {
+                LOGGER.error("Create Vocabulary API - vocabularyFolderLabel missing");
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Vocabulary API - vocabularyFolderLabel missing", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+        
+        //FInally we need to check if there is one Folder with the passed folderId
+        
+        try{
+        Folder folder = vocabularyService.getFolder(folderId);
+        }catch (Exception e) {
+                    LOGGER.error("Create Vocabulary API- Folder Cannot Be Found ", e);
+                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_FOUND_404, " Folder with ID " +folderId +" Not Found ", ErrorActionBean.RETURN_ERROR_EVENT);
+                }
+        
         Reader rdfFileReader = new InputStreamReader(request.getInputStream(), CharEncoding.UTF_8);
         
         // So the trick here is to pass into the method below, 2 things:
@@ -475,6 +530,7 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
        *vocabularyId is the required parameter in order to know which vocabulary to delete.
        * keepRelationsOnDelete refers to the baseUris and whether they should replace the relations
        * or we should delete the relations completely
+       * @param vocabularyId
        */
       public Resolution deleteVocabulary() throws ServiceException{
       
@@ -556,7 +612,20 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
          
         LOGGER.info("Mark Vocabulary TO Be Deleted API - Request authorized");
           
+        // Parameter check 
           
+        if (vocabularyId==0 ) {
+                LOGGER.error("Mark Vocabulary TO Be Deleted  API - vocabularyId parameter missing");
+                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Vocabulary Api - vocabulary parameter missing", ErrorActionBean.RETURN_ERROR_EVENT);
+            }
+        
+         try{
+        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyId);
+        }catch (Exception e) {
+                    LOGGER.error("Create Vocabulary API- Vocabulary Cannot Be Found ", e);
+                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_FOUND_404, " Vocabulary with ID " + vocabularyId +" Not Found ", ErrorActionBean.RETURN_ERROR_EVENT);
+                }
+        
          List<Integer> folderIds = new ArrayList<Integer>();
           folderIds.add(vocabularyId);
           
