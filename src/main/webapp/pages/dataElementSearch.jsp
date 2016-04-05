@@ -129,7 +129,7 @@
                         <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name"></a>
                     </td>
                     <td class="input">
-                        <stripes:text name="filter.shortName" class="smalltext" size="59" id="txtShortName"/>
+                        <stripes:text name="filter.shortName" class="smalltext" size="59" id="txtShortName" />
                     </td>
                 </tr>
                 <tr>
@@ -138,7 +138,7 @@
                         <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier"></a>
                     </td>
                     <td class="input">
-                        <stripes:text name="filter.identifier" class="smalltext" size="59" id="txtIdentifier"/>
+                        <stripes:text name="filter.identifier" class="smalltext" size="59" id="txtIdentifier" />
                     </td>
                 </tr>
                 <c:forEach items="${actionBean.filter.attributes}" var="attr" varStatus="row">
@@ -151,7 +151,7 @@
                             <stripes:hidden name="filter.attributes[${row.index}].id" />
                             <stripes:hidden name="filter.attributes[${row.index}].name" />
                             <stripes:hidden name="filter.attributes[${row.index}].shortName" />
-                            <stripes:text name="filter.attributes[${row.index}].value" class="smalltext" size="59" id="txtFilterAttr_${attr.id}_${row.index}"/>
+                            <stripes:text name="filter.attributes[${row.index}].value" class="smalltext" size="59" id="txtFilterAttr_${attr.id}_${row.index}" />
                         </td>
                     </tr>
                 </c:forEach>
@@ -165,7 +165,7 @@
                             <stripes:hidden name="addedAttributes[${row.index}].id" />
                             <stripes:hidden name="addedAttributes[${row.index}].name" />
                             <stripes:hidden name="addedAttributes[${row.index}].shortName" />
-                            <stripes:text name="addedAttributes[${row.index}].value" class="smalltext" size="59" id="txtAddedAttr_${attr.id}_${row.index}"/>
+                            <stripes:text name="addedAttributes[${row.index}].value" class="smalltext" size="59" id="txtAddedAttr_${attr.id}_${row.index}" />
                             <a class="deleteButton" href="#" onclick="deleteAttribute(${attr.id})" title="Remove attribute from search criteria" /></a>
                         </td>
                     </tr>
@@ -175,7 +175,7 @@
                     <td class="input">
                         <stripes:select name="addAttr" class="small" onchange="this.form.submit();" >
                             <stripes:option value="0" label="Add criteria" />
-                            <stripes:options-collection collection="${actionBean.addableAttributes}" label="name" value="id"/>
+                            <stripes:options-collection collection="${actionBean.addableAttributes}" label="name" value="id" />
                         </stripes:select>
                     </td>
                 </tr>

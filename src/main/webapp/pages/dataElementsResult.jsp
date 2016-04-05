@@ -19,7 +19,7 @@
             <h2 class="results">Total results: ${actionBean.result.totalResults}</h2>
         </c:if>
 
-        <display:table name="actionBean.result.dataElements" class="results" id="item" requestURI="/searchelements/search/" style="width:100%">
+        <display:table name="actionBean.result.dataElements" class="datatable results" id="item" requestURI="/searchelements/search/" style="width:100%">
             <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No data elements found.</p>" />
             <display:column title="Element" sortable="true" sortProperty="identifier">
                 <c:choose>
