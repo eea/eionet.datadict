@@ -1186,7 +1186,7 @@
                 }<%}%>
 
             var url="<%=request.getContextPath()%>/search.jsp?ctx=popup";
-            wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+            wAdd = window.open(url,"Search","height=800,width=1200,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
             if (window.focus){
                 wAdd.focus();
             }

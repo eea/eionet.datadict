@@ -357,7 +357,7 @@
 
             pickMode = "copy";
             var url="search.jsp?ctx=popup&noncommon";
-            wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+            wAdd = window.open(url,"Search","height=800,width=1200,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
             if (window.focus){
                 wAdd.focus();
             }
@@ -379,7 +379,7 @@
             rplcId = elmId;
             rplcPos = position;
             var url="common_elms.jsp?ctx=popup&search_precision=exact&idfier=" + elmIdf + "&newerThan=" + elmId;
-            wLink = window.open(url,"Search","height=500,width=700,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
+            wLink = window.open(url,"Search","height=800,width=1200,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
             if (window.focus){
                 wLink.focus();
             }

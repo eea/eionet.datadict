@@ -311,7 +311,9 @@ else{ %>
                     return;
                 }
             }
+            String strAllOrLatest = isIncludeHistoricVersions ? "all " : "latest";
             %>
+            <h1>Non-common elements from <%=strAllOrLatest%> versions of datasets in any status</h1>
 
             <%
             if (popup){
@@ -323,12 +325,6 @@ else{ %>
                     </ul>
                 </div><%
             }
-
-            String strAllOrLatest = isIncludeHistoricVersions ? "all " : "latest";
-            %>
-            <h1>Non-common elements from <%=strAllOrLatest%> versions of datasets in any status</h1>
-
-            <%
             if (user==null){ %>
                 <p class="advise-msg">
                     Note: Elements from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.
