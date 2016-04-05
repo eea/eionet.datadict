@@ -151,7 +151,7 @@ public class CreateVocabularyFolderApiActionBeanTest  extends UnitilsJUnit4{
          JWTSecuredEndPoints = new ArrayList<String>();
          JWTSecuredEndPoints.add("createFolderAndVocabulary");
          JWTSecuredEndPoints.add("createVocabulary");
-         JWTSecuredEndPoints.add("deleteVocabulary");
+        // JWTSecuredEndPoints.add("deleteVocabulary");
         
     }
     

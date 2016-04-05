@@ -540,10 +540,7 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
          // Ensure that the request has the right header:
           String contentType = request.getHeader(CONTENT_TYPE_HEADER);
 
-            if (!StringUtils.startsWithIgnoreCase(contentType, VALID_CONTENT_TYPE_FOR_RDF_PAYLOAD)) {
-                LOGGER.error("create Vocabulary  API - invalid content type: " + contentType);
-                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Invalid content-type for RDF upload", ErrorActionBean.RETURN_ERROR_EVENT);
-            }
+        
         
             //Security Handling with JWT:
             String keyHeader = request.getHeader(JWT_API_KEY_HEADER);
