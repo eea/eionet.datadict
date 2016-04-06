@@ -271,20 +271,18 @@
     </script>
 </head>
 
-<%
-if (popup){ %>
+    <% if (popup){ %>
 
     <body class="popup">
+        <div id="pagehead">
+            <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
+            <div id="networktitle">Eionet</div>
+            <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
+            <div id="sitetagline">This service is part of Reportnet</div>
+        </div> <!-- pagehead -->
+        <div id="workarea">
 
-    <div id="pagehead">
-        <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
-        <div id="networktitle">Eionet</div>
-        <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
-        <div id="sitetagline">This service is part of Reportnet</div>
-    </div> <!-- pagehead -->
-    <%
-}
-else{ %>
+    <%} else { %>
 
     <body>
         <div id="container">
@@ -295,30 +293,27 @@ else{ %>
         <c:set var="currentSection" value="dataElements" />
         <%@ include file="/pages/common/navigation.jsp" %>
         <div id="workarea">
+
         <%
-}
-
-            if (pageMode.equals("search")){
-
-                // see if any results were found
-                if (dataElements == null || dataElements.size()==0){
-
-                    // prepare message trailer for un-authenticated users
-                    String msgTrailer = user==null ? " for unauthenticated users" : "";
-                    %>
-                    <p class='not-found'>No element definitions matching the search criteria were found<%=Util.processForDisplay(msgTrailer)%>.</p>
-                    </div></body></html> <%
-                    return;
-                }
             }
             String strAllOrLatest = isIncludeHistoricVersions ? "all " : "latest";
-            %>
-            <h1>Non-common elements from <%=strAllOrLatest%> versions of datasets in any status</h1>
-
-            <%
-            if (popup){
-                %>
-                <div id="drop-operations">
+        %>
+        <h1>Non-common elements from <%=strAllOrLatest%> versions of datasets in any status</h1>
+        <%
+            if (pageMode.equals("search")) {
+                // see if any results were found
+                if (dataElements == null || dataElements.size()==0) {
+                    // prepare message trailer for un-authenticated users
+                    String msgTrailer = user==null ? " for unauthenticated users" : "";
+        %>
+        <p class='not-found'>No element definitions matching the search criteria were found<%=Util.processForDisplay(msgTrailer)%>.</p>
+        </div></body></html> <%
+            return;
+            }
+        }
+        if (popup){
+        %>
+                <div id="drop-operations" style="width:100%">
                     <ul>
                         <li class="close"><a href="javascript:window.close();">Close</a></li>
                         <li class="help"><a class="helpButton" href="help.jsp?screen=elements&amp;area=pagehelp">Page help</a></li>
@@ -331,12 +326,12 @@ else{ %>
                 </p><%
             }
             %>
-
+            <h2 class="results">Total results: <%=dataElements.size()%></h2>
             <form id="form1" method="post" action="search_results.jsp" onsubmit="setLocation()">
 
             <!-- search results table -->
 
-            <table width="700" class="sortable results" style="display:block">
+            <table class="datatable results">
             <%
             boolean isDisplayDstVersionColumn = isIncludeHistoricVersions;
             if (isDisplayDstVersionColumn){%>
@@ -524,16 +519,7 @@ else{ %>
                         }
                         %>
                         <td>
-                            <%
-                            if (clickable){ %>
-                                <img style="border:0" src="<%=Util.processForDisplay(statusImg)%>" width="56" height="12" title="<%=dstRegStatus%>" alt="<%=dstRegStatus%>"/><%
-                            }
-                            else{ %>
-                                <span style="color:gray;text-decoration:none;font-size:8pt" title="<%=dstRegStatus%>">
-                                    <strong><%=statusTxt%></strong>
-                                </span><%
-                            }
-                            %>
+                            <dd:datasetRegStatus value="<%=dstRegStatus%>" />
                         </td>
                     </tr><%
                     displayed++;
@@ -541,7 +527,7 @@ else{ %>
                 %>
             </tbody>
         </table>
-        <p>Total results: <%=dataElements.size()%></p><%
+        <%
             }
             else{
                 // No search - return from another result set or a total stranger...
