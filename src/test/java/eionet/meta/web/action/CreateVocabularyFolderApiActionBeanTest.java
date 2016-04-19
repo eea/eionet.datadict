@@ -28,10 +28,12 @@ import net.sourceforge.stripes.mock.MockRoundtrip;
 import net.sourceforge.stripes.mock.MockServletContext;
 import net.sourceforge.stripes.util.bean.BeanUtil;
 import net.sourceforge.stripes.validation.ValidationErrors;
+import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.web.context.ContextLoaderListener;
 import org.unitils.UnitilsJUnit4;
@@ -43,8 +45,13 @@ import org.unitils.spring.annotation.SpringBeanByType;
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
 @SpringApplicationContext("spring-context.xml")
-public class CreateVocabularyFolderApiActionBeanTest  extends UnitilsJUnit4{
-    
+public class CreateVocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
+
+    /**
+     * Logger.
+     */
+    protected static final Logger LOGGER = Logger.getLogger(CreateVocabularyFolderApiActionBeanTest.class);
+
     /**
      * Keyword for content type.
      */
@@ -76,7 +83,8 @@ public class CreateVocabularyFolderApiActionBeanTest  extends UnitilsJUnit4{
     private static final int VALID_JWT_EXPIRATION_IN_MINUTES = Props.getIntProperty(PropsIF.DD_VOCABULARY_API_JWT_EXP_IN_MINUTES);
 
     /**
-     * JWT Timeout in minutes for verification (used to validate if sent token is still active or deprecated).
+     * JWT Timeout in minutes for verification (used to validate if sent token
+     * is still active or deprecated).
      */
     private static final int VALID_JWT_TIMEOUT_IN_MINUTES = Props.getIntProperty(PropsIF.DD_VOCABULARY_API_JWT_TIMEOUT_IN_MINUTES);
 
@@ -119,45 +127,44 @@ public class CreateVocabularyFolderApiActionBeanTest  extends UnitilsJUnit4{
      * A valid API key.
      */
     public static final String VALID_API_KEY = "ValidApiKey";
-    
+
     /**
-     * A List which contains all the Rest API Endpoints which make use of the JWT security implementation
-     * 
+     * A List which contains all the Rest API Endpoints which make use of the
+     * JWT security implementation
+     *
      */
-    public List<String> JWTSecuredEndPoints ;
+    public List<String> JWTSecuredEndPoints;
     /**
      * JWT service.
      */
     @SpringBeanByType
     private IJWTService jwtService;
-    
-    
-      @BeforeClass
+
+    @BeforeClass
     public static void loadData() throws Exception {
         DBUnitHelper.loadData("seed-emptydb.xml");
         DBUnitHelper.loadData("seed-create-vocabulary-folder-api.xml");
-        
+
     }
 
     @AfterClass
     public static void deleteData() throws Exception {
         DBUnitHelper.deleteData("seed-create-vocabulary-folder-api.xml");
     }
-    
+
     @Before
-    public void initializeJWTSecuredEndPoints()
-    {
-       
-         JWTSecuredEndPoints = new ArrayList<String>();
-         JWTSecuredEndPoints.add("createFolderAndVocabulary");
-         JWTSecuredEndPoints.add("createVocabulary");
-        // JWTSecuredEndPoints.add("deleteVocabulary");
-        
+    public void initializeJWTSecuredEndPoints() {
+
+        JWTSecuredEndPoints = new ArrayList<String>();
+        JWTSecuredEndPoints.add("createFolderAndVocabulary");
+        JWTSecuredEndPoints.add("createVocabulary");
+        JWTSecuredEndPoints.add("deleteVocabulary");
+
     }
-    
-    
+
     /**
-     * This method creates and returns a mock servlet context with a property finder to be used with file bean
+     * This method creates and returns a mock servlet context with a property
+     * finder to be used with file bean
      *
      * @return
      */
@@ -181,9 +188,8 @@ public class CreateVocabularyFolderApiActionBeanTest  extends UnitilsJUnit4{
         springContextLoader.contextInitialized(new ServletContextEvent(ctx));
         return ctx;
     }
-    
+
     // Test jWT security implementation 
-    
     /**
      * Call api with no content type.
      *
@@ -191,18 +197,21 @@ public class CreateVocabularyFolderApiActionBeanTest  extends UnitilsJUnit4{
      */
     @Test
     public void testNoContentType() throws Exception {
-        
+
         for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
-                MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-    
+            if (JWTSecuredEndPoint.equals("deleteVocabulary")) {
+                break;
+            }
+            LOGGER.info("testint JWT Secured End Point : " + JWTSecuredEndPoint);
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+
             trip.execute(JWTSecuredEndPoint);
-        MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", INVALID_INPUT_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", INVALID_CONTENT_TYPE_ERROR_MESSAGE, response.getErrorMessage());
+            MockHttpServletResponse response = trip.getResponse();
+            Assert.assertEquals("Status code", INVALID_INPUT_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", INVALID_CONTENT_TYPE_ERROR_MESSAGE, response.getErrorMessage());
         }
-        
-        
+
     } // end of test step testNoContentType
 
     /**
@@ -213,16 +222,20 @@ public class CreateVocabularyFolderApiActionBeanTest  extends UnitilsJUnit4{
     @Test
     public void testInvalidContentType() throws Exception {
 
-for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+            if (JWTSecuredEndPoint.equals("deleteVocabulary")) {
+                break;
+            }
+            LOGGER.info("testint JWT Secured End Point : " + JWTSecuredEndPoint);
 
             MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, "asdadsasd");
-    trip.execute(JWTSecuredEndPoint);
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, "asdadsasd");
+            trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", INVALID_INPUT_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", INVALID_CONTENT_TYPE_ERROR_MESSAGE, response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", INVALID_INPUT_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", INVALID_CONTENT_TYPE_ERROR_MESSAGE, response.getErrorMessage());
+        }
     } // end of test step testInvalidContentType
 
     /**
@@ -232,16 +245,20 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
      */
     @Test
     public void testValidContentTypeEmptyJwt() throws Exception {
-    
-for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-    trip.execute(JWTSecuredEndPoint);
+
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+            if (JWTSecuredEndPoint.equals("deleteVocabulary")) {
+                break;
+            }
+            LOGGER.info("testint JWT Secured End Point : " + JWTSecuredEndPoint);
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+            trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "API Key cannot be missing", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "API Key missing", response.getErrorMessage());
+        }
     } // end of test step testValidContentTypeEmptyJwt
 
     /**
@@ -251,16 +268,16 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
      */
     @Test
     public void testValidContentTypeBlankJwt() throws Exception {
-    for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
-    MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, " ");    
-        trip.execute(JWTSecuredEndPoint);
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, " ");
+            trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "API Key cannot be missing", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "API Key missing", response.getErrorMessage());
+        }
     } // end of test step testValidContentTypeBlankJwt
 
     /**
@@ -271,37 +288,37 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
     @Test
     public void testValidContentTypeInvalidJwt() throws Exception {
 
-for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "asldjkalsdk");
-    trip.execute(JWTSecuredEndPoint);
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, "asldjkalsdk");
+            trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Wrong number of segments: 1", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "Wrong number of segments: 1", response.getErrorMessage());
+        }
     } // end of test step testValidContentTypeInvalidJwt
 
     /**
-     * Call api with valid content type, valid jwt but invalid token content (dummy payload).
+     * Call api with valid content type, valid jwt but invalid token content
+     * (dummy payload).
      *
      * @throws Exception if test fails
      */
     @Test
     public void testValidJwtInvalidApiKeyString() throws Exception {
-    for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
-    MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ");
-    
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ");
 
-        trip.execute(JWTSecuredEndPoint);
+            trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: signature verification failed", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "signature verification failed", response.getErrorMessage());
+        }
     } // end of test step testValidJwtInvalidApiKeyString
 
     /**
@@ -311,20 +328,18 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
      */
     @Test
     public void testValidAlreadyExpiredJwt() throws Exception {
-for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0MjI0Mjk2MTksImV4cCI6MTQyMjQyOTkzMywiYXVkIjoiRGF0YURpY3Rpb25hcnkiLCJzdWIiOiIiLCJBUElfS0VZIjoiTm90RXhpc3RpbmdBUElLZXkifQ.Fs_fr9cp2o4imv8ErnXBgzdcv-ZMKpiEB6pL5cAdgm-RU0ZSJUV5i1H5Zqfe3snO65t4vos41jum7f8atHh62A");
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0MjI0Mjk2MTksImV4cCI6MTQyMjQyOTkzMywiYXVkIjoiRGF0YURpY3Rpb25hcnkiLCJzdWIiOiIiLCJBUElfS0VZIjoiTm90RXhpc3RpbmdBUElLZXkifQ.Fs_fr9cp2o4imv8ErnXBgzdcv-ZMKpiEB6pL5cAdgm-RU0ZSJUV5i1H5Zqfe3snO65t4vos41jum7f8atHh62A");
-
-    
-    trip.execute(JWTSecuredEndPoint);
+            trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: jwt expired", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "jwt expired", response.getErrorMessage());
+        }
     } // end of test step testValidAlreadyExpiredJwt
 
     /**
@@ -334,12 +349,12 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
      */
     @Test
     public void testWrongAudienceJwt() throws Exception {
-for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
+            //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
 //        {
 //            "iss": "DDTest",
 //            "iat": 1451610061,
@@ -348,15 +363,13 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
 //            "sub": "",
 //            "API_KEY": "NotExistingAPIKey"
 //        }
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0NTE2MTAwNjEsImV4cCI6NDYwNzI4NzI2MSwiYXVkIjoiQ29udGVudFJlZ2lzdHJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6Ik5vdEV4aXN0aW5nQVBJS2V5In0.0TyN0RebnKJJr28-jZ_d0R6mHUEvbsD2GY6h7tZVHsOsxuUTiC5-_cpd3DCFnWX2bhzydYEZS0EapIPG1ym-4g");
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0NTE2MTAwNjEsImV4cCI6NDYwNzI4NzI2MSwiYXVkIjoiQ29udGVudFJlZ2lzdHJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6Ik5vdEV4aXN0aW5nQVBJS2V5In0.0TyN0RebnKJJr28-jZ_d0R6mHUEvbsD2GY6h7tZVHsOsxuUTiC5-_cpd3DCFnWX2bhzydYEZS0EapIPG1ym-4g");
-
-    
-    trip.execute(JWTSecuredEndPoint);
+            trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: jwt audience invalid", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "jwt audience invalid", response.getErrorMessage());
+        }
     } // end of test step testWrongAudienceJwt
 
     /**
@@ -366,12 +379,12 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
      */
     @Test
     public void testValidDeprecatedJwt() throws Exception {
-for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
+            //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
 //        {
 //            "iss": "DDTest",
 //            "iat": 1422429619,
@@ -380,14 +393,13 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
 //            "sub": "",
 //            "API_KEY": "NotExistingAPIKey"
 //        }
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0MjI0Mjk2MTksImV4cCI6MTA4OTIxMjkxMzMsImF1ZCI6IkRhdGFEaWN0aW9uYXJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6Ik5vdEV4aXN0aW5nQVBJS2V5In0.gij-9-r6PAKYGicjaBXTIiFL72Zon7LZrV_e0cQZvvCfcunWX__t5YZyS6GfZbkhJfNYDC6mhdcAOoZHSiWpQg");
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0MjI0Mjk2MTksImV4cCI6MTA4OTIxMjkxMzMsImF1ZCI6IkRhdGFEaWN0aW9uYXJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6Ik5vdEV4aXN0aW5nQVBJS2V5In0.gij-9-r6PAKYGicjaBXTIiFL72Zon7LZrV_e0cQZvvCfcunWX__t5YZyS6GfZbkhJfNYDC6mhdcAOoZHSiWpQg");
-
-    trip.execute(JWTSecuredEndPoint);
+            trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Deprecated token", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "Deprecated token", response.getErrorMessage());
+        }
     } // end of test step testValidDeprecatedJwt
 
     /**
@@ -397,13 +409,13 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
      */
     @Test
     public void testValidJwtNotExistingApiKey() throws Exception {
-    for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
 
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
+            //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
 //        {
 //            "iss": "DDTest",
 //            "iat": 10889450419,
@@ -412,13 +424,12 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
 //            "sub": "",
 //            "API_KEY": "NotExistingAPIKey"
 //        }
-
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjEwODg5NDUwNDE5LCJleHAiOjEwODkyMTI5MTMzLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsInN1YiI6IiIsIkFQSV9LRVkiOiJOb3RFeGlzdGluZ0FQSUtleSJ9.gtS_aw5GniHmu4820veWbSksv6r1cF10MhONO09hvIKAMrnKHIsVzTAvRKHa1oN96McUuMNq6-yzBaSqITrbfQ");
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjEwODg5NDUwNDE5LCJleHAiOjEwODkyMTI5MTMzLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsInN1YiI6IiIsIkFQSV9LRVkiOiJOb3RFeGlzdGluZ0FQSUtleSJ9.gtS_aw5GniHmu4820veWbSksv6r1cF10MhONO09hvIKAMrnKHIsVzTAvRKHa1oN96McUuMNq6-yzBaSqITrbfQ");
             trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Failed to get api key", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "Failed to get api key", response.getErrorMessage());
+        }
     } // end of test step testValidJwtNotExistingApiKey
 
     /**
@@ -428,13 +439,13 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
      */
     @Test
     public void testValidJwtBlankApiKey() throws Exception {
-for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
 
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
+            //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
 //        {
 //            "iss": "DDTest",
 //            "iat": 10889450419,
@@ -443,13 +454,12 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
 //            "sub": "",
 //            "API_KEY": " "
 //        }
-
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjEwODg5NDUwNDE5LCJleHAiOjEwODkyMTI5MTMzLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsInN1YiI6IiIsIkFQSV9LRVkiOiIgIn0.YaMzqJywCpQFn7-xT-x-PevfD1eeHfzd5LeQm7-wp0lL2LWj0sFM4PbyXl4owb7vHqxvG99fpIRF--YN40473Q");
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjEwODg5NDUwNDE5LCJleHAiOjEwODkyMTI5MTMzLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsInN1YiI6IiIsIkFQSV9LRVkiOiIgIn0.YaMzqJywCpQFn7-xT-x-PevfD1eeHfzd5LeQm7-wp0lL2LWj0sFM4PbyXl4owb7vHqxvG99fpIRF--YN40473Q");
             trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Failed to get api key", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "Failed to get api key", response.getErrorMessage());
+        }
     } // end of test step testValidJwtBlankApiKey
 
     /**
@@ -459,13 +469,13 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
      */
     @Test
     public void testValidJwtWithoutApiKey() throws Exception {
-for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
 
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
+            //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
 //        {
 //            "iss": "DDTest",
 //            "iat": 10889450419,
@@ -473,13 +483,12 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
 //            "aud": "DataDictionary",
 //            "sub": ""
 //        }
-
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjEwODg5NDUwNDE5LCJleHAiOjEwODkyMTI5MTMzLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsInN1YiI6IiJ9.GUj1BZ5KLsdiYfkVHbMbYYNQMEXTBUo8x4DehQZ5fbP_cU66jQDN8rId9l6OY_i7HnkDg2rNOxfEeOXfbHJ4Sg");
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjEwODg5NDUwNDE5LCJleHAiOjEwODkyMTI5MTMzLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsInN1YiI6IiJ9.GUj1BZ5KLsdiYfkVHbMbYYNQMEXTBUo8x4DehQZ5fbP_cU66jQDN8rId9l6OY_i7HnkDg2rNOxfEeOXfbHJ4Sg");
             trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: JSONObject[\"API_KEY\"] not found.", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "Failed to get api key", response.getErrorMessage());
+        }
     } // end of test step testValidJwtWithoutApiKey
 
     /**
@@ -489,18 +498,18 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
      */
     @Test
     public void testValidJwtWithoutApiKeyWithOurService() throws Exception {
-for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
 
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, new HashMap(), VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, new HashMap(), VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
             trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: JSONObject[\"API_KEY\"] not found.", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "Failed to get api key", response.getErrorMessage());
+        }
     } // end of test step testValidJwtWithoutApiKeyWithOurService
 
     /**
@@ -511,18 +520,18 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
     @Test
     public void testWrongSecretKeyGeneratedJwt() throws Exception {
 
-for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
 
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign("this is really not secret key", VALID_JWT_AUDIENCE, new HashMap(), VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign("this is really not secret key", VALID_JWT_AUDIENCE, new HashMap(), VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
             trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: signature verification failed", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "signature verification failed", response.getErrorMessage());
+        }
     } // end of test step testWrongSecretKeyGeneratedJwt
 
     /**
@@ -532,21 +541,21 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
      */
     @Test
     public void testValidJwtWithBlankApiKeyWithOurService() throws Exception {
-for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
 
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "");
+            Map<String, String> jwtPayload = new HashMap<String, String>();
+            jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "");
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
             trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Failed to get api key", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "Failed to get api key", response.getErrorMessage());
+        }
     } // end of test step testValidJwtWithBlankApiKeyWithOurService
 
     /**
@@ -556,21 +565,21 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
      */
     @Test
     public void testExpiredApiKey() throws Exception {
-for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
 
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "ThisKeyExpired");
+            Map<String, String> jwtPayload = new HashMap<String, String>();
+            jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "ThisKeyExpired");
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
             trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Expired key", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "Expired key", response.getErrorMessage());
+        }
     } // end of test step testExpiredApiKey
 
     /**
@@ -580,43 +589,56 @@ for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
      */
     @Test
     public void testApiKeyForSomeEndPoints() throws Exception {
-for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
+        for (String JWTSecuredEndPoint : JWTSecuredEndPoints) {
 
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+            MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "ThisKeyCanBeCalledFromSomeCertainDomains");
+            Map<String, String> jwtPayload = new HashMap<String, String>();
+            jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "ThisKeyCanBeCalledFromSomeCertainDomains");
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
             trip.execute(JWTSecuredEndPoint);
             MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Invalid remote end point", response.getErrorMessage());
-}
+            Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+            Assert.assertEquals("Error message", "Invalid remote end point", response.getErrorMessage());
+        }
     } // end of test step testApiKeyForSomeEndPoints
 
     
     
-    
-    
-    
-    
-    
+    @Ignore
+    @Test
+    public void testCreateFolderAndVocabularyValidApiKeyEmptyFolderIdentifier() throws Exception
+            {
+             MockServletContext ctx = ActionBeanUtils.getServletContext();
+            MockRoundtrip trip = new MockRoundtrip(ctx, CreateVocabularyFolderApiActionBean.class);
+            trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+
+            Map<String, String> jwtPayload = new HashMap<String, String>();
+            jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "ThisKeyCanBeCalledFromSomeCertainDomains");
+
+            trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
+            
+            }
     
     
     
     
     
     /**
-     * Extension of {@link net.sourceforge.stripes.controller.DefaultActionBeanPropertyBinder} in order to directly inject the proper file bean.
+     * Extension of
+     * {@link net.sourceforge.stripes.controller.DefaultActionBeanPropertyBinder}
+     * in order to directly inject the proper file bean.
      *
      */
     @SuppressWarnings("UnusedDeclaration")
     public static class MyActionBeanPropertyBinder extends DefaultActionBeanPropertyBinder {
+
         /**
-         * Name for the request attribute via which we inject rich-type (e.g. file bean) request parameters for the action bean.
+         * Name for the request attribute via which we inject rich-type (e.g.
+         * file bean) request parameters for the action bean.
          */
         public static final String RICH_TYPE_REQUEST_PARAMS_ATTR_NAME = "RICH_TYPE_REQUEST_PARAMS";
 

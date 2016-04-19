@@ -64,6 +64,9 @@ public class Auth0JWTServiceImpl implements IJWTService {
         } catch (IOException e) {
             e.printStackTrace();
             throw new ServiceException(e.getMessage(), e);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            throw new ServiceException(e.getMessage(), e);
         } catch (SignatureException e) {
             e.printStackTrace();
             throw new ServiceException(e.getMessage(), e);
