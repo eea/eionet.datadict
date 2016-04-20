@@ -23,7 +23,7 @@
             </ul>
         </div>
 
-        <display:table name="${actionBean.vocabularyResult.list}" class="results" id="item" requestURI="/vocabularies/search" pagesize="20" style="width:100%">
+        <display:table name="${actionBean.vocabularyResult.list}" class="datatable results" id="item" requestURI="/vocabularies/search" pagesize="20">
             <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No vocabularies found.</p>" />
             <display:column title="Vocabulary Set" sortable="true" sortProperty="folderName">
                 ${item.folderName}

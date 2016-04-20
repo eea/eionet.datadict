@@ -283,7 +283,7 @@
                         </c:forEach>
                     </div>
                 </fieldset>
-                <fieldset id="vovabularyConceptFilterOptions">
+                <fieldset id="vocabularyConceptFilterOptions">
                     <legend><a class="showHide" href="#">Options</a></legend>
                     <div class="togglable" id="optionsList">
                         <span class="optionsItem">

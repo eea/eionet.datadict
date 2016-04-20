@@ -620,18 +620,18 @@ table.results td sup.commonelm {
 
 /* DATASETS TABLE */
 
-#workarea table.datatable.results th,
-#workarea table.datatable.results td {
+table.datatable.results th,
+table.datatable.results td {
     border: 1px solid #cfe3e4;
 }
 
-#workarea table.datatable.results th.scope-row {
+table.datatable.results th.scope-row {
     width: 250px;
     color: #666666;
     text-align: left;
 }
 
-#workarea table.datatable.results th.scope-row a.helpButton:after {
+table.datatable.results th.scope-row a.helpButton:after {
     margin-left: 5px;
     margin-right: 0px;
 }
@@ -668,7 +668,7 @@ table.results td sup.commonelm {
 }
 
 .pagelinks a {
-    color: #2a6495;  
+    color: #2a6495 !important;
     background: #ecf4f5;
     border: 1px solid #cfe3e4;
 }
@@ -775,7 +775,7 @@ form#Upload table input {
 /* POP UPS */
 
 .ui-widget-content a {
-    color: #2a6495 !important;
+    color: #2a6495;
 }
 
 .ui-dialog {
@@ -1169,7 +1169,7 @@ d.simple_attr_title{
 * Vocabulary concepts
 */
 fieldset#vocabularyConceptFilters,
-fieldset#vovabularyConceptFilterOptions {
+fieldset#vocabularyConceptFilterOptions {
     border-top: 1px solid #b6b6b6;
     border-right: none;
     border-bottom: none;
@@ -1183,12 +1183,12 @@ fieldset#vovabularyConceptFilterOptions {
     float: left;
 }
 
-fieldset#vovabularyConceptFilterOptions {
+fieldset#vocabularyConceptFilterOptions {
     margin-top: 15px;
 }
 
 fieldset#vocabularyConceptFilters legend,
-fieldset#vovabularyConceptFilterOptions legend {
+fieldset#vocabularyConceptFilterOptions legend {
     padding-left: 0px;
     padding-right: 10px;
     font-weight: bold;
@@ -1224,35 +1224,35 @@ fieldset#vocabularyConceptFilters #filterList span.filterItem label {
 }
 
 #vocabularyConceptFilters select,
-#vovabularyConceptFilterOptions select {
+#vocabularyConceptFilterOptions select {
     max-width: 300px;
 }
 
-#vovabularyConceptFilterOptions span.optionsItem,
-#vovabularyConceptFilterOptions span.cartcontainer {
+#vocabularyConceptFilterOptions span.optionsItem,
+#vocabularyConceptFilterOptions span.cartcontainer {
     display: block;
     margin-bottom: 10px;
 }
 
-#vovabularyConceptFilterOptions span.cartcontainer {
+#vocabularyConceptFilterOptions span.cartcontainer {
     display: table;	
 }
 
-#vovabularyConceptFilterOptions span.cartcontainer label,
-#vovabularyConceptFilterOptions span.cartcontainer select,
-#vovabularyConceptFilterOptions span.cartcontainer p.middle {
+#vocabularyConceptFilterOptions span.cartcontainer label,
+#vocabularyConceptFilterOptions span.cartcontainer select,
+#vocabularyConceptFilterOptions span.cartcontainer p.middle {
     display: table-cell;
     vertical-align: middle;
     padding: 0 5px;
 }
 
-#vovabularyConceptFilterOptions span.cartcontainer p.middle input {
+#vocabularyConceptFilterOptions span.cartcontainer p.middle input {
     clear: both;
     display: block;
     margin: 3px 10px;
 }
 
-#vovabularyConceptFilterOptions span.cartcontainer label {
+#vocabularyConceptFilterOptions span.cartcontainer label {
     width: 130px;
 }
 
@@ -1260,7 +1260,7 @@ fieldset#vocabularyConceptFilters #filterList span.filterItem label {
     width: 150px;
 }
 
-#vovabularyConceptFilterOptions {
+#vocabularyConceptFilterOptions {
     border-top: 1px solid #b6b6b6;
     border-right: none;
     border-bottom: 1px solid #b6b6b6;
@@ -1269,18 +1269,18 @@ fieldset#vocabularyConceptFilters #filterList span.filterItem label {
 }
 
 fieldset#vocabularyConceptFilters a.showHide,
-fieldset#vovabularyConceptFilterOptions a.showHide {
+fieldset#vocabularyConceptFilterOptions a.showHide {
     text-decoration: none;
     padding-left: 20px;
     padding-right: 5px;
 }
 
 fieldset#vocabularyConceptFilters a.showHide.expanded,
-fieldset#vovabularyConceptFilterOptions a.showHide.expanded {
+fieldset#vocabularyConceptFilterOptions a.showHide.expanded {
     background: url(../images/expanded.png) 3px 0 no-repeat;
 }
 
-fieldset#vovabularyConceptFilterOptions a.showHide,
+fieldset#vocabularyConceptFilterOptions a.showHide,
 fieldset#vocabularyConceptFilters a.showHide {
     background: url(../images/collapsed.png) 3px 0 no-repeat;
 }

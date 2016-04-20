@@ -74,8 +74,8 @@
             </div>
         </stripes:form>
 
-        <display:table name="${actionBean.tableResult}" class="results" id="item"
-            decorator="eionet.web.decorators.TableResultDecorator" requestURI="/searchtables" style="width:100%">
+        <display:table name="${actionBean.tableResult}" class="datatable results" id="item"
+            decorator="eionet.web.decorators.TableResultDecorator" requestURI="/searchtables">
             <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No tables found.</p>" />
             <display:column title="Full name" sortable="true" sortProperty="NAME">
                 <c:choose>

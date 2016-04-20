@@ -23,7 +23,7 @@
             </ul>
         </div>
 
-        <display:table name="${actionBean.vocabularyConceptResult}" class="results" id="item" requestURI="/vocabularies/searchConcepts" pagesize="20" style="width:100%">
+        <display:table name="${actionBean.vocabularyConceptResult}" class="datatable results" id="item" requestURI="/vocabularies/searchConcepts" pagesize="20">
             <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No vocabulary concepts found.</p>" />
             <display:column title="Vocabulary Set" sortable="true" sortProperty="vocabularySetIdentifier" >
                 <c:out value="${item.vocabularySetIdentifier}" />

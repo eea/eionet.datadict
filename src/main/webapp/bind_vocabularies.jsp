@@ -10,7 +10,7 @@
     <stripes:layout-component name="contents">
         <h1>Set Vocabulary for fixed values</h1>
 
-        <display:table name="${actionBean.vocabularies.list}" class="results" id="item" requestURI="/bindvocabulary" pagesize="20" style="width:100%">
+        <display:table name="${actionBean.vocabularies.list}" class="datatable results" id="item" requestURI="/bindvocabulary" pagesize="20">
             <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No data elements found.</p>" />
             <display:column title="Vocabulary Set" sortable="true" sortProperty="folderName">
                 ${item.folderName}

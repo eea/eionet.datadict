@@ -67,9 +67,9 @@
         VersionManager verMan = new VersionManager(conn, searchEngine, user);
         
         String sortName = (String) request.getParameter("sort_name");
-        DataSetSort sort = DataSetSort.fromString(sortName);
+        eionet.meta.DataSetSort sort = eionet.meta.DataSetSort.fromString(sortName);
         if (sort == null) {
-            sort = DataSetSort.SHORT_NAME; // fall-back
+            sort = eionet.meta.DataSetSort.SHORT_NAME; // fall-back
         }
         String sortOrder = (String) request.getParameter("sort_order");
         boolean descending = StringUtils.isNotBlank(sortOrder) && sortOrder.equals("desc");
@@ -137,7 +137,7 @@
         <h2 class="results">Total results: <%=datasets.size()%></h2>
         <form id="form1" method="post" action="restore_datasets.jsp">
         <!--  result table -->
-        <table width="100%" class="results">
+        <table class="datatable results">
             <thead>
                 <tr>
                     <th>&nbsp;</th>

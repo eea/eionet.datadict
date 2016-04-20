@@ -34,7 +34,7 @@
 
 <h2>Bound elements for concepts</h2>
 
-<display:table name="actionBean.boundElements" class="results" id="item" style="width:100%"
+<display:table name="actionBean.boundElements" class="datatable results" id="item" 
     requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/edit">
     <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No bound elements found.</p>" />
     <display:column title="Element" sortable="true" sortProperty="identifier">

@@ -78,7 +78,7 @@
             </div>
         </stripes:form>
 
-        <display:table name="actionBean.schemaSetsResult" class="results" id="item" requestURI="/schemasets/search/" style="width:100%">
+        <display:table name="actionBean.schemaSetsResult" class="datatable results" id="item" requestURI="/schemasets/search/">
             <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No schema sets found.</p>" />
             <display:column title="Name" sortable="true" sortName="sortName" sortProperty="NAME_ATTR">
                 <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">

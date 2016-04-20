@@ -100,7 +100,7 @@
             </div>
         </stripes:form>
 
-        <display:table name="actionBean.schemasResult" class="results" id="item" requestURI="/schema/search/" style="width:100%">
+        <display:table name="actionBean.schemasResult" class="datatable results" id="item" requestURI="/schema/search/">
             <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No schemas found.</p>" />
             <c:if test="${actionBean.schemaSetId != 0}">
                 <display:column title="" sortable="false">
