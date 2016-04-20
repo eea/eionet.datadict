@@ -4,7 +4,7 @@
  * Created on Apr 5, 2016
  *            www.eworx.gr
  */
-package eionet.meta;
+package eionet.meta.dao.domain;
 
 import eionet.util.Util;
 import java.util.Comparator;
@@ -16,24 +16,24 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum DataElementSort {
 
-    ID, SHORT_NAME, STATUS, TYPE;
+    IDENTIFIER, NAME, STATUS, TYPE, TABLE_NAME, DATASET_NAME;
 
     public Comparator<DataElement> getComparator(final boolean descending) {
-        if (this == ID) {
+        if (this == IDENTIFIER) {
             return new Comparator<DataElement>() {
                 @Override
                 public int compare(DataElement d1, DataElement d2) {
-                    return descending ? -Integer.valueOf(d1.getID()).compareTo(Integer.valueOf(d2.getID())) : 
-                            Integer.valueOf(d1.getID()).compareTo(Integer.valueOf(d2.getID()));
+                    return descending ? -d1.getIdentifier().compareToIgnoreCase(d2.getIdentifier()) : 
+                            d1.getIdentifier().compareToIgnoreCase(d2.getIdentifier());
                 }
             };
         }
-        if (this == SHORT_NAME) {
+        if (this == NAME) {
             return new Comparator<DataElement>() {
                 @Override
                 public int compare(DataElement d1, DataElement d2) {
-                    return descending ? -d1.getShortName().compareToIgnoreCase(d2.getShortName()) :
-                            d1.getShortName().compareToIgnoreCase(d2.getShortName());
+                    return descending ? -d1.getName().compareToIgnoreCase(d2.getName()) :
+                            d1.getName().compareToIgnoreCase(d2.getName());
                 }
             };
         }
@@ -55,6 +55,24 @@ public enum DataElementSort {
                 }
             };
         }
+        if (this == TABLE_NAME) {
+            return new Comparator<DataElement>() {
+                @Override
+                public int compare(DataElement d1, DataElement d2) {
+                    return descending ? -d1.getTableName().compareToIgnoreCase(d2.getTableName()) : 
+                            d1.getTableName().compareToIgnoreCase(d2.getTableName());
+                }
+            };
+        }
+        if (this == DATASET_NAME) {
+            return new Comparator<DataElement>() {
+                @Override
+                public int compare(DataElement d1, DataElement d2) {
+                    return descending ? -d1.getDataSetName().compareToIgnoreCase(d2.getDataSetName()) : 
+                            d1.getDataSetName().compareToIgnoreCase(d2.getDataSetName());
+                }
+            };
+        }
         return null;
     }
 
@@ -69,4 +87,5 @@ public enum DataElementSort {
         }
         return null;
     }
+
 }

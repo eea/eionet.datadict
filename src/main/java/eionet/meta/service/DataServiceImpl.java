@@ -105,7 +105,7 @@ public class DataServiceImpl implements IDataService {
      * {@inheritDoc}
      */
     @Override
-    public DataElementsResult searchDataElements(DataElementsFilter filter) throws ServiceException {
+    public List<DataElement> searchDataElements(DataElementsFilter filter) throws ServiceException {
         try {
             return dataElementDao.searchDataElements(filter);
         } catch (Exception e) {
@@ -162,21 +162,19 @@ public class DataServiceImpl implements IDataService {
     @Override
     public List<DataElement> getDataElementsWithFixedValues() throws ServiceException {
         try {
+            List<DataElement> result = new ArrayList<DataElement>();
             DataElementsFilter commonElementsFilter = new DataElementsFilter();
             commonElementsFilter.setElementType(DataElementsFilter.COMMON_ELEMENT_TYPE);
             commonElementsFilter.setRegStatus("Released");
             commonElementsFilter.setType("CH1");
-            DataElementsResult commonResult = dataElementDao.searchDataElements(commonElementsFilter);
+            result.addAll(dataElementDao.searchDataElements(commonElementsFilter));
 
             DataElementsFilter nonCommonElementsFilter = new DataElementsFilter();
             nonCommonElementsFilter.setElementType(DataElementsFilter.NON_COMMON_ELEMENT_TYPE);
             nonCommonElementsFilter.setRegStatus("Released");
             nonCommonElementsFilter.setType("CH1");
-            DataElementsResult nonCommonResult = dataElementDao.searchDataElements(nonCommonElementsFilter);
+            result.addAll(dataElementDao.searchDataElements(nonCommonElementsFilter));
 
-            List<DataElement> result = new ArrayList<DataElement>();
-            result.addAll(commonResult.getDataElements());
-            result.addAll(nonCommonResult.getDataElements());
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to get data elements with fixed values: " + e.getMessage(), e);
@@ -206,16 +204,11 @@ public class DataServiceImpl implements IDataService {
 
     @Override
     public List<DataElement> getReleasedCommonDataElements() throws ServiceException {
-
         DataElementsFilter commonElementsFilter = new DataElementsFilter();
         commonElementsFilter.setElementType(DataElementsFilter.COMMON_ELEMENT_TYPE);
         commonElementsFilter.setRegStatus("Released");
         commonElementsFilter.setIncludeOnlyInternal(true);
-
-        DataElementsResult result = dataElementDao.searchDataElements(commonElementsFilter);
-
-        return result.getDataElements();
-
+        return dataElementDao.searchDataElements(commonElementsFilter);
     }
 
     @Override

@@ -47,9 +47,9 @@ public interface IDataElementDAO {
      *
      * @param filter
      *            search filter
-     * @return search results
+     * @return list of data elements
      */
-    DataElementsResult searchDataElements(DataElementsFilter filter);
+    List<DataElement> searchDataElements(DataElementsFilter filter);
 
     /**
      * Returns data element attributes.

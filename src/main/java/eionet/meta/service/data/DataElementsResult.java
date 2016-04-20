@@ -29,50 +29,12 @@ import eionet.meta.dao.domain.DataElement;
  * Data elements search result.
  *
  * @author Juhan Voolaid
+ * @author Ioannis Stamos <js@eworx.gr>
  */
-public class DataElementsResult {
+public class DataElementsResult extends PagedResult<DataElement> {
 
-    private List<DataElement> dataElements;
-
-    private boolean commonElements;
-
-    /**
-     * Total number of results.
-     *
-     * @return
-     */
-    public int getTotalResults() {
-        return dataElements.size();
-    }
-
-    /**
-     * @return the dataElements
-     */
-    public List<DataElement> getDataElements() {
-        return dataElements;
-    }
-
-    /**
-     * @param dataElements
-     *            the dataElements to set
-     */
-    public void setDataElements(List<DataElement> dataElements) {
-        this.dataElements = dataElements;
-    }
-
-    /**
-     * @return the commonElements
-     */
-    public boolean isCommonElements() {
-        return commonElements;
-    }
-
-    /**
-     * @param commonElements
-     *            the commonElements to set
-     */
-    public void setCommonElements(boolean commonElements) {
-        this.commonElements = commonElements;
+    public DataElementsResult(List<DataElement> items, int totalItems, PagedRequest pagedRequest) {
+        super(items, totalItems, pagedRequest);
     }
 
 }

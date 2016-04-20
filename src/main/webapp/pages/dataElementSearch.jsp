@@ -11,67 +11,70 @@
         <script type="text/javascript">
         // <![CDATA[
 
-        /*
-        * Adds hidden parameter "delAttr" to form and submits it, so the attribute field gets removed after the submit.
-        */
-        function deleteAttribute(id) {
-            var input = document.createElement("input");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("name", "delAttr");
-            input.setAttribute("value", id);
+            /*
+            * Adds hidden parameter "delAttr" to form and submits it, so the attribute field gets removed after the submit.
+            */
+            function deleteAttribute(id) {
+                var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", "delAttr");
+                input.setAttribute("value", id);
 
-            document.getElementById("searchForm").appendChild(input);
-            document.getElementById("searchForm").submit();
-        }
+                document.getElementById("searchForm").appendChild(input);
+                document.getElementById("searchForm").submit();
+            }
 
-        ( function($) {
-            $(document).ready(function(){
+            (function($) {
+                $(document).ready(function() {
+                    // Checks if common/non-common element radio button is selected and disables/enambles input fields accordingly.
+                    var toggleDisabledFields = function() {
+                        var nonCommonRadio = document.getElementById("nonCommonRadio");
+                        var commonRadio = document.getElementById("commonRadio");
+                        var regStatusSelect = document.getElementById("regStatusSelect");
+                        var datasetSelect = document.getElementById("datasetSelect");
 
-                /*
-                 * Checks if common/non-common element radio button is selected and disables/enambles input fields accordingly.
-                 */
-                 var toggleDisabledFields = function() {
-                     var nonCommonRadio = document.getElementById("nonCommonRadio");
-                     var commonRadio = document.getElementById("commonRadio");
-                     var regStatusSelect = document.getElementById("regStatusSelect");
-                     var datasetSelect = document.getElementById("datasetSelect");
+                        if (nonCommonRadio.checked) {
+                            regStatusSelect.disable();
+                            datasetSelect.enable();
+                            regStatusSelect.value = "";
+                        }
 
-                     if (nonCommonRadio.checked) {
-                         regStatusSelect.disable();
-                         datasetSelect.enable();
-                     }
+                        if (commonRadio.checked) {
+                            regStatusSelect.enable();
+                            datasetSelect.disable();
+                            datasetSelect.value = "";
+                        }
+                    }
 
-                     if (commonRadio.checked) {
-                         regStatusSelect.enable();
-                         datasetSelect.disable();
-                     }
-
-                     regStatusSelect.value="";
-                     datasetSelect.value="";
-                 }
-
-                toggleDisabledFields();
-
-                $("#nonCommonRadio").click(function() {
                     toggleDisabledFields();
-                });
 
-                $("#commonRadio").click(function() {
-                    toggleDisabledFields();
-                });
+                    $("#nonCommonRadio").click(function() {
+                        toggleDisabledFields();
+                    });
 
-            });
-        } ) ( jQuery );
+                    $("#commonRadio").click(function() {
+                        toggleDisabledFields();
+                    });
+
+                    applySearchToggle("searchForm");
+                });
+            })(jQuery);
         // ]]>
         </script>
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">
-    <h1>Search data elements</h1>
+    <h1>Data elements</h1>
+    <c:if test="${empty actionBean.user}">
+        <p class="advise-msg">
+            Note: Elements from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.
+        </p>
+    </c:if>
 
     <c:if test="${actionBean.permissionToAdd}">
         <div id="drop-operations">
             <ul>
+                <li class="search open"><a class="searchSection" href="#" title="Search datasets">Search</a></li>
                 <li class="new">
                     <stripes:link href="/dataelements/add/">
                         <stripes:param name="common" value="true" />
@@ -93,7 +96,7 @@
                     <td class="input">
                         <stripes:select id="regStatusSelect" name="filter.regStatus" class="small">
                             <stripes:option value="" label="All" />
-                            <stripes:options-collection collection="${actionBean.regStatuses}"/>
+                            <stripes:options-collection collection="${actionBean.regStatuses}" />
                         </stripes:select>
                     </td>
                 </tr>
@@ -141,31 +144,31 @@
                         <stripes:text name="filter.identifier" class="smalltext" size="59" id="txtIdentifier" />
                     </td>
                 </tr>
-                <c:forEach items="${actionBean.filter.attributes}" var="attr" varStatus="row">
+                <c:forEach items="${actionBean.filter.defaultAttributes}" var="attr" varStatus="row">
                     <tr>
                         <td class="label">
                             <label for="txtFilterAttr_${attr.id}_${row.index}"><c:out value="${attr.shortName}" /></label>
                             <a class="helpButton" href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE"></a>
                         </td>
                         <td class="input">
-                            <stripes:hidden name="filter.attributes[${row.index}].id" />
-                            <stripes:hidden name="filter.attributes[${row.index}].name" />
-                            <stripes:hidden name="filter.attributes[${row.index}].shortName" />
-                            <stripes:text name="filter.attributes[${row.index}].value" class="smalltext" size="59" id="txtFilterAttr_${attr.id}_${row.index}" />
+                            <stripes:hidden name="filter.defaultAttributes[${row.index}].id" />
+                            <stripes:hidden name="filter.defaultAttributes[${row.index}].name" />
+                            <stripes:hidden name="filter.defaultAttributes[${row.index}].shortName" />
+                            <stripes:text name="filter.defaultAttributes[${row.index}].value" class="smalltext" size="59" id="txtFilterAttr_${attr.id}_${row.index}" />
                         </td>
                     </tr>
                 </c:forEach>
-                <c:forEach items="${actionBean.addedAttributes}" var="attr" varStatus="row">
+                <c:forEach items="${actionBean.filter.addedAttributes}" var="attr" varStatus="row">
                     <tr>
                         <td class="label">
                             <label for="txtAddedAttr_${attr.id}_${row.index}"><c:out value="${attr.name}" /></label>
                             <a class="helpButton" href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE"></a>
                         </td>
                         <td class="input">
-                            <stripes:hidden name="addedAttributes[${row.index}].id" />
-                            <stripes:hidden name="addedAttributes[${row.index}].name" />
-                            <stripes:hidden name="addedAttributes[${row.index}].shortName" />
-                            <stripes:text name="addedAttributes[${row.index}].value" class="smalltext" size="59" id="txtAddedAttr_${attr.id}_${row.index}" />
+                            <stripes:hidden name="filter.addedAttributes[${row.index}].id" />
+                            <stripes:hidden name="filter.addedAttributes[${row.index}].name" />
+                            <stripes:hidden name="filter.addedAttributes[${row.index}].shortName" />
+                            <stripes:text name="filter.addedAttributes[${row.index}].value" class="smalltext" size="59" id="txtAddedAttr_${attr.id}_${row.index}" />
                             <a class="deleteButton" href="#" onclick="deleteAttribute(${attr.id})" title="Remove attribute from search criteria" /></a>
                         </td>
                     </tr>
@@ -204,6 +207,51 @@
             </table>
         </div>
     </stripes:form>
+
+    <display:table name="${actionBean.result}" class="datatable results" id="item" requestURI="/searchelements">
+        <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No data elements found.</p>" />
+        <display:column title="Element" sortable="true" sortProperty="IDENTIFIER">
+            <c:choose>
+                <c:when test="${item.released && empty actionBean.user}">
+                    <stripes:link href="/dataelements/${item.id}">${item.identifier}</stripes:link>
+                </c:when>
+                <c:when test="${not empty actionBean.user}">
+                    <stripes:link href="/dataelements/${item.id}">${item.identifier}</stripes:link>
+                    <c:if test="${not empty item.workingUser}">
+                        <span class="checkedout" title="${item.workingUser}">*</span>
+                    </c:if>
+                </c:when>
+                <c:otherwise>
+                    ${item.identifier}
+                </c:otherwise>
+            </c:choose>
+        </display:column>
+        <display:column title="Type" sortable="true" sortProperty="TYPE">
+            <c:if test="${item.type == 'CH1'}">Fixed values (code list)</c:if>
+            <c:if test="${item.type == 'CH2'}">Quantitative</c:if>
+            <c:if test="${item.type == 'CH3'}">Fixed Values (vocabulary)</c:if>
+        </display:column>
+        <c:if test="${actionBean.filter.elementType=='nonCommon'}">
+            <c:set var="statusLabel" value="Dataset status" />
+            <display:column property="tableName" title="Table" sortable="true" sortProperty="TABLE_NAME" />
+            <display:column property="dataSetName" title="Dataset" sortable="true" sortProperty="DATASET_NAME" />
+        </c:if>
+        <c:if test="${actionBean.filter.elementType=='common'}">
+            <c:set var="statusLabel" value="Status" />
+        </c:if>
+        <display:column title="${statusLabel}" sortable="true" sortProperty="STATUS">
+            <dd:datasetRegStatus value="${item.status}" />
+
+            <c:if test="${item.released}">
+                <fmt:setLocale value="en_GB" />
+                <fmt:formatDate pattern="dd MMM yyyy" value="${item.modified}" var="dateFormatted"/>
+                <sup class="commonelm">${dateFormatted}</sup>
+            </c:if>
+        </display:column>
+         <display:column title="Name" sortable="true" sortProperty="NAME">
+            ${item.name}
+        </display:column>
+    </display:table>
 
     </stripes:layout-component>
 

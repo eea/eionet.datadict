@@ -31,19 +31,24 @@ import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import eionet.meta.VersionManager;
 import eionet.meta.dao.domain.Attribute;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.DataElementSort;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 import eionet.util.SecurityUtil;
+import java.util.Collections;
+import org.apache.commons.lang.StringUtils;
+import org.displaytag.properties.SortOrderEnum;
 
 /**
  * Data elements search page controller.
  *
  * @author Juhan Voolaid
  */
-@UrlBinding("/searchelements/{$event}")
+@UrlBinding("/searchelements")
 public class SearchDataElementsActionBean extends AbstractActionBean {
 
     /** Possible registration statuses. */
@@ -62,9 +67,6 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
     /** Filtering attributes that are available to add. */
     private List<Attribute> addableAttributes;
 
-    /** Added filtering attributes */
-    private List<Attribute> addedAttributes;
-
     /** Id of the attribute to add. */
     private int addAttr;
 
@@ -82,73 +84,53 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     @DefaultHandler
-    public Resolution view() throws ServiceException {
+    public Resolution search() throws ServiceException {
+        if (filter == null) {
+            filter = new DataElementsFilter();
+            filter.setElementType(DataElementsFilter.NON_COMMON_ELEMENT_TYPE);
+            filter.getDefaultAttributes().add(dataService.getAttributeByName("Name"));
+            filter.getDefaultAttributes().add(dataService.getAttributeByName("Definition"));
+            filter.getDefaultAttributes().add(dataService.getAttributeByName("Keyword"));
+        }
+        filter.setPageNumber(page);
+        dataSets = dataService.getDataSets();
+
+        addableAttributes = dataService.getDataElementAttributes();
         if (addAttr != 0) {
-            return addAttribute();
+            addSelectedAttribute();
         }
 
         if (delAttr != 0) {
-            return deleteAttribute();
+            deleteSelectedAttribute();
+        }
+        filterAddableAttributes();
+
+        List<DataElement> dataElements = dataService.searchDataElements(filter);
+        int dataElementsSize = dataElements.size();
+
+        // sorting
+        DataElementSort dataElementSort = DataElementSort.fromString(sort);
+        if (dataElementSort != null) {
+            boolean descending = StringUtils.isNotBlank(dir) && dir.equals("desc");
+            // feed sort order to display tag
+            filter.setSortProperty(sort);
+            filter.setSortOrder(descending ? SortOrderEnum.DESCENDING : SortOrderEnum.ASCENDING);
+            Collections.sort(dataElements, dataElementSort.getComparator(descending));
         }
 
-        filter = new DataElementsFilter();
+        result = new DataElementsResult(dataElements, dataElementsSize, filter);
 
-        dataSets = dataService.getDataSets();
-
-        filter.getAttributes().add(dataService.getAttributeByName("Name"));
-        filter.getAttributes().add(dataService.getAttributeByName("Definition"));
-        filter.getAttributes().add(dataService.getAttributeByName("Keyword"));
-
-        addableAttributes = dataService.getDataElementAttributes();
-        filterAddableAttributes();
-
-        return new ForwardResolution("/pages/dataElementSearch.jsp");
-    }
-
-    /**
-     * Search action.
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution search() throws ServiceException {
-        if (addedAttributes != null && addedAttributes.size() > 0) {
-            filter.getAttributes().addAll(addedAttributes);
+        // pagination
+        if (filter.isUsePaging()) {
+            if (filter.getOffset() > dataElementsSize) {
+                result.setList(Collections.EMPTY_LIST);
+            } else {
+                int paginationLimit = filter.getOffset()+ filter.getPageSize();
+                List<DataElement> paginatedItems = result.getList().subList(filter.getOffset(), 
+                        dataElementsSize <= paginationLimit ? dataElementsSize : paginationLimit);
+                result.setList(paginatedItems);
+            }
         }
-        result = dataService.searchDataElements(filter);
-        return new ForwardResolution("/pages/dataElementsResult.jsp");
-    }
-
-    /**
-     * Add attribute action.
-     *
-     * @return
-     * @throws ServiceException
-     */
-    private Resolution addAttribute() throws ServiceException {
-
-        dataSets = dataService.getDataSets();
-        addableAttributes = dataService.getDataElementAttributes();
-
-        addSelectedAttribute();
-        filterAddableAttributes();
-
-        return new ForwardResolution("/pages/dataElementSearch.jsp");
-    }
-
-    /**
-     * Remove attribute action.
-     *
-     * @return
-     * @throws ServiceException
-     */
-    private Resolution deleteAttribute() throws ServiceException {
-
-        dataSets = dataService.getDataSets();
-        addableAttributes = dataService.getDataElementAttributes();
-
-        deleteSelectedAttribute();
-        filterAddableAttributes();
 
         return new ForwardResolution("/pages/dataElementSearch.jsp");
     }
@@ -157,9 +139,9 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
      * Deletes the attribute from addedAttributes collection.
      */
     private void deleteSelectedAttribute() {
-        for (Attribute a : addedAttributes) {
+        for (Attribute a : filter.getAddedAttributes()) {
             if (delAttr == a.getId()) {
-                addedAttributes.remove(a);
+                filter.getAddedAttributes().remove(a);
                 break;
             }
         }
@@ -170,12 +152,9 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
      * Adds the attribute to addedAttributes collection.
      */
     private void addSelectedAttribute() {
-        if (addedAttributes == null) {
-            addedAttributes = new ArrayList<Attribute>();
-        }
         for (Attribute a : addableAttributes) {
             if (addAttr == a.getId()) {
-                addedAttributes.add(a);
+                filter.getAddedAttributes().add(a);
                 break;
             }
         }
@@ -192,15 +171,6 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
         for (Attribute a : filter.getAttributes()) {
             if (addableAttributes.contains(a)) {
                 addableAttributes.remove(a);
-            }
-        }
-
-        // Remove the added attributes
-        if (addedAttributes != null) {
-            for (Attribute a : addedAttributes) {
-                if (addableAttributes.contains(a)) {
-                    addableAttributes.remove(a);
-                }
             }
         }
     }
@@ -278,21 +248,6 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
     }
 
     /**
-     * @return the addedAttributes
-     */
-    public List<Attribute> getAddedAttributes() {
-        return addedAttributes;
-    }
-
-    /**
-     * @param addedAttributes
-     *            the addedAttributes to set
-     */
-    public void setAddedAttributes(List<Attribute> addedAttributes) {
-        this.addedAttributes = addedAttributes;
-    }
-
-    /**
      * @return the delAttr
      */
     public int getDelAttr() {
@@ -305,6 +260,39 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
      */
     public void setDelAttr(int delAttr) {
         this.delAttr = delAttr;
+    }
+
+    // table page number
+    private int page = 1;
+
+    // sorting property
+    private String sort;
+
+    // sorting direction
+    private String dir;
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public String getSort() {
+        return sort;
+    }
+
+    public void setSort(String sort) {
+        this.sort = sort;
+    }
+
+    public String getDir() {
+        return dir;
+    }
+
+    public void setDir(String dir) {
+        this.dir = dir;
     }
 
 }

@@ -540,7 +540,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
         elementsFilter.setRegStatus("Released");
         elementsFilter.setElementType(DataElementsFilter.COMMON_ELEMENT_TYPE);
-        elementsResult = dataService.searchDataElements(elementsFilter);
+        List<DataElement> dataElements = dataService.searchDataElements(elementsFilter);
+        elementsResult = new DataElementsResult(dataElements, dataElements.size(), elementsFilter);
         editDivId = "addElementsDiv";
 
         boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
