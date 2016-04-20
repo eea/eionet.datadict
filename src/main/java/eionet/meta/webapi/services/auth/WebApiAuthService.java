@@ -1,15 +1,14 @@
-package eionet.meta.service;
+package eionet.meta.webapi.services.auth;
 
 import eionet.meta.DDUser;
 import eionet.meta.application.errors.UserAuthenticationException;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  *
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
 public interface WebApiAuthService {
-
-    DDUser authenticate(HttpServletRequest request) throws UserAuthenticationException;
+    
+    DDUser authenticate(WebApiAuthInfo contextInfo) throws UserAuthenticationException;
     
 }

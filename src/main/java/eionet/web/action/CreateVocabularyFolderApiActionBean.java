@@ -9,7 +9,8 @@ import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.meta.service.IRDFVocabularyImportService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
-import eionet.meta.service.WebApiAuthService;
+import eionet.meta.webapi.services.auth.WebApiAuthInfoService;
+import eionet.meta.webapi.services.auth.WebApiAuthService;
 import static eionet.web.action.AbstractActionBean.LOGGER;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -75,6 +76,9 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
     public static final String JSON_FORMAT = "application/json";
 
     //Instance members
+    
+    @SpringBean
+    private WebApiAuthInfoService webApiAuthInfoService;
     
     @SpringBean
     private WebApiAuthService webApiAuthService;
@@ -171,7 +175,7 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
         DDUser user;
         
         try {
-            user = this.webApiAuthService.authenticate(request);
+            user = this.webApiAuthService.authenticate(this.webApiAuthInfoService.getAuthenticationInfo(request));
         }
         catch (UserAuthenticationException ex) {
             return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, ex.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
@@ -259,7 +263,7 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
         DDUser user;
         
         try {
-            user = this.webApiAuthService.authenticate(request);
+            user = this.webApiAuthService.authenticate(this.webApiAuthInfoService.getAuthenticationInfo(request));
         }
         catch (UserAuthenticationException ex) {
             return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, ex.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
@@ -332,7 +336,7 @@ public class CreateVocabularyFolderApiActionBean extends AbstractActionBean {
         String contentType = request.getHeader(CONTENT_TYPE_HEADER);
 
         try {
-            this.webApiAuthService.authenticate(request);
+            this.webApiAuthService.authenticate(this.webApiAuthInfoService.getAuthenticationInfo(request));
         }
         catch (UserAuthenticationException ex) {
             return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, ex.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);

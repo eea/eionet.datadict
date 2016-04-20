@@ -1,13 +1,15 @@
-package eionet.meta.service;
+package eionet.meta.webapi.services.auth;
 
 import eionet.meta.DDUser;
 import eionet.meta.application.errors.UserAuthenticationException;
 import eionet.meta.dao.domain.DDApiKey;
-import eionet.meta.service.impl.WebApiAuthServiceImpl;
+import eionet.meta.service.ConfigurationPropertyValueProvider;
+import eionet.meta.service.IApiKeyService;
+import eionet.meta.service.IJWTService;
+import eionet.meta.service.ServiceException;
 import eionet.util.PropsIF;
 import java.util.Calendar;
 import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONObject;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -38,10 +40,8 @@ public class WebApiAuthServiceTest {
     @Mock
     private ConfigurationPropertyValueProvider configurationPropertyValueProvider;
     
-    @Mock
-    private HttpServletRequest request;
-    
     private WebApiAuthService webApiAuthService;
+    private WebApiAuthInfo request;
     
     @Before
     public void setUp() {
@@ -51,6 +51,7 @@ public class WebApiAuthServiceTest {
     
     @Test
     public void testApiKeyMissing() throws ServiceException {
+        this.request = new WebApiAuthInfo(null);
         this.assertUserAuthenticationException();
         
         verify(this.jwtService, times(0)).verify(any(String.class), any(String.class), any(String.class));
@@ -159,7 +160,7 @@ public class WebApiAuthServiceTest {
     }
     
     private void configureExistingApiKey() {
-        when(this.request.getHeader(WebApiAuthServiceImpl.JWT_API_KEY_HEADER)).thenReturn(DUMMY_JSON_WEB_TOKEN);
+        this.request = new WebApiAuthInfo(DUMMY_JSON_WEB_TOKEN);
     }
     
     private void configureDDJwtConfiguration() {

@@ -1,4 +1,4 @@
-package eionet.meta.service.impl;
+package eionet.meta.webapi.services.auth;
 
 import eionet.meta.DDUser;
 import eionet.meta.application.errors.UserAuthenticationException;
@@ -7,11 +7,9 @@ import eionet.meta.service.ConfigurationPropertyValueProvider;
 import eionet.meta.service.IApiKeyService;
 import eionet.meta.service.IJWTService;
 import eionet.meta.service.ServiceException;
-import eionet.meta.service.WebApiAuthService;
 import eionet.util.PropsIF;
 import java.util.Calendar;
 import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -25,7 +23,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class WebApiAuthServiceImpl implements WebApiAuthService {
 
-    public static final String JWT_API_KEY_HEADER = "X-DD-API-KEY";
     public static final String JWT_ISSUER = "iss";
     public static final String API_KEY_IDENTIFIER_IN_JSON = "API_KEY";
     public static final String TOKEN_CREATED_TIME_IDENTIFIER_IN_JSON = "iat";
@@ -42,18 +39,17 @@ public class WebApiAuthServiceImpl implements WebApiAuthService {
         this.apiKeyService = apiKeyService;
         this.configurationPropertyValueProvider = configurationPropertyValueProvider;
     }
-
+    
     @Override
-    public DDUser authenticate(HttpServletRequest request) throws UserAuthenticationException {
-        String jsonWebToken = this.getJsonWebToken(request);
-        String tokenUser;
-
-        if (StringUtils.isBlank(jsonWebToken)) {
+    public DDUser authenticate(WebApiAuthInfo contextInfo) throws UserAuthenticationException {
+        if (StringUtils.isBlank(contextInfo.getAuthenticationToken())) {
             throw new UserAuthenticationException("API Key missing");
         }
+        
+        String tokenUser;
 
         try {
-            JSONObject jsonObject = jwtService.verify(this.getJwtKey(), this.getJwtAudience(), jsonWebToken);
+            JSONObject jsonObject = jwtService.verify(this.getJwtKey(), this.getJwtAudience(), contextInfo.getAuthenticationToken());
             
             long createdTimeInSeconds = this.getDateCreatedInSeconds(jsonObject);
             long nowInSeconds = Calendar.getInstance().getTimeInMillis() / 1000l;
@@ -79,11 +75,7 @@ public class WebApiAuthServiceImpl implements WebApiAuthService {
                 }
             }
 
-            String remoteAddr = ddApiKey.getRemoteAddr();
-
-            if (StringUtils.isNotBlank(remoteAddr) && !StringUtils.equals(remoteAddr, request.getRemoteAddr()) && !StringUtils.equals(remoteAddr, request.getRemoteHost())) {
-                throw new UserAuthenticationException("Invalid remote end point");
-            }
+            this.validateRemoteHost(ddApiKey, contextInfo);
             
             tokenUser = this.getTokenUser(jsonObject);
 
@@ -97,10 +89,6 @@ public class WebApiAuthServiceImpl implements WebApiAuthService {
         }
         
         return new DDUser(tokenUser, true);
-    }
-    
-    protected String getJsonWebToken(HttpServletRequest request) {
-        return request.getHeader(JWT_API_KEY_HEADER);
     }
     
     protected String getJwtKey() {
@@ -125,6 +113,18 @@ public class WebApiAuthServiceImpl implements WebApiAuthService {
         }
         
         return jwtVerifyResult.getString(API_KEY_IDENTIFIER_IN_JSON);
+    }
+    
+    protected void validateRemoteHost(DDApiKey ddApiKey, WebApiAuthInfo contextInfo) throws UserAuthenticationException {
+        String remoteAddr = ddApiKey.getRemoteAddr();
+
+        if (StringUtils.isBlank(remoteAddr)) {
+            return;
+        }
+        
+        if (!StringUtils.equals(remoteAddr, contextInfo.getRemoteAddress()) && !StringUtils.equals(remoteAddr, contextInfo.getRemoteHost())) {
+            throw new UserAuthenticationException("Invalid remote end point");
+        }
     }
     
     protected String getTokenUser(JSONObject jwtVerifyResult) {
