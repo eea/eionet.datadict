@@ -71,19 +71,19 @@
         </p>
     </c:if>
 
-    <c:if test="${actionBean.permissionToAdd}">
-        <div id="drop-operations">
-            <ul>
-                <li class="search open"><a class="searchSection" href="#" title="Search datasets">Search</a></li>
+    <div id="drop-operations">
+        <ul>
+            <li class="search open"><a class="searchSection" href="#" title="Search datasets">Search</a></li>
+            <c:if test="${actionBean.permissionToAdd}">
                 <li class="new">
                     <stripes:link href="/dataelements/add/">
                         <stripes:param name="common" value="true" />
                         New common element
                     </stripes:link>
                 </li>
-            </ul>
-        </div>
-    </c:if>
+            </c:if>
+        </ul>
+    </div>
 
     <stripes:form id="searchForm" beanclass="eionet.web.action.SearchDataElementsActionBean" method="get">
         <div id="filters">
