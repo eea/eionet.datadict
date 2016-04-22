@@ -165,6 +165,15 @@ function applySearchToggle(searchFormId) {
     });
 }
 
+function applyExportOptionsToggle() {
+    jQuery("#drop-operations ul").append('<li class="expand"><a id="exportLink" href="">Exports</a></li>');
+    jQuery("a#exportLink").click(function() {
+        jQuery("#createbox").slideToggle("slow");
+        jQuery(this).parent("li.expand").toggleClass("active");
+        return false;
+    });
+}
+
 function applySelectionStyle() {
     jQuery(".selectable").click(function() {
         if (jQuery(this).is(":checked")) {

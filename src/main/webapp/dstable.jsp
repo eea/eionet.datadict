@@ -662,8 +662,12 @@ else if (mode.equals("add"))
                     }
                     if (subscribe) {%>
                            <li class="subscribe"><a href="<%=request.getContextPath()%>/tables/<%=tableID%>/subscribe">Subscribe</a></li><%
-                       }
-                    %>
+                    }
+                    // display the link about cache
+                    boolean dispCache = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
+                    if (editDstPrm || dispCache) {%>
+                        <li class="doc"><a rel="nofollow" href="<%=request.getContextPath()%>/GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache</a></li>
+                    <%}%>
                 </ul>
             </div>
             <%
@@ -684,7 +688,7 @@ else if (mode.equals("add"))
 
                             <!-- schema, MS Excel template, XForm, XmlInst, etc -->
                             <%
-                            if (mode.equals("view")){
+                            if (mode.equals("view")) {
 
                                 boolean dispAll = editDstPrm;
                                 boolean dispXLS = dataset!=null && dataset.displayCreateLink("XLS");
@@ -692,156 +696,109 @@ else if (mode.equals("add"))
                                 boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
                                 boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
                                 boolean dispXForm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xfrm");
-                                boolean dispCache = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
 
-                                if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispXForm || dispCache || dispODS){
+                                if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispXForm || dispODS){
                                     %>
+                                    <script type="text/javascript">
+                                        $(function() {
+                                            applyExportOptionsToggle();
+                                        });
+                                    </script>
                                     <div id="createbox">
-                                            <table id="outputsmenu">
-                                            <col style="width:73%"/>
-                                            <col style="width:27%"/>
+                                        <ul>
+                                            <%
+                                            // XML Schema link
+                                            if (dispAll || dispXmlSchema){ %>
+                                                <li>
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=TBL<%=tableID%>" class="xsd">
+                                                        Create an XML Schema for this table
+                                                    </a>
+                                                </li><%
+                                            }
+
+                                            // XML Instance link
+                                            if (dispAll || dispXmlInstance){ %>
+                                                <li>
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetXmlInstance?id=<%=tableID%>&amp;type=tbl" class="xml">
+                                                        Create an instance XML for this table
+                                                    </a>
+                                                </li><%
+                                            }
+
+                                            // XForm link
+                                            if (dispAll || dispXForm){ %>
+                                                <li>
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetXForm?id=<%=tableID%>" class="xml">
+                                                        Create an XForm for this table
+                                                    </a>
+                                                </li><%
+                                            }
+
+                                            // MS Excel link
+                                            if (dispAll || dispXLS){
+                                            %>
+                                                <li>
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>" class="excel">
+                                                        Create an MS Excel template for this table
+                                                    </a>
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel"></a>
+                                                </li>
+                                            <% }
+                                            if ((dispAll || dispXLS) && user != null) { %>
+                                                <li>
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=tbl&amp;obj_act=dd&amp;obj_id=<%=tableID%>" class="excel">
+                                                        Create an MS Excel template for this table with drop-down boxes (BETA)
+                                                    </a>
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel_dropdown"></a>
+                                                </li>
                                                 <%
-                                                // XML Schema link
-                                                if (dispAll || dispXmlSchema){ %>
-                                                    <tr>
-                                                        <td>
-                                                            Create an XML Schema for this table
-                                                        </td>
-                                                        <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=TBL<%=tableID%>">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/xsd.png" width="16" height="16" alt=""/>
-                                                            </a>
-                                                        </td>
-                                                    </tr><%
-                                                }
+                                            }
 
-                                                // XML Instance link
-                                                if (dispAll || dispXmlInstance){ %>
-                                                    <tr>
-                                                        <td>
-                                                            Create an instance XML for this table
-                                                        </td>
-                                                        <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXmlInstance?id=<%=tableID%>&amp;type=tbl">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
-                                                            </a>
-                                                        </td>
-                                                    </tr><%
-                                                }
+                                            // OpenDocument spreadsheet template link
+                                            if (dispAll || dispODS){ %>
+                                                <li>
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=tbl&amp;id=<%=tableID%>" class="open-doc">
+                                                        Create an OpenDocument spreadsheet template for this table
+                                                    </a>
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=ods"></a>
+                                                </li><%
+                                            }
 
-                                                // XForm link
-                                                if (dispAll || dispXForm){ %>
-                                                    <tr>
-                                                        <td>
-                                                            Create an XForm for this table
-                                                        </td>
-                                                        <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXForm?id=<%=tableID%>">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
-                                                            </a>
-                                                        </td>
-                                                    </tr><%
-                                                }
+                                            // codelist
+                                            if (dispAll || dispXmlSchema){ %>
+                                                <li>
+                                                    <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="csv">
+                                                        <stripes:param name="ownerType" value="tables"/>
+                                                        <stripes:param name="ownerId" value="<%=dsTable.getID()%>"/>
+                                                        <stripes:param name="format" value="csv"/>
+                                                        Get the comma-separated codelists of this table
+                                                    </stripes:link>
+                                                </li>
+                                                <li>
+                                                    <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="csv">
+                                                        <stripes:param name="ownerType" value="tables"/>
+                                                        <stripes:param name="ownerId" value="<%=dsTable.getID()%>"/>
+                                                        <stripes:param name="format" value="xml"/>
+                                                        Get the codelists of this table in XML format
+                                                    </stripes:link>
+                                                </li><%
+                                            }
 
-                                                // MS Excel link
-                                                if (dispAll || dispXLS){
-                                                %>
-                                                    <tr>
-                                                        <td>
-                                                            Create an MS Excel template for this table&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel"></a>
-                                                        </td>
-                                                        <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img style="border:0" src="<%=request.getContextPath()%>/images/xls.png" width="16" height="16" alt=""/></a>
-                                                        </td>
-                                                    </tr>
-                                                <% }
-                                                if ((dispAll || dispXLS) && user != null) { %>
-                                                <tr>
-                                                        <td>
-                                                            Create an MS Excel template for this table with drop-down boxes (BETA)&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel_dropdown"></a>
-                                                        </td>
-                                                        <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=tbl&amp;obj_act=dd&amp;obj_id=<%=tableID%>"><img style="border:0" src="<%=request.getContextPath()%>/images/xls.png" width="16" height="16" alt=""/></a>
-                                                        </td>
-                                                    </tr>
-                                                    <%
-                                                }
-
-                                                // OpenDocument spreadsheet template link
-                                                if (dispAll || dispODS){ %>
-                                                    <tr>
-                                                        <td>
-                                                            Create an OpenDocument spreadsheet template for this table&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=ods"></a>
-                                                        </td>
-                                                        <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=tbl&amp;id=<%=tableID%>"><img style="border:0" src="<%=request.getContextPath()%>/images/ods.png" width="16" height="16" alt=""/></a>
-                                                        </td>
-                                                    </tr><%
-                                                }
-
-                                                // codelist
-                                                if (dispAll || dispXmlSchema){ %>
-                                                    <tr>
-                                                        <td>
-                                                            Get the comma-separated codelists of this table
-                                                        </td>
-                                                        <td>
-                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
-                                                                    <stripes:param name="ownerType" value="tables"/>
-                                                                    <stripes:param name="ownerId" value="<%=dsTable.getID()%>"/>
-                                                                    <stripes:param name="format" value="csv"/>
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
-                                                            </stripes:link>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            Get the codelists of this table in XML format
-                                                        </td>
-                                                        <td>
-                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
-                                                                    <stripes:param name="ownerType" value="tables"/>
-                                                                    <stripes:param name="ownerId" value="<%=dsTable.getID()%>"/>
-                                                                    <stripes:param name="format" value="xml"/>
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
-                                                            </stripes:link>
-                                                        </td>
-                                                    </tr><%
-                                                }
-
-                                                // TESTING the link for creating dBase II format
-                                                if (user!=null){
-                                                    String userName = user.getUserName();
-                                                    if (userName.equals("roug") || userName.equals("heinlja") || userName.equals("cryan")){
-                                                        %>
-                                                        <tr>
-                                                            <td>Create dBaseII</td>
-                                                            <td>
-                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetDbf/<%=dsTable.getID()%>">
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                        <%
-                                                    }
-                                                }
-
-
-                                                // display the link about cache
-                                                if (dispAll || dispCache){
+                                            // TESTING the link for creating dBase II format
+                                            if (user!=null){
+                                                String userName = user.getUserName();
+                                                if (userName.equals("roug") || userName.equals("heinlja") || userName.equals("cryan")) {
                                                     %>
-                                                    <tr style="height:20px;">
-                                                        <td colspan="2">
-                                                            <span class="barfont">
-                                                                [ <a rel="nofollow" href="<%=request.getContextPath()%>/GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
-                                                            </span>
-                                                        </td>
-                                                    </tr>
+                                                    <li>
+                                                        <a rel="nofollow" href="<%=request.getContextPath()%>/GetDbf/<%=dsTable.getID()%>" class="dbf">
+                                                            Create dBaseII
+                                                        </a>
+                                                    </li>
                                                     <%
                                                 }
-                                                %>
-
-                                            </table>
+                                            }
+                                        %>
+                                        </ul>
                                     </div>
                                     <%
                                 }
@@ -853,14 +810,14 @@ else if (mode.equals("add"))
                             String schemaUrl = Props.getRequiredProperty(PropsIF.DD_URL) + "/GetSchema?id=TBL" + tableID;
                             SchemaConversionsData xmlConvData = searchEngine.getXmlConvData(schemaUrl);
                             if (xmlConvData != null){ %>
-                                <div>
-                                    <p>
+                                <div class="system-msg">
+                                    <strong>
                                     There are <%=xmlConvData.getNumberOfQAScripts()%> QA scripts and <%=xmlConvData.getNumberOfConversions()%> conversion scripts registered for this table.
                                     <% if (xmlConvData.getNumberOfQAScripts() > 0 || xmlConvData.getNumberOfConversions() > 0) {%>
                                     <br />
                                     <a href="<%=xmlConvData.getXmlConvUrl()%>?schema=<%=schemaUrl%>">Link to the schema page on XMLCONV</a>
                                     <%}%>
-                                    </p>
+                                    </strong>
                                 </div><%
                             }
                             %>

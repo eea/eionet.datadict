@@ -1409,7 +1409,7 @@
                     }
                 %>
 
-            <form id="form1" method="post" action="<%=request.getContextPath()%>/dataelements" style="clear:right;margin-top:20px">
+            <form id="form1" method="post" action="<%=request.getContextPath()%>/dataelements" style="clear:both;margin-top:20px">
                 <div style="display:none">
                     <%
                         if (!mode.equals("add")) {
@@ -1438,50 +1438,40 @@
                                                         && dataset.displayCreateLink("XMLSCHEMA");
                                             if (!popup && dispOutputs) {
                                 %>
-                                        <div id="createbox" style="clear:right">
-                                            <table id="outputsmenu">
-                                                <tr>
-                                                    <td style="width:73%">
+                                        <script type="text/javascript">
+                                            $(function() {
+                                                applyExportOptionsToggle();
+                                            });
+                                        </script>
+                                        <div id="createbox">
+                                            <ul>
+                                                <li>
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=ELM<%=delem_id%>" class="xsd">
                                                         Create an XML Schema for this element
-                                                    </td>
-                                                    <td style="width:27%">
-                                                        <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=ELM<%=delem_id%>">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/xsd.png" width="16" height="16" alt=""/>
-                                                        </a>
-                                                    </td>
-                                                </tr>
+                                                    </a>
+                                                </li>
                                                 <%
                                                     if (fixedValues != null && fixedValues.size() > 0) {
                                                 %>
-                                                    <tr>
-                                                        <td style="width:73%">
+                                                    <li>
+                                                        <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="csv">
+                                                            <stripes:param name="ownerType" value="dataelements"/>
+                                                            <stripes:param name="ownerId" value="<%=dataElement.getID()%>"/>
+                                                            <stripes:param name="format" value="csv"/>
                                                             Get the comma-separated codelist of this element
-                                                        </td>
-                                                        <td style="width:27%">
-                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
-                                                                    <stripes:param name="ownerType" value="dataelements"/>
-                                                                    <stripes:param name="ownerId" value="<%=dataElement.getID()%>"/>
-                                                                    <stripes:param name="format" value="csv"/>
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
-                                                            </stripes:link>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="width:73%">
+                                                        </stripes:link>
+                                                    </li>
+                                                    <li>
+                                                        <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="xml">
+                                                            <stripes:param name="ownerType" value="dataelements"/>
+                                                            <stripes:param name="ownerId" value="<%=dataElement.getID()%>"/>
+                                                            <stripes:param name="format" value="xml"/>
                                                             Get the codelist of this element in XML format
-                                                        </td>
-                                                        <td style="width:27%">
-                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
-                                                                    <stripes:param name="ownerType" value="dataelements"/>
-                                                                    <stripes:param name="ownerId" value="<%=dataElement.getID()%>"/>
-                                                                    <stripes:param name="format" value="xml"/>
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
-                                                            </stripes:link>
-                                                        </td>
-                                                    </tr><%
+                                                        </stripes:link>
+                                                    </li><%
                                                         }
                                                     %>
-                                            </table>
+                                            </ul>
                                         </div>
                                         <%
                                             }

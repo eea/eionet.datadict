@@ -95,54 +95,43 @@
         </div>
 
         <c:if test="${not actionBean.vocabularyFolder.draftStatus && not actionBean.vocabularyFolder.workingCopy}">
-        <c:url var="rdfIconUrl" value="/images/rdf-icon.gif" />
-        <c:url var="csvIconUrl" value="/images/csv_icon_sm.gif" />
-        <c:url var="codelistIconUrl" value="/images/inspire_icon.gif" />
-        <c:url var="jsonIconUrl" value="/images/json_file_icon.gif" />
-        <div id="createbox" style="clear:right">
-            <table id="outputsmenu">
-                <tr>
-                    <td style="width:73%">Get RDF output of this vocabulary</td>
-                    <td style="width:27%">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="rdf" title="Export RDF">
+            <script type="text/javascript">
+                $(function() {
+                    applyExportOptionsToggle();
+                });
+            </script>
+            <div id="createbox">
+                <ul>
+                    <li>
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="rdf" title="Export RDF" class="rdf">
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                            <img src="${rdfIconUrl}" alt="" />
+                            Get RDF output of this vocabulary
                         </stripes:link>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width:73%">Get CSV output of this vocabulary</td>
-                    <td style="width:27%">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="csv" title="Export CSV">
+                    </li>
+                    <li>
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="csv" title="Export CSV" class="csv">
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                            <img src="${csvIconUrl}" alt="" />
+                            Get CSV output of this vocabulary
                         </stripes:link>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width:73%">Get XML output in INSPIRE codelist format</td>
-                    <td style="width:27%">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="codelist" title="Export XML in INSPIRE codelist format">
+                    </li>
+                    <li>
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="codelist" title="Export XML in INSPIRE codelist format" class="inspire">
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                            <img src="${codelistIconUrl}" alt="" />
+                            Get XML output in INSPIRE codelist format
                         </stripes:link>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width:73%">Get JSON-LD output of this vocabulary</td>
-                    <td style="width:27%">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="json" title="Export JSON">
+                    </li>
+                    <li>
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="json" title="Export JSON" class="json">
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                            <img src="${jsonIconUrl}" alt="" />
+                            Get JSON-LD output of this vocabulary
                         </stripes:link>
-                    </td>
-                </tr>
-            </table>
-        </div>
+                    </li>
+                </table>
+            </div>
         </c:if>
 
         <!-- Vocabulary folder -->

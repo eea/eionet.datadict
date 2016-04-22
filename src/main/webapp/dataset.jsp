@@ -702,8 +702,9 @@ else if (mode.equals("add"))
             }
 
             boolean isDisplayOperations = mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null;
-            if (isDisplayOperations==false)
+            if (isDisplayOperations==false) {
                 isDisplayOperations = (mode.equals("view") && !dataset.isWorkingCopy()) && user!=null && (latestID!=null && !latestID.equals(dataset.getID()));
+            }
 
             if (isDisplayOperations || goToNewest) {
                 %>
@@ -749,9 +750,17 @@ else if (mode.equals("add"))
                             if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null && !dataset.isWorkingCopy()) {%>
                                 <li class="subscribe"><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/subscribe">Subscribe</a></li><%
                             }
-                        }
-                        %>
-                    </ul>
+                            // display the "Upload document" and "Manage cache" links
+                            if (mode.equals("view") && (editPrm || editReleasedPrm)) {%>
+                                <li class="doc">
+                                    <a rel="nofollow" href="<%=request.getContextPath()%>/doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Upload a document</a>
+                                </li>
+                                <li class="doc">
+                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Open cache</a>
+                                </li>
+                            <%}
+                        }%>
+                        </ul>
                   </div>
                   <%
               }
@@ -796,146 +805,113 @@ else if (mode.equals("add"))
                                     boolean dispMDB = dataset!=null && dataset.displayCreateLink("MDB");
                                     boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
                                     boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
-                                    boolean dispUploadAndCache = editPrm || editReleasedPrm;
                                     boolean dispDocs = docs!=null && docs.size()>0;
 
-                                    if (dispAll || dispPDF || dispXLS || dispXmlSchema || dispXmlInstance || dispUploadAndCache || dispDocs || dispMDB || dispODS) {
+                                    if (dispAll || dispPDF || dispXLS || dispXmlSchema || dispXmlInstance || dispDocs || dispMDB || dispODS) {
                                         %>
+                                            <script type="text/javascript">
+                                                $(function() {
+                                                    applyExportOptionsToggle();
+                                                });
+                                            </script>
                                             <div id="createbox">
-                                                <table id="outputsmenu">
-                                                    <col style="width:73%"/>
-                                                    <col style="width:27%"/>
+                                                <ul>
                                                     <%
                                                     // PDF link
                                                     if (dispAll || dispPDF) { %>
-                                                        <tr>
-                                                            <td>
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN" class="pdf">
                                                                 Create technical specification for this dataset
-                                                            </td>
-                                                            <td>
-                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN">
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/pdf.png" width="16" height="16" alt="PDF" />
-                                                                </a>
-                                                            </td>
-                                                        </tr><%
+                                                            </a>
+                                                        </li><%
                                                     }
 
                                                     // XML Schema link
                                                     if (dispAll || dispXmlSchema) { %>
-                                                        <tr>
-                                                            <td>
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=DST<%=ds_id%>" class="xsd">
                                                                 Create an XML Schema for this dataset
-                                                            </td>
-                                                            <td>
-                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=DST<%=ds_id%>">
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/xsd.png" width="16" height="16" alt="XML icon"/>
-                                                                </a>
-                                                            </td>
-                                                        </tr><%
+                                                            </a>
+                                                        </li><%
                                                     }
 
                                                     // XML Instance link
                                                     if (dispAll || dispXmlInstance) { %>
-                                                        <tr>
-                                                            <td>
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXmlInstance?id=<%=dataset.getID()%>&amp;type=dst" class="xml">
                                                                 Create an instance XML for this dataset
-                                                            </td>
-                                                            <td>
-                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetXmlInstance?id=<%=dataset.getID()%>&amp;type=dst">
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt="XML icon"/>
-                                                                </a>
-                                                            </td>
-                                                        </tr><%
+                                                            </a>
+                                                        </li><%
                                                     }
 
                                                     // MS Excel link
                                                     if (dispAll || dispXLS) { %>
-                                                        <tr>
-                                                            <td>
-                                                                Create an MS Excel template for this dataset&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
-                                                            </td>
-                                                            <td>
-                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>"><img style="border:0" src="<%=request.getContextPath()%>/images/xls.png" width="16" height="16" alt="XLS icon"/></a>
-                                                            </td>
-                                                        </tr>
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>" class="excel">
+                                                                Create an MS Excel template for this dataset
+                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
+                                                        </li>
                                                     <% }
                                                     if ((dispAll || dispXLS) && user != null) { %>
-                                                         <tr>
-                                                            <td>
-                                                                Create an MS Excel template for this dataset with drop-down boxes (BETA)&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel_dropdown"></a>
-                                                            </td>
-                                                            <td>
-                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>"><img style="border:0" src="<%=request.getContextPath()%>/images/xls.png" width="16" height="16" alt="XLS icon"/></a>
-                                                            </td>
-                                                        </tr>
+                                                         <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>" class="excel">
+                                                                Create an MS Excel template for this dataset with drop-down boxes (BETA)
+                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel_dropdown"></a>
+                                                        </li>
                                                         <%
                                                     }
 
                                                     // OpenDocument spreadsheet link
                                                     if (dispAll || dispODS) { %>
-                                                        <tr>
-                                                            <td>
-                                                                Create an OpenDocument spreadsheet template for this dataset&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=ods"></a>
-                                                            </td>
-                                                            <td>
-                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=dst&amp;id=<%=ds_id%>"><img style="border:0" src="<%=request.getContextPath()%>/images/ods.png" width="16" height="16" alt="ODS icon"/></a>
-                                                            </td>
-                                                        </tr><%
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=dst&amp;id=<%=ds_id%>" class="open-doc">
+                                                                Create an OpenDocument spreadsheet template for this dataset
+                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=ods"></a>
+                                                        </li><%
                                                     }
 
                                                     // MS Access link
                                                     if (dispAll || dispMDB) { %>
-                                                        <tr>
-                                                            <td>
-                                                                Create validation metadata for MS Access template&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=access"></a>
-                                                            </td>
-                                                            <td>
-                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true"><img style="border:0" src="<%=request.getContextPath()%>/images/mdb.png" width="16" height="16" alt="MDB icon"/></a>
-                                                            </td>
-                                                        </tr><%
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true" class="access">
+                                                                Create validation metadata for MS Access template
+                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=access"></a>
+                                                        </li><%
                                                     }
 
                                                     // Advanced MS Access template generation link
                                                     if (dispAll || advancedAccess) {
                                                         %>
-                                                        <tr>
-                                                            <td>
-                                                                Create advanced MS Access template&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=advancedMSAccess"></a>
-                                                            </td>
-                                                            <td>
-                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>"><img style="border:0" src="<%=request.getContextPath()%>/images/mdb.png" width="16" height="16" alt="MDB icon"/></a>
-                                                            </td>
-                                                        </tr><%
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>" class="access">
+                                                                Create advanced MS Access template
+                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=advancedMSAccess"></a>
+                                                        </li><%
                                                     }
 
                                                     // codelists
                                                     if (dispAll || dispXmlSchema) { %>
-                                                        <tr>
-                                                            <td>
+                                                        <li>
+                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="csv">
+                                                                <stripes:param name="ownerType" value="datasets"/>
+                                                                <stripes:param name="ownerId" value="<%=dataset.getID()%>"/>
+                                                                <stripes:param name="format" value="csv"/>
                                                                 Get the comma-separated codelists of this dataset
-                                                            </td>
-                                                            <td>
-                                                                <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
-                                                                    <stripes:param name="ownerType" value="datasets"/>
-                                                                    <stripes:param name="ownerId" value="<%=dataset.getID()%>"/>
-                                                                    <stripes:param name="format" value="csv"/>
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
-                                                                </stripes:link>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
+                                                            </stripes:link>
+                                                        </li>
+                                                        <li>
+                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="xml">
+                                                                <stripes:param name="ownerType" value="datasets"/>
+                                                                <stripes:param name="ownerId" value="<%=dataset.getID()%>"/>
+                                                                <stripes:param name="format" value="xml"/>
                                                                 Get the codelists of this dataset in XML format
-                                                            </td>
-                                                            <td>
-                                                                <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
-                                                                    <stripes:param name="ownerType" value="datasets"/>
-                                                                    <stripes:param name="ownerId" value="<%=dataset.getID()%>"/>
-                                                                    <stripes:param name="format" value="xml"/>
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
-                                                                </stripes:link>
-                                                            </td>
-                                                        </tr><%
+                                                            </stripes:link>
+                                                        </li><%
                                                     }
 
                                                     // display links to uploaded documents
@@ -959,24 +935,8 @@ else if (mode.equals("add"))
                                                         </tr>
                                                         <%
                                                     }
-
-                                                    // display the "Upload document" and "Manage cache" links
-                                                    if (dispAll || dispUploadAndCache) {
-                                                        %>
-                                                        <tr style="height:20px;">
-                                                            <td colspan="2">
-                                                                <small>
-                                                                    [ <a rel="nofollow" href="<%=request.getContextPath()%>/doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Upload a document ...</a> ]
-                                                                </small>
-                                                                <small>
-                                                                    [ <a rel="nofollow" href="<%=request.getContextPath()%>/GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Open cache ...</a> ]
-                                                                </small>
-                                                            </td>
-                                                        </tr>
-                                                        <%
-                                                    }
                                                     %>
-                                                </table>
+                                                </ul>
                                     </div>
                                         <%
                                     }
