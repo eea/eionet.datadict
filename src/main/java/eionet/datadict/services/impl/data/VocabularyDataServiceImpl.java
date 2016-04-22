@@ -1,0 +1,107 @@
+package eionet.datadict.services.impl.data;
+
+import eionet.datadict.resources.ResourceType;
+import eionet.datadict.dal.VocabularyRepository;
+import eionet.datadict.dal.VocabularySetRepository;
+import eionet.datadict.errors.DuplicateResourceException;
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.model.VocabularySet;
+import eionet.datadict.resources.VocabularyIdInfo;
+import eionet.datadict.resources.VocabularySetIdInfo;
+import eionet.datadict.services.data.VocabularyDataService;
+import eionet.meta.DDUser;
+import eionet.meta.dao.domain.Folder;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.dao.domain.VocabularyType;
+import eionet.meta.service.IVocabularyService;
+import eionet.meta.service.ServiceException;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ *
+ * @author Nikolaos Nakas <nn@eworx.gr>
+ */
+@Service
+public class VocabularyDataServiceImpl implements VocabularyDataService {
+
+    private final VocabularySetRepository vocabularySetRepository;
+    private final VocabularyRepository vocabularyRepository;
+    private final IVocabularyService legacyVocabularyService;
+    
+    @Autowired
+    public VocabularyDataServiceImpl(VocabularySetRepository vocabularySetRepository, VocabularyRepository vocabularyRepository, IVocabularyService legacyVocabularyService) {
+        this.vocabularySetRepository = vocabularySetRepository;
+        this.vocabularyRepository = vocabularyRepository;
+        this.legacyVocabularyService = legacyVocabularyService;
+    }
+    
+    @Override
+    @Transactional
+    public VocabularySet createVocabularySet(VocabularySet vocabularySet) 
+            throws EmptyParameterException, DuplicateResourceException {
+        if (StringUtils.isBlank(vocabularySet.getIdentifier())) {
+            throw new EmptyParameterException("identifier");
+        }
+        
+        if (StringUtils.isBlank(vocabularySet.getLabel())) {
+            throw new EmptyParameterException("label");
+        }
+        
+        if (this.vocabularySetRepository.exists(vocabularySet.getIdentifier())) {
+            String msg = String.format("Vocabulary set %s already exists", vocabularySet.getIdentifier());
+            throw new DuplicateResourceException(ResourceType.VOCABULARY_SET, new VocabularySetIdInfo(vocabularySet.getIdentifier()), msg);
+        }
+        
+        this.vocabularySetRepository.create(vocabularySet);
+        
+        return this.vocabularySetRepository.get(vocabularySet.getIdentifier());
+    }
+
+    @Override
+    @Transactional
+    public VocabularyFolder createVocabulary(String vocabularySetIdentifier, VocabularyFolder vocabulary, DDUser creator) 
+            throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
+        if (StringUtils.isBlank(vocabularySetIdentifier)) {
+            throw new EmptyParameterException("vocabularySetIdentifier");
+        }
+        
+        if (StringUtils.isBlank(vocabulary.getIdentifier())) {
+            throw new EmptyParameterException("vocabularyIdentifier");
+        }
+        
+        if (StringUtils.isBlank(vocabulary.getLabel())) {
+            throw new EmptyParameterException("vocabularyLabel");
+        }
+        
+        Integer vocabularySetId = this.vocabularySetRepository.resolve(vocabularySetIdentifier);
+        
+        if (vocabularySetId == null) {
+            throw new ResourceNotFoundException(ResourceType.VOCABULARY_SET, new VocabularySetIdInfo(vocabularySetIdentifier));
+        }
+        
+        if (this.vocabularyRepository.exists(vocabularySetId, vocabulary.getIdentifier())) {
+            throw new DuplicateResourceException(ResourceType.VOCABULARY, new VocabularyIdInfo(vocabularySetIdentifier, vocabulary.getIdentifier()));
+        }
+        
+        // Legacy code, to be removed
+        Folder vocSet = new Folder();
+        vocSet.setId(vocabularySetId);
+        vocSet.setIdentifier(vocabularySetIdentifier);
+        
+        vocabulary.setType(VocabularyType.COMMON);
+        
+        try {
+            int vocabularyId = this.legacyVocabularyService.createVocabularyFolder(vocabulary, vocSet, creator.getUserName());
+            
+            return this.legacyVocabularyService.getVocabularyFolder(vocabularyId);
+        }
+        catch (ServiceException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+}
