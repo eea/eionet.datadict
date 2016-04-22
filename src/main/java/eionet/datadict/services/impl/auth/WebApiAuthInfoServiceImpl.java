@@ -1,5 +1,7 @@
-package eionet.meta.webapi.services.auth;
+package eionet.datadict.services.impl.auth;
 
+import eionet.datadict.services.auth.WebApiAuthInfo;
+import eionet.datadict.services.auth.WebApiAuthInfoService;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 

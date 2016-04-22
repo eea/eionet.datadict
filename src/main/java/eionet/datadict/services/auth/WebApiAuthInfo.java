@@ -1,4 +1,4 @@
-package eionet.meta.webapi.services.auth;
+package eionet.datadict.services.auth;
 
 /**
  *

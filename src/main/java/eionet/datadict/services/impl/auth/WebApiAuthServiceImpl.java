@@ -1,5 +1,7 @@
-package eionet.meta.webapi.services.auth;
+package eionet.datadict.services.impl.auth;
 
+import eionet.datadict.services.auth.WebApiAuthInfo;
+import eionet.datadict.services.auth.WebApiAuthService;
 import eionet.meta.DDUser;
 import eionet.meta.application.errors.UserAuthenticationException;
 import eionet.meta.dao.domain.DDApiKey;
