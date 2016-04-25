@@ -323,6 +323,9 @@
 				#drop-operations > ul li.doc a:before {
 					 content: "\e906";
 				}
+				#drop-operations > ul li.list a:before {
+					 content: "\e927";
+				}
 
 				#drop-operations > ul li.expand a:before {
 					 content: "\e925";
@@ -987,6 +990,13 @@
 
 /* @group end */
 
+	@-moz-document url-prefix(http://) {
+	    button::-moz-focus-inner, input[type="button"]::-moz-focus-inner, input[type="submit"]::-moz-focus-inner, input[type="reset"]::-moz-focus-inner {
+	        padding: 0 !important;
+	        border: 0 none !important;
+	    }
+	}
+
 	div.form fieldset {
 		border: 0px;
 	}
@@ -1003,9 +1013,20 @@
 	}
 
 	input, select, textarea{
-		border:1px solid gray;
+		padding: 7px 10px;
+	}
+	input[type="text"]{
+		border: 1px solid #9ac4c6;
+		background: #fff;
+	}
+	input[type="submit"]{
+		border: 0;
+		background: #00446A;
+		color: #fff;
 	}
 	select{
+		border: 1px solid #9ac4c6;
+		background: #fff;
 		cursor: pointer;
 	}
 
@@ -1207,7 +1228,7 @@
 			border-top: 1px solid #CFE5E1;
 			position: relative;
 			}
-			#workarea .menu li:not(.checked):hover{
+			#workarea .menu li:not(.selected):hover{
 				background: #F8FAFB;
 			}
 		#workarea .menu input[type="checkbox"]{
@@ -1225,7 +1246,7 @@
 			vertical-align: top;
 			box-sizing: border-box;
 		}
-		#workarea .menu .checked{
+		#workarea .menu .selected{
 			background: #E0EBA4;
 		}
 		#workarea .menu .description{
@@ -1291,7 +1312,7 @@
 				border: 0;
 				padding: 5px 0 5px 30px;
 				}
-				#workarea .tree-nav .menu li:not(.checked):hover{
+				#workarea .tree-nav .menu li:not(.selected):hover{
 					background: #fff;
 				}
 			#workarea .tree-nav .menu .link-folder{

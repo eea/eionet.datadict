@@ -120,32 +120,19 @@
             </ul>
         </div>
 
-        <c:url var="expandIcon" value="/images/expand.png" />
-        <c:url var="collapseIcon" value="/images/collapse.png" />
         <c:url var="editIcon" value="/images/edit.gif" />
         <c:url var="rdfIcon" value="/images/rdf-icon.gif" />
         <stripes:form id="vocabulariesForm" beanclass="${actionBean['class'].name}" method="post" style="margin-top:1em">
-            <div class="tree-nav">
-            <ul class="menu">
+            <ul class="tree-nav">
                 <c:forEach var="folder" items="${actionBean.folders}">
-                <li>
-                    <stripes:link beanclass="${actionBean['class'].name}">
-                        <stripes:param name="folderId" value="${folder.id}" />
-                        <stripes:param name="expand" value="${not folder.expanded}" />
-                        <stripes:param name="expanded" value="${actionBean.expanded}" />
-                        <c:choose>
-                            <c:when test="${folder.expanded}"><img style="border:0" src="${collapseIcon}" alt="Collapse" /></c:when>
-                            <c:otherwise><img style="border:0" src="${expandIcon}" alt="Expand" /></c:otherwise>
-                        </c:choose>
-                    </stripes:link>
-
-                    <stripes:link beanclass="${actionBean['class'].name}" class="${folder.expanded ? 'expanded' : 'collapsed'}">
-                        <stripes:param name="folderId" value="${folder.id}" />
-                        <stripes:param name="expand" value="${not folder.expanded}" />
-                        <stripes:param name="expanded" value="${actionBean.expanded}" />
-                        <c:out value="${folder.identifier}" />
-                    </stripes:link>
-                    (<c:out value="${folder.label}"/>)
+                    <li<c:if test="${folder.expanded}"> class="expanded"</c:if>>
+                        <stripes:link beanclass="${actionBean['class'].name}" class="title">
+                            <stripes:param name="folderId" value="${folder.id}" />
+                            <stripes:param name="expand" value="${not folder.expanded}" />
+                            <stripes:param name="expanded" value="${actionBean.expanded}" />
+                            <c:out value="${folder.identifier}" />
+                        </stripes:link>
+                        <span class="description">(<c:out value="${folder.label}"/>)</span>
 
 
                     <c:if test="${folder.expanded && not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'u')}">
@@ -155,15 +142,14 @@
                     </c:if>
 
                     <c:if test="${folder.expanded && not empty folder.items}">
-                        <div style="float:right; width:20px"><stripes:link beanclass="eionet.web.action.FolderActionBean" event="rdf" title="Export RDF with all vocabularies in the folder">
+                        <stripes:link beanclass="eionet.web.action.FolderActionBean" event="rdf" title="Export RDF with all vocabularies in the folder" class="export-rdf">
                             <stripes:param name="folder.identifier" value="${folder.identifier}" />
                             <img style="border:0" src="${rdfIcon}" alt="Export RDF"/>
-                        </stripes:link></div>
+                        </stripes:link>
                     </c:if>
 
                     <c:if test="${not empty folder.items}">
-
-                        <ul class="menu" style="margin-left: 1.2em">
+                        <ul class="menu">
                             <c:forEach var="item" items="${folder.items}" varStatus="itemLoop">
                                 <li${item.workingCopy || not empty item.workingUser ? ' class="disabled"' : ''}>
                                     <c:if test="${not empty actionBean.user  && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'd')}">
@@ -189,7 +175,7 @@
                                             <c:if test="${item.draftStatus}">
                                                 <span class="link-folder" style="color:gray;">
                                             </c:if>
-                                            (<c:out value="${item.label}"/>)
+                                            <span class="description">(<c:out value="${item.label}"/>)</span>
                                             <c:if test="${ddfn:contains(actionBean.statusTextsToDisplay, item.regStatus)}">
                                                 <sup style="font-size:0.7em"><c:out value="${item.regStatus}" /></sup>
                                             </c:if>
@@ -210,13 +196,12 @@
                      </c:if>
                  </li>
                  </c:forEach>
-             </ul>
-             <stripes:hidden id="txtKeepRelations" name="keepRelationsOnDelete" value="false"></stripes:hidden>
-             <c:if test="${not empty actionBean.user && actionBean.visibleEditableVocabularies && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'd')}">
-                 <stripes:button id="deleteBtn" name="delete" value="Delete" />
-                 <input type="button" id="toggleSelectAll" value="Select all" name="selectAll" />
-             </c:if>
-             </div>
+            </ul>
+            <stripes:hidden id="txtKeepRelations" name="keepRelationsOnDelete" value="false"></stripes:hidden>
+            <c:if test="${not empty actionBean.user && actionBean.visibleEditableVocabularies && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'd')}">
+                <stripes:button id="deleteBtn" name="delete" value="Delete" />
+                <input type="button" id="toggleSelectAll" value="Select all" name="selectAll" />
+            </c:if>
          </stripes:form>
 
 
