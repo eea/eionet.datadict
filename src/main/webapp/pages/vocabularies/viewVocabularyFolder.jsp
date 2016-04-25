@@ -96,7 +96,7 @@
 
         <c:if test="${not actionBean.vocabularyFolder.draftStatus && not actionBean.vocabularyFolder.workingCopy}">
             <script type="text/javascript">
-                $(function() {
+                jQuery(function() {
                     applyExportOptionsToggle();
                 });
             </script>
@@ -117,7 +117,7 @@
                         </stripes:link>
                     </li>
                     <li>
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="codelist" title="Export XML in INSPIRE codelist format" class="inspire">
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="codelist" title="Export XML in INSPIRE codelist format" class="xml">
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                             Get XML output in INSPIRE codelist format
@@ -135,7 +135,7 @@
         </c:if>
 
         <!-- Vocabulary folder -->
-        <div id="outerframe" style="padding-top:20px">
+        <div id="outerframe">
             <table class="datatable">
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
