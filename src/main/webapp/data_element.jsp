@@ -1409,7 +1409,7 @@
                     }
                 %>
 
-            <form id="form1" method="post" action="<%=request.getContextPath()%>/dataelements" style="clear:both;margin-top:20px">
+            <form id="form1" method="post" action="<%=request.getContextPath()%>/dataelements">
                 <div style="display:none">
                     <%
                         if (!mode.equals("add")) {
@@ -1479,47 +1479,46 @@
                                         %>
 
                                 <!-- type -->
-                                <div style="margin: 3px">
-                                    <b>Type:</b>
                                     <%
                                     if (mode.equals("add") && (type == null || type.length() == 0)) {
-                                        %>
-                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type"></a>
-                                        <br/><input type="radio" name="type" value="CH2" onclick="javascript:fixType(this)" checked="checked">Data element with quantitative values (e.g. measurements)</input>
-                                        <br/><input type="radio" name="type" value="CH1" onclick="javascript:fixType(this)">Data element with fixed values (codes)</input>
-                                        <br/><input type="radio" name="type" value="CH3" onclick="javascript:fixType(this)">Data element with values from a vocabulary</input><%
+                                    %>
+                                        <div>
+                                            <b>Type:</b>
+                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type"></a>
+                                            <br/><input type="radio" name="type" value="CH2" onclick="javascript:fixType(this)" checked="checked">Data element with quantitative values (e.g. measurements)</input>
+                                            <br/><input type="radio" name="type" value="CH1" onclick="javascript:fixType(this)">Data element with fixed values (codes)</input>
+                                            <br/><input type="radio" name="type" value="CH3" onclick="javascript:fixType(this)">Data element with values from a vocabulary</input>
+                                        </div><%
                                     }
-                                    else {
+                                    else { %>
+                                    <h2>
+                                    <%
                                         if (type.equals("CH1")) {
                                             %>
-                                            <b>DATA ELEMENT WITH FIXED VALUES</b><%
+                                            DATA ELEMENT WITH FIXED VALUES<%
                                         }
                                         else if (type.equals("CH2")) {
                                             %>
-                                            <b>DATA ELEMENT WITH QUANTITATIVE VALUES</b><%
+                                            DATA ELEMENT WITH QUANTITATIVE VALUES<%
                                         }
                                         else if (type.equals("CH3")) {
                                             %>
-                                            <b>DATA ELEMENT RELATED TO A VOCABULARY</b><%
+                                            DATA ELEMENT RELATED TO A VOCABULARY<%
                                         }
                                         else {
                                             %>
-                                            <b>DATA ELEMENT WITH QUANTITATIVE VALUES</b><%
+                                            DATA ELEMENT WITH QUANTITATIVE VALUES<%
                                         }
                                         %>
                                         <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type"></a>
+                                    </h2>
                                     <%
                                     }
                                     %>
-                                </div>
-
 
                                 <!-- start dotted -->
-
                                 <div id="outerframe">
-
                                         <!-- attributes -->
-
                                         <%
                                             int displayed = 1;
                                             String isOdd = Util.isOdd(displayed);
