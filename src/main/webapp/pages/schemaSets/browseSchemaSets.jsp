@@ -95,8 +95,11 @@
                                 <c:choose>
                                     <c:when test="${schemaSet.draftStatus && empty actionBean.user}">
                                         <span class="link-folder" style="color:gray;">
-                                            <c:out value="${schemaSet.identifier}"/> (<c:out value="${schemaSetName}"/>)
-                                            <sup style="font-size:0.7em"><c:out value="${schemaSet.regStatus}" /></sup>
+                                            <c:out value="${schemaSet.identifier}"/> 
+                                        </span>
+                                        <span class="description" style="color:gray;">
+                                            (<c:out value="${schemaSetName}"/>)
+                                            <sup><c:out value="${schemaSet.regStatus}" /></sup>
                                         </span>
                                     </c:when>
                                     <c:otherwise>
@@ -105,15 +108,17 @@
                                             <c:if test="${schemaSet.workingCopy}"><stripes:param name="workingCopy" value="true" /></c:if>
                                             <c:out value="${schemaSet.identifier}"/>
                                         </stripes:link>
-                                        (<c:out value="${schemaSetName}"/>)
-                                        <c:if test="${ddfn:contains(actionBean.statusTextsToDisplay, schemaSet.regStatus)}">
-                                            <sup style="font-size:0.7em"><c:out value="${schemaSet.regStatus}" /></sup>
-                                        </c:if>
+                                        <span class="description"<c:if test="${schemaSet.draftStatus}"> style="color:gray;"</c:if>>
+                                            (<c:out value="${schemaSetName}"/>)
+                                            <c:if test="${ddfn:contains(actionBean.statusTextsToDisplay, schemaSet.regStatus)}">
+                                                <sup><c:out value="${schemaSet.regStatus}" /></sup>
+                                            </c:if>
+                                            <c:if test="${not empty actionBean.userName && schemaSet.workingCopy && actionBean.userName==schemaSet.workingUser}">
+                                                <span title="Your working copy" class="checkedout"><strong>*</strong></span>
+                                            </c:if>
+                                        </span>
                                     </c:otherwise>
                                 </c:choose>
-                                <c:if test="${not empty actionBean.userName && schemaSet.workingCopy && actionBean.userName==schemaSet.workingUser}">
-                                    <span title="Your working copy" class="checkedout"><strong>*</strong></span>
-                                </c:if>
                             </li>
                         </c:if>
                     </c:forEach>

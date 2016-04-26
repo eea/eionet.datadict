@@ -159,8 +159,10 @@
                                         <c:when test="${item.draftStatus && empty actionBean.user}">
                                             <span class="link-folder" style="color:gray;">
                                                 <c:out value="${item.identifier}"/>
+                                            </span>
+                                            <span class="description" style="color:gray;">
                                                 (<c:out value="${item.label}"/>)
-                                                <sup style="font-size:0.7em"><c:out value="${item.regStatus}" /></sup>
+                                                <sup><c:out value="${item.regStatus}" /></sup>
                                             </span>
                                         </c:when>
                                         <c:otherwise>
@@ -172,21 +174,17 @@
                                                 </c:if>
                                                 <c:out value="${item.identifier}"/>
                                             </stripes:link>
-                                            <c:if test="${item.draftStatus}">
-                                                <span class="link-folder" style="color:gray;">
-                                            </c:if>
-                                            <span class="description">(<c:out value="${item.label}"/>)</span>
-                                            <c:if test="${ddfn:contains(actionBean.statusTextsToDisplay, item.regStatus)}">
-                                                <sup style="font-size:0.7em"><c:out value="${item.regStatus}" /></sup>
-                                            </c:if>
-                                            <c:if test="${item.draftStatus}">
-                                                </span>
-                                            </c:if>
+                                            <span class="description"<c:if test="${item.draftStatus}"> style="color:gray;"</c:if>>
+                                                (<c:out value="${item.label}"/>)
+                                                <c:if test="${ddfn:contains(actionBean.statusTextsToDisplay, item.regStatus)}">
+                                                    <sup><c:out value="${item.regStatus}" /></sup>
+                                                </c:if>
+                                                <c:if test="${item.workingCopy && actionBean.userName==item.workingUser}">
+                                                    <span title="Your working copy" class="checkedout"><strong>*</strong></span>
+                                                </c:if>
+                                            </span>
                                         </c:otherwise>
                                     </c:choose>
-                                    <c:if test="${item.workingCopy && actionBean.userName==item.workingUser}">
-                                        <span title="Your working copy" class="checkedout"><strong>*</strong></span>
-                                    </c:if>
                                 </li>
                             </c:forEach>
                          </ul>

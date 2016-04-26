@@ -16,11 +16,13 @@
 	#container {
 		background: #ECF4F5;
 		border-left: 1px solid #CFE3E4;
-		border-right: 1px solid #CFE3E4;	
+		border-right: 1px solid #CFE3E4;
+		box-sizing: border-box;
 	}
 
 	#workarea {
 		overflow: hidden;
+		padding: 30px;
 	}
 
 	#workarea,
@@ -35,7 +37,7 @@
 
 	#workarea,
 	.threecolumns #workarea {
-		border-right: 1px solid #CFE3E4;	
+		/*border-right: 1px solid #CFE3E4;	*/
 		border-left: 1px solid #CFE3E4;	
 	}
 
@@ -46,8 +48,13 @@
 	}
 
 	#pagefoot {
+		box-sizing: border-box;
+		padding: 15px 20px;
 		border-left: 1px solid #cedc32;
 		border-right: 1px solid #cedc32;
+	}
+	#pagefoot p{
+		margin: 0;
 	}
 
 /* @group HEADER */
@@ -158,6 +165,13 @@
 	}
 
 	#workarea h2 {
+		background: none;
+		border: none;
+		display: block;
+		padding: 0;
+		margin: 40px 0 30px 0;
+	}
+	#workarea h3 {
 		background: none;
 		border: none;
 		display: block;
@@ -339,7 +353,6 @@
 						z-index: 1;
 						}
 						#drop-operations > ul li.expand.active a:before {
-							-moz-transform: rotateZ(180deg);
 							-webkit-transform: rotateZ(180deg);
 							transform: rotateZ(180deg);
 						}
@@ -842,6 +855,26 @@
 		padding: 5px 8px;
 	}
 
+/*@group searchForm*/
+	
+	#searchForm{
+		padding: 20px 30px;
+		margin-bottom: 30px;
+		border: 1px solid #cfe3e4;
+		background: #f9fcfc;
+		}
+		#searchForm .filterItem{
+			margin: 5px 0; 
+		}
+		#searchForm label{
+			display: inline-block;
+			vertical-align: middle;
+			width: 20%;
+		}
+		#searchForm label + *{
+			display: inline-block;
+			vertical-align: middle;
+		}
 
 /* @group POP UPS */
 
@@ -855,9 +888,6 @@
 	}
 
 	.ui-dialog.ui-corner-all {
-		-moz-border-radius: 0px;
-		-webkit-border-radius: 0px;
-		-khtml-border-radius: 0px;
 		border-radius: 0px;
 	}
 
@@ -867,9 +897,6 @@
 		color: #FFFFFF;
 		padding: 1em !important;
 		font-size: 1.1em;
-		moz-border-radius: 0px;
-		-webkit-border-radius: 0px;
-		-khtml-border-radius: 0px;
 		border-radius: 0px;
 	}
 
@@ -1020,9 +1047,14 @@
 		background: #fff;
 	}
 	input[type="submit"]{
-		border: 0;
+		border: 1px solid #00446A;
 		background: #00446A;
 		color: #fff;
+	}
+	input[type="button"]{
+		border: 1px solid #9ac4c6;
+		background: #fff;
+		color: #5A8E90;
 	}
 	select{
 		border: 1px solid #9ac4c6;
@@ -1062,6 +1094,7 @@
 
 	.checkedout {
 		color: #A00000;
+		font-size: 	1rem;
 	}
 
 /* @group Admonitions */
@@ -1237,14 +1270,15 @@
 			top: 10px;
 		}
 		#workarea .menu .link-folder{
-			display: inline-block;
-			padding: 0 5px 0 25px;
+		    padding: 5px 5px 5px 25px;
 			font-weight: bold;
+			line-height: 1;
 			text-decoration: none;
 			display: inline-block;
 			width: 49%;
 			vertical-align: top;
 			box-sizing: border-box;
+			background-position: 0 2px;
 		}
 		#workarea .menu .selected{
 			background: #E0EBA4;
@@ -1252,12 +1286,20 @@
 		#workarea .menu .description{
 			display: inline-block;
 			width: 49%;
+			padding: 5px 0;
 			line-height: 1;
+		    vertical-align: top;
+		    font-size: 	0.9em;
+		}
+		#workarea .menu sup{
+			color: #999;
+			display: inline-block;
+			margin: 0 7px;
 		}
 
 	#workarea .tree-nav{
 		list-style: none;
-		margin: 0;
+		margin: 0 0 30px 0;
 		}
 		#workarea .tree-nav > li{
 			border-top: 1px solid #CFE5E1;
@@ -1306,11 +1348,11 @@
 				color: #fff;
 			}
 		#workarea .tree-nav .menu{
-			margin: 10px 10px 10px 0;
+			margin: 20px 30px 0px 0;
 			}
 			#workarea .tree-nav .menu li{
-				border: 0;
-				padding: 5px 0 5px 30px;
+				/*border: 0;*/
+				padding: 7px 0 7px 30px;
 				}
 				#workarea .tree-nav .menu li:not(.selected):hover{
 					background: #fff;
@@ -1319,7 +1361,7 @@
 
 			}
 			#workarea .tree-nav .menu input[type="checkbox"]{
-				top: 5px;
+				top: 8px;
 				left: 5px;
 			}
 
