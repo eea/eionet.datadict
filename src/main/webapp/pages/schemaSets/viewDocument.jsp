@@ -293,7 +293,7 @@
 
     <c:if test="${actionBean.rootLevelSchema && not empty actionBean.otherVersions}">
         <h2>Other versions of this schema</h2>
-        <display:table name="${actionBean.otherVersions}" class="datatable results" id="otherVersion" style="width:80%">
+        <display:table name="${actionBean.otherVersions}" class="datatable results" id="otherVersion">
             <display:column title="File name">
                 <stripes:link beanclass="${actionBean['class'].name}" title="Open schema details">
                     <stripes:param name="schema.id" value="${otherVersion.id}"/>

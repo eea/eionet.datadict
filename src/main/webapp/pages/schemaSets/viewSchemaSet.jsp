@@ -125,7 +125,7 @@
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                             </stripes:link>
                         </li>
-                        <li class="view">
+                        <li class="edit">
                             <stripes:url var="viewUrl" beanclass="${actionBean['class'].name}" event="view">
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                                 <stripes:param name="workingCopy" value="true"/>
@@ -190,7 +190,7 @@
     <%-- Attributes div --%>
 
     <div id="outerframe" style="padding-top:20px">
-        <table class="datatable">
+        <table class="datatable results">
             <colgroup>
                 <col style="width:30%"/>
                 <col style="width:70%"/>
@@ -267,7 +267,7 @@
     </c:if>
 
     <c:if test="${not empty actionBean.schemas}">
-        <display:table name="${actionBean.schemas}" class="datatable results" id="schema" style="width:80%">
+        <display:table name="${actionBean.schemas}" class="datatable results" id="schema">
             <display:column title="File name">
                 <stripes:link beanclass="eionet.web.action.SchemaActionBean" title="Open schema details">
                     <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
@@ -318,7 +318,7 @@
 
     <c:if test="${not empty actionBean.otherVersions}">
         <h2>Other versions of this schema set</h2>
-        <display:table name="${actionBean.otherVersions}" class="datatable results" id="otherVersion" style="width:80%">
+        <display:table name="${actionBean.otherVersions}" class="datatable results" id="otherVersion">
             <display:column title="Identifier">
                 <stripes:link beanclass="${actionBean['class'].name}" title="Open schema set details">
                     <stripes:param name="schemaSet.identifier" value="${otherVersion.identifier}"/>

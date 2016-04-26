@@ -136,7 +136,7 @@
 
         <!-- Vocabulary folder -->
         <div id="outerframe">
-            <table class="datatable">
+            <table class="datatable results">
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Folder

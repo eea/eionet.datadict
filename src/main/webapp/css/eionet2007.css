@@ -855,27 +855,6 @@
 		padding: 5px 8px;
 	}
 
-/*@group searchForm*/
-	
-	#searchForm{
-		padding: 20px 30px;
-		margin-bottom: 30px;
-		border: 1px solid #cfe3e4;
-		background: #f9fcfc;
-		}
-		#searchForm .filterItem{
-			margin: 5px 0; 
-		}
-		#searchForm label{
-			display: inline-block;
-			vertical-align: middle;
-			width: 20%;
-		}
-		#searchForm label + *{
-			display: inline-block;
-			vertical-align: middle;
-		}
-
 /* @group POP UPS */
 
 	.ui-widget-content a {
@@ -1065,6 +1044,10 @@
 /* @group styles that aren't in the central style sheet */
 	
 	#createbox + #outerframe{
+		margin-top: 30px;
+	}
+
+	#drop-operations + #outerframe{
 		margin-top: 30px;
 	}
 
