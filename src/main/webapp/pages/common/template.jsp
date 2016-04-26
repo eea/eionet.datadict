@@ -13,8 +13,9 @@
             <%--
             <base href="<%= BaseUrl.getBaseUrl(request) %>"/>
             --%>
-
-            <title>${initParam.appDispName} - ${pageTitle}</title>
+            <stripes:layout-component name="title">
+                <title>${initParam.appDispName}-${pageTitle}</title>
+            </stripes:layout-component>
 
             <link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/print.css" media="print" />
             <link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/handheld.css" media="handheld" />
@@ -37,7 +38,9 @@
             <script type="text/javascript" src="<c:url value="/script.js"/>"></script>
             <stripes:layout-component name="head"/>
         </head>
-        <body>
+        <stripes:layout-component name="bodylabel">
+            <body>
+            </stripes:layout-component>
             <div id="container">
                 <div id="toolribbon">
                     <div id="lefttools">
@@ -59,15 +62,17 @@
                         <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>
                         <a id="acronymlink" href="about.action" title="About ${initParam.appDispName}"><span>About</span></a>
                         <form action="http://google.com/search" method="get">
-                          <div id="freesrchform">
-                            <label for="freesrchfld">Search</label>
-                            <input type="text" id="freesrchfld" name="q"
-                             onfocus="if(this.value=='Search the site')this.value='';"
-                             onblur="if(this.value=='')this.value='Search the site';"
-                             value="Search the site"/>
-                             <input type="hidden" name="sitesearch" value="${actionBean.sitePrefix}" />
-                            <input id="freesrchbtn" type="image" src="<c:url value="/images/button_go.gif"/>" alt="Go"/>
-                          </div>
+                            <div id="freesrchform">
+                                <label for="freesrchfld">Search</label>
+                                <input type="text" id="freesrchfld" name="q"
+                                       onfocus="if (this.value == 'Search the site')
+                                                   this.value = '';"
+                                       onblur="if (this.value == '')
+                                                   this.value = 'Search the site';"
+                                       value="Search the site"/>
+                                <input type="hidden" name="sitesearch" value="${actionBean.sitePrefix}" />
+                                <input id="freesrchbtn" type="image" src="<c:url value="/images/button_go.gif"/>" alt="Go"/>
+                            </div>
                         </form>
                     </div>
                 </div> <!-- toolribbon -->
@@ -102,6 +107,9 @@
 
                 <stripes:layout-component name="navigation">
                     <jsp:include page="/pages/common/navigation.jsp"/>
+                </stripes:layout-component>
+
+                <stripes:layout-component name="news">
                 </stripes:layout-component>
 
                 <div id="workarea">
@@ -180,7 +188,7 @@
                     <c:set var="feedbackMail" value="mailto:helpdesk@eionet.europa.eu?subject=Feedback from the ${initParam.appDispName} website"/>
                     <p><a href="mailto:cr@eionet.europa.eu">E-mail</a> | <a href="${ddfn:urlEncode(feedbackMail)}">Feedback</a></p>
                     <p><a href="http://www.eea.europa.eu/"><b>European Environment Agency</b></a>
-                    <br/>Kgs. Nytorv 6, DK-1050 Copenhagen K, Denmark - Phone: +45 3336 7100</p>
+                        <br/>Kgs. Nytorv 6, DK-1050 Copenhagen K, Denmark - Phone: +45 3336 7100</p>
                 </div>
             </div>
         </body>
