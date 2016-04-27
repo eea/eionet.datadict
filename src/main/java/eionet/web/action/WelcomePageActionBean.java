@@ -17,6 +17,8 @@ import net.sourceforge.stripes.action.Resolution;
  */
 public class WelcomePageActionBean extends AbstractActionBean {
 
+    public static final String WELCOME_PAGE = "/pages/welcome.jsp";
+    
     String helps;
     String support;
 
@@ -27,32 +29,16 @@ public class WelcomePageActionBean extends AbstractActionBean {
         return errorMessage;
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
     public String getErrorTrace() {
         return errorTrace;
-    }
-
-    public void setErrorTrace(String errorTrace) {
-        this.errorTrace = errorTrace;
     }
 
     public String getSupport() {
         return support;
     }
-
-    public void setSupport(String support) {
-        this.support = support;
-    }
-
+    
     public String getHelps() {
         return helps;
-    }
-
-    public void setHelps(String helps) {
-        this.helps = helps;
     }
 
     @DefaultHandler
@@ -65,8 +51,16 @@ public class WelcomePageActionBean extends AbstractActionBean {
         } else {
             errorMessage = "";
         }
-        helps = Helps.get("front_page", "news");
-        support = Helps.get("front_page", "support");
-        return new ForwardResolution("/pages/welcome.jsp");
+        helps = getFrontPageNews();
+        support = getFrontPageSupport();
+        return new ForwardResolution(WELCOME_PAGE);
+    }
+    
+    protected String getFrontPageNews(){
+        return Helps.get("front_page", "news");
+    }
+    
+    protected String getFrontPageSupport(){
+        return  Helps.get("front_page", "support");
     }
 }
