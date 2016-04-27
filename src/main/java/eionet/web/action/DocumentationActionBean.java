@@ -45,10 +45,10 @@ public class DocumentationActionBean extends AbstractActionBean {
 
     @SpringBean
     private DocumentationService documentationService;
-    
+
     @SpringBean
     private DocumentationValidator docValidator;
-    
+
     /** */
     private String pageId;
     private String event;
@@ -63,10 +63,13 @@ public class DocumentationActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution view() throws Exception {
-
-        String forward = "/pages/documentation.jsp";
+        String forward;
+        if (event!=null && event.equals("show")) {
+            forward = "/pages/welcome/showdocumentation.jsp";
+        }
+        else forward = "/pages/documentation.jsp";
         pageObject = this.documentationService.view(pageId, event);
-        
+
         if (pageObject != null && pageObject.getFis() != null) {
             return new StreamingResolution(pageObject.getContentType(), pageObject.getFis());
         }
@@ -126,11 +129,11 @@ public class DocumentationActionBean extends AbstractActionBean {
         // - If pageObject.overwrite = false, then checks if page ID already exists
         // - If no file is chosen, then Page ID is mandatory
         docValidator.getStripesValidationErrors(pageObject, errors);
-        
+
         if (errors != null && errors.size() > 0) {
             getContext().setValidationErrors(errors);
         }
-        
+
         event = "add";
     }
 
@@ -183,16 +186,16 @@ public class DocumentationActionBean extends AbstractActionBean {
     public FileBean getFileToSave() {
         return this.fileToSave;
     }
-    
+
     public void setFileToSave(FileBean fileToSave) {
         this.fileToSave = fileToSave;
     }
-    
+
     private void attachFileInfoToPageObject() {
         if (this.pageObject.getFile() != null) {
             return;
         }
-        
+
         FileBeanToFileInfoConverter converter = new FileBeanToFileInfoConverter();
         this.pageObject.setFile(converter.convert(this.fileToSave));
     }
