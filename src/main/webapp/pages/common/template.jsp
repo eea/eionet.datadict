@@ -39,8 +39,9 @@
             <stripes:layout-component name="head"/>
         </head>
         <stripes:layout-component name="bodylabel">
+            <!--sometimes must be rendered with different css class-->
             <body>
-            </stripes:layout-component>
+        </stripes:layout-component>
             <div id="container">
                 <div id="toolribbon">
                     <div id="lefttools">
@@ -110,6 +111,7 @@
                 </stripes:layout-component>
 
                 <stripes:layout-component name="news">
+                    <!--for the news area when needed-->
                 </stripes:layout-component>
 
                 <div id="workarea">
