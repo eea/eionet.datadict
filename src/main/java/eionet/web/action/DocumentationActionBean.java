@@ -40,7 +40,7 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
  * @author Risto Alt
  *
  */
-@UrlBinding("/documentation/{pageId}/{$event}")
+@UrlBinding("/documentation/{pageId}/{event}")
 public class DocumentationActionBean extends AbstractActionBean {
 
     @SpringBean
@@ -49,9 +49,7 @@ public class DocumentationActionBean extends AbstractActionBean {
     @SpringBean
     private DocumentationValidator docValidator;
 
-    /**
-     *
-     */
+    /** */
     private String pageId;
     private String event;
 
@@ -149,7 +147,7 @@ public class DocumentationActionBean extends AbstractActionBean {
 
         if (isUserLoggedIn()) {
             // The page title is not mandatory. If it is not filled in, then it takes the value of the page_id.
-            if (pageObject != null && pageObject.getDocIds() != null && pageObject.getDocIds().size() > 0) {
+            if (pageObject != null && pageObject.getDocIds() != null &&  pageObject.getDocIds().size() > 0) {
                 this.documentationService.delete(pageObject);
             } else {
                 addWarningMessage("No objects selected!");
