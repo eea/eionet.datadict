@@ -33,7 +33,6 @@ import eionet.doc.dto.DocPageDTO;
 import eionet.doc.extensions.stripes.DocumentationValidator;
 import eionet.doc.extensions.stripes.FileBeanToFileInfoConverter;
 import net.sourceforge.stripes.action.FileBean;
-import net.sourceforge.stripes.action.HandlesEvent;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 
 /**
