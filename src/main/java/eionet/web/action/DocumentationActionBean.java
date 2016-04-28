@@ -63,11 +63,7 @@ public class DocumentationActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution view() throws Exception {
-        String forward;
-        if (event!=null && event.equals("show")) {
-            forward = "/pages/welcome/showdocumentation.jsp";
-        }
-        else forward = "/pages/documentation.jsp";
+        String forward = "/pages/documentation.jsp";
         pageObject = this.documentationService.view(pageId, event);
 
         if (pageObject != null && pageObject.getFis() != null) {

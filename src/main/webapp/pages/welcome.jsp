@@ -8,26 +8,35 @@
     </stripes:layout-component>
     <stripes:layout-component name="bodylabel">
         <body  class="threecolumns">
-    </stripes:layout-component>
-    <stripes:layout-component name="news">
-        <div id="rightcolumn" class="quickjumps">
-            ${actionBean.helps}
-        </div>
-    </stripes:layout-component>
-    <stripes:layout-component name="contents">
-        <c:choose>
-            <c:when test="${empty actionBean.errorMessage}">
-                <div id="outerframe">
-                    <jsp:include page="/releasedItems.action" flush="true" />
-                    <jsp:include page="/documentation">
-                        <jsp:param name="event" value="show"/>
-                    </jsp:include>
-                    ${actionBean.support}
+        </stripes:layout-component>
+        <stripes:layout-component name="news">
+            <div id="rightcolumn" class="quickjumps">
+                ${actionBean.pageNews}
+            </div>
+        </stripes:layout-component>
+        <stripes:layout-component name="contents">
+            <div id="outerframe">
+                <jsp:include page="/releasedItems.action" flush="true" />
+                <h2>Documentation</h2>
+                <ul>
+                    <c:set var="count" value="0" scope="page"/>
+                    <c:forEach var="doc" items="${actionBean.pageObject.docs}">
+                        <li>
+                            <c:set var="doctitle" value="${doc.title}"/>
+                            <c:if test="${empty doctitle}">
+                                <c:set var="doctitle" value="${doc.pageId}"/>
+                            </c:if>
+                            <stripes:link href="/documentation/${doc.pageId}">${doctitle}</stripes:link>
+                            <c:set var="count" value="${count + 1}" scope="page"/>
+                        </li>
+                    </c:forEach>
+                </ul>
+                <c:if test="${count < 1}">
+                    <p>No documentation currently available in the database.</p>
+                </c:if>
+                <div>
+                    ${actionBean.pageSupport}
                 </div>
-            </c:when>
-            <c:otherwise>
-                <stripes:layout-render name="/pages/welcome/show_DD_ERR_MSG.jsp" errorMessage="${actionBean.errorMessage}" errorTrace="${actionbean.errorTrace}"/>
-            </c:otherwise>
-        </c:choose>
-    </stripes:layout-component>
-</stripes:layout-render>
+            </div>
+        </stripes:layout-component>
+    </stripes:layout-render>
