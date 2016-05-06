@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-    version="2.4">
+         version="2.4">
 
     <display-name>Data Dictionary</display-name>
 
@@ -304,11 +304,11 @@
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/codelists/*</url-pattern>
     </servlet-mapping>
-     <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/index</url-pattern>
     </servlet-mapping>
-
+   
     <servlet>
         <servlet-name>rpcrouter</servlet-name>
         <servlet-class>eionet.rpcserver.servlets.XmlRpcRouter</servlet-class>
@@ -567,6 +567,10 @@
         <url-pattern>/void.rdf</url-pattern>
     </servlet-mapping>
 
+    <welcome-file-list>
+        <welcome-file>index</welcome-file>
+    </welcome-file-list>
+    
     <!-- Mime mappings. -->
     <mime-mapping>
         <extension>xsd</extension>
@@ -574,7 +578,7 @@
     </mime-mapping>
 
     <!-- the application server might allow directory listing. The welcome-files
-        are used to overcome workings of such feature -->
+    are used to overcome workings of such feature -->
 
 
     <resource-ref>
@@ -596,20 +600,19 @@
         <env-entry-type>java.lang.Boolean</env-entry-type>
         <env-entry-value>false</env-entry-value>
     </env-entry>
-
     <!-- force the entire application to security constraint CONFIDENTIAL -->
     <!-- as a result the non-SSL connector will redirect using the redirectPort
-        value to the SSL connector -->
+    value to the SSL connector -->
     <!-- first match wins -->
     <!-- transport-guarantee can be NONE, INTEGRAL, CONFIDENTIAL -->
     <!-- define SSL security> <security-constraint> <web-resource-collection>
-        <web-resource-name>XslXmlFiles</web-resource-name> <description>app files</description>
-        <url-pattern>/app/*</url-pattern> <url-pattern>/images/*</url-pattern> <http-method>GET</http-method>
-        <http-method>POST</http-method> </web-resource-collection> <user-data-constraint>
-        <transport-guarantee>NONE</transport-guarantee> </user-data-constraint> </security-constraint>
-        <security-constraint> <web-resource-collection> <web-resource-name>Entire
-        Application</web-resource-name> <url-pattern>/*</url-pattern> </web-resource-collection>
-        <user-data-constraint> <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-        </user-data-constraint> </security-constraint> <!end def SSL security -->
+    <web-resource-name>XslXmlFiles</web-resource-name> <description>app files</description>
+    <url-pattern>/app/*</url-pattern> <url-pattern>/images/*</url-pattern> <http-method>GET</http-method>
+    <http-method>POST</http-method> </web-resource-collection> <user-data-constraint>
+    <transport-guarantee>NONE</transport-guarantee> </user-data-constraint> </security-constraint>
+    <security-constraint> <web-resource-collection> <web-resource-name>Entire
+    Application</web-resource-name> <url-pattern>/*</url-pattern> </web-resource-collection>
+    <user-data-constraint> <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint> </security-constraint> <!end def SSL security -->
 
 </web-app>
