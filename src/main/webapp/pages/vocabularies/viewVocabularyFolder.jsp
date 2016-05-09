@@ -291,10 +291,12 @@
                         <td class="label">
                             <label>Columns</label>
                         </td>
-                        <td class="input bordered">
+                        <td class="input bordered multi-select-container">
                             <c:forEach var="column" items="${actionBean.columns}">
-                                <stripes:checkbox name="filter.visibleColumns" id="${fn:escapeXml(column)}" value="${fn:escapeXml(column)}" />
-                                <label for="${fn:escapeXml(column)}" class="smallfont">${fn:escapeXml(column)}</label>
+                                <label for="${fn:escapeXml(column)}" class="smallfont">
+                                    <stripes:checkbox name="filter.visibleColumns" id="${fn:escapeXml(column)}" value="${fn:escapeXml(column)}" />
+                                    ${fn:escapeXml(column)}
+                                </label>
                             </c:forEach>
                         </td>
                     </tr>
@@ -307,13 +309,11 @@
                             <label for="visibleDefinition" class="smallfont">Yes</label>
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                            <stripes:submit name="view" value="Search" class="mediumbuttonb searchButton" />
-                            <input class="mediumbuttonb" type="reset" value="Reset" />
-                        </td>
-                    </tr>
                 </table>
+                <p>
+                    <stripes:submit name="view" value="Search" class="mediumbuttonb searchButton" />
+                    <input class="mediumbuttonb" type="reset" value="Reset" />
+                </p>
             </div>
             <script type="text/javascript" src="<c:url value="/scripts/jquery.balloon.min.js" />"></script>
             <script type="text/javascript">
