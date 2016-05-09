@@ -922,17 +922,15 @@ else if (mode.equals("add"))
                                                         String icon  = (String)hash.get("icon");
                                                         String title = (String)hash.get("title");
                                                         %>
-                                                        <tr>
-                                                            <td><%=Util.processForDisplay(title)%></td>
-                                                            <td>
-                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/DocDownload?file=<%=Util.processForDisplay(md5)%>"><img style="border:0" src="<%=request.getContextPath()%>/images/<%=Util.processForDisplay(icon)%>" width="16" height="16" alt="icon"/></a>
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/DocDownload?file=<%=Util.processForDisplay(md5)%>"><img style="border:0" src="<%=request.getContextPath()%>/images/<%=Util.processForDisplay(icon)%>" width="16" height="16" alt="icon"/><%=Util.processForDisplay(title)%></a>
                                                                 <%
                                                                 if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")) {
-                                                                    %>&nbsp;<a  href="<%=request.getContextPath()%>/DocUpload?ds_id=<%=ds_id%>&amp;delete=<%=Util.processForDisplay(md5)%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>"><img style="border:0" src="<%=request.getContextPath()%>/images/delete.gif" width="14" height="14"/></a><%
+                                                                    %><a  href="<%=request.getContextPath()%>/DocUpload?ds_id=<%=ds_id%>&amp;delete=<%=Util.processForDisplay(md5)%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>"><img style="border:0" src="<%=request.getContextPath()%>/images/delete.gif" width="14" height="14"/></a><%
                                                                 }
                                                                 %>
                                                             </td>
-                                                        </tr>
+                                                        </li>
                                                         <%
                                                     }
                                                     %>
