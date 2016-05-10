@@ -76,7 +76,7 @@ public class ImgUpload extends HttpServlet {
         HttpSession session = req.getSession();
         String qryStr = (String) session.getAttribute(QRYSTR_ATTR);
         if (Util.isEmpty(qryStr))
-            qryStr = "index.jsp";
+            qryStr = "index";
         else
             session.removeAttribute(QRYSTR_ATTR);
 

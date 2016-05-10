@@ -36,7 +36,7 @@ ServletContext ctx = null;
             handler.execute();
 
             String    deleteUrl = history.gotoLastMatching("attributes.jsp");
-            redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ? deleteUrl:redirUrl + "/index.jsp";
+            redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ? deleteUrl : request.getContextPath();
         }
         finally{
             try { if (userConn!=null) userConn.close();

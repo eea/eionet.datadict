@@ -255,7 +255,7 @@
                 redirUrl = request.getContextPath() + "/datasets/" + dsID;
             }
             else{
-                redirUrl = request.getContextPath() + "/index.jsp";
+                redirUrl = request.getContextPath();
             }
         }
         else if (mode.equals("copy")){
