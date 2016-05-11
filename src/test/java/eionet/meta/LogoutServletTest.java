@@ -57,7 +57,7 @@ public class LogoutServletTest extends TestCase {
         
         // a couple of more expected calls to request
         expect(request.getScheme()).andReturn(REQUEST_SCHEME);
-        expect(request.getContextPath()).andReturn(CONTEXT_PATH);
+        expect(request.getContextPath()).andReturn(CONTEXT_PATH).atLeastOnce();
         String expectedLogoutUrl = getExpectedLogoutUrl();
         
         // CASFilterConfig must be initialized
