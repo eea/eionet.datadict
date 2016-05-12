@@ -214,13 +214,18 @@
 
                 <tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
                     <%
-                    if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
+                    if (attrType.equals(DElemAttribute.TYPE_COMPLEX)){
                         attrTypeDisp = "Complex";
                     %>
                     <td>
                         <a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>">
                         <%=Util.processForDisplay(attr_name)%></a>
+                    </td><%}%>
+                    <td>
+                        <a href="attribute/view/<%=attr_id%>">
+                            <%=Util.processForDisplay(attr_name)%></a>
                     </td>
+
                     <td><%=Util.processForDisplay(attrTypeDisp)%></td>
                     <td class="center">
                         <% if (attribute.displayFor("DST")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
