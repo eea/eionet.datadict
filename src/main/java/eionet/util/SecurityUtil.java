@@ -258,7 +258,7 @@ public final class SecurityUtil {
     public static String getLogoutURL(HttpServletRequest request) {
 
         // The default result used when the application is configured to not use Central Authentication Service (CAS).
-        String result = "index.jsp";
+        String result = request.getContextPath();
 
         if (Props.isUseCentralAuthenticationService()) {
 

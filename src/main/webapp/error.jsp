@@ -49,7 +49,7 @@ else{
 }
 %>
 
-        <form id="form1" action="index.jsp" method="get">
+        <form id="form1" action="index" method="get">
 
             <%
                 String msg   = (String)request.getAttribute("DD_ERR_MSG");

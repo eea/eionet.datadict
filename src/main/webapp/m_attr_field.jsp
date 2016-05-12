@@ -100,7 +100,7 @@ private String legalizeAlert(String in){
                 String redirUrl=null;
                 if (mode.equals("delete")){
                     String    deleteUrl = history.gotoLastNotMatching("m_attr_field.jsp");
-                    redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ? deleteUrl:redirUrl + "/index.jsp";
+                    redirUrl = (deleteUrl!=null && deleteUrl.length() > 0) ? deleteUrl : request.getContextPath();
                     //redirUrl = "" +
                     //                "/m_attr_fields.jsp?mode=edit&attr_id=" + attr_id + "&attr_name=" + attr_name;
                 }

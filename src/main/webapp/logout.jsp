@@ -25,7 +25,7 @@ List<VocabularyFolder> vocabularies = null;
     DDUser user = SecurityUtil.getUser(request);
 
     if (user==null){
-        response.sendRedirect("index.jsp");
+        response.sendRedirect(request.getContextPath());
         return;
     }
 

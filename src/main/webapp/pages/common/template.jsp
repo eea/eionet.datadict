@@ -13,9 +13,7 @@
             <%--
             <base href="<%= BaseUrl.getBaseUrl(request) %>"/>
             --%>
-            <stripes:layout-component name="title">
-                <title>${initParam.appDispName}-${pageTitle}</title>
-            </stripes:layout-component>
+            <title>${initParam.appDispName}<c:if test="${not empty pageTitle}">" - ${pageTitle}</c:if></title>
 
             <link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/print.css" media="print" />
             <link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/handheld.css" media="handheld" />
@@ -38,10 +36,8 @@
             <script type="text/javascript" src="<c:url value="/script.js"/>"></script>
             <stripes:layout-component name="head"/>
         </head>
-        <stripes:layout-component name="bodylabel">
-            <!--sometimes must be rendered with different css class-->
-            <body>
-        </stripes:layout-component>
+
+        <body<c:if test="${not empty bodyClass}"> class="${bodyClass}"</c:if>>
             <div id="container">
                 <div id="toolribbon">
                     <div id="lefttools">
@@ -110,9 +106,7 @@
                     <jsp:include page="/pages/common/navigation.jsp"/>
                 </stripes:layout-component>
 
-                <stripes:layout-component name="news">
-                    <!--for the news area when needed-->
-                </stripes:layout-component>
+                <stripes:layout-component name="news" />
 
                 <div id="workarea">
 

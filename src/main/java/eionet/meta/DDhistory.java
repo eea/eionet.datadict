@@ -10,7 +10,7 @@ import eionet.util.QueryString;
  */
 public class DDhistory {
 
-  private static String START_PAGE="index.jsp";
+  private static String START_PAGE = "index";
   /** stores all the loaded urls. */
   private Vector history;
   /** back button should use this url. */

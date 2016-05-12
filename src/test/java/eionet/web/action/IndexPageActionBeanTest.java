@@ -12,42 +12,42 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import static org.mockito.Mockito.*;
 
 /**
  *
  * @author eworx-alk
  */
-public class WelcomePageActionBeanTest {
-    
+public class IndexPageActionBeanTest {
+
     @Spy
-    WelcomePageActionBean bean;
-    
+    IndexPageActionBean bean;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
-    
+
     @Test
-    public void testWelcomePage() throws Exception{
-        //stubbing the methods that return the info for news and support
+    public void testView() throws Exception{
+        // stubbing the methods that return the info for news and support
         when(bean.getFrontPageNews()).thenReturn("front page news");
         when(bean.getFrontPageSupport()).thenReturn("front page support");
-        doReturn(new DocPageDTO()).when(bean).getDocumentation();
-        
-        //actual method to test
-        Resolution res = bean.welcome();
-        //testing return resolution type
+
+        // actual method to test
+        Resolution res = bean.view();
+        // testing return resolution type
         assertEquals (res.getClass(), ForwardResolution.class);
-        
-        //testing actionBean properties setting
-        assertEquals("Front page news was not set properly","front page news", bean.getPageNews());
-        assertEquals("Front page support was not set properly", "front page support", bean.getPageSupport());
-        assertNotNull(bean.getPageObject());
+
+        verify(bean, times(1)).getFrontPageNews();
+        verify(bean, times(1)).getFrontPageSupport();
+        verify(bean, times(1)).getDocumentationItems();
+
+        // testing actionBean properties setting
+        assertEquals("Front page news was not set properly","front page news", bean.getNewsSection());
+        assertEquals("Front page support was not set properly", "front page support", bean.getSupportSection());
     }
-    
-    
+
 }

@@ -127,9 +127,9 @@
                     }
                     else if (mode.equals("delete")){
                         String    deleteUrl = history.gotoLastMatching("attributes.jsp");
-                        redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ? deleteUrl:redirUrl + "/index.jsp";
+                        redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ? deleteUrl : request.getContextPath();
                         //redirUrl = redirUrl + "delem_attribute.jsp?mode=add&type=SIMPLE";
-                        //redirUrl = redirUrl + "index.jsp";
+                        //redirUrl = request.getContextPath();
                     }
                 }
                 finally{
