@@ -5,6 +5,7 @@
  */
 package eionet.datadict.controllers;
 
+import eionet.meta.application.errors.ResourceNotFoundException;
 import eionet.util.CompoundDataObject;
 
 /**
@@ -14,10 +15,20 @@ import eionet.util.CompoundDataObject;
 public interface AttributeController {
     
     /**
-     * Fetch all info for the view page
+     * Fetch info for the view page
+     * 
      * @param attrId the M_ATTRIBUTE id
      * @return an object containing all the display info
+     * @throws eionet.meta.application.errors.ResourceNotFoundException
      */
-    CompoundDataObject getAttributeViewInfo(String attrId);
+    CompoundDataObject getAttributeViewInfo(String attrId) throws ResourceNotFoundException;
     
+    /**
+     * Fetch info for the edit page
+     * 
+     * @param attrId the M_ATTRIBUTE id
+     * @return an object containing all the display info
+     * @throws eionet.meta.application.errors.ResourceNotFoundException
+     */
+    CompoundDataObject getAttributeEditInfo(String attrId) throws ResourceNotFoundException;
 }

@@ -59,16 +59,16 @@
             <tr>
                 <th scope="row" class="scope-row">Obligation</th>
                 <td>
-                    ${model.obligation}
+                    ${model.attributeDefinition.obligationLevel.label}
                 </td>
             </tr>
             <tr>
                 <th scope="row" class="scope-row">Display type</th>
                 <td>
-                    ${model.displayType}
+                    ${model.attributeDefinition.displayType.displayLabel}
                 </td>
             </tr>
-            <c:if test="${model.displayType == 'Select box'}">
+            <c:if test="${model.attributeDefinition.displayType.displayLabel == 'Select box'}">
                 <tr>
                     <th scope="row" class="scope-row">
                         <a href="${actionBean.contextPath}/fixedvalues/attr/${actionBean.attrId}">

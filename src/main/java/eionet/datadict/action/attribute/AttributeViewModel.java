@@ -11,12 +11,20 @@ import java.util.Map;
  */
 public final class AttributeViewModel {
     
+    private String submitActionBeanName;
+    
     private AttributeDefinition attributeDefinition;
     private Map<String, String> displayForTypes;
-    private String obligation;
-    private String displayType;
     private List<FixedValue> fixedValues;
 
+    public String getSubmitActionBeanName() {
+        return submitActionBeanName;
+    }
+
+    public void setSubmitActionBeanName(String submitActionBean) {
+        this.submitActionBeanName = submitActionBean;
+    }
+    
     public AttributeDefinition getAttributeDefinition() {
         return attributeDefinition;
     }
@@ -31,22 +39,6 @@ public final class AttributeViewModel {
 
     public void setDisplayForTypes(Map<String, String> displayForTypes) {
         this.displayForTypes = displayForTypes;
-    }
-
-    public String getObligation() {
-        return obligation;
-    }
-
-    public void setObligation(String obligation) {
-        this.obligation = obligation;
-    }
-
-    public String getDisplayType() {
-        return displayType;
-    }
-
-    public void setDisplayType(String displayType) {
-        this.displayType = displayType;
     }
 
     public List<FixedValue> getFixedValues() {

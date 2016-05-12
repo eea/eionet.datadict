@@ -5,6 +5,7 @@
  */
 package eionet.datadict.action.attribute;
 
+import eionet.datadict.action.AttributeActionBean;
 import eionet.datadict.model.AttributeDefinition;
 import eionet.util.CompoundDataObject;
 import java.util.List;
@@ -22,9 +23,14 @@ public class AttributeViewModelBuilder {
         AttributeViewModel  viewModel = new AttributeViewModel();
         viewModel.setAttributeDefinition((AttributeDefinition)model.get("attributeDefinition"));
         viewModel.setDisplayForTypes((Map)model.get("displayForTypes"));
-        viewModel.setDisplayType((String)model.get("displayType"));
-        viewModel.setObligation((String)model.get("obligation"));
         viewModel.setFixedValues((List)model.get("fixedValues"));
+        return viewModel;
+    }
+    
+    public AttributeViewModel buildForEdit(CompoundDataObject model) {
+        AttributeViewModel viewModel = new AttributeViewModel();
+        viewModel.setSubmitActionBeanName((AttributeActionBean.class).getName());
+        viewModel.setAttributeDefinition((AttributeDefinition)model.get("attributeDefinition"));
         return viewModel;
     }
 }

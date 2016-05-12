@@ -222,7 +222,7 @@
                         <%=Util.processForDisplay(attr_name)%></a>
                     </td><%}%>
                     <td>
-                        <a href="attribute/view/<%=attr_id%>">
+                        <a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>">
                             <%=Util.processForDisplay(attr_name)%></a>
                     </td>
 

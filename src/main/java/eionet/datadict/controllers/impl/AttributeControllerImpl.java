@@ -9,6 +9,7 @@ import eionet.datadict.controllers.AttributeController;
 import eionet.datadict.dal.AttributeDefinitionDAO;
 import eionet.datadict.model.AttributeDefinition;
 import eionet.datadict.model.enums.Enumerations;
+import eionet.meta.application.errors.ResourceNotFoundException;
 import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.util.CompoundDataObject;
@@ -34,17 +35,21 @@ public class AttributeControllerImpl implements AttributeController{
     }
     
     @Override
-    public CompoundDataObject getAttributeViewInfo(String attrId) {
+    public CompoundDataObject getAttributeViewInfo(String attrId) throws ResourceNotFoundException{
         AttributeDefinition attrDef = this.getAttributeDefinition(Integer.parseInt(attrId));
         Map<String, String> displayForTypes = this.getDisplayForTypes(attrDef);
-        String obligation = this.getObligation(attrDef);
-        String displayType = this.getDisplayType(attrDef);
         List<FixedValue> fixedValues = this.getFixedValues(attrDef);
-        return this.packageResults(attrDef, displayForTypes, obligation, displayType, fixedValues);
+        return this.packageResults(attrDef, displayForTypes, fixedValues);
     }
 
+    @Override
+    public CompoundDataObject getAttributeEditInfo(String attrId) throws ResourceNotFoundException {
+        AttributeDefinition attrDef = this.getAttributeDefinition(Integer.parseInt(attrId));
+        String submitActionBeanName = "AttributeActionBean";
+        return packageResults(attrDef, submitActionBeanName);
+    }
 
-    private AttributeDefinition getAttributeDefinition(int attrId) {
+    private AttributeDefinition getAttributeDefinition(int attrId) throws ResourceNotFoundException{
         return ddAttributeDefinitionDAOImpl.getAttributeDefinitionById(attrId);
     }
 
@@ -64,13 +69,17 @@ public class AttributeControllerImpl implements AttributeController{
        return fixedValueDAO.getValueByOwner(FixedValue.OwnerType.ATTRIBUTE, attributeDefinition.getId());
     }
     
+    private CompoundDataObject packageResults(AttributeDefinition attrDef, String SubmitActionBeanName) {
+        CompoundDataObject object = new CompoundDataObject();
+        object.put("attributeDefinition", attrDef);
+        return object;
+    }
+    
     private CompoundDataObject packageResults (
-            AttributeDefinition attrDef, Map<String, String> displayForTypes, String obligation, String displayType, List<FixedValue> fixedValues) {
+            AttributeDefinition attrDef, Map<String, String> displayForTypes, List<FixedValue> fixedValues) {
         CompoundDataObject object = new CompoundDataObject();
         object.put("attributeDefinition", attrDef);
         object.put("displayForTypes", displayForTypes);
-        object.put("obligation", obligation);
-        object.put("displayType", displayType);
         object.put("fixedValues", fixedValues);
         return object;
     }

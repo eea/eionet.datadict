@@ -3,19 +3,15 @@ package eionet.datadict.action;
 import eionet.datadict.action.attribute.AttributeViewModel;
 import eionet.datadict.action.attribute.AttributeViewModelBuilder;
 import eionet.datadict.controllers.AttributeController;
-import eionet.datadict.model.AttributeDefinition;
-import eionet.datadict.model.enums.Enumerations.DisplayForType;
 import eionet.meta.DDUser;
+import eionet.meta.application.errors.ResourceNotFoundException;
 import eionet.meta.application.errors.UserAuthorizationException;
-import eionet.meta.dao.domain.FixedValue;
 import eionet.util.CompoundDataObject;
 import eionet.util.SecurityUtil;
 import eionet.web.action.AbstractActionBean;
 import eionet.web.action.ErrorActionBean;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
@@ -29,8 +25,9 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 @UrlBinding("/attribute/{$event}/{attrId}")
 public class AttributeActionBean extends AbstractActionBean {
 
-    private static final String ATTRIBUTE_PAGE = "/pages/attributes/attribute.jsp";
-
+    private static final String VIEW_PAGE = "/pages/attributes/view_attribute.jsp";
+    private static final String EDIT_PAGE = "/pages/attributes/edit_attribute.jsp";
+    
     private String attrId;
 
     @SpringBean
@@ -69,26 +66,52 @@ public class AttributeActionBean extends AbstractActionBean {
 
     @DefaultHandler
     public Resolution view() throws Exception {
-        user = SecurityUtil.getUser(this.getContext().getRequest());
-        String username = user == null ? "" : user.getUserName();
         try {
-            if (!SecurityUtil.hasPerm(username, "/attributes/", "v")) {
-                throw new UserAuthorizationException();
-            }
-        } catch (Exception authorizationException) {
+            authorizationInitializations("v");
+            CompoundDataObject model = attributeControllerImpl.getAttributeViewInfo(attrId);
+            viewModel = attributeViewModelBuilder.buildForView(model);
+        }
+        catch(UserAuthorizationException e) {
             return createNotAuthorizedResolution();
         }
-        CompoundDataObject model = attributeControllerImpl.getAttributeViewInfo(attrId);
-        viewModel = attributeViewModelBuilder.buildForView(model);
-
-        return new ForwardResolution(ATTRIBUTE_PAGE);
+        catch (ResourceNotFoundException e) {
+            return createAttributeNotFoundResolution(attrId);
+        }
+        return new ForwardResolution(VIEW_PAGE);
     }
 
+    public Resolution edit() throws Exception {
+        try {
+            authorizationInitializations("u");
+            CompoundDataObject model = attributeControllerImpl.getAttributeEditInfo(attrId);
+            viewModel = attributeViewModelBuilder.buildForEdit(model);
+        }
+        catch(UserAuthorizationException e) {
+            return createNotAuthorizedResolution();
+        }
+        return new ForwardResolution(EDIT_PAGE);
+
+    }
+
+    private Resolution createAttributeNotFoundResolution(String id) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("message", "Attribute with id " + id + " does not exist");
+        params.put("type", ErrorActionBean.ErrorType.NOT_FOUND_404);
+        return new ForwardResolution(ErrorActionBean.class).addParameters(params);
+    }
     private Resolution createNotAuthorizedResolution() {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("message", "You are not authorized to access this page");
         params.put("type", ErrorActionBean.ErrorType.FORBIDDEN_403);
         return new ForwardResolution(ErrorActionBean.class).addParameters(params);
+    }
+
+    private void authorizationInitializations(String perm) throws UserAuthorizationException, Exception {
+        user = SecurityUtil.getUser(this.getContext().getRequest());
+        String username = user == null ? "anonymous" : user.getUserName();
+        if (!SecurityUtil.hasPerm(username, "/attributes/", perm)) {
+            throw new UserAuthorizationException();
+        }
     }
 
 }
