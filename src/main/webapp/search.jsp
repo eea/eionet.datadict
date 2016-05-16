@@ -646,14 +646,11 @@ if (isDisplayOperations){
                         </tr><%
                     }
                     %>
-
-                    <tr>
-                        <td>
-                            <input class="mediumbuttonb searchButton" type="button" value="Search" onclick="submitForm('search_results.jsp')" />
-                            <input class="mediumbuttonb" type="reset" value="Reset" />
-                        </td>
-                    </tr>
                 </table>
+                <p class="actions">
+                    <input class="mediumbuttonb searchButton" type="button" value="Search" onclick="submitForm('search_results.jsp')" />
+                    <input class="mediumbuttonb" type="reset" value="Reset" />
+                </p>
 
                     <div style="display:none"> <!-- hidden inputs -->
                         <input type="hidden" name="sel_attr" value=""/>

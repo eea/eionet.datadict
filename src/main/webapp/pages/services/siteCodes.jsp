@@ -172,13 +172,11 @@
                             </stripes:select>
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                            <stripes:submit name="search" value="Search" class="mediumbuttonb searchButton" />
-                            <input class="mediumbuttonb" type="reset" value="Reset" />
-                        </td>
-                    </tr>
-               </table>
+                </table>
+                <p class="actions">
+                    <stripes:submit name="search" value="Search" class="mediumbuttonb searchButton" />
+                    <input class="mediumbuttonb" type="reset" value="Reset" />
+                </p>
             </div>
         </stripes:form>
 

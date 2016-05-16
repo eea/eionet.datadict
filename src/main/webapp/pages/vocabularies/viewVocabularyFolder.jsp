@@ -305,7 +305,7 @@
                         </td>
                     </tr>
                 </table>
-                <p>
+                <p class="actions">
                     <stripes:submit name="view" value="Search" class="mediumbuttonb searchButton" />
                     <input class="mediumbuttonb" type="reset" value="Reset" />
                 </p>

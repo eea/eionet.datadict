@@ -565,13 +565,11 @@
                             <label for="incl_histver" class="smallfont">Yes</label>
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                            <input class="mediumbuttonb searchButton" type="submit" value="Search" />
-                            <input class="mediumbuttonb" type="reset" value="Reset" />
-                        </td>
-                    </tr>
                 </table>
+                <p class="actions">
+                    <input class="mediumbuttonb searchButton" type="submit" value="Search" />
+                    <input class="mediumbuttonb" type="reset" value="Reset" />
+                </p>
                     <!-- table for 'Add' -->
                     <div style="display:none">
                         <input type="hidden" name="sel_attr" value=""/>

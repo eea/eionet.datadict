@@ -81,7 +81,7 @@
 
 	#menuribbon #dropdowns li a:link {
 		padding: 0.5em 2em;
-		
+		background-image: none;
 	}
 
 	#menuribbon #dropdowns li:hover {
@@ -100,34 +100,52 @@
 	}
 
 	#menuribbon #dropdowns ul {
-		top: 2.3em !important;
-		width: auto;
-		padding: 1em;
+		/*top: 2.3em !important;*/
+		width: 120%;
+		/*padding: 1em;*/
 		border-right: 1px solid #CFE3E4;
-		border-bottom: 1px solid #CFE3E4;
+		border-bottom: 0;
 		border-left: 1px solid #CFE3E4;
 		background: #ECF4F5;
 	}
 
 	#menuribbon #dropdowns li ul li {
-		background: #ECF4F5;	
+		width: 100%;
+		padding: 0;
+		border-bottom: 1px solid #D5E5E6;
+		background: #ECF4F5;
 	}
-
+	
 	#menuribbon #dropdowns li ul li a:link,
 	#menuribbon #dropdowns li ul li a:visited {
-		padding: 1em 1.5em;
-		border: none;	
+		padding: 0.7em 2.1em;
+		border: none;
+
 	}
 
+	#menuribbon #dropdowns li ul li a{
+		-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+	}
 	#menuribbon #dropdowns li ul li a:hover {
 		border: none;
+		background: #CEDC32;
+		border-left: 7px solid #AAAD28;
+		color: #000000;
+		padding-left: calc(2.1em - 7px);
 	}
 
 
 /* @group LEFT MENU */
+	
+	.localnav ul{
+		border-bottom: 0;
+	}
 
 	.localnav li {
 		font-size: 100%;
+		border-top: 1px solid #D5E5E6;
 	}
 
 	.localnav li:first-child {
@@ -533,21 +551,6 @@
 	#workarea table.filter td.input.bordered {
 		background: #FFFFFF;
 		border: 1px solid #9AC4C6;
-	}
-
-	#workarea table.filter td input.mediumbuttonb {
-		width: auto;
-		border: 1px solid #CFE3E4;	
-		background: #FFFFFF;
-		color: #00446A;
-	}
-
-	#workarea table.filter td input.mediumbuttonb.searchButton {
-		border: 1px solid #13446B;	
-		background: #13446B;
-		color: #FFFFFF;
-		text-transform: uppercase;
-		font-weight: bold
 	}
 
 /* @group HELP - ADD - REMOVE FILTERS */
@@ -1049,8 +1052,22 @@
 		border: 1px solid #00446A;
 		background: #00446A;
 		color: #fff;
-	}
+		cursor: pointer;
+		}
+		input[type="submit"]:hover{
+			background: #00669E;
+		}
+	input[type="reset"]{
+		cursor: pointer;
+		border: 1px solid #CFE3E4;	
+		background: #FFFFFF;
+		color: #00446A;
+		}
+		input[type="reset"]:hover{
+			border: 1px solid  #00446A;	
+		}
 	input[type="button"]{
+		cursor: pointer;
 		border: 1px solid #9ac4c6;
 		background: #fff;
 		color: #5A8E90;

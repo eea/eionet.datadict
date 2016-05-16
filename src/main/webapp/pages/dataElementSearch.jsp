@@ -73,7 +73,7 @@
 
     <div id="drop-operations">
         <ul>
-            <li class="search open"><a class="searchSection" href="#" title="Search datasets">Search</a></li>
+            <li class="search open"><a class="searchSection" href="#" title="Search data elements">Search</a></li>
             <c:if test="${actionBean.permissionToAdd}">
                 <li class="new">
                     <stripes:link href="/dataelements/add/">
@@ -198,13 +198,11 @@
                         <label for="chkInclHistoricVersions" class="smallfont">Yes</label>
                     </td>
                 </tr>
-                <tr>
-                    <td>
-                        <stripes:submit class="mediumbuttonb searchButton" name="search" value="Search"/>
-                        <input class="mediumbuttonb" type="reset" value="Reset" />
-                    </td>
-                </tr>
             </table>
+            <p class="actions">
+                <stripes:submit class="mediumbuttonb searchButton" name="search" value="Search"/>
+                <input class="mediumbuttonb" type="reset" value="Reset" />  
+            </p>
         </div>
     </stripes:form>
 
