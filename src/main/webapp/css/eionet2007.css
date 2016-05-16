@@ -473,13 +473,14 @@
 /* @group FILTERS STYLES */
 
 	#workarea #filters {
-		/*width: 860px;*/
 		display: block;
+ 		box-sizing: border-box;
 		float: left;
-		background: #F9FCFC;
-		border: 1px solid #CFE3E4;
+		width: 100%;
 		padding: 30px;
 		margin: -1px 0 25px 0; 
+		background: #F9FCFC;
+		border: 1px solid #CFE3E4;
 	}
 
 	#workarea table.filter {

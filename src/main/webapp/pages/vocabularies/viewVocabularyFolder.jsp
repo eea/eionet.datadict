@@ -228,11 +228,6 @@
 
         <!-- Vocabulary concepts search -->
         <h2>Vocabulary concepts</h2>
-        <div id="drop-operations">
-            <ul>
-                <li class="search open"><a class="searchSection" href="#" title="Search datasets">Search</a></li>
-            </ul>
-        </div>
         <stripes:form method="get" id="searchForm" beanclass="${actionBean['class'].name}">
             <div id="filters">
                 <table class="filter">
