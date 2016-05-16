@@ -35,6 +35,7 @@
                 <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemas', 'i')}">
                     <li class="add"><stripes:link beanclass="eionet.web.action.SchemaActionBean" event="add">Add root-level schema</stripes:link></li>
                 </c:if>
+                <li class="search"><a href="${pageContext.request.contextPath}/schemasets/search/">Search schema sets</a></li>
             </ul>
         </div>
 
@@ -86,17 +87,15 @@
                             </td>
                         </tr>
                     </c:forEach>
-                    <tr>
-                        <td>
-                            <stripes:submit class="mediumbuttonb searchButton" name="search" value="Search"/>
-                            <input class="mediumbuttonb" type="reset" value="Reset" />
-                            <c:if test="${actionBean.schemaSetId != 0}">
-                               <stripes:submit name="copyToSchemaSet" value="Copy to schema set" />
-                               <stripes:submit name="cancelCopy" value="Cancel" />
-                            </c:if>
-                        </td>
-                    </tr>
                 </table>
+                <p class="actions">
+                    <stripes:submit class="mediumbuttonb searchButton" name="search" value="Search"/>
+                    <input class="mediumbuttonb" type="reset" value="Reset" />
+                    <c:if test="${actionBean.schemaSetId != 0}">
+                       <stripes:submit name="copyToSchemaSet" value="Copy to schema set" />
+                       <stripes:submit name="cancelCopy" value="Cancel" />
+                    </c:if>
+                </p>
             </div>
         </stripes:form>
 

@@ -26,6 +26,7 @@
                     <li class="add">
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" event="add">Add schema set</stripes:link>
                     </li>
+                    <li class="search"><a href="${pageContext.request.contextPath}/schema/search/">Search schemas</a></li>
                 </c:if>
             </ul>
         </div>
@@ -68,13 +69,11 @@
                             </td>
                         </tr>
                     </c:forEach>
-                    <tr>
-                        <td>
-                            <stripes:submit class="mediumbuttonb searchButton" name="search" value="Search"/>
-                            <input class="mediumbuttonb" type="reset" value="Reset" />
-                        </td>
-                    </tr>
                 </table>
+                <p class="actions">
+                    <stripes:submit class="mediumbuttonb searchButton" name="search" value="Search"/>
+                    <input class="mediumbuttonb" type="reset" value="Reset" />
+                </p>
             </div>
         </stripes:form>
 
