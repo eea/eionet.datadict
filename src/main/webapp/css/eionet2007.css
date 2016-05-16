@@ -960,7 +960,7 @@
 		border: 1px solid;
 		font-size: 100%;
 		position: relative;
-		padding: 1.5em 2.8em 1.5em 3.6em;
+		padding: 1.5em 2.8em 1.5em 5em;
 		clear: both;
 	}
 
@@ -970,7 +970,7 @@
 	}
 
 	.error-msg{
-		background: #ce8484;
+		background: #FBD7D7;
 		color: #893030;
 		border-color: #893030;
 	}
@@ -979,29 +979,29 @@
 		content: "\e91d";
 		font-family: 'eea';
 		position: absolute;
-		top: 19px;
-		left: 12px;
+		top: 24px;
+		left: 21px;
 		font-size: 30px;
 	}
 
 	.system-msg {
 		background: #e9ebf2;  
-		border-color: #b4bfdb;  
-		color: #7f8799;
+		border-color: #606A82;  
+		color: #606A82;
 	}
 
 	.system-msg strong:before {
 		content: "\e909";
 		font-family: 'eea';
 		position: absolute;
-		top: 15px;
-		left: 12px;
+		top: 24px;
+		left: 21px;
 		font-size: 30px;
 	}
 
 	.caution-msg,
 	.warning-msg  {
-		background: #dbb97b;
+		background: #FFEED0;
 		color: #8c6328;
 		border-color: #8c6328;
 	}
@@ -1011,8 +1011,8 @@
 		content: "\e913";
 		font-family: 'eea';
 		position: absolute;
-		top: 19px;
-		left: 12px;
+		top: 24px;
+		left: 21px;
 		font-size: 30px;
 	}
 
@@ -1070,8 +1070,11 @@
 		cursor: pointer;
 		border: 1px solid #9ac4c6;
 		background: #fff;
-		color: #5A8E90;
-	}
+		color: #00446A;
+		}
+		input[type="button"]:hover{
+			border: 1px solid  #00446A;	
+		}
 	select{
 		border: 1px solid #9ac4c6;
 		background: #fff;
