@@ -13,7 +13,7 @@
             <%--
             <base href="<%= BaseUrl.getBaseUrl(request) %>"/>
             --%>
-            <title>${initParam.appDispName}<c:if test="${not empty pageTitle}">" - ${pageTitle}</c:if></title>
+            <title>${initParam.appDispName}<c:if test="${not empty pageTitle}"> - ${pageTitle}</c:if></title>
 
             <link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/print.css" media="print" />
             <link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/handheld.css" media="handheld" />

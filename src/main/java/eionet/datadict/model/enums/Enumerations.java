@@ -1,8 +1,9 @@
 
 package eionet.datadict.model.enums;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -39,6 +40,10 @@ public class Enumerations {
             this.value = value;
             this.displayLabel = displayLabel;
         }
+        
+        public String getValue() {
+            return value;
+        }
 
         public static AttributeDisplayType getEnum(String s) {
             for (AttributeDisplayType element : AttributeDisplayType.values()) {
@@ -54,27 +59,6 @@ public class Enumerations {
         }
     };
 
-    public enum AttributeDisplayMultiple {
-        ZERO("0"),
-        ONE("1");
-
-        private final String value;
-
-        private AttributeDisplayMultiple(String value) {
-            this.value = value;
-        }
-
-       public static AttributeDisplayMultiple getEnum(String s) {
-            for (AttributeDisplayMultiple element : AttributeDisplayMultiple.values()) {
-                if (element.value.equals(s)){
-                    return element;
-                }
-            }
-            return null;
-        }
-
-    };
-
     public enum Inherit {
         ZERO("0", "No inheritance"),
         ONE("1", "Inherit attribute values from parent level with possibilty to add new values"),
@@ -88,6 +72,12 @@ public class Enumerations {
             this.label = label;
         }
 
+        public static List<Inherit> getAllEnums(){
+            List<Inherit> elements = new ArrayList<Inherit>();
+            elements.addAll(Arrays.asList(Inherit.values()));
+            return elements;
+        }
+        
         public static Inherit getEnum(String s) {
             for (Inherit element : Inherit.values()) {
                 if (element.value.equals(s)){
@@ -95,6 +85,10 @@ public class Enumerations {
                 }
             }
             return null;
+        }
+        
+        public String getValue() {
+            return this.value;
         }
         
         public String getLabel (){
@@ -174,15 +168,27 @@ public class Enumerations {
             this.label = label;
         }
         
-        public static Map<String, String> getDisplayForTypes(int displayWhen){
-            Map<String, String> displayForTypes = new HashMap<String, String>();
+        public int getValue(){
+            return this.value;
+        }
+        public String getLabel(){
+            return this.label;
+        }
+        public static List<DisplayForType> getDisplayForTypes(int displayWhen){
+            List<DisplayForType> displayForTypes = new ArrayList<DisplayForType>();
             for (DisplayForType type : DisplayForType.values()){
                 if ((displayWhen / type.value) % 2 == 1) {
-                    displayForTypes.put(type.name(), type.label);
+                    displayForTypes.add(type);
                 }
             }
             return displayForTypes;
-        }        
+        } 
+        
+        public static List<DisplayForType> getAllEnums(){
+            List<DisplayForType> elements = new ArrayList<DisplayForType>();
+            elements.addAll(Arrays.asList(DisplayForType.values()));
+            return elements;
+        }
         
     }
      

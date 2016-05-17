@@ -12,4 +12,8 @@ public interface AttributeDefinitionDAO {
     public List<AttributeDefinition> getAttributes();
 
     public AttributeDefinition getAttributeDefinitionById(int id);
+    
+    public void save(AttributeDefinition attrDef);
+    
+    public void delete(int id);
 }

@@ -10,8 +10,11 @@
             <ul>
                 <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/attributes/', 'u')}">
                     <li>
-                        <stripes:link beanclass="eionet.datadict.action.AttributeActionBean" event="edit">Edit</stripes:link>
-                        </li>
+                        <stripes:link beanclass="eionet.datadict.action.AttributeActionBean" event="edit">
+                            <stripes:param name="attrId" value="${actionBean.attrId}"/>
+                            Edit
+                        </stripes:link>
+                    </li>
                 </c:if>
             </ul>
         </div>
@@ -86,7 +89,7 @@
                 <th scope="row" class="scope-row">Display multiple</th>
                 <td>
                     <c:choose>
-                        <c:when test="${model.attributeDefinition.displayMultiple == 'ONE'}">
+                        <c:when test="${model.attributeDefinition.displayMultiple}">
                             True
                         </c:when>
                         <c:otherwise>
@@ -113,7 +116,7 @@
                 <th scope="row" class="scope-row">Display for</th>
                 <td>
                     <c:forEach var="displayType" items="${model.displayForTypes}">
-                        ${displayType.value}<br/>
+                        ${displayType.label}<br/>
                     </c:forEach>
                 </td>
             </tr>

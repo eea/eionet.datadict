@@ -1,6 +1,7 @@
 package eionet.datadict.dal;
 
 import eionet.datadict.model.RdfNamespace;
+import java.util.List;
 
 /**
  *
@@ -8,4 +9,5 @@ import eionet.datadict.model.RdfNamespace;
  */
 public interface RdfNamespaceDAO {
     public RdfNamespace getRdfNamespaceById(int id);
+    public List<RdfNamespace> getRdfNamespaces();
 }

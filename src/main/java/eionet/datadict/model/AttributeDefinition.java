@@ -6,7 +6,6 @@
 package eionet.datadict.model;
 
 import eionet.datadict.model.enums.Enumerations.AttributeDataType;
-import eionet.datadict.model.enums.Enumerations.AttributeDisplayMultiple;
 import eionet.datadict.model.enums.Enumerations.AttributeDisplayType;
 import eionet.datadict.model.enums.Enumerations.Inherit;
 import eionet.datadict.model.enums.Enumerations.Obligation;
@@ -24,6 +23,7 @@ public class AttributeDefinition {
     private int displayWidth;
     private int displayHeight;       
     private boolean languageUsed;
+    private boolean displayMultiple;
 
     private String rdfPropertyName;
     private String name;
@@ -31,8 +31,7 @@ public class AttributeDefinition {
     private String shortName;
 
     private AttributeDisplayType displayType;
-    private AttributeDisplayMultiple displayMultiple;
-    private AttributeDataType datatype;
+    private AttributeDataType dataType;
     private Obligation obligationLevel;
     private Inherit inherit;
 
@@ -81,7 +80,7 @@ public class AttributeDefinition {
         this.displayHeight = displayHeight;
     }
 
-    public void setDisplayMultiple(AttributeDisplayMultiple displayMultiple) {
+    public void setDisplayMultiple(boolean displayMultiple) {
         this.displayMultiple = displayMultiple;
     }
 
@@ -93,8 +92,8 @@ public class AttributeDefinition {
         this.languageUsed = languageUsed;
     }
 
-    public void setDatatype(AttributeDataType datatype) {
-        this.datatype = datatype;
+    public void setDataType(AttributeDataType dataType) {
+        this.dataType = dataType;
     }
 
     public void setRdfPropertyName(String rdfPropertyName) {
@@ -141,7 +140,7 @@ public class AttributeDefinition {
         return displayHeight;
     }
 
-    public AttributeDisplayMultiple getDisplayMultiple() {
+    public boolean getDisplayMultiple() {
         return displayMultiple;
     }
 
@@ -153,8 +152,8 @@ public class AttributeDefinition {
         return languageUsed;
     }
 
-    public AttributeDataType getDatatype() {
-        return datatype;
+    public AttributeDataType getDataType() {
+        return dataType;
     }
 
     public String getRdfPropertyName() {

@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
@@ -27,7 +28,7 @@ public class AttributeActionBean extends AbstractActionBean {
 
     private static final String VIEW_PAGE = "/pages/attributes/view_attribute.jsp";
     private static final String EDIT_PAGE = "/pages/attributes/edit_attribute.jsp";
-    
+
     private String attrId;
 
     @SpringBean
@@ -70,11 +71,9 @@ public class AttributeActionBean extends AbstractActionBean {
             authorizationInitializations("v");
             CompoundDataObject model = attributeControllerImpl.getAttributeViewInfo(attrId);
             viewModel = attributeViewModelBuilder.buildForView(model);
-        }
-        catch(UserAuthorizationException e) {
+        } catch (UserAuthorizationException e) {
             return createNotAuthorizedResolution();
-        }
-        catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             return createAttributeNotFoundResolution(attrId);
         }
         return new ForwardResolution(VIEW_PAGE);
@@ -85,12 +84,31 @@ public class AttributeActionBean extends AbstractActionBean {
             authorizationInitializations("u");
             CompoundDataObject model = attributeControllerImpl.getAttributeEditInfo(attrId);
             viewModel = attributeViewModelBuilder.buildForEdit(model);
-        }
-        catch(UserAuthorizationException e) {
+        } catch (UserAuthorizationException e) {
             return createNotAuthorizedResolution();
         }
         return new ForwardResolution(EDIT_PAGE);
 
+    }
+
+    public Resolution save() throws Exception {
+        try {
+            authorizationInitializations("u");
+            attributeControllerImpl.saveAttribute(viewModel);
+        } catch (UserAuthorizationException e) {
+            return createNotAuthorizedResolution();
+        }
+        return new RedirectResolution("/attribute/view/" + attrId);
+    }
+    
+    public Resolution delete() throws Exception {
+        try {
+            authorizationInitializations("d");
+            attributeControllerImpl.deleteAttribute(attrId);
+        } catch (UserAuthorizationException e) {
+            return createNotAuthorizedResolution();
+        }
+        return new ForwardResolution("/attributes.jsp");
     }
 
     private Resolution createAttributeNotFoundResolution(String id) {
@@ -99,6 +117,7 @@ public class AttributeActionBean extends AbstractActionBean {
         params.put("type", ErrorActionBean.ErrorType.NOT_FOUND_404);
         return new ForwardResolution(ErrorActionBean.class).addParameters(params);
     }
+
     private Resolution createNotAuthorizedResolution() {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("message", "You are not authorized to access this page");
