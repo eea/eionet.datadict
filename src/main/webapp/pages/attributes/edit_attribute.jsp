@@ -89,7 +89,7 @@
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row">Display for</th>
-                    <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>f
+                    <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
                     <td>
                         <c:forEach var="displayForType" items="${model.allDisplayForTypes}"> 
                             <stripes:checkbox name="viewModel.displayForTypes" value="${displayForType}" checked="${model.displayForTypes}"/> ${displayForType.label}<br/>
