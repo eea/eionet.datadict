@@ -39,4 +39,13 @@ public class AttributeViewModelBuilder {
         return viewModel;
     }
     
+    public AttributeViewModel buildForAdd(CompoundDataObject model){
+        AttributeViewModel viewModel = new AttributeViewModel();
+        viewModel.setSubmitActionBeanName(AttributeActionBean.class.getName());
+        viewModel.setAttributeDefinition(new AttributeDefinition());
+        viewModel.setAllRdfNamespaces((List)model.get(AttributeController.RDF_NAMESPACES));
+        return viewModel;
+    }
+    
+    
 }

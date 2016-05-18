@@ -25,27 +25,6 @@ public class RdfNamespaceDAOImpl extends JdbcRepositoryBase implements RdfNamesp
     }
 
     @Override
-    public RdfNamespace getRdfNamespaceById(int id) {
-
-        String sql = "Select * from T_RDF_NAMESPACE where ID = :id";
-
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("id", id);
-
-        RdfNamespace rdfNamespace
-                = getNamedParameterJdbcTemplate()
-                .queryForObject(sql, params, new RowMapper<RdfNamespace>() {
-                    @Override
-                    public RdfNamespace mapRow(ResultSet rs, int i) throws SQLException {
-                        return createFromSimpleSelectStatement(rs);
-                    }
-
-                });
-
-        return rdfNamespace;
-    }
-
-    @Override
     public List<RdfNamespace> getRdfNamespaces() {
         String sql = "select * from T_RDF_NAMESPACE order by URI";
         List<RdfNamespace> namespaces

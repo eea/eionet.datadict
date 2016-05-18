@@ -8,6 +8,11 @@ import java.util.List;
  * @author exorx-alk
  */
 public interface RdfNamespaceDAO {
-    public RdfNamespace getRdfNamespaceById(int id);
+    
+    /**
+     * Fetches all entries of the T_RDF_NAMESPACE table
+     * 
+     * @return 
+     */
     public List<RdfNamespace> getRdfNamespaces();
 }

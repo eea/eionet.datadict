@@ -9,5 +9,10 @@ import java.util.List;
  */
 public interface NamespaceDAO {
 
+    /**
+     * Fetches the list of namespaces related to attributes
+     * 
+     * @return 
+     */
     public List<Namespace> getAttributeNamespaces();
 }

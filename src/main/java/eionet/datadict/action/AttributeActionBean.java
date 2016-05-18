@@ -28,6 +28,7 @@ public class AttributeActionBean extends AbstractActionBean {
 
     private static final String VIEW_PAGE = "/pages/attributes/view_attribute.jsp";
     private static final String EDIT_PAGE = "/pages/attributes/edit_attribute.jsp";
+    private static final String ADD_PAGE ="/pages/attributes/add_attribute.jsp";
 
     private String attrId;
 
@@ -92,8 +93,29 @@ public class AttributeActionBean extends AbstractActionBean {
         return new ForwardResolution(EDIT_PAGE);
 
     }
+    
+    public Resolution add() throws Exception {
+        try {
+            authorizationInitializations("i");
+            CompoundDataObject model = attributeControllerImpl.getAttributeAddInfo();
+            viewModel = attributeViewModelBuilder.buildForAdd(model);
+        } catch (UserAuthorizationException e){
+            return createNotAuthorizedResolution();
+        }
+        return new ForwardResolution(ADD_PAGE);
+    }
 
-    public Resolution save() throws Exception {
+    public Resolution saveAdd() throws Exception {
+        try{
+            authorizationInitializations("i");
+            attrId = String.valueOf(attributeControllerImpl.saveNewAttribute(viewModel));   
+        } catch (UserAuthorizationException e) {
+            return createNotAuthorizedResolution();
+        }
+        return new RedirectResolution("/attribute/view/"+ attrId);
+    }
+    
+    public Resolution saveEdit() throws Exception {
         try {
             authorizationInitializations("u");
             attributeControllerImpl.saveAttribute(viewModel);

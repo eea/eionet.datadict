@@ -13,10 +13,46 @@ import java.util.List;
  * @author eworx-alk
  */
 public final class AttributeViewModel {
+  
+    private AttributeDefinition attributeDefinition;
     
+    /**
+     * The list of all the existing RDF Namespaces
+     */
+    private List<RdfNamespace> allRdfNamespaces;
+    
+    /**
+     * The list of all the namespaces related to Attributes
+     */
+    private List<Namespace> namespaces;
+    
+    /**
+     * The actionBean to handle the submit form
+     */
+    private String submitActionBeanName;
+    
+    /**
+     * Strings to handle non int cases of int values
+     */
+    private String displayOrder;
+    private String rdfNamespaceId;
+    
+    /**
+     * Used for specific cases
+     */
+    private List<DisplayForType> displayForTypes;
+    private List<FixedValue> fixedValues; 
+    
+      
+    /**
+     * For getting all values of the specific Enumerations
+     */
     private final List<DisplayForType> allDisplayForTypes = DisplayForType.getAllEnums();
     private final List<Inherit> allInherits = Inherit.getAllEnums();
 
+    
+    //Getters and setters
+    
     public List<DisplayForType> getAllDisplayForTypes() {
         return allDisplayForTypes;
     }
@@ -24,17 +60,7 @@ public final class AttributeViewModel {
     public List<Inherit> getAllInherits() {
         return allInherits;
     }
-    
-    private List<RdfNamespace> allRdfNamespaces;
-    private String submitActionBeanName;
-    private String displayOrder;
-    private String rdfNamespaceId;
-    private AttributeDefinition attributeDefinition;
-    private List<DisplayForType> displayForTypes;
-    private List<FixedValue> fixedValues; 
-    private List<Namespace> namespaces;
-    
-    
+
     public String getRdfNamespaceId() {
         return rdfNamespaceId;
     }

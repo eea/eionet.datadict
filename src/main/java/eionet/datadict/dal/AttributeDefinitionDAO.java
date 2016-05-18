@@ -2,7 +2,6 @@ package eionet.datadict.dal;
 
 import eionet.datadict.model.AttributeDefinition;
 import eionet.meta.application.errors.ResourceNotFoundException;
-import java.util.List;
 
 /**
  *
@@ -10,11 +9,34 @@ import java.util.List;
  */
 public interface AttributeDefinitionDAO {
 
-    public List<AttributeDefinition> getAttributes();
-
+    /**
+     * Fetch the attribute definition by id
+     * 
+     * @param id
+     * @return
+     * @throws ResourceNotFoundException 
+     */
     public AttributeDefinition getAttributeDefinitionById(int id) throws ResourceNotFoundException;
     
-    public void save(AttributeDefinition attrDef);
+    /**
+     * Updates an existing M_ATTRIBUTE
+     * 
+     * @param attrDef 
+     */
+    public void update(AttributeDefinition attrDef);
     
+    /**
+     * Adds a new M_ATTRIBUTE
+     * 
+     * @param attrDef
+     * @return 
+     */
+    public int add(AttributeDefinition attrDef);
+    
+    /**
+     * Delete the M_ATTRIBUTE
+     * 
+     * @param id 
+     */
     public void delete(int id);
 }

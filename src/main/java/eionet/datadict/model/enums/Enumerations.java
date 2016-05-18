@@ -11,6 +11,9 @@ import java.util.List;
  */
 public class Enumerations {
     
+    /**
+     * Used for the eionet.datadict.model.AttributeDefinition
+     */
     public enum Obligation {
         M("Mandatory"), 
         O("Optional"), 
@@ -27,6 +30,9 @@ public class Enumerations {
         }
     };
 
+    /**
+     * Used for the eionet.datadict.model.AttributeDefinition
+     */
     public enum AttributeDisplayType {
         TEXT("text", "Text box"),
         TEXTAREA("textarea", "Text area"),
@@ -59,6 +65,9 @@ public class Enumerations {
         }
     };
 
+    /**
+     * Used for the eionet.datadict.model.AttributeDefinition
+     */
     public enum Inherit {
         ZERO("0", "No inheritance"),
         ONE("1", "Inherit attribute values from parent level with possibilty to add new values"),
@@ -96,6 +105,9 @@ public class Enumerations {
         }
     };
 
+    /**
+     * Used for the eionet.datadict.model.AttributeDefinition
+     */
     public enum AttributeDataType {
         REFERENCE("reference"),
         STRING("string"),
@@ -120,6 +132,9 @@ public class Enumerations {
         }
     };
     
+    /**
+     * Used for the eionet.datadict.model.Attribute
+     */
      public enum DDEntitiyType {
         ELEMENT("E"), 
         TABLE("T"), 
@@ -144,7 +159,10 @@ public class Enumerations {
         }
     }
      
-    //It is use in order to show for who to display an attribute
+    /**
+     * Used for the AttributeDefinition
+     * is related to the displayWhen property of the AttributeDefinition
+     */
     public enum DisplayForType {
         // Commented exist in the DElemAttribute but are not used in the delem_attriubte.jsp
         //VCO(512),

@@ -20,6 +20,8 @@ import eionet.datadict.model.RdfNamespace;
 import eionet.meta.application.errors.ResourceNotFoundException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 /**
  *
@@ -28,7 +30,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 @Repository
 public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements AttributeDefinitionDAO {
 
-    //initially was with ORDER_BY
     private static final String GET_BY_ID = "select "
             + "M_ATTRIBUTE.*, NAMESPACE.*, T_RDF_NAMESPACE.ID AS RDF_ID, T_RDF_NAMESPACE.URI AS RDF_URI "
             + "FROM "
@@ -45,6 +46,14 @@ public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements At
 
     private static final String DELETE = "delete from M_ATTRIBUTE "
             + "where M_ATTRIBUTE_ID = :id";
+    
+    private static final String ADD = "insert into M_ATTRIBUTE "
+            + "(NAME , SHORT_NAME, OBLIGATION, DEFINITION, DISP_TYPE, DISP_ORDER, "
+            + "DISP_WIDTH, DISP_HEIGHT, DISP_MULTIPLE, INHERIT, NAMESPACE_ID, "
+            + "DISP_WHEN, RDF_PROPERTY_NAMESPACE_ID, RDF_PROPERTY_NAME) "
+            + "values (:name, :shortName, :obligation, :definition, :dispType, :dispOrder, "
+            + ":dispWidth, :dispHeight, :dispMultiple, :inherit, :namespaceId, "
+            + ":dispWhen, :rdfPropertyNamespaceId, :rdfPropertyName)";
 
     @Autowired
     public AttributeDefinitionDAOImpl(DataSource dataSource) {
@@ -60,18 +69,61 @@ public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements At
     }
 
     @Override
-    public void save(AttributeDefinition attrDef) {
+    public int add(AttributeDefinition attrDef) {
+        String sql = ADD;
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("shortName", attrDef.getShortName());
+        params.put("name", attrDef.getName());
+        params.put("obligation", attrDef.getObligationLevel().name());
+        params.put("definition", attrDef.getDefinition());
+        params.put("dispOrder", attrDef.getDisplayOrder());
+        params.put("dispWidth", attrDef.getDisplayWidth());
+        params.put("dispHeight", attrDef.getDisplayHeight());
+        params.put("dispWhen", attrDef.getDisplayWhen());
+        if (attrDef.getDisplayMultiple()) {
+            params.put("dispMultiple", "1");
+        } else {
+            params.put("dispMultiple", "0");
+        }
+        params.put("inherit", attrDef.getInherit().getValue());
+        params.put("rdfPropertyName", attrDef.getRdfPropertyName());
+        params.put("namespaceId", attrDef.getNamespace().getNamespaceID());
+        if (attrDef.getDisplayType()!= null) {
+            params.put("dispType", attrDef.getDisplayType().getValue());
+        }
+        else {
+            params.put("dispType", null);
+        }
+        if (attrDef.getRdfNamespace() != null) {
+            params.put("rdfPropertyNamespaceId", attrDef.getRdfNamespace().getId());
+        } else {
+            params.put("rdfPropertyNamespaceId", null);
+        }
+        MapSqlParameterSource parameterMap = new MapSqlParameterSource(params);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        getNamedParameterJdbcTemplate().update(sql, parameterMap, keyHolder);
+        return keyHolder.getKey().intValue();
+    }
+    
+    
+    @Override
+    public void update(AttributeDefinition attrDef) {
         String sql = UPDATE;
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", attrDef.getId());
         params.put("name", attrDef.getName());
         params.put("obligation", attrDef.getObligationLevel().name());
         params.put("definition", attrDef.getDefinition());
-        params.put("dispType", attrDef.getDisplayType().getValue());
         params.put("dispOrder", attrDef.getDisplayOrder());
         params.put("dispWidth", attrDef.getDisplayWidth());
         params.put("dispHeight", attrDef.getDisplayHeight());
         params.put("dispWhen", attrDef.getDisplayWhen());
+        if (attrDef.getDisplayType()!= null) {
+            params.put("dispType", attrDef.getDisplayType().getValue());
+        }
+        else {
+            params.put("dispType", null);
+        }
         if (attrDef.getDisplayMultiple()) {
             params.put("dispMultiple", "1");
         } else {
@@ -87,19 +139,6 @@ public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements At
         }
         MapSqlParameterSource parameterMap = new MapSqlParameterSource(params);
         getNamedParameterJdbcTemplate().update(sql, parameterMap);
-    }
-
-    @Override
-    public List<AttributeDefinition> getAttributes() {
-        String sql = "Select * from M_ATTRIBUTE";
-        List<AttributeDefinition> attributeDefinitions
-                = getJdbcTemplate().query(sql, new RowMapper<AttributeDefinition>() {
-                    @Override
-                    public AttributeDefinition mapRow(ResultSet rs, int i) throws SQLException {
-                        return createFromSimpleSelectStatement(rs);
-                    }
-                });
-        return attributeDefinitions;
     }
 
     @Override

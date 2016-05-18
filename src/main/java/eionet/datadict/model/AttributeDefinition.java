@@ -5,6 +5,7 @@
  */
 package eionet.datadict.model;
 
+import eionet.datadict.controllers.AttributeController;
 import eionet.datadict.model.enums.Enumerations.AttributeDataType;
 import eionet.datadict.model.enums.Enumerations.AttributeDisplayType;
 import eionet.datadict.model.enums.Enumerations.Inherit;
@@ -21,7 +22,7 @@ public class AttributeDefinition {
     private int displayOrder;
     private int displayWhen;
     private int displayWidth;
-    private int displayHeight;       
+    private int displayHeight;
     private boolean languageUsed;
     private boolean displayMultiple;
 
@@ -38,8 +39,7 @@ public class AttributeDefinition {
     private Namespace namespace;
     private RdfNamespace rdfNamespace;
     private List<Attribute> attributes;
-    
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -73,11 +73,19 @@ public class AttributeDefinition {
     }
 
     public void setDisplayWidth(int displayWidth) {
-        this.displayWidth = displayWidth;
+        if (displayWidth == 0) {
+            this.displayWidth = AttributeController.DISPLAY_WIDTH_DEFAULT;
+        } else {
+            this.displayWidth = displayWidth;
+        }
     }
 
     public void setDisplayHeight(int displayHeight) {
-        this.displayHeight = displayHeight;
+        if (displayHeight == 0) {
+            this.displayHeight = AttributeController.DISPLAY_HEIGHT_DEFAULT;
+        } else {
+            this.displayHeight = displayHeight;
+        }
     }
 
     public void setDisplayMultiple(boolean displayMultiple) {
@@ -107,7 +115,7 @@ public class AttributeDefinition {
     public String getName() {
         return name;
     }
-    
+
     public Obligation getObligationLevel() {
         return obligationLevel;
     }
@@ -133,10 +141,12 @@ public class AttributeDefinition {
     }
 
     public int getDisplayWidth() {
+        if (this.displayWidth==0) return AttributeController.DISPLAY_WIDTH_DEFAULT;
         return displayWidth;
     }
-    
+
     public int getDisplayHeight() {
+        if (this.displayHeight==0) return AttributeController.DISPLAY_HEIGHT_DEFAULT;
         return displayHeight;
     }
 
@@ -168,14 +178,14 @@ public class AttributeDefinition {
         this.attributes = attributes;
     }
 
-     public RdfNamespace getRdfNamespace() {
+    public RdfNamespace getRdfNamespace() {
         return rdfNamespace;
     }
 
     public void setRdfNameSpace(RdfNamespace rdfNameSpace) {
         this.rdfNamespace = rdfNameSpace;
     }
-    
+
     public Namespace getNamespace() {
         return namespace;
     }
@@ -183,8 +193,8 @@ public class AttributeDefinition {
     public void setNamespace(Namespace namespace) {
         this.namespace = namespace;
     }
-    
-    public void setUnknownNames () {
+
+    public void setUnknownNames() {
         if (this.name == null) {
             this.name = "unknown";
         }
