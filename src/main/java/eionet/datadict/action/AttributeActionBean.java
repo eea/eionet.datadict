@@ -86,6 +86,8 @@ public class AttributeActionBean extends AbstractActionBean {
             viewModel = attributeViewModelBuilder.buildForEdit(model);
         } catch (UserAuthorizationException e) {
             return createNotAuthorizedResolution();
+        } catch (ResourceNotFoundException e) {
+            return createAttributeNotFoundResolution(attrId);
         }
         return new ForwardResolution(EDIT_PAGE);
 

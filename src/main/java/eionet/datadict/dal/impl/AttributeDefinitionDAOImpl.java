@@ -17,6 +17,8 @@ import org.springframework.stereotype.Repository;
 import eionet.datadict.dal.AttributeDefinitionDAO;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
+import eionet.meta.application.errors.ResourceNotFoundException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 /**
@@ -43,20 +45,20 @@ public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements At
 
     private static final String DELETE = "delete from M_ATTRIBUTE "
             + "where M_ATTRIBUTE_ID = :id";
-    
+
     @Autowired
     public AttributeDefinitionDAOImpl(DataSource dataSource) {
         super(dataSource);
     }
 
-    @Override 
+    @Override
     public void delete(int id) {
         String sql = DELETE;
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);
         getNamedParameterJdbcTemplate().update(sql, params);
     }
-    
+
     @Override
     public void save(AttributeDefinition attrDef) {
         String sql = UPDATE;
@@ -101,23 +103,26 @@ public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements At
     }
 
     @Override
-    public AttributeDefinition getAttributeDefinitionById(int id) {
-        String sql = GET_BY_ID;
+    public AttributeDefinition getAttributeDefinitionById(int id) throws ResourceNotFoundException {
+        try {
+            String sql = GET_BY_ID;
 
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("id", id);
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("id", id);
 
-        AttributeDefinition attrDef
-                = getNamedParameterJdbcTemplate()
-                .queryForObject(sql, params, new RowMapper<AttributeDefinition>() {
-                    @Override
-                    public AttributeDefinition mapRow(ResultSet rs, int i) throws SQLException {
-                        return createFromSelectWithRdfNamespaceAndNamespace(rs);
-                    }
+            AttributeDefinition attrDef
+                    = getNamedParameterJdbcTemplate()
+                    .queryForObject(sql, params, new RowMapper<AttributeDefinition>() {
+                        @Override
+                        public AttributeDefinition mapRow(ResultSet rs, int i) throws SQLException {
+                            return createFromSelectWithRdfNamespaceAndNamespace(rs);
+                        }
 
-                });
-
-        return attrDef;
+                    });
+            return attrDef;
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException(String.valueOf(id));
+        } 
     }
 
     private AttributeDefinition createFromSelectWithRdfNamespaceAndNamespace(ResultSet rs) throws SQLException {
