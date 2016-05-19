@@ -3,8 +3,10 @@ package eionet.datadict.action.attribute;
 import eionet.datadict.model.AttributeDefinition;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
+import eionet.datadict.model.enums.Enumerations.AttributeDisplayType;
 import eionet.datadict.model.enums.Enumerations.DisplayForType;
 import eionet.datadict.model.enums.Enumerations.Inherit;
+import eionet.datadict.model.enums.Enumerations.Obligation;
 import eionet.meta.dao.domain.FixedValue;
 import java.util.List;
 
@@ -13,7 +15,7 @@ import java.util.List;
  * @author Aliki Kopaneli
  */
 public final class AttributeViewModel {
-  
+   
     private AttributeDefinition attributeDefinition;
     
     /**
@@ -31,28 +33,27 @@ public final class AttributeViewModel {
      */
     private String submitActionBeanName;
     
-    /**
-     * Strings to handle non int cases of int values
-     */
     private String displayOrder;
     private String rdfNamespaceId;
     
-    /**
-     * Used for specific cases
-     */
     private List<DisplayForType> displayForTypes;
     private List<FixedValue> fixedValues; 
     
-      
-    /**
-     * For getting all values of the specific Enumerations
-     */
+    //Hold info about the enumerations
     private final List<DisplayForType> allDisplayForTypes = DisplayForType.getAllEnums();
     private final List<Inherit> allInherits = Inherit.getAllEnums();
+    private final String obligationClass = Obligation.M.getClass().getName();
+    private final String displayTypeClass = AttributeDisplayType.SELECT.getClass().getName();
+    
+    
+    public String getObligationClass() {
+        return obligationClass;
+    }
 
-    
-    //Getters and setters
-    
+    public String getDisplayTypeClass() {
+        return displayTypeClass;
+    }
+
     public List<DisplayForType> getAllDisplayForTypes() {
         return allDisplayForTypes;
     }
