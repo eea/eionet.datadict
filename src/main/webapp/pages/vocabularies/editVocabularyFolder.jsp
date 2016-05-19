@@ -2,29 +2,32 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp"
-    pageTitle="Edit vocabulary">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit vocabulary" currentSection="vocabularies">
 
     <stripes:layout-component name="head">
         <script type="text/javascript">
         // <![CDATA[
-        ( function($) {
+        (function($) {
             $(document).ready(function() {
+                $("#toggleSelectAll").click(function() {
+                    toggleSelectAll('conceptsForm');
+                    $(this).val() === "Select all" ? $("tr", "#concept").removeClass("selected") : $("tr", "#concept").addClass("selected");
+                    return false;
+                });
 
-            	$("#uploadCSVLink").click(function() {
+                $("#uploadCSVLink").click(function() {
                     $('#uploadCSVDialog').dialog('open');
                     return false;
                 });
 
-            	$("#purgeVocabularyData").click(function() {
-            		if ($('input#purgeVocabularyData').is(':checked')) {
-	                   alert("If you check this option all data will be deleted! If you are not sure about this, please uncheck it!");
-	                   $('input#purgeBoundElements').removeAttr("disabled");
-            		}
-            		else{
-            		   $('input#purgeBoundElements').attr("disabled", true);
-            		   $('input#purgeBoundElements').attr("checked", false);
-            		}
+                $("#purgeVocabularyData").click(function() {
+                    if ($('input#purgeVocabularyData').is(':checked')) {
+                       alert("If you check this option all data will be deleted! If you are not sure about this, please uncheck it!");
+                       $('input#purgeBoundElements').removeAttr("disabled");
+                    } else {
+                       $('input#purgeBoundElements').attr("disabled", true);
+                       $('input#purgeBoundElements').attr("checked", false);
+                    }
                     return true;
                 });
 
@@ -93,7 +96,6 @@
 
                 handleFolderChoice();
 
-
                 $(".delLink").click(function() {
                     this.parentElement.remove();
                 });
@@ -123,8 +125,7 @@
                     openPopup("#${actionBean.editDivId}");
                 </c:if>
             });
-
-        } ) ( jQuery );
+        })(jQuery);
 
         /**
         * require user confirmation if noattions equal identifier is set to tru during this edit session
@@ -160,11 +161,21 @@
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">
+        <h1>Edit vocabulary</h1>
 
+        <c:if test="${actionBean.vocabularyFolder.workingCopy && actionBean.vocabularyFolder.siteCodeType}">
+            <div class="system-msg">
+                <strong>Note</strong>
+                <p>
+                For checked out site codes, vocabulary concepts are not visible. To view them, see the
+                <stripes:link href="/services/siteCodes">site codes page</stripes:link>.
+                </p>
+            </div>
+        </c:if>
+        
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
-                <li>
+                <li class="checkin">
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkIn">
                         <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
@@ -174,17 +185,17 @@
                     </stripes:link>
                 </li>
                 <c:if test="${actionBean.userWorkingCopy}">
-          <li>
-              <a href="#" id="addNewConceptLink">Add new concept</a>
-          </li>
-          <li>
-              <a href="#" id="uploadCSVLink">Upload CSV</a>
-          </li>
-          <li>
-              <a href="#" id="uploadRDFLink">Upload RDF</a>
-          </li>
-        </c:if>
-                <li>
+                    <li class="add">
+                        <a href="#" id="addNewConceptLink">Add new concept</a>
+                    </li>
+                    <li class="upload">
+                        <a href="#" id="uploadCSVLink">Upload CSV</a>
+                    </li>
+                    <li class="upload">
+                        <a href="#" id="uploadRDFLink">Upload RDF</a>
+                    </li>
+                </c:if>
+                <li class="undo">
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="undoCheckOut">
                         <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
@@ -194,18 +205,6 @@
                 </li>
             </ul>
         </div>
-
-        <h1>Edit vocabulary</h1>
-
-        <c:if test="${actionBean.vocabularyFolder.workingCopy && actionBean.vocabularyFolder.siteCodeType}">
-            <div class="note-msg">
-                <strong>Notice</strong>
-                <p>
-                For checked out site codes, vocabulary concepts are not visible. To view them, see the
-                <stripes:link href="/services/siteCodes">site codes page</stripes:link>.
-                </p>
-            </div>
-        </c:if>
 
         <stripes:form id="editVocabularyFolderForm" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
         <div id="outerframe">
@@ -418,17 +417,16 @@
         <!-- Vocabulary concepts -->
         <c:url var="editIcon" value="/images/edit.gif" />
         <stripes:form method="post" id="conceptsForm" beanclass="${actionBean['class'].name}">
-            <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="concept" style="width:80%"
+            <display:table name="${actionBean.vocabularyConcepts}" class="datatable results" id="concept" style="width:100%"
                 requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/edit">
-                <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
-                <display:setProperty name="paging.banner.placement" value="both" />
+                <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No vocabulary concepts found.</p>" />
                 <display:setProperty name="paging.banner.item_name" value="concept" />
                 <display:setProperty name="paging.banner.items_name" value="concepts" />
 
                 <display:column style="width: 1%">
-                    <stripes:checkbox name="conceptIds" value="${concept.id}" />
+                    <stripes:checkbox name="conceptIds" class="selectable" value="${concept.id}" />
                 </display:column>
-                <display:column title="Id" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%">
+                <display:column title="Id" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 10%">
                     <c:choose>
                     <c:when test="${!concept.status.accepted}">
                         <span style="text-decoration:line-through"><c:out value="${concept.identifier}" /></span>
@@ -463,7 +461,7 @@
                     <stripes:hidden name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                     <stripes:hidden name="vocabularyFolder.identifier" />
                     <stripes:hidden name="vocabularyFolder.workingCopy" />
-                    <input type="button" onclick="toggleSelectAll('conceptsForm');return false" value="Select all" name="selectAll">
+                    <input type="button" id="toggleSelectAll" value="Select all" name="selectAll">
                     <stripes:submit name="deleteConcepts" value="Delete" />
                     <stripes:submit name="markConceptsInvalid" value="Mark invalid" />
                     <stripes:submit name="markConceptsValid" value="Mark valid" />
@@ -584,8 +582,8 @@
                 <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                 <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
 
-	            <div class="note-msg">
-                    CSV Import
+	            <div class="system-msg">
+                    <strong>CSV Import</strong>
                     <br><br>The CSV file should contain a header row for element names and data rows for concepts.
                     <br>It is strongly recommended to use an exported CSV file as a template for bulk editing. Columns and rows can be added to or deleted from the template file.
                     <br>A concept can be ignored by prepending a double-slash '//' to the concept row in the CSV
@@ -619,7 +617,7 @@
                 <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
                 <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                 <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                <div class="note-msg">
+                <div class="system-msg">
 				    <strong>Note</strong>
 				       <ul>
 				          <li>With this operation, contents of RDF file will be imported into vocabulary folder.</li>

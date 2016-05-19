@@ -244,7 +244,8 @@ if (!isPopup){
         <jsp:param name="name" value="Search dataelements"/>
         <jsp:param name="helpscreen" value="search_element"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <c:set var="currentSection" value="dataElements" />
+    <%@ include file="/pages/common/navigation.jsp" %>
     <div id="workarea">
 <%
 }
@@ -256,6 +257,7 @@ else{ %>
         <div id="sitetagline">This service is part of Reportnet</div>
     </div> <!-- pagehead -->
     <div id="workarea">
+        <h1>Search data elements</h1>
     <%
 }
 
@@ -265,30 +267,24 @@ if (isDisplayOperations==false)
 if (isDisplayOperations){
     %>
     <div id="drop-operations">
-    <h2>Operations:</h2>
         <ul>
             <%
             if (isPopup){ %>
-                <li><a href="javascript:window.close();">Close</a></li>
+                <li class="close"><a href="javascript:window.close();">Close</a></li>
                 <li class="help"><a class="helpButton" href="help.jsp?screen=search_element&amp;area=pagehelp" title="Get some help on this page">Page help</a></li><%
             }
             else if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements", "i")){
                 %>
-                <li><a title="Add a definition of a new common element" href="<%=request.getContextPath()%>/dataelements/add/?common=true">New common element</a></li><%
+                <li class="add"><a title="Add a definition of a new common element" href="<%=request.getContextPath()%>/dataelements/add/?common=true">New common element</a></li><%
             }
             %>
         </ul>
     </div><%
-}
-%>
-
-                <h1>Search data elements</h1>
-
-                <%
-                if (feedbackValue != null) {
+        }
+        if (feedbackValue != null) {
                 %>
                 <div class="system-msg">
-                    <%= feedbackValue %>
+                    <strong><%= feedbackValue %></strong>
                 </div>
                 <%
                 }
@@ -306,7 +302,8 @@ if (isDisplayOperations){
                         </div><%
                     }
                     %>
-                <table width="auto" cellspacing="0" style="clear:right">
+                <div id="filters">
+                    <table class="filter">
 
                     <%
                     boolean commonOnly = request.getParameter("common")!=null;
@@ -314,17 +311,13 @@ if (isDisplayOperations){
 
                     if (request.getParameter("link")==null){
                         %>
-                        <tr valign="top">
-                            <td align="right" style="padding-right:10">
-                                <strong>RegistrationStatus</strong>
+                        <tr>
+                            <td class="label">
+                                <label for="regStatusSelect">Registration status</label>
+                                <a class="helpButton" href="help.jsp?screen=dataset&area=regstatus"></a>
                             </td>
-                            <td>
-                                <a class="helpButton" href="help.jsp?screen=dataset&area=regstatus">
-                                    <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                                </a>
-                            </td>
-                            <td colspan="2">
-                                <select name="reg_status" class="small">
+                            <td class="input">
+                                <select id="regStatusSelect" name="reg_status" class="small">
                                     <option value="">All</option>
                                     <option value="Released">Released</option>
                                     <option value="Recorded">Recorded</option>
@@ -338,17 +331,13 @@ if (isDisplayOperations){
 
                     if (!(fk!=null && fk.equals("true") && sel_ds!=null && sel_ds.length()>0) && commonOnly==false){
                         %>
-                        <tr valign="top">
-                            <td align="right" style="padding-right:10">
-                                <b>Dataset</b>
+                        <tr>
+                            <td class="label">
+                                <label for="datasetSelect">Dataset</label>
+                                <a class="helpButton" href="help.jsp?screen=search_element&amp;area=dataset"></a>
                             </td>
-                            <td>
-                                <a class="helpButton" href="help.jsp?screen=search_element&amp;area=dataset">
-                                    <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                                </a>
-                            </td>
-                            <td colspan="2">
-                                <select name="dataset_idf" class="small">
+                            <td class="input">
+                                <select id="datasetSelect" name="dataset_idf" class="small">
                                     <option value="">All</option>
                                     <%
                                     Vector datasets = searchEngine.getDatasets();
@@ -366,17 +355,13 @@ if (isDisplayOperations){
                     }
                     %>
 
-                    <tr valign="top">
-                        <td align="right" style="padding-right:10">
-                            <b>Type</b>
+                    <tr>
+                        <td class="label">
+                            <label for="typeSelect">Type</label>
+                            <a class="helpButton" href="help.jsp?screen=element&amp;area=type"></a>
                         </td>
-                        <td>
-                            <a class="helpButton" href="help.jsp?screen=element&amp;area=type">
-                                <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                            </a>
-                        </td>
-                        <td colspan="2">
-                            <select name="type" class="small">
+                        <td class="input">
+                            <select name="type" class="small" id="typeSelect">
                                 <option value="">All</option>
                                 <option value="CH1">Data element with fixed values (codes)</option>
                                 <option value="CH2">Data element with quantitative values (e.g. measurements)</option>
@@ -385,31 +370,23 @@ if (isDisplayOperations){
                         </td>
                     </tr>
 
-                    <tr valign="top">
-                        <td align="right" style="padding-right:10">
-                            <b>Short name</b>
+                    <tr>
+                        <td class="label">
+                            <label for="txtShortName">Short name</label>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name"></a>
                         </td>
-                        <td>
-                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
-                                <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                            </a>
-                        </td>
-                        <td colspan="2">
-                            <input type="text" class="smalltext" size="59" name="short_name" value="<%=Util.processForDisplay(short_name, true)%>"/>
+                        <td class="input">
+                            <input type="text" class="smalltext" size="59" name="short_name" value="<%=Util.processForDisplay(short_name, true)%>" id="txtShortName" />
                         </td>
                     </tr>
 
-                    <tr valign="top">
-                        <td align="right" style="padding-right:10">
-                            <b>Identifier</b>
+                    <tt>
+                        <td class="label">
+                            <label for="txtIdentifier">Identifier</label>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier"></a>
                         </td>
-                        <td>
-                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier">
-                                <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                            </a>
-                        </td>
-                        <td colspan="2">
-                            <input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>"/>
+                        <td class="input">
+                            <input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>" id="txtIdentifier" />
                         </td>
                     </tr>
 
@@ -421,7 +398,7 @@ if (isDisplayOperations){
 
                     if (attrID!=null){
                         %>
-                        <tr valign="top">
+                        <tr>
                             <td width="100"><b>
                                 <a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit">
                                     <font color="black">Name</font></a></b>:</td>
@@ -438,7 +415,7 @@ if (isDisplayOperations){
                                 <span class="mainfont"><b>Language</b></span>
                             </td>
                             <td align="right" style="padding-right:10">
-                                <a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit"><img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/></a>&nbsp;
+                                <a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit"></a>&nbsp;
                             </td>
                             <td colspan="2">
                                 <select name="attr_<%=attrID%>" class="small">
@@ -521,17 +498,13 @@ if (isDisplayOperations){
                                 collect_attrs.append(attrID + "|");
                                 displayedCriteria.add(attrID);
                                 %>
-                                <tr valign="top">
-                                    <td align="right" style="padding-right:10">
-                                        <b><%=Util.processForDisplay(attrName)%></b>
+                                <tr>
+                                    <td class="label">
+                                        <label for="txtFilterAttr_<%=attrID%>"><%=Util.processForDisplay(attrName)%></label>
+                                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                     </td>
-                                    <td>
-                                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                            <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                                        </a>
-                                    </td>
-                                    <td colspan="2">
-                                        <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.processForDisplay(attrValue, true)%>"/>
+                                    <td class="input">
+                                        <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value="<%=Util.processForDisplay(attrValue, true)%>" id="txtFilterAttr_<%=attrID%>" />
                                     </td>
                                 </tr>
                                 <%
@@ -553,20 +526,14 @@ if (isDisplayOperations){
                             collect_attrs.append(attrID + "|");
                             displayedCriteria.add(attrID);
                             %>
-                            <tr valign="top">
-                                <td align="right" style="padding-right:10">
-                                    <b><%=Util.processForDisplay(attrName)%></b>
+                            <tr>
+                                <td class="label">
+                                    <label for="txtFilterAttr_<%=attrID%>"><%=Util.processForDisplay(attrName)%></label>
+                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                 </td>
-                                <td>
-                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                        <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                                    </a>
-                                </td>
-                                <td>
-                                    <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.processForDisplay(attrValue, true)%>"/>
-                                </td>
-                                <td>
-                                    <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
+                                <td class="input">
+                                    <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.processForDisplay(attrValue, true)%>" id="txtAddedAttr_<%=attrID%>" />
+                                    <a class="deleteButton" href="javascript:selAttr(<%=attrID%>, 'remove');" title="Remove attribute from search criteria"></a>
                                 </td>
                             </tr>
                             <%
@@ -580,40 +547,73 @@ if (isDisplayOperations){
                             displayedCriteria.add(attrID);
                             attrName = getAttributeNameById(attrID);
                             %>
-                            <tr valign="top">
-                                <td align="right" style="padding-right:10">
-                                    <b><%=Util.processForDisplay(attrName)%></b>
+                            <tr>
+                                <td class="label">
+                                    <label for="txtFilterAttr_<%=attrID%>"><%=Util.processForDisplay(attrName)%></label>
+                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                 </td>
-                                <td>
-                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                        <img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-                                    </a>
-                                </td>
-                                <td>
-                                    <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
-                                </td>
-                                <td>
-                                    <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
+                                <td class="input">
+                                    <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value="" id="txtAddedAttr_<%=attrID%>" />
+                                    <a class="deleteButton" href="javascript:selAttr(<%=attrID%>, 'remove');" title="Remove attribute from search criteria"></a>
                                 </td>
                             </tr>
                             <%
                         }
                     }
+
+                    Vector addCriteria = new Vector();
+                    for (int i=0; attrs!=null && i<attrs.size(); i++) {
+                        DElemAttribute attribute = (DElemAttribute)attrs.get(i);
+
+                        if (type.equals("")) {
+                            if (!attribute.displayFor("CH1") && !attribute.displayFor("CH2") && !attribute.displayFor("CH3")) {
+                                continue;
+                            }
+                        }
+                        else if (!attribute.displayFor(type)) {
+                            continue;
+                        }
+                        if (!displayedCriteria.contains(attribute.getID())) {
+                            Hashtable hash = new Hashtable();
+                            hash.put("id", attribute.getID());
+                            hash.put("name", attribute.getShortName());
+                            addCriteria.add(hash);
+                        }
+                    }
+
+                    if (addCriteria.size() > 0) {
+                        %>
+                        <tr>
+                            <td></td>
+                            <td class="input">
+                                <select name="add_criteria" id="add_criteria" onchange="selAttr(this.options[this.selectedIndex].value, 'add')">
+                                    <option value="">Add criteria</option>
+                                    <%
+                                    for (int i=0; i<addCriteria.size(); i++) {
+                                        Hashtable hash = (Hashtable)addCriteria.get(i);
+                                    %>
+                                        <option value="<%=hash.get("id")%>"><%=hash.get("name")%></option><%
+                                    }
+                                    %>
+                                </select>
+                            </td>
+                        </tr><%
+                    }
                     %>
 
-                    <tr valign="bottom">
-                        <td style="width:150px" colspan="2">&nbsp;</td>
-                        <td colspan="2" class="smallfont_light">
+                    <tr>
+                        <td class="label">Search method</td>
+                        <td class="input bordered">
                             <input type="radio" name="search_precision" id="ssubstr" value="substr" checked="checked"/><label for="ssubstr">Substring search</label>
-                            <input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>&nbsp;&nbsp;
+                            <input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>
                         </td>
                     </tr>
 
                     <%
                     if (!commonOnly && !nonCommonOnly){ %>
                         <tr>
-                            <td colspan="2">&nbsp;</td>
-                            <td colspan="2" align="left" class="smallfont_light">
+                            <td class="label">Class</td>
+                            <td class="input bordered">
                                 <input type="radio" name="common" value="false" id="snoncom" checked="checked" onclick="changeFormStateForNonCommon()"/><label for="snoncom">Non-common elements</label>
                                 <input type="radio" name="common" id="scom" value="true" onclick="changeFormStateForCommon()"/><label for="scom">Common elements</label>
                             </td>
@@ -624,10 +624,10 @@ if (isDisplayOperations){
                     if (user!=null){
                         if (fk==null || !fk.equals("true")){ %>
                             <tr>
-                                <td colspan="2">&nbsp;</td>
-                                <td colspan="2" align="left">
-                                    <input type="checkbox" name="wrk_copies" id="wrk_copies" value="true"/>
-                                    <label for="wrk_copies" class="smallfont" style="font-weight: normal">Working copies only</label>
+                                <td class="label"><label for="wrk_copies">Working copies only</label></td>
+                                <td class="input bordered">
+                                    <input type="checkbox" name="wrk_copies" id="wrk_copies" value="true" />
+                                    <label for="wrk_copies" class="smallfont">Yes</label>
                                 </td>
                             </tr> <%
                         }
@@ -638,65 +638,19 @@ if (isDisplayOperations){
 
                     if (fk==null || !fk.equals("true")){ %>
                         <tr>
-                            <td colspan="2">&nbsp;</td>
-                            <td colspan="2" align="left">
-                                <input type="checkbox" name="incl_histver" id="incl_histver" value="true"/>
-                                <label for="incl_histver" class="smallfont" style="font-weight: normal">Include historic versions</label>
-                            </td>
-                        </tr><%
-                    }
-                    %>
-
-                    <tr style="height:10px;"><td colspan="4"></td></tr>
-
-                    <tr valign="top">
-                        <td colspan="2"></td>
-                        <td>
-                            <input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('search_results.jsp')"/>
-                            <input class="mediumbuttonb" type="reset" value="Reset"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        </td>
-                    </tr>
-                    <%
-                    Vector addCriteria = new Vector();
-                    for (int i=0; attrs!=null && i<attrs.size(); i++){
-
-                        DElemAttribute attribute = (DElemAttribute)attrs.get(i);
-
-                        if (type.equals("")){
-                            if (!attribute.displayFor("CH1") && !attribute.displayFor("CH2") && !attribute.displayFor("CH3"))
-                                continue;
-                        }
-                        else if (!attribute.displayFor(type))
-                            continue;
-
-                        if (!displayedCriteria.contains(attribute.getID())){
-                            Hashtable hash = new Hashtable();
-                            hash.put("id", attribute.getID());
-                            hash.put("name", attribute.getShortName());
-                            addCriteria.add(hash);
-                        }
-                    }
-
-                    if (addCriteria.size()>0){
-                        %>
-                        <tr>
-                            <td colspan="4" style="text-align:right">
-                                <label for="add_criteria">Add criteria</label>
-                                <select name="add_criteria" id="add_criteria" onchange="selAttr(this.options[this.selectedIndex].value, 'add')">
-                                    <option value=""></option>
-                                    <%
-                                    for (int i=0; i<addCriteria.size(); i++){
-                                        Hashtable hash = (Hashtable)addCriteria.get(i);
-                                        %>
-                                        <option value="<%=hash.get("id")%>"><%=hash.get("name")%></option><%
-                                    }
-                                    %>
-                                </select>
+                            <td class="label"><label for="incl_histver">Include historic versions</label></td>
+                            <td class="input bordered">
+                                <input type="checkbox" name="incl_histver" id="incl_histver" value="true" />
+                                <label for="incl_histver" class="smallfont">Yes</label>
                             </td>
                         </tr><%
                     }
                     %>
                 </table>
+                <p class="actions">
+                    <input class="mediumbuttonb searchButton" type="button" value="Search" onclick="submitForm('search_results.jsp')" />
+                    <input class="mediumbuttonb" type="reset" value="Reset" />
+                </p>
 
                     <div style="display:none"> <!-- hidden inputs -->
                         <input type="hidden" name="sel_attr" value=""/>

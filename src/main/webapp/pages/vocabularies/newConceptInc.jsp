@@ -57,40 +57,40 @@
             </colgroup>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title">
-                    Identifier
+                    <label for="conceptIdentifier">Identifier</label>
                 </th>
                 <td class="simple_attr_help">
                     <dd:mandatoryIcon />
                 </td>
                 <td class="simple_attr_value">
-                    <stripes:text class="smalltext" size="30" name="vocabularyConcept.identifier" value="${actionBean.nextIdentifier}" />
+                    <stripes:text id="conceptIdentifier" class="smalltext" size="30" name="vocabularyConcept.identifier" value="${actionBean.nextIdentifier}" />
                 </td>
             </tr>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title">
-                    Label
+                    <label for="conceptLabel">Label</label>
                 </th>
                 <td class="simple_attr_help">
                     <dd:mandatoryIcon />
                 </td>
                 <td class="simple_attr_value">
-                    <stripes:text name="vocabularyConcept.label" style="width: 500px;" class="smalltext"/>
+                    <stripes:text id="conceptLabel" name="vocabularyConcept.label" style="width: 500px;" class="smalltext"/>
                 </td>
             </tr>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title">
-                    Definition
+                    <label for="conceptDefinition">Definition</label>
                 </th>
                 <td class="simple_attr_help">
                     <dd:optionalIcon />
                 </td>
                 <td class="simple_attr_value">
-                    <stripes:textarea name="vocabularyConcept.definition" rows="3" cols="60" class="smalltext"/>
+                    <stripes:textarea id="conceptDefinition" name="vocabularyConcept.definition" rows="3" cols="60" class="smalltext"/>
                 </td>
             </tr>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title">
-                    Notation
+                    <label for="conceptNotation">Notation</label>
                 </th>
                 <td class="simple_attr_help">
                     <dd:optionalIcon />
@@ -101,16 +101,17 @@
                             <span style="font-size:0.7em">(forcefully equal to identifier in this vocabulary)</span>
                         </c:when>
                         <c:otherwise>
-                            <stripes:text class="smalltext" size="30" name="vocabularyConcept.notation" />
+                            <stripes:text id="conceptNotation" class="smalltext" size="30" name="vocabularyConcept.notation" />
                         </c:otherwise>
                     </c:choose>
                 </td>
             </tr>
             <tr>
                 <th>&nbsp;</th>
-                <td colspan="2">
+                <td></td>
+                <td>
                     <stripes:submit name="saveConcept" value="Add" class="mediumbuttonb"/>
-                    <button class="mediumbuttonb" id="closeAddNewConeptButton">Cancel</button>
+                    <input type="submit" value="Cancel" class="mediumbuttonb" id="closeAddNewConeptButton" />
                 </td>
             </tr>
         </table>

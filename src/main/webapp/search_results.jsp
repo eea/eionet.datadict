@@ -8,8 +8,6 @@
 <%!final static String oSearchCacheAttrName="elms_search_cache";%>
 <%!final static String oSearchUrlAttrName="elms_search_url";%>
 
-<%!private int reqno = 0;%>
-
 <%@ include file="history.jsp" %>
 <%@ include file="sorting.jsp" %>
 
@@ -273,20 +271,18 @@
     </script>
 </head>
 
-<%
-if (popup){ %>
+    <% if (popup){ %>
 
     <body class="popup">
+        <div id="pagehead">
+            <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
+            <div id="networktitle">Eionet</div>
+            <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
+            <div id="sitetagline">This service is part of Reportnet</div>
+        </div> <!-- pagehead -->
+        <div id="workarea">
 
-    <div id="pagehead">
-        <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
-        <div id="networktitle">Eionet</div>
-        <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
-        <div id="sitetagline">This service is part of Reportnet</div>
-    </div> <!-- pagehead -->
-    <%
-}
-else{ %>
+    <%} else { %>
 
     <body>
         <div id="container">
@@ -294,54 +290,48 @@ else{ %>
             <jsp:param name="name" value="Search results"/>
             <jsp:param name="helpscreen" value="elements"/>
         </jsp:include>
-        <%@ include file="nmenu.jsp" %>
+        <c:set var="currentSection" value="dataElements" />
+        <%@ include file="/pages/common/navigation.jsp" %>
         <div id="workarea">
+
         <%
-}
-
-            if (pageMode.equals("search")){
-
+            }
+            String strAllOrLatest = isIncludeHistoricVersions ? "all " : "latest";
+        %>
+        <h1>Non-common elements from <%=strAllOrLatest%> versions of datasets in any status</h1>
+        <%
+            if (pageMode.equals("search")) {
                 // see if any results were found
-                if (dataElements == null || dataElements.size()==0){
-
+                if (dataElements == null || dataElements.size()==0) {
                     // prepare message trailer for un-authenticated users
                     String msgTrailer = user==null ? " for unauthenticated users" : "";
-                    %>
-                    <div class="error-msg">No element definitions matching the search criteria were found<%=Util.processForDisplay(msgTrailer)%>!</div>
-                    </div></body></html> <%
-                    return;
-                }
+        %>
+        <p class='not-found'>No element definitions matching the search criteria were found<%=Util.processForDisplay(msgTrailer)%>.</p>
+        </div></body></html> <%
+            return;
             }
-            %>
-
-            <%
-            if (popup){
-                %>
-                <div id="operations">
+        }
+        if (popup){
+        %>
+                <div id="drop-operations" style="width:100%">
                     <ul>
-                        <li><a href="javascript:window.close();">Close</a></li>
+                        <li class="close"><a href="javascript:window.close();">Close</a></li>
                         <li class="help"><a class="helpButton" href="help.jsp?screen=elements&amp;area=pagehelp">Page help</a></li>
                     </ul>
                 </div><%
             }
-
-            String strAllOrLatest = isIncludeHistoricVersions ? "all " : "latest";
-            %>
-            <h1>Non-common elements from <%=strAllOrLatest%> versions of datasets in any status</h1>
-
-            <%
             if (user==null){ %>
                 <p class="advise-msg">
                     Note: Elements from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.
                 </p><%
             }
             %>
-
+            <h2 class="results">Total results: <%=dataElements.size()%></h2>
             <form id="form1" method="post" action="search_results.jsp" onsubmit="setLocation()">
 
             <!-- search results table -->
 
-            <table width="700" class="sortable" style="display:block">
+            <table class="datatable results">
             <%
             boolean isDisplayDstVersionColumn = isIncludeHistoricVersions;
             if (isDisplayDstVersionColumn){%>
@@ -490,7 +480,7 @@ else{ %>
                     oEntry.href = href.toString();
                     oResultSet.oElements.add(oEntry);
 
-                    String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+                    String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                     %>
 
                     <tr class="<%=zebraClass%>">
@@ -529,16 +519,7 @@ else{ %>
                         }
                         %>
                         <td>
-                            <%
-                            if (clickable){ %>
-                                <img style="border:0" src="<%=Util.processForDisplay(statusImg)%>" width="56" height="12" title="<%=dstRegStatus%>" alt="<%=dstRegStatus%>"/><%
-                            }
-                            else{ %>
-                                <span style="color:gray;text-decoration:none;font-size:8pt" title="<%=dstRegStatus%>">
-                                    <strong><%=statusTxt%></strong>
-                                </span><%
-                            }
-                            %>
+                            <dd:datasetRegStatus value="<%=dstRegStatus%>" />
                         </td>
                     </tr><%
                     displayed++;
@@ -546,7 +527,7 @@ else{ %>
                 %>
             </tbody>
         </table>
-        <p>Total results: <%=dataElements.size()%></p><%
+        <%
             }
             else{
                 // No search - return from another result set or a total stranger...
@@ -565,7 +546,7 @@ else{ %>
                         String statusImg   = "images/" + Util.getStatusImage(oEntry.dstRegStatus);
                         String statusTxt   = Util.getStatusRadics(oEntry.dstRegStatus);
 
-                        String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+                        String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                         %>
                         <tr class="<%=zebraClass%>">
                             <td<%=strDisabled%>>

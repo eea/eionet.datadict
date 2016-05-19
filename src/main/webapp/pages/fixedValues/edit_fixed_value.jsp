@@ -2,17 +2,17 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Fixed Value Editor">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Fixed Value Editor" currentSection="dataElements">
     <stripes:layout-component name="contents">
         <c:if test="${empty actionBean.context.validationErrors}">
             <%@ include file="/pages/fixedValues/fixed_value_header.jsp"%>
 
-            <div id="operations">
+            <div id="drop-operations">
                 <ul>
-                    <li>
+                    <li class="back">
                         <stripes:link beanclass="${actionBean.viewModel.actionBeanName}" event="edit">
                             <stripes:param name="ownerId" value="${actionBean.viewModel.owner.id}" />
-                            back to 
+                            Back to 
                             <c:out value="${actionBean.viewModel.fixedValueCategoryLower}" /> 
                             values
                         </stripes:link>

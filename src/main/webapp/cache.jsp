@@ -35,7 +35,7 @@ Vector entries = (Vector)request.getAttribute("entries");
                 <jsp:param name="name" value="Cache"/>
                 <jsp:param name="helpscreen" value="cache"/>
             </jsp:include>
-            <%@ include file="nmenu.jsp" %>
+            <%@ include file="/pages/common/navigation.jsp" %>
             <div id="workarea">
                 <h1>Cached articles for <%=StringEscapeUtils.escapeXml(request.getAttribute("object_type").toString())%>: <em><%=StringEscapeUtils.escapeXml(idf)%></em></h1>
                 <br/>
@@ -44,7 +44,7 @@ Vector entries = (Vector)request.getAttribute("entries");
                         <input type="button" class="smallbutton" value="Update selected" onclick="submitForm('update')"/>
                         <input type="button" class="smallbutton" value="Remove selected" onclick="submitForm('clear')"/>
                     </div>
-                    <table class="datatable" style="width:auto">
+                    <table class="datatable results">
                         <thead>
                         <tr>
                             <th>&nbsp;</th>
@@ -61,10 +61,11 @@ Vector entries = (Vector)request.getAttribute("entries");
                             String text = (String)hash.get("text");
                             Long created = (Long)hash.get("created");
                             String date = created==null ? "-- not in cache --" : Util.historyDate(created.longValue());
+                            String isOdd = Util.isOdd(i + 1);
                             %>
-                            <tr>
+                            <tr class="<%=isOdd%>">
                                 <td class="center">
-                                    <input type="checkbox" name="article" value="<%=Util.processForDisplay(article, true)%>"/>
+                                    <input type="checkbox" class="selectable" name="article" value="<%=Util.processForDisplay(article, true)%>"/>
                                 </td>
                                 <td style="padding-right:10px">
                                     <%=Util.processForDisplay(text)%>

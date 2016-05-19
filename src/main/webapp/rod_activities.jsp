@@ -67,24 +67,8 @@ if (dstName == null || dstName.length()==0)
 <jsp:include page="nlocation.jsp" flush="true">
     <jsp:param name="name" value="Rod links"/>
 </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
-    <form id="reload" action="InServices?client=webrod&amp;method=reload_activities" method="get">
-        <div style="display:none">
-            <input type="hidden" name="client" value="webrod"/>
-            <input type="hidden" name="method" value="reload_activities"/>
-            
-            <input type="hidden" name="dst_id" value="<%=dstID%>"/>
-            <input type="hidden" name="dst_idf" value="<%=dstIdf%>"/>
-            <input type="hidden" name="dst_name" value="<%=dstName%>"/>
-        </div>    
-    </form>
-    <div id="drop-operations">
-        <h2>Operations:</h2>
-        <ul>
-            <li><a href="javascript:document.forms['reload'].submit();">Reload</a></li>
-        </ul>
-    </div>
     <%
     if (activities==null || activities.size()==0){
         %>
@@ -100,16 +84,34 @@ if (dstName == null || dstName.length()==0)
             <h1>You are linking ROD obligations with dataset</h1><%
         }
         %>
-        <div style="font-size:0.7em;clear:right;margin-bottom:10px;margin-top:10px">
-            Below is the list of obligations in ROD.<br/>
+        <form id="reload" action="InServices?client=webrod&amp;method=reload_activities" method="get">
+            <div style="display:none">
+                <input type="hidden" name="client" value="webrod"/>
+                <input type="hidden" name="method" value="reload_activities"/>
+
+                <input type="hidden" name="dst_id" value="<%=dstID%>"/>
+                <input type="hidden" name="dst_idf" value="<%=dstIdf%>"/>
+                <input type="hidden" name="dst_name" value="<%=dstName%>"/>
+            </div>    
+        </form>
+        <div id="drop-operations">
+            <ul>
+                <li class="reload"><a href="javascript:document.forms['reload'].submit();">Reload</a></li>
+            </ul>
+        </div>
+
+        <div class="system-msg">
+            <strong>Below is the list of obligations in ROD.</strong><br />
             Click Title to link obligation with the dataset.<br/>
             Click Details to open the obligation's details in ROD.
         </div>
-        <table class="datatable" cellspacing="0" cellpadding="0" style="width:auto">
-            <tr>
-                <th style="padding-left:5px;padding-right:10px">Title</th>
-                <th style="padding-left:5px;padding-right:10px">Details</th>
-            </tr>
+        <table class="datatable results">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
             <%
             int displayed = 0;
             for (int i=0; i<activities.size(); i++){

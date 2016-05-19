@@ -5,24 +5,26 @@
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabulary Concepts">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabulary Concepts" currentSection="vocabularies">
 
     <stripes:layout-component name="contents">
+        <h1>Vocabulary Concepts</h1>
+
+        <c:if test="${empty actionBean.user}">
+            <p class="advise-msg">
+                Note: Unauthenticated users can only see vocabulary concepts of vocabularies in <em>Released</em> and <em>Public Draft</em> statuses.
+            </p>
+        </c:if>
+
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
-                <li><stripes:link id="searchConceptLnk" href="#">Search again</stripes:link></li>
-                <li><stripes:link href="/vocabularies" event="form">Back to vocabularies</stripes:link></li>
+                <li class="back"><stripes:link href="/vocabularies" event="form">Back to vocabularies</stripes:link></li>
+                <li class="search"><stripes:link id="searchConceptLnk" href="#">Search again</stripes:link></li>
             </ul>
         </div>
 
-        <h1>Vocabulary Concepts</h1>
-
-        <p class="advise-msg">
-            Note: Unauthenticated users can only see vocabulary concepts of vocabularies in <em>Released</em> and <em>Public Draft</em> statuses.
-        </p>
-
-        <display:table name="${actionBean.vocabularyConceptResult}" class="sortable" id="item" requestURI="/vocabularies/searchConcepts"  pagesize="20">
+        <display:table name="${actionBean.vocabularyConceptResult}" class="datatable results" id="item" requestURI="/vocabularies/searchConcepts" pagesize="20">
+            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No vocabulary concepts found.</p>" />
             <display:column title="Vocabulary Set" sortable="true" sortProperty="vocabularySetIdentifier" >
                 <c:out value="${item.vocabularySetIdentifier}" />
             </display:column>

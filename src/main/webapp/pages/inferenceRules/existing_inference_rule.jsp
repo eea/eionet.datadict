@@ -2,14 +2,14 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Inference Rule">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Inference Rule" currentSection="dataElements">
     <stripes:layout-component name="contents">
         <c:if test="${empty actionBean.context.validationErrors}">
             <h1>Edit Inference Rule for element <stripes:link href="/dataelements/${actionBean.parentElement.id}">${actionBean.parentElement.shortName}</stripes:link></h1>
-            <div id="operations">
+            <div id="drop-operations">
                 <ul>
-                    <li>
-                        <stripes:link href="/inference_rules/${actionBean.parentElement.id}">back to rules</stripes:link>
+                    <li class="back">
+                        <stripes:link href="/inference_rules/${actionBean.parentElement.id}">Back to rules</stripes:link>
                     </li>
                 </ul>
             </div>

@@ -384,7 +384,8 @@ else
             <jsp:param name="name" value="Attribute"/>
             <jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
         </jsp:include>
-        <%@ include file="nmenu.jsp" %>
+        <c:set var="currentSection" value="attributes" />
+        <%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
 
             <form id="form1" method="post" action="delem_attribute.jsp">
@@ -407,16 +408,6 @@ else
                 </div>
 
                 <%
-                if (user!=null && mode.equals("view") && editPrm){
-                    %>
-                    <div id="drop-operations">
-                    <h2>Operations:</h2>
-                        <ul>
-                            <li><a href="javascript:goToEdit()">Edit</a></li>
-                        </ul>
-                    </div><%
-                }
-
                 if (mode.equals("add")){ %>
                     <h1>Add an attribute definition</h1> <%
                 }
@@ -428,15 +419,24 @@ else
                     <%
                 }
 
+                if (user!=null && mode.equals("view") && editPrm){
+                    %>
+                    <div id="drop-operations">
+                        <ul>
+                            <li class="edit"><a href="javascript:goToEdit()">Edit</a></li>
+                        </ul>
+                    </div><%
+                }
+
                 if (!mode.equals("view") && type==null){ %>
                     <div class="attention">NB! Please select the attribute type first. Otherwise your entries will be lost.</div><%
                 }
 
-            int displayed = 0;
+            int displayed = 1;
 
             if (mode.equals("view")){
                 %>
-                <table class="datatable" style="clear:right">
+                <table class="datatable results" style="clear:right">
                 <col style="width:10em"/>
                 <col style="width:35em"/>
                 <%
@@ -450,7 +450,7 @@ else
             }
             %>
 
-            <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebraodd" <%;%>>
+            <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                 <th scope="row" class="scope-row">Type</th>
                 <%
                 displayed++;
@@ -482,7 +482,7 @@ else
                 </td>
             </tr>
 
-            <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+            <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                 <th scope="row" class="scope-row">Short name</th>
                         <%
                         displayed++;
@@ -504,7 +504,7 @@ else
 
 
 
-            <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+            <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                 <th scope="row" class="scope-row">Name</th>
                         <%
                         displayed++;
@@ -545,7 +545,7 @@ else
             }
             if (displayNamespace){
                 %>
-                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
 
                     <th scope="row" class="scope-row">Context</th>
                             <%
@@ -613,7 +613,7 @@ else
             }
             %>
 
-            <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+            <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                 <th scope="row" class="scope-row">Definition</th>
                         <%
                         displayed++;
@@ -651,7 +651,7 @@ else
             if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
                 %>
 
-                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                     <th scope="row" class="scope-row">Obligation</th>
                             <%
                             displayed++;
@@ -688,7 +688,7 @@ else
                     </td>
                 </tr>
 
-                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                     <th scope="row" class="scope-row">Display type</th>
                             <%
                             displayed++;
@@ -737,7 +737,7 @@ else
                 <%
                 if (mode.equals("view") && dispType!=null && dispType.equals("select")){
                 %>
-                    <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+                    <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                         <th scope="row" class="scope-row">
                                 <a href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attr_id%>">
                                     Fixed values
@@ -761,7 +761,7 @@ else
                 <%
                 }
                 %>
-                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                     <th scope="row" class="scope-row">Display multiple</th>
                         <%
                             displayed++;
@@ -799,7 +799,7 @@ else
                 <%
             }
             %>
-            <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+            <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                 <th scope="row" class="scope-row">Inheritance</th>
                         <%
                         displayed++;
@@ -838,7 +838,7 @@ else
                 </td>
             </tr>
 
-            <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+            <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                 <th scope="row" class="scope-row">Display order</th>
                         <%
                         displayed++;
@@ -876,7 +876,7 @@ else
             <%
             if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){ %>
 
-                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                     <th scope="row" class="scope-row">Display for</th>
                             <%
                             displayed++;
@@ -949,7 +949,7 @@ else
             <%
             if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
                 %>
-                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                     <th scope="row" class="scope-row">Display width</th>
                             <%
                             displayed++;
@@ -987,7 +987,7 @@ else
 
             if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
                 %>
-                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                     <th scope="row" class="scope-row">Display height</th>
                             <%
                             displayed++;
@@ -1028,7 +1028,8 @@ else
                     pageContext.setAttribute("rdfNamespaces", searchEngine.getRdfNamespaces());
                 }
                 %>
-                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
+                    <% displayed++; %>
                     <th scope="row" class="scope-row">RDF property URI</th>
                     <c:if test="${mode eq 'edit' || mode eq 'add'}">
                         <td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
@@ -1056,7 +1057,8 @@ else
                         </c:if>
                     </td>
                 </tr>
-                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
+                    <% displayed++; %>
                     <th scope="row" class="scope-row">RDF property name</th>
                     <c:if test="${mode eq 'edit' || mode eq 'add'}">
                         <td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
@@ -1099,7 +1101,7 @@ else
 
                 %>
 
-                <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                     <th scope="row" class="scope-row">Linked harvester</th>
                             <%
                             displayed++;
@@ -1153,7 +1155,7 @@ else
             <td></td>
             <% } %>
             <td>
-                <table class="datatable">
+                <table class="datatable results">
                     <col style="width:100px"/>
                     <col style="width:200px"/>
                     <tr>
@@ -1175,9 +1177,10 @@ else
 
                             int pos = Integer.parseInt((String)hash.get("position"));
                             if (pos >= position) position = pos +1;
+                            String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
 
                             %>
-                            <tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
+                            <tr class="<%=zebraClass%>">
                                 <td align="center"><a href="<%=fieldLink%>"><%=Util.processForDisplay(name)%></a></td>
                                 <td align="center" onmouseover=""><%=Util.processForDisplay(definition)%></td>
                             </tr>

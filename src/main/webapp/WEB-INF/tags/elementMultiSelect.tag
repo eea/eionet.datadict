@@ -18,7 +18,6 @@
  --%>
 
 <c:url var="addIcon" value="/images/button_plus.gif" />
-<c:url var="delIcon" value="/images/button_remove.gif" />
 
 <script type="text/javascript">
 // <![CDATA[
@@ -49,7 +48,7 @@
     <span id="newFixedField${uniqueId}">
         <input type="hidden" name="" value="${attributeId}" />
         <dd:selectFixedValue fixedValues="${fixedValues}" value="" id="elem${uniqueId}" ></dd:selectFixedValue>
-        <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
+        <a href="#" class="delLink deleteButton" title="Remove"></a>
         <br/>
     </span>
 </div>
@@ -60,7 +59,7 @@
         <span id="multySpan${uniqueId}-${innerLoop.index}">
             <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
             <dd:selectFixedValue fixedValues="${attr.fixedValues}" value="${attr.attributeValue}" name="${fieldName}[${innerLoop.index}].attributeValue" id="elem${fieldName}[${innerLoop.index}]" ></dd:selectFixedValue>
-            <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a><br>
+            <a href="#" class="delLink deleteButton" title="Remove"></a>
         </span>
         </c:if>
 

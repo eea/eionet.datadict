@@ -3,7 +3,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp"  pageTitle="Edit vocabulary concept">
+<stripes:layout-render name="/pages/common/template.jsp"  pageTitle="Edit vocabulary concept" currentSection="vocabularies">
 
 <stripes:layout-component name="head">
     <script type="text/javascript">
@@ -65,17 +65,19 @@
 </stripes:layout-component>
 
 <stripes:layout-component name="contents">
+    <h1>Vocabulary concept</h1>
 
     <div id="drop-operations">
-        <h2>Operations:</h2>
         <ul>
-            <li>
+            <li class="back">
                 <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="edit">
                     <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                     <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                     <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                     Back to vocabulary
                 </stripes:link>
+            </li>
+            <li class="view">
                 <!-- beanClass usage interprets some symbols incorrect because of a Stripes bug. Will be fixed in Stripes 1.5.8 -->
                 <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/view">
                     <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
@@ -84,8 +86,6 @@
             </li>
         </ul>
     </div>
-
-    <h1>Vocabulary concept</h1>
 
     <stripes:form id="editForm" method="post" beanclass="${actionBean['class'].name}">
 

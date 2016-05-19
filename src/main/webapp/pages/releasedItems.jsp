@@ -7,7 +7,7 @@
 <c:url var="datasetIconUrl" value="/images/tar.png" />
     <c:url var="vocabularyIconUrl" value="/images/txt.png" />
     <c:url var="schemaIconUrl" value="/images/xsd.png" />
-    <display:table name="${actionBean.results}" class="datatable" id="recentlyReleased" style="width:100%" >
+    <display:table name="${actionBean.results}" class="datatable results" id="recentlyReleased" style="width:100%" >
         <display:column style="width:5%">
             <c:choose>
                 <c:when test="${recentlyReleased.type eq 'VOCABULARY'}">

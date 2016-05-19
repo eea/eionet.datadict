@@ -2,7 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="View schema set">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="View schema set" currentSection="schemas">
 
     <stripes:layout-component name="head">
         <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
@@ -85,6 +85,28 @@
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">
+        <%-- Page heading --%>
+        <h1>View schema set</h1>
+
+        <c:set var="schemaSetWorkingCopy" value="${actionBean.schemaSetWorkingCopy}"/>
+        <c:if test="${not empty schemaSetWorkingCopy}">
+            <div class="system-msg">
+                <strong>Note</strong>
+                <p>You have a
+                    <stripes:link beanclass="${actionBean['class'].name}">
+                        <stripes:param name="schemaSet.identifier" value="${schemaSetWorkingCopy.identifier}"/>
+                        <stripes:param name="workingCopy" value="true"/>
+                        working copy
+                    </stripes:link> of this schema set!</p>
+            </div>
+        </c:if>
+
+    <c:if test="${actionBean.schemaSet.deprecatedStatus}">
+        <div class="system-msg">
+            <strong>Note</strong>
+            <p>This schema set is deprecated. It is not valid anymore!</p>
+        </div>
+    </c:if>
 
     <stripes:url var="viewUrl" beanclass="${actionBean['class'].name}" event="view">
         <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
@@ -96,52 +118,51 @@
         <c:set var="isMyWorkingCopy" value="${actionBean.schemaSet.workingCopy && actionBean.userName==actionBean.schemaSet.workingUser}"/>
         <c:if test="${empty actionBean.schemaSet.workingUser || isMyWorkingCopy}">
             <div id="drop-operations">
-                <h2>Operations:</h2>
                 <ul>
                     <c:if test="${isMyWorkingCopy}">
-                        <li>
+                        <li class="edit">
                             <stripes:link beanclass="${actionBean['class'].name}" event="edit">Edit metadata
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                             </stripes:link>
                         </li>
-                        <li>
+                        <li class="edit">
                             <stripes:url var="viewUrl" beanclass="${actionBean['class'].name}" event="view">
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                                 <stripes:param name="workingCopy" value="true"/>
                             </stripes:url>
                             <a href="${pageContext.request.contextPath}/complex_attrs.jsp?parent_id=${actionBean.schemaSet.id}&parent_type=SCS&parent_name=${actionBean.schemaSet.identifier}&parent_link=${viewUrl}">Edit complex attributes</a>
                         </li>
-                        <li>
+                        <li class="edit">
                             <stripes:link beanclass="${actionBean['class'].name}" event="editSchemas">Edit schemas
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                             </stripes:link>
                         </li>
-                        <li>
+                        <li class="upload">
                             <a href="#" id="uploadSchemaLink">Upload schema</a>
                         </li>
-                        <li>
+                        <li class="upload">
                             <a href="#" id="uploadDocumentLink">Upload other document</a>
                         </li>
-                        <li>
+                        <li class="copy">
                             <stripes:link beanclass="eionet.web.action.SearchSchemaActionBean" event="search">Copy existing schema
                                 <stripes:param name="schemaSetId" value="${actionBean.schemaSet.id}"/>
                             </stripes:link>
                         </li>
                         <c:choose>
                             <c:when test="${actionBean.checkInCommentsRequired}">
-                                <li>
+                                <li class="checkin">
                                     <a href="#" id="checkInLink">Check in</a>
                                 </li>
                             </c:when>
                             <c:otherwise>
-                                <li>
+                                <li class="checkin">
                                    <stripes:link beanclass="${actionBean['class'].name}" event="checkIn">Check in
                                        <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
                                    </stripes:link>
                                </li>
                             </c:otherwise>
                         </c:choose>
-                        <li>
+                        <li class="undo">
                             <stripes:link beanclass="${actionBean['class'].name}" event="undoCheckout">Undo checkout
                                 <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
                             </stripes:link>
@@ -149,12 +170,12 @@
                     </c:if>
                     <c:if test="${empty actionBean.schemaSet.workingUser && (actionBean.createAllowed || actionBean.checkoutAllowed)}">
                         <c:if test="${actionBean.createAllowed}">
-                            <li>
+                            <li class="newVersion">
                                 <a href="#" id="newVersionLink">New version</a>
                             </li>
                         </c:if>
                         <c:if test="${actionBean.checkoutAllowed}">
-                            <li>
+                            <li class="checkout">
                                 <stripes:link beanclass="${actionBean['class'].name}" event="checkOut">Check out
                                     <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
                                 </stripes:link>
@@ -166,48 +187,19 @@
         </c:if>
     </c:if>
 
-    <%-- Page heading --%>
-
-    <h1>View schema set</h1>
-
-    <c:set var="schemaSetWorkingCopy" value="${actionBean.schemaSetWorkingCopy}"/>
-    <c:if test="${not empty schemaSetWorkingCopy}">
-        <div class="note-msg">
-            <strong>Note</strong>
-            <p>You have a
-                <stripes:link beanclass="${actionBean['class'].name}">
-                    <stripes:param name="schemaSet.identifier" value="${schemaSetWorkingCopy.identifier}"/>
-                    <stripes:param name="workingCopy" value="true"/>
-                    working copy
-                </stripes:link> of this schema set!</p>
-        </div>
-    </c:if>
-
-    <c:if test="${actionBean.schemaSet.deprecatedStatus}">
-        <div class="note-msg">
-            <strong>Note</strong>
-            <p>This schema set is deprecated. It is not valid anymore!</p>
-        </div>
-    </c:if>
-
     <%-- Attributes div --%>
 
     <div id="outerframe" style="padding-top:20px">
-        <table class="datatable">
+        <table class="datatable results">
             <colgroup>
-                <col style="width:26%"/>
-                <col style="width:4%"/>
-                <col style="width:62%"/>
+                <col style="width:30%"/>
+                <col style="width:70%"/>
             </colgroup>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title">
                     Identifier
+                    <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier"></a>
                 </th>
-                <td class="simple_attr_help">
-                    <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier">
-                        <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
-                    </a>
-                </td>
                 <td class="simple_attr_value">
                     <c:out value="${actionBean.schemaSet.identifier}"/>
                 </td>
@@ -215,12 +207,8 @@
             <tr>
                 <th scope="row" class="scope-row simple_attr_title">
                     Registration status
+                    <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus"></a>
                 </th>
-                <td class="simple_attr_help">
-                    <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus">
-                        <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
-                    </a>
-                </td>
                 <td class="simple_attr_value">
                     <fmt:setLocale value="en_GB" />
                     <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schemaSet.dateModified}" var="dateFormatted"/>
@@ -244,8 +232,6 @@
                 <th scope="row" class="scope-row simple_attr_title">
                     Status changed
                 </th>
-                <td class="simple_attr_help">
-                </td>
                 <td class="simple_attr_value">
                     ${statusDateFormatted}
                 </td>
@@ -256,12 +242,8 @@
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">
                             <c:out value="${attribute.name}"/>
+                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE"></a>
                         </th>
-                        <td class="simple_attr_help">
-                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE">
-                                <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                            </a>
-                        </td>
                         <td style="word-wrap:break-word;wrap-option:emergency" class="simple_attr_value">
                             <c:if test="${not attribute.displayMultiple}">
                                 <c:out value="${attribute.value}"/>
@@ -285,7 +267,7 @@
     </c:if>
 
     <c:if test="${not empty actionBean.schemas}">
-        <display:table name="${actionBean.schemas}" class="datatable" id="schema" style="width:80%">
+        <display:table name="${actionBean.schemas}" class="datatable results" id="schema">
             <display:column title="File name">
                 <stripes:link beanclass="eionet.web.action.SchemaActionBean" title="Open schema details">
                     <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
@@ -303,23 +285,18 @@
         <h2>
             Complex attributes
         </h2>
-        <table class="datatable">
+        <table class="datatable results">
 
-            <col style="width:29%"/>
-            <col style="width:4%"/>
-            <col style="width:63%"/>
+            <col style="width:30%"/>
+            <col style="width:70%"/>
 
             <c:forEach items="${actionBean.complexAttributes}" var="complexAttr" varStatus="complexAttrsLoop">
-                <tr class="zebra${complexAttrsLoop.index % 2 != 0 ? 'odd' : 'even'}">
+                <tr class="${(complexAttrsLoop.index + 1) % 2 != 0 ? 'odd' : 'even'}">
                     <td>
                         <a href="${pageContext.request.contextPath}/complex_attr.jsp?attr_id=${complexAttr.ID}&amp;parent_id=${actionBean.schemaSet.id}&amp;parent_type=SCS&amp;parent_name=${actionBean.schemaSet.identifier}&amp;parent_link=${viewUrl}">
                             <c:out value="${complexAttr.name}"/>
                         </a>
-                    </td>
-                    <td>
-                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${complexAttr.ID}&amp;attrtype=COMPLEX">
-                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                        </a>
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${complexAttr.ID}&amp;attrtype=COMPLEX"></a>
                     </td>
                     <td>
                         <c:forEach items="${complexAttr.rows}" var="complexAttrRow" varStatus="complexAttrRowsLoop">
@@ -341,7 +318,7 @@
 
     <c:if test="${not empty actionBean.otherVersions}">
         <h2>Other versions of this schema set</h2>
-        <display:table name="${actionBean.otherVersions}" class="datatable" id="otherVersion" style="width:80%">
+        <display:table name="${actionBean.otherVersions}" class="datatable results" id="otherVersion">
             <display:column title="Identifier">
                 <stripes:link beanclass="${actionBean['class'].name}" title="Open schema set details">
                     <stripes:param name="schemaSet.identifier" value="${otherVersion.identifier}"/>
@@ -367,7 +344,7 @@
     <div id="newVersionDialog" title="Create new version">
         <stripes:form beanclass="${actionBean['class'].name}" method="get">
 
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>A new version requires a new identifier. Please enter it below.</p>
             </div>
@@ -388,7 +365,7 @@
     <div id="checkInDialog" title="Check in">
         <stripes:form beanclass="${actionBean['class'].name}" method="get">
 
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>A check-in comment is required. Please enter it below.</p>
             </div>

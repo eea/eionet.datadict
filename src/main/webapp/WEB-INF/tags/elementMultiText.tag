@@ -25,7 +25,6 @@
 </c:if>
 
 <c:url var="addIcon" value="/images/button_plus.gif" />
-<c:url var="delIcon" value="/images/button_remove.gif" />
 
 <script type="text/javascript">
 // <![CDATA[
@@ -53,7 +52,7 @@
     <span id="newField${uniqueId}">
         <input type="hidden" name="" value="${attributeId}" />
         <input class="smalltext" size="${fieldSize}" type="text"/>
-        <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
+        <a href="#" class="delLink deleteButton" title="Remove"></a>
         <br/>
     </span>
 </div>
@@ -64,7 +63,7 @@
         <span id="multySpan${uniqueId}-${innerLoop.index}">
             <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
             <input value="${attr.attributeValue}" name="${fieldName}[${innerLoop.index}].attributeValue" class="${fieldClass}" size="${fieldSize}" type="text"/>
-            <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a><br/>
+            <a href="#" class="delLink deleteButton" title="Remove"></a>
         </span>
         </c:if>
     </c:forEach>

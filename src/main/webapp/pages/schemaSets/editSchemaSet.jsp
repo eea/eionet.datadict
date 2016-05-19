@@ -5,7 +5,7 @@
 <%@page import="eionet.meta.dao.domain.RegStatus"%>
 <%@page import="eionet.meta.DElemAttribute"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit schema set">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit schema set" currentSection="schemas">
 
     <stripes:layout-component name="contents">
         
@@ -14,7 +14,7 @@
     <h1>Edit schema set</h1>
 
     <c:if test="${actionBean.schemaSet.deprecatedStatus}">
-        <div class="note-msg">
+        <div class="system-msg">
             <strong>Note</strong>
             <p>This schema set is deprecated. It is not valid anymore!</p>
         </div>
@@ -24,20 +24,15 @@
         <div id="outerframe">
             <table class="datatable">
                 <colgroup>
-                    <col style="width:26%"/>
+                    <col style="width:30%"/>
                     <col style="width:4%"/>
-                    <col style="width:4%"/>
-                    <col style="width:62%"/>
+                    <col style="width:66%"/>
                 </colgroup>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Identifier
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier"></a>
                     </th>
-                    <td class="simple_attr_help">
-                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier">
-                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
-                        </a>
-                    </td>
                     <td class="simple_attr_help">
                         <img style="border:0" src="${pageContext.request.contextPath}/images/mandatory.gif" width="16" height="16" alt=""/>
                     </td>
@@ -49,12 +44,8 @@
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Registration status
+                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus"></a>
                     </th>
-                    <td class="simple_attr_help">
-                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus">
-                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
-                        </a>
-                    </td>
                     <td class="simple_attr_help">
                         <img style="border:0" src="${pageContext.request.contextPath}/images/mandatory.gif" width="16" height="16" alt=""/>
                     </td>
@@ -72,12 +63,8 @@
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">
                             <c:out value="${attribute.name}"/>
+                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE"></a>
                         </th>
-                        <td class="simple_attr_help">
-                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE">
-                                <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                            </a>
-                        </td>
                         <td class="simple_attr_help">
                             <c:if test="${attribute.obligation=='M'}">
                                 <img style="border:0" src="${pageContext.request.contextPath}/images/mandatory.gif" width="16" height="16" alt=""/>
@@ -131,7 +118,6 @@
                 </c:forEach>
                 <tr>
                     <th>&nbsp;</th>
-                    <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>
                         <stripes:submit name="save" value="Save" class="mediumbuttonb"/>

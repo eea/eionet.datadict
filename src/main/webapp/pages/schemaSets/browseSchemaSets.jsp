@@ -5,35 +5,50 @@
 <%@page import="eionet.meta.dao.domain.SchemaSet"%>
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
-<stripes:layout-render name="/pages/common/template.jsp"
-    pageTitle="Schema sets">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schema sets" currentSection="schemas">
+
+    <stripes:layout-component name="head">
+        <script type="text/javascript">
+        // <![CDATA[
+            (function($) {
+                $(document).ready(function() {
+                    $("#toggleSelectAll").click(function() {
+                        toggleSelectAll('schemaSetsForm');
+                        $(this).val() === "Select all" ? $("li", ".menu").removeClass("selected") : $("li", ".menu").not(".disabled").addClass("selected");
+                        return false;
+                    });
+                });
+            })(jQuery);
+        // ]]>
+        </script>
+    </stripes:layout-component>
 
     <stripes:layout-component name="contents">
+        <h1>Browse schema sets and schemas</h1>
 
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
                 <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemasets', 'i')}">
-                    <li>
+                    <li class="add">
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" event="add">Add schema set</stripes:link>
                     </li>
                 </c:if>
                 <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemas', 'i')}">
-                    <li>
+                    <li class="add">
                         <stripes:link beanclass="eionet.web.action.SchemaActionBean" event="add">Add root-level schema</stripes:link>
                     </li>
                 </c:if>
-                <li><a href="${pageContext.request.contextPath}/schemasets/search/">Search schema sets</a></li>
-                <li><a href="${pageContext.request.contextPath}/schema/search/">Search schemas</a></li>
+                <li class="search"><a href="${pageContext.request.contextPath}/schemasets/search/">Search schema sets</a></li>
+                <li class="search"><a href="${pageContext.request.contextPath}/schema/search/">Search schemas</a></li>
                 <c:if test="${not empty actionBean.user}">
-                    <stripes:link beanclass="${actionBean['class'].name}" event="workingCopies">
-                        List my working copies
-                    </stripes:link>
+                    <li class="list">
+                        <stripes:link beanclass="${actionBean['class'].name}" event="workingCopies">
+                            List my working copies
+                        </stripes:link>
+                    </li>
                 </c:if>
             </ul>
         </div>
-
-        <h1>Browse schema sets and schemas</h1>
 
         <c:if test="${empty actionBean.schemaSets && empty actionBean.schemas}">
             <div style="margin-top:1em">
@@ -53,7 +68,7 @@
         </c:if>
 
         <c:if test="${not empty actionBean.user && actionBean.context.eventName!='workingCopies'}">
-            <div class="advice-msg" style="margin-top:1em;font-size:0.8em">
+            <div class="advice-msg">
                 Hint: red asterisk marks your working copies, if you have any.
             </div>
         </c:if>
@@ -66,11 +81,11 @@
                         <c:if test="${schemaSet.deprecatedStatus eq (outerLoop.index eq 1)}">
                             <c:set var="schemaSetName" value="${schemaSet.attributeValues!=null ? ddfn:join(schemaSet.attributeValues['Name'],'') : ''}"/>
                             <c:set var="displayName" value="${not empty schemaSetName ? schemaSetName : schemaSet.identifier}"/>
-                            <li>
+                            <li${ddfn:contains(actionBean.deletableSchemaSets,schemaSet.id) ? '' : ' class="disabled"'}>
                                 <c:if test="${not empty actionBean.user}">
                                     <c:choose>
                                         <c:when test="${ddfn:contains(actionBean.deletableSchemaSets,schemaSet.id)}">
-                                            <stripes:checkbox name="selectedSchemaSets" value="${schemaSet.id}" />
+                                            <stripes:checkbox class="selectable" name="selectedSchemaSets" value="${schemaSet.id}" />
                                         </c:when>
                                         <c:otherwise>
                                             <input type="checkbox" disabled="disabled" title="Schema set in registered status or currently checked out"/>
@@ -80,8 +95,11 @@
                                 <c:choose>
                                     <c:when test="${schemaSet.draftStatus && empty actionBean.user}">
                                         <span class="link-folder" style="color:gray;">
-                                            <c:out value="${schemaSet.identifier}"/> (<c:out value="${schemaSetName}"/>)
-                                            <sup style="font-size:0.7em"><c:out value="${schemaSet.regStatus}" /></sup>
+                                            <c:out value="${schemaSet.identifier}"/> 
+                                        </span>
+                                        <span class="description" style="color:gray;">
+                                            (<c:out value="${schemaSetName}"/>)
+                                            <sup><c:out value="${schemaSet.regStatus}" /></sup>
                                         </span>
                                     </c:when>
                                     <c:otherwise>
@@ -90,21 +108,23 @@
                                             <c:if test="${schemaSet.workingCopy}"><stripes:param name="workingCopy" value="true" /></c:if>
                                             <c:out value="${schemaSet.identifier}"/>
                                         </stripes:link>
-                                        (<c:out value="${schemaSetName}"/>)
-                                        <c:if test="${ddfn:contains(actionBean.statusTextsToDisplay, schemaSet.regStatus)}">
-                                            <sup style="font-size:0.7em"><c:out value="${schemaSet.regStatus}" /></sup>
-                                        </c:if>
+                                        <span class="description"<c:if test="${schemaSet.draftStatus}"> style="color:gray;"</c:if>>
+                                            (<c:out value="${schemaSetName}"/>)
+                                            <c:if test="${ddfn:contains(actionBean.statusTextsToDisplay, schemaSet.regStatus)}">
+                                                <sup><c:out value="${schemaSet.regStatus}" /></sup>
+                                            </c:if>
+                                            <c:if test="${not empty actionBean.userName && schemaSet.workingCopy && actionBean.userName==schemaSet.workingUser}">
+                                                <span title="Your working copy" class="checkedout"><strong>*</strong></span>
+                                            </c:if>
+                                        </span>
                                     </c:otherwise>
                                 </c:choose>
-                                <c:if test="${not empty actionBean.userName && schemaSet.workingCopy && actionBean.userName==schemaSet.workingUser}">
-                                    <span title="Your working copy" class="checkedout"><strong>*</strong></span>
-                                </c:if>
                             </li>
                         </c:if>
                     </c:forEach>
                     <c:if test="${outerLoop.index == 0}">
                         <h3>Deprecated schema sets</h3>
-                        <div class="advice-msg" style="margin-top:1em;font-size:0.8em">
+                        <div class="advice-msg" style="margin-top:1em;margin-bottom:1em;font-size:0.8em">
                             Hint: Following schema sets are deprecated. They are not valid anymore!
                         </div>
                     </c:if>
@@ -154,7 +174,7 @@
                 <c:choose>
                     <c:when test="${not empty actionBean.deletableSchemaSets || not empty actionBean.deletableSchemas}">
                         <stripes:submit name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete the selected schema sets and/or schemas?');"/>
-                        <input type="button" onclick="toggleSelectAll('schemaSetsForm');return false" value="Select all" name="selectAll" />
+                        <input type="button" id="toggleSelectAll" value="Select all" name="selectAll" />
                     </c:when>
                     <c:otherwise>
                         <stripes:submit disabled="disabled" name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete the selected schema sets and/or schemas?');"/>

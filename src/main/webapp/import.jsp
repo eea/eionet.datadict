@@ -1,6 +1,6 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-
 <%
     response.setHeader("Pragma", "No-cache");
     response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
@@ -101,7 +101,8 @@
         <jsp:param name="name" value="Import"/>
         <jsp:param name="helpscreen" value="import"/>
     </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="import" />
+<%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
 
     <h1>Import data</h1>
@@ -114,7 +115,7 @@
     <p>
     You can import the file either from a URL or a location on your local file system.
     </p>
-                    
+
         <%
         if (mode.equals("FXV")){ %>
             <p>
@@ -125,35 +126,35 @@
             </p><%
         }
         %>
-                
+
                 <form id="Upload" action="Import" method="post" enctype="multipart/form-data">
 
-                <table cellspacing="0">
+                <table>
                     <tr>
-                        <td align="left" style="padding-right:5">
+                        <td>
                             <input type="radio" name="fileORurl" value="file" checked="checked"/>
-                             <label for="filefld" class="question">File</label></td>
-                        <td align="left">
+                            <label for="filefld" class="question">File</label></td>
+                        <td>
                             <input type="file" class="smalltext" id="filefld" name="file_input" size="40"/>
                         </td>
                     </tr>
                     <tr>
-                        <td align="left" style="padding-right:5">
+                        <td>
                             <input type="radio" class="smalltext" name="fileORurl" value="url"/>
                             <label for="urlfld" class="question">URL</label></td>
-                        <td align="left">
+                        <td>
                             <input type="text" class="smalltext" id="urlfld" name="url_input" size="52"/>
                         </td>
                     </tr>
-                    <tr style="height:10px;"><td colspan="2"></td></tr>
+                    <tr><td colspan="2"></td></tr>
                     <tr>
                         <td></td>
-                        <td align="left">
-                            <% if (user!=null){ %>                                    
+                        <td>
+                            <% if (user!=null){ %>
                                 <input name="SUBMIT" type="button" class="mediumbuttonb" value="Import" onclick="submitForm()" onkeypress="submitForm()"/>&nbsp;&nbsp;
                             <%}%>
-                                <input name="RESET" type="reset" class="mediumbuttonb" value="Clear"/>
-                                <input type="hidden" name="type" value="<%=mode%>"/>
+                            <input name="RESET" type="reset" class="mediumbuttonb" value="Clear"/>
+                            <input type="hidden" name="type" value="<%=mode%>"/>
                         </td>
                     </tr>
                 </table>

@@ -28,7 +28,6 @@
 </c:if>
 
 <c:url var="addIcon" value="/images/button_plus.gif" />
-<c:url var="delIcon" value="/images/button_remove.gif" />
 
 <script type="text/javascript">
     // <![CDATA[
@@ -108,7 +107,7 @@
         <input type="hidden" id="elem-${uniqueId}.id" name="" value="${elementId}" />
         <input type="hidden" id="identifier-${uniqueId}.identifier" name="" value="${dataElements[0].identifier}" />
         <input  type="text"  name="${fieldName}[${uniqueId}].attributeValue" value="" class="${fieldClass}" size="${fieldSize}"/>
-        <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
+        <a href="#" class="delLink deleteButton" title="Remove"></a>
     </div>
 </div>
 
@@ -147,7 +146,7 @@
                     </c:otherwise>
                 </c:choose>
 
-                <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove'/></a>
+                <a href='#' class="delLink deleteButton" title="Remove"></a>
             </div>
         </c:if>
     </c:forEach>

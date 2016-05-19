@@ -1,8 +1,9 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
-<%!
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<%!
 
 private String legalizeAlert(String in){
 
@@ -253,20 +254,20 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
         <jsp:param name="name" value="Complex attribute"/>
         <jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
     </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="attributes" />
+<%@ include file="/pages/common/navigation.jsp" %>
 
 <div id="workarea">
 
     <%
-    if (mode.equals("add")){
-        if (attrFields == null || attrFields.size()==0){
+    if (mode.equals("add")) {
+        if (attrFields == null || attrFields.size()==0) {
             %>
             <span class="error">No fields found for this attribute!</span></body></html>
             <%
             return;
         }
-    }
-    else if (attribute == null){
+    } else if (attribute == null) {
         %>
         <span class="error">Attribute not found!</span><br/>
             <a href="javascript:history.back(-1)">
@@ -283,38 +284,62 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
     String attrName = attribute.getShortName();
     int position = 0;
 
-
     Vector rows = null;
     Vector inheritRows=null;
-    Vector originalRows=null;
 
-
-    if (inherit){
-        if (mode.equals("view")){
+    if (inherit) {
+        if (mode.equals("view")) {
             rows = attribute.getRows();
-        }
-        else{
+        } else {
             inheritRows = attribute.getInheritedValues();
             rows = attribute.getOriginalValues();
-        }
-    }
-    else
+        } 
+    } else {
         rows = attribute.getRows();
+    }
 
+    StringBuffer parentLink = new StringBuffer();
+    String dispParentType = request.getParameter("parent_type");
+    
+    if (dispParentType == null) {
+        dispParentType = "";
+    } else if (dispParentType.equals("DS")) {
+        dispParentType = "dataset";
+        parentLink.append(request.getContextPath() + "/datasets/");
+    } else if (dispParentType.equals("T")) {
+        dispParentType = "table";
+        parentLink.append(request.getContextPath() + "/tables/");
+    } else if (dispParentType.equals("E")) {
+        dispParentType = "element";
+        parentLink.append(request.getContextPath() + "/dataelements/");
+    } else if (dispParentType.equals("SCH")) {
+        dispParentType = "schema";
+    } else if (dispParentType.equals("SCS")) {
+        dispParentType = "schema set";
+    }
 
-    %>
+    String dispParentName = request.getParameter("parent_name");
+    if (dispParentName==null) {
+        dispParentName = "";
+    }
 
-<form id="form1" method="post" action="complex_attr.jsp">
+    if (parentLink.length()>0) {
+        parentLink.append(request.getParameter("parent_id"));
+    } else if (!Util.isEmpty(parent_link)) {
+        parentLink.append(parent_link);
+    }
+%>
+
+<h1>Complex attribute <a href=""><%=attrName%></a> of <%=dispParentType%> <a href="<%=parentLink%>"><%=dispParentName%></a></h1>
 
     <%
     if (user != null && isWorkingCopy && mode.equals("view")){
         %>
         <div id="drop-operations">
-        <h2>Operations:</h2>
             <ul>
                 <%
                 if (user != null && isWorkingCopy && mode.equals("view")){ %>
-                    <li><a href="<%=Util.processForDisplay(redirUrl, true, true)%>">Edit</a></li> <%
+                    <li class="edit"><a href="<%=Util.processForDisplay(redirUrl, true, true)%>">Edit</a></li> <%
                 }
                 %>
             </ul>
@@ -322,55 +347,17 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
     }
     if (!mode.equals("view")) {
         %>
-        <div id="operations">
+        <div id="drop-operations">
         <ul>
-            <li><a href="javascript:window.location.replace('<%=backURLEscaped%>')">&lt; back to attributes</a></li>
+            <li class="back"><a href="javascript:window.location.replace('<%=backURLEscaped%>')">Back to attributes</a></li>
         </ul>
         </div>
         <%
     }
-
-StringBuffer parentLink = new StringBuffer();
-String dispParentType = request.getParameter("parent_type");
-if (dispParentType == null){
-    dispParentType = "";
-}
-else if (dispParentType.equals("DS")){
-    dispParentType = "dataset";
-    parentLink.append(request.getContextPath() + "/datasets/");
-}
-else if (dispParentType.equals("T")){
-    dispParentType = "table";
-    parentLink.append(request.getContextPath() + "/tables/");
-}
-else if (dispParentType.equals("E")){
-    dispParentType = "element";
-    parentLink.append(request.getContextPath() + "/dataelements/");
-}
-else if (dispParentType.equals("SCH")){
-    dispParentType = "schema";
-}
-else if (dispParentType.equals("SCS")){
-    dispParentType = "schema set";
-}
-
-String dispParentName = request.getParameter("parent_name");
-if (dispParentName==null){
-    dispParentName = "";
-}
-
-if (parentLink.length()>0){
-    parentLink.append(request.getParameter("parent_id"));
-}
-else if (!Util.isEmpty(parent_link)){
-    parentLink.append(parent_link);
-}
-%>
-
-<h1 style="margin-bottom:20px">Complex attribute <a href=""><%=attrName%></a> of <%=dispParentType%> <a href="<%=parentLink%>"><%=dispParentName%></a></h1>
-
+    %>
+    <form id="form1" method="post" action="complex_attr.jsp">
     <%
-    if (!mode.equals("view")){
+    if (!mode.equals("view")) {
         %>
         <div>
             <%
@@ -413,7 +400,7 @@ else if (!Util.isEmpty(parent_link)){
     </table><%
 } // if (!mode.equals("view"))
 %>
-    <div style="overflow:auto">
+    <div>
     <table cellpadding="0" cellspacing="0" class="datatable">
 
         <tr>

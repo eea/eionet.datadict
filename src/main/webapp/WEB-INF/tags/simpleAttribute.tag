@@ -13,7 +13,6 @@
  --%>
 
 <c:set var="attrMeta" value="${attributes[0]}"/>
-<c:url var="delIcon" value="/images/button_remove.gif" />
 
 <%-- Single value --%>
 <c:if test="${not attrMeta.multiValue}">
@@ -66,7 +65,7 @@
         <c:if test="${attrMeta.inputType eq 'textarea'}">
             <textarea class="smalltext" rows="${attrMeta.height}" cols="${attrMeta.width}"></textarea>
         </c:if>
-        <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
+        <a href="#" class="delLink deleteButton" title="Remove"></a>
         <br/>
     </div>
 </div>
@@ -81,7 +80,7 @@
             <c:if test="${attrMeta.inputType eq 'text'}">
                 <stripes:text name="${fieldName}[${innerLoop.index}].value" size="${attrMeta.width}" class="smalltext" />
             </c:if>
-            <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a><br>
+            <a href="#" class="delLink deleteButton" title="Remove"></a>
         </div>
     </c:forEach>
 </div>

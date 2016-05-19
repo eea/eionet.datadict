@@ -28,17 +28,26 @@ package eionet.meta.dao.domain;
  */
 public enum DatasetRegStatus {
 
-    /** */
-    INCOMPLETE("Incomplete"), CANDIDATE("Candidate"), RECORDED("Recorded"), QUALIFIED("Qualified"), RELEASED("Released");
-    /** */
-    String s;
+    INCOMPLETE("Incomplete", 1), CANDIDATE("Candidate", 2), RECORDED("Recorded", 3), QUALIFIED("Qualified", 4), RELEASED("Released", 5);
+
+    private String name;
+    private int phaseOrder;
 
     /**
      *
-     * @param s
+     * @param name
      */
-    DatasetRegStatus(String s) {
-        this.s = s;
+    DatasetRegStatus(String name, int phaseOrder) {
+        this.name = name;
+        this.phaseOrder = phaseOrder;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getPhaseOrder() {
+        return phaseOrder;
     }
 
     /*
@@ -47,17 +56,17 @@ public enum DatasetRegStatus {
      */
     @Override
     public String toString() {
-        return s;
+        return name;
     }
 
     /**
      *
-     * @param s
+     * @param name
      * @return
      */
-    public static DatasetRegStatus fromString(String s) {
+    public static DatasetRegStatus fromString(String name) {
         for (DatasetRegStatus regStatus : DatasetRegStatus.values()) {
-            if (regStatus.toString().equals(s)) {
+            if (regStatus.toString().equals(name)) {
                 return regStatus;
             }
         }

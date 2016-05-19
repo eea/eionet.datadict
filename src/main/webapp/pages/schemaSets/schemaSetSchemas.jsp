@@ -2,48 +2,59 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schema set schemas">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schema set schemas" currentSection="schemas">
 
     <stripes:layout-component name="head">
         <script type="text/javascript">
         // <![CDATA[
-            ( function($) {
-                $(document).ready(
-                    function(){
-
-                        $("#uploadSchemaLink").click(function() {
-                            $('#uploadSchemaDialog').dialog('open');
-                            return false;
-                        });
-
-                        $('#uploadSchemaDialog').dialog({
-                            autoOpen: false,
-                            width: 500
-                        });
-
-                        $("#closeUploadSchemaDialog").click(function() {
-                            $('#uploadSchemaDialog').dialog("close");
-                            return true;
-                        });
+            (function($) {
+                $(document).ready(function() {
+                    $("#toggleSelectAll").click(function() {
+                        toggleSelectAll('schemasForm');
+                        $(this).val() === "Select all" ? $("tr", "#schema").removeClass("selected") : $("tr", "#schema").addClass("selected");
+                        return false;
                     });
-            } ) ( jQuery );
+
+                    $("#uploadSchemaLink").click(function() {
+                        $('#uploadSchemaDialog').dialog('open');
+                        return false;
+                    });
+
+                    $('#uploadSchemaDialog').dialog({
+                        autoOpen: false,
+                        width: 500
+                    });
+
+                    $("#closeUploadSchemaDialog").click(function() {
+                        $('#uploadSchemaDialog').dialog("close");
+                        return true;
+                    });
+                });
+            })(jQuery);
         // ]]>
         </script>
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">
+        <h1>Edit schemas of schema set <a href="${fn:escapeXml(schemaSetUrl)}">${actionBean.schemaSet.identifier}</a></h1>
+
+        <c:if test="${actionBean.schemaSet.deprecatedStatus}">
+            <div class="system-msg">
+                <strong>Note</strong>
+                <p>This schema set is deprecated. It is not valid anymore!</p>
+            </div>
+        </c:if>
 
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
-                <li>
-                    <a href="#" id="uploadSchemaLink">Upload schema</a>
-                </li>
-                <li>
+                <li class="back">
                     <stripes:link beanclass="${actionBean['class'].name}">Back to schema set
                         <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                         <stripes:param name="workingCopy" value="${actionBean.schemaSet.workingCopy}"/>
                     </stripes:link>
+                </li>
+                <li class="upload">
+                    <a href="#" id="uploadSchemaLink">Upload schema</a>
                 </li>
             </ul>
         </div>
@@ -53,21 +64,12 @@
             <stripes:param name="workingCopy" value="${actionBean.schemaSet.workingCopy}"/>
         </stripes:url>
 
-        <h1>Edit schemas of schema set <a href="${fn:escapeXml(schemaSetUrl)}">${actionBean.schemaSet.identifier}</a></h1>
-
-        <c:if test="${actionBean.schemaSet.deprecatedStatus}">
-            <div class="note-msg">
-                <strong>Note</strong>
-                <p>This schema set is deprecated. It is not valid anymore!</p>
-            </div>
-        </c:if>
-
         <c:if test="${not empty actionBean.schemas}">
             <stripes:form id="schemasForm" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
                 <stripes:hidden name="schemaSet.id"/>
-                <display:table name="${actionBean.schemas}" class="datatable" id="schema" style="width:80%">
+                <display:table name="${actionBean.schemas}" class="datatable results" id="schema">
                     <display:column>
-                        <stripes:checkbox name="schemaIds" value="${schema.id}" />
+                        <stripes:checkbox class="selectable" name="schemaIds" value="${schema.id}" />
                     </display:column>
                     <display:column title="File name">
                         <stripes:link beanclass="eionet.web.action.SchemaActionBean" title="Open schema details">
@@ -81,7 +83,7 @@
                 </display:table>
 
                 <stripes:submit name="deleteSchemas" value="Delete" />
-                <input type="button" onclick="toggleSelectAll('schemasForm');return false" value="Select all" name="selectAll">
+                <input type="button" id="toggleSelectAll" value="Select all" name="selectAll">
 
             </stripes:form>
         </c:if>

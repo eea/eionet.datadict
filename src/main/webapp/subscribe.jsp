@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%@ page import="java.util.*" %>
 <%@ page import="java.sql.*" %>
@@ -98,7 +99,8 @@ finally {
     <jsp:include page="nlocation.jsp" flush="true">
         <jsp:param name="name" value="Subscribe"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <c:set var="currentSection" value="subscribe" />
+    <%@ include file="/pages/common/navigation.jsp" %>
 
     <div id="workarea">
 
@@ -108,7 +110,7 @@ finally {
         if (user==null){
             %>
             <div class="error-msg">
-                You must <a href="<%=SecurityUtil.getLoginURL(request)%>">log in</a> to be able to subscribe to any notifications!
+                <strong>You must <a href="<%=SecurityUtil.getLoginURL(request)%>">log in</a> to be able to subscribe to any notifications!</strong>
             </div>
             <%
         }
@@ -121,15 +123,15 @@ finally {
                    if (success!=null){
                        session.removeAttribute("SUCCESS");
                        %>
-                       <div class="system-msg">Subscription successful!</div>
+                       <div class="system-msg"><strong>Subscription successful!</strong></div>
                        <%
                    }
                    String subscriptionsUrl = Props.getProperty(Subscriber.PROP_UNS_SUBSCRIPTIONS_URL);
                    subscriptionsUrl = subscriptionsUrl + Props.getProperty(Subscriber.PROP_UNS_CHANNEL_NAME);
                    %>
 
-                <div class="note-msg">
-                       <strong>Note</strong>
+                <div class="system-msg">
+                    <strong>Note</strong>
                     <p>This will make an additional subscription even if you have subscribed before.
                     To change or delete your existing subscriptions, go to the <a href="<%=subscriptionsUrl%>">Unified Notification Service (UNS)</a>.
                     </p>

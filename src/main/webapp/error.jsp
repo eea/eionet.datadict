@@ -11,8 +11,6 @@
 
     request.setCharacterEncoding("UTF-8");
 
-    DDUser user = SecurityUtil.getUser(request);
-
     String bodyClass = request.getParameter("class");
     boolean isPopup = bodyClass!=null && bodyClass.equals("popup");
 %>
@@ -44,11 +42,11 @@ else{
         <jsp:include page="nlocation.jsp" flush="true">
             <jsp:param name="isError" value="true"/>
         </jsp:include>
-        <%@ include file="nmenu.jsp" %>
+        <%@ include file="/pages/common/navigation.jsp" %>
         <div id="workarea"><%
 }
 %>
-
+        <h1>Error page</h1>
         <form id="form1" action="index" method="get">
 
             <%
@@ -67,18 +65,20 @@ else{
             <%
             if (!isPopup){
                 %>
-                <div id="operations">
+                <div id="drop-operations">
                     <ul>
-                        <li>
-                            <a href="<%=backLink%>">&lt; back</a>
+                        <li class="back">
+                            <a href="<%=backLink%>">Back</a>
                         </li>
                     </ul>
                 </div><%
             }
             %>
 
-            <h1>Error:</h1>
-            <p><strong><%=StringEscapeUtils.escapeXml(msg)%></strong></p>
+            <div class="error-msg">
+                <strong>Error</strong><br />
+                <%=StringEscapeUtils.escapeXml(msg)%>
+            </div>
             <% if (elements != null) {
                     for (DataElement elem : elements) {  %>
                         <a href="<%=request.getContextPath()%>/dataelements/<%=elem.getId()%>"><%=elem.getIdentifier()%></a><br/>

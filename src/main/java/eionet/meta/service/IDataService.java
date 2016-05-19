@@ -30,7 +30,6 @@ import eionet.meta.dao.domain.InferenceRule;
 import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.DataElementsFilter;
-import eionet.meta.service.data.DataElementsResult;
 
 import java.util.Collection;
 import java.util.List;
@@ -97,10 +96,10 @@ public interface IDataService {
      * Search data elements.
      *
      * @param filter
-     * @return
+     * @return list of data elements
      * @throws ServiceException
      */
-    DataElementsResult searchDataElements(DataElementsFilter filter) throws ServiceException;
+    List<DataElement> searchDataElements(DataElementsFilter filter) throws ServiceException;
     
     /**
      * Returns data element's fixed values

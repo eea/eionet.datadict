@@ -5,7 +5,7 @@
 <%@page import="eionet.meta.dao.domain.SchemaSet"%>
 <%@page import="eionet.meta.DElemAttribute"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Add schema set">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Add schema set" currentSection="schemas">
 
     <stripes:layout-component name="contents">
         <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
@@ -15,20 +15,15 @@
         <div id="outerframe">
             <table class="datatable">
                 <colgroup>
-                    <col style="width:26%"/>
+                    <col style="width:30%"/>
                     <col style="width:4%"/>
-                    <col style="width:4%"/>
-                    <col style="width:62%"/>
+                    <col style="width:66%"/>
                 </colgroup>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Identifier
+                        <a class="helpButton" href="/help.jsp?screen=dataset&amp;area=identifier"></a>
                     </th>
-                    <td class="simple_attr_help">
-                        <a class="helpButton" href="/help.jsp?screen=dataset&amp;area=identifier">
-                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                        </a>
-                    </td>
                     <td class="simple_attr_help">
                         <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                     </td>
@@ -42,12 +37,8 @@
                         <tr>
                             <th scope="row" class="scope-row simple_attr_title">
                                 <c:out value="${attribute.shortName}"/>
+                                <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE"></a>
                             </th>
-                            <td class="simple_attr_help">
-                                <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE">
-                                    <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                                </a>
-                            </td>
                             <td class="simple_attr_help">
                                 <c:if test="${attribute.obligation=='M'}">
                                     <img style="border:0" src="${pageContext.request.contextPath}/images/mandatory.gif" width="16" height="16" alt=""/>

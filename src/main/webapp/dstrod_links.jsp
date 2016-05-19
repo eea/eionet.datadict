@@ -1,16 +1,14 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <%!private static final String SUBMIT_ADD_NEW = "Add new";%>
 <%!private static final String SUBMIT_REMOVE_SELECTED = "Remove selected";%>
 
 <%!class RodLinkComparator implements Comparator {
 
-    /**
-    *
-    */
     public int compare(Object o1, Object o2){
-
         Hashtable hash1 = (Hashtable)o1;
         Hashtable hash2 = (Hashtable)o2;
         String o1Title = (String)hash1.get("ra-title");
@@ -85,7 +83,6 @@ try{
             <script type="text/javascript">
             // <![CDATA[
                 function submitAdd(raID, raTitle, liID, liTitle){
-
                     document.forms["rodlinks"].elements["mode"].value = "add";
                     document.forms["rodlinks"].elements["ra_id"].value = raID;
                     document.forms["rodlinks"].elements["ra_title"].value = raTitle;
@@ -102,69 +99,76 @@ try{
                 <jsp:param name="name" value="Rod links"/>
                 <jsp:param name="helpscreen" value="dataset_rod"/>
             </jsp:include>
-            <%@ include file="nmenu.jsp" %>
+            <c:set var="currentSection" value="datasets" />
+            <%@ include file="/pages/common/navigation.jsp" %>
             <div id="workarea"> <!-- start work area -->
+                <h1>ROD obligations corresponding to <a href="<%=request.getContextPath()%>/datasets/<%=dstID%>"><%=Util.processForDisplay(dstName)%></a> dataset</h1>
                 <form id="rodlinks" action="dstrod_links.jsp" method="post">
-                    <h1>ROD obligations corresponding to <a href="<%=request.getContextPath()%>/datasets/<%=dstID%>"><%=Util.processForDisplay(dstName)%></a> dataset</h1>
-                    <div style="float:left;margin-top:20px;">
-                        <input type="submit" name="submit" value="<%=SUBMIT_ADD_NEW%>"/>
+                    <div id="drop-operations">
+                        <p>
+                            <input type="submit" name="submit" value="<%=SUBMIT_ADD_NEW%>" class="mediumbuttonb" />
+                            <%
+                            if (rodLinks!=null && rodLinks.size()>0){ %>
+                                <input type="submit" name="submit" value="<%=SUBMIT_REMOVE_SELECTED%>" class="mediumbuttonb" /><%
+                            }
+                            %>
+                        </p>
+                    </div>
+                    <% if (rodLinks!=null && rodLinks.size()>0) { %>
+                    <table class="datatable results">
+                        <thead>
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th>Title</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                         <%
-                        if (rodLinks!=null && rodLinks.size()>0){ %>
-                            <input type="submit" name="submit" value="<%=SUBMIT_REMOVE_SELECTED%>"/><%
+                            for (int i=0; rodLinks!=null && i<rodLinks.size(); i++) {
+                                Hashtable rodLink = (Hashtable)rodLinks.get(i);
+                                String raID = (String)rodLink.get("ra-id");
+                                String raTitle = (String)rodLink.get("ra-title");
+                                String raDetails = (String)rodLink.get("ra-url");
+                                String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
+                        %>
+                            <tr class="<%=zebraClass%>">
+                                <td>
+                                    <input class="selectable" type="checkbox" name="del_id" value="<%=raID%>"/>
+                                </td>
+                                <td>
+                                    <%=Util.processForDisplay(raTitle)%>
+                                </td>
+                                <td>
+                                    <a href="<%=Util.processForDisplay(raDetails, true)%>"><%=Util.processForDisplay(raDetails, true)%></a>
+                                </td>
+                            </tr>
+                        <%
                         }
                         %>
+                        </tbody>
+                    </table>
+                    <% } else  { %>
+                        <p class="not-found">No ROD obligations found.</p>
+                    <% } %>    
+                    <div style="display:none">
+                        <input type="hidden" name="mode" value="rmv"/>
+                        <input type="hidden" name="dst_id" value="<%=dstID%>"/>
+                        <input type="hidden" name="dst_idf" value="<%=Util.processForDisplay(dstIdf, true)%>"/>
+                        <input type="hidden" name="dst_name" value="<%=Util.processForDisplay(dstName, true)%>"/>
+
+                        <input type="hidden" name="ra_id" value=""/>
+                        <input type="hidden" name="ra_title" value=""/>
+                        <input type="hidden" name="li_id" value=""/>
+                        <input type="hidden" name="li_title" value=""/>
+
+                        <input type="hidden" name="client" value="webrod"/>
+                        <input type="hidden" name="method" value="get_activities"/>
                     </div>
-                                <table cellspacing="0" cellpadding="0" class="datatable" style="margin-top:0;width:auto;clear:both">
-                                    <tr>
-                                        <th>&nbsp;</th>
-                                        <th style="padding-left:5px;padding-right:10px;border-left:0">Title</th>
-                                        <th style="padding-left:5px;padding-right:10px;">Details</th>
-                                    </tr>
-                                    <%
-                                    int displayed = 0;
-                                    for (int i=0; rodLinks!=null && i<rodLinks.size(); i++){
-
-                                        Hashtable rodLink = (Hashtable)rodLinks.get(i);
-                                        String raID = (String)rodLink.get("ra-id");
-                                        String raTitle = (String)rodLink.get("ra-title");
-                                        String raDetails = (String)rodLink.get("ra-url");
-
-                                        String colorAttr = displayed % 2 != 0 ? "bgcolor=#CCCCCC" : "";
-                                        %>
-                                        <tr>
-                                            <td <%=colorAttr%>>
-                                                <input type="checkbox" name="del_id" value="<%=raID%>"/>
-                                            </td>
-                                            <td style="padding-left:5;padding-right:10" <%=colorAttr%>>
-                                                <%=Util.processForDisplay(raTitle)%>
-                                            </td>
-                                            <td style="padding-left:5;padding-right:10" <%=colorAttr%>>
-                                                <a href="<%=Util.processForDisplay(raDetails, true)%>"><%=Util.processForDisplay(raDetails, true)%></a>
-                                            </td>
-                                        </tr>
-                                        <%
-                                        displayed++;
-                                    }
-                                    %>
-                                </table>
-                                <div style="display:none">
-                                    <input type="hidden" name="mode" value="rmv"/>
-                                    <input type="hidden" name="dst_id" value="<%=dstID%>"/>
-                                    <input type="hidden" name="dst_idf" value="<%=Util.processForDisplay(dstIdf, true)%>"/>
-                                    <input type="hidden" name="dst_name" value="<%=Util.processForDisplay(dstName, true)%>"/>
-
-                                    <input type="hidden" name="ra_id" value=""/>
-                                    <input type="hidden" name="ra_title" value=""/>
-                                    <input type="hidden" name="li_id" value=""/>
-                                    <input type="hidden" name="li_title" value=""/>
-
-                                    <input type="hidden" name="client" value="webrod"/>
-                                    <input type="hidden" name="method" value="get_activities"/>
-                                </div>
-                            </form>
-                        </div> <!-- workarea -->
-                        </div> <!-- container -->
-                        <%@ include file="footer.jsp" %>
+                </form>
+            </div> <!-- workarea -->
+            </div> <!-- container -->
+            <%@ include file="footer.jsp" %>
         </body>
     </html>
 

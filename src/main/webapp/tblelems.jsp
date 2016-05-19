@@ -1,6 +1,6 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="history.jsp" %>
 
 <%!
@@ -357,7 +357,7 @@
 
             pickMode = "copy";
             var url="search.jsp?ctx=popup&noncommon";
-            wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+            wAdd = window.open(url,"Search","height=800,width=1200,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
             if (window.focus){
                 wAdd.focus();
             }
@@ -366,7 +366,7 @@
         function linkElem(){
             pickMode = "link";
             var url="search.jsp?ctx=popup&common=&link=&exclude=" + document.forms["form1"].str_elem_ids.value;
-            wLink = window.open(url,"Search","height=500,width=700,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
+            wLink = window.open(url,"Search","height=800,width=1200,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
             if (window.focus){
                 wLink.focus();
             }
@@ -379,7 +379,7 @@
             rplcId = elmId;
             rplcPos = position;
             var url="common_elms.jsp?ctx=popup&search_precision=exact&idfier=" + elmIdf + "&newerThan=" + elmId;
-            wLink = window.open(url,"Search","height=500,width=700,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
+            wLink = window.open(url,"Search","height=800,width=1200,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
             if (window.focus){
                 wLink.focus();
             }
@@ -447,14 +447,15 @@
         <jsp:param name="name" value="Table elements"/>
         <jsp:param name="helpscreen" value="table_elements"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <c:set var="currentSection" value="dataElements" />
+    <%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
 
 <%
 String messages = RequestMessages.get(request, RequestMessages.system, RequestMessages.htmlLineBreak);
 if (messages.trim().length()>0){
     %>
-    <div class="system-msg"><%=messages%></div><%
+    <div class="system-msg"><strong><%=messages%></strong></div><%
 }
 %>
 

@@ -2,80 +2,14 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabulary">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabulary" currentSection="vocabularies">
 
     <stripes:layout-component name="contents">
-
-        <div id="drop-operations">
-            <h2>Operations:</h2>
-            <ul>
-                <li>
-                    <stripes:link beanclass="eionet.web.action.VocabularyFoldersActionBean">
-                        <stripes:param name="folderId" value="${actionBean.vocabularyFolder.folderId}" />
-                        <stripes:param name="expand" value="true" />
-                        <stripes:param name="expanded" value="" />
-                                Back to set
-                    </stripes:link>
-                </li>
-                <c:if test="${not empty actionBean.user}">
-                  <c:if test="${not actionBean.vocabularyFolder.siteCodeType}">
-                      <li>
-                          <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">
-                              <stripes:param name="copyId" value="${actionBean.vocabularyFolder.id}" />
-                              Create new copy
-                          </stripes:link>
-                      </li>
-                  </c:if>
-                  <c:if test="${actionBean.userWorkingCopy}">
-                  <li>
-                      <a href="#" id="addNewConceptLink">Add new concept</a>
-                  </li>
-                  <li>
-                      <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="edit">
-                          <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                          <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                          <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                          Edit vocabulary
-                      </stripes:link>
-                  </li>
-                  <li>
-                      <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkIn">
-                          <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
-                          <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                          <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                          <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                          Check in
-                      </stripes:link>
-                  </li>
-                  <li>
-                      <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="undoCheckOut">
-                          <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
-                          <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                          <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                          Undo checkout
-                      </stripes:link>
-                  </li>
-                  </c:if>
-                  <c:if test="${not actionBean.vocabularyFolder.workingCopy}">
-                  <li>
-                      <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkOut">
-                          <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
-                          <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                          <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                          <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                          Check out
-                      </stripes:link>
-                  </li>
-                  </c:if>
-                </c:if>
-            </ul>
-        </div>
-
         <h1>Vocabulary: <em><c:out value="${actionBean.vocabularyFolder.label}" /></em></h1>
 
         <c:if test="${actionBean.vocabularyFolder.workingCopy && actionBean.vocabularyFolder.siteCodeType}">
-            <div class="note-msg">
-                <strong>Notice</strong>
+            <div class="system-msg">
+                <strong>Note</strong>
                 <p>
                 For checked out site codes, vocabulary concepts are not visible. To view them, see the
                 <stripes:link href="/services/siteCodes">site codes page</stripes:link>.
@@ -84,7 +18,7 @@
         </c:if>
 
         <c:if test="${actionBean.checkedOutByUser}">
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>You have a
                     <stripes:link beanclass="${actionBean['class'].name}" event="viewWorkingCopy">
@@ -95,61 +29,114 @@
                     </stripes:link> of this vocabulary!</p>
             </div>
         </c:if>
+        
+        <div id="drop-operations">
+            <ul>
+                <li class="back">
+                    <stripes:link beanclass="eionet.web.action.VocabularyFoldersActionBean">
+                        <stripes:param name="folderId" value="${actionBean.vocabularyFolder.folderId}" />
+                        <stripes:param name="expand" value="true" />
+                        <stripes:param name="expanded" value="" />
+                            Back to set
+                    </stripes:link>
+                </li>
+                <c:if test="${not empty actionBean.user}">
+                    <c:if test="${not actionBean.vocabularyFolder.siteCodeType}">
+                        <li class="create">
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">
+                                <stripes:param name="copyId" value="${actionBean.vocabularyFolder.id}" />
+                                Create new copy
+                            </stripes:link>
+                        </li>
+                    </c:if>
+                    <c:if test="${actionBean.userWorkingCopy}">
+                        <li class="add">
+                            <a href="#" id="addNewConceptLink">Add new concept</a>
+                        </li>
+                        <li class="edit">
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="edit">
+                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                                Edit vocabulary
+                            </stripes:link>
+                        </li>
+                        <li class="checkin">
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkIn">
+                                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                                Check in
+                            </stripes:link>
+                        </li>
+                        <li class="undo">
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="undoCheckOut">
+                                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                Undo checkout
+                            </stripes:link>
+                        </li>
+                    </c:if>
+                    <c:if test="${not actionBean.vocabularyFolder.workingCopy}">
+                        <li class="checkout">
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkOut">
+                                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                                Check out
+                            </stripes:link>
+                        </li>
+                    </c:if>
+                </c:if>
+            </ul>
+        </div>
 
         <c:if test="${not actionBean.vocabularyFolder.draftStatus && not actionBean.vocabularyFolder.workingCopy}">
-        <c:url var="rdfIconUrl" value="/images/rdf-icon.gif" />
-        <c:url var="csvIconUrl" value="/images/csv_icon_sm.gif" />
-        <c:url var="codelistIconUrl" value="/images/inspire_icon.gif" />
-        <c:url var="jsonIconUrl" value="/images/json_file_icon.gif" />
-        <div id="createbox" style="clear:right">
-            <table id="outputsmenu">
-                <tr>
-                    <td style="width:73%">Get RDF output of this vocabulary</td>
-                    <td style="width:27%">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="rdf" title="Export RDF">
+            <script type="text/javascript">
+                jQuery(function() {
+                    applyExportOptionsToggle();
+                });
+            </script>
+            <div id="createbox">
+                <ul>
+                    <li>
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="rdf" title="Export RDF" class="rdf">
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                            <img src="${rdfIconUrl}" alt="" />
+                            Get RDF output of this vocabulary
                         </stripes:link>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width:73%">Get CSV output of this vocabulary</td>
-                    <td style="width:27%">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="csv" title="Export CSV">
+                    </li>
+                    <li>
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="csv" title="Export CSV" class="csv">
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                            <img src="${csvIconUrl}" alt="" />
+                            Get CSV output of this vocabulary
                         </stripes:link>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width:73%">Get XML output in INSPIRE codelist format</td>
-                    <td style="width:27%">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="codelist" title="Export XML in INSPIRE codelist format">
+                    </li>
+                    <li>
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="codelist" title="Export XML in INSPIRE codelist format" class="xml">
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                            <img src="${codelistIconUrl}" alt="" />
+                            Get XML output in INSPIRE codelist format
                         </stripes:link>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width:73%">Get JSON-LD output of this vocabulary</td>
-                    <td style="width:27%">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="json" title="Export JSON">
+                    </li>
+                    <li>
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="json" title="Export JSON" class="json">
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                            <img src="${jsonIconUrl}" alt="" />
+                            Get JSON-LD output of this vocabulary
                         </stripes:link>
-                    </td>
-                </tr>
-            </table>
-        </div>
+                    </li>
+                </table>
+            </div>
         </c:if>
 
         <!-- Vocabulary folder -->
-        <div id="outerframe" style="padding-top:20px">
-            <table class="datatable">
+        <div id="outerframe">
+            <table class="datatable results">
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Folder
@@ -242,67 +229,85 @@
         <!-- Vocabulary concepts search -->
         <h2>Vocabulary concepts</h2>
         <stripes:form method="get" id="searchForm" beanclass="${actionBean['class'].name}">
-            <div id="searchframe">
-                <stripes:hidden name="vocabularyFolder.folderName" />
-                <stripes:hidden name="vocabularyFolder.identifier" />
-                <stripes:hidden name="vocabularyFolder.workingCopy" />
-                <fieldset id="vocabularyConceptFilters">
-                    <legend><a class="showHide expanded" href="#">Filters</a></legend>
-                    <div class="togglable" id="filterList">
-                        <c:if test="${fn:length(actionBean.boundElements)>0}">
-                            <link type="text/css" media="all" href="<c:url value="/css/spinner.css"/>"  rel="stylesheet" />
-                            <div class="addFilter">
-                                <label for="addFilter"><span style="white-space:nowrap;">Add filter</span></label>
-                                <select id="addFilter">
-                                    <option value=""></option>
-                                    <c:forEach var="boundElement" items="${actionBean.boundElements}">
-                                        <option value="${boundElement.id}"<c:if test="${ddfn:contains(actionBean.boundElementFilterIds, boundElement.id)}">disabled="disabled"</c:if>><c:out value="${boundElement.identifier}" /></option>
-                                    </c:forEach>
-                                </select>
-                            </div>
-                        </c:if>
-                        <span class="filterItem">
-                            <label for="status"><span style="white-space:nowrap;">Status</span></label>
+            <div id="filters">
+                <table class="filter">
+                    <stripes:hidden name="vocabularyFolder.folderName" />
+                    <stripes:hidden name="vocabularyFolder.identifier" />
+                    <stripes:hidden name="vocabularyFolder.workingCopy" />
+                    <tr>
+                        <td class="label">
+                            <label for="status">Status</label>
+                        </td>
+                        <td class="input">
                             <stripes:select name="filter.conceptStatusInt" id="status">
-                                <stripes:option value="255" label="All concepts"/>
+                                <stripes:option value="255" label="All"/>
                                 <stripes:options-collection collection="<%=eionet.meta.dao.domain.StandardGenericStatus.valuesAsList()%>" label="label" value="value"/>
                             </stripes:select>
-                        </span>
-                        <span class="filterItem">
-                            <label for="filterText"><span style="white-space:nowrap;">Filtering text</span></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <label for="filterText">Filtering text</label>
+                        </td>
+                        <td class="input">
                             <stripes:text class="smalltext" size="30" name="filter.text" id="filterText"/>
-                        </span>
-                        <c:forEach items="${actionBean.boundElementFilters}" var="boundElementFilter" varStatus="loop">
-                            <span class="filterItem boundElementFilter" data-filter-id="${boundElementFilter.id}">
-                                <label for="boundElementFilter-${boundElementFilter.id}"><span style="white-space:nowrap;"><c:out value="${boundElementFilter.label}" /></span></label>
+                        </td>
+                    </tr>
+                    <c:forEach items="${actionBean.boundElementFilters}" var="boundElementFilter" varStatus="loop">
+                        <tr class="boundElementFilter" data-filter-id="${boundElementFilter.id}">
+                            <td class="label">
+                                <label for="boundElementFilter-${boundElementFilter.id}"><c:out value="${boundElementFilter.label}" /></label>
+                            </td>
+                            <td class="input">
                                 <stripes:hidden name="filter.boundElements[${loop.index}].id" value="${boundElementFilter.id}" class="boundElementFilterId" />
                                 <stripes:select name="filter.boundElements[${loop.index}].value" class="boundElementFilterSelect">
                                     <stripes:option value="" label="All" />
                                     <stripes:options-map map="${boundElementFilter.options}" />
                                 </stripes:select>
-                                <c:url var="delIcon" value="/images/button_remove.gif" />
-                                <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
-                            </span>
-                        </c:forEach>
-                    </div>
-                </fieldset>
-                <fieldset id="vovabularyConceptFilterOptions">
-                    <legend><a class="showHide" href="#">Options</a></legend>
-                    <div class="togglable" id="optionsList">
-                        <span class="optionsItem">
-                            <label for="visibleColumns"><span style="white-space:nowrap;">Columns</span></label>
-                            <stripes:select name="filter.visibleColumns" id="visibleColumns" multiple="multiple" class="buckets">
-                                <stripes:options-collection collection="${actionBean.columns}" />
-                            </stripes:select>
-                        </span>
-                        <span class="optionsItem">
-                            <label for="visibleDefinition"><span style="white-space:nowrap;">Show definition</span></label>
+                                <a href="#" class="deleteButton" title="Remove from search criteria"></a>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <c:if test="${fn:length(actionBean.boundElements)>0}">
+                        <link type="text/css" media="all" href="<c:url value="/css/spinner.css"/>"  rel="stylesheet" />
+                        <tr id="addFilterRow">
+                            <td></td>
+                            <td class="input">
+                                <select id="addFilter">
+                                    <option value="">Add criteria</option>
+                                    <c:forEach var="boundElement" items="${actionBean.boundElements}">
+                                        <option value="${boundElement.id}"<c:if test="${ddfn:contains(actionBean.boundElementFilterIds, boundElement.id)}">disabled="disabled"</c:if>><c:out value="${boundElement.identifier}" /></option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                    </c:if>
+                    <tr>
+                        <td class="label">
+                            <label>Columns</label>
+                        </td>
+                        <td class="input bordered multi-select-container">
+                            <c:forEach var="column" items="${actionBean.columns}">
+                                <label for="${fn:escapeXml(column)}" class="smallfont">
+                                    <stripes:checkbox name="filter.visibleColumns" id="${fn:escapeXml(column)}" value="${fn:escapeXml(column)}" />
+                                    ${fn:escapeXml(column)}
+                                </label>
+                            </c:forEach>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <label for="visibleDefinition">Show definition</label>
+                        </td>
+                        <td class="input bordered">
                             <stripes:checkbox name="filter.visibleDefinition" id="visibleDefinition" />
-                        </span>
-                    </div>
-                </fieldset>
+                            <label for="visibleDefinition" class="smallfont">Yes</label>
+                        </td>
+                    </tr>
+                </table>
                 <p class="actions">
-                    <stripes:submit name="view" value="Search" class="mediumbuttonb"/>
+                    <stripes:submit name="view" value="Search" class="mediumbuttonb searchButton" />
+                    <input class="mediumbuttonb" type="reset" value="Reset" />
                 </p>
             </div>
             <script type="text/javascript" src="<c:url value="/scripts/jquery.balloon.min.js" />"></script>
@@ -310,47 +315,45 @@
             // <![CDATA[
                 (function($) {
                     $(document).ready(function() {
-                        $("#optionsList").hide();
-                        $(".showHide").click(function() {
-                            $(this).toggleClass("expanded");
-                            $(".togglable", $(this).closest("fieldset")).slideToggle();
-                            return false;
-                        });
+                        applySearchToggle("searchForm");
 
                         $("#addFilter").change(function() {
                             if ($(this).val()==="") {
                                 return;
                             }
 
+                            var filterValue = $(this).val();
+                            var $selectedOption = $("option:selected", $(this));
                             <stripes:url var="url" beanclass="${actionBean['class'].name}"></stripes:url>
-                            $("#filterList").append('<div class="spinner-loader">Loading...</div>');
+                            
+                            $("#addFilterRow").before('<tr id="spinner-'+ filterValue + '"><td><div class="spinner-loader">Loading...</div></td></tr>');
+
                             $.ajax({
                                 url: '${url}',
                                 data: { 
-                                    'boundElementFilterId': $(this).val(),
+                                    'boundElementFilterId': filterValue,
                                     'boundElementFilterIndex': $(".boundElementFilter").length,
                                     'vocabularyFolderId': ${actionBean.vocabularyFolder.id},
                                     '_eventName': 'constructBoundElementFilter'
                                 },
                                 success:function(data) {
-                                    $("div.spinner-loader", "#filterList").remove();
-                                    $("#filterList").append(data);
+                                    $("tr#spinner-" + filterValue).remove();
+                                    $("#addFilterRow").before(data);
+                                    $selectedOption.prop("disabled", true);
                                 },
                                 error: function() {
-                                    $("div.spinner-loader", "#filterList").removeClass().addClass("ajaxError").text("Something went wrong. Please try again.");
-                                    setTimeout(function(){
-                                        $("div.ajaxError", "#filterList").remove();
+                                    $("div.spinner-loader", "tr#spinner-" + filterValue).removeClass().addClass("ajaxError").text("Something went wrong. Please try again.");
+                                    setTimeout(function() {
+                                        $("tr#spinner-" + filterValue).remove();
                                     }, 2000);
                                 }
                             });
 
-                            var $selectedOption = $("#addFilter option:selected");
-                            $selectedOption.prop("disabled", true);
                             $(this).val("");
                         });
-                        
-                        $("a.delLink").live("click", function() {
-                            var $filterItem = $(this).closest("span.filterItem");
+
+                        $("table.filter").delegate("a.deleteButton", "click", function() {
+                            var $filterItem = $(this).closest("tr.boundElementFilter");
                             var filterId = $filterItem.data("filterId");
                             $('#addFilter option[value=' + filterId +']').prop('disabled', false);
                             $filterItem.remove();
@@ -362,7 +365,7 @@
                             $('.boundElementFilterSelect').each(function(index) {
                                 $(this).attr("name", "filter.boundElements[" + index + "].value");
                             });
-                            
+
                             return false;
                         });
 
@@ -375,118 +378,17 @@
                                 width: "30%"
                             }
                         });
-
-                        applyMultipleSelectDropdowns();
-                        function applyMultipleSelectDropdowns() {
-                            //private functions
-                            function initMultipleSelects(originalSelect, fromSelect, toSelect) {
-                                for(var i = 0, length = originalSelect.options.length; i<length; i++) {
-                                    var option = originalSelect.options[i];
-                                    var newOption = option.cloneNode(true);
-                                    newOption.selected=false;
-                                    if (option.selected) {
-                                        toSelect.appendChild(newOption);
-                                    } else {
-                                        fromSelect.appendChild(newOption);
-                                    }
-                                }
-                            }
-
-                            function transferSelected(originalSelect, fromSelect, toSelect) {
-                                for(var i = fromSelect.options.length - 1; i>=0; i--) {
-                                    var option = fromSelect.options[i];
-                                    if (option.selected) {
-                                        toSelect.appendChild(fromSelect.removeChild(option));
-                                    }
-                                }
-                            }
-
-                            function applySelected(originalSelect, cloneSelect) {
-                                for(var i=0, length=originalSelect.options.length; i<length; i++) {
-                                    var selectedOption = false;
-                                    for(var j=0, lengthj=cloneSelect.options.length; j<lengthj; j++) {
-                                        if (originalSelect.options[i].value==cloneSelect.options[j].value) {
-                                            selectedOption = true;
-                                            break;
-                                        }
-                                    }
-                                    originalSelect.options[i].selected = selectedOption;
-                                }
-                            }
-
-                            function findSelect(button)    {return button.parentNode.parentNode.getElementsByTagName("select")[0]}
-                            function findFromSelect(button){return button.parentNode.parentNode.getElementsByTagName("select")[1]}
-                            function findToSelect(button)  {return button.parentNode.parentNode.getElementsByTagName("select")[2]}
-
-                            var selects = document.getElementsByTagName("select");
-                            for (var i = selects.length-1; i >=0; i--) {
-                                if (selects[i].getAttribute("multiple") &&
-                                    selects[i].className.indexOf("buckets")>=0) {
-                                    var select = selects[i];
-                                    select.style.display='none';
-
-                                    var fromSelect;
-                                    var toSelect;
-
-                                    /*hack for IE which has a problem creating form elements http://www.webdeveloper.com/forum/archive/index.php/t-34494.html */
-                                    try{
-                                        fromSelect = document.createElement('<select multiple>');
-                                        toSelect = document.createElement('<select multiple>');
-                                    } catch(e) {
-                                        fromSelect = document.createElement('select');
-                                        toSelect = document.createElement('select');
-                                    }
-
-                                    fromSelect.setAttribute("multiple", "multiple");
-                                    fromSelect.multiple = true;
-                                    fromSelect.setAttribute("size", 7);
-                                    fromSelect.className="left";
-                                    toSelect.setAttribute("multiple", "multiple");
-                                    toSelect.setAttribute("size", 7);
-                                    toSelect.multiple = true;
-                                    toSelect.className="right";
-
-                                    initMultipleSelects(select, fromSelect, toSelect);
-
-                                    var removeButton = document.createElement("input");
-                                    var addButton = document.createElement("input");
-                                    removeButton.setAttribute("type", "button");
-                                    removeButton.setAttribute("value", "Remove");
-                                    removeButton.className="button moveup";
-                                    addButton.setAttribute("type", "button");
-                                    addButton.setAttribute("value", "Add");
-                                    addButton.className="button movedown";
-                                    var par = document.createElement("p");
-                                    par.className="middle";
-                                    removeButton.onclick=function() {
-                                        transferSelected(findSelect(this), findToSelect(this), findFromSelect(this));
-                                        applySelected(findSelect(this), findToSelect(this));
-                                    };
-                                    addButton.onclick=function() {
-                                        transferSelected(findSelect(this), findFromSelect(this), findToSelect(this));
-                                        applySelected(findSelect(this), findToSelect(this));
-                                    };
-                                    select.parentNode.appendChild(fromSelect);
-                                    par.appendChild(addButton);
-                                    par.appendChild(removeButton);
-                                    select.parentNode.appendChild(par);
-                                    select.parentNode.appendChild(toSelect);
-                                    select.parentNode.className='cartcontainer';
-                                }
-                            }
-                        }
-                    });
+                   }); 
                 }) (jQuery);
             // ]]>
             </script>
         </stripes:form>
         <%-- Vocabulary concepts --%>
         <div class="vocabularyConceptResults" style="overflow: auto;">
-        <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept"
+        <display:table name="actionBean.vocabularyConcepts" class="datatable results" id="concept"
             style="width:100%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view"
             excludedParams="view vocabularyFolder.identifier vocabularyFolder.folderName">
-            <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
-            <display:setProperty name="paging.banner.placement" value="both" />
+            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No vocabulary concepts found.</p>" />
             <display:setProperty name="paging.banner.item_name" value="concept" />
             <display:setProperty name="paging.banner.items_name" value="concepts" />
 
@@ -595,7 +497,7 @@
 
     <c:if test="${not empty actionBean.vocabularyFolderVersions}">
         <h2 id="otherVersions">Other versions of this vocabulary</h2>
-        <display:table name="${actionBean.vocabularyFolderVersions}" class="datatable" id="item" style="width:100%">
+        <display:table name="${actionBean.vocabularyFolderVersions}" class="datatable results" id="item" style="width:100%">
             <display:column title="Label">
                 <c:choose>
                     <c:when test="${item.draftStatus && empty actionBean.user}">

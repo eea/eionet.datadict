@@ -118,7 +118,8 @@ String disabled = user == null ? "disabled" : "";
         <jsp:param name="name" value="Foreign key relation"/>
         <jsp:param name="helpscreen" value="foreign_key_rel"/>
     </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="dataElements" />
+<%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
     <form id="form1" method="post" action="fk_relation.jsp">
   <h1>Foreign key relation</h1>
@@ -175,9 +176,7 @@ String disabled = user == null ? "disabled" : "";
                         }
                         %>
                     </select>&nbsp;
-                    <a class="helpButton" href="help.jsp?screen=foreign_key_rel&amp;area=cardinality">
-                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Get help on this item"/>
-                    </a>
+                    <a class="helpButton" href="help.jsp?screen=foreign_key_rel&amp;area=cardinality"></a>
                 </td>
             </tr>
 

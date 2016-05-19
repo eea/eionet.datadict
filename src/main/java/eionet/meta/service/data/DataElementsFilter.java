@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author Juhan Voolaid
  */
-public class DataElementsFilter {
+public class DataElementsFilter extends PagedRequest {
 
     public static final String NON_COMMON_ELEMENT_TYPE = "nonCommon";
 
@@ -65,7 +65,8 @@ public class DataElementsFilter {
      */
     private String userName;
 
-    private List<Attribute> attributes = new ArrayList<Attribute>();
+    private List<Attribute> defaultAttributes = new ArrayList<Attribute>();
+    private List<Attribute> addedAttributes = new ArrayList<Attribute>();
 
     /**
      * Returns NON_COMMON_ELEMENT_TYPE constant value.
@@ -173,14 +174,10 @@ public class DataElementsFilter {
      * @return the attributes
      */
     public List<Attribute> getAttributes() {
+        List<Attribute> attributes = new ArrayList<Attribute>();
+        attributes.addAll(defaultAttributes);
+        attributes.addAll(addedAttributes);
         return attributes;
-    }
-
-    /**
-     * @param attributes the attributes to set
-     */
-    public void setAttributes(List<Attribute> attributes) {
-        this.attributes = attributes;
     }
 
     /**
@@ -239,6 +236,22 @@ public class DataElementsFilter {
 
     public void setExactIdentifierMatch(boolean isExactIdentifierMatch) {
         this.isExactIdentifierMatch = isExactIdentifierMatch;
+    }
+
+    public List<Attribute> getDefaultAttributes() {
+        return defaultAttributes;
+    }
+
+    public void setDefaultAttributes(List<Attribute> defaultAttributes) {
+        this.defaultAttributes = defaultAttributes;
+    }
+
+    public List<Attribute> getAddedAttributes() {
+        return addedAttributes;
+    }
+
+    public void setAddedAttributes(List<Attribute> addedAttributes) {
+        this.addedAttributes = addedAttributes;
     }
 
 }

@@ -1,11 +1,11 @@
 <%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,eionet.util.Util,java.sql.*,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="history.jsp" %>
 
 <%
     request.setCharacterEncoding("UTF-8");
-
     DDUser user = SecurityUtil.getUser(request);
 %>
 
@@ -133,7 +133,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
             imgVisual = true;
     }
 }
-
+request.setAttribute("currentSection", "datasets");
 %>
 
 <body>
@@ -142,7 +142,8 @@ if (dsVisual!=null && dsVisual.length()!=0){
     <jsp:param name="name" value="Dataset Model"/>
     <jsp:param name="helpscreen" value="dataset_model"/>
 </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="datasets" />
+<%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
     <h1>
         Data model of
@@ -162,7 +163,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
     </div>
     <br style="clear:left" />
 
-                <table width="500">
+                <table>
 
                     <%
                     if (dsVisual==null){
@@ -218,25 +219,26 @@ if (dsVisual!=null && dsVisual.length()!=0){
                 if (user!=null){
                     %>
                     <form id="Upload" action="DsVisualUpload" method="post" enctype="multipart/form-data">
-
-                        <table width="auto" cellspacing="0">
-
+                        <table>
                             <tr>
-                                <td align="left" style="padding-right:5">
-                                    <input type="radio" name="fileORurl" value="file" checked="checked"/>&nbsp;File:</td>
-                                <td align="left">
-                                    <input type="file" class="smalltext" name="file_input" size="40"/>
+                                <td>
+                                    <input type="radio" name="fileORurl" value="file" checked="checked"/>
+                                    <label for="file_input" class="question">File</label></td>
+                                </td>
+                                <td>
+                                    <input type="file" class="smalltext" id="file_input" name="file_input" size="40"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td align="left" style="padding-right:5">
-                                    <input type="radio" class="smalltext" name="fileORurl" value="url"/>&nbsp;URL:
+                                <td>
+                                    <input type="radio" class="smalltext" name="fileORurl" value="url"/>
+                                    <label for="url_input" class="question">URL</label></td>
                                 </td>
-                                <td align="left">
-                                    <input type="text" class="smalltext" name="url_input" size="52"/>
+                                <td>
+                                    <input type="text" class="smalltext" id="url_input" name="url_input" size="52"/>
                                 </td>
                             </tr>
-                            <tr style="height:10px;"><td colspan="2"></td></tr>
+                            <tr><td colspan="2"></td></tr>
                             <tr>
                                 <td></td>
                                 <td align="left">
@@ -254,7 +256,6 @@ if (dsVisual!=null && dsVisual.length()!=0){
                                 <%
                             }
                             %>
-
                             <input type="hidden" name="str_type" value="<%=type%>"/>
                         </div>
                     </form>

@@ -2,7 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Fixed Values">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Fixed Values" currentSection="dataElements">
     <stripes:layout-component name="contents">
         <c:if test="${empty actionBean.context.validationErrors}">
             <%@ include file="/pages/fixedValues/fixed_values_header.jsp"%>
