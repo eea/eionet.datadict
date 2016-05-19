@@ -5,11 +5,9 @@
  */
 package eionet.web.action;
 
-import eionet.doc.dto.DocPageDTO;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;

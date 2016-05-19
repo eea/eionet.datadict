@@ -1,7 +1,6 @@
 package eionet.meta;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 
 import eionet.DDDatabaseTestCase;
 import eionet.help.Helps;
