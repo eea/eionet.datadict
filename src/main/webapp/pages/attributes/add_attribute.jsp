@@ -35,8 +35,8 @@
                     <th scope="row" class="scope-row">Obligation</th>
                     <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
                     <td>
-                        <stripes:select name="viewModel.attributeDefinition.obligationLevel" value="eionet.datadict.model.enums.Enumerations$Obligation.M">
-                            <stripes:options-enumeration enum="eionet.datadict.model.enums.Enumerations$Obligation" label="label"/>
+                        <stripes:select name="viewModel.attributeDefinition.obligationLevel" value="${model.obligationClass}.M">
+                            <stripes:options-enumeration enum="${model.obligationClass}" label="label"/>
                         </stripes:select>
                     </td>
                 </tr>
@@ -44,9 +44,9 @@
                     <th scope="row" class="scope-row">Display type</th>
                     <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
                     <td>
-                        <stripes:select name="viewModel.attributeDefinition.displayType" value="eionet.datadict.model.enums.Enumerations$AttributeDisplayType.TEXT">
+                        <stripes:select name="viewModel.attributeDefinition.displayType" value="${model.displayTypeClass}.TEXT">
                             <stripes:option label="-Do not display at all-" value=""/>
-                            <stripes:options-enumeration enum="eionet.datadict.model.enums.Enumerations$AttributeDisplayType" label="displayLabel"/>
+                            <stripes:options-enumeration enum="${model.displayTypeClass}" label="displayLabel"/>
                         </stripes:select>
                     </td>
                 </tr>

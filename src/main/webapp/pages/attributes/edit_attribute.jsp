@@ -46,7 +46,7 @@
                     <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
                     <td>
                         <stripes:select name="viewModel.attributeDefinition.obligationLevel" value="${model.attributeDefinition.obligationLevel}">
-                            <stripes:options-enumeration enum="${model.attributeDefinition.obligationLevel.class.name}" label="label"/>
+                            <stripes:options-enumeration enum="${model.obligationClass}" label="label"/>
                         </stripes:select>
                     </td>
                 </tr>
@@ -56,7 +56,7 @@
                     <td>
                         <stripes:select name="viewModel.attributeDefinition.displayType" value="${model.attributeDefinition.displayType}">
                             <stripes:option label="-Do not display at all-" value=""/>
-                            <stripes:options-enumeration enum="eionet.datadict.model.enums.Enumerations$AttributeDisplayType" label="displayLabel"/>
+                            <stripes:options-enumeration enum="${model.displayTypeClass}" label="displayLabel"/>
                         </stripes:select>
                         <c:if test="${model.attributeDefinition.displayType == 'SELECT'}">
                             &nbsp;<span class="smallfont"><a href="${actionBean.context}/fixedvalues/attr/${model.attributeDefinition.id}/edit">
