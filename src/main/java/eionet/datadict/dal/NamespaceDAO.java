@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  *
- * @author exorx-alk
+ * @author Aliki Kopaneli
  */
 public interface NamespaceDAO {
 

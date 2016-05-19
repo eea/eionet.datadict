@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author exorx-alk
+ * @author Aliki Kopaneli
  */
 @Repository("ddNamespaceDAOImpl")
 public class NamespaceDAOImpl extends JdbcRepositoryBase implements NamespaceDAO {

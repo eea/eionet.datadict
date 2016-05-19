@@ -4,7 +4,7 @@ import eionet.datadict.model.enums.Enumerations.DDEntitiyType;
 
 /**
  *
- * @author eworx-alk
+ * @author Aliki Kopaneli
  */
 public class Attribute {
     

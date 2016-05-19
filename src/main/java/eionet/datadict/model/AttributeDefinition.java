@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  *
- * @author eworx-alk
+ * @author Aliki Kopaneli
  */
 public class AttributeDefinition {
 

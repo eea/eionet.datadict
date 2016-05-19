@@ -11,7 +11,7 @@ import eionet.util.CompoundDataObject;
 
 /**
  *
- * @author exorx-alk
+ * @author Aliki Kopaneli
  */
 public interface AttributeController {
     

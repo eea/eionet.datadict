@@ -2,7 +2,7 @@ package eionet.datadict.model;
 
 /**
  *
- * @author eworx-alk
+ * @author Aliki Kopaneli
  */
 public class Namespace {
     

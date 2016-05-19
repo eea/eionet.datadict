@@ -5,7 +5,7 @@ import eionet.meta.application.errors.ResourceNotFoundException;
 
 /**
  *
- * @author eworx-alk
+ * @author Aliki Kopaneli
  */
 public interface AttributeDefinitionDAO {
 

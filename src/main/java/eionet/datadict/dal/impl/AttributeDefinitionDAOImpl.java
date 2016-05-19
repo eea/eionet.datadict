@@ -8,7 +8,6 @@ import eionet.datadict.model.enums.Enumerations.Obligation;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ import org.springframework.jdbc.support.KeyHolder;
 
 /**
  *
- * @author eworx-alk
+ * @author Aliki Kopaneli
  */
 @Repository
 public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements AttributeDefinitionDAO {

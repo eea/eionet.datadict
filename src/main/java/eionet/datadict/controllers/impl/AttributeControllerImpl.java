@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eionet.datadict.controllers.impl;
 
 import eionet.datadict.action.attribute.AttributeViewModel;
@@ -25,7 +20,7 @@ import org.springframework.stereotype.Controller;
 
 /**
  *
- * @author exorx-alk
+ * @author Aliki Kopaneli
  */
 @Controller
 public class AttributeControllerImpl implements AttributeController {
@@ -101,7 +96,7 @@ public class AttributeControllerImpl implements AttributeController {
     }
     //----------------------
     
-    //methods to create CompoundDataObjects from populated parameters
+    //methods to create CompoundDataObjects
     private CompoundDataObject packageResults(List<RdfNamespace> rdfNamespaces) {
         CompoundDataObject object = new CompoundDataObject();
         object.put(RDF_NAMESPACES, rdfNamespaces);
@@ -131,7 +126,6 @@ public class AttributeControllerImpl implements AttributeController {
 
     /**
      * Returns the namespace to be saved for a new attribute
-     * (user is not allowed to set other namespace than the default)
      * 
      * @return a namespace with the default ID for attribute
      */
