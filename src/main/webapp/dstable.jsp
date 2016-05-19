@@ -695,9 +695,8 @@ else if (mode.equals("add"))
                                 boolean dispODS = dataset!=null && dataset.displayCreateLink("ODS");
                                 boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
                                 boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
-                                boolean dispXForm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xfrm");
 
-                                if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispXForm || dispODS){
+                                if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispODS){
                                     %>
                                     <script type="text/javascript">
                                         $(function() {
