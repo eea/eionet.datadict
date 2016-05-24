@@ -2014,4 +2014,30 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
           referencedColumnNames="DATAELEM_ID" referencedTableName="DATAELEM" referencesUniqueColumn="false"/>
     </changeSet>
     
+    <changeSet author="kopanalk" id="rev-150">
+        <comment>
+            Add display type vocabulary for attributes linked to vocabularies
+        </comment>
+        <modifyDataType tableName="M_ATTRIBUTE" 
+                        columnName="DISP_TYPE" 
+                        newDataType="enum('text','textarea','select','image','vocabulary')"/>
+    </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-151">
+        <comment>
+            Add a table used for linking attribute definitions to vocabularies
+        </comment>
+        <createTable tableName="M_ATTRIBUTE_VOCABULARY">
+            <column name="M_ATTRIBUTE_ID" type="INT UNSIGNED"/>
+            <column name="VOCABULARY_ID" type="INT UNSIGNED"/> 
+        </createTable>
+        <addPrimaryKey tableName="M_ATTRIBUTE_VOCABULARY" columnNames="M_ATTRIBUTE_ID"/>
+        <addForeignKeyConstraint baseTableName="M_ATTRIBUTE_VOCABULARY"
+                                 baseColumnNames="M_ATTRIBUTE_ID" constraintName="FK_M_ATTRIBUTE" 
+                                 referencedTableName="M_ATTRIBUTE" referencedColumnNames="M_ATTRIBUTE_ID"/>
+        <addForeignKeyConstraint baseTableName="M_ATTRIBUTE_VOCABULARY" 
+                                 baseColumnNames="VOCABULARY_ID" constraintName="FK_VOCABULARY" 
+                                 referencedTableName="VOCABULARY" referencedColumnNames="VOCABULARY_ID"/>
+    </changeSet>
+    
 </databaseChangeLog>
