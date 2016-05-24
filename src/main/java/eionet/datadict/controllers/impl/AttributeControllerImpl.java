@@ -41,14 +41,6 @@ public class AttributeControllerImpl implements AttributeController {
         this.namespaceDAOImpl = namespaceDAOImpl;
         this.rdfNamespaceDAOImpl = rdfNamespaceDAOImpl;
     }
-
-    @Override
-    public String validateViewModel(AttributeViewModel viewModel) {
-        String fields = "";
-        if (viewModel.getAttributeDefinition().getName()==null) fields = fields + " 'name'";
-        if (viewModel.getAttributeDefinition().getShortName()==null) fields = fields + " 'shortName";
-        return fields;
-    }
     
     //Methods to create the object to be passed to the ViewModel (for GET actions)
     @Override

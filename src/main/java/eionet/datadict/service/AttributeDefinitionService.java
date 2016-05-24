@@ -5,7 +5,7 @@ import eionet.meta.application.errors.ResourceNotFoundException;
 
 /**
  *
- * @author exorx-alk
+ * @author Aliki Kopaneli
  */
 public interface AttributeDefinitionService {
 

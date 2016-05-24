@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author exorx-alk
+ * @author Aliki Kopaneli
  */
 @Repository("ddRdfNamespaceDAOImpl")
 public class RdfNamespaceDAOImpl extends JdbcRepositoryBase implements RdfNamespaceDAO {

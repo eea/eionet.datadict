@@ -11,11 +11,9 @@ import eionet.util.CompoundDataObject;
 import eionet.util.SecurityUtil;
 import eionet.web.action.AbstractActionBean;
 import eionet.web.action.ErrorActionBean;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
@@ -23,9 +21,6 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.LocalizableError;
-import net.sourceforge.stripes.validation.SimpleError;
-import net.sourceforge.stripes.validation.Validate;
-import net.sourceforge.stripes.validation.ValidateNestedProperties;
 import net.sourceforge.stripes.validation.ValidationError;
 import net.sourceforge.stripes.validation.ValidationErrorHandler;
 import net.sourceforge.stripes.validation.ValidationErrors;
@@ -120,11 +115,6 @@ public class AttributeActionBean extends AbstractActionBean implements Validatio
     public Resolution saveAdd() throws Exception {
         try {
             authorizationInitializations("i");
-            String validationErrors = attributeControllerImpl.validateViewModel(viewModel);
-            System.out.println(validationErrors);
-            if (validationErrors.length() != 0) {
-                throw new ValidationException();
-            }
             attrId = String.valueOf(attributeControllerImpl.saveNewAttribute(viewModel));
         } catch (UserAuthorizationException e) {
             return createNotAuthorizedResolution();

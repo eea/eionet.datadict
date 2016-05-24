@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author exorx-alk
+ * @author Aliki Kopaneli
  */
 @Repository
 public class VocabularyDAOImpl extends JdbcRepositoryBase implements VocabularyDAO {
