@@ -67,6 +67,8 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
 
     /** Vocabularies maintenance page. */
     private static final String VOCABULARIES_MAINTENANCE_JSP = "/pages/vocabularies/vocabulariesMaintenance.jsp";
+    
+    private static final String VIEW_VOCABULARY_FOR_SELECTION_JSP = "/pages/attributes/select_vocabulary.jsp";
 
     /** Vocabulary service. */
     @SpringBean
@@ -709,4 +711,35 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     public void setNewSitePrefix(String newSitePrefix) {
         this.newSitePrefix = StringUtils.trimToNull(newSitePrefix);
     }
+    
+    private String attrId;
+    
+    public String getAttrId() {
+        return this.attrId;
+    }
+    
+    public void setAttrId(String attrId) {
+        this.attrId = attrId;
+    }
+    
+    public Resolution selectVocabulary() throws ServiceException {
+        folders = vocabularyService.getFolders(getUserName(), parseExpandedIds());
+        vocabulariesWithBaseUri = new ArrayList<Integer>();
+
+        for (Folder folder : folders) {
+            if (folder.isExpanded() && folder.getItems() != null) {
+                for (Object vocabulary : folder.getItems()) {
+                    if (vocabulary instanceof VocabularyFolder && ((VocabularyFolder) vocabulary).getBaseUri() != null) {
+                        vocabulariesWithBaseUri.add(((VocabularyFolder) vocabulary).getId());
+                    }
+                    if (vocabulary instanceof VocabularyFolder && !((VocabularyFolder) vocabulary).isWorkingCopy()
+                            && StringUtils.isEmpty(((VocabularyFolder) vocabulary).getWorkingUser())) {
+                        setVisibleEditableVocabularies(true);
+                    }
+                }
+            }
+        }
+        return new ForwardResolution(VIEW_VOCABULARY_FOR_SELECTION_JSP);
+    }
+
 }

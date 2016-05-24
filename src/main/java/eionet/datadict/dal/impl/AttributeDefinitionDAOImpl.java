@@ -17,6 +17,7 @@ import eionet.datadict.dal.AttributeDefinitionDAO;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
 import eionet.meta.application.errors.ResourceNotFoundException;
+import eionet.meta.dao.domain.VocabularyFolder;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -30,11 +31,12 @@ import org.springframework.jdbc.support.KeyHolder;
 public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements AttributeDefinitionDAO {
 
     private static final String GET_BY_ID = "select "
-            + "M_ATTRIBUTE.*, NAMESPACE.*, T_RDF_NAMESPACE.ID AS RDF_ID, T_RDF_NAMESPACE.URI AS RDF_URI "
+            + "M_ATTRIBUTE.*, NAMESPACE.*, M_ATTRIBUTE_VOCABULARY.VOCABULARY_ID AS VOCABULARY_ID, T_RDF_NAMESPACE.ID AS RDF_ID, T_RDF_NAMESPACE.URI AS RDF_URI "
             + "FROM "
             + "M_ATTRIBUTE "
             + "LEFT JOIN T_RDF_NAMESPACE ON T_RDF_NAMESPACE.ID = M_ATTRIBUTE.RDF_PROPERTY_NAMESPACE_ID "
             + "LEFT JOIN NAMESPACE ON NAMESPACE.NAMESPACE_ID = M_ATTRIBUTE.NAMESPACE_ID "
+            + "LEFT JOIN M_ATTRIBUTE_VOCABULARY ON M_ATTRIBUTE_VOCABULARY.M_ATTRIBUTE_ID =  M_ATTRIBUTE.M_ATTRIBUTE_ID "
             + "WHERE M_ATTRIBUTE.M_ATTRIBUTE_ID = :id";
 
     private static final String UPDATE = "update M_ATTRIBUTE set "
@@ -43,9 +45,18 @@ public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements At
             + "DISP_WHEN = :dispWhen, RDF_PROPERTY_NAMESPACE_ID = :rdfPropertyNamespaceId, RDF_PROPERTY_NAME = :rdfPropertyName "
             + "where M_ATTRIBUTE_ID = :id";
 
-    private static final String DELETE = "delete from M_ATTRIBUTE "
+    private static final String UPDATE_VOC ="insert into M_ATTRIBUTE_VOCABULARY "
+            + "(M_ATTRIBUTE_ID, VOCABULARY_ID) "
+            + "values (:attrDefId, :vocId) "
+            + "on duplicate key update "
+            + "VOCABULARY_ID=VALUES(VOCABULARY_ID)";
+    
+    private static final String DELETE_VOC ="delete from M_ATTRIBUTE_VOCABULARY "
             + "where M_ATTRIBUTE_ID = :id";
     
+    private static final String DELETE = "delete from M_ATTRIBUTE "
+            + "where M_ATTRIBUTE_ID = :id";
+
     private static final String ADD = "insert into M_ATTRIBUTE "
             + "(NAME , SHORT_NAME, OBLIGATION, DEFINITION, DISP_TYPE, DISP_ORDER, "
             + "DISP_WIDTH, DISP_HEIGHT, DISP_MULTIPLE, INHERIT, NAMESPACE_ID, "
@@ -87,10 +98,9 @@ public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements At
         params.put("inherit", attrDef.getInherit().getValue());
         params.put("rdfPropertyName", attrDef.getRdfPropertyName());
         params.put("namespaceId", attrDef.getNamespace().getNamespaceID());
-        if (attrDef.getDisplayType()!= null) {
+        if (attrDef.getDisplayType() != null) {
             params.put("dispType", attrDef.getDisplayType().getValue());
-        }
-        else {
+        } else {
             params.put("dispType", null);
         }
         if (attrDef.getRdfNamespace() != null) {
@@ -103,8 +113,7 @@ public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements At
         getNamedParameterJdbcTemplate().update(sql, parameterMap, keyHolder);
         return keyHolder.getKey().intValue();
     }
-    
-    
+
     @Override
     public void update(AttributeDefinition attrDef) {
         String sql = UPDATE;
@@ -117,10 +126,9 @@ public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements At
         params.put("dispWidth", attrDef.getDisplayWidth());
         params.put("dispHeight", attrDef.getDisplayHeight());
         params.put("dispWhen", attrDef.getDisplayWhen());
-        if (attrDef.getDisplayType()!= null) {
+        if (attrDef.getDisplayType() != null) {
             params.put("dispType", attrDef.getDisplayType().getValue());
-        }
-        else {
+        } else {
             params.put("dispType", null);
         }
         if (attrDef.getDisplayMultiple()) {
@@ -141,6 +149,23 @@ public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements At
     }
 
     @Override
+    public void updateAttributeDefinitionVocabulary (int attrDefId, int vocId ) {
+        String sql = UPDATE_VOC;
+        Map<String, Object> params = new HashMap<String, Object> ();
+        params.put("attrDefId", attrDefId);
+        params.put("vocId", vocId);
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+    
+    @Override
+    public void removeAttributeDefinitionVocabulary(int attrDefId) {
+        String sql = DELETE_VOC;
+        Map<String, Object> params = new HashMap<String, Object> ();
+        params.put("id", attrDefId);
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+ 
+    @Override
     public AttributeDefinition getAttributeDefinitionById(int id) throws ResourceNotFoundException {
         try {
             String sql = GET_BY_ID;
@@ -153,41 +178,55 @@ public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements At
                     .queryForObject(sql, params, new RowMapper<AttributeDefinition>() {
                         @Override
                         public AttributeDefinition mapRow(ResultSet rs, int i) throws SQLException {
-                            return createFromSelectWithRdfNamespaceAndNamespace(rs);
+                            return createFromSelectWithReferences(rs);
                         }
 
                     });
             return attrDef;
         } catch (EmptyResultDataAccessException e) {
             throw new ResourceNotFoundException(String.valueOf(id));
-        } 
+        }
     }
 
-    private AttributeDefinition createFromSelectWithRdfNamespaceAndNamespace(ResultSet rs) throws SQLException {
+    private AttributeDefinition createFromSelectWithReferences(ResultSet rs) throws SQLException {
         AttributeDefinition attrDef = createFromSimpleSelectStatement(rs);
         attrDef = addRdfNamespace(rs, attrDef);
         attrDef = addNamespace(rs, attrDef);
+        attrDef = addVocabulary(rs, attrDef);
         return attrDef;
     }
 
+    private AttributeDefinition addVocabulary(ResultSet rs, AttributeDefinition attrDefToBeExtended) throws SQLException {
+        if (rs.getObject("VOCABULARY_ID")!=null) {
+            VocabularyFolder vocFolder = new VocabularyFolder();
+            vocFolder.setId(rs.getInt("VOCABULARY_ID"));
+            attrDefToBeExtended.setVocabulary(vocFolder);
+        }
+        return attrDefToBeExtended;
+    }
+    
     private AttributeDefinition addRdfNamespace(ResultSet rs, AttributeDefinition attrDefToBeExtended) throws SQLException {
         RdfNamespace rdfNamespace = new RdfNamespace();
-        rdfNamespace.setId(rs.getInt("RDF_ID"));
-        rdfNamespace.setUri(rs.getString("RDF_URI"));
-        attrDefToBeExtended.setRdfNameSpace(rdfNamespace);
+        if (rs.getObject("RDF_ID") != null) {
+            rdfNamespace.setId(rs.getInt("RDF_ID"));
+            rdfNamespace.setUri(rs.getString("RDF_URI"));
+            attrDefToBeExtended.setRdfNameSpace(rdfNamespace);
+        }
         return attrDefToBeExtended;
     }
 
     private AttributeDefinition addNamespace(ResultSet rs, AttributeDefinition attrDefToBeExtended) throws SQLException {
         String namespacePrefix = "NAMESPACE.";
-        Namespace namespace = new Namespace();
-        namespace.setNamespaceID(rs.getInt(namespacePrefix + "NAMESPACE_ID"));
-        namespace.setShortName(rs.getString(namespacePrefix + "SHORT_NAME"));
-        namespace.setFullName(rs.getString(namespacePrefix + "FULL_NAME"));
-        namespace.setDefinition(rs.getString(namespacePrefix + "DEFINITION"));
-        namespace.setParentNS(rs.getInt(namespacePrefix + "PARENT_NS"));
-        namespace.setWorkingUser(rs.getString(namespacePrefix + "WORKING_USER"));
-        attrDefToBeExtended.setNamespace(namespace);
+        if (rs.getObject(namespacePrefix + "NAMESPACE_ID") != null) {
+            Namespace namespace = new Namespace();
+            namespace.setNamespaceID(rs.getInt(namespacePrefix + "NAMESPACE_ID"));
+            namespace.setShortName(rs.getString(namespacePrefix + "SHORT_NAME"));
+            namespace.setFullName(rs.getString(namespacePrefix + "FULL_NAME"));
+            namespace.setDefinition(rs.getString(namespacePrefix + "DEFINITION"));
+            namespace.setParentNS(rs.getInt(namespacePrefix + "PARENT_NS"));
+            namespace.setWorkingUser(rs.getString(namespacePrefix + "WORKING_USER"));
+            attrDefToBeExtended.setNamespace(namespace);
+        }
         return attrDefToBeExtended;
     }
 
@@ -219,4 +258,5 @@ public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements At
         return attrDef;
     }
 
+   
 }

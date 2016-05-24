@@ -3,6 +3,7 @@
 <%@ include file="/pages/common/taglibs.jsp"%>
 
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit Attribute">
+    <%@ include file="/pages/attributes/attribute_scripts.jsp"%>
     <stripes:layout-component name="contents">
         <c:set value="${actionBean.viewModel}" var="model"/>
         <h1>Edit attribute definition</h1>
@@ -54,14 +55,44 @@
                     <th scope="row" class="scope-row">Display type</th>
                     <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
                     <td>
-                        <stripes:select name="viewModel.attributeDefinition.displayType" value="${model.attributeDefinition.displayType}">
+                        <stripes:select id='select-display-type' name="viewModel.attributeDefinition.displayType" value="${model.attributeDefinition.displayType}" onchange="showOnChange(this,'${model.attributeDefinition.displayType}')">
                             <stripes:option label="-Do not display at all-" value=""/>
                             <stripes:options-enumeration enum="${model.displayTypeClass}" label="displayLabel"/>
                         </stripes:select>
+                        <c:set var="vocab_display_style" value ="display: none"/>
+                        <c:set var="select_display_style" value="display: none"/>
+                        <c:if test="${model.attributeDefinition.displayType == 'VOCABULARY'}">
+                            <c:set var="vocab_display_style" value="display: inline"/>
+                        </c:if>
                         <c:if test="${model.attributeDefinition.displayType == 'SELECT'}">
-                            &nbsp;<span class="smallfont"><a href="${actionBean.context}/fixedvalues/attr/${model.attributeDefinition.id}/edit">
+                            <c:set var="select_display_style" value="display: inline"/>
+                        </c:if>
+                        <div id="vocabulary" style="${vocab_display_style}">
+                            &emsp;
+                            <stripes:link href="${actionBean.contextPath}/vocabularies/selectVocabulary">
+                                <stripes:param name="attrId" value="${model.attributeDefinition.id}"/>
+                                ATTACH NEW VOCABULARY
+                            </stripes:link>
+                            &emsp;
+                            <div class="smallfont">
+                                (Current: 
+                                <c:choose>
+                                    <c:when test="${not empty model.attributeDefinition.vocabulary}">
+                                        <stripes:link href="${actionBean.contextPath}/vocabulary/${model.attributeDefinition.vocabulary.folderLabel}/${model.attributeDefinition.vocabulary.identifier}/view">
+                                            ${model.attributeDefinition.vocabulary.label}
+                                        </stripes:link>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <em>None</em>
+                                    </c:otherwise>
+                                </c:choose>
+                                )
+                            </div>
+                        </div>
+                        <div id="select" style="${select_display_style}">
+                            &nbsp;<span class="smallfont"><a href="${actionBean.contextPath}/fixedvalues/attr/${model.attributeDefinition.id}/edit">
                                     <b>FIXED VALUES</b></a></span>
-                                </c:if>
+                        </div>
                     </td>
                 </tr>
                 <tr>
@@ -129,7 +160,8 @@
                 </tr>
             </table>
             <stripes:hidden name="attrId"/>
-            <stripes:hidden name="viewModel.attributeDefinition.id"/>
+            <stripes:hidden name="viewModel.attributeDefinition.id"/>      
+            <stripes:hidden name="viewModel"/>
         </stripes:form>
     </stripes:layout-component>
 </stripes:layout-render>

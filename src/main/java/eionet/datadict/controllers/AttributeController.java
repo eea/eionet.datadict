@@ -15,6 +15,7 @@ import eionet.util.CompoundDataObject;
  */
 public interface AttributeController {
     
+    String validateViewModel(AttributeViewModel viewModel);
     /**
      * Fetch info for the view page
      * 
@@ -32,7 +33,7 @@ public interface AttributeController {
      * @throws eionet.meta.application.errors.ResourceNotFoundException
      */
     CompoundDataObject getAttributeEditInfo(String attrId) throws ResourceNotFoundException;
-    
+   
     /**
      * Fetch info for the add page
      * 
@@ -54,6 +55,15 @@ public interface AttributeController {
      * @return the id of the newly inserted attribute
      */
     int saveNewAttribute (AttributeViewModel viewModel);
+    
+    /**
+     * Update the vocabulary from which the attribute gets its values
+     * 
+     * @param attrId
+     * @param vocId 
+     */
+    void saveNewVocabulary(String attrId, String vocId);
+    
     
     /**
      * Delete the specified attribute
@@ -82,5 +92,5 @@ public interface AttributeController {
     
     public static final int DISPLAY_WIDTH_DEFAULT = 20;
     public static final int DISPLAY_HEIGHT_DEFAULT = 1;
-    public static final int NAMESPACE_ID_DEFAULT = 44;
+    public static final int NAMESPACE_ID_DEFAULT = 3;
 }

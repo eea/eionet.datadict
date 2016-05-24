@@ -10,6 +10,7 @@ import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
 import eionet.datadict.model.enums.Enumerations;
 import eionet.datadict.model.enums.Enumerations.DisplayForType;
+import eionet.datadict.service.AttributeDefinitionService;
 import eionet.meta.application.errors.ResourceNotFoundException;
 import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.domain.FixedValue;
@@ -25,19 +26,30 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class AttributeControllerImpl implements AttributeController {
 
+    private final AttributeDefinitionService attributeDefinitionServiceImpl;
     private final AttributeDefinitionDAO ddAttributeDefinitionDAOImpl;
     private final IFixedValueDAO fixedValueDAO;
     private final NamespaceDAO namespaceDAOImpl;
     private final RdfNamespaceDAO rdfNamespaceDAOImpl;
 
     @Autowired
-    public AttributeControllerImpl(AttributeDefinitionDAO attributeDefinitionDAOImpl, IFixedValueDAO fixedValueDAO, NamespaceDAO namespaceDAOImpl, RdfNamespaceDAO rdfNamespaceDAOImpl) {
-        this.ddAttributeDefinitionDAOImpl = attributeDefinitionDAOImpl;
+    public AttributeControllerImpl(AttributeDefinitionDAO ddAttributeDefinitionDAOImpl, AttributeDefinitionService attributeDefinitionServiceImpl,
+            IFixedValueDAO fixedValueDAO, NamespaceDAO namespaceDAOImpl, RdfNamespaceDAO rdfNamespaceDAOImpl) {
+        this.attributeDefinitionServiceImpl = attributeDefinitionServiceImpl;
+        this.ddAttributeDefinitionDAOImpl = ddAttributeDefinitionDAOImpl;
         this.fixedValueDAO = fixedValueDAO;
         this.namespaceDAOImpl = namespaceDAOImpl;
         this.rdfNamespaceDAOImpl = rdfNamespaceDAOImpl;
     }
 
+    @Override
+    public String validateViewModel(AttributeViewModel viewModel) {
+        String fields = "";
+        if (viewModel.getAttributeDefinition().getName()==null) fields = fields + " 'name'";
+        if (viewModel.getAttributeDefinition().getShortName()==null) fields = fields + " 'shortName";
+        return fields;
+    }
+    
     //Methods to create the object to be passed to the ViewModel (for GET actions)
     @Override
     public CompoundDataObject getAttributeViewInfo(String attrId) throws ResourceNotFoundException {
@@ -46,7 +58,18 @@ public class AttributeControllerImpl implements AttributeController {
         List<FixedValue> fixedValues = this.getFixedValues(attrDef);
         return this.packageResults(attrDef, displayForTypes, fixedValues);
     }
-
+    
+    @Override
+    public void saveNewVocabulary(String attrId, String vocId) {
+        if (vocId == null) {
+            ddAttributeDefinitionDAOImpl.removeAttributeDefinitionVocabulary(Integer.valueOf(attrId));
+        }
+        else {
+            ddAttributeDefinitionDAOImpl.updateAttributeDefinitionVocabulary(Integer.valueOf(attrId),
+                Integer.valueOf(vocId));
+        }
+    }
+    
     @Override
     public CompoundDataObject getAttributeEditInfo(String attrId) throws ResourceNotFoundException {
         AttributeDefinition attrDef = this.getAttributeDefinition(Integer.parseInt(attrId));
@@ -185,7 +208,7 @@ public class AttributeControllerImpl implements AttributeController {
     }
 
     private AttributeDefinition getAttributeDefinition(int attrId) throws ResourceNotFoundException {
-        return ddAttributeDefinitionDAOImpl.getAttributeDefinitionById(attrId);
+        return attributeDefinitionServiceImpl.getAttributeDefinitionById(attrId);
     }
 
      private List<RdfNamespace> getAllRdfNamespaces() {
@@ -195,6 +218,4 @@ public class AttributeControllerImpl implements AttributeController {
     private List<FixedValue> getFixedValues(AttributeDefinition attributeDefinition) {
         return fixedValueDAO.getValueByOwner(FixedValue.OwnerType.ATTRIBUTE, attributeDefinition.getId());
     }
-
-   
 }

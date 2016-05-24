@@ -10,6 +10,7 @@ import eionet.datadict.model.enums.Enumerations.AttributeDataType;
 import eionet.datadict.model.enums.Enumerations.AttributeDisplayType;
 import eionet.datadict.model.enums.Enumerations.Inherit;
 import eionet.datadict.model.enums.Enumerations.Obligation;
+import eionet.meta.dao.domain.VocabularyFolder;
 import java.util.List;
 
 /**
@@ -39,6 +40,16 @@ public class AttributeDefinition {
     private Namespace namespace;
     private RdfNamespace rdfNamespace;
     private List<Attribute> attributes;
+    
+    private VocabularyFolder vocabulary;
+
+    public VocabularyFolder getVocabulary() {
+        return vocabulary;
+    }
+
+    public void setVocabulary(VocabularyFolder vocabulary) {
+        this.vocabulary = vocabulary;
+    }
 
     public void setId(int id) {
         this.id = id;

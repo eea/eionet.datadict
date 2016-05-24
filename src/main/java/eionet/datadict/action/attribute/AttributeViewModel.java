@@ -24,6 +24,12 @@ public final class AttributeViewModel {
     private List<RdfNamespace> allRdfNamespaces;
     
     /**
+     * The vocabulary obtained from the selectVocabulary page
+     * only used in the edit page when display type is vocab
+     */
+    private String vocabularyId;
+    
+    /**
      * The list of all the namespaces related to Attributes
      */
     private List<Namespace> namespaces;
@@ -38,13 +44,20 @@ public final class AttributeViewModel {
     
     private List<DisplayForType> displayForTypes;
     private List<FixedValue> fixedValues; 
-    
+
     //Hold info about the enumerations
     private final List<DisplayForType> allDisplayForTypes = DisplayForType.getAllEnums();
     private final List<Inherit> allInherits = Inherit.getAllEnums();
     private final String obligationClass = Obligation.M.getClass().getName();
     private final String displayTypeClass = AttributeDisplayType.SELECT.getClass().getName();
     
+    public String getVocabularyId() {
+        return vocabularyId;
+    }
+
+    public void setVocabularyId(String vocabularyId) {
+        this.vocabularyId = vocabularyId;
+    }
     
     public String getObligationClass() {
         return obligationClass;

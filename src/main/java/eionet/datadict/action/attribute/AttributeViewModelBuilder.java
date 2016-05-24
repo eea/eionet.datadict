@@ -35,7 +35,9 @@ public class AttributeViewModelBuilder {
         viewModel.setDisplayOrder((String)model.get(AttributeController.DISPLAY_ORDER));
         viewModel.setDisplayForTypes((List)model.get(AttributeController.DISPLAY_FOR_TYPES));
         viewModel.setAllRdfNamespaces((List)model.get(AttributeController.RDF_NAMESPACES));
-        viewModel.setRdfNamespaceId(String.valueOf(viewModel.getAttributeDefinition().getRdfNamespace().getId()));
+        if (viewModel.getAttributeDefinition().getRdfNamespace() != null) {
+            viewModel.setRdfNamespaceId(String.valueOf(viewModel.getAttributeDefinition().getRdfNamespace().getId()));
+        }
         return viewModel;
     }
     

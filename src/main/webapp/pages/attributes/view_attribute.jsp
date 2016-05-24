@@ -71,7 +71,26 @@
                     ${model.attributeDefinition.displayType.displayLabel}
                 </td>
             </tr>
-            <c:if test="${model.attributeDefinition.displayType.displayLabel == 'Select box'}">
+            <c:if test="${model.attributeDefinition.displayType == 'VOCABULARY'}">
+                <tr>
+                    <th scope="row" class="scope-row">
+                        Vocabulary
+                    </th>
+                    <td>
+                        <c:choose>
+                            <c:when test="${not empty model.attributeDefinition.vocabulary}">
+                                <stripes:link href="${actionBean.contextPath}/vocabulary/${model.attributeDefinition.vocabulary.folderLabel}/${model.attributeDefinition.vocabulary.identifier}/view">
+                                    ${model.attributeDefinition.vocabulary.label}
+                                </stripes:link>
+                            </c:when>
+                            <c:otherwise>
+                                <em>None</em>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                </tr>
+            </c:if>
+            <c:if test="${model.attributeDefinition.displayType == 'SELECT'}">
                 <tr>
                     <th scope="row" class="scope-row">
                         <a href="${actionBean.contextPath}/fixedvalues/attr/${actionBean.attrId}">
@@ -130,12 +149,14 @@
             </tr>
             <tr>
                 <th scope="row" class="scope-row">RDF property URI</th>
-                <td>${model.attributeDefinition.rdfNamespace.uri}</td>
-            </tr>
+                <td>
+                    ${model.attributeDefinition.rdfNamespace.uri}
+                </td>
             <tr>
                 <th scope="row" class="scope-row">RDF property name</th>
                 <td>${model.attributeDefinition.rdfPropertyName}</td>
             </tr>
         </table>
+        <c:out value="${model.attributeDefinition.vocabulary.label}"/>
     </stripes:layout-component>
 </stripes:layout-render>

@@ -6,29 +6,41 @@ import eionet.datadict.controllers.AttributeController;
 import eionet.meta.DDUser;
 import eionet.meta.application.errors.ResourceNotFoundException;
 import eionet.meta.application.errors.UserAuthorizationException;
+import eionet.meta.service.ValidationException;
 import eionet.util.CompoundDataObject;
 import eionet.util.SecurityUtil;
 import eionet.web.action.AbstractActionBean;
 import eionet.web.action.ErrorActionBean;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.LocalizableError;
+import net.sourceforge.stripes.validation.SimpleError;
+import net.sourceforge.stripes.validation.Validate;
+import net.sourceforge.stripes.validation.ValidateNestedProperties;
+import net.sourceforge.stripes.validation.ValidationError;
+import net.sourceforge.stripes.validation.ValidationErrorHandler;
+import net.sourceforge.stripes.validation.ValidationErrors;
+import net.sourceforge.stripes.validation.ValidationMethod;
 
 /**
  *
  * @author Aliki Kopaneli
  */
 @UrlBinding("/attribute/{$event}/{attrId}")
-public class AttributeActionBean extends AbstractActionBean {
+public class AttributeActionBean extends AbstractActionBean implements ValidationErrorHandler {
 
     private static final String VIEW_PAGE = "/pages/attributes/view_attribute.jsp";
     private static final String EDIT_PAGE = "/pages/attributes/edit_attribute.jsp";
-    private static final String ADD_PAGE ="/pages/attributes/add_attribute.jsp";
+    private static final String ADD_PAGE = "/pages/attributes/add_attribute.jsp";
 
     private String attrId;
 
@@ -93,28 +105,35 @@ public class AttributeActionBean extends AbstractActionBean {
         return new ForwardResolution(EDIT_PAGE);
 
     }
-    
+
     public Resolution add() throws Exception {
         try {
             authorizationInitializations("i");
             CompoundDataObject model = attributeControllerImpl.getAttributeAddInfo();
             viewModel = attributeViewModelBuilder.buildForAdd(model);
-        } catch (UserAuthorizationException e){
+        } catch (UserAuthorizationException e) {
             return createNotAuthorizedResolution();
         }
         return new ForwardResolution(ADD_PAGE);
     }
 
     public Resolution saveAdd() throws Exception {
-        try{
+        try {
             authorizationInitializations("i");
-            attrId = String.valueOf(attributeControllerImpl.saveNewAttribute(viewModel));   
+            String validationErrors = attributeControllerImpl.validateViewModel(viewModel);
+            System.out.println(validationErrors);
+            if (validationErrors.length() != 0) {
+                throw new ValidationException();
+            }
+            attrId = String.valueOf(attributeControllerImpl.saveNewAttribute(viewModel));
         } catch (UserAuthorizationException e) {
             return createNotAuthorizedResolution();
+        } catch (ValidationException e) {
+            return createAttributeNotFoundResolution(attrId);
         }
-        return new RedirectResolution("/attribute/view/"+ attrId);
+        return new RedirectResolution("/attribute/view/" + attrId);
     }
-    
+
     public Resolution saveEdit() throws Exception {
         try {
             authorizationInitializations("u");
@@ -124,7 +143,7 @@ public class AttributeActionBean extends AbstractActionBean {
         }
         return new RedirectResolution("/attribute/view/" + attrId);
     }
-    
+
     public Resolution delete() throws Exception {
         try {
             authorizationInitializations("d");
@@ -133,6 +152,20 @@ public class AttributeActionBean extends AbstractActionBean {
             return createNotAuthorizedResolution();
         }
         return new ForwardResolution("/attributes.jsp");
+    }
+
+    public Resolution selectVocabulary() throws Exception {
+        try {
+            authorizationInitializations("u");
+            if (viewModel != null) {
+                attributeControllerImpl.saveNewVocabulary(attrId, viewModel.getVocabularyId());
+            } else {
+                attributeControllerImpl.saveNewVocabulary(attrId, null);
+            }
+        } catch (UserAuthorizationException e) {
+            return createNotAuthorizedResolution();
+        }
+        return new RedirectResolution("/attribute/edit/" + attrId);
     }
 
     private Resolution createAttributeNotFoundResolution(String id) {
@@ -155,6 +188,40 @@ public class AttributeActionBean extends AbstractActionBean {
         if (!SecurityUtil.hasPerm(username, "/attributes/", perm)) {
             throw new UserAuthorizationException();
         }
+    }
+
+    @ValidationMethod(on = "saveAdd")
+    public void validateMandatoryFieldsAdd(ValidationErrors errors) {
+        String errorLabel = "saveAdd";
+        if (viewModel.getAttributeDefinition().getName()==null) {
+            errors.add(errorLabel, new LocalizableError("attr.name"));
+        }  
+        if (viewModel.getAttributeDefinition().getShortName()==null) {
+            errors.add(errorLabel, new LocalizableError("attr.shortName"));
+        }
+    }
+    
+    @ValidationMethod(on = "saveEdit")
+    public void validateMandatoryFieldsEdit(ValidationErrors errors) {
+        String errorLabel = "saveEdit";
+        if (viewModel.getAttributeDefinition().getName()==null) {
+            errors.add(errorLabel, new LocalizableError("attr.name"));
+        }
+    }
+            
+    @Override
+    public Resolution handleValidationErrors(ValidationErrors ve) throws Exception {
+            List<ValidationError> arrayL = ve.get("saveAdd");
+            if (arrayL!=null) {
+                CompoundDataObject model = attributeControllerImpl.getAttributeAddInfo();
+                viewModel = attributeViewModelBuilder.buildForAdd(model);
+            }
+            arrayL = ve.get("saveEdit");
+            if (arrayL!=null) {
+                CompoundDataObject model = attributeControllerImpl.getAttributeEditInfo(attrId);
+                viewModel = attributeViewModelBuilder.buildForEdit(model);
+        }
+        return null;
     }
 
 }

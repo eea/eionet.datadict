@@ -37,7 +37,8 @@ public class Enumerations {
         TEXT("text", "Text box"),
         TEXTAREA("textarea", "Text area"),
         SELECT("select", "Select box"),
-        IMAGE("image", "Image");
+        IMAGE("image", "Image"),
+        VOCABULARY("vocabulary", "Vocabulary");
 
         private final String value;
         private final String displayLabel;
@@ -169,14 +170,14 @@ public class Enumerations {
         //AGG(4),
         //CH3(2),
         //DCL(16),
-        VCF(1024, "Vocabulary folders"),
-        SCS(256, "Schema sets"),
-        SCH(128, "Schema"),
-        TBL(64, "Dataset tables"),
-        FXV(32, "Fixed values (code list and vocabulary"),
-        DST(8, "Datasets"),
+        //FXV(32, "Fixed values (code list and vocabulary"),
         CH1(2, "Data elements with fixed values (code list and elements from a vocabulary)"),
-        CH2(1, "Data elements with quanitative values");
+        CH2(1, "Data elements with quanitative values"),
+        DST(8, "Datasets"),
+        TBL(64, "Dataset tables"),
+        SCH(128, "Schema"),
+        SCS(256, "Schema sets"),
+        VCF(1024, "Vocabulary folders");
         
         private final int value;
         private final String label;
