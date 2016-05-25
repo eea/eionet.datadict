@@ -13,8 +13,6 @@ import org.unitils.spring.annotation.SpringBeanByType;
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
-//Maven command to execute THIS test directly:
-//  mvn -Denv=unittest -Dmaven.test.skip=false -Dtest=eionet.datadict.dal.VocabularyRepositoryTest clean test
 @SpringApplicationContext("mock-spring-context.xml")
 public class VocabularyRepositoryTest extends UnitilsJUnit4 {
 
