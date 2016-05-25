@@ -38,13 +38,21 @@ public class VocabularySetRepositoryTest extends UnitilsJUnit4 {
     @Test
     public void testResolveByIdentifier() {
         assertNull(this.vocabularySetRepository.resolve("common1042"));
-        assertNotNull(this.vocabularySetRepository.resolve("common2"));
+        assertEquals(Integer.valueOf(11), this.vocabularySetRepository.resolve("common2"));
     }
 
     @Test
     public void testGetByIdentifier() {
         assertNull(this.vocabularySetRepository.get("common1042"));
-        assertNotNull(this.vocabularySetRepository.get("common2"));
+        
+        VocabularySet expected = new VocabularySet();
+        expected.setId(11);
+        expected.setIdentifier("common2");
+        expected.setLabel("Common2");
+        VocabularySet actual = this.vocabularySetRepository.get(expected.getIdentifier());
+        
+        assertNotNull(actual);
+        this.assertVocabularySet(expected, actual, false);
     }
 
     @Test
