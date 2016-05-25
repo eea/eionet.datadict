@@ -20,6 +20,7 @@
  */
 package eionet.meta.service;
 
+import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IVocabularyImportService.MissingConceptsAction;
 import eionet.meta.service.IVocabularyImportService.UploadAction;
@@ -29,46 +30,74 @@ import java.io.Reader;
 import java.util.List;
 
 /**
- * This interface contains methods to import csv contents to bulk edit a vocabulary.
+ * This interface contains methods to import csv contents to bulk edit a
+ * vocabulary or create a Vocabulary From RDF.
  *
  * @author enver
  */
 public interface IRDFVocabularyImportService {
 
-    /**
-     * A Transactional method to import RDF file contents into a vocabulary folder. User can request purging data first and then
-     * inserting from scratch.
+    
+     /**
+     * Transactional method to create a folder and a vocabulary from a Rest Call using a mix
+     * of Request Params and RDF Payload
      *
-     * @param contents              Reader object to read file content.
-     * @param vocabularyFolder      Vocabulary folder under bulk edit mode.
-     * @param uploadActionBefore    Action before for this upload operation.
-     * @param uploadAction          Action for this upload operation.
-     * @param missingConceptsAction Missing concepts action for this upload operation.
+     * @param contents Reader object to read file content 
+     * @param folder 
+     * @param vocabularyFolder 
+     * @param username the username of the creator of the vocabulary 
+     */
+    List<String> createFolderAndVocabularyFromRDF(Reader contents,Folder folder,  VocabularyFolder vocabularyFolder, String username) throws ServiceException;
+    
+    
+    
+    /**
+     * Transactional method to create a vocabulary from a Rest Call using a mix
+     * of Request Params and RDF Payload
+     *
+     * @param contents Reader object to read file content 
+     * @param vocabularyFolder 
+     * @param username the username of the creator of the vocabulary 
+     */
+    List<String> createVocabularyFromRDF(Reader contents, VocabularyFolder vocabularyFolder, String username) throws ServiceException;
+
+    /**
+     * A Transactional method to import RDF file contents into a vocabulary
+     * folder. User can request purging data first and then inserting from
+     * scratch.
+     *
+     * @param contents Reader object to read file content.
+     * @param vocabularyFolder Vocabulary folder under bulk edit mode.
+     * @param uploadActionBefore Action before for this upload operation.
+     * @param uploadAction Action for this upload operation.
+     * @param missingConceptsAction Missing concepts action for this upload
+     * operation.
      * @return List of log messages
      * @throws ServiceException Error if input is not valid
      */
     List<String> importRdfIntoVocabulary(Reader contents,
-                                         VocabularyFolder vocabularyFolder,
-                                         UploadActionBefore uploadActionBefore,
-                                         UploadAction uploadAction,
-                                         MissingConceptsAction missingConceptsAction) throws ServiceException;
+            VocabularyFolder vocabularyFolder,
+            UploadActionBefore uploadActionBefore,
+            UploadAction uploadAction,
+            MissingConceptsAction missingConceptsAction) throws ServiceException;
 
     /**
-     * A support method for legacy calls (calls importRdfIntoVocabulary internally).
+     * A support method for legacy calls (calls importRdfIntoVocabulary
+     * internally).
      *
-     * @param contents            Reader object to read file content
-     * @param vocabularyFolder    Vocabulary folder under bulk edit mode
+     * @param contents Reader object to read file content
+     * @param vocabularyFolder Vocabulary folder under bulk edit mode
      * @param purgeVocabularyData Purge all vocabulary concepts of folder
      * @param purgePredicateBasis Purge bound elements per predicate basis
      * @return List of log messages
      * @throws ServiceException Error if input is not valid
      */
     List<String> importRdfIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData,
-                                         boolean purgePredicateBasis) throws ServiceException;
+            boolean purgePredicateBasis) throws ServiceException;
 
     /**
-     * A method to get all supported action before elements, depending on upload operation is called from API,
-     * or from UI.
+     * A method to get all supported action before elements, depending on upload
+     * operation is called from API, or from UI.
      *
      * @param isApiCall is api call.
      * @return list of supported values.
@@ -76,8 +105,8 @@ public interface IRDFVocabularyImportService {
     List<UploadActionBefore> getSupportedActionBefore(boolean isApiCall);
 
     /**
-     * A method to get default action before element, depending on upload operation is called from API,
-     * or from UI.
+     * A method to get default action before element, depending on upload
+     * operation is called from API, or from UI.
      *
      * @param isApiCall is api call.
      * @return default value.
@@ -85,8 +114,8 @@ public interface IRDFVocabularyImportService {
     UploadActionBefore getDefaultActionBefore(boolean isApiCall);
 
     /**
-     * A method to get all supported action elements, depending on upload operation is called from API,
-     * or from UI.
+     * A method to get all supported action elements, depending on upload
+     * operation is called from API, or from UI.
      *
      * @param isApiCall is api call.
      * @return list of supported values.
@@ -94,8 +123,8 @@ public interface IRDFVocabularyImportService {
     List<UploadAction> getSupportedAction(boolean isApiCall);
 
     /**
-     * A method to get default action element, depending on upload operation is called from API,
-     * or from UI.
+     * A method to get default action element, depending on upload operation is
+     * called from API, or from UI.
      *
      * @param isApiCall is api call.
      * @return default value.
@@ -103,8 +132,8 @@ public interface IRDFVocabularyImportService {
     UploadAction getDefaultAction(boolean isApiCall);
 
     /**
-     * A method to get all supported missing concepts action elements, depending on upload operation is called from API,
-     * or from UI.
+     * A method to get all supported missing concepts action elements, depending
+     * on upload operation is called from API, or from UI.
      *
      * @param isApiCall is api call.
      * @return list of supported values.
@@ -112,8 +141,8 @@ public interface IRDFVocabularyImportService {
     List<MissingConceptsAction> getSupportedMissingConceptsAction(boolean isApiCall);
 
     /**
-     * A method to get default missing concepts action element, depending on upload operation is called from API,
-     * or from UI.
+     * A method to get default missing concepts action element, depending on
+     * upload operation is called from API, or from UI.
      *
      * @param isApiCall is api call.
      * @return default value.

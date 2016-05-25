@@ -21,6 +21,12 @@
 
 package eionet.web.action;
 
+import eionet.datadict.errors.DuplicateResourceException;
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.services.data.VocabularyDataService;
+import eionet.meta.DDUser;
+import eionet.meta.application.errors.UserAuthenticationException;
 import eionet.meta.dao.domain.DDApiKey;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.json.VocabularyJSONOutputHelper;
@@ -32,6 +38,8 @@ import eionet.meta.service.IVocabularyImportService.UploadAction;
 import eionet.meta.service.IVocabularyImportService.UploadActionBefore;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.datadict.services.auth.WebApiAuthInfoService;
+import eionet.datadict.services.auth.WebApiAuthService;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import net.sf.json.JSONObject;
@@ -182,6 +190,13 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     @SpringBean
     private IRDFVocabularyImportService vocabularyRdfImportService;
 
+    @SpringBean
+    private WebApiAuthInfoService webApiAuthInfoService;
+    @SpringBean
+    private WebApiAuthService webApiAuthService;
+    @SpringBean
+    private VocabularyDataService vocabularyDataService;
+    
     /**
      * Action before param.
      */
@@ -197,8 +212,61 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
      */
     private String missingConcepts;
 
+    // start params for create
+    private String label;
+    private String baseUri;
+    private boolean numericConceptidentifiers;
+    private boolean notationsEqualIdentifiers;
+    // end params for create
+    
     //Method definitions
 
+    public Resolution createVocabulary() {
+        DDUser user;
+        
+        try {
+            user = this.webApiAuthService.authenticate(this.webApiAuthInfoService.getAuthenticationInfo(getContext().getRequest()));
+        }
+        catch (UserAuthenticationException ex) {
+            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, ex.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+        }
+        
+        VocabularyFolder vocabulary = new VocabularyFolder();
+        vocabulary.setIdentifier(this.vocabularyFolder.getIdentifier());
+        vocabulary.setLabel(this.label);
+        vocabulary.setNumericConceptIdentifiers(this.numericConceptidentifiers);
+        vocabulary.setNotationsEqualIdentifiers(this.notationsEqualIdentifiers);
+        vocabulary.setBaseUri(this.baseUri);
+        final String vocabularySetIdentifier = this.vocabularyFolder.getFolderName();
+        final VocabularyFolder created;
+        
+        try {
+            created = this.vocabularyDataService.createVocabulary(vocabularySetIdentifier, vocabulary, user);
+        } catch (EmptyParameterException ex) {
+            LOGGER.info(ex.getMessage(), ex);
+            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, ex.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+        } catch (ResourceNotFoundException ex) {
+            LOGGER.info(ex.getMessage(), ex);
+            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_FOUND_404, ex.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+        } catch (DuplicateResourceException ex) {
+            LOGGER.info(ex.getMessage(), ex);
+            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.CONFLICT, ex.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+        }
+        
+        StreamingResolution result = new StreamingResolution(JSON_FORMAT) {
+
+            @Override
+            protected void stream(HttpServletResponse response) throws Exception {
+                List<String> messages = new ArrayList<String>();
+                messages.add(String.format("Successfully created vocabulary %s/%s", vocabularySetIdentifier, created.getIdentifier()));
+                VocabularyJSONOutputHelper.writeJSON(response.getOutputStream(), messages);
+            }
+            
+        };
+        
+        return result;
+    }
+    
     /**
      * Imports RDF contents into vocabulary.
      *
@@ -492,4 +560,95 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     public void setVocabularyFolder(VocabularyFolder vocabularyFolder) {
         this.vocabularyFolder = vocabularyFolder;
     }
+
+    public IVocabularyService getVocabularyService() {
+        return vocabularyService;
+    }
+
+    public void setVocabularyService(IVocabularyService vocabularyService) {
+        this.vocabularyService = vocabularyService;
+    }
+
+    public IJWTService getJwtService() {
+        return jwtService;
+    }
+
+    public void setJwtService(IJWTService jwtService) {
+        this.jwtService = jwtService;
+    }
+
+    public IApiKeyService getApiKeyService() {
+        return apiKeyService;
+    }
+
+    public void setApiKeyService(IApiKeyService apiKeyService) {
+        this.apiKeyService = apiKeyService;
+    }
+
+    public IRDFVocabularyImportService getVocabularyRdfImportService() {
+        return vocabularyRdfImportService;
+    }
+
+    public void setVocabularyRdfImportService(IRDFVocabularyImportService vocabularyRdfImportService) {
+        this.vocabularyRdfImportService = vocabularyRdfImportService;
+    }
+
+    public WebApiAuthInfoService getWebApiAuthInfoService() {
+        return webApiAuthInfoService;
+    }
+
+    public void setWebApiAuthInfoService(WebApiAuthInfoService webApiAuthInfoService) {
+        this.webApiAuthInfoService = webApiAuthInfoService;
+    }
+
+    public WebApiAuthService getWebApiAuthService() {
+        return webApiAuthService;
+    }
+
+    public void setWebApiAuthService(WebApiAuthService webApiAuthService) {
+        this.webApiAuthService = webApiAuthService;
+    }
+
+    public VocabularyDataService getVocabularyDataService() {
+        return vocabularyDataService;
+    }
+
+    public void setVocabularyDataService(VocabularyDataService vocabularyDataService) {
+        this.vocabularyDataService = vocabularyDataService;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getBaseUri() {
+        return baseUri;
+    }
+
+    public void setBaseUri(String baseUri) {
+        this.baseUri = baseUri;
+    }
+
+    public boolean isNumericConceptidentifiers() {
+        return numericConceptidentifiers;
+    }
+
+    public void setNumericConceptidentifiers(boolean numericConceptidentifiers) {
+        this.numericConceptidentifiers = numericConceptidentifiers;
+    }
+
+    public boolean isNotationsEqualIdentifiers() {
+        return notationsEqualIdentifiers;
+    }
+
+    public void setNotationsEqualIdentifiers(boolean notationsEqualIdentifiers) {
+        this.notationsEqualIdentifiers = notationsEqualIdentifiers;
+    }
+    
+    
+    
 } // end of class VocabularyFolderApiActionBean

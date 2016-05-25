@@ -63,7 +63,8 @@ public class ErrorActionBean extends AbstractActionBean {
         NOT_AUTHENTICATED_401,
         FORBIDDEN_403,
         NOT_FOUND_404,
-        INVALID_INPUT
+        INVALID_INPUT,
+        CONFLICT
     }
 
     /**
@@ -106,6 +107,9 @@ public class ErrorActionBean extends AbstractActionBean {
             case INVALID_INPUT:
                 httpCode = HttpServletResponse.SC_NOT_ACCEPTABLE;
                 break;
+            case CONFLICT:
+                httpCode = HttpServletResponse.SC_CONFLICT;
+                break;
             case INTERNAL_SERVER_ERROR:
             case UNKNOWN:
             default:
@@ -141,6 +145,8 @@ public class ErrorActionBean extends AbstractActionBean {
                 return "404 Not Found";
             case INVALID_INPUT:
                 return "An error has occurred due to invalid input";
+            case CONFLICT:
+                return "409 Conflict";
             case UNKNOWN:
             default:
                 return "An unexpected system error has occurred:";
