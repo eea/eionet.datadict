@@ -83,9 +83,9 @@ public class VocabularyDataServiceTest {
         when(vocabularySetRepository.exists(inSet.getIdentifier())).thenReturn(true);
         this.vocabularyDataService.createVocabularySet(inSet);
     }
-    
+
     @Test
-    public void testCreateVocabularySet() throws EmptyParameterException, DuplicateResourceException{
+    public void testCreateVocabularySet() throws EmptyParameterException, DuplicateResourceException {
         VocabularySet vocSet = new VocabularySet();
         vocSet.setId(1);
         vocSet.setIdentifier("identifier");
@@ -93,54 +93,48 @@ public class VocabularyDataServiceTest {
         when(vocabularySetRepository.exists(vocSet.getIdentifier())).thenReturn(false);
         this.vocabularyDataService.createVocabularySet(vocSet);
         ArgumentCaptor<VocabularySet> toInsertCaptor = ArgumentCaptor.forClass(VocabularySet.class);
-         verify(vocabularySetRepository, times(1)).create(toInsertCaptor.capture());
-         VocabularySet toBeInserted = toInsertCaptor.getValue();
+        verify(vocabularySetRepository, times(1)).create(toInsertCaptor.capture());
+        VocabularySet toBeInserted = toInsertCaptor.getValue();
         assertTrue(EqualsBuilder.reflectionEquals(vocSet, toBeInserted));
     }
 
-
-
     @Test
-    public void testFailToCreateVocabularyBecauseOfEmptyVocabularySetIdentifier() throws ResourceNotFoundException, DuplicateResourceException{
-       VocabularyFolder vocabulary = new VocabularyFolder();
-       DDUser ddUser = new DDUser();
-       try {
-            this.vocabularyDataService.createVocabulary(null,vocabulary ,ddUser);
+    public void testFailToCreateVocabularyBecauseOfEmptyVocabularySetIdentifier() throws ResourceNotFoundException, DuplicateResourceException {
+        VocabularyFolder vocabulary = new VocabularyFolder();
+        DDUser ddUser = new DDUser();
+        try {
+            this.vocabularyDataService.createVocabulary(null, vocabulary, ddUser);
             fail("Should throw an exception for missing vocabularySetIdentifier parameter");
         } catch (EmptyParameterException e) {
             assertEquals(e.getParamName(), "vocabularySetIdentifier");
         }
     }
-    
-    
-    
-    
+
     @Test
-    public void testFailToCreateVocabularyBecauseOfEmptyVocabularyIdentifier() throws ResourceNotFoundException, DuplicateResourceException{
-    VocabularyFolder vocabulary = new VocabularyFolder();
-       DDUser ddUser = new DDUser();
-       try {
-            this.vocabularyDataService.createVocabulary("setIdentifier",vocabulary ,ddUser);  
+    public void testFailToCreateVocabularyBecauseOfEmptyVocabularyIdentifier() throws ResourceNotFoundException, DuplicateResourceException {
+        VocabularyFolder vocabulary = new VocabularyFolder();
+        DDUser ddUser = new DDUser();
+        try {
+            this.vocabularyDataService.createVocabulary("setIdentifier", vocabulary, ddUser);
             fail("Should throw an exception for missing vocabularyIdentifier parameter");
         } catch (EmptyParameterException e) {
             assertEquals(e.getParamName(), "vocabularyIdentifier");
-        }             
+        }
     }
-    
-    
+
     @Test
-    public void testFailToCreateVocabularyBecauseOfEmptyVocabularyLabel() throws ResourceNotFoundException, DuplicateResourceException{
-    VocabularyFolder vocabulary = new VocabularyFolder();
-    vocabulary.setIdentifier("identifier");
-       DDUser ddUser = new DDUser();
-       try {
-            this.vocabularyDataService.createVocabulary("setIdentifier",vocabulary ,ddUser);  
+    public void testFailToCreateVocabularyBecauseOfEmptyVocabularyLabel() throws ResourceNotFoundException, DuplicateResourceException {
+        VocabularyFolder vocabulary = new VocabularyFolder();
+        vocabulary.setIdentifier("identifier");
+        DDUser ddUser = new DDUser();
+        try {
+            this.vocabularyDataService.createVocabulary("setIdentifier", vocabulary, ddUser);
             fail("Should throw an exception for missing vocabularyLabel parameter");
         } catch (EmptyParameterException e) {
             assertEquals(e.getParamName(), "vocabularyLabel");
-        } 
+        }
     }
-    
+
     @Test(expected = ResourceNotFoundException.class)
     public void testFailToCreateVocabularyBecauseOfNullVocabularySet() throws ResourceNotFoundException, DuplicateResourceException, EmptyParameterException {
         VocabularyFolder vocabulary = new VocabularyFolder();
@@ -152,9 +146,8 @@ public class VocabularyDataServiceTest {
         this.vocabularyDataService.createVocabulary(vocabularySetIdentifier, vocabulary, ddUser);
     }
 
-    
     @Test(expected = DuplicateResourceException.class)
-    public void testFailToCreateVocabularyBecauseOfDuplicate() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException{
+    public void testFailToCreateVocabularyBecauseOfDuplicate() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
         VocabularyFolder vocabulary = new VocabularyFolder();
         String vocabularySetIdentifier = "setIdentifier";
         vocabulary.setIdentifier("identifier");
@@ -164,31 +157,29 @@ public class VocabularyDataServiceTest {
         Integer vocabularySetId = 102;
         vocabularySet.setId(vocabularySetId);
         when(vocabularySetRepository.get(vocabularySetIdentifier)).thenReturn(vocabularySet);
-        when(vocabularyRepository.exists(vocabularySetId,vocabulary.getIdentifier())).thenReturn(true);
-       this.vocabularyDataService.createVocabulary(vocabularySetIdentifier, vocabulary, ddUser);
-    }
-    
-    
-    @Test
-    public void testCreateVocabulary() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException, ServiceException{
-        VocabularyFolder vocabulary = new VocabularyFolder();
-        String vocabularySetIdentifier = "setIdentifier";
-        vocabulary.setIdentifier("identifier");
-        vocabulary.setLabel("label");
-        DDUser ddUser = new DDUser();
-        VocabularySet vocabularySet = new VocabularySet();
-        vocabularySet.setIdentifier(vocabularySetIdentifier); 
-        Integer vocabularySetId = 102;
-        vocabularySet.setId(vocabularySetId);
-        when(vocabularySetRepository.get(vocabularySetIdentifier)).thenReturn(vocabularySet);
-        when(vocabularyRepository.exists(vocabularySetId,vocabulary.getIdentifier())).thenReturn(false);
+        when(vocabularyRepository.exists(vocabularySetId, vocabulary.getIdentifier())).thenReturn(true);
         this.vocabularyDataService.createVocabulary(vocabularySetIdentifier, vocabulary, ddUser);
-                ArgumentCaptor<VocabularyFolder> toInsertVocabularyCaptor = ArgumentCaptor.forClass(VocabularyFolder.class);
-                ArgumentCaptor<Folder> folderCaptor = ArgumentCaptor.forClass(Folder.class);
-                ArgumentCaptor<String> creatorCaptor = ArgumentCaptor.forClass(String.class);
-         verify(legacyVocabularyService, times(1)).createVocabularyFolder(toInsertVocabularyCaptor.capture(),folderCaptor.capture(),creatorCaptor.capture());
-         VocabularyFolder vocFolderToBeInserted = toInsertVocabularyCaptor.getValue();
-         assertTrue(EqualsBuilder.reflectionEquals(vocabulary, vocFolderToBeInserted));
+    }
+
+    @Test
+    public void testCreateVocabulary() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException, ServiceException {
+        VocabularyFolder vocabulary = new VocabularyFolder();
+        String vocabularySetIdentifier = "setIdentifier";
+        vocabulary.setIdentifier("identifier");
+        vocabulary.setLabel("label");
+        DDUser ddUser = new DDUser();
+        VocabularySet vocabularySet = new VocabularySet();
+        vocabularySet.setIdentifier(vocabularySetIdentifier);
+        Integer vocabularySetId = 102;
+        vocabularySet.setId(vocabularySetId);
+        when(vocabularySetRepository.get(vocabularySetIdentifier)).thenReturn(vocabularySet);
+        when(vocabularyRepository.exists(vocabularySetId, vocabulary.getIdentifier())).thenReturn(false);
+        this.vocabularyDataService.createVocabulary(vocabularySetIdentifier, vocabulary, ddUser);
+        ArgumentCaptor<VocabularyFolder> toInsertVocabularyCaptor = ArgumentCaptor.forClass(VocabularyFolder.class);
+        ArgumentCaptor<Folder> folderCaptor = ArgumentCaptor.forClass(Folder.class);
+        ArgumentCaptor<String> creatorCaptor = ArgumentCaptor.forClass(String.class);
+        verify(legacyVocabularyService, times(1)).createVocabularyFolder(toInsertVocabularyCaptor.capture(), folderCaptor.capture(), creatorCaptor.capture());
+        VocabularyFolder vocFolderToBeInserted = toInsertVocabularyCaptor.getValue();
+        assertTrue(EqualsBuilder.reflectionEquals(vocabulary, vocFolderToBeInserted));
     }
 }
-
