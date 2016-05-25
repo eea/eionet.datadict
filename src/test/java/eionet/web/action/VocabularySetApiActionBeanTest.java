@@ -13,7 +13,6 @@ import eionet.web.action.di.ActionBeanDependencyInjector;
 import eionet.web.action.uiservices.ErrorPageService;
 import eionet.web.action.uiservices.impl.ErrorPageServiceImpl;
 import net.sourceforge.stripes.action.ActionBean;
-import net.sourceforge.stripes.mock.MockHttpServletResponse;
 import net.sourceforge.stripes.mock.MockRoundtrip;
 import net.sourceforge.stripes.mock.MockServletContext;
 import org.apache.commons.lang.builder.EqualsBuilder;
