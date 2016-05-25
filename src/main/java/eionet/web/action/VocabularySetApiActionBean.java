@@ -22,32 +22,30 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
  */
 @UrlBinding("/api/vocabularysets/{identifier}/{$event}")
 public class VocabularySetApiActionBean extends AbstractActionBean {
-    
+
     public static final String JSON_FORMAT = "application/json";
-    
+
     @SpringBean
     private WebApiAuthInfoService webApiAuthInfoService;
     @SpringBean
     private WebApiAuthService webApiAuthService;
     @SpringBean
     private VocabularyDataService vocabularyDataService;
-    
+
     private String identifier;
     private String label;
-    
+
     public Resolution createVocabularySet() {
         try {
             this.webApiAuthService.authenticate(this.webApiAuthInfoService.getAuthenticationInfo(getContext().getRequest()));
-        }
-        catch (UserAuthenticationException ex) {
+        } catch (UserAuthenticationException ex) {
             return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, ex.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
         }
-        
         VocabularySet vocabularySet = new VocabularySet();
         vocabularySet.setIdentifier(this.identifier);
         vocabularySet.setLabel(this.label);
         final VocabularySet created;
-        
+
         try {
             created = this.vocabularyDataService.createVocabularySet(vocabularySet);
         } catch (EmptyParameterException ex) {
@@ -57,7 +55,7 @@ public class VocabularySetApiActionBean extends AbstractActionBean {
             LOGGER.info(ex.getMessage(), ex);
             return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.CONFLICT, ex.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
         }
-        
+
         StreamingResolution result = new StreamingResolution(JSON_FORMAT) {
 
             @Override
@@ -66,10 +64,50 @@ public class VocabularySetApiActionBean extends AbstractActionBean {
                 messages.add(String.format("Successfully created vocabulary set %s", created.getIdentifier()));
                 VocabularyJSONOutputHelper.writeJSON(response.getOutputStream(), messages);
             }
-            
+
         };
-        
+
         return result;
     }
-    
+
+    public WebApiAuthInfoService getWebApiAuthInfoService() {
+        return webApiAuthInfoService;
+    }
+
+    public void setWebApiAuthInfoService(WebApiAuthInfoService webApiAuthInfoService) {
+        this.webApiAuthInfoService = webApiAuthInfoService;
+    }
+
+    public WebApiAuthService getWebApiAuthService() {
+        return webApiAuthService;
+    }
+
+    public void setWebApiAuthService(WebApiAuthService webApiAuthService) {
+        this.webApiAuthService = webApiAuthService;
+    }
+
+    public VocabularyDataService getVocabularyDataService() {
+        return vocabularyDataService;
+    }
+
+    public void setVocabularyDataService(VocabularyDataService vocabularyDataService) {
+        this.vocabularyDataService = vocabularyDataService;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
 }

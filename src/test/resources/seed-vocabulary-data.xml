@@ -23,6 +23,8 @@
     <VOCABULARY VOCABULARY_ID="7" CONTINUITY_ID="125" IDENTIFIER="vocab_with_base_uri_pop2" LABEL="vocabulary with base uri" REG_STATUS="Draft" DATE_MODIFIED="2014-06-21 06:48:20" WORKING_COPY="0" WORKING_USER="testUser2" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="5" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/csv_header_vs/vocab_with_base_uri_pop2/"/>
 
     <VOCABULARY VOCABULARY_ID="8" CONTINUITY_ID="125" IDENTIFIER="vocab_with_base_uri_change" LABEL="vocabulary with base uri" REG_STATUS="Draft" DATE_MODIFIED="2014-06-21 06:48:20" WORKING_COPY="0" WORKING_USER="testUser2" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="5" BASE_URI="http://test.dd.eionet.europa.eu/vocabulary/common/countries/"/>
+    <VOCABULARY VOCABULARY_ID="22" CONTINUITY_ID="123" IDENTIFIER="test_vocabulary22" LABEL="test22" REG_STATUS="Released" DATE_MODIFIED="2014-05-15 20:46:40" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="1" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/common/test_vocabulary2/"/>
+    <VOCABULARY VOCABULARY_ID="23" CONTINUITY_ID="123" IDENTIFIER="test_vocabulary23" LABEL="test23" REG_STATUS="Released" DATE_MODIFIED="2014-05-15 20:46:40" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="1" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/common/test_vocabulary2/"/>
 
 
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="1" VOCABULARY_ID="3" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="concept1" LABEL="concept1" />
