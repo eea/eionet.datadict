@@ -151,31 +151,29 @@
         <jsp:param name="name" value="Tables"/>
         <jsp:param name="helpscreen" value="tables"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <c:set var="currentSection" value="tables" />
+    <%@ include file="/pages/common/navigation.jsp" %>
 
 <div id="workarea">
+    <h1>Tables from latest versions of datasets in any status</h1>
+    <%
+    if (user==null){%>
+        <p class="advise-msg">
+            Note: Tables from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.
+        </p><%
+    }
+    %>
 
+    <!-- search buttons -->
+    <div id="drop-operations">
+        <ul>
+            <li class="search"><a href="search_table.jsp">Search</a></li>
+        </ul>
+    </div>
 
-                <!-- search buttons -->
-
-                <div id="drop-operations">
-                <h2>Operations:</h2>
-                    <ul>
-                        <li><a href="search_table.jsp">Search</a></li>
-                    </ul>
-                </div>
-
-            <h1>Tables from latest versions of datasets in any status</h1>
-            <%
-            if (user==null){%>
-                <p class="advise-msg">
-                    Note: Tables from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.
-                </p><%
-            }
-            %>
 
         <!-- the result table -->
-        <table width="100%" class="sortable" style="clear:both">
+        <table width="100%" class="sortable results" style="clear:both">
          <col style="width:34%"/>
          <col style="width:22%"/>
          <col style="width:22%"/>
@@ -314,7 +312,7 @@
 
                         tableLink = request.getContextPath() + "/tables/" + table_id;
 
-                        String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+                        String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                         String regStatus = table.getDstStatus();
                         boolean clickable = regStatus!=null ? !searchEngine.skipByRegStatus(regStatus) : true;
                         String strDisabled = clickable ? "" : " class=\"disabled\"";
@@ -409,7 +407,7 @@
 
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
                         String strDisabled = oEntry.clickable ? "" : " class=\"disabled\"";
-                        String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+                        String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                         tableLink = request.getContextPath() + "/tables/" + oEntry.oID;
                         String statusImg   = "images/" + Util.getStatusImage(oEntry.regStatus);
                         String statusTxt   = Util.getStatusRadics(oEntry.regStatus);

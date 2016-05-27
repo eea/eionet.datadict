@@ -64,7 +64,7 @@ public class VocabularyFolder {
     /**
      * Includes valid reg. status values for a vocabulary.
      */
-    public static final RegStatus[] VALID_REG_STATUS = new RegStatus[] {RegStatus.DRAFT, RegStatus.PUBLIC_DRAFT, RegStatus.RELEASED};
+    public static final RegStatus[] VALID_REG_STATUS = new RegStatus[] {RegStatus.DRAFT, RegStatus.PUBLIC_DRAFT, RegStatus.RELEASED,RegStatus.RELEASED};
 
     /**
      * Joined property - folder identifier.

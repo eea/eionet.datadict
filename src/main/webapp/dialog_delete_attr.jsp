@@ -90,7 +90,8 @@ ServletContext ctx = null;
         <jsp:include page="nlocation.jsp" flush="true">
             <jsp:param name="name" value="Attribute"/>
         </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="attributes" />
+<%@ include file="/pages/common/navigation.jsp" %>
 
 <div id="workarea">
     <form id="form1" action="dialog_delete_attr.jsp" method="post">

@@ -2,14 +2,13 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Site codes">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Site codes" currentSection="services">
 
     <stripes:layout-component name="head">
         <script type="text/javascript">
         // <![CDATA[
-        ( function($) {
+        (function($) {
             $(document).ready(function() {
-
                 var sampleNames = "site name 1\nsite name 2\nsite name 3\n...";
                 var allocated = false;
 
@@ -30,9 +29,6 @@
                     }
                     return false;
                 });
-
-
-
 
                 // Close allocate site codes dialog
                 $("#closeAllocateLink").click(function() {
@@ -86,7 +82,6 @@
                     }
                 });
 
-
                 // Function for opening popups
                 openPopup = function(divId) {
                     $(divId).dialog('open');
@@ -99,56 +94,96 @@
                     return false;
                 }
 
-
-                // First disable both fields
-                var disableAmountAndLabelsInput = new function() {
-                    var value = $("input:radio[name=choice]:checked").val();
-
-                    if (value == "amount") {
-                        $("#amountText").prop('disabled', false);
-                        $("#labelsText").prop('disabled', true);
-                        $("#labelsText").val(sampleNames);
-                    } else if (value == "labels") {
-                        $("#amountText").prop('disabled', true);
-                        $("#labelsText").prop('disabled', false);
-                        $("#labelsText").val("");
-                    } else {
-                        $("#amountText").prop('disabled', true);
-                        $("#labelsText").prop('disabled', true);
-                        $("#labelsText").val(sampleNames);
-                    }
-                }
-
-                disableAmountAndLabelsInput();
+                applySearchToggle("searchSiteCodesForm");
             });
-
-        } ) ( jQuery );
+        })(jQuery);
         // ]]>
         </script>
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">
+        <h1>Site codes</h1>
 
-        <c:if test="${actionBean.allocateRight || actionBean.createRight}">
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
+                <li class="search open"><a class="searchSection" href="#" title="Search site codes">Search</a></li>
                 <c:if test="${actionBean.createRight}">
-                    <li><a href="#" onClick="openPopup('#reserveSiteCodesDialog')">Add new site codes</a></li>
+                    <li class="add"><a href="#" onClick="openPopup('#reserveSiteCodesDialog')">Add new site codes</a></li>
                 </c:if>
                 <c:if test="${actionBean.allocateRight}">
-                    <li><a href="#" id="allocateSiteCodesLink">Allocate site codes</a></li>
+                    <li class="allocate"><a href="#" id="allocateSiteCodesLink">Allocate site codes</a></li>
                 </c:if>
             </ul>
         </div>
-        </c:if>
 
-        <h1>Site codes</h1>
+        <%-- Site codes search --%>
+        <stripes:form method="get" id="searchSiteCodesForm" beanclass="${actionBean['class'].name}">
+            <div id="filters">
+                <table class="filter">
+                    <tr>
+                        <td class="label">
+                            <label title="Allocated country" for="countryFilter">Country</label>
+                        </td>
+                        <td class="input">
+                            <stripes:select name="filter.countryCode" id="countryFilter">
+                                <stripes:option label="All" value="" />
+                                <stripes:options-collection collection="${actionBean.countries}" value="value" label="definition" />
+                            </stripes:select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <label title="Status" for="statusFilter">Status</label>
+                        </td>
+                        <td class="input">
+                            <stripes:select name="filter.status" id="statusFilter">
+                                <stripes:option label="All" value="" />
+                                <stripes:options-enumeration enum="eionet.meta.dao.domain.SiteCodeStatus" label="label" />
+                            </stripes:select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <label title="Site code number" for="siteCodeFilter">Site code</label>
+                        </td>
+                        <td class="input">
+                            <stripes:text class="smalltext" size="20" name="filter.identifier" id="siteCodeFilter"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <label title="Site code name" for="siteNameFilter">Site name</label>
+                        </td>
+                        <td class="input">
+                            <stripes:text class="smalltext" size="30" name="filter.siteName" id="siteNameFilter"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label" >
+                            <label title="Result page size" for="pageSize">Page size</label>
+                        </td>
+                        <td class="input">
+                            <stripes:select name="filter.pageSize" id="pageSize" value="${actionBean.filter.pageSize}">
+                                <stripes:option value="20" label="20" />
+                                <stripes:option value="50" label="50" />
+                                <stripes:option value="100" label="100" />
+                                <stripes:option value="500" label="500" />
+                                <stripes:option value="1000" label="1000" />
+                            </stripes:select>
+                        </td>
+                    </tr>
+                </table>
+                <p class="actions">
+                    <stripes:submit name="search" value="Search" class="mediumbuttonb searchButton" />
+                    <input class="mediumbuttonb" type="reset" value="Reset" />
+                </p>
+            </div>
+        </stripes:form>
 
         <%-- Info text --%>
         <c:if test="${actionBean.context.eventName == 'view'}">
             <c:if test="${actionBean.userLoggedIn and not actionBean.allocateRight}">
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>
                   You are not authorized to allocate site codes. Please contact responsible NRC or NFP if this is needed.
@@ -191,7 +226,7 @@
             </div>
 
             <c:if test="${empty actionBean.user}">
-            <div class="note-msg">
+            <div class="system-msg">
                 <strong>Note</strong>
                 <p>
                 Please <a href="https://sso.eionet.europa.eu/login?service=http%3A%2F%2Fdd.eionet.europa.eu%2Flogin">log-in</a> with your Eionet
@@ -234,81 +269,13 @@
             </c:forEach>
         </c:if>
 
-        <%-- Site codes search --%>
-        <stripes:form method="get" id="searchSiteCodesForm" beanclass="${actionBean['class'].name}">
-            <h2>Search site codes</h2>
-            <table class="datatable">
-                <colgroup>
-                    <col style="width:30 em;"/>
-                    <col />
-                </colgroup>
-                <tr>
-                    <th title="Allocated country">
-                        <label for="countryFilter">Country</label>
-                    </th>
-                    <td class="simple_attr_value">
-                        <stripes:select name="filter.countryCode" id="countryFilter">
-                            <stripes:option label="All" value="" />
-                            <stripes:options-collection collection="${actionBean.countries}" value="value" label="definition" />
-                        </stripes:select>
-                    </td>
-                    <th title="Allocated country">
-                        <label for="statusFilter">Status</label>
-                    </th>
-                    <td class="simple_attr_value">
-                        <stripes:select name="filter.status" id="statusFilter">
-                            <stripes:option label="All" value="" />
-                            <stripes:options-enumeration enum="eionet.meta.dao.domain.SiteCodeStatus" label="label" />
-                        </stripes:select>
-                    </td>
-                </tr>
-                <tr>
-                    <th class="simple_attr_title" title="Site code number">
-                        <label for="siteCodeFilter">Site code</label>
-                    </th>
-                    <td class="simple_attr_value">
-                        <stripes:text class="smalltext" size="20" name="filter.identifier" id="siteCodeFilter"/>
-                    </td>
-                    <th class="simple_attr_title" title="Site code name">
-                        <label for="siteNameFilter">Site name</label>
-                    </th>
-                    <td class="simple_attr_value">
-                        <stripes:text class="smalltext" size="30" name="filter.siteName"  id="siteNameFilter"/>
-                    </td>
-                </tr>
-                <tr>
-                    <th class="simple_attr_title" title="Result page size">
-                        <label for="pageSize">Page size</label>
-                    </th>
-                    <td class="simple_attr_value">
-                        <stripes:select name="filter.pageSize" id="pageSize" value="${actionBean.filter.pageSize}">
-                            <stripes:option value="20" label="20" />
-                            <stripes:option value="50" label="50" />
-                            <stripes:option value="100" label="100" />
-                            <stripes:option value="500" label="500" />
-                            <stripes:option value="1000" label="1000" />
-                        </stripes:select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>
-                        <stripes:submit name="search" value="Search" />
-                    </td>
-                </tr>
-           </table>
-        </stripes:form>
-
-
         <%-- Site codes table --%>
         <c:if test="${actionBean.context.eventName == 'search'}">
         <c:set var="exporttext"><div class="exportlinks"> Download all results as: {0} </div></c:set>
+        <display:table name="actionBean.siteCodeResult" class="datatable results" id="siteCode" style="width:100%" requestURI="/services/siteCodes/search" export="true">
+            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No site codes found.</p>" />
 
-        <display:table name="actionBean.siteCodeResult" class="datatable" id="siteCode" style="width:80%"
-        requestURI="/services/siteCodes/search" export="true">
-            <display:setProperty name="basic.msg.empty_list" value="No site codes found." />
-
-            <display:column title="Site code" property="identifier" escapeXml="true" class="number" style="width: 1%" sortable="true" sortProperty="identifier" />
+            <display:column title="Site code" property="identifier" escapeXml="true" class="number" sortable="true" sortProperty="identifier" />
             <display:column title="Site name" escapeXml="true" property="label" sortable="true" sortProperty="label" />
             <display:column title="Status" sortable="true" sortProperty="status">
                 <c:out value="${siteCode.siteCodeStatus.label}" />
@@ -336,7 +303,7 @@
                 <c:when test="${actionBean.updateRight ||
                     (actionBean.allocateRightAsCountry && fn:length(actionBean.allocations) > 0 &&
                     actionBean.allocations[0].unusedCodes < actionBean.maxAllocateAmount)}">
-                    <div class="tip-msg">
+                    <div class="system-msg">
                         <strong>Tip</strong>
                         <p>You have the following two options how to allocate new global site codes for your sites.</p>
                     </div>
@@ -440,7 +407,7 @@
             <stripes:form method="post" id="reserveFreeSiteCodesForm" beanclass="${actionBean['class'].name}">
                 <stripes:hidden name="siteCodeFolderId" />
 
-                <div class="tip-msg">
+                <div class="system-msg">
                     <strong>Tip</strong>
                     <p>Insert the range of new site codes. All the new site codes falling inclusively between range start and range end will be availabel for countries to be allocated.
                     </p>

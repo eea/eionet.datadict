@@ -16,7 +16,9 @@ import org.springframework.stereotype.Repository;
 import eionet.datadict.dal.AttributeDefinitionDAO;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
-import eionet.meta.application.errors.ResourceNotFoundException;
+import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.resources.AttributeDefinitionIdInfo;
+import eionet.datadict.resources.ResourceType;
 import eionet.meta.dao.domain.VocabularyFolder;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -184,7 +186,7 @@ public class AttributeDefinitionDAOImpl extends JdbcRepositoryBase implements At
                     });
             return attrDef;
         } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException(String.valueOf(id));
+            throw new ResourceNotFoundException(ResourceType.ATTRIBUTE_DEFINITION, new AttributeDefinitionIdInfo(String.valueOf(id)));
         }
     }
 

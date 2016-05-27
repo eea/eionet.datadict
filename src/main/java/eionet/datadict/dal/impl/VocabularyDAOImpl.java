@@ -6,7 +6,7 @@
 package eionet.datadict.dal.impl;
 
 import eionet.datadict.dal.VocabularyDAO;
-import eionet.meta.application.errors.ResourceNotFoundException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.meta.dao.domain.VocabularyFolder;
 import java.sql.ResultSet;
 import java.sql.SQLException;

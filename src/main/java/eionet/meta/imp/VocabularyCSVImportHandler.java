@@ -42,7 +42,6 @@ import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DataElementsFilter;
-import eionet.meta.service.data.DataElementsResult;
 import eionet.util.Pair;
 import eionet.util.Props;
 import eionet.util.PropsIF;
@@ -170,20 +169,20 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 if (!this.boundElementsIds.containsKey(elementHeader)) {
                     // search for data element
                     this.elementsFilter.setIdentifier(elementHeader);
-                    DataElementsResult elementsResult = this.dataService.searchDataElements(this.elementsFilter);
+                    List<DataElement> dataElements  = this.dataService.searchDataElements(this.elementsFilter);
                     // if there is one and only one element check if header and identifer exactly matches!
-                    if (elementsResult.getTotalResults() < 1) {
+                    if (dataElements.size() < 1) {
                         throw new ServiceException("Cannot find any data element for column: " + elementHeader
                                 + ". Please bind element manually then upload CSV.");
-                    } else if (elementsResult.getTotalResults() > 1) {
+                    } else if (dataElements.size()> 1) {
                         throw new ServiceException("Cannot find single data element for column: " + elementHeader
-                                + ". Search returns: " + elementsResult.getTotalResults()
+                                + ". Search returns: " + dataElements.size()
                                 + " elements. Please bind element manually then upload CSV.");
                     } else {
-                        DataElement elem = elementsResult.getDataElements().get(0);
+                        DataElement elem = dataElements.get(0);
                         if (StringUtils.equals(elementHeader, elem.getIdentifier())) {
                             // found it, add to list and map
-                            this.boundElementsIds.put(elementHeader, elementsResult.getDataElements().get(0).getId());
+                            this.boundElementsIds.put(elementHeader, elem.getId());
                             this.newBoundElement.add(elem);
                         } else {
                             throw new ServiceException("Found data element did not EXACTLY match with column: " + elementHeader

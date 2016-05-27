@@ -12,34 +12,23 @@
         <c:url var="expandIcon" value="/images/expand.png" />
         <c:url var="collapseIcon" value="/images/collapse.png" />
         <stripes:form beanclass="eionet.datadict.action.AttributeActionBean" method="post" style="margin-top:1em">
-            <div class="tree-nav">
-                <ul class="menu">
+                <ul class="tree-nav">
                     <c:forEach var="folder" items="${actionBean.folders}">
-                        <li>
-                            <stripes:link href="${actionBean.contextPath}/vocabularies/selectVocabulary">
+                        <li<c:if test="${folder.expanded}"> class="expanded"</c:if>>
+                            <stripes:link href="${actionBean.contextPath}/vocabularies/selectVocabulary" class="title">
                                 <stripes:param name="folderId" value="${folder.id}" />
                                 <stripes:param name="expand" value="${not folder.expanded}" />
                                 <stripes:param name="expanded" value="${actionBean.expanded}" />
                                 <stripes:param name="attrId" value="${actionBean.attrId}"/>
-                                <c:choose>
-                                    <c:when test="${folder.expanded}"><img style="border:0" src="${collapseIcon}" alt="Collapse" /></c:when>
-                                    <c:otherwise><img style="border:0" src="${expandIcon}" alt="Expand" /></c:otherwise>
-                                </c:choose>
+                                <c:out value="${folder.identifier}"/>
                             </stripes:link>
 
-                            <stripes:link href="${actionBean.contextPath}" class="${folder.expanded ? 'expanded' : 'collapsed'}">
-                                <stripes:param name="folderId" value="${folder.id}" />
-                                <stripes:param name="expand" value="${not folder.expanded}" />
-                                <stripes:param name="expanded" value="${actionBean.expanded}" />
-                                <stripes:param name="attrId" value ="${actionBean.attrId}"/>
-                                <c:out value="${folder.identifier}" />
-                            </stripes:link>
                             (<c:out value="${folder.label}"/>)
 
                             <c:if test="${not empty folder.items}">
-                                <ul class="menu" style="margin-left: 1.2em">
+                                <ul class="menu">
                                     <c:forEach var="item" items="${folder.items}" varStatus="itemLoop">
-                                        <li class="zebra${itemLoop.index % 2 != 0 ? 'odd' : 'even'}">
+                                        <li>
                                             <c:if test="${not item.workingCopy}">
                                                 <stripes:radio id="radio" name="viewModel.vocabularyId" value="${item.id}" />
                                                 <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" class="link-folder">
@@ -65,7 +54,6 @@
                 </div>
                 <stripes:hidden name="attrId"/>
             </stripes:form>
-        </div>
     </stripes:layout-component>
 </stripes:layout-render>
 

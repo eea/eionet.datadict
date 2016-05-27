@@ -156,3 +156,37 @@ function addMultiSelectRow(addValue, checkboxName, multiSelectDivName){
         div.appendChild(label);
     }
 }
+
+function applySearchToggle(searchFormId) {
+    jQuery("a.searchSection").click(function() {
+        jQuery("#" + searchFormId).slideToggle("slow");
+        jQuery(this).parent("li.search").toggleClass("open");
+        return false;
+    });
+}
+
+function applyExportOptionsToggle() {
+    jQuery("#drop-operations ul").append('<li class="expand"><a id="exportLink" href="">Exports</a></li>');
+    jQuery("a#exportLink").click(function() {
+        jQuery("#createbox").slideToggle("slow");
+        jQuery(this).parent("li.expand").toggleClass("active");
+        return false;
+    });
+}
+
+function applySelectionStyle() {
+    jQuery(".selectable").click(function() {
+        if (jQuery(this).is(":checked")) {
+            jQuery(this).parent("li").length ? jQuery(this).parent("li").addClass("selected") : jQuery(this).closest("tr").addClass("selected");
+        } else {
+            jQuery(this).parent("li").length ? jQuery(this).parent("li").removeClass("selected") : jQuery(this).closest("tr").removeClass("selected");
+        }
+    });
+}
+
+(function($) {
+    $(document).ready(function() {
+        $("th.sorted").addClass("selected");
+        applySelectionStyle();
+    });
+})(jQuery);

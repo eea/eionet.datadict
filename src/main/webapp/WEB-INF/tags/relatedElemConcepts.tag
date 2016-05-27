@@ -27,7 +27,6 @@
 </c:if>
 
 <c:url var="addIcon" value="/images/button_plus.gif" />
-<c:url var="delIcon" value="/images/button_remove.gif" />
 
 <script type="text/javascript">
 // <![CDATA[
@@ -70,7 +69,7 @@
                 <option value="${concept.id}"><c:out value="${concept.identifier}" /> (<c:out value="${concept.label}" />)</option>
             </c:forEach>
         </select>
-        <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove'/></a>
+        <a href="#" class="delLink deleteButton" title="Remove"></a>
     </div>
 </div>
 
@@ -95,7 +94,7 @@
                     </c:choose>
                 </c:forEach>
             </select>
-            <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
+            <a href="#" class="delLink deleteButton" title="Remove"></a>
         </div>
         </c:if>
     </c:forEach>

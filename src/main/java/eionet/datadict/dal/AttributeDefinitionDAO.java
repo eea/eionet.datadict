@@ -1,7 +1,7 @@
 package eionet.datadict.dal;
 
 import eionet.datadict.model.AttributeDefinition;
-import eionet.meta.application.errors.ResourceNotFoundException;
+import eionet.datadict.errors.ResourceNotFoundException;
 
 /**
  *

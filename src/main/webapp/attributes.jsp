@@ -1,6 +1,7 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%!static int iPageLen=0;%>
 
 <%@ include file="history.jsp" %>
@@ -100,32 +101,27 @@
                 <jsp:param name="name" value="Attributes"/>
                 <jsp:param name="helpscreen" value="attributes"/>
             </jsp:include>
-            <%@ include file="nmenu.jsp" %>
+            <c:set var="currentSection" value="attributes" />
+            <%@ include file="/pages/common/navigation.jsp" %>
             <div id="workarea">
+            <h1>Attributes</h1>
             <%
-
-            if (attributes == null || attributes.size()==0){
-                %>
-                <div class="error-msg">No attributes were found!</div>
+                if (attributes == null || attributes.size()==0){
+            %>
+                <h2 class="results">No attributes were found!</h2>
             </div></div>
-              <%@ include file="footer.jsp" %>
+            <%@ include file="footer.jsp" %>
             </body></html>
                 <%
                 return;
             }
-            %>
-
-        <h1>Attributes</h1>
-
-            <%
             if (user != null && mode==null){
                 boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
                 if (addPrm){
                     %>
                     <div id="drop-operations">
-                    <h2>Operations:</h2>
                         <ul>
-                            <li><a href="attribute/add">Add attribute</a></li>
+                            <li class="add"><a href="delem_attribute.jsp?mode=add">Add attribute</a></li>
                         </ul>
                     </div>
                     <%
@@ -146,36 +142,18 @@
             <%}%>
         </p>
 
-        <table class="datatable">
-            <tr>
-                <th scope="col" class="scope-col">
-                                Short name
-                </th>
-                <th scope="col" class="scope-col">
-                                Type
-                </th>
-                <th scope="col" class="scope-col">
-                                Datasets
-                </th>
-                <th scope="col" class="scope-col">
-                                Tables
-                </th>
-                <th scope="col" class="scope-col">
-                                Data elements<br/>with fixed values
-                </th>
-                <th scope="col" class="scope-col">
-                                Data elements<br/>with quantitative values
-                </th>
-                <th scope="col" class="scope-col">
-                                Schemas
-                </th>
-                <th scope="col" class="scope-col">
-                                Schema sets
-                </th>
-                <th scope="col" class="scope-col">
-                                Vocabulary folders
-                </th>
-            </tr>
+        <table class="datatable results">
+            <thead>
+                <th>Short name</th>
+                <th>Type</th>
+                <th>Datasets</th>
+                <th>Tables</th>
+                <th>Data elements<br/>with fixed values</th>
+                <th>Data elements<br/>with quantitative values</th>
+                <th>Schemas</th>
+                <th>Schema sets</th>
+                <th>Vocabulary folders</th>
+            </thead>
 
             <%
             // show all
@@ -210,52 +188,47 @@
                 }
 
                 String attrTypeDisp = "Simple";
+                String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                 %>
-
-                <tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
-                    <%
-                    if (attrType.equals(DElemAttribute.TYPE_COMPLEX)){
-                        attrTypeDisp = "Complex";
-                    %>
-                    <td>
-                        <a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>">
-                        <%=Util.processForDisplay(attr_name)%></a>
-                    </td><%}%>
-                    <td>
+                <tbody>
+                    <tr class="<%=zebraClass%>">
                         <%
-                        if (attrType.equals(DElemAttribute.TYPE_COMPLEX)){ %>
-                        <a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>">
-                            <%=Util.processForDisplay(attr_name)%></a> 
-                        <%
-                        } else { %>
-                        <a href="attribute/view/<%=attr_id%>"><%=Util.processForDisplay(attr_name)%></a> 
-                       <% } %>
-                    </td>
-
-                    <td><%=Util.processForDisplay(attrTypeDisp)%></td>
-                    <td class="center">
-                        <% if (attribute.displayFor("DST")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
-                    </td>
-                    <td class="center">
-                        <% if (attribute.displayFor("TBL")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
-                    </td>
-                    <td class="center">
-                        <!--  CH1 and CH3 attributes are same -->
-                        <% if (attribute.displayFor("CH1") || attribute.displayFor("CH3")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
-                    </td>
-                    <td class="center">
-                        <% if (attribute.displayFor("CH2")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
-                    </td>
-                    <td class="center">
-                        <% if (attribute.displayFor(DElemAttribute.ParentType.SCHEMA.toString())){ %><img src="images/ok.gif" alt="Yes"/><%}%>
-                    </td>
-                    <td class="center">
-                        <% if (attribute.displayFor(DElemAttribute.ParentType.SCHEMA_SET.toString())){ %><img src="images/ok.gif" alt="Yes"/><%}%>
-                    </td>
-                    <td class="center">
-                        <% if (attribute.displayFor(DElemAttribute.ParentType.VOCABULARY_FOLDER.toString())){ %><img src="images/ok.gif" alt="Yes"/><%}%>
-                    </td>
-                </tr>
+                        if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
+                            attrTypeDisp = "Complex";
+                        %>
+                        <td>
+                            <%if(attrType.equals(DElemAttribute.TYPE_SIMPLE)) {%>
+                            <a href="attribute/view/<%=attr_id%>"> <%
+                             } else { %>
+                             <a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>"> <%
+                                 }%>
+                            <%=Util.processForDisplay(attr_name)%></a>
+                        </td>
+                        <td><%=Util.processForDisplay(attrTypeDisp)%></td>
+                        <td class="center">
+                            <% if (attribute.displayFor("DST")){ %><span class="check">Yes</span><%}%>
+                        </td>
+                        <td class="center">
+                            <% if (attribute.displayFor("TBL")){ %><span class="check">Yes</span><%}%>
+                        </td>
+                        <td class="center">
+                            <!--  CH1 and CH3 attributes are same -->
+                            <% if (attribute.displayFor("CH1") || attribute.displayFor("CH3")){ %><span class="check">Yes</span><%}%>
+                        </td>
+                        <td class="center">
+                            <% if (attribute.displayFor("CH2")){ %><span class="check">Yes</span><%}%>
+                        </td>
+                        <td class="center">
+                            <% if (attribute.displayFor(DElemAttribute.ParentType.SCHEMA.toString())){ %><span class="check">Yes</span><%}%>
+                        </td>
+                        <td class="center">
+                            <% if (attribute.displayFor(DElemAttribute.ParentType.SCHEMA_SET.toString())){ %><span class="check">Yes</span><%}%>
+                        </td>
+                        <td class="center">
+                            <% if (attribute.displayFor(DElemAttribute.ParentType.VOCABULARY_FOLDER.toString())){ %><span class="check">Yes</span><%}%>
+                        </td>
+                    </tr>
+                </tbody>
 
                 <%
             }
@@ -263,9 +236,7 @@
 
         </table>
 
-        <fieldset style="display:hidden">
             <input type="hidden" name="searchUrl" value=""/>
-        </fieldset>
         </form>
             </div> <!-- workarea -->
             </div> <!-- container -->

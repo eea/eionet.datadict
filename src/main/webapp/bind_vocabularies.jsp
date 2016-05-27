@@ -5,12 +5,13 @@
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabularies">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabularies" currentSection="dataElements">
 
     <stripes:layout-component name="contents">
         <h1>Set Vocabulary for fixed values</h1>
 
-        <display:table name="${actionBean.vocabularies.list}" class="sortable" id="item" requestURI="/bindvocabulary"  pagesize="20">
+        <display:table name="${actionBean.vocabularies.list}" class="datatable results" id="item" requestURI="/bindvocabulary" pagesize="20">
+            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No data elements found.</p>" />
             <display:column title="Vocabulary Set" sortable="true" sortProperty="folderName">
                 ${item.folderName}
             </display:column>

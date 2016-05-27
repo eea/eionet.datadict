@@ -33,7 +33,6 @@ import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.mysql.valueconverters.BooleanToYesNoConverter;
 import eionet.meta.service.data.DataElementsFilter;
-import eionet.meta.service.data.DataElementsResult;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -41,7 +40,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
-import java.util.Collection;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -73,20 +71,9 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      * {@inheritDoc}
      */
     @Override
-    public DataElementsResult searchDataElements(DataElementsFilter filter) {
+    public List<DataElement> searchDataElements(DataElementsFilter filter) {
         boolean commonElements = filter.getElementType().equals(DataElementsFilter.COMMON_ELEMENT_TYPE);
-        List<DataElement> dataElements = null;
-        if (commonElements) {
-            dataElements = executeCommonElementQuery(filter);
-        } else {
-            dataElements = executeNonCommonElementQuery(filter);
-        }
-
-        DataElementsResult result = new DataElementsResult();
-        result.setDataElements(dataElements);
-        result.setCommonElements(commonElements);
-
-        return result;
+        return commonElements ? executeCommonElementQuery(filter) : executeNonCommonElementQuery(filter);
     }
 
     /**

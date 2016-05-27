@@ -34,8 +34,9 @@
 
 <h2>Bound elements for concepts</h2>
 
-<display:table name="actionBean.boundElements" class="sortable" id="item"
+<display:table name="actionBean.boundElements" class="datatable results" id="item" 
     requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/edit">
+    <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No bound elements found.</p>" />
     <display:column title="Element" sortable="true" sortProperty="identifier">
         <c:choose>
             <c:when test="${item.released && empty actionBean.user}">
@@ -58,9 +59,7 @@
         <c:if test="${item.type == 'CH3'}">Vocabulary</c:if>
     </display:column>
     <display:column title="Status" sortable="true">
-        <c:url var="imgSrc" value="/images/${item.statusImage}" />
-        <img src="${imgSrc}" title="${item.status}" alt="Status"/>
-
+        <dd:datasetRegStatus value="${item.status}" />
         <c:if test="${item.released}">
             <fmt:setLocale value="en_GB" />
             <fmt:formatDate pattern="dd MMM yyyy" value="${item.modified}" var="dateFormatted"/>
@@ -111,45 +110,46 @@
         </table>
     </stripes:form>
 
-    <display:table name="actionBean.elementsResult.dataElements" class="sortable" id="item" pagesize="20"
-        requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/searchDataElements">
-        <display:column title="Element" sortable="true" sortProperty="identifier">
-            <c:choose>
-                <c:when test="${item.released}">
-                    <stripes:link beanclass="${actionBean['class'].name}" event="addDataElement">
-                        <stripes:param name="elementId" value="${item.id}" />
-                        <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
-                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+    <c:if test="${not empty actionBean.elementsResult}">
+        <display:table name="actionBean.elementsResult.list" class="datatable results" id="item" pagesize="10"
+            requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/searchDataElements">
+            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No data elements found.</p>" />
+            <display:column title="Element">
+                <c:choose>
+                    <c:when test="${item.released}">
+                        <stripes:link beanclass="${actionBean['class'].name}" event="addDataElement">
+                            <stripes:param name="elementId" value="${item.id}" />
+                            <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                            <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                            <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                            <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                            ${item.identifier}
+                        </stripes:link>
+                        <c:if test="${not empty item.workingUser}">
+                            <span class="checkedout" title="${item.workingUser}">*</span>
+                        </c:if>
+                    </c:when>
+                    <c:otherwise>
                         ${item.identifier}
-                    </stripes:link>
-                    <c:if test="${not empty item.workingUser}">
-                        <span class="checkedout" title="${item.workingUser}">*</span>
-                    </c:if>
-                </c:when>
-                <c:otherwise>
-                    ${item.identifier}
-                    <c:if test="${not empty item.workingUser}">
-                        <span class="checkedout" title="${item.workingUser}">*</span>
-                    </c:if>
-                </c:otherwise>
-            </c:choose>
-        </display:column>
-        <display:column title="Type" sortable="true">
-            <c:if test="${item.type == 'CH1'}">Fixed values</c:if>
-            <c:if test="${item.type == 'CH2'}">Quantitative</c:if>
-            <c:if test="${item.type == 'CH3'}">Vocabulary</c:if>
-        </display:column>
-        <display:column title="Status" sortable="true">
-            <c:url var="imgSrc" value="/images/${item.statusImage}" />
-            <img src="${imgSrc}" border="0" title="${item.status}" />
-
-            <c:if test="${item.released}">
-                <fmt:setLocale value="en_GB" />
-                <fmt:formatDate pattern="dd MMM yyyy" value="${item.modified}" var="dateFormatted"/>
-                <sup class="commonelm">${dateFormatted}</sup>
-            </c:if>
-        </display:column>
-    </display:table>
+                        <c:if test="${not empty item.workingUser}">
+                            <span class="checkedout" title="${item.workingUser}">*</span>
+                        </c:if>
+                    </c:otherwise>
+                </c:choose>
+            </display:column>
+            <display:column title="Type">
+                <c:if test="${item.type == 'CH1'}">Fixed values</c:if>
+                <c:if test="${item.type == 'CH2'}">Quantitative</c:if>
+                <c:if test="${item.type == 'CH3'}">Vocabulary</c:if>
+            </display:column>
+            <display:column title="Status">
+                <dd:datasetRegStatus value="${item.status}" />
+                <c:if test="${item.released}">
+                    <fmt:setLocale value="en_GB" />
+                    <fmt:formatDate pattern="dd MMM yyyy" value="${item.modified}" var="dateFormatted"/>
+                    <sup class="commonelm">${dateFormatted}</sup>
+                </c:if>
+            </display:column>
+        </display:table>
+    </c:if>
 </div>

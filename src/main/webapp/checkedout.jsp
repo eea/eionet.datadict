@@ -63,7 +63,8 @@ List<VocabularyFolder> vocabularies = null;
 <jsp:include page="nlocation.jsp" flush="true">
     <jsp:param name="name" value="Checked out"/>
 </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="checkouts" />
+<%@ include file="/pages/common/navigation.jsp" %>
 
 <div id="workarea">
     <h1>Your checkouts</h1>

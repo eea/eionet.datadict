@@ -13,7 +13,7 @@
 
                 $("#searchVocabulariesDiv").dialog({
                     autoOpen: false,
-                    width: 600,
+                    width: 700,
                     modal: true
                 });
 
@@ -30,7 +30,7 @@
 
                 $("#searchConceptsDiv").dialog({
                     autoOpen: false,
-                    width: 600,
+                    width: 700,
                     modal: true
                 });
 
@@ -64,7 +64,7 @@
             </tr>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title" title="Vocabularies concept identifier or label ">
-                    <label for="filterText"><span style="white-space:nowrap;">Vocabulary Concept</span></label>
+                    <label for="filterConceptText"><span style="white-space:nowrap;">Vocabulary Concept</span></label>
                 </th>
                 <td class="simple_attr_value">
                     <input class="smalltext" size="50" name="vocabularyFilter.conceptText" id="filterConceptText" placeholder="Search by Vocabulary Concept identifier or label"/>

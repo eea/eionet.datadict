@@ -81,6 +81,11 @@ public class DDUser {
     public DDUser() {
     }
 
+    public DDUser(String userName, boolean authenticated) {
+        this.username = userName;
+        this.authented = authenticated;
+    }
+    
     /**
      *
      */

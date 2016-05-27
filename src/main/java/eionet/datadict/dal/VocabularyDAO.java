@@ -1,6 +1,6 @@
 package eionet.datadict.dal;
 
-import eionet.meta.application.errors.ResourceNotFoundException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.meta.dao.domain.VocabularyFolder;
 
 /**

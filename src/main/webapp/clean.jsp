@@ -1,6 +1,6 @@
 <%@page contentType="text/html;charset=UTF-8" import="eionet.util.sql.ConnectionUtil,eionet.meta.CleanupServlet,eionet.meta.DDUser,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
     response.setHeader("Pragma", "No-cache");
     response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
@@ -33,7 +33,8 @@
         <jsp:include page="nlocation.jsp" flush="true">
             <jsp:param name="name" value="Cleanup"/>
         </jsp:include>
-        <%@ include file="nmenu.jsp" %>
+        <c:set var="currentSection" value="cleanup" />
+        <%@ include file="/pages/common/navigation.jsp" %>
         <div id="workarea">
             <h1>Cleanup functions</h1>
             <p>

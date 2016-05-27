@@ -5,24 +5,26 @@
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabularies">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabularies" currentSection="vocabularies">
 
     <stripes:layout-component name="contents">
+        <h1>Vocabularies</h1>
+
+        <c:if test="${empty actionBean.user}">
+            <p class="advise-msg">
+                Note: Unauthenticated users can only see vocabularies in <em>Released</em> and <em>Public Draft</em> statuses.
+            </p>
+        </c:if>
+
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
-                <li><stripes:link id="searchLnk" href="#">Search again</stripes:link></li>
-                <li><stripes:link href="/vocabularies" event="form">Back to vocabularies</stripes:link></li>
+                <li class="back"><stripes:link href="/vocabularies" event="form">Back to vocabularies</stripes:link></li>
+                <li class="search"><stripes:link id="searchLnk" href="#">Search again</stripes:link></li>
             </ul>
         </div>
 
-        <h1>Vocabularies</h1>
-
-        <p class="advise-msg">
-            Note: Unauthenticated users can only see vocabularies in <em>Released</em> and <em>Public Draft</em> statuses.
-        </p>
-
-        <display:table name="${actionBean.vocabularyResult.list}" class="sortable" id="item" requestURI="/vocabularies/search"  pagesize="20">
+        <display:table name="${actionBean.vocabularyResult.list}" class="datatable results" id="item" requestURI="/vocabularies/search" pagesize="20">
+            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No vocabularies found.</p>" />
             <display:column title="Vocabulary Set" sortable="true" sortProperty="folderName">
                 ${item.folderName}
             </display:column>

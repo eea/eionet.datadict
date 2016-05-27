@@ -1186,7 +1186,7 @@
                 }<%}%>
 
             var url="<%=request.getContextPath()%>/search.jsp?ctx=popup";
-            wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+            wAdd = window.open(url,"Search","height=800,width=1200,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
             if (window.focus){
                 wAdd.focus();
             }
@@ -1278,7 +1278,8 @@
             <jsp:param name="name" value="Data element"/>
             <jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
         </jsp:include>
-        <%@ include file="nmenu.jsp" %>
+        <c:set var="currentSection" value="dataElements" />
+        <%@ include file="/pages/common/navigation.jsp" %>
         <div id="workarea">
 <%
     } // end if popup
@@ -1286,7 +1287,7 @@
             if (feedbackValue != null) {
             %>
                 <div class="system-msg">
-                <%= feedbackValue %>
+                    <strong><%= feedbackValue %></strong>
                 </div>
             <%
             }
@@ -1297,11 +1298,38 @@
                     else if (mode.equals("edit"))
                         verb = "Edit";
                     String strCommon = elmCommon ? "common" : "";
+                %>
+                <h1><%=verb%> <%=strCommon%> element definition</h1>
+                <%
+                    // set up fixed values
+                    fixedValues = mode.equals("add") ? null : searchEngine.getFixedValuesOrderedByValue(delem_id, "elem");
 
+                    // set up foreign key relations (if non-common element)
+                    Vector fKeys = null;
+                    if (!mode.equals("add") && !elmCommon && dataset != null) {
+                        fKeys = searchEngine.getFKRelationsElm(delem_id, dataset.getID());
+                    }
+                    if (mode.equals("view")) {
+                        Vector quicklinks = new Vector();
+
+                        if (fixedValues != null && fixedValues.size() > 0) {
+                            String s = type.equals("CH1") ? "Allowable values" : "Suggested values";
+                            quicklinks.add(s + " | values");
+                        }
+                        if (fKeys != null && fKeys.size() > 0) {
+                            quicklinks.add("Foreign key relations | fkeys");
+                        }
+                        if (complexAttrs != null && complexAttrs.size() > 0) {
+                            quicklinks.add("Complex attributes | cattrs");
+                        }
+                        request.setAttribute("quicklinks", quicklinks);
+                %>
+                    <jsp:include page="quicklinks.jsp" flush="true" />
+                <%
+                    }
                     if (mode.equals("view") && user!=null) {
                     %>
                         <div id="drop-operations">
-                        <h2>Operations:</h2>
                             <ul>
                             <%
                             if (popup) {
@@ -1310,7 +1338,7 @@
                             }
                             if (elmCommon && canNewVersion) {
                             %>
-                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/newversion">New version</a></li><%
+                                    <li class="newVersion"><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/newversion">New version</a></li><%
                             }
                             if (mode.equals("view") && elmCommon
                                     && !dataElement.isWorkingCopy()) {
@@ -1318,7 +1346,7 @@
                                     if (latestID != null
                                             && !latestID.equals(dataElement.getID())) {
                             %>
-                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=latestID%>">Go to newest</a></li><%
+                                    <li class="newest"><a href="<%=request.getContextPath()%>/dataelements/<%=latestID%>">Go to newest</a></li><%
                                     }
                                 }
                             }
@@ -1326,40 +1354,40 @@
                                 //The buttons displayed in view mode
                                     if (!elmCommon && editDstPrm) {
                                 %>
-                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
+                                    <li class="edit"><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
                                     <% request.setAttribute("includeSwitchTypeDialog", "true"); %>
-                                    <li><a href="#" id="switchTypeLink">Switch type</a></li>
+                                    <li class="switch"><a href="#" id="switchTypeLink">Switch type</a></li>
                                 <%
                                     }
                                     if (elmCommon && canCheckout) {
                                 %>
-                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/checkout">Check out</a></li>
+                                    <li class="checkout"><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/checkout">Check out</a></li>
                                 <%
                                     }
                                     if ((elmCommon && canCheckout)
                                                     || (!elmCommon && editDstPrm)) {
                                 %>
-                                    <li><a href="javascript:submitForm('delete')">Delete</a></li>
+                                    <li class="delete"><a href="javascript:submitForm('delete')">Delete</a></li>
                                 <%
                                     }
                                     if (!elmCommon && editDstPrm){
-                                        %><li><a href="<%=request.getContextPath()%>/dataelements/add/?table_id=<%=tableID%>&ds_id=<%=dsID%>">Add new element to table</a></li><%
+                                        %><li class="add"><a href="<%=request.getContextPath()%>/dataelements/add/?table_id=<%=tableID%>&ds_id=<%=dsID%>">Add new element to table</a></li><%
                                     }
                                }
                             if (mode.equals("view") && isMyWorkingCopy) {
                                  // view case
                                 %>
-                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
+                                    <li class="edit"><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
                                     <% request.setAttribute("includeSwitchTypeDialog", "true"); %>
-                                    <li><a href="#" id="switchTypeLink">Switch type</a></li>
-                                    <li><a href="javascript:checkIn()">Check in</a></li>
-                                    <li><a href="javascript:submitForm('delete')">Undo checkout</a></li>
+                                    <li class="switch"><a href="#" id="switchTypeLink">Switch type</a></li>
+                                    <li class="checkin"><a href="javascript:checkIn()">Check in</a></li>
+                                    <li class="undo"><a href="javascript:submitForm('delete')">Undo checkout</a></li>
                                 <%
                               }
                             if (mode.equals("view") && user != null && dataElement != null
                                     && elmCommon && dataElement.getIdentifier() != null && !dataElement.isWorkingCopy()) {
                             %>
-                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/subscribe">Subscribe</a></li>
+                                    <li class="subscribe"><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/subscribe">Subscribe</a></li>
                             <%
                             }
                             %>
@@ -1367,9 +1395,7 @@
                         </div>
                     <%
                     }
-                    %>
-                        <h1><%=verb%> <%=strCommon%> element definition</h1>
-            <%
+
                 if (mode.equals("add")) {
             %>
                 <p>
@@ -1383,7 +1409,7 @@
                     }
                 %>
 
-            <form id="form1" method="post" action="<%=request.getContextPath()%>/dataelements" style="clear:right;margin-top:20px">
+            <form id="form1" method="post" action="<%=request.getContextPath()%>/dataelements">
                 <div style="display:none">
                     <%
                         if (!mode.equals("add")) {
@@ -1403,39 +1429,7 @@
                                 <!-- quick links -->
 
                                 <%
-                                    // set up fixed values
-                                        fixedValues = mode.equals("add") ? null : searchEngine
-                                                .getFixedValuesOrderedByValue(delem_id, "elem");
-
-                                        // set up foreign key relations (if non-common element)
-                                        Vector fKeys = null;
-                                        if (!mode.equals("add") && !elmCommon && dataset != null)
-                                            fKeys = searchEngine.getFKRelationsElm(delem_id,
-                                                    dataset.getID());
-
-                                        if (mode.equals("view")) {
-                                            Vector quicklinks = new Vector();
-
-                                            if (fixedValues != null && fixedValues.size() > 0) {
-                                                String s = type.equals("CH1") ? "Allowable values"
-                                                        : "Suggested values";
-                                                quicklinks.add(s + " | values");
-                                            }
-                                            if (fKeys != null && fKeys.size() > 0)
-                                                quicklinks.add("Foreign key relations | fkeys");
-                                            if (complexAttrs != null && complexAttrs.size() > 0)
-                                                quicklinks.add("Complex attributes | cattrs");
-
-                                            request.setAttribute("quicklinks", quicklinks);
-                                %>
-                                    <jsp:include page="quicklinks.jsp" flush="true" />
-                                    <%
-                                        }
-                                    %>
-
-                                <!-- schema && codelist links-->
-
-                                <%
+                                    // schema && codelist links
                                     // display schema link only in view mode and only for users that have a right to edit a dataset
                                         if (mode.equals("view")) {
                                             boolean dispOutputs = elmCommon;
@@ -1444,50 +1438,40 @@
                                                         && dataset.displayCreateLink("XMLSCHEMA");
                                             if (!popup && dispOutputs) {
                                 %>
-                                        <div id="createbox" style="clear:right">
-                                            <table id="outputsmenu">
-                                                <tr>
-                                                    <td style="width:73%">
+                                        <script type="text/javascript">
+                                            $(function() {
+                                                applyExportOptionsToggle();
+                                            });
+                                        </script>
+                                        <div id="createbox">
+                                            <ul>
+                                                <li>
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=ELM<%=delem_id%>" class="xsd">
                                                         Create an XML Schema for this element
-                                                    </td>
-                                                    <td style="width:27%">
-                                                        <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=ELM<%=delem_id%>">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/xsd.png" width="16" height="16" alt=""/>
-                                                        </a>
-                                                    </td>
-                                                </tr>
+                                                    </a>
+                                                </li>
                                                 <%
                                                     if (fixedValues != null && fixedValues.size() > 0) {
                                                 %>
-                                                    <tr>
-                                                        <td style="width:73%">
+                                                    <li>
+                                                        <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="csv">
+                                                            <stripes:param name="ownerType" value="dataelements"/>
+                                                            <stripes:param name="ownerId" value="<%=dataElement.getID()%>"/>
+                                                            <stripes:param name="format" value="csv"/>
                                                             Get the comma-separated codelist of this element
-                                                        </td>
-                                                        <td style="width:27%">
-                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
-                                                                    <stripes:param name="ownerType" value="dataelements"/>
-                                                                    <stripes:param name="ownerId" value="<%=dataElement.getID()%>"/>
-                                                                    <stripes:param name="format" value="csv"/>
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
-                                                            </stripes:link>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="width:73%">
+                                                        </stripes:link>
+                                                    </li>
+                                                    <li>
+                                                        <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="xml">
+                                                            <stripes:param name="ownerType" value="dataelements"/>
+                                                            <stripes:param name="ownerId" value="<%=dataElement.getID()%>"/>
+                                                            <stripes:param name="format" value="xml"/>
                                                             Get the codelist of this element in XML format
-                                                        </td>
-                                                        <td style="width:27%">
-                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
-                                                                    <stripes:param name="ownerType" value="dataelements"/>
-                                                                    <stripes:param name="ownerId" value="<%=dataElement.getID()%>"/>
-                                                                    <stripes:param name="format" value="xml"/>
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
-                                                            </stripes:link>
-                                                        </td>
-                                                    </tr><%
+                                                        </stripes:link>
+                                                    </li><%
                                                         }
                                                     %>
-                                            </table>
+                                            </ul>
                                         </div>
                                         <%
                                             }
@@ -1495,84 +1479,61 @@
                                         %>
 
                                 <!-- type -->
-                                <div style="margin: 3px">
-                                    <b>Type:</b>
                                     <%
                                     if (mode.equals("add") && (type == null || type.length() == 0)) {
-                                        %>
-                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type">
-                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                        </a>
-                                        <br/><input type="radio" name="type" value="CH2" onclick="javascript:fixType(this)" checked="checked">Data element with quantitative values (e.g. measurements)</input>
-                                        <br/><input type="radio" name="type" value="CH1" onclick="javascript:fixType(this)">Data element with fixed values (codes)</input>
-                                        <br/><input type="radio" name="type" value="CH3" onclick="javascript:fixType(this)">Data element with values from a vocabulary</input><%
+                                    %>
+                                        <div>
+                                            <b>Type:</b>
+                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type"></a>
+                                            <br/><input type="radio" name="type" value="CH2" onclick="javascript:fixType(this)" checked="checked">Data element with quantitative values (e.g. measurements)</input>
+                                            <br/><input type="radio" name="type" value="CH1" onclick="javascript:fixType(this)">Data element with fixed values (codes)</input>
+                                            <br/><input type="radio" name="type" value="CH3" onclick="javascript:fixType(this)">Data element with values from a vocabulary</input>
+                                        </div><%
                                     }
-                                    else {
+                                    else { %>
+                                    <h2>
+                                    <%
                                         if (type.equals("CH1")) {
                                             %>
-                                            <b>DATA ELEMENT WITH FIXED VALUES</b><%
+                                            DATA ELEMENT WITH FIXED VALUES<%
                                         }
                                         else if (type.equals("CH2")) {
                                             %>
-                                            <b>DATA ELEMENT WITH QUANTITATIVE VALUES</b><%
+                                            DATA ELEMENT WITH QUANTITATIVE VALUES<%
                                         }
                                         else if (type.equals("CH3")) {
                                             %>
-                                            <b>DATA ELEMENT RELATED TO A VOCABULARY</b><%
+                                            DATA ELEMENT RELATED TO A VOCABULARY<%
                                         }
                                         else {
                                             %>
-                                            <b>DATA ELEMENT WITH QUANTITATIVE VALUES</b><%
+                                            DATA ELEMENT WITH QUANTITATIVE VALUES<%
                                         }
                                         %>
-                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type">
-                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                        </a><%
+                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type"></a>
+                                    </h2>
+                                    <%
                                     }
                                     %>
-                                </div>
-
 
                                 <!-- start dotted -->
-
                                 <div id="outerframe">
-
                                         <!-- attributes -->
-
                                         <%
-                                            int displayed = 0;
-                                                int colspan = mode.equals("view") ? 3 : 4;
-                                                String titleWidth = colspan == 3 ? "30" : "26";
-                                                String valueWidth = colspan == 3 ? "66" : "62";
-
-                                                String isOdd = Util.isOdd(displayed);
+                                            int displayed = 1;
+                                            String isOdd = Util.isOdd(displayed);
                                         %>
 
-                                        <table class="datatable">
-                                            <col style="width: <%=titleWidth%>%"/>
-                                            <col style="width: 4%"/>
-                                            <%
-                                                if (colspan == 4) {
-                                            %>
-                                            <col style="width: 4%"/>
-                                            <%
-                                                }
-                                            %>
-                                            <col style="width: <%=valueWidth%>%"/>
+                                        <table class="datatable results">
 
                                             <!-- Identifier -->
-
-                                            <tr class="zebra<%=isOdd%>">
+                                            <tr class="<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">
                                                     Identifier
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier"></a>
                                                 </th>
-                                                <td class="simple_attr_help">
-                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier">
-                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                    </a>
-                                                </td>
                                                 <%
-                                                    if (colspan == 4) {
+                                                    if (!mode.equals("view")) {
                                                 %>
                                                     <td class="simple_attr_help">
                                                         <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
@@ -1591,22 +1552,19 @@
                                                             }
                                                         %>
                                                 </td>
-
                                                 <%
                                                     isOdd = Util.isOdd(++displayed);
                                                 %>
                                             </tr>
 
                                               <!-- short name -->
-                                            <tr id="short_name_row">
-                                                <th scope="row" class="scope-row short_name">Short name</th>
-                                                <td class="short_name simple_attr_help">
-                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name">
-                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                    </a>
-                                                </td>
+                                            <tr id="short_name_row" class="<%=isOdd%>">
+                                                <th scope="row" class="scope-row short_name">
+                                                    Short name
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name"></a>
+                                                </th>
                                                 <%
-                                                    if (colspan == 4) {
+                                                    if (!mode.equals("view")) {
                                                 %>
                                                     <td class="short_name simple_attr_help">
                                                         <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
@@ -1628,30 +1586,24 @@
                                                             }
                                                         %>
                                                 </td>
-
                                                 <%
                                                     isOdd = Util.isOdd(++displayed);
                                                 %>
                                             </tr>
 
                                             <!-- dataset & table part, relevant for non-common elements only -->
-
                                             <%
                                                 if (!elmCommon) {
 
                                                         // dataset
                                             %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Dataset
-                                                        </th>
-                                                    <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=dataset">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
-                                                    </td>
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=dataset"></a>
+                                                    </th>
                                                     <%
-                                                        if (colspan == 4) {
+                                                        if (!mode.equals("view")) {
                                                     %>
                                                         <td class="simple_attr_help">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
@@ -1672,7 +1624,6 @@
                                                             %>
                                                         <input type="hidden" name="ds_id" value="<%=dsID%>"/>
                                                     </td>
-
                                                     <%
                                                         isOdd = Util.isOdd(++displayed);
                                                     %>
@@ -1680,17 +1631,13 @@
                                                 <%
                                                     // table
                                                 %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Table
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=table"></a>
                                                     </th>
-                                                    <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=table">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
-                                                    </td>
                                                     <%
-                                                        if (colspan == 4) {
+                                                        if (!mode.equals("view")) {
                                                     %>
                                                         <td class="simple_attr_help">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
@@ -1705,7 +1652,6 @@
                                                         </em>
                                                         <input type="hidden" name="table_id" value="<%=dsTable.getID()%>"/>
                                                     </td>
-
                                                     <%
                                                         isOdd = Util.isOdd(++displayed);
                                                     %>
@@ -1717,17 +1663,13 @@
                                             <%
                                                 if (elmCommon) {
                                             %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         RegistrationStatus
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=regstatus"></a>
                                                     </th>
-                                                    <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=regstatus">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
-                                                    </td>
                                                     <%
-                                                        if (colspan == 4) {
+                                                        if (!mode.equals("view")) {
                                                     %>
                                                         <td class="simple_attr_help">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
@@ -1794,19 +1736,14 @@
                                             if (mode.equals("view") && jspUrlPrefix != null) {
                                                 String refUrl = dataElement.getReferenceURL();
                                                 %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Reference URL
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl"></a>
                                                     </th>
-                                                    <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
-                                                    </td>
                                                     <td class="simple_attr_value">
                                                         <small><a href="<%=refUrl%>"><%=refUrl%></a></small>
                                                     </td>
-
                                                     <%
                                                         isOdd = Util.isOdd(++displayed);
                                                     %>
@@ -1834,7 +1771,6 @@
                                                 %>
 
                                             <!-- dynamic attributes -->
-
                                             <%
                                                 String attrID = null;
                                                     String attrValue = null;
@@ -1937,17 +1873,13 @@
                                                             }
                                                         }
                                             %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         <%=Util.processForDisplay(attribute.getName())%>
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                                     </th>
-                                                    <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
-                                                    </td>
                                                     <%
-                                                        if (colspan == 4) {
+                                                        if (!mode.equals("view")) {
                                                     %>
                                                         <td class="simple_attr_help">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/<%=Util.processForDisplay(obligImg)%>" width="16" height="16" alt=""/>
@@ -1956,7 +1888,6 @@
                                                         %>
 
                                                     <!-- dynamic attribute value display -->
-
                                                     <td class="simple_attr_value"><%
                                                         // handle image attribute first
                                                                 if (dispType.equals("image")) {
@@ -2136,9 +2067,7 @@
                          }
  %>
                                                                     </select>
-                                                                    <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>">
-                                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                                    </a>
+                                                                    <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>"></a>
                                                                     <%
                                                                         } else {
                                                                     %>
@@ -2168,17 +2097,13 @@
                                                     if (elmCommon && !mode.equals("add")) {
                                                         String elmVersion = dataElement.getVersion();
                                             %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         CheckInNo
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=check_in_no"></a>
                                                     </th>
-                                                    <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=check_in_no">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
-                                                    </td>
                                                     <%
-                                                        if (colspan == 4) {
+                                                        if (!mode.equals("view")) {
                                                     %>
                                                         <td class="simple_attr_help">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
@@ -2188,7 +2113,6 @@
                                                     <td class="simple_attr_value">
                                                         <%=elmVersion%>
                                                     </td>
-
                                                     <%
                                                         isOdd = Util.isOdd(++displayed);
                                                     %>
@@ -2200,17 +2124,13 @@
                                             <%
                                                 if (vocabulary != null) {
                                             %>
-                                                <tr class="zebra<%=isOdd%>">
+                                                <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Vocabulary
+                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=vocabulary_link"></a>
                                                     </th>
-                                                    <td class="simple_attr_help">
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=vocabulary_link">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                                        </a>
-                                                    </td>
                                                     <%
-                                                        if (colspan == 4) {
+                                                        if (!mode.equals("view")) {
                                                     %>
                                                     <td class="simple_attr_help">
                                                         <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt=""/>
@@ -2261,7 +2181,6 @@
                                                         <%
                                                             }
                                                         %>
-
                                                     </td>
                                                     <%
                                                         isOdd = Util.isOdd(++displayed);
@@ -2278,42 +2197,39 @@
                                                 pageContext.setAttribute("rdfNamespaces", searchEngine.getRdfNamespaces());
                                             } */
                                             %>
-                                            <tr>
-                                                <th></th>
-                                                <td colspan="3">
-
-                                                 <!-- add, save, check-in, undo check-out buttons -->
-                                                    <%
-                                                    // add case
-                                                    if (mode.equals("add")) {
-                                                    %>
+                                            <!-- add, save, check-in, undo check-out buttons -->
+                                            <%
+                                                // add case
+                                                if (mode.equals("add")) {
+                                            %>
+                                                <tr>
+                                                    <th></th>
+                                                    <td colspan="3">
                                                         <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
                                                         <input type="button" class="mediumbuttonb" value="Copy"
                                                             onclick="copyElem()"
                                                             title="Opens an element search window, and from the search results you can select an element to copy."/>
-                                                    <%
-                                                    }// edit case
-                                                    else if (mode.equals("edit")) {
-                                                    %>
+                                                    </td>
+                                                </tr>
+                                            <%
+                                                }// edit case
+                                                else if (mode.equals("edit")) {
+                                            %>
+                                                <tr>
+                                                    <th></th>
+                                                    <td colspan="3">
                                                         <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
                                                         <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
                                                         <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=delem_id%>')"/>
+                                                    </td>
+                                                </tr>
                                                     <%
                                                     }
                                                     %>
-
-                                                </td>
-                                            </tr>
                                         </table>
-
                                         <!-- end of attributes -->
 
-                                        <%
-                                            boolean separ1displayed = false;
-                                        %>
-
                                         <!-- allowable/suggested values -->
-
                                         <%
                                             boolean key = (mode.equals("edit") && user != null)
                                                         || (mode.equals("view") && fixedValues != null && fixedValues
@@ -2354,9 +2270,7 @@ String helpAreaName = "";
                                                         if (!mode.equals("view")) {
                                                     %>
                                                         <span class="simple_attr_help">
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=<%=Util.processForDisplay(helpAreaName)%>">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=<%=Util.processForDisplay(helpAreaName)%>"></a>
                                                         </span>
                                                         <span class="simple_attr_help">
                                                             <% if (type.equals("CH3")) { %>
@@ -2398,15 +2312,17 @@ String helpAreaName = "";
                                                     if (mode.equals("view") && fixedValues != null
                                                                     && fixedValues.size() > 0) {
                                                 %>
-                                                            <table class="datatable subtable">
+                                                            <table class="datatable results">
                                                                 <col style="width:20%"/>
                                                                 <col style="width:40%"/>
                                                                 <col style="width:40%"/>
-                                                                <tr>
-                                                                    <th>Code</th>
-                                                                    <th>Label</th>
-                                                                    <th>Definition</th>
-                                                                </tr>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Code</th>
+                                                                        <th>Label</th>
+                                                                        <th>Definition</th>
+                                                                    </tr>
+                                                                </thead>
                                                                 <%
                                                                     // rows
                                                                                 for (int i = 0; i < fixedValues.size()
@@ -2499,9 +2415,7 @@ String helpAreaName = "";
                                                         if (!mode.equals("view")) {
                                                     %>
                                                         <span class="simple_attr_help">
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=fks_link">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=fks_link"></a>
                                                         </span>
                                                         <span class="simple_attr_help">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt="optional"/>
@@ -2571,15 +2485,17 @@ String helpAreaName = "";
                                                 </h2>
 
                                                 <!-- table part -->
-                                                        <table class="datatable subtable">
+                                                        <table class="datatable results">
                                                             <col style="width: 43%"/>
                                                             <col style="width: 43%"/>
                                                             <col style="width: 14%"/>
-                                                            <tr>
-                                                                <th>Table</th>
-                                                                <th>Dataset</th>
-                                                                <th>Owner</th>
-                                                            </tr>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Table</th>
+                                                                    <th>Dataset</th>
+                                                                    <th>Owner</th>
+                                                                </tr>
+                                                            </thead>
                                                             <%
                                                                 // rows
                                                                         for (int i = 0; i < refTables.size(); i++) {
@@ -2626,8 +2542,6 @@ String helpAreaName = "";
                                             if ((mode.equals("edit") && user != null)
                                                         || (mode.equals("view") && complexAttrs != null && complexAttrs
                                                                 .size() > 0)) {
-
-                                                    colspan = user == null ? 1 : 2;
                                         %>
 
 
@@ -2638,9 +2552,7 @@ String helpAreaName = "";
                                                         if (!mode.equals("view")) {
                                                     %>
                                                         <span class="simple_attr_help">
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link"></a>
                                                         </span>
                                                         <span class="simple_attr_help">
                                                             <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt="mandatory"/>
@@ -2662,10 +2574,9 @@ String helpAreaName = "";
                                                             if (mode.equals("view") && complexAttrs != null
                                                                     && complexAttrs.size() > 0) {
                                                 %>
-                                                            <table class="datatable" id="dataset-attributes">
-                                                                <col style="width: 29%"/>
-                                                                <col style="width: 4%"/>
-                                                                <col style="width: 63%"/>
+                                                            <table class="datatable results" id="dataset-attributes">
+                                                                <col style="width: 30%"/>
+                                                                <col style="width: 70%"/>
                                                                 <%
                                                                     displayed = 1;
                                                                                 isOdd = Util.isOdd(displayed);
@@ -2679,15 +2590,11 @@ String helpAreaName = "";
                                                                                             attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
                                                                 %>
 
-                                                                    <tr class="zebra<%=isOdd%>">
+                                                                    <tr class="<%=isOdd%>">
                                                                         <td>
                                                                             <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.processForDisplay(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
                                                                                 <%=Util.processForDisplay(attrName)%>
-                                                                            </a>
-                                                                        </td>
-                                                                        <td>
-                                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
-                                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX"></a>
                                                                             </a>
                                                                         </td>
                                                                         <td>
@@ -2746,9 +2653,7 @@ String helpAreaName = "";
                                         <h2>Rules
                                             <!-- Eionet styling -->
                                             <span class="inference_rules_help">
-                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link">
-                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
-                                                </a>
+                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link"></a>
                                             </span>
                                             <span class="inference_rules_help">
                                                   <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt="mandatory"/>
@@ -2762,13 +2667,15 @@ String helpAreaName = "";
                                         <% if( mode.equals("view") ){ %>
                                             <% if( dataElementRules.size() > 0 ){ %>
                                             <h2>Rules</h2>
-                                            <table class="datatable" id="element-rules">
+                                            <table class="datatable results" id="element-rules">
                                                 <col style="width: 27%"/>
                                                 <col style="width: 63%"/>
-                                                <tr>
-                                                    <th>Inference Rule</th>
-                                                    <th>Element</th>
-                                                </tr>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Inference Rule</th>
+                                                        <th>Element</th>
+                                                    </tr>
+                                                </thead>
                                                 <tbody>
                                                     <%
                                                         eionet.meta.dao.domain.DataElement target;
@@ -2800,7 +2707,7 @@ String helpAreaName = "";
                                             <h2>
                                                 Other versions<a id="versions"></a>
                                             </h2>
-                                            <table class="datatable" id="other-versions">
+                                            <table class="datatable results">
                                                 <col style="width:25%"/>
                                                 <col style="width:25%"/>
                                                 <col style="width:25%"/>
@@ -2835,8 +2742,9 @@ String helpAreaName = "";
                                                         releaseDate = "";
                                                         releaseDateHint = "";
                                                     }
+                                                    String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                                                 %>
-                                                    <tr>
+                                                    <tr class="<%=zebraClass%>">
                                                         <td><%=otherVer.getID()%></td>
                                                         <td><%=status%></td>
                                                         <td><%=releaseDate%></td>

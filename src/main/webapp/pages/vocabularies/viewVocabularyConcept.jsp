@@ -2,15 +2,14 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp"
-    pageTitle="Vocabulary">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabulary" currentSection="vocabularies">
 
     <stripes:layout-component name="contents">
+        <h1>Concept: <em><c:out value="${actionBean.vocabularyConcept.label}" /></em> in the <em><c:out value="${actionBean.vocabularyFolder.identifier}" /></em> vocabulary</h1>
 
         <div id="drop-operations">
-            <h2>Operations:</h2>
             <ul>
-                <li>
+                <li class="back">
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="view">
                         <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
@@ -21,19 +20,17 @@
                     </stripes:link>
                 </li>
                 <c:if test="${actionBean.vocabularyFolder.workingCopy}">
-                <!-- beanClass usage interprets some symbols incorrect because of a Stripes bug. Will be fixed in Stripes 1.5.8 -->
-                <li>
-                    <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/edit">
-                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                        <c:out value="${item.label}" />
-                        Edit concept
-                    </stripes:link>
-                </li>
+                    <!-- beanClass usage interprets some symbols incorrect because of a Stripes bug. Will be fixed in Stripes 1.5.8 -->
+                    <li class="edit">
+                        <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${actionBean.vocabularyConcept.identifier}/edit">
+                            <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                            <c:out value="${item.label}" />
+                            Edit concept
+                        </stripes:link>
+                    </li>
                 </c:if>
             </ul>
         </div>
-
-        <h1>Concept: <em><c:out value="${actionBean.vocabularyConcept.label}" /></em> in the <em><c:out value="${actionBean.vocabularyFolder.identifier}" /></em> vocabulary</h1>
 
         <!-- Vocabulary folder -->
         <div id="outerframe" style="padding-top: 20px">

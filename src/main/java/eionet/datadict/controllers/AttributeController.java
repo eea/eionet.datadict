@@ -1,7 +1,7 @@
 package eionet.datadict.controllers;
 
 import eionet.datadict.action.attribute.AttributeViewModel;
-import eionet.meta.application.errors.ResourceNotFoundException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.util.CompoundDataObject;
 
 /**
@@ -15,7 +15,7 @@ public interface AttributeController {
      * 
      * @param attrId the M_ATTRIBUTE id
      * @return an object containing all the display info
-     * @throws eionet.meta.application.errors.ResourceNotFoundException
+     * @throws eionet.datadict.errors.ResourceNotFoundException
      */
     CompoundDataObject getAttributeViewInfo(String attrId) throws ResourceNotFoundException;
     
@@ -24,7 +24,7 @@ public interface AttributeController {
      * 
      * @param attrId the M_ATTRIBUTE id
      * @return an object containing all the display info
-     * @throws eionet.meta.application.errors.ResourceNotFoundException
+     * @throws eionet.datadict.errors.ResourceNotFoundException
      */
     CompoundDataObject getAttributeEditInfo(String attrId) throws ResourceNotFoundException;
    
@@ -63,7 +63,7 @@ public interface AttributeController {
      * Delete the specified attribute
      * 
      * @param id the id of the attribute to be deleted
-     * @throws eionet.meta.application.errors.ResourceNotFoundException
+     * @throws eionet.datadict.errors.ResourceNotFoundException
      */
     void deleteAttribute(String id) throws ResourceNotFoundException;
     

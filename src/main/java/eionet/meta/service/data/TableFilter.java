@@ -30,7 +30,7 @@ import eionet.meta.dao.domain.Attribute;
  *
  * @author Juhan Voolaid
  */
-public class TableFilter {
+public class TableFilter extends PagedRequest {
 
     private String shortName;
 

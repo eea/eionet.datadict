@@ -4,7 +4,7 @@ import eionet.datadict.dal.AttributeDefinitionDAO;
 import eionet.datadict.dal.VocabularyDAO;
 import eionet.datadict.model.AttributeDefinition;
 import eionet.datadict.service.AttributeDefinitionService;
-import eionet.meta.application.errors.ResourceNotFoundException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.meta.dao.domain.VocabularyFolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

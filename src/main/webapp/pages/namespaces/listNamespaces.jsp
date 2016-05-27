@@ -2,7 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Tables">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Tables" currentSection="namespaces">
 
     <stripes:layout-component name="contents">
 
@@ -10,8 +10,8 @@
 
         <h3>RDF Namespaces</h3>
 
-        <display:table name="${actionBean.rdfNamespaceResult}" class="sortable" id="rdfNamespace" sort="list" >
-            <display:setProperty name="basic.msg.empty_list" value="No RDF namespaces found." />
+        <display:table name="${actionBean.rdfNamespaceResult}" class="datatable results" id="rdfNamespace" sort="list">
+            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No RDF namespaces found.</p>" />
             <display:setProperty name="paging.banner.item_name" value="RDF namespace" />
             <display:setProperty name="paging.banner.items_name" value="RDF namespaces" />
             <display:column title="Prefix">
@@ -24,9 +24,9 @@
 
         <h3>Data Dictionary Namespaces</h3>
 
-        <display:table name="${actionBean.namespaceResult}" class="sortable" id="datasetNamespace" sort="list" requestURI="/namespaces">
+        <display:table name="${actionBean.namespaceResult}" class="datatable results" id="datasetNamespace" sort="list" requestURI="/namespaces">
             <display:setProperty name="paging.banner.placement" value="both" />
-            <display:setProperty name="basic.msg.empty_list" value="No namespaces found." />
+            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No namespaces found.</p>" />
             <display:setProperty name="paging.banner.item_name" value="namespace" />
             <display:setProperty name="paging.banner.items_name" value="namespaces" />
             <display:column title="Prefix">

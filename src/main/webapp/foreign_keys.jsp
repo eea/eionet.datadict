@@ -1,6 +1,8 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <%!private Vector elems=null;%>
 <%!private ServletContext ctx=null;%>
 
@@ -103,7 +105,7 @@
                 var selected = document.forms["form1"].collect_elems.value;
                 if (url != null) url = url + "&selected=" + selected;
 
-                wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+                wAdd = window.open(url,"Search","height=800,width=1200,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
                 if (window.focus){
                     wAdd.focus();
                 }
@@ -125,7 +127,8 @@
         <jsp:param name="name" value="Foreign keys"/>
         <jsp:param name="helpscreen" value="foreign_keys"/>
     </jsp:include>
-<%@ include file="nmenu.jsp" %>
+<c:set var="currentSection" value="dataElements" />
+<%@ include file="/pages/common/navigation.jsp" %>
 <div id="workarea">
 
 <form accept-charset="UTF-8" id="form1" method="post" action="foreign_keys.jsp">

@@ -104,6 +104,7 @@
             ${cutAtSpace(someString, 50)}
         </example>
     </function>
+
     <function>
         <description>Replaces spaces with %20 etc in the given string.</description>
         <name>urlEncode</name>
@@ -122,6 +123,13 @@
         <example>
             ${checkmark(someBoolean)}
         </example>
+    </function>
+
+    <function>
+        <description>Return the DatasetRegStatus enum from the given string.</description>
+        <name>getDatasetRegStatusFromString</name>
+        <function-class>eionet.meta.dao.domain.DatasetRegStatus</function-class>
+        <function-signature>eionet.meta.dao.domain.DatasetRegStatus fromString(java.lang.String)</function-signature>
     </function>
 
 </taglib>

@@ -22,7 +22,7 @@
 	<jsp:include page="nlocation.jsp" flush="true">
 	    <jsp:param name="name" value="Login"/>
 	</jsp:include>
-	<%@ include file="nmenu.jsp" %>
+	<%@ include file="/pages/common/navigation.jsp" %>
 
 	<div id="workarea">
 
@@ -32,8 +32,8 @@
 	    if (request.getParameter("err") != null) {
 	        %>
 	        <div class="error-msg">
-                There was a login error!<br/>
-                Please check your username/password and try again. If the problem persists, please contact system administrators.
+                    <strong>There was a login error.</strong>
+                    <p>Please check your username/password and try again. If the problem persists, please contact system administrators.</p>
 	        </div>
 	        <%
 	    }

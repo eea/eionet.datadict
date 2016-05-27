@@ -5,8 +5,7 @@
 <%@page import="eionet.meta.dao.domain.SchemaSet"%>
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
-<stripes:layout-render name="/pages/common/template.jsp"
-    pageTitle="Add vocabulary">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Add vocabulary" currentSection="vocabularies">
 
     <stripes:layout-component name="head">
         <script type="text/javascript">

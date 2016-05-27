@@ -11,7 +11,9 @@ import eionet.datadict.model.RdfNamespace;
 import eionet.datadict.model.enums.Enumerations;
 import eionet.datadict.model.enums.Enumerations.DisplayForType;
 import eionet.datadict.service.AttributeDefinitionService;
-import eionet.meta.application.errors.ResourceNotFoundException;
+import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.resources.AttributeDefinitionIdInfo;
+import eionet.datadict.resources.ResourceType;
 import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.util.CompoundDataObject;
@@ -106,7 +108,7 @@ public class AttributeControllerImpl implements AttributeController {
         try {
             ddAttributeDefinitionDAOImpl.delete(Integer.parseInt(id));
         } catch (NumberFormatException e) {
-            throw new ResourceNotFoundException(id);
+            throw new ResourceNotFoundException(ResourceType.ATTRIBUTE_DEFINITION, new AttributeDefinitionIdInfo(id));
         }
     }
     //----------------------

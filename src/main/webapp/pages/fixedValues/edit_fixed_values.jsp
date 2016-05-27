@@ -2,7 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Fixed Values">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Fixed Values" currentSection="dataElements">
     <stripes:layout-component name="head">
 
         <script type="text/javascript">
@@ -32,15 +32,15 @@
     <stripes:layout-component name="contents">
         <c:if test="${empty actionBean.context.validationErrors}">
             <%@ include file="/pages/fixedValues/fixed_values_header.jsp"%>
-            <div id="operations">
+            <div id="drop-operations">
                 <ul>
-                    <li>
+                    <li class="add">
                         <stripes:link beanclass="${actionBean.viewModel.actionBeanName}" event="add">
                             <stripes:param name="ownerId" value="${actionBean.ownerId}" />
                             Add value
                         </stripes:link>
                     </li>
-                    <li>
+                    <li class="import">
                         <stripes:link href="/import.jsp">
                             <stripes:param name="mode" value="FXV" />
                             <stripes:param name="delem_id" value="${actionBean.viewModel.owner.id}" />
@@ -48,7 +48,7 @@
                             Import values
                         </stripes:link>
                     </li>
-                    <li>
+                    <li class="delete">
                         <stripes:link id="btnDeleteAllFixedValues" beanclass="${actionBean.viewModel.actionBeanName}" event="delete">
                             <stripes:param name="ownerId" value="${actionBean.ownerId}" />
                             Delete all values
@@ -58,10 +58,12 @@
             </div>
             <c:choose>
                 <c:when test="${empty actionBean.viewModel.fixedValues}">
+                    <p class="not-found">
                     There are no 
                     <c:out value="${actionBean.viewModel.fixedValueCategoryLower}" /> 
                     values for this 
                     <c:out value="${actionBean.viewModel.owner.entityName}" />
+                    </p>
                 </c:when>
                 <c:otherwise>
                     <table class="datatable">

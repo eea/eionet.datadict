@@ -7,12 +7,13 @@
 
         <h1><c:out value="${actionBean.errorTypeMsg}" /></h1>
         <div class="error-msg">
+            <strong>Error</strong><br />
             <c:choose>
                 <c:when test="${not empty actionBean.message}">
                     <c:out value="${actionBean.message}" />
                 </c:when>
                 <c:otherwise>
-                    Error message not specified ...
+                    Error message not specified...
                 </c:otherwise>
             </c:choose>
         </div>

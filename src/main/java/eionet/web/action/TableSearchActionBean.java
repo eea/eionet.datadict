@@ -21,34 +21,39 @@
 
 package eionet.web.action;
 
-import java.util.List;
 
+import eionet.meta.dao.domain.DataSetTable;
+import eionet.meta.dao.domain.DataSetTableSort;
 import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 
 import org.apache.log4j.Logger;
 
-import eionet.meta.dao.domain.DataSetTable;
 import eionet.meta.service.ITableService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.TableFilter;
+import eionet.meta.service.data.TableResult;
+import java.util.Collections;
+import java.util.List;
+import net.sourceforge.stripes.action.ForwardResolution;
+import org.apache.commons.lang.StringUtils;
+import org.displaytag.properties.SortOrderEnum;
 
 /**
  * Table search action bean.
  *
  * @author Juhan Voolaid
  */
-@UrlBinding("/tableSearch.action")
+@UrlBinding("/searchtables")
 public class TableSearchActionBean extends AbstractActionBean {
 
     /** Logger. */
     private static final Logger LOGGER = Logger.getLogger(TableSearchActionBean.class);
 
     /** Table search result. */
-    private List<DataSetTable> dataSetTables;
+    private TableResult tableResult;
 
     /** Table search filter. */
     private TableFilter tableFilter;
@@ -56,17 +61,6 @@ public class TableSearchActionBean extends AbstractActionBean {
     /** Table service. */
     @SpringBean
     private ITableService tableService;
-
-    /**
-     * Handles the form page view.
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution form() throws ServiceException {
-        initTableFilter();
-        return new ForwardResolution("/pages/tableSearch.jsp");
-    }
 
     /**
      * Handles the searching action.
@@ -79,8 +73,35 @@ public class TableSearchActionBean extends AbstractActionBean {
         if (tableFilter == null) {
             initTableFilter();
         }
-        dataSetTables = tableService.searchTables(tableFilter);
-        return new ForwardResolution("/pages/tableResult.jsp");
+        tableFilter.setPageNumber(page);
+
+        List<DataSetTable> dataSetTables = tableService.searchTables(tableFilter);
+        int dataSetTablesSize = dataSetTables.size();
+
+        // sorting
+        DataSetTableSort dataSetTableSort = DataSetTableSort.fromString(sort);
+        if (dataSetTableSort != null) {
+            boolean descending = StringUtils.isNotBlank(dir) && dir.equals("desc");
+            // feed sort info to display tag
+            tableFilter.setSortProperty(sort);
+            tableFilter.setSortOrder(descending ? SortOrderEnum.DESCENDING : SortOrderEnum.ASCENDING);
+            Collections.sort(dataSetTables, dataSetTableSort.getComparator(descending));
+        }
+
+        tableResult = new TableResult(dataSetTables, dataSetTablesSize, tableFilter);
+
+        // pagination
+        if (tableFilter.isUsePaging()) {
+            if (tableFilter.getOffset() > dataSetTablesSize) {
+                tableResult.setList(Collections.EMPTY_LIST);
+            } else {
+                int paginationLimit = tableFilter.getOffset()+ tableFilter.getPageSize();
+                List<DataSetTable> paginatedItems = tableResult.getList().subList(tableFilter.getOffset(), 
+                        dataSetTablesSize <= paginationLimit ? dataSetTablesSize : paginationLimit);
+                tableResult.setList(paginatedItems);
+            }
+        }
+        return new ForwardResolution("/pages/search_tables.jsp");
     }
 
     /**
@@ -96,16 +117,16 @@ public class TableSearchActionBean extends AbstractActionBean {
     /**
      * @return the dataSetTables
      */
-    public List<DataSetTable> getDataSetTables() {
-        return dataSetTables;
+    public TableResult getTableResult() {
+        return tableResult;
     }
 
     /**
      * @param dataSetTables
      *            the dataSetTables to set
      */
-    public void setDataSetTables(List<DataSetTable> dataSetTables) {
-        this.dataSetTables = dataSetTables;
+    public void setDataSetTables(TableResult tableResult) {
+        this.tableResult = tableResult;
     }
 
     /**
@@ -136,6 +157,39 @@ public class TableSearchActionBean extends AbstractActionBean {
      */
     public void setTableService(ITableService tableService) {
         this.tableService = tableService;
+    }
+
+    /** Table page number. */
+    private int page = 1;
+
+    /** Sorting property. */
+    private String sort;
+
+    /** Sorting direction. */
+    private String dir;
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public String getSort() {
+        return sort;
+    }
+
+    public void setSort(String sort) {
+        this.sort = sort;
+    }
+
+    public String getDir() {
+        return dir;
+    }
+
+    public void setDir(String dir) {
+        this.dir = dir;
     }
 
 }

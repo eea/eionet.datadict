@@ -25,7 +25,6 @@
 </c:if>
 
 <c:url var="addIcon" value="/images/button_plus.gif" />
-<c:url var="delIcon" value="/images/button_remove.gif" />
 
 <script type="text/javascript">
 // <![CDATA[
@@ -57,7 +56,7 @@
         <input type="hidden" name="" value="${elementId}" />
         <input class="smalltext" size="${fieldSize}" type="text" />
         <dd:selectLang value="en" name="" />
-        <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
+        <a href="#" class="delLink deleteButton" title="Remove"></a>
         <br/>
     </span>
 </div>
@@ -69,7 +68,7 @@
             <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
             <input value="${attr.attributeValue}" name="${fieldName}[${innerLoop.index}].attributeValue" class="${fieldClass}" size="${fieldSize}" type="text" />
             <dd:selectLang value="${attr.attributeLanguage}" name="${fieldName}[${innerLoop.index}].attributeLanguage" />
-            <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a><br/>
+            <a href="#" class="delLink deleteButton" title="Remove"></a>
         </span>
         </c:if>
     </c:forEach>

@@ -175,7 +175,8 @@ if (!isPopup){
         <jsp:param name="name" value="Search tables"/>
         <jsp:param name="helpscreen" value="search_table"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %><%
+    <c:set var="currentSection" value="tables" />
+    <%@ include file="/pages/common/navigation.jsp" %><%
 }
 else {
     %>
@@ -191,20 +192,20 @@ else {
 %>
 
 <div id="workarea">
+    <h1>Search tables</h1>
 
     <%
       if (isPopup){
           %>
-          <div id="operations">
+          <div id="drop-operations">
             <ul>
-                <li><a href="javascript:window.close();">Close</a></li>
+                <li class="search"><a href="javascript:window.close();">Close</a></li>
                 <li class="help"><a class="helpButton" href="help.jsp?screen=search_table&amp;area=pagehelp" title="Get some help on this page">Page help</a></li>
               </ul>
     </div><%
       }
       %>
 
-    <h1>Search tables</h1>
         <form id="form1" action="search_results_tbl.jsp" method="get">
 
                 <table width="auto" cellspacing="0" style="margin-top:10px">
@@ -213,9 +214,7 @@ else {
                             <b>Short name</b>
                         </td>
                         <td>
-                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name">
-                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                            </a>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=short_name"></a>
                         </td>
                         <td colspan="2">
                             <input type="text" class="smalltext" size="59" name="short_name" value="<%=Util.processForDisplay(short_name)%>"/>
@@ -227,9 +226,7 @@ else {
                             <b>Identifier</b>
                         </td>
                         <td>
-                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier">
-                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                            </a>
+                            <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier"></a>
                         </td>
                         <td colspan="2">
                             <input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>"/>
@@ -275,9 +272,7 @@ else {
                                         <b><%=Util.processForDisplay(attrName)%></b>
                                     </td>
                                     <td>
-                                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                                        </a>
+                                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                     </td>
                                     <td colspan="2">
                                         <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.processForDisplay(attrValue, true)%>"/>
@@ -307,15 +302,13 @@ else {
                                     <b><%=Util.processForDisplay(attrName)%></b>
                                 </td>
                                 <td>
-                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                                    </a>
+                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                 </td>
                                 <td>
                                     <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.processForDisplay(attrValue, true)%>"/>
                                 </td>
                                 <td>
-                                    <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
+                                    <a class="deleteButton" href="javascript:selAttr(<%=attrID%>, 'remove');" title="Remove attribute from search criteria"></a>
                                 </td>
                             </tr>
                             <%
@@ -334,15 +327,13 @@ else {
                                     <b><%=Util.processForDisplay(attrName)%></b>
                                 </td>
                                 <td>
-                                        <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-                                        </a>
-                                    </td>
+                                    <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
+                                </td>
                                 <td>
                                     <input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
                                 </td>
                                 <td>
-                                    <a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
+                                    <a class="deleteButton" href="javascript:selAttr(<%=attrID%>, 'remove');" title="Remove attribute from search criteria"></a>
                                 </td>
                             </tr>
                             <%

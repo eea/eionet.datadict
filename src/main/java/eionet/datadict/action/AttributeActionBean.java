@@ -4,7 +4,7 @@ import eionet.datadict.action.attribute.AttributeViewModel;
 import eionet.datadict.action.attribute.AttributeViewModelBuilder;
 import eionet.datadict.controllers.AttributeController;
 import eionet.meta.DDUser;
-import eionet.meta.application.errors.ResourceNotFoundException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.meta.application.errors.UserAuthorizationException;
 import eionet.meta.service.ValidationException;
 import eionet.util.CompoundDataObject;

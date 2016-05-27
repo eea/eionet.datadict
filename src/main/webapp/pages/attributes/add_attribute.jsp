@@ -2,7 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit Attribute">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit Attribute" currentSection="attributes" >
     <stripes:layout-component name="contents">
         <c:set value="${actionBean.viewModel}" var="model"/>
         <h1>Add an attribute definition</h1>

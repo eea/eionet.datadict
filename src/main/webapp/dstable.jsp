@@ -605,7 +605,8 @@ else if (mode.equals("add"))
         <jsp:param name="name" value="Dataset table"/>
         <jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
     </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+    <c:set var="currentSection" value="tables" />
+    <%@ include file="/pages/common/navigation.jsp" %>
 
     <div id="workarea">
 
@@ -624,30 +625,49 @@ else if (mode.equals("add"))
         else if (mode.equals("edit"))
             pageHeadingVerb = "Edit";
         %>
-        <!-- The buttons displayed in view mode -->
-            <%
+        <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="<%=request.getContextPath()%>/datasets/<%=dsID%>"><%=Util.processForDisplay(dsName)%></a> dataset<%}%></h1>
+
+        <!-- quick links -->
+        <%
+            if (mode.equals("view")) {
+                Vector quicklinks = new Vector();
+
+                if (elems != null && elems.size() > 0) {
+                    quicklinks.add("Elements | elements");
+                }
+                if (complexAttrs != null && complexAttrs.size() > 0) {
+                    quicklinks.add("Complex attributes | cattrs");
+                }
+                request.setAttribute("quicklinks", quicklinks);
+        %>
+                <jsp:include page="quicklinks.jsp" flush="true" />
+        <%
+            }
             if ((mode.equals("view") && editDstPrm==true) || subscribe) {
             %>
             <div id="drop-operations">
-                <h2>Operations:</h2>
                 <ul>
                     <%
                     if (mode.equals("view") && editDstPrm==true) {
                     %>
-                    <li><a href="<%=request.getContextPath()%>/tables/<%=tableID%>/edit/?ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">Edit metadata</a></li>
+                    <li class="edit"><a href="<%=request.getContextPath()%>/tables/<%=tableID%>/edit/?ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">Edit metadata</a></li>
                     <%
                     // elements link
                     String elemLink = request.getContextPath() + "/tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
                     %>
-                    <li><a href="<%=request.getContextPath()%>/complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Edit complex attributes</a></li>
-                    <li><a href="<%=elemLink%>">Manage elements</a></li>
-                    <li><a href="javascript:submitForm('delete')">Delete</a></li>
+                    <li class="edit"><a href="<%=request.getContextPath()%>/complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Edit complex attributes</a></li>
+                    <li class="manage"><a href="<%=elemLink%>">Manage elements</a></li>
+                    <li class="delete"><a href="javascript:submitForm('delete')">Delete</a></li>
                     <%
                     }
                     if (subscribe) {%>
-                           <li><a href="<%=request.getContextPath()%>/tables/<%=tableID%>/subscribe">Subscribe</a></li><%
-                       }
-                    %>
+                           <li class="subscribe"><a href="<%=request.getContextPath()%>/tables/<%=tableID%>/subscribe">Subscribe</a></li><%
+                    }
+                    // display the link about cache
+                    boolean dispCache = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
+                    if (editDstPrm || dispCache) {%>
+                        <li class="doc"><a rel="nofollow" href="<%=request.getContextPath()%>/GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache</a></li>
+                    <%}%>
                 </ul>
             </div>
             <%
@@ -656,11 +676,9 @@ else if (mode.equals("add"))
 
             <%
             if (feedbackValue != null) {%>
-                <div class="system-msg"><%= feedbackValue %></div><%
+                <div class="system-msg"><strong><%= feedbackValue %></strong></div><%
             }
             %>
-
-        <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="<%=request.getContextPath()%>/datasets/<%=dsID%>"><%=Util.processForDisplay(dsName)%></a> dataset<%}%></h1>
 
         <form id="form1" method="post" action="<%=request.getContextPath()%>/tables" style="clear:both">
 
@@ -668,178 +686,109 @@ else if (mode.equals("add"))
             <!-- main table inside div -->
             <!--=======================-->
 
-            <table cellspacing="0" cellpadding="0" style="clear:right;border:0">
-
-                <!-- main table body -->
-
-                <tr>
-                    <td style="width:100%;height:10" colspan="2">
-
-                            <!-- quick links -->
-
-                            <%
-                            if (mode.equals("view")){
-                                Vector quicklinks = new Vector();
-
-                                if (elems!=null && elems.size()>0)
-                                    quicklinks.add("Elements | elements");
-                                if (complexAttrs!=null && complexAttrs.size()>0)
-                                    quicklinks.add("Complex attributes | cattrs");
-
-                                request.setAttribute("quicklinks", quicklinks);
-                                %>
-                                <jsp:include page="quicklinks.jsp" flush="true" />
-                                <%
-                            }
-                            %>
-
                             <!-- schema, MS Excel template, XForm, XmlInst, etc -->
-
                             <%
-                            if (mode.equals("view")){
+                            if (mode.equals("view")) {
 
                                 boolean dispAll = editDstPrm;
                                 boolean dispXLS = dataset!=null && dataset.displayCreateLink("XLS");
                                 boolean dispODS = dataset!=null && dataset.displayCreateLink("ODS");
                                 boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
                                 boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
-                                boolean dispXForm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xfrm");
-                                boolean dispCache = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
 
-                                if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispXForm || dispCache || dispODS){
+                                if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispODS){
                                     %>
+                                    <script type="text/javascript">
+                                        $(function() {
+                                            applyExportOptionsToggle();
+                                        });
+                                    </script>
                                     <div id="createbox">
-                                            <table id="outputsmenu">
-                                            <col style="width:73%"/>
-                                            <col style="width:27%"/>
+                                        <ul>
+                                            <%
+                                            // XML Schema link
+                                            if (dispAll || dispXmlSchema){ %>
+                                                <li>
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=TBL<%=tableID%>" class="xsd">
+                                                        Create an XML Schema for this table
+                                                    </a>
+                                                </li><%
+                                            }
+
+                                            // XML Instance link
+                                            if (dispAll || dispXmlInstance){ %>
+                                                <li>
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetXmlInstance?id=<%=tableID%>&amp;type=tbl" class="xml">
+                                                        Create an instance XML for this table
+                                                    </a>
+                                                </li><%
+                                            }
+
+                                            // MS Excel link
+                                            if (dispAll || dispXLS){
+                                            %>
+                                                <li>
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>" class="excel">
+                                                        Create an MS Excel template for this table
+                                                    </a>
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel"></a>
+                                                </li>
+                                            <% }
+                                            if ((dispAll || dispXLS) && user != null) { %>
+                                                <li>
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=tbl&amp;obj_act=dd&amp;obj_id=<%=tableID%>" class="excel">
+                                                        Create an MS Excel template for this table with drop-down boxes (BETA)
+                                                    </a>
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel_dropdown"></a>
+                                                </li>
                                                 <%
-                                                // XML Schema link
-                                                if (dispAll || dispXmlSchema){ %>
-                                                    <tr>
-                                                        <td>
-                                                            Create an XML Schema for this table
-                                                        </td>
-                                                        <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=TBL<%=tableID%>">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/xsd.png" width="16" height="16" alt=""/>
-                                                            </a>
-                                                        </td>
-                                                    </tr><%
-                                                }
+                                            }
 
-                                                // XML Instance link
-                                                if (dispAll || dispXmlInstance){ %>
-                                                    <tr>
-                                                        <td>
-                                                            Create an instance XML for this table
-                                                        </td>
-                                                        <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXmlInstance?id=<%=tableID%>&amp;type=tbl">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
-                                                            </a>
-                                                        </td>
-                                                    </tr><%
-                                                }
+                                            // OpenDocument spreadsheet template link
+                                            if (dispAll || dispODS){ %>
+                                                <li>
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=tbl&amp;id=<%=tableID%>" class="open-doc">
+                                                        Create an OpenDocument spreadsheet template for this table
+                                                    </a>
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=ods"></a>
+                                                </li><%
+                                            }
 
-                                                // MS Excel link
-                                                if (dispAll || dispXLS){
-                                                %>
-                                                    <tr>
-                                                        <td>
-                                                            Create an MS Excel template for this table&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" /></a>
-                                                        </td>
-                                                        <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img style="border:0" src="<%=request.getContextPath()%>/images/xls.png" width="16" height="16" alt=""/></a>
-                                                        </td>
-                                                    </tr>
-                                                <% }
-                                                if ((dispAll || dispXLS) && user != null) { %>
-                                                <tr>
-                                                        <td>
-                                                            Create an MS Excel template for this table with drop-down boxes (BETA)&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel_dropdown"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" /></a>
-                                                        </td>
-                                                        <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=tbl&amp;obj_act=dd&amp;obj_id=<%=tableID%>"><img style="border:0" src="<%=request.getContextPath()%>/images/xls.png" width="16" height="16" alt=""/></a>
-                                                        </td>
-                                                    </tr>
-                                                    <%
-                                                }
+                                            // codelist
+                                            if (dispAll || dispXmlSchema){ %>
+                                                <li>
+                                                    <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="csv">
+                                                        <stripes:param name="ownerType" value="tables"/>
+                                                        <stripes:param name="ownerId" value="<%=dsTable.getID()%>"/>
+                                                        <stripes:param name="format" value="csv"/>
+                                                        Get the comma-separated codelists of this table
+                                                    </stripes:link>
+                                                </li>
+                                                <li>
+                                                    <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="csv">
+                                                        <stripes:param name="ownerType" value="tables"/>
+                                                        <stripes:param name="ownerId" value="<%=dsTable.getID()%>"/>
+                                                        <stripes:param name="format" value="xml"/>
+                                                        Get the codelists of this table in XML format
+                                                    </stripes:link>
+                                                </li><%
+                                            }
 
-                                                // OpenDocument spreadsheet template link
-                                                if (dispAll || dispODS){ %>
-                                                    <tr>
-                                                        <td>
-                                                            Create an OpenDocument spreadsheet template for this table&nbsp;<a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=ods"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" /></a>
-                                                        </td>
-                                                        <td>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=tbl&amp;id=<%=tableID%>"><img style="border:0" src="<%=request.getContextPath()%>/images/ods.png" width="16" height="16" alt=""/></a>
-                                                        </td>
-                                                    </tr><%
-                                                }
-
-                                                // codelist
-                                                if (dispAll || dispXmlSchema){ %>
-                                                    <tr>
-                                                        <td>
-                                                            Get the comma-separated codelists of this table
-                                                        </td>
-                                                        <td>
-                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
-                                                                    <stripes:param name="ownerType" value="tables"/>
-                                                                    <stripes:param name="ownerId" value="<%=dsTable.getID()%>"/>
-                                                                    <stripes:param name="format" value="csv"/>
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
-                                                            </stripes:link>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            Get the codelists of this table in XML format
-                                                        </td>
-                                                        <td>
-                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean">
-                                                                    <stripes:param name="ownerType" value="tables"/>
-                                                                    <stripes:param name="ownerId" value="<%=dsTable.getID()%>"/>
-                                                                    <stripes:param name="format" value="xml"/>
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
-                                                            </stripes:link>
-                                                        </td>
-                                                    </tr><%
-                                                }
-
-                                                // TESTING the link for creating dBase II format
-                                                if (user!=null){
-                                                    String userName = user.getUserName();
-                                                    if (userName.equals("roug") || userName.equals("heinlja") || userName.equals("cryan")){
-                                                        %>
-                                                        <tr>
-                                                            <td>Create dBaseII</td>
-                                                            <td>
-                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetDbf/<%=dsTable.getID()%>">
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                        <%
-                                                    }
-                                                }
-
-
-                                                // display the link about cache
-                                                if (dispAll || dispCache){
+                                            // TESTING the link for creating dBase II format
+                                            if (user!=null){
+                                                String userName = user.getUserName();
+                                                if (userName.equals("roug") || userName.equals("heinlja") || userName.equals("cryan")) {
                                                     %>
-                                                    <tr style="height:20px;">
-                                                        <td colspan="2">
-                                                            <span class="barfont">
-                                                                [ <a rel="nofollow" href="<%=request.getContextPath()%>/GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
-                                                            </span>
-                                                        </td>
-                                                    </tr>
+                                                    <li>
+                                                        <a rel="nofollow" href="<%=request.getContextPath()%>/GetDbf/<%=dsTable.getID()%>" class="dbf">
+                                                            Create dBaseII
+                                                        </a>
+                                                    </li>
                                                     <%
                                                 }
-                                                %>
-
-                                            </table>
+                                            }
+                                        %>
+                                        </ul>
                                     </div>
                                     <%
                                 }
@@ -851,14 +800,14 @@ else if (mode.equals("add"))
                             String schemaUrl = Props.getRequiredProperty(PropsIF.DD_URL) + "/GetSchema?id=TBL" + tableID;
                             SchemaConversionsData xmlConvData = searchEngine.getXmlConvData(schemaUrl);
                             if (xmlConvData != null){ %>
-                                <div>
-                                    <p>
+                                <div class="system-msg">
+                                    <strong>
                                     There are <%=xmlConvData.getNumberOfQAScripts()%> QA scripts and <%=xmlConvData.getNumberOfConversions()%> conversion scripts registered for this table.
                                     <% if (xmlConvData.getNumberOfQAScripts() > 0 || xmlConvData.getNumberOfConversions() > 0) {%>
                                     <br />
                                     <a href="<%=xmlConvData.getXmlConvUrl()%>?schema=<%=schemaUrl%>">Link to the schema page on XMLCONV</a>
                                     <%}%>
-                                    </p>
+                                    </strong>
                                 </div><%
                             }
                             %>
@@ -869,36 +818,21 @@ else if (mode.equals("add"))
                                     <!-- attributes -->
 
                                     <%
-                                    int displayed = 0;
-                                    int colspan = mode.equals("view") ? 3 : 4;
-                                    String titleWidth = colspan==3 ? "30" : "26";
-                                    String valueWidth = colspan==3 ? "66" : "62";
-
+                                    int displayed = 1;
                                     String isOdd = Util.isOdd(displayed);
                                     %>
 
-                                    <table class="datatable" width="100%">
-                                            <col style="width:<%=titleWidth%>%"/>
-                                            <col style="width:4%"/>
-                                            <% if (colspan==4){ %>
-                                            <col style="width:4%"/>
-                                            <% } %>
-                                            <col style="width:<%=valueWidth%>%"/>
-
-                                          <!-- static attributes -->
+                                    <table class="datatable results" width="100%">
+                                        <!-- static attributes -->
 
                                         <!-- Identifier -->
-                                        <tr class="zebra<%=isOdd%>">
+                                        <tr class="<%=isOdd%>">
                                             <th scope="row" class="scope-row simple_attr_title">
                                                 Identifier
+                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier"></a>
                                             </th>
-                                            <td class="simple_attr_help">
-                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier">
-                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
-                                                </a>
-                                            </td>
                                             <%
-                                            if (colspan==4){%>
+                                            if (!mode.equals("view")){%>
                                                 <td class="simple_attr_help">
                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                                                 </td><%
@@ -915,20 +849,17 @@ else if (mode.equals("add"))
                                                 }
                                                 %>
                                             </td>
-
                                             <%isOdd = Util.isOdd(++displayed);%>
                                         </tr>
 
                                         <!-- short name -->
-                                        <tr id="short_name_row">
-                                            <th scope="row" class="scope-row short_name">Short name</th>
-                                            <td class="short_name simple_attr_help">
-                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name">
-                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
-                                                </a>
-                                            </td>
+                                        <tr id="short_name_row" class="<%=isOdd%>">
+                                            <th scope="row" class="scope-row short_name">
+                                                Short name
+                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name"></a>
+                                            </th>
                                             <%
-                                            if (colspan==4){
+                                            if (!mode.equals("view")){
                                                 %>
                                                 <td class="short_name simple_attr_help">
                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
@@ -949,23 +880,17 @@ else if (mode.equals("add"))
                                                 }
                                                 %>
                                             </td>
-
                                             <%isOdd = Util.isOdd(++displayed);%>
                                         </tr>
 
                                         <!-- dataset -->
-
-                                        <tr class="zebra<%=isOdd%>">
+                                        <tr class="<%=isOdd%>">
                                             <th scope="row" class="scope-row simple_attr_title">
                                                 Dataset
+                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=dataset"></a>
                                             </th>
-                                            <td class="simple_attr_help">
-                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=dataset">
-                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
-                                                </a>
-                                            </td>
                                             <%
-                                            if (colspan==4){%>
+                                            if (!mode.equals("view")){%>
                                                 <td class="simple_attr_help">
                                                     <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                                                 </td><%
@@ -987,30 +912,23 @@ else if (mode.equals("add"))
                                         <!-- Reference URL -->
                                         <%
                                         String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-                                        if (mode.equals("view") && jspUrlPrefix!=null){
-
+                                        if (mode.equals("view") && jspUrlPrefix!=null) {
                                             String refUrl = dsTable.getReferenceURL();
                                             %>
-                                            <tr class="zebra<%=isOdd%>">
+                                            <tr class="<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">
                                                     Reference URL
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl"></a>
                                                 </th>
-                                                <td class="simple_attr_help">
-                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl">
-                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
-                                                    </a>
-                                                </td>
                                                 <td class="simple_attr_value">
                                                     <small><a href="<%=refUrl%>"><%=refUrl%></a></small>
                                                 </td>
-
                                                 <%isOdd = Util.isOdd(++displayed);%>
                                             </tr><%
                                         }
                                         %>
 
                                         <!-- dynamic attributes -->
-
                                         <%
                                         String attrID = null;
                                         String attrValue = null;
@@ -1018,7 +936,6 @@ else if (mode.equals("add"))
                                         boolean imagesQuicklinkSet = false;
 
                                         for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
-
                                             attribute = (DElemAttribute)mAttributes.get(i);
                                             String dispType = attribute.getDisplayType();
                                             if (dispType == null) continue;
@@ -1061,13 +978,10 @@ else if (mode.equals("add"))
                                                     if (dispMultiple){
                                                         if (inherit){
                                                             multiValues = getValues(attrID, 1, mode, attributes); //original values only
-                                                        }
-                                                        else{
+                                                        } else {
                                                             multiValues = getValues(attrID, 0, mode, attributes);  //all values
                                                         }
-
-                                                    }
-                                                    else{
+                                                    } else {
                                                         if (inherit) attrValue = getValue(attrID, 1, mode, attributes);  //get original value
                                                     }
                                                 }
@@ -1075,17 +989,13 @@ else if (mode.equals("add"))
 
                                             %>
 
-                                            <tr class="zebra<%=isOdd%>">
+                                            <tr class="<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">
                                                     <%=Util.processForDisplay(attribute.getName())%>
+                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                                 </th>
-                                                <td class="simple_attr_help">
-                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
-                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
-                                                    </a>
-                                                </td>
                                                 <%
-                                                if (colspan==4){%>
+                                                if (!mode.equals("view")){%>
                                                     <td class="simple_attr_help">
                                                         <img style="border:0" src="<%=request.getContextPath()%>/images/<%=Util.processForDisplay(obligImg)%>" width="16" height="16" alt=""/>
                                                     </td><%
@@ -1093,9 +1003,7 @@ else if (mode.equals("add"))
                                                 %>
 
                                                 <!-- dynamic attribute value display -->
-
                                                 <td class="simple_attr_value"><%
-
                                                     // handle image attribute first
                                                     if (dispType.equals("image")){
 
@@ -1241,9 +1149,7 @@ else if (mode.equals("add"))
                                                                     }
                                                                     %>
                                                                 </select>
-                                                                    <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID + "/" + ("view".equals(mode) ? "view" : "edit")%>">
-                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
-                                                                </a>
+                                                                    <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID + "/" + ("view".equals(mode) ? "view" : "edit")%>"></a>
                                                                 <%
                                                             }
                                                             else{ %>
@@ -1269,42 +1175,40 @@ else if (mode.equals("add"))
                                             pageContext.setAttribute("rdfNamespaces", searchEngine.getRdfNamespaces());
                                         } */
                                         %>
-                                        <tr>
-                                            <th></th>
-                                            <td colspan="3">
-                                            <!-- add, save, check-in, undo check-out buttons -->
+                                        
+                                        <!-- add, save, check-in, undo check-out buttons -->
                                             <%
-                                            if (mode.equals("add") || mode.equals("edit")){
+                                            if (mode.equals("add") || mode.equals("edit")) {
                                                 // add case
-                                                if (mode.equals("add")){
+                                                if (mode.equals("add")) {
                                                     %>
-                                                    <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
-                                                    <input type="button" class="mediumbuttonb" value="Copy"
-                                                        onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
-                                                        title="Copies table structure and attributes from existing dataset table"/><%
-                                                }
-                                                // edit case
-                                                else if (mode.equals("edit")){
-                                                    %>
-                                                    <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-                                                    <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
-                                                    <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=tableID%>')"/>
-                                                    <%
+                                                    <tr>
+                                                        <th></th>
+                                                        <td colspan="3">
+                                                            <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
+                                                            <input type="button" class="mediumbuttonb" value="Copy"
+                                                                onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
+                                                                title="Copies table structure and attributes from existing dataset table"/>
+                                                        </td>
+                                                    </tr><%
+                                                } else if (mode.equals("edit")) { // edit case
+                                                %>
+                                                    <tr>
+                                                        <th></th>
+                                                        <td colspan="3">
+                                                            <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
+                                                            <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
+                                                            <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=tableID%>')"/>
+                                                        </td>
+                                                    </tr>
+                                            <%
                                                 }
                                             }
                                             %>
-                                            </td>
-                                        </tr>
                                     </table>
-
                                     <!-- end of attributes -->
 
-                                    <%
-                                    boolean separ1displayed = false;
-                                    %>
-
                                     <!-- table elements -->
-
                                     <%
                                     if ((mode.equals("view") && elems!=null && elems.size()>0) || mode.equals("edit")){
 
@@ -1338,16 +1242,17 @@ else if (mode.equals("add"))
                                                     types.put("CH2", "Quantitative");
                                                     types.put("CH3", "Vocabulary");
                                                     %>
-                                                              <table class="datatable subtable">
+                                                              <table class="datatable results">
                                                                     <col style="width:<%=widthShortName%>"/>
                                                                     <col style="width:<%=widthDatatype%>"/>
                                                                     <col style="width:<%=widthElemtype%>"/>
-                                                                <tr>
-                                                                    <th>Element name</th>
-                                                                    <th>Datatype</th>
-                                                                    <th>Element type</th>
-                                                                </tr>
-
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Element name</th>
+                                                                        <th>Datatype</th>
+                                                                        <th>Element type</th>
+                                                                    </tr>
+                                                                </thead>
                                                                 <%
                                                                 // rows loop
                                                                 for (int i=0; i<elems.size(); i++){
@@ -1487,8 +1392,6 @@ else if (mode.equals("add"))
 
                                     <%
                                     if ((mode.equals("edit") && user!=null) || (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0)){
-
-                                        colspan = user==null ? 1 : 2;
                                         %>
 
 
@@ -1498,10 +1401,9 @@ else if (mode.equals("add"))
                                             // the table
                                             if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
                                                 %>
-                                                        <table class="datatable" id="dataset-attributes">
-                                                                    <col style="width:29%"/>
-                                                                    <col style="width:4%"/>
-                                                                    <col style="width:63%"/>
+                                                        <table class="datatable results" id="dataset-attributes">
+                                                                    <col style="width:30%"/>
+                                                                    <col style="width:70%"/>
 
                                                             <%
                                                             displayed = 1;
@@ -1514,15 +1416,11 @@ else if (mode.equals("add"))
                                                                 Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
                                                                 %>
 
-                                                                <tr class="zebra<%=isOdd%>">
+                                                                <tr class="<%=isOdd%>">
                                                                     <td>
                                                                         <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
                                                                             <%=Util.processForDisplay(attrName)%>
-                                                                        </a>
-                                                                    </td>
-                                                                    <td>
-                                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
-                                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX"></a>
                                                                         </a>
                                                                     </td>
                                                                     <td>
@@ -1567,14 +1465,6 @@ else if (mode.equals("add"))
 
                             <!-- end dotted -->
             </div>
-                    </td>
-                </tr>
-
-
-            </table>
-
-                <!-- end main table body -->
-            <!-- end main table -->
 
             <div style="display:none">
                 <%
