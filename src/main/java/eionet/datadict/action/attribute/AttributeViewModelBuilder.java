@@ -14,6 +14,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class AttributeViewModelBuilder {
     
+    /**
+     * Create a viewModel for the view page of attributes
+     * 
+     * @param model
+     * @return 
+     */
     public AttributeViewModel buildForView(CompoundDataObject model) {
         AttributeViewModel  viewModel = new AttributeViewModel();
         viewModel.setAttributeDefinition((AttributeDefinition)model.get(AttributeController.ATTRIBUTE_DEFINITION));
@@ -22,6 +28,12 @@ public class AttributeViewModelBuilder {
         return viewModel;
     }
     
+    /**
+     * Create a viewModel for the edit page of attributes
+     * 
+     * @param model
+     * @return 
+     */
     public AttributeViewModel buildForEdit(CompoundDataObject model) {
         AttributeViewModel viewModel = new AttributeViewModel();
         viewModel.setSubmitActionBeanName(AttributeActionBean.class.getName());
@@ -36,6 +48,11 @@ public class AttributeViewModelBuilder {
         return viewModel;
     }
     
+    /**
+     * Create a viewModel for the add page of attributes
+     * @param model
+     * @return 
+     */
     public AttributeViewModel buildForAdd(CompoundDataObject model){
         AttributeViewModel viewModel = new AttributeViewModel();
         viewModel.setSubmitActionBeanName(AttributeActionBean.class.getName());
