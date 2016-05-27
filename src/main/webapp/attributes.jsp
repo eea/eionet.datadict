@@ -125,7 +125,7 @@
                     <div id="drop-operations">
                     <h2>Operations:</h2>
                         <ul>
-                            <li><a href="delem_attribute.jsp?mode=add">Add attribute</a></li>
+                            <li><a href="attribute/add">Add attribute</a></li>
                         </ul>
                     </div>
                     <%
@@ -222,8 +222,14 @@
                         <%=Util.processForDisplay(attr_name)%></a>
                     </td><%}%>
                     <td>
+                        <%
+                        if (attrType.equals(DElemAttribute.TYPE_COMPLEX)){ %>
                         <a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>">
-                            <%=Util.processForDisplay(attr_name)%></a>
+                            <%=Util.processForDisplay(attr_name)%></a> 
+                        <%
+                        } else { %>
+                        <a href="attribute/view/<%=attr_id%>"><%=Util.processForDisplay(attr_name)%></a> 
+                       <% } %>
                     </td>
 
                     <td><%=Util.processForDisplay(attrTypeDisp)%></td>
