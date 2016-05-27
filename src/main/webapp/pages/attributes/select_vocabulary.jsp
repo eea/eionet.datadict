@@ -59,8 +59,10 @@
                         </li>
                     </c:forEach>
                 </ul>
-                <stripes:submit class="mediumbuttonb" name="selectVocabulary" value="SELECT" onclick="return validateEmptyVocab()"/>
-                <stripes:submit class="mediumbuttonb" name="edit" value="BACK TO ATTRIBUTE"/>
+                <div>
+                    <stripes:submit class="mediumbuttonb" name="selectVocabulary" value="SELECT" onclick="return validateEmptyVocab()"/>
+                    <stripes:submit class="mediumbuttonb" name="edit" value="BACK TO ATTRIBUTE"/>
+                </div>
                 <stripes:hidden name="attrId"/>
             </stripes:form>
         </div>
