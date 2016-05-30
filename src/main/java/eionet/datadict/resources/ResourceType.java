@@ -8,7 +8,8 @@ public enum ResourceType {
 
     VOCABULARY_SET,
     VOCABULARY,
-    ATTRIBUTE_DEFINITION
+    ATTRIBUTE_DEFINITION,
+    DATASET
     
     
 }
