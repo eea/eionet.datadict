@@ -10,7 +10,7 @@ import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
 import eionet.datadict.model.enums.Enumerations;
 import eionet.datadict.model.enums.Enumerations.DisplayForType;
-import eionet.datadict.service.AttributeDefinitionService;
+import eionet.datadict.services.data.AttributeDefinitionService;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.resources.AttributeDefinitionIdInfo;
 import eionet.datadict.resources.ResourceType;
