@@ -126,6 +126,12 @@
     </function>
 
     <function>
+        <name>getEnumValues</name>
+        <function-class>eionet.web.util.JstlFunctions</function-class>
+        <function-signature>[java.lang.Object getEnumValues(java.lang.String)</function-signature>
+    </function>
+
+    <function>
         <description>Return the DatasetRegStatus enum from the given string.</description>
         <name>getDatasetRegStatusFromString</name>
         <function-class>eionet.meta.dao.domain.DatasetRegStatus</function-class>

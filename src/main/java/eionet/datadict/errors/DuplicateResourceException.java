@@ -29,5 +29,10 @@ public class DuplicateResourceException extends Exception {
     public ResourceIdInfo getResourceIdInfo() {
         return resourceIdInfo;
     }
+
+    @Override
+    public String getMessage() {
+        return String.format("%s with %s already exists", this.resourceType.toString(), this.resourceIdInfo.getIdDescription());
+    }
     
 }

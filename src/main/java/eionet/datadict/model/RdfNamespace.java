@@ -6,9 +6,9 @@ package eionet.datadict.model;
  */
 public class RdfNamespace {
     
-    private int id;
+    private Integer id;
     private String uri;
-    private String namePrefix;
+    private String prefix;
 
     public int getId() {
         return id;
@@ -26,11 +26,12 @@ public class RdfNamespace {
         this.uri = uri;
     }
 
-    public String getNamePrefix() {
-        return namePrefix;
+    public String getPrefix() {
+        return prefix;
     }
 
-    public void setNamePrefix(String namePrefix) {
-        this.namePrefix = namePrefix;
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
+    
 }

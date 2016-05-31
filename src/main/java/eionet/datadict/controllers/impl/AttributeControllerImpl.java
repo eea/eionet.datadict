@@ -2,17 +2,17 @@ package eionet.datadict.controllers.impl;
 
 import eionet.datadict.action.attribute.AttributeViewModel;
 import eionet.datadict.controllers.AttributeController;
-import eionet.datadict.dal.AttributeDefinitionDAO;
-import eionet.datadict.dal.NamespaceDAO;
-import eionet.datadict.dal.RdfNamespaceDAO;
-import eionet.datadict.model.AttributeDefinition;
+import eionet.datadict.dal.AttributeDao;
+import eionet.datadict.dal.NamespaceDao;
+import eionet.datadict.dal.RdfNamespaceDao;
+import eionet.datadict.model.Attribute;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
 import eionet.datadict.model.enums.Enumerations;
 import eionet.datadict.model.enums.Enumerations.DisplayForType;
-import eionet.datadict.services.data.AttributeDefinitionService;
+import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.errors.ResourceNotFoundException;
-import eionet.datadict.resources.AttributeDefinitionIdInfo;
+//import eionet.datadict.resources.AttributeDefinitionIdInfo;
 import eionet.datadict.resources.ResourceType;
 import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.domain.FixedValue;
@@ -28,15 +28,15 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class AttributeControllerImpl implements AttributeController {
 
-    private final AttributeDefinitionService attributeDefinitionServiceImpl;
-    private final AttributeDefinitionDAO ddAttributeDefinitionDAOImpl;
+    private final AttributeDataService attributeDefinitionServiceImpl;
+    private final AttributeDao ddAttributeDefinitionDAOImpl;
     private final IFixedValueDAO fixedValueDAO;
-    private final NamespaceDAO namespaceDAOImpl;
-    private final RdfNamespaceDAO rdfNamespaceDAOImpl;
+    private final NamespaceDao namespaceDAOImpl;
+    private final RdfNamespaceDao rdfNamespaceDAOImpl;
 
     @Autowired
-    public AttributeControllerImpl(AttributeDefinitionDAO ddAttributeDefinitionDAOImpl, AttributeDefinitionService attributeDefinitionServiceImpl,
-            IFixedValueDAO fixedValueDAO, NamespaceDAO namespaceDAOImpl, RdfNamespaceDAO rdfNamespaceDAOImpl) {
+    public AttributeControllerImpl(AttributeDao ddAttributeDefinitionDAOImpl, AttributeDataService attributeDefinitionServiceImpl,
+            IFixedValueDAO fixedValueDAO, NamespaceDao namespaceDAOImpl, RdfNamespaceDao rdfNamespaceDAOImpl) {
         this.attributeDefinitionServiceImpl = attributeDefinitionServiceImpl;
         this.ddAttributeDefinitionDAOImpl = ddAttributeDefinitionDAOImpl;
         this.fixedValueDAO = fixedValueDAO;
@@ -47,31 +47,33 @@ public class AttributeControllerImpl implements AttributeController {
     //Methods to create the object to be passed to the ViewModel (for GET actions)
     @Override
     public CompoundDataObject getAttributeViewInfo(String attrId) throws ResourceNotFoundException {
-        AttributeDefinition attrDef = this.getAttributeDefinition(Integer.parseInt(attrId));
-        List<DisplayForType> displayForTypes = this.getDisplayForTypesFromDisplayWhen(attrDef.getDisplayWhen());
-        List<FixedValue> fixedValues = this.getFixedValues(attrDef);
-        return this.packageResults(attrDef, displayForTypes, fixedValues);
+//        Attribute attrDef = this.getAttributeDefinition(Integer.parseInt(attrId));
+//        List<DisplayForType> displayForTypes = this.getDisplayForTypesFromDisplayWhen(attrDef.getDisplayWhen());
+//        List<FixedValue> fixedValues = this.getFixedValues(attrDef);
+//        return this.packageResults(attrDef, displayForTypes, fixedValues);
+        return null;
     }
     
     @Override
     public void saveNewVocabulary(String attrId, String vocId) {
         if (vocId == null) {
-            ddAttributeDefinitionDAOImpl.removeAttributeDefinitionVocabulary(Integer.valueOf(attrId));
+            ddAttributeDefinitionDAOImpl.deleteVocabularyBinding(Integer.valueOf(attrId));
         }
         else {
-            ddAttributeDefinitionDAOImpl.updateAttributeDefinitionVocabulary(Integer.valueOf(attrId),
+            ddAttributeDefinitionDAOImpl.updateVocabularyBinding(Integer.valueOf(attrId),
                 Integer.valueOf(vocId));
         }
     }
     
     @Override
     public CompoundDataObject getAttributeEditInfo(String attrId) throws ResourceNotFoundException {
-        AttributeDefinition attrDef = this.getAttributeDefinition(Integer.parseInt(attrId));
-        List<Namespace> namespaces = this.getAttributeNamespaces();
-        String displayOrder = this.getDisplayOrderToView(attrDef);
-        List<DisplayForType> displayForTypes = this.getDisplayForTypesFromDisplayWhen(attrDef.getDisplayWhen());
-        List<RdfNamespace> rdfNamespaces = this.getAllRdfNamespaces();
-        return packageResults(attrDef, namespaces, displayOrder, displayForTypes, rdfNamespaces);
+//        Attribute attrDef = this.getAttributeDefinition(Integer.parseInt(attrId));
+//        List<Namespace> namespaces = this.getAttributeNamespaces();
+//        String displayOrder = this.getDisplayOrderToView(attrDef);
+//        List<DisplayForType> displayForTypes = this.getDisplayForTypesFromDisplayWhen(attrDef.getDisplayWhen());
+//        List<RdfNamespace> rdfNamespaces = this.getAllRdfNamespaces();
+//        return packageResults(attrDef, namespaces, displayOrder, displayForTypes, rdfNamespaces);
+        return null;
     }
 
     @Override
@@ -84,32 +86,32 @@ public class AttributeControllerImpl implements AttributeController {
     //Methods which update the database
     @Override
     public void saveAttribute(AttributeViewModel viewModel) {
-        AttributeDefinition attrDef = viewModel.getAttributeDefinition();
+        Attribute attrDef = viewModel.getAttributeDefinition();
         attrDef.setDisplayOrder(getDisplayOrderToSave(viewModel.getDisplayOrder()));
-        attrDef.setDisplayWhen(getDisplayWhenFromDisplayForTypes(viewModel.getDisplayForTypes()));
-        attrDef.setRdfNameSpace(getRdfNamespaceToSave(viewModel.getRdfNamespaceId()));
+//        attrDef.setDisplayWhen(getDisplayWhenFromDisplayForTypes(viewModel.getDisplayForTypes()));
+//        attrDef.setRdfNameSpace(getRdfNamespaceToSave(viewModel.getRdfNamespaceId()));
         ddAttributeDefinitionDAOImpl.update(attrDef);
     }
 
     @Override
     public int saveNewAttribute(AttributeViewModel viewModel) {
-        AttributeDefinition attrDef = viewModel.getAttributeDefinition();
+        Attribute attrDef = viewModel.getAttributeDefinition();
         if (attrDef.getDefinition()==null) attrDef.setDefinition("");
         attrDef.setDisplayOrder(getDisplayOrderToSave(viewModel.getDisplayOrder()));
-        attrDef.setDisplayWhen(getDisplayWhenFromDisplayForTypes(viewModel.getDisplayForTypes()));
-        attrDef.setDisplayWhen(getDisplayWhenFromDisplayForTypes(viewModel.getDisplayForTypes()));
-        attrDef.setRdfNameSpace(getRdfNamespaceToSave(viewModel.getRdfNamespaceId()));
+//        attrDef.setDisplayWhen(getDisplayWhenFromDisplayForTypes(viewModel.getDisplayForTypes()));
+//        attrDef.setDisplayWhen(getDisplayWhenFromDisplayForTypes(viewModel.getDisplayForTypes()));
+//        attrDef.setRdfNameSpace(getRdfNamespaceToSave(viewModel.getRdfNamespaceId()));
         attrDef.setNamespace(getDefaultNamespace());
-        return ddAttributeDefinitionDAOImpl.add(attrDef);
+        return ddAttributeDefinitionDAOImpl.create(attrDef);
     }
 
     @Override
     public void deleteAttribute(String id) throws ResourceNotFoundException {
-        try {
-            ddAttributeDefinitionDAOImpl.delete(Integer.parseInt(id));
-        } catch (NumberFormatException e) {
-            throw new ResourceNotFoundException(ResourceType.ATTRIBUTE_DEFINITION, new AttributeDefinitionIdInfo(id));
-        }
+//        try {
+//            ddAttributeDefinitionDAOImpl.delete(Integer.parseInt(id));
+//        } catch (NumberFormatException e) {
+//            throw new ResourceNotFoundException(ResourceType.ATTRIBUTE, new AttributeDefinitionIdInfo(id));
+//        }
     }
     //----------------------
     
@@ -121,7 +123,7 @@ public class AttributeControllerImpl implements AttributeController {
     }
 
     private CompoundDataObject packageResults(
-            AttributeDefinition attrDef, List<Namespace> namespaces, String displayOrder, List<DisplayForType> displayForTypes, List<RdfNamespace> rdfNamespaces) {
+            Attribute attrDef, List<Namespace> namespaces, String displayOrder, List<DisplayForType> displayForTypes, List<RdfNamespace> rdfNamespaces) {
         CompoundDataObject object = new CompoundDataObject();
         object.put(ATTRIBUTE_DEFINITION, attrDef);
         object.put(NAMESPACES, namespaces);
@@ -132,7 +134,7 @@ public class AttributeControllerImpl implements AttributeController {
     }
 
     private CompoundDataObject packageResults(
-            AttributeDefinition attrDef, List<DisplayForType> displayForTypes, List<FixedValue> fixedValues) {
+            Attribute attrDef, List<DisplayForType> displayForTypes, List<FixedValue> fixedValues) {
         CompoundDataObject object = new CompoundDataObject();
         object.put(ATTRIBUTE_DEFINITION, attrDef);
         object.put(DISPLAY_FOR_TYPES, displayForTypes);
@@ -148,7 +150,7 @@ public class AttributeControllerImpl implements AttributeController {
      */
     private Namespace getDefaultNamespace() {
         Namespace namespace = new Namespace();
-        namespace.setNamespaceID(NAMESPACE_ID_DEFAULT);
+//        namespace.setNamespaceID(NAMESPACE_ID_DEFAULT);
         return namespace;
     }
      
@@ -187,7 +189,7 @@ public class AttributeControllerImpl implements AttributeController {
         }
     }
     
-    private String getDisplayOrderToView(AttributeDefinition attrDef) {
+    private String getDisplayOrderToView(Attribute attrDef) {
         int dispOrder = attrDef.getDisplayOrder();
         if (dispOrder == 999) {
             return "";
@@ -201,15 +203,15 @@ public class AttributeControllerImpl implements AttributeController {
         return namespaceDAOImpl.getAttributeNamespaces();
     }
 
-    private AttributeDefinition getAttributeDefinition(int attrId) throws ResourceNotFoundException {
-        return attributeDefinitionServiceImpl.getAttributeDefinitionById(attrId);
+    private Attribute getAttributeDefinition(int attrId) throws ResourceNotFoundException {
+        return attributeDefinitionServiceImpl.getAttribute(attrId);
     }
 
      private List<RdfNamespace> getAllRdfNamespaces() {
         return this.rdfNamespaceDAOImpl.getRdfNamespaces();
     }
      
-    private List<FixedValue> getFixedValues(AttributeDefinition attributeDefinition) {
+    private List<FixedValue> getFixedValues(Attribute attributeDefinition) {
         return fixedValueDAO.getValueByOwner(FixedValue.OwnerType.ATTRIBUTE, attributeDefinition.getId());
     }
 }

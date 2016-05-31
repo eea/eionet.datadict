@@ -1,6 +1,6 @@
 package eionet.datadict.action.attribute;
 
-import eionet.datadict.model.AttributeDefinition;
+import eionet.datadict.model.Attribute;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
 import eionet.datadict.model.enums.Enumerations.AttributeDisplayType;
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public final class AttributeViewModel {
    
-    private AttributeDefinition attributeDefinition;
+    private Attribute attributeDefinition;
     
     /**
      * The list of all the existing RDF Namespaces
@@ -115,11 +115,11 @@ public final class AttributeViewModel {
         this.submitActionBeanName = submitActionBean;
     }
     
-    public AttributeDefinition getAttributeDefinition() {
+    public Attribute getAttributeDefinition() {
         return attributeDefinition;
     }
 
-    public void setAttributeDefinition(AttributeDefinition attributeDefinition) {
+    public void setAttributeDefinition(Attribute attributeDefinition) {
         this.attributeDefinition = attributeDefinition;
     }
 

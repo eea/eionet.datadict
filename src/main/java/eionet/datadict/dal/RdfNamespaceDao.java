@@ -7,12 +7,12 @@ import java.util.List;
  *
  * @author Aliki Kopaneli
  */
-public interface RdfNamespaceDAO {
+public interface RdfNamespaceDao {
     
     /**
-     * Fetches all entries of the T_RDF_NAMESPACE table
+     * Fetches all RDF name-spaces.
      * 
-     * @return 
+     * @return a {@link java.util.List} containing {@link RdfNamespace} objects.
      */
     public List<RdfNamespace> getRdfNamespaces();
 }

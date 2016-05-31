@@ -7,8 +7,7 @@ import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.VocabularySet;
-import eionet.datadict.resources.VocabularyIdInfo;
-import eionet.datadict.resources.VocabularySetIdInfo;
+import eionet.datadict.resources.ResourceIdentifierInfo;
 import eionet.datadict.services.data.VocabularyDataService;
 import eionet.meta.DDUser;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -51,7 +50,7 @@ public class VocabularyDataServiceImpl implements VocabularyDataService {
 
         if (this.vocabularySetRepository.exists(vocabularySet.getIdentifier())) {
             String msg = String.format("Vocabulary set %s already exists", vocabularySet.getIdentifier());
-            throw new DuplicateResourceException(ResourceType.VOCABULARY_SET, new VocabularySetIdInfo(vocabularySet.getIdentifier()), msg);
+            throw new DuplicateResourceException(ResourceType.VOCABULARY_SET, new ResourceIdentifierInfo(vocabularySet.getIdentifier()), msg);
         }
 
         this.vocabularySetRepository.create(vocabularySet);
@@ -77,11 +76,11 @@ public class VocabularyDataServiceImpl implements VocabularyDataService {
 
         VocabularySet existingVocabularySet = this.vocabularySetRepository.get(vocabularySetIdentifier);
         if (existingVocabularySet == null) {
-            throw new ResourceNotFoundException(ResourceType.VOCABULARY_SET, new VocabularySetIdInfo(vocabularySetIdentifier));
+            throw new ResourceNotFoundException(ResourceType.VOCABULARY_SET, new ResourceIdentifierInfo(vocabularySetIdentifier));
         }
 
         if (this.vocabularyRepository.exists(existingVocabularySet.getId(), vocabulary.getIdentifier())) {
-            throw new DuplicateResourceException(ResourceType.VOCABULARY, new VocabularyIdInfo(vocabularySetIdentifier, vocabulary.getIdentifier()));
+            throw new DuplicateResourceException(ResourceType.VOCABULARY, new ResourceIdentifierInfo(vocabularySetIdentifier, vocabulary.getIdentifier()));
         }
 
         vocabulary.setFolderId(existingVocabularySet.getId());

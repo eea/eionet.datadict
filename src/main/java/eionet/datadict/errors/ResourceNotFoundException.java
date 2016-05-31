@@ -30,5 +30,10 @@ public class ResourceNotFoundException extends Exception {
     public ResourceIdInfo getResourceIdInfo() {
         return resourceIdInfo;
     }
+
+    @Override
+    public String getMessage() {
+        return String.format("Could not find %s with %s", resourceType.toString().toLowerCase(), resourceIdInfo.getIdDescription());
+    }
     
 }

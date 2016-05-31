@@ -7,4 +7,6 @@ package eionet.datadict.resources;
  */
 public interface ResourceIdInfo {
     
+    String getIdDescription();
+    
 }

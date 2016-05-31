@@ -7,12 +7,12 @@ import java.util.List;
  *
  * @author Aliki Kopaneli
  */
-public interface NamespaceDAO {
+public interface NamespaceDao {
 
     /**
-     * Fetches the list of namespaces related to attributes
+     * Fetches the list of namespaces related to attributes.
      * 
-     * @return 
+     * @return a {@link java.util.List} containing the fetched {@link Namespace} objects.
      */
     public List<Namespace> getAttributeNamespaces();
 }

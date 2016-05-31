@@ -6,10 +6,20 @@ package eionet.datadict.resources;
  */
 public enum ResourceType {
 
-    VOCABULARY_SET,
-    VOCABULARY,
-    ATTRIBUTE_DEFINITION,
-    DATASET
+    VOCABULARY_SET("Vocabulary set"),
+    VOCABULARY("Vocabulary"),
+    ATTRIBUTE("Attribute"),
+    DATASET("Dataset");
     
+    private final String label;
+    
+    private ResourceType(String label) {
+        this.label = label;
+    }
+
+    @Override
+    public String toString() {
+        return label;
+    }
     
 }

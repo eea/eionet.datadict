@@ -6,28 +6,19 @@ package eionet.datadict.model;
  */
 public class Namespace {
     
-    private int namespaceID;
-    private int parentNS;
+    private Integer id;
     
     private String shortName;
     private String fullName;
     private String definition;
     private String workingUser;
 
-    public int getNamespaceID() {
-        return namespaceID;
+    public Integer getId() {
+        return id;
     }
 
-    public void setNamespaceID(int namespaceID) {
-        this.namespaceID = namespaceID;
-    }
-
-    public int getParentNS() {
-        return parentNS;
-    }
-
-    public void setParentNS(int parentNS) {
-        this.parentNS = parentNS;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getShortName() {
