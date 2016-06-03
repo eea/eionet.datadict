@@ -10,6 +10,7 @@ import java.util.Set;
  */
 public class Attribute {
 
+    
     public static enum TargetEntity {
         
         CH1(2, "Data elements with fixed values (code list and elements from a vocabulary)"), // Data elements with fixed values (code list and elements from a vocabulary)

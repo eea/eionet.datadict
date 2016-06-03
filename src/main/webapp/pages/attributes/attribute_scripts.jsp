@@ -25,9 +25,27 @@
         function validateEmptyVocab () {
             var selectedId = document.getElementById('radio');
             if (!selectedId || 0 === selectedId.length) {
-                return confirm("No vocabulary selected! This action will remove any existing vocabulary reference to the attribute. Are you sure you want to continue?");
+                alert("Please select a vocabulary!");
+                return false;
             }
             else return true;
+        }
+        
+        function validateMandatoryEditorFields () {
+            var list = document.getElementsByClassName("mandatory_field");
+            var invalidList = "";
+           for (var i = 0; i < list.length; i++) {
+                var entry = list[i];
+                if (!entry.value || 0 === entry.value.length) {
+                    invalidList = invalidList + entry.name + "\n";
+                    console.log("Entry invalid: "+entry.name);
+                }   
+            }
+            if (invalidList.length !== 0){
+                alert("Please insert values for fields: \n"+invalidList);
+                return false;
+            }
+            return true;
         }
 
     </script>

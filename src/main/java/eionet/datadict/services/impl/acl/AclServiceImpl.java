@@ -42,6 +42,15 @@ public class AclServiceImpl implements AclService {
         }
     }
     
+    @Override
+    public void removeAccessRightsForDeletedEntity(AclEntity entity, String entityId) {
+        try {
+            AccessController.removeAcl(this.getEntityPath(entity, entityId));
+        } catch (SignOnException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
     protected String getUserName(DDUser user) {
         return user == null ? "" : user.getUserName();
     }

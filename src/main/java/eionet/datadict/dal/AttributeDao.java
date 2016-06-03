@@ -1,6 +1,8 @@
 package eionet.datadict.dal;
 
 import eionet.datadict.model.Attribute;
+import eionet.datadict.model.DataDictEntity;
+import java.util.Map;
 
 /**
  *
@@ -15,6 +17,14 @@ public interface AttributeDao {
      * @return an {@link Attribute} object corresponding to the given id.
      */
     public Attribute getById(int id);
+    
+    /**
+     * Checks if an attribute with a given id exists.
+     * 
+     * @param id the id of the attribute.
+     * @return a boolean value stating whether the attribute exists or not.
+     */
+    public boolean exists(int id);
 
     /**
      * Creates a new attribute.
@@ -59,4 +69,20 @@ public interface AttributeDao {
      * @param attributeId the id of the attribute whose values will be deleted.
      */
     public void deleteValues(int attributeId);
+    
+    /**
+     * Returns the number of values of an attribute with a given id
+     * 
+     * @param attributeId the id of the attribute whose values are to be counted 
+     * @return  the number of values for the specified attribute
+     */
+    public int countAttributeValues(int attributeId);
+    
+    /**
+     * Fetches information about all DD concepts for which the attribute of a given id has attribute values.
+     * 
+     * @param attributeId the id of the attribute.
+     * @return a {@link java.util.Map} containing {@link DataDictEntity$Entity} keys and Integer values.
+     */
+    public Map<DataDictEntity.Entity, Integer> getConceptsWithAttributeValues(int attributeId);
 }

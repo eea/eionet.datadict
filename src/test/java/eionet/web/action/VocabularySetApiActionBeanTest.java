@@ -3,6 +3,8 @@ package eionet.web.action;
 import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.model.VocabularySet;
+import eionet.datadict.resources.ResourceIdentifierInfo;
+import eionet.datadict.resources.ResourceType;
 import eionet.datadict.services.auth.WebApiAuthInfoService;
 import eionet.datadict.services.auth.WebApiAuthService;
 import eionet.datadict.services.data.VocabularyDataService;
@@ -105,9 +107,9 @@ public class VocabularySetApiActionBeanTest {
     }
 
     @Test
-    public void testFailToCreateVocabularySetBecauseOfDuplicateResource() throws EmptyParameterException, DuplicateResourceException, Exception {
+    public void testFailToCreateVocabularySetBecauseOfDuplicateResource() throws EmptyParameterException, Exception {
         MockRoundtrip trip = this.createRoundtrip();
-        when(this.vocabularyDataService.createVocabularySet(any(VocabularySet.class))).thenThrow(DuplicateResourceException.class);
+        when(this.vocabularyDataService.createVocabularySet(any(VocabularySet.class))).thenThrow(new DuplicateResourceException(ResourceType.VOCABULARY_SET, new ResourceIdentifierInfo(new String[]{"test", "identifier"})));
         trip.execute("createVocabularySet");
         verify(errorPageService, times(1)).createErrorResolutionWithoutRedirect(eq(ErrorActionBean.ErrorType.CONFLICT), any(String.class), eq(ErrorActionBean.RETURN_ERROR_EVENT));
     }

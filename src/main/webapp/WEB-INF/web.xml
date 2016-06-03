@@ -230,10 +230,6 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
-        <url-pattern>/attribute2/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>*.action</url-pattern>
     </servlet-mapping>
     <servlet-mapping>

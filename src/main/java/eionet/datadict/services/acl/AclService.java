@@ -12,4 +12,5 @@ public interface AclService {
     void grantAccess(DDUser user, AclEntity entity, String entityId, String description) 
             throws UserAuthorizationException;
     
+    void removeAccessRightsForDeletedEntity(AclEntity entity, String entityId);
 }

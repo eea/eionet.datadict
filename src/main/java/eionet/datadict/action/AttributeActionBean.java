@@ -30,11 +30,11 @@ import net.sourceforge.stripes.validation.ValidationMethod;
  *
  * @author Aliki Kopaneli
  */
-@UrlBinding("/attribute/{$event}/{attrId}")
+@UrlBinding("/attribute2/{$event}/{attrId}")
 public class AttributeActionBean extends AbstractActionBean implements ValidationErrorHandler {
 
-    private static final String VIEW_PAGE = "/pages/attributes/view_attribute.jsp";
-    private static final String EDIT_PAGE = "/pages/attributes/edit_attribute.jsp";
+    private static final String VIEW_PAGE = "/pages/attributes/viewAttribute.jsp";
+    private static final String EDIT_PAGE = "/pages/attributes/attributeEditor.jsp";
     private static final String ADD_PAGE = "/pages/attributes/add_attribute.jsp";
 
     private String attrId;

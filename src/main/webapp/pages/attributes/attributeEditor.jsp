@@ -25,7 +25,7 @@
                                 <em>${actionBean.attribute.shortName}</em>
                             </c:when>
                             <c:otherwise>
-                                <stripes:text name="attribute.shortName"/>
+                                <stripes:text id="shortName" class="mandatory_field"name="attribute.shortName"/>
                             </c:otherwise>
                         </c:choose>
                     </td>
@@ -33,7 +33,7 @@
                 <tr>
                     <th scope="row" class="scope-row">Name</th>
                     <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
-                    <td><stripes:text name="attribute.name"/></td>
+                    <td><stripes:text id= "name" class="mandatory_field" name="attribute.name"/></td>
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row">Context</th>
@@ -75,14 +75,19 @@
                             <c:set var="select_display_style" value="display: inline"/>
                         </c:if>
                         <div id="vocabulary" style="${vocab_display_style}">
-                            &emsp;
+                            &nbsp;
                             <stripes:link href="${actionBean.contextPath}/vocabularies/selectVocabulary">
                                 <stripes:param name="attrId" value="${actionBean.attribute.id}"/>
-                                ATTACH NEW VOCABULARY
+                                <img src="<stripes:url value="/images/edit.gif" />" alt="Edit vocabulary" name="Edit vocabulary"/>
                             </stripes:link>
-                            &emsp;
+                            &nbsp;
+                            <stripes:link beanclass="eionet.datadict.controllers.AttributeActionBean2" event="removeVocabularyBinding">
+                                <stripes:param name="attribute.id" value="${actionBean.attribute.id}"/>
+                                <img src="<stripes:url value="/images/delete.gif" />" alt="Remove vocabulary" name="Remove vocabulary"/>
+                            </stripes:link>
+                            <br>
                             <div class="smallfont">
-                                (Current: 
+                                Current:
                                 <c:choose>
                                     <c:when test="${not empty actionBean.attribute.vocabulary}">
                                         <stripes:link href="${actionBean.contextPath}/vocabulary/${actionBean.attribute.vocabulary.folderLabel}/${actionBean.attribute.vocabulary.identifier}/view">
@@ -93,7 +98,6 @@
                                         <em>None</em>
                                     </c:otherwise>
                                 </c:choose>
-                                )
                             </div>
                         </div>
                         <div id="select" style="${select_display_style}">
@@ -114,7 +118,14 @@
                     <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
                     <td>
                         <c:forEach var="inherit" items="${ddfn:getEnumValues('eionet.datadict.model.Attribute$ValueInheritanceMode')}">
-                            <stripes:radio name="attribute.valueInheritanceMode" value="${inherit}"/>${inherit.label}<br/>
+                            <c:choose>
+                                <c:when test="${inherit.label eq 'No inheritance'}">
+                                    <stripes:radio name="attribute.valueInheritanceMode" value="${inherit}"/>${inherit.label}<br/>
+                                </c:when>
+                                <c:otherwise>
+                                    <stripes:radio name="attribute.valueInheritanceMode" value="${inherit}"/>${inherit.label}<br/>
+                                </c:otherwise>
+                            </c:choose>
                         </c:forEach>
                     </td>
                 </tr>
@@ -163,15 +174,17 @@
                 </tr>
                 <tr>
                     <td colspan="3" style="text-align:center">
-                        <stripes:submit class="mediumbuttonb" name="save" value="Save"/>
+                        <stripes:submit class="mediumbuttonb" name="save" value="Save" onclick="return validateMandatoryEditorFields()"/>
                         <c:if test="${not empty actionBean.attribute.id}">
-                            <stripes:submit class="mediumbuttonb" name="delete" value="Delete"/>
+                            <stripes:submit class="mediumbuttonb" name="reset" value="Reset"/>
+                            <stripes:submit class="mediumbuttonb" name="confirmDelete" value="Delete"/>
+                            <stripes:hidden name="attribute.shortName"/>
                         </c:if>
                     </td>
                 </tr>
             </table>
-            <stripes:hidden name="attrId"/>
             <stripes:hidden name="attribute.id"/>      
+            <stripes:hidden name="attribute.vocabulary.id"/>
         </stripes:form>
     </stripes:layout-component>
 </stripes:layout-render>

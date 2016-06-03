@@ -3,7 +3,8 @@
 <%@ include file="/pages/common/taglibs.jsp"%>
 
 <stripes:layout-render name="/pages/common/template.jsp"
-                       pageTitle="Vocabularies">
+                       pageTitle="Vocabularies"
+                       currentSection="attributes">
     <%@ include file="/pages/attributes/attribute_scripts.jsp"%>
     <stripes:layout-component name="contents">
 
@@ -11,7 +12,7 @@
 
         <c:url var="expandIcon" value="/images/expand.png" />
         <c:url var="collapseIcon" value="/images/collapse.png" />
-        <stripes:form beanclass="eionet.datadict.action.AttributeActionBean" method="post" style="margin-top:1em">
+        <stripes:form beanclass="eionet.datadict.controllers.AttributeActionBean2" method="post" style="margin-top:1em">
                 <ul class="tree-nav">
                     <c:forEach var="folder" items="${actionBean.folders}">
                         <li<c:if test="${folder.expanded}"> class="expanded"</c:if>>
@@ -30,7 +31,7 @@
                                     <c:forEach var="item" items="${folder.items}" varStatus="itemLoop">
                                         <li>
                                             <c:if test="${not item.workingCopy}">
-                                                <stripes:radio id="radio" name="viewModel.vocabularyId" value="${item.id}" />
+                                                <stripes:radio id="radio" name="vocabularyId" value="${item.id}" />
                                                 <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" class="link-folder">
                                                     <stripes:param name="vocabularyFolder.folderName" value="${item.folderName}" />
                                                     <stripes:param name="vocabularyFolder.identifier" value="${item.identifier}" />
@@ -48,11 +49,11 @@
                         </li>
                     </c:forEach>
                 </ul>
-                <div>
-                    <stripes:submit class="mediumbuttonb" name="selectVocabulary" value="SELECT" onclick="return validateEmptyVocab()"/>
+                <div style="text-align:center">
+                    <stripes:submit class="mediumbuttonb" name="edit" value="SELECT" onclick="return validateEmptyVocab()"/>
                     <stripes:submit class="mediumbuttonb" name="edit" value="BACK TO ATTRIBUTE"/>
                 </div>
-                <stripes:hidden name="attrId"/>
+                    <stripes:hidden name="attribute.id" value="${actionBean.attrId}"/>
             </stripes:form>
     </stripes:layout-component>
 </stripes:layout-render>

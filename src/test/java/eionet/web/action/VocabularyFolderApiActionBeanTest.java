@@ -3,6 +3,8 @@ package eionet.web.action;
 import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.resources.ResourceIdentifierInfo;
+import eionet.datadict.resources.ResourceType;
 import eionet.datadict.services.auth.WebApiAuthInfoService;
 import eionet.datadict.services.auth.WebApiAuthService;
 import eionet.datadict.services.data.VocabularyDataService;
@@ -118,7 +120,8 @@ public class VocabularyFolderApiActionBeanTest {
         final boolean numericConceptIdentifier = true;
         final boolean NotationsEqualIdentifiers = true;
         MockRoundtrip trip = this.prepareRoundtrip(folderName, vocabularySetIdentifier, numericConceptIdentifier, NotationsEqualIdentifiers);
-        when(this.vocabularyDataService.createVocabulary(any(String.class), any(VocabularyFolder.class), any(DDUser.class))).thenThrow(ResourceNotFoundException.class);
+        when(this.vocabularyDataService.createVocabulary(any(String.class), any(VocabularyFolder.class), any(DDUser.class))).thenThrow(
+                new ResourceNotFoundException(ResourceType.VOCABULARY, new ResourceIdentifierInfo(new String[]{vocabularySetIdentifier, folderName})));
         trip.execute("createVocabulary");
         verify(errorPageService, times(1)).createErrorResolutionWithoutRedirect(eq(ErrorActionBean.ErrorType.NOT_FOUND_404), any(String.class), eq(ErrorActionBean.RETURN_ERROR_EVENT));
     }
@@ -130,7 +133,8 @@ public class VocabularyFolderApiActionBeanTest {
         final boolean numericConceptIdentifier = true;
         final boolean NotationsEqualIdentifiers = true;
         MockRoundtrip trip = this.prepareRoundtrip(folderName, vocabularySetIdentifier, numericConceptIdentifier, NotationsEqualIdentifiers);
-        when(this.vocabularyDataService.createVocabulary(any(String.class), any(VocabularyFolder.class), any(DDUser.class))).thenThrow(DuplicateResourceException.class);
+        when(this.vocabularyDataService.createVocabulary(any(String.class), any(VocabularyFolder.class), any(DDUser.class))).thenThrow(
+                new DuplicateResourceException(ResourceType.VOCABULARY, new ResourceIdentifierInfo(new String[]{vocabularySetIdentifier, folderName})));
         trip.execute("createVocabulary");
         verify(errorPageService, times(1)).createErrorResolutionWithoutRedirect(eq(ErrorActionBean.ErrorType.CONFLICT), any(String.class), eq(ErrorActionBean.RETURN_ERROR_EVENT));
     }

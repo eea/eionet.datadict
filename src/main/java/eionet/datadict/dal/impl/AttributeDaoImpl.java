@@ -12,11 +12,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.impl.converters.BooleanToMySqlEnumConverter;
+import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
 import eionet.datadict.util.data.DataConverter;
 import eionet.meta.dao.domain.VocabularyFolder;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -58,6 +60,17 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
         catch (EmptyResultDataAccessException ex) {
             return null;
         }
+    }
+    
+    @Override 
+    public boolean exists(int id) {
+        String sql = "select count(M_ATTRIBUTE_ID) from M_ATTRIBUTE where M_ATTRIBUTE_ID=:id";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("id", id);
+        
+        int count = getNamedParameterJdbcTemplate().queryForInt(sql, params);
+        if (count>0) return true;
+        else return false;
     }
     
     @Override
@@ -131,6 +144,13 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
     }
     
     @Override
+    public int countAttributeValues(int attributeId) {
+        String sql = "select count(Distinct(PARENT_TYPE), DATAELEM_ID) from ATTRIBUTE where M_ATTRIBUTE_ID = :id";
+        Map<String, Object> params = new HashMap<String, Object> ();
+        params.put("id", attributeId);
+        return getNamedParameterJdbcTemplate().queryForInt(sql, params);
+    }
+    @Override
     public void delete(int id) {
         String sql = "delete from M_ATTRIBUTE where M_ATTRIBUTE_ID = :id";
         Map<String, Object> params = new HashMap<String, Object>();
@@ -153,6 +173,44 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
         params.put("attributeId", attributeId);
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
+
+    @Override
+    public Map<DataDictEntity.Entity, Integer> getConceptsWithAttributeValues(int attributeId) {
+        String sql = "select PARENT_TYPE, count(PARENT_TYPE) as COUNT_RES from ATTRIBUTE where M_ATTRIBUTE_ID = :id group by PARENT_TYPE";
+        Map<String, Object> params = this.createParameterMap();
+        params.put("id", attributeId);
+        List<Map<DataDictEntity.Entity, Integer>> listOfMaps = getNamedParameterJdbcTemplate().query(sql, params, new MapRowMapper());
+        Map<DataDictEntity.Entity, Integer> map = new HashMap();
+        for (Map<DataDictEntity.Entity, Integer> singleLineMap : listOfMaps) {
+            for (DataDictEntity.Entity key: singleLineMap.keySet()){
+                map.put(key, singleLineMap.get(key));
+            }
+        }
+        return map;
+    }
+    
+    protected static class MapRowMapper implements RowMapper<Map<DataDictEntity.Entity, Integer>> {
+
+        @Override
+        public Map<DataDictEntity.Entity, Integer> mapRow(ResultSet rs, int i) throws SQLException {
+            Map<DataDictEntity.Entity, Integer> map = new HashMap<DataDictEntity.Entity, Integer>();
+            map.put(new DataDictEntityConverter().convertBack(rs.getString("PARENT_TYPE")),rs.getInt("COUNT_RES"));
+            return map;
+        }
+        
+    }
+    
+    protected static class DataDictEntityRowMapper implements RowMapper<DataDictEntity> {
+
+        @Override
+        public DataDictEntity mapRow(ResultSet rs, int i) throws SQLException {
+            DataDictEntity datadictEntity = new DataDictEntity();
+            datadictEntity.setId(rs.getInt("DATAELEM_ID"));
+            datadictEntity.setType(DataDictEntity.Entity.E);
+            return datadictEntity;  
+        }
+    }
+    
     
     protected static class AttributeRowMapper implements RowMapper<Attribute> {
 
@@ -228,6 +286,24 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
             attribute.getRdfNamespace().setUri(rs.getString("RDF_URI"));
         }
         
+    }
+    
+    protected static class DataDictEntityConverter implements DataConverter<DataDictEntity.Entity, String> {
+        
+        @Override
+        public String convert(DataDictEntity.Entity value) {
+            return value.name();
+        }
+
+        @Override
+        public DataDictEntity.Entity convertBack(String value) {
+            for (DataDictEntity.Entity entity : DataDictEntity.Entity.values()) {
+                if (entity.name().equals(value)) {
+                    return entity;
+                }
+            }
+            return null;
+        }
     }
     
     protected static class TargetEntityConverter implements DataConverter<Set<Attribute.TargetEntity>, Integer> {

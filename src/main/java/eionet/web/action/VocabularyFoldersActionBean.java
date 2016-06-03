@@ -68,7 +68,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /** Vocabularies maintenance page. */
     private static final String VOCABULARIES_MAINTENANCE_JSP = "/pages/vocabularies/vocabulariesMaintenance.jsp";
     
-    private static final String VIEW_VOCABULARY_FOR_SELECTION_JSP = "/pages/attributes/select_vocabulary.jsp";
+    private static final String VIEW_VOCABULARY_FOR_SELECTION_JSP = "/pages/attributes/selectVocabulary.jsp";
 
     /** Vocabulary service. */
     @SpringBean
