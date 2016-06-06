@@ -96,9 +96,9 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
         params.put("dispMultiple", new BooleanToMySqlEnumConverter().convert(attribute.isDisplayMultiple()));
         params.put("inherit", new ValueInheritanceConverter().convert(attribute.getValueInheritanceMode()));
         params.put("rdfPropertyName", attribute.getRdfPropertyName());
-        params.put("namespaceId", attribute.getNamespace() == null ? null : attribute.getNamespace().getId());
+        params.put("namespaceId", attribute.getNamespace() == null ? NAMESPACE_ID_DEFAULT : attribute.getNamespace().getId());
         params.put("dispType", new DisplayTypeConverter().convert(attribute.getDisplayType()));
-        params.put("rdfPropertyNamespaceId", attribute.getRdfNamespace() == null ? NAMESPACE_ID_DEFAULT : attribute.getRdfNamespace().getId());
+        params.put("rdfPropertyNamespaceId", attribute.getRdfNamespace() == null ? null : attribute.getRdfNamespace().getId());
         MapSqlParameterSource parameterMap = new MapSqlParameterSource(params);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         getNamedParameterJdbcTemplate().update(sql, parameterMap, keyHolder);
