@@ -10,7 +10,7 @@ public class RdfNamespace {
     private String uri;
     private String prefix;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
