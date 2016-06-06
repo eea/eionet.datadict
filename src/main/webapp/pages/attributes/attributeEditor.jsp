@@ -93,6 +93,10 @@
                                         <stripes:link href="${actionBean.contextPath}/vocabulary/${actionBean.attribute.vocabulary.folderLabel}/${actionBean.attribute.vocabulary.identifier}/view">
                                             ${actionBean.attribute.vocabulary.label}
                                         </stripes:link>
+                                        <stripes:hidden name="attribute.vocabulary.folderLabel"/>
+                                        <stripes:hidden name="attribute.vocabulary.identifier"/>
+                                        <stripes:hidden name="attribute.vocabulary.label"/>
+                                        <stripes:hidden name="attribute.vocabulary.id"/>
                                     </c:when>
                                     <c:otherwise>
                                         <em>None</em>
@@ -183,8 +187,7 @@
                     </td>
                 </tr>
             </table>
-            <stripes:hidden name="attribute.id"/>      
-            <stripes:hidden name="attribute.vocabulary.id"/>
+            <stripes:hidden name="attribute.id"/>     
         </stripes:form>
     </stripes:layout-component>
 </stripes:layout-render>

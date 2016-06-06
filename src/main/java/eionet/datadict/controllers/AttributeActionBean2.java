@@ -22,10 +22,12 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.web.action.AbstractActionBean;
 import java.util.List;
 import java.util.Map;
+import net.sourceforge.stripes.action.Before;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.controller.LifecycleStage;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ScopedLocalizableError;
 import net.sourceforge.stripes.validation.ValidationError;
@@ -53,9 +55,17 @@ public class AttributeActionBean2 extends AbstractActionBean implements Validati
     private Map<DataDictEntity.Entity, Integer> entityTypesWithAttributeValues;
     private int attributeValuesCount;
     
+    //http://stripes-users.narkive.com/ZQ071553/repopulating-drop-downs-after-validation-error
+    @Before(stages=LifecycleStage.BindingAndValidation, on={"save", "add", "edit", "removeVocabularyBinding"})
+    public void populateSelectListsInterceptor(){
+        this.namespaces = this.namespaceDataService.getAttributeNamespaces();
+        this.rdfNamespaces = this.rdfNamespaceDataService.getRdfNamespaces();
+    }
+    
+    
     public Resolution view() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException, BadRequestException {
         DDUser user = this.getUser();
-        
+
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to view attributes.");
         }
@@ -75,7 +85,7 @@ public class AttributeActionBean2 extends AbstractActionBean implements Validati
     
     public Resolution add() throws UserAuthenticationException, UserAuthorizationException {
         DDUser user = this.getUser();
-        
+
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to add/edit attributes.");
         }
@@ -86,15 +96,13 @@ public class AttributeActionBean2 extends AbstractActionBean implements Validati
         
         this.attribute = new Attribute();
         this.attribute.setValueInheritanceMode(Attribute.ValueInheritanceMode.NONE);
-        this.namespaces = this.namespaceDataService.getAttributeNamespaces();
-        this.rdfNamespaces = this.rdfNamespaceDataService.getRdfNamespaces();
         
         return new ForwardResolution("/pages/attributes/attributeEditor.jsp");
     }
     
     public Resolution edit() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException, BadRequestException {
         DDUser user = this.getUser();
-        
+
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to add/edit attributes.");
         }
@@ -113,9 +121,7 @@ public class AttributeActionBean2 extends AbstractActionBean implements Validati
             String vocabularyId = this.getContext().getRequestParameter("vocabularyId");
             attribute = attributeDataService.setNewVocabularyToAttributeObject(attribute, Integer.parseInt(vocabularyId));
         }
-        
-        this.namespaces = this.namespaceDataService.getAttributeNamespaces();
-        this.rdfNamespaces = this.rdfNamespaceDataService.getRdfNamespaces();
+
         return new ForwardResolution ("/pages/attributes/attributeEditor.jsp");
     }
     
@@ -182,13 +188,11 @@ public class AttributeActionBean2 extends AbstractActionBean implements Validati
         
         this.attribute = attributeDataService.getAttribute(attribute.getId());
         this.attribute.setVocabulary(null);
-        this.namespaces = this.namespaceDataService.getAttributeNamespaces();
-        this.rdfNamespaces = this.rdfNamespaceDataService.getRdfNamespaces();
         return new ForwardResolution ("/pages/attributes/attributeEditor.jsp");
     }
     
     @Override
-    public Resolution handleValidationErrors(ValidationErrors ve) throws Exception {
+    public Resolution handleValidationErrors(ValidationErrors ve) throws Exception { 
         if (ve.get("attribute.id")!=null) {
            for (ValidationError error: ve.get("attribute.id")) {
                if (error.getClass() == ScopedLocalizableError.class) {
