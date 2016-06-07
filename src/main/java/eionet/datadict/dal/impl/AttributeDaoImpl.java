@@ -118,7 +118,7 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
         params.put("name", attribute.getName());
         params.put("obligation", new ObligationTypeConverter().convert(attribute.getObligationType()));
         params.put("definition", attribute.getDefinition());
-        params.put("dispOrder", attribute.getDisplayOrder() == 999 ? DISPLAY_ORDER_DEFAULT : attribute.getDisplayOrder());
+        params.put("dispOrder", attribute.getDisplayOrder() == null ? DISPLAY_ORDER_DEFAULT : attribute.getDisplayOrder());
         params.put("dispWidth", attribute.getDisplayWidth() == null ? DISPLAY_WIDTH_DEFAULT : attribute.getDisplayWidth());
         params.put("dispHeight", attribute.getDisplayHeight() == null ? DISPLAY_HEIGHT_DEFAULT : attribute.getDisplayHeight());
         params.put("dispWhen", new TargetEntityConverter().convert(attribute.getTargetEntities()));
@@ -202,18 +202,7 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
         }
 
     }
-
-    protected static class DataDictEntityRowMapper implements RowMapper<DataDictEntity> {
-
-        @Override
-        public DataDictEntity mapRow(ResultSet rs, int i) throws SQLException {
-            DataDictEntity datadictEntity = new DataDictEntity();
-            datadictEntity.setId(rs.getInt("DATAELEM_ID"));
-            datadictEntity.setType(DataDictEntity.Entity.E);
-            return datadictEntity;
-        }
-    }
-
+    
     protected static class AttributeRowMapper implements RowMapper<Attribute> {
 
         @Override
