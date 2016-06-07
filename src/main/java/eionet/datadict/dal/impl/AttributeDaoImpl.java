@@ -118,9 +118,9 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
         params.put("name", attribute.getName());
         params.put("obligation", new ObligationTypeConverter().convert(attribute.getObligationType()));
         params.put("definition", attribute.getDefinition());
-        params.put("dispOrder", attribute.getDisplayOrder() == null ? DISPLAY_ORDER_DEFAULT : attribute.getDisplayOrder());
-        params.put("dispWidth", attribute.getDisplayWidth());
-        params.put("dispHeight", attribute.getDisplayHeight());
+        params.put("dispOrder", attribute.getDisplayOrder() == 999 ? DISPLAY_ORDER_DEFAULT : attribute.getDisplayOrder());
+        params.put("dispWidth", attribute.getDisplayWidth() == null ? DISPLAY_WIDTH_DEFAULT : attribute.getDisplayWidth());
+        params.put("dispHeight", attribute.getDisplayHeight() == null ? DISPLAY_HEIGHT_DEFAULT : attribute.getDisplayHeight());
         params.put("dispWhen", new TargetEntityConverter().convert(attribute.getTargetEntities()));
         params.put("dispType", new DisplayTypeConverter().convert(attribute.getDisplayType()));
         params.put("dispMultiple", new BooleanToMySqlEnumConverter().convert(attribute.isDisplayMultiple()));
