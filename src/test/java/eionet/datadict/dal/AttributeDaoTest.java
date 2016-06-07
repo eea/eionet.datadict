@@ -8,7 +8,6 @@ import eionet.datadict.model.Attribute.ValueInheritanceMode;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
 import eionet.meta.service.DBUnitHelper;
-import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
