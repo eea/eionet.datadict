@@ -35,7 +35,7 @@ public class AttributeServiceImpl implements AttributeService {
             throw new UserAuthenticationException("You must be signed in in order to delete attributes.");
         }
 
-        if (!this.aclService.hasPermission(user, AclEntity.ATTRIBUTE, this.getAttributeAclId(attributeId), Permission.INSERT)) {
+        if (!this.aclService.hasPermission(user, AclEntity.ATTRIBUTE, this.getAttributeAclId(attributeId), Permission.DELETE)) {
             throw new UserAuthorizationException("You are not authorized to delete this attribute.");
         }
 
