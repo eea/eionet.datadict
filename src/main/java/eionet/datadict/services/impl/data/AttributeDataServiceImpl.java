@@ -80,8 +80,8 @@ public class AttributeDataServiceImpl implements AttributeDataService {
     public void deleteAttributeById(int attributeId) {
         this.attributeDao.deleteValues(attributeId);
         this.attributeDao.deleteVocabularyBinding(attributeId);
-        this.attributeDao.delete(attributeId);
         this.fixedValueDao.deleteAll(FixedValue.OwnerType.ATTRIBUTE, attributeId);
+        this.attributeDao.delete(attributeId);
     }
     
     @Override
