@@ -5,6 +5,12 @@ import org.apache.commons.lang.StringUtils;
 
 public class BooleanToMySqlEnumConverter implements DataConverter<Boolean, String> {
 
+    private final Boolean defaultValue;
+    
+    public BooleanToMySqlEnumConverter(Boolean defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+    
     @Override
     public String convert(Boolean value) {
         if (value == null) {
@@ -18,6 +24,11 @@ public class BooleanToMySqlEnumConverter implements DataConverter<Boolean, Strin
     public Boolean convertBack(String value) {
         if (value == null) {
             return null;
+        }
+        //Some DB entries have "" value which is used as a valid entry for invalid values.
+        //Here invalid entries are translated into the default value for this field    
+        if (StringUtils.equals(value, "")) {
+            return defaultValue;
         }
         
         if (StringUtils.equals(value, "0")) {

@@ -93,7 +93,7 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
         params.put("dispWidth", attribute.getDisplayWidth() == null ? DISPLAY_WIDTH_DEFAULT : attribute.getDisplayWidth());
         params.put("dispHeight", attribute.getDisplayHeight() == null ? DISPLAY_HEIGHT_DEFAULT : attribute.getDisplayHeight());
         params.put("dispWhen", new TargetEntityConverter().convert(attribute.getTargetEntities()));
-        params.put("dispMultiple", new BooleanToMySqlEnumConverter().convert(attribute.isDisplayMultiple()));
+        params.put("dispMultiple", new BooleanToMySqlEnumConverter(Boolean.FALSE).convert(attribute.isDisplayMultiple()));
         params.put("inherit", new ValueInheritanceConverter().convert(attribute.getValueInheritanceMode()));
         params.put("rdfPropertyName", attribute.getRdfPropertyName());
         params.put("namespaceId", attribute.getNamespace() == null ? NAMESPACE_ID_DEFAULT : attribute.getNamespace().getId());
@@ -123,7 +123,7 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
         params.put("dispHeight", attribute.getDisplayHeight() == null ? DISPLAY_HEIGHT_DEFAULT : attribute.getDisplayHeight());
         params.put("dispWhen", new TargetEntityConverter().convert(attribute.getTargetEntities()));
         params.put("dispType", new DisplayTypeConverter().convert(attribute.getDisplayType()));
-        params.put("dispMultiple", new BooleanToMySqlEnumConverter().convert(attribute.isDisplayMultiple()));
+        params.put("dispMultiple", new BooleanToMySqlEnumConverter(Boolean.FALSE).convert(attribute.isDisplayMultiple()));
         params.put("inherit", new ValueInheritanceConverter().convert(attribute.getValueInheritanceMode()));
         params.put("rdfPropertyName", attribute.getRdfPropertyName());
         params.put("namespaceId", attribute.getNamespace() == null ? NAMESPACE_ID_DEFAULT : attribute.getNamespace().getId());
@@ -351,7 +351,9 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
 
         @Override
         public Attribute.ObligationType convertBack(String value) {
-            if (StringUtils.equalsIgnoreCase(value, "M")) {
+            //Some DB entries have "" value which is used as a valid entry for invalid values.
+            //Here invalid entries are translated into the default value for this field
+            if (StringUtils.equalsIgnoreCase(value, "M") || StringUtils.equals(value, "")) {
                 return Attribute.ObligationType.MANDATORY;
             }
 
@@ -414,7 +416,9 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
 
         @Override
         public Attribute.ValueInheritanceMode convertBack(String value) {
-            if (StringUtils.equals(value, "0")) {
+            //Some DB entries have "" value which is used as a valid entry for invalid values.
+            //Here invalid entries are translated into the default value for this field
+            if (StringUtils.equals(value, "0") || StringUtils.equals(value, "")) {
                 return Attribute.ValueInheritanceMode.NONE;
             }
 
