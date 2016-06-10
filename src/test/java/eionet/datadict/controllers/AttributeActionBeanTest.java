@@ -43,15 +43,15 @@ import static org.mockito.Matchers.any;
 public class AttributeActionBeanTest {
     private static class DependencyInjector implements ActionBeanDependencyInjector {
         
-        private final AttributeActionBean2 actionBean;
+        private final AttributeActionBean actionBean;
         
-        public DependencyInjector(AttributeActionBean2 actionBean){ 
+        public DependencyInjector(AttributeActionBean actionBean){ 
             this.actionBean = actionBean;
         }
         
         @Override
         public boolean accepts(ActionBean bean) {
-            return bean instanceof AttributeActionBean2;
+            return bean instanceof AttributeActionBean;
         }
 
         @Override
@@ -66,7 +66,7 @@ public class AttributeActionBeanTest {
 
         @Override
         public ActionBean getStubActionBeanFromExecutionContextActionBean(ActionBean bean) {
-           AttributeActionBean2 oldActionBean = (AttributeActionBean2)bean;
+           AttributeActionBean oldActionBean = (AttributeActionBean)bean;
            actionBean.setAttribute(oldActionBean.getAttribute());
            actionBean.setNamespaces(oldActionBean.getNamespaces());
            actionBean.setRdfNamespaces(oldActionBean.getRdfNamespaces());
@@ -98,13 +98,12 @@ public class AttributeActionBeanTest {
     
     @Spy
     @InjectMocks
-    AttributeActionBean2 actionBean;
+    AttributeActionBean actionBean;
     
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ActionBeanDependencyInjectionInterceptor.dependencyInjector = 
-                new DependencyInjector(actionBean);//, aclService, attributeService, rdfNamespaceDataService, attributeDataService, namespaceDataService, attribute);
+        ActionBeanDependencyInjectionInterceptor.dependencyInjector = new DependencyInjector(actionBean);
     }
     
     @Test
@@ -427,7 +426,7 @@ public class AttributeActionBeanTest {
     
     private MockRoundtrip createRoundtrip() {
         MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, AttributeActionBean2.class);
+        MockRoundtrip trip = new MockRoundtrip(ctx, AttributeActionBean.class);
         
         return trip;
     }
