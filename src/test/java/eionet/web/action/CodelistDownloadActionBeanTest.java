@@ -34,6 +34,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import org.mockito.Spy;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 
 /**
  *
@@ -75,6 +84,16 @@ public class CodelistDownloadActionBeanTest {
             actionBean.setCodelistContentTypeConverter(codelistContentTypeConverter);
             actionBean.setCodelistFileExtensionConverter(codelistFileExtensionConverter);
             actionBean.setErrorPageService(errorPageService);
+        }
+
+        @Override
+        public boolean shouldReplaceActionBean() {
+            return false;
+        }
+
+        @Override
+        public ActionBean getStubActionBeanFromExecutionContextActionBean(ActionBean bean) {
+            return null;
         }
     }
 

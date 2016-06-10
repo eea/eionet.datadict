@@ -61,6 +61,16 @@ public class AttributeFixedValuesActionBeanTest {
             actionBean.setViewModelBuilder(viewModelBuilder);
             actionBean.setErrorPageService(errorPageService);
         }
+
+        @Override
+        public boolean shouldReplaceActionBean() {
+            return false;
+        }
+
+        @Override
+        public ActionBean getStubActionBeanFromExecutionContextActionBean(ActionBean bean) {
+            return null;
+        }
         
     }
     

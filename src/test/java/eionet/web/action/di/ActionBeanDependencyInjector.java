@@ -12,4 +12,7 @@ public interface ActionBeanDependencyInjector {
     
     void injectDependencies(ActionBean bean);
     
+    boolean shouldReplaceActionBean();
+    
+    ActionBean getStubActionBeanFromExecutionContextActionBean(ActionBean bean);
 }

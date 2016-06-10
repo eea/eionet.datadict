@@ -31,6 +31,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 
 /**
  *
@@ -64,6 +68,16 @@ public class VocabularySetApiActionBeanTest {
             actionBean.setWebApiAuthInfoService(webApiAuthInfoService);
             actionBean.setWebApiAuthService(webApiAuthService);
             actionBean.setErrorPageService(errorPageService);
+        }
+
+        @Override
+        public boolean shouldReplaceActionBean() {
+            return false;
+        }
+
+        @Override
+        public ActionBean getStubActionBeanFromExecutionContextActionBean(ActionBean bean) {
+            return null;
         }
     }
 
