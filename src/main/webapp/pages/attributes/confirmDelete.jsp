@@ -11,7 +11,7 @@
                 ${actionBean.attribute.shortName}
             </stripes:link></h1>
         <div>
-            The action you are about to perform will have implication on ${actionBean.attributeValuesCount} entities:
+            The action you are about to perform will remove attribute values of ${actionBean.attributeValuesCount} entities:
         </div>
         <br>
         <table class="datatable">
