@@ -81,7 +81,7 @@
                                 <img src="<stripes:url value="/images/edit.gif" />" alt="Edit vocabulary" name="Edit vocabulary" title="Edit vocabulary binding"/>
                             </stripes:link>
                             &nbsp;
-                            <stripes:link beanclass="eionet.datadict.controllers.AttributeActionBean2" event="removeVocabularyBinding">
+                            <stripes:link beanclass="eionet.datadict.controllers.AttributeActionBean" event="removeVocabularyBinding">
                                 <stripes:param name="attribute.id" value="${actionBean.attribute.id}"/>
                                 <img src="<stripes:url value="/images/delete.gif" />" alt="Remove vocabulary" name="Remove vocabulary" title="Remove vocabulary binding"/>
                             </stripes:link>

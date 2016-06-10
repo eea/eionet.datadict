@@ -9,7 +9,7 @@
             <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/attributes/', 'u')}">
                 <ul>
                     <li class="edit">
-                        <stripes:link beanclass="eionet.datadict.controllers.AttributeActionBean2" event="edit">
+                        <stripes:link beanclass="eionet.datadict.controllers.AttributeActionBean" event="edit">
                             <stripes:param name="attribute.id" value="${actionBean.attribute.id}"/>
                             Edit
                         </stripes:link>

@@ -12,7 +12,7 @@
 
         <c:url var="expandIcon" value="/images/expand.png" />
         <c:url var="collapseIcon" value="/images/collapse.png" />
-        <stripes:form beanclass="eionet.datadict.controllers.AttributeActionBean2" method="post" style="margin-top:1em">
+        <stripes:form beanclass="eionet.datadict.controllers.AttributeActionBean" method="post" style="margin-top:1em">
                 <ul class="tree-nav">
                     <c:forEach var="folder" items="${actionBean.folders}">
                         <li<c:if test="${folder.expanded}"> class="expanded"</c:if>>

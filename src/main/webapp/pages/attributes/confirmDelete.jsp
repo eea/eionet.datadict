@@ -6,7 +6,7 @@
 
     <stripes:layout-component name="contents">
         <h1>Deleting attribute 
-            <stripes:link beanclass="eionet.datadict.controllers.AttributeActionBean2" event="view">
+            <stripes:link beanclass="eionet.datadict.controllers.AttributeActionBean" event="view">
                 <stripes:param name="attribute.id" value="${actionBean.attribute.id}"/>
                 ${actionBean.attribute.shortName}
             </stripes:link></h1>
@@ -36,7 +36,7 @@
         </table>
         <br>
         <div>
-            <stripes:form beanclass="eionet.datadict.controllers.AttributeActionBean2">
+            <stripes:form beanclass="eionet.datadict.controllers.AttributeActionBean">
                 <stripes:submit name="delete" value="Delete"/>
                 <stripes:submit name="edit" value="Cancel"/>
                 <stripes:hidden name="attribute.id"/>
