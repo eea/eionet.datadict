@@ -8,8 +8,11 @@ import org.mockito.Spy;
 
 
 public class BooleanToMysqlEnumConverterTest {
+
+    Boolean defaultValue;
+    
     @Spy
-    BooleanToMySqlEnumConverter converter;
+    BooleanToMySqlEnumConverter converter = new BooleanToMySqlEnumConverter(defaultValue);
     
     @Before
     public void setUp() {
@@ -25,6 +28,7 @@ public class BooleanToMysqlEnumConverterTest {
     
     @Test
     public void testConvertBack() {
+        assertEquals(defaultValue, converter.convertBack(""));
         assertEquals(Boolean.TRUE, converter.convertBack("1"));
         assertEquals(Boolean.FALSE, converter.convertBack("0"));
         assertEquals(null, converter.convertBack(null));
