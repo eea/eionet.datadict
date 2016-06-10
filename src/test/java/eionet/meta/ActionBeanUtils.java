@@ -36,7 +36,7 @@ public final class ActionBeanUtils {
 
             Map filterParams = new HashMap();
             filterParams.put("Interceptor.Classes", getInterceptorClassesParameter());
-            filterParams.put("ActionResolver.Packages", "eionet.web.action,eionet.datadict.action");
+            filterParams.put("ActionResolver.Packages", "eionet.web.action,eionet.datadict.controllers");
             filterParams.put("ActionBeanContext.Class", "eionet.web.DDActionBeanContext");
 
             ctx.addFilter(StripesFilter.class, "StripesFilter", filterParams);
