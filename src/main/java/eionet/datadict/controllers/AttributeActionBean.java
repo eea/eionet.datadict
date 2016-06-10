@@ -23,7 +23,6 @@ import eionet.web.action.AbstractActionBean;
 import java.util.List;
 import java.util.Map;
 import net.sourceforge.stripes.action.Before;
-import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
@@ -53,7 +52,11 @@ public class AttributeActionBean extends AbstractActionBean {
     private Map<DataDictEntity.Entity, Integer> entityTypesWithAttributeValues;
     private int attributeValuesCount;
     
-    
+    /**
+     * Validates the attribute.id request parameter (must be a numeric value). 
+     * 
+     * @throws BadRequestException 
+     */
     @Before(stages=LifecycleStage.BindingAndValidation, on={"save", "edit", "delete", "confirmDelete", "removeVocabularyBinding"})
     public void checkForNumericAttributeID() throws BadRequestException{
         String attributeId = this.getContext().getRequestParameter("attribute.id");
@@ -67,7 +70,15 @@ public class AttributeActionBean extends AbstractActionBean {
         this.rdfNamespaces = this.rdfNamespaceDataService.getRdfNamespaces();
     }
     
-    @DefaultHandler
+    /**
+     * Handles requests for the view event. Is responsible for displaying info of an attribute with a given id.
+     * 
+     * @return A {@link ForwardResolution} directing to the jsp file responsible for displaying attribute information.
+     * @throws UserAuthenticationException
+     * @throws UserAuthorizationException
+     * @throws ResourceNotFoundException
+     * @throws BadRequestException 
+     */
     public Resolution view() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException, BadRequestException {
         DDUser user = this.getUser();
 
@@ -88,6 +99,13 @@ public class AttributeActionBean extends AbstractActionBean {
         return new ForwardResolution("/pages/attributes/viewAttribute.jsp");
     }
     
+    /**
+     * Handles requests for the add event. Is responsible for displaying a form for creating new attributes.
+     * 
+     * @return a {@link ForwardResolution} directing to the jsp file responsible for displaying the creation form.
+     * @throws UserAuthenticationException
+     * @throws UserAuthorizationException 
+     */
     public Resolution add() throws UserAuthenticationException, UserAuthorizationException {
         DDUser user = this.getUser();
 
@@ -112,6 +130,15 @@ public class AttributeActionBean extends AbstractActionBean {
         return new ForwardResolution("/pages/attributes/attributeEditor.jsp");
     }
     
+    /**
+     * Handles requests for the edit event. Is responsible for displaying the edit page of an attribute with a given id.
+     * 
+     * @return a {@link ForwardResolution} for directing to the attributeEditor jsp file. 
+     * @throws UserAuthenticationException
+     * @throws UserAuthorizationException
+     * @throws ResourceNotFoundException
+     * @throws BadRequestException 
+     */
     public Resolution edit() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException, BadRequestException {
         DDUser user = this.getUser();
 
@@ -133,31 +160,55 @@ public class AttributeActionBean extends AbstractActionBean {
             String vocabularyId = getRequestParameter("vocabularyId");
             attribute = attributeDataService.setNewVocabularyToAttributeObject(attribute, Integer.parseInt(vocabularyId));
         }
+        
         if (this.namespaces==null || this.namespaces.isEmpty()){
             this.namespaces = this.namespaceDataService.getAttributeNamespaces();
         }
+        
         if (this.rdfNamespaces==null || this.rdfNamespaces.isEmpty()){
             this.rdfNamespaces = this.rdfNamespaceDataService.getRdfNamespaces();
         }
+        
         return new ForwardResolution ("/pages/attributes/attributeEditor.jsp");
     }
     
+    /**
+     * Handles requests for the save event. Is responsible for saving an attribute (either by creating a new one or updating an existing one).
+     * 
+     * @return A {@link RedirectResolution} to the view page of the saved attribute
+     * @throws UserAuthenticationException
+     * @throws UserAuthorizationException
+     * @throws BadRequestException 
+     */
     public Resolution save() throws UserAuthenticationException, UserAuthorizationException, BadRequestException {
         DDUser user = this.getUser();
+        
         int attributeId = this.attributeService.save(attribute, user);
+        
         if (this.namespaces==null || this.namespaces.isEmpty()){
             this.namespaces = this.namespaceDataService.getAttributeNamespaces();
         }
+        
         if (this.rdfNamespaces==null || this.rdfNamespaces.isEmpty()){
             this.rdfNamespaces = this.rdfNamespaceDataService.getRdfNamespaces();
         }
+        
         return new RedirectResolution("/attribute/view/" + attributeId);
     }
     
+    /**
+     * Handles requests for the delete event. Is responsible for deleting an attribute with a given id.
+     * 
+     * @return A ${@link ForwardResolution} directing to the attributes page.
+     * @throws UserAuthenticationException
+     * @throws UserAuthorizationException
+     * @throws ResourceNotFoundException 
+     */
     public Resolution delete() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException {
        DDUser user = this.getUser();
        
        int attributeId = attribute.getId();
+       
        if (!this.attributeDataService.exists(attributeId)) {
            throw new ResourceNotFoundException(ResourceType.ATTRIBUTE, new ResourceDbIdInfo(attributeId));
        }
@@ -167,6 +218,15 @@ public class AttributeActionBean extends AbstractActionBean {
        return new ForwardResolution("attributes.jsp");
     }
     
+    /**
+     * Handles requests for the confirmDelete event. Is responsible for searching for dependencies between an attribute to be deleted
+     * and other DataDict entities. If dependencies are found a confirmation page is provided, otherwise the delete method is called.
+     * 
+     * @return A {@link ForwardResolution}
+     * @throws UserAuthenticationException
+     * @throws UserAuthorizationException
+     * @throws ResourceNotFoundException 
+     */
     public Resolution confirmDelete() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException {
         DDUser user = this.getUser();
         
@@ -179,9 +239,11 @@ public class AttributeActionBean extends AbstractActionBean {
         if (!this.aclService.hasPermission(user, AclEntity.ATTRIBUTE, "s"+attributeId, Permission.DELETE)) {
             throw new UserAuthorizationException("You are not authorized to delete this attribute.");
         }
+        
         if (!this.attributeDataService.exists(attributeId)) {
             throw new ResourceNotFoundException(ResourceType.ATTRIBUTE, new ResourceDbIdInfo(attributeId));
         }
+        
         attributeValuesCount = this.attributeDataService.countAttributeValues(attributeId);
         
         if (attributeValuesCount>0) {
@@ -193,10 +255,23 @@ public class AttributeActionBean extends AbstractActionBean {
         }
     }
     
+    /**
+     * Handles requests for the reset event. Reloads information of an attribute with the given id.
+     * 
+     * @return A {@link ForwardResolution} to the edit page.
+     */
     public Resolution reset(){
-        return new RedirectResolution("/attribute/edit/"+attribute.getId());
+        return new ForwardResolution("/attribute/edit/"+attribute.getId());
     }
      
+    /**
+     * Handles requests for the removeVocabularyBindig event. Is responsible for removing a vocabulary binding of an attribute with the given id.
+     * 
+     * @return A {@link  ForwardResolution} directing to the edit page.
+     * @throws UserAuthenticationException
+     * @throws UserAuthorizationException
+     * @throws ResourceNotFoundException 
+     */
     public Resolution removeVocabularyBinding() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException {
         DDUser user = this.getUser();
         
@@ -210,12 +285,15 @@ public class AttributeActionBean extends AbstractActionBean {
         
         this.attribute = attributeDataService.getAttribute(attribute.getId());
         this.attribute.setVocabulary(null);
+        
         if (this.namespaces==null || this.namespaces.isEmpty()){
             this.namespaces = this.namespaceDataService.getAttributeNamespaces();
         }
+        
         if (this.rdfNamespaces==null || this.rdfNamespaces.isEmpty()){
             this.rdfNamespaces = this.rdfNamespaceDataService.getRdfNamespaces();
         }
+        
         return new ForwardResolution ("/pages/attributes/attributeEditor.jsp");
     }
 
