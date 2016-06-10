@@ -133,7 +133,7 @@ public class AttributeActionBean extends AbstractActionBean {
     /**
      * Handles requests for the edit event. Is responsible for displaying the edit page of an attribute with a given id.
      * 
-     * @return a {@link ForwardResolution} for directing to the attributeEditor jsp file. 
+     * @return a {@link ForwardResolution} directing to the attributeEditor.jsp file. 
      * @throws UserAuthenticationException
      * @throws UserAuthorizationException
      * @throws ResourceNotFoundException
@@ -199,7 +199,7 @@ public class AttributeActionBean extends AbstractActionBean {
     /**
      * Handles requests for the delete event. Is responsible for deleting an attribute with a given id.
      * 
-     * @return A ${@link ForwardResolution} directing to the attributes page.
+     * @return A ${@link RedirectResolution} directing to the attributes page.
      * @throws UserAuthenticationException
      * @throws UserAuthorizationException
      * @throws ResourceNotFoundException 
@@ -215,7 +215,7 @@ public class AttributeActionBean extends AbstractActionBean {
        
        this.attributeService.delete(attributeId, user);
        
-       return new ForwardResolution("attributes.jsp");
+       return new RedirectResolution("attributes.jsp");
     }
     
     /**
