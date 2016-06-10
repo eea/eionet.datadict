@@ -275,7 +275,7 @@ public class AttributeActionBeanTest {
         Mockito.doNothing().when(attributeService).delete(anyInt(), any(DDUser.class));
         Resolution resolution = actionBean.delete();
         assertNotNull(resolution);
-        assertEquals(ForwardResolution.class, resolution.getClass());
+        assertEquals(RedirectResolution.class, resolution.getClass());
         Mockito.verify(attributeService).delete(0, user);
     }
     
@@ -344,7 +344,7 @@ public class AttributeActionBeanTest {
         Mockito.doReturn(0).when(attribute).getId();
         Resolution resolution = actionBean.reset();
         assertNotNull(resolution);
-        assertEquals(RedirectResolution.class, resolution.getClass());
+        assertEquals(ForwardResolution.class, resolution.getClass());
     }
     
     @Test
