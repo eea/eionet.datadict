@@ -11,6 +11,7 @@ import eionet.meta.service.DBUnitHelper;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
@@ -38,6 +39,11 @@ public class AttributeDaoTest extends UnitilsJUnit4{
         DBUnitHelper.loadData("seed-attribute.xml");
     }
 
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DBUnitHelper.deleteData("seed-attribute.xml");
+    }
+    
     @Test
     public void testGetByIdForSimpleFields() {
         Attribute attribute37 = this.attributeDao.getById(37);
