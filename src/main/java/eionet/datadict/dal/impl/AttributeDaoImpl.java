@@ -147,7 +147,7 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
 
     @Override
     public int countAttributeValues(int attributeId) {
-        String sql = "select count(Distinct(PARENT_TYPE), DATAELEM_ID) from ATTRIBUTE where M_ATTRIBUTE_ID = :id";
+        String sql = "select count(Distinct(PARENT_TYPE), DATAELEM_ID) from ATTRIBUTE where M_ATTRIBUTE_ID = :id and not PARENT_TYPE = ''";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", attributeId);
         return getNamedParameterJdbcTemplate().queryForInt(sql, params);
@@ -179,7 +179,7 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
 
     @Override
     public Map<DataDictEntity.Entity, Integer> getConceptsWithAttributeValues(int attributeId) {
-        String sql = "select PARENT_TYPE, count(PARENT_TYPE) as COUNT_RES from ATTRIBUTE where M_ATTRIBUTE_ID = :id group by PARENT_TYPE";
+        String sql = "select PARENT_TYPE, count(DISTINCT(DATAELEM_ID)) as COUNT_RES from ATTRIBUTE where M_ATTRIBUTE_ID = :id and not PARENT_TYPE = ''group by PARENT_TYPE";
         Map<String, Object> params = this.createParameterMap();
         params.put("id", attributeId);
         List<Map<DataDictEntity.Entity, Integer>> listOfMaps = getNamedParameterJdbcTemplate().query(sql, params, new MapRowMapper());
