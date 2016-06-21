@@ -37,8 +37,8 @@
            for (var i = 0; i < list.length; i++) {
                 var entry = list[i];
                 if (!entry.value || 0 === entry.value.length) {
-                    invalidList = invalidList + entry.name + "\n";
-                    console.log("Entry invalid: "+entry.name);
+                    invalidList = invalidList + entry.id + "\n";
+                    console.log("Entry invalid: "+entry.id);
                 }   
             }
             if (invalidList.length !== 0){

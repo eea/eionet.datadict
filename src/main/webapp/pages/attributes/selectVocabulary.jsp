@@ -50,7 +50,7 @@
                     </c:forEach>
                 </ul>
                 <div style="text-align:center">
-                    <stripes:submit class="mediumbuttonb" name="edit" value="SELECT" onclick="return validateEmptyVocab()"/>
+                    <stripes:submit class="mediumbuttonb" name="editVocabulary" value="SELECT" onclick="return validateEmptyVocab()"/>
                     <stripes:submit class="mediumbuttonb" name="edit" value="BACK TO ATTRIBUTE"/>
                 </div>
                     <stripes:hidden name="attribute.id" value="${actionBean.attrId}"/>

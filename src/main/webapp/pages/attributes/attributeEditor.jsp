@@ -25,7 +25,7 @@
                                 <em>${actionBean.attribute.shortName}</em>
                             </c:when>
                             <c:otherwise>
-                                <stripes:text id="shortName" class="mandatory_field"name="attribute.shortName"/>
+                                <stripes:text id="Short Name" class="mandatory_field"name="attribute.shortName"/>
                             </c:otherwise>
                         </c:choose>
                     </td>
@@ -33,7 +33,7 @@
                 <tr>
                     <th scope="row" class="scope-row">Name</th>
                     <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
-                    <td><stripes:text id= "name" class="mandatory_field" name="attribute.name"/></td>
+                    <td><stripes:text id= "Name" class="mandatory_field" name="attribute.name"/></td>
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row">Context</th>
@@ -165,7 +165,7 @@
                     <th scope="row" class="scope-row">RDF property URI</th>
                     <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
                     <td>
-                        <stripes:select name="attribute.rdfNamespace.id">
+                        <stripes:select name="attribute.rdfNamespace.id" value="${actionBean.attribute.rdfNamespace.id}">
                             <stripes:option/>
                             <stripes:options-collection collection="${actionBean.rdfNamespaces}" value="id" label="uri"/>
                         </stripes:select>
