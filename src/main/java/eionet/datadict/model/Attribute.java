@@ -15,7 +15,7 @@ public class Attribute {
         
         CH1(2, "Data elements with fixed values (code list and elements from a vocabulary)"), // Data elements with fixed values (code list and elements from a vocabulary)
         CH2(1, "Data elements with quantitative values"), // Data elements with quantitative values
-        CH3(2, "Data elements with fixed values (code list and elements from a vocabulary)"), // Data elements with fixed values (code list and elements from a vocabulary)
+        //CH3(2, "Data elements with fixed values (code list and elements from a vocabulary)"), // Data elements with fixed values (code list and elements from a vocabulary)
         DST(8, "Datasets"), // Datasets
         TBL(64, "Dataset tables"), // Dataset tables
         SCH(128, "Schemas"), // Schemas
