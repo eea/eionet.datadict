@@ -56,12 +56,11 @@ public class AttributeDaoTest extends UnitilsJUnit4{
         Attribute attribute37 = this.attributeDao.getById(37);
         Set<Attribute.TargetEntity> targetEntities = attribute37.getTargetEntities();
         assertNotNull(targetEntities);
-        assertTrue(targetEntities.size()==5);
+        assertTrue(targetEntities.size()==4);
         assertTrue(targetEntities.containsAll(
                 Arrays.asList(
                         Attribute.TargetEntity.CH1, 
                         Attribute.TargetEntity.CH2, 
-                        Attribute.TargetEntity.CH3, 
                         Attribute.TargetEntity.TBL, 
                         Attribute.TargetEntity.DST
                 )));
