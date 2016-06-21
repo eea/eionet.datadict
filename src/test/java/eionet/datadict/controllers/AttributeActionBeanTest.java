@@ -199,8 +199,8 @@ public class AttributeActionBeanTest {
         Mockito.doReturn(Boolean.TRUE).when(aclService).hasPermission(any(DDUser.class), any(AclEntity.class), anyString(), any(Permission.class));
         Mockito.doReturn(0).when(attribute).getId();
         Mockito.doReturn(attribute).when(attributeDataService).getAttribute(anyInt());
-        Mockito.doReturn("1").when(actionBean).getRequestParameter(anyString());
         Mockito.doReturn(attribute).when(attributeDataService).setNewVocabularyToAttributeObject(any(Attribute.class), anyInt());
+        actionBean.setVocabularyId("1");
         Resolution resolution = actionBean.edit();
         assertNotNull(resolution);
         assertEquals(ForwardResolution.class, resolution.getClass());
@@ -245,8 +245,8 @@ public class AttributeActionBeanTest {
         Mockito.doReturn(Boolean.TRUE).when(aclService).hasPermission(any(DDUser.class), any(AclEntity.class), anyString(), any(Permission.class));
         Mockito.doReturn(0).when(attribute).getId();
         Mockito.doReturn(attribute).when(attributeDataService).getAttribute(anyInt());
-        Mockito.doReturn("1").when(actionBean).getRequestParameter(anyString());
         Mockito.doThrow(ResourceNotFoundException.class).when(attributeDataService).setNewVocabularyToAttributeObject(any(Attribute.class), anyInt());
+        actionBean.setVocabularyId("1");
         Resolution resolution = actionBean.edit();
         assertNotNull(resolution);
         assertEquals(ForwardResolution.class, resolution.getClass());
@@ -344,7 +344,7 @@ public class AttributeActionBeanTest {
         Mockito.doReturn(0).when(attribute).getId();
         Resolution resolution = actionBean.reset();
         assertNotNull(resolution);
-        assertEquals(ForwardResolution.class, resolution.getClass());
+        assertEquals(RedirectResolution.class, resolution.getClass());
     }
     
     @Test
@@ -395,7 +395,7 @@ public class AttributeActionBeanTest {
     }
     
     @Test
-    public void testEditRoundTripWithVocabularyId() throws ResourceNotFoundException, Exception {
+    public void testEditVocabularyIdRoundTrip() throws ResourceNotFoundException, Exception {
         MockRoundtrip trip = createRoundtrip();
         trip.setParameter("attribute.id", "1");
         trip.setParameter("vocabularyId", "1");
@@ -404,7 +404,7 @@ public class AttributeActionBeanTest {
         Mockito.doReturn(Boolean.TRUE).when(aclService).hasPermission(any(DDUser.class), any(AclEntity.class), anyString(), any(Permission.class));
         Mockito.doReturn(attribute).when(attributeDataService).getAttribute(anyInt());
         
-        trip.execute("edit");
+        trip.execute("editVocabulary");
         
         Mockito.verify(attributeDataService).setNewVocabularyToAttributeObject(attribute, 1); 
     }

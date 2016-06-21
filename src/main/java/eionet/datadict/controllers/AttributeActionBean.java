@@ -405,5 +405,9 @@ public class AttributeActionBean extends AbstractActionBean {
     public void setEntityTypesWithAttributeValues(Map<DataDictEntity.Entity, Integer> entityTypesWithAttributeValues) {
         this.entityTypesWithAttributeValues = entityTypesWithAttributeValues;
     }
+ 
+    public void setVocabularyId(String vocabularyId) {
+        this.vocabularyId = vocabularyId;
+    }
 
 }
