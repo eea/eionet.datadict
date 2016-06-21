@@ -51,6 +51,7 @@ public class AttributeActionBean extends AbstractActionBean {
     private List<FixedValue> fixedValues;
     private Map<DataDictEntity.Entity, Integer> entityTypesWithAttributeValues;
     private int attributeValuesCount;
+    private String vocabularyId;
     
     /**
      * Validates the attribute.id request parameter (must be a numeric value). 
@@ -73,7 +74,7 @@ public class AttributeActionBean extends AbstractActionBean {
     /**
      * Handles requests for the view event. Is responsible for displaying info of an attribute with a given id.
      * 
-     * @return A {@link ForwardResolution} directing to the jsp file responsible for displaying attribute information.
+     * @return A {@link ForwardResolution} to the jsp file responsible for displaying attribute information.
      * @throws UserAuthenticationException
      * @throws UserAuthorizationException
      * @throws ResourceNotFoundException
@@ -102,7 +103,7 @@ public class AttributeActionBean extends AbstractActionBean {
     /**
      * Handles requests for the add event. Is responsible for displaying a form for creating new attributes.
      * 
-     * @return a {@link ForwardResolution} directing to the jsp file responsible for displaying the creation form.
+     * @return a {@link ForwardResolution} to the jsp file responsible for displaying the creation form.
      * @throws UserAuthenticationException
      * @throws UserAuthorizationException 
      */
@@ -133,7 +134,7 @@ public class AttributeActionBean extends AbstractActionBean {
     /**
      * Handles requests for the edit event. Is responsible for displaying the edit page of an attribute with a given id.
      * 
-     * @return a {@link ForwardResolution} directing to the attributeEditor.jsp file. 
+     * @return a {@link ForwardResolution} to the attributeEditor.jsp file. 
      * @throws UserAuthenticationException
      * @throws UserAuthorizationException
      * @throws ResourceNotFoundException
@@ -154,10 +155,8 @@ public class AttributeActionBean extends AbstractActionBean {
         } 
 
         attribute = attributeDataService.getAttribute(attribute.getId());
-        
-        //in case vocabularyId has been edited but not yet saved
-        if (getRequestParameter("vocabularyId")!= null ) {
-            String vocabularyId = getRequestParameter("vocabularyId");
+
+        if (vocabularyId!= null ) {
             attribute = attributeDataService.setNewVocabularyToAttributeObject(attribute, Integer.parseInt(vocabularyId));
         }
         
@@ -170,6 +169,22 @@ public class AttributeActionBean extends AbstractActionBean {
         }
         
         return new ForwardResolution ("/pages/attributes/attributeEditor.jsp");
+    }
+    
+    /**
+     * Handle requests for the editVocabulary event. Is responsible for detecting whether the vocabulary binding to an attribute is to be updated.
+     * 
+     * @return
+     * @throws UserAuthenticationException
+     * @throws UserAuthorizationException
+     * @throws ResourceNotFoundException
+     * @throws BadRequestException 
+     */
+    public Resolution editVocabulary() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException, BadRequestException {
+        if (getRequestParameter("vocabularyId")!= null ) {
+            vocabularyId = getRequestParameter("vocabularyId");
+        }
+        return edit();
     }
     
     /**
@@ -199,7 +214,7 @@ public class AttributeActionBean extends AbstractActionBean {
     /**
      * Handles requests for the delete event. Is responsible for deleting an attribute with a given id.
      * 
-     * @return A ${@link RedirectResolution} directing to the attributes page.
+     * @return A ${@link RedirectResolution} to the attributes page.
      * @throws UserAuthenticationException
      * @throws UserAuthorizationException
      * @throws ResourceNotFoundException 
@@ -215,14 +230,14 @@ public class AttributeActionBean extends AbstractActionBean {
        
        this.attributeService.delete(attributeId, user);
        
-       return new RedirectResolution("attributes.jsp");
+       return new RedirectResolution("/attributes.jsp");
     }
     
     /**
      * Handles requests for the confirmDelete event. Is responsible for searching for dependencies between an attribute to be deleted
      * and other DataDict entities. If dependencies are found a confirmation page is provided, otherwise the delete method is called.
      * 
-     * @return A {@link ForwardResolution}
+     * @return A {@link ForwardResolution} if confirmation is needed or a {@link RedirectResolution} if delete() is to be called.
      * @throws UserAuthenticationException
      * @throws UserAuthorizationException
      * @throws ResourceNotFoundException 
@@ -258,16 +273,16 @@ public class AttributeActionBean extends AbstractActionBean {
     /**
      * Handles requests for the reset event. Reloads information of an attribute with the given id.
      * 
-     * @return A {@link ForwardResolution} to the edit page.
+     * @return A {@link RedirectResolution} to the edit page.
      */
-    public Resolution reset(){
-        return new ForwardResolution("/attribute/edit/"+attribute.getId());
+    public Resolution reset() {
+        return new RedirectResolution("/attribute/edit/"+attribute.getId());
     }
      
     /**
      * Handles requests for the removeVocabularyBindig event. Is responsible for removing a vocabulary binding of an attribute with the given id.
      * 
-     * @return A {@link  ForwardResolution} directing to the edit page.
+     * @return A {@link  ForwardResolution} to the edit page.
      * @throws UserAuthenticationException
      * @throws UserAuthorizationException
      * @throws ResourceNotFoundException 
