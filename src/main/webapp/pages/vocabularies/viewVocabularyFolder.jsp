@@ -315,74 +315,15 @@
             // <![CDATA[
                 (function($) {
                     $(document).ready(function() {
-                        applySearchToggle("searchForm");
-
-                        $("#addFilter").change(function() {
-                            if ($(this).val()==="") {
-                                return;
-                            }
-
-                            var filterValue = $(this).val();
-                            var $selectedOption = $("option:selected", $(this));
-                            <stripes:url var="url" beanclass="${actionBean['class'].name}"></stripes:url>
-                            
-                            $("#addFilterRow").before('<tr id="spinner-'+ filterValue + '"><td><div class="spinner-loader">Loading...</div></td></tr>');
-
-                            $.ajax({
-                                url: '${url}',
-                                data: { 
-                                    'boundElementFilterId': filterValue,
-                                    'boundElementFilterIndex': $(".boundElementFilter").length,
-                                    'vocabularyFolderId': ${actionBean.vocabularyFolder.id},
-                                    '_eventName': 'constructBoundElementFilter'
-                                },
-                                success:function(data) {
-                                    $("tr#spinner-" + filterValue).remove();
-                                    $("#addFilterRow").before(data);
-                                    $selectedOption.prop("disabled", true);
-                                },
-                                error: function() {
-                                    $("div.spinner-loader", "tr#spinner-" + filterValue).removeClass().addClass("ajaxError").text("Something went wrong. Please try again.");
-                                    setTimeout(function() {
-                                        $("tr#spinner-" + filterValue).remove();
-                                    }, 2000);
-                                }
-                            });
-
-                            $(this).val("");
-                        });
-
-                        $("table.filter").delegate("a.deleteButton", "click", function() {
-                            var $filterItem = $(this).closest("tr.boundElementFilter");
-                            var filterId = $filterItem.data("filterId");
-                            $('#addFilter option[value=' + filterId +']').prop('disabled', false);
-                            $filterItem.remove();
-
-                            // recalculate bound element names
-                            $('.boundElementFilterId').each(function(index) {
-                                $(this).attr("name", "filter.boundElements[" + index + "].id");
-                            });
-                            $('.boundElementFilterSelect').each(function(index) {
-                                $(this).attr("name", "filter.boundElements[" + index + "].value");
-                            });
-
-                            return false;
-                        });
-
-                        $(".conceptDefinition").balloon({
-                            css: {
-                                border: 'solid 1px #000',
-                                padding: '10px',
-                                backgroundColor: '#f6f6f6',
-                                color: '#000',
-                                width: "30%"
-                            }
-                        });
+                        <stripes:url var="url" beanclass="${actionBean['class'].name}"></stripes:url>
+                        applyBoundElementsFiltererInteractions("${url}", ${actionBean.vocabularyFolder.id});
+                        applyConceptDefinitionBalloon();
                    }); 
                 }) (jQuery);
             // ]]>
             </script>
         </stripes:form>
+
         <%-- Vocabulary concepts --%>
         <div class="vocabularyConceptResults" style="overflow: auto;">
         <display:table name="actionBean.vocabularyConcepts" class="datatable results" id="concept"
@@ -402,7 +343,7 @@
                     </c:otherwise>
                 </c:choose>
             </display:column>
-            <display:column title="Preferred label" media="html" style="width: 30%">
+            <display:column title="Label" media="html" style="width: 30%">
                 <c:choose>
                     <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
                         <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view" title="${concept.label}">
@@ -453,42 +394,46 @@
             </c:if>
             <c:forEach var="boundElementIdentifier" items="${actionBean.filter.boundElementVisibleColumns}">
                 <display:column title="${fn:escapeXml(boundElementIdentifier)}" escapeXml="false">
-                    <c:forEach var="elementValues" items="${concept.elementAttributes}">
-                        <c:set var="elementMeta" value="${elementValues[0]}"/>
-                        <c:if test="${elementMeta.identifier == boundElementIdentifier}">
-                            <c:forEach var="attr" items="${elementValues}" varStatus="innerLoop">
-                                <c:choose>
-                                    <c:when test="${attr.relationalElement}">
-                                      <c:choose>
-                                          <c:when test="${not actionBean.vocabularyFolder.workingCopy or attr.datatype eq 'reference'}">
-                                              <stripes:link href="/vocabularyconcept/${attr.relatedConceptRelativePath}/view">
-                                                  <c:out value="${attr.relatedConceptIdentifier}" />
-                                                  <c:if test="${not empty attr.relatedConceptLabel}">
-                                                      (<c:out value="${attr.relatedConceptLabel}" />)
-                                                  </c:if>
-                                                  <c:if test="${not empty attr.relatedConceptVocSet}">
-                                                      in <c:out value="${attr.relatedConceptVocSet}/${attr.relatedConceptVocabulary}" />
-                                                  </c:if>
-                                                </stripes:link>
-                                          </c:when>
-                                          <c:otherwise>
-                                            <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean">
-                                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                                                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                                                <stripes:param name="vocabularyConcept.identifier" value="${attr.relatedConceptIdentifier}" />
-                                                <dd:attributeValue attrValue="${attr.relatedConceptLabel}" attrLen="40" />
-                                            </stripes:link>
-                                          </c:otherwise>
-                                      </c:choose>
-                                    </c:when>
-                                    <c:otherwise>
-                                          <dd:linkify value="${attr.attributeValue}" /><c:if test="${not empty attr.attributeLanguage}"> [${attr.attributeLanguage}]</c:if>
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:forEach>
-                        </c:if>
-                    </c:forEach>
+                    <ul class="stripedmenu">
+                        <c:forEach var="elementValues" items="${concept.elementAttributes}">
+                            <c:set var="elementMeta" value="${elementValues[0]}"/>
+                            <c:if test="${elementMeta.identifier == boundElementIdentifier}">
+                                <c:forEach var="attr" items="${elementValues}" varStatus="innerLoop">
+                                    <li>
+                                        <c:choose>
+                                            <c:when test="${attr.relationalElement}">
+                                                <c:choose>
+                                                    <c:when test="${not actionBean.vocabularyFolder.workingCopy or attr.datatype eq 'reference'}">
+                                                        <stripes:link href="/vocabularyconcept/${attr.relatedConceptRelativePath}/view">
+                                                            <c:out value="${attr.relatedConceptIdentifier}" />
+                                                            <c:if test="${not empty attr.relatedConceptLabel}">
+                                                                (<c:out value="${attr.relatedConceptLabel}" />)
+                                                            </c:if>
+                                                            <c:if test="${not empty attr.relatedConceptVocSet}">
+                                                                in <c:out value="${attr.relatedConceptVocSet}/${attr.relatedConceptVocabulary}" />
+                                                            </c:if>
+                                                          </stripes:link>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean">
+                                                            <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                                            <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                                            <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                                                            <stripes:param name="vocabularyConcept.identifier" value="${attr.relatedConceptIdentifier}" />
+                                                            <dd:attributeValue attrValue="${attr.relatedConceptLabel}" attrLen="40" />
+                                                        </stripes:link>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:when>
+                                            <c:otherwise>
+                                                  <dd:linkify value="${attr.attributeValue}" /><c:if test="${not empty attr.attributeLanguage}"> [${attr.attributeLanguage}]</c:if>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </li>
+                                </c:forEach>
+                            </c:if>
+                        </c:forEach>
+                    </ul>
                 </display:column>
             </c:forEach>
         </display:table>

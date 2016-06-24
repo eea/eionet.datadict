@@ -373,45 +373,102 @@
 
         <!-- Vocabulary concepts search -->
         <h2>Vocabulary concepts</h2>
-
         <stripes:form method="get" id="searchForm" beanclass="${actionBean['class'].name}">
-            <div id="searchframe">
-                <stripes:hidden name="vocabularyFolder.folderName" />
-                <stripes:hidden name="vocabularyFolder.workingCopy" />
-                <stripes:hidden name="origIdentifer" />
-                <stripes:hidden name="vocabularyFolder.identifier" />
-
-                <table class="datatable">
-                    <colgroup>
-                        <col style="width:10em;"/>
-                        <col />
-                        <col style="width:10em;"/>
-                        <col />
-                        <col />
-                    </colgroup>
+            <div id="filters">
+                <table class="filter">
+                    <stripes:hidden name="vocabularyFolder.folderName" />
+                    <stripes:hidden name="vocabularyFolder.workingCopy" />
+                    <stripes:hidden name="origIdentifer" />
+                    <stripes:hidden name="vocabularyFolder.identifier" />
                     <tr>
-                        <th scope="row" class="scope-row simple_attr_title" title="Text to filter from label, notation and definition">
-                            <label for="filterText"><span style="white-space:nowrap;">Filtering text</span></label>
-                        </th>
-                        <td class="simple_attr_value">
-                            <stripes:text class="smalltext" size="30" name="filter.text" id="filterText"/>
+                        <td class="label">
+                            <label for="status">Status</label>
                         </td>
-                        <th scope="row" class="scope-row simple_attr_title" title="Concept's status">
-                            <label for="status"><span style="white-space:nowrap;">Status</span></label>
-                        </th>
-                        <td class="simple_attr_value" style="padding-right: 5em;">
+                        <td class="input">
                             <stripes:select name="filter.conceptStatusInt" id="status">
-                                <stripes:option value="255" label="All concepts"/>
+                                <stripes:option value="255" label="All"/>
                                 <stripes:options-collection collection="<%=eionet.meta.dao.domain.StandardGenericStatus.valuesAsList()%>" label="label" value="value"/>
                             </stripes:select>
                         </td>
-                        <td>
-                            <c:set var="disableSearch" value="${(empty actionBean.vocabularyFolder.identifier) or not (actionBean.origIdentifier eq actionBean.vocabularyFolder.identifier)}"/>
-                            <stripes:submit name="edit" value="Search" class="mediumbuttonb" disabled="${disableSearch}"/>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <label for="filterText">Filtering text</label>
+                        </td>
+                        <td class="input">
+                            <stripes:text class="smalltext" size="30" name="filter.text" id="filterText"/>
+                        </td>
+                    </tr>
+                    <c:forEach items="${actionBean.boundElementFilters}" var="boundElementFilter" varStatus="loop">
+                        <tr class="boundElementFilter" data-filter-id="${boundElementFilter.id}">
+                            <td class="label">
+                                <label for="boundElementFilter-${boundElementFilter.id}"><c:out value="${boundElementFilter.label}" /></label>
+                            </td>
+                            <td class="input">
+                                <stripes:hidden name="filter.boundElements[${loop.index}].id" value="${boundElementFilter.id}" class="boundElementFilterId" />
+                                <stripes:select name="filter.boundElements[${loop.index}].value" class="boundElementFilterSelect">
+                                    <stripes:option value="" label="All" />
+                                    <stripes:options-map map="${boundElementFilter.options}" />
+                                </stripes:select>
+                                <a href="#" class="deleteButton" title="Remove from search criteria"></a>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <c:if test="${fn:length(actionBean.boundElements)>0}">
+                        <link type="text/css" media="all" href="<c:url value="/css/spinner.css"/>"  rel="stylesheet" />
+                        <tr id="addFilterRow">
+                            <td></td>
+                            <td class="input">
+                                <select id="addFilter">
+                                    <option value="">Add criteria</option>
+                                    <c:forEach var="boundElement" items="${actionBean.boundElements}">
+                                        <option value="${boundElement.id}"<c:if test="${ddfn:contains(actionBean.boundElementFilterIds, boundElement.id)}">disabled="disabled"</c:if>><c:out value="${boundElement.identifier}" /></option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                    </c:if>
+                    <tr>
+                        <td class="label">
+                            <label>Columns</label>
+                        </td>
+                        <td class="input bordered multi-select-container">
+                            <c:forEach var="column" items="${actionBean.columns}">
+                                <label for="${fn:escapeXml(column)}" class="smallfont">
+                                    <stripes:checkbox name="filter.visibleColumns" id="${fn:escapeXml(column)}" value="${fn:escapeXml(column)}" />
+                                    ${fn:escapeXml(column)}
+                                </label>
+                            </c:forEach>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <label for="visibleDefinition">Show definition</label>
+                        </td>
+                        <td class="input bordered">
+                            <stripes:checkbox name="filter.visibleDefinition" id="visibleDefinition" />
+                            <label for="visibleDefinition" class="smallfont">Yes</label>
                         </td>
                     </tr>
                 </table>
+                <p class="actions">
+                    <c:set var="disableSearch" value="${(empty actionBean.vocabularyFolder.identifier) or not (actionBean.origIdentifier eq actionBean.vocabularyFolder.identifier)}"/>
+                    <stripes:submit name="edit" value="Search" class="mediumbuttonb searchButton" disabled="${disableSearch}" />
+                    <input class="mediumbuttonb" type="reset" value="Reset" />
+                </p>
             </div>
+            <script type="text/javascript" src="<c:url value="/scripts/jquery.balloon.min.js" />"></script>
+            <script type="text/javascript">
+            // <![CDATA[
+                (function($) {
+                    $(document).ready(function() {
+                        <stripes:url var="url" beanclass="${actionBean['class'].name}"></stripes:url>
+                        applyBoundElementsFiltererInteractions("${url}", ${actionBean.vocabularyFolder.id});
+                        applyConceptDefinitionBalloon();
+                   }); 
+                }) (jQuery);
+            // ]]>
+            </script>
         </stripes:form>
 
         <!-- Vocabulary concepts -->
@@ -439,35 +496,100 @@
                 <display:column title="Label">
                     <!-- beanClass encodes incorrectly identifiers containing '+'. Can be replaced back after upgrading to Stripes 1.5.8 -->
                     <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/${concept.identifier}/edit">
-                       <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                         <c:out value="${concept.label}" />
                     </stripes:link>
                     <a href="#" onClick="openPopup('#editConceptDiv${concept.id}')"><img src="${editIcon}" title="Quick edit" alt="Quick edit" style="border:0" /></a>
-                </display:column>
-                <display:column title="Definition" escapeXml="true" property="definition" />
-                <display:column title="Notation" escapeXml="true" property="notation" />
-                <display:column title="Status" escapeXml="false" property="status.label" />
-                <display:column title="Status Modified" escapeXml="false">
-                    <fmt:formatDate value="${concept.statusModified}" pattern="dd.MM.yyyy"/>
-                </display:column>
-                <display:column title="Not Accepted from">
-                    <c:if test="${!concept.status.accepted}">
-                       <fmt:formatDate value="${concept.notAcceptedDate}" pattern="dd.MM.yyyy"/>
+                    <c:if test="${actionBean.filter.visibleDefinition}">
+                        <c:choose>
+                            <c:when test="${not empty concept.definition}">
+                                <p><span class="conceptDefinition" title="${fn:escapeXml(concept.definition)}">Definition</span></p>
+                            </c:when>
+                            <c:otherwise>
+                                <p><span class="noDefinition">No definition available</span></p>
+                            </c:otherwise>
+                        </c:choose>
                     </c:if>
                 </display:column>
+                <c:if test="${ddfn:contains(actionBean.filter.visibleColumns, 'Status')}">
+                    <display:column title="Status" escapeXml="false">
+                        <dd:attributeValue attrValue="${concept.status.label}" />
+                    </display:column>
+                </c:if>
+                <c:if test="${ddfn:contains(actionBean.filter.visibleColumns, 'Status Modified')}">
+                    <display:column title="Status Modified" escapeXml="false">
+                        <fmt:formatDate value="${concept.statusModified}" pattern="dd.MM.yyyy" />
+                    </display:column>
+                </c:if>
+                <c:if test="${ddfn:contains(actionBean.filter.visibleColumns, 'Notation')}">
+                    <display:column title="Notation" escapeXml="true" property="notation" />
+                </c:if>
+                <c:if test="${ddfn:contains(actionBean.filter.visibleColumns, 'Accepted Date')}">
+                    <display:column title="Accepted Date" escapeXml="false">
+                        <fmt:formatDate value="${concept.acceptedDate}" pattern="dd.MM.yyyy" />
+                    </display:column>
+                </c:if>
+                <c:if test="${ddfn:contains(actionBean.filter.visibleColumns, 'Not Accepted Date')}">
+                    <display:column title="Not Accepted Date" escapeXml="false">
+                        <fmt:formatDate value="${concept.notAcceptedDate}" pattern="dd.MM.yyyy" />
+                    </display:column>
+                </c:if>
+                <c:forEach var="boundElementIdentifier" items="${actionBean.filter.boundElementVisibleColumns}">
+                    <display:column title="${fn:escapeXml(boundElementIdentifier)}" escapeXml="false">
+                        <ul class="stripedmenu">
+                            <c:forEach var="elementValues" items="${concept.elementAttributes}">
+                                <c:set var="elementMeta" value="${elementValues[0]}"/>
+                                <c:if test="${elementMeta.identifier == boundElementIdentifier}">
+                                    <c:forEach var="attr" items="${elementValues}" varStatus="innerLoop">
+                                        <li>
+                                            <c:choose>
+                                                <c:when test="${attr.relationalElement}">
+                                                    <c:choose>
+                                                        <c:when test="${not actionBean.vocabularyFolder.workingCopy or attr.datatype eq 'reference'}">
+                                                            <stripes:link href="/vocabularyconcept/${attr.relatedConceptRelativePath}/view">
+                                                                <c:out value="${attr.relatedConceptIdentifier}" />
+                                                                <c:if test="${not empty attr.relatedConceptLabel}">
+                                                                    (<c:out value="${attr.relatedConceptLabel}" />)
+                                                                </c:if>
+                                                                <c:if test="${not empty attr.relatedConceptVocSet}">
+                                                                    in <c:out value="${attr.relatedConceptVocSet}/${attr.relatedConceptVocabulary}" />
+                                                                </c:if>
+                                                              </stripes:link>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean">
+                                                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                                                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                                                                <stripes:param name="vocabularyConcept.identifier" value="${attr.relatedConceptIdentifier}" />
+                                                                <dd:attributeValue attrValue="${attr.relatedConceptLabel}" attrLen="40" />
+                                                            </stripes:link>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <dd:linkify value="${attr.attributeValue}" /><c:if test="${not empty attr.attributeLanguage}"> [${attr.attributeLanguage}]</c:if>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </li>
+                                    </c:forEach>
+                                </c:if>
+                            </c:forEach>
+                        </ul>
+                    </display:column>
+                </c:forEach>
             </display:table>
             <c:if test="${not empty actionBean.vocabularyConcepts.list}">
                 <div style="padding-top: 10px;">
                     <stripes:hidden name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                     <stripes:hidden name="vocabularyFolder.identifier" />
                     <stripes:hidden name="vocabularyFolder.workingCopy" />
-                    <input type="button" id="toggleSelectAll" value="Select all" name="selectAll">
+                    <input type="button" id="toggleSelectAll" value="Select all" name="selectAll" />
                     <stripes:submit name="deleteConcepts" value="Delete" />
                     <stripes:submit name="markConceptsInvalid" value="Mark invalid" />
                     <stripes:submit name="markConceptsValid" value="Mark valid" />
-
                     <c:if test="${actionBean.vocabularyFolder.commonType}">
-                        <button id="addNewConceptBtn">Add new concept</button>
+                        <input type="button" id="addNewConceptBtn" value="Add new concept" />
                     </c:if>
                 </div>
             </c:if>

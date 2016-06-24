@@ -388,51 +388,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         validateView();
 
         boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-        Collections.sort(boundElements, new Comparator<DataElement>() {
-            @Override
-            public int compare(DataElement o1, DataElement o2) {
-                return (o1.getIdentifier().compareToIgnoreCase(o2.getIdentifier()));
-            }
-        });
-
-        // populate columns filter
-        columns.addAll(Arrays.asList(new String[] {
-           "Notation", "Status", "Status Modified", "Accepted Date", "Not Accepted Date"
-        }));
-        for (DataElement boundElement : boundElements) {
-            columns.add(boundElement.getIdentifier());
-        }
-        initFilter();
-
-        for (DataElement boundElement : boundElements) {
-            if (filter.getVisibleColumns().contains(boundElement.getIdentifier())) {
-                filter.getBoundElementVisibleColumns().add(boundElement.getIdentifier());
-            }
-        }
-        if (!filter.getBoundElementIds().isEmpty()) {
-            List<Integer> cids = vocabularyService.getVocabularyConceptIds(vocabularyFolder.getId());
-            for (Integer boundElementId : filter.getBoundElementIds()) {
-                boundElementFilters.add(vocabularyService.getVocabularyConceptBoundElementFilter(boundElementId, cids));
-            }
-        }
-
+        constructBoundElementsFilterer();
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
-
-        // inject data element values in filtered concepts
-        if (!vocabularyConcepts.getList().isEmpty()) {
-            List<Integer> vocabularyConceptIds = new ArrayList<Integer>();
-            for (VocabularyConcept concept : vocabularyConcepts.getList()) {
-                vocabularyConceptIds.add(concept.getId());
-            }
-            Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
-                    vocabularyService.getVocabularyConceptsDataElementValues(vocabularyFolder.getId(),
-                    ArrayUtils.toPrimitive(vocabularyConceptIds.toArray(new Integer[vocabularyConceptIds.size()])),
-                            false);
-
-            for (VocabularyConcept concept : vocabularyConcepts.getList()) {
-                concept.setElementAttributes(vocabularyConceptsDataElementValues.get(concept.getId()));
-            }
-        }
+        injectDataElementValuesInConcepts();
 
         vocabularyFolderVersions =
                 vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
@@ -502,16 +460,66 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
-        initFilter();
-        origIdentifier = vocabularyFolder.getIdentifier();
+        boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+
+        constructBoundElementsFilterer();
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+        injectDataElementValuesInConcepts();
+
+        origIdentifier = vocabularyFolder.getIdentifier();
         folders = vocabularyService.getFolders(getUserName(), null);
         folderChoice = FOLDER_CHOICE_EXISTING;
 
-        boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
         setRdfPurgeOption(1);
 
         return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
+    }
+
+    private void constructBoundElementsFilterer() throws ServiceException {
+        Collections.sort(boundElements, new Comparator<DataElement>() {
+            @Override
+            public int compare(DataElement o1, DataElement o2) {
+                return (o1.getIdentifier().compareToIgnoreCase(o2.getIdentifier()));
+            }
+        });
+
+        // populate columns filter
+        columns.addAll(Arrays.asList(new String[] {
+            "Notation", "Status", "Status Modified", "Accepted Date", "Not Accepted Date"
+        }));
+        for (DataElement boundElement : boundElements) {
+            columns.add(boundElement.getIdentifier());
+        }
+        initFilter();
+
+        for (DataElement boundElement : boundElements) {
+            if (filter.getVisibleColumns().contains(boundElement.getIdentifier())) {
+                filter.getBoundElementVisibleColumns().add(boundElement.getIdentifier());
+            }
+        }
+        if (!filter.getBoundElementIds().isEmpty()) {
+            List<Integer> cids = vocabularyService.getVocabularyConceptIds(vocabularyFolder.getId());
+            for (Integer boundElementId : filter.getBoundElementIds()) {
+                boundElementFilters.add(vocabularyService.getVocabularyConceptBoundElementFilter(boundElementId, cids));
+            }
+        }
+    }
+
+    private void injectDataElementValuesInConcepts() {
+        if (!vocabularyConcepts.getList().isEmpty()) {
+            List<Integer> vocabularyConceptIds = new ArrayList<Integer>();
+            for (VocabularyConcept concept : vocabularyConcepts.getList()) {
+                vocabularyConceptIds.add(concept.getId());
+            }
+            Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
+                    vocabularyService.getVocabularyConceptsDataElementValues(vocabularyFolder.getId(),
+                    ArrayUtils.toPrimitive(vocabularyConceptIds.toArray(new Integer[vocabularyConceptIds.size()])),
+                            false);
+
+            for (VocabularyConcept concept : vocabularyConcepts.getList()) {
+                concept.setElementAttributes(vocabularyConceptsDataElementValues.get(concept.getId()));
+            }
+        }
     }
 
     /**
