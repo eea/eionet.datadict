@@ -261,7 +261,7 @@
         else if (mode.equals("copy")){
             String id = handler.getLastInsertID();
             if (id!=null && id.length()>0){
-                redirUrl = request.getContextPath() + "/tables/" + id + "/edit";
+                redirUrl = request.getContextPath() + "/tables/" + id; //+ "/edit";
             }
             if (history!=null){
                 history.remove(history.getCurrentIndex());
@@ -541,17 +541,29 @@
                 return false;
         }
 
-        function copyTbl(){
+        function copyTbl(context){
 
-            if (document.forms["form1"].elements["idfier"].value==""){
-                alert("Identifier cannot be empty!");
-                return;
+            if (!checkObligations()){
+                    alert("You have not specified one of the mandatory fields!");
+                    return;
             }
 
-            var url='search_table.jsp?ctx=popup';
+            if (hasWhiteSpace("idfier")){
+                    alert("Identifier cannot contain any white space!");
+                    return;
+            }
 
-            wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
-            if (window.focus){wAdd.focus()}
+            if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
+                    alert("Identifier not valid for usage as an XML tag! " +
+                          "In the first character only underscore or latin characters are allowed! " +
+                          "In the rest of characters only underscore or hyphen or dot or 0-9 or latin characters are allowed!");
+                    return;
+            }
+            
+
+            var url='/search_table.jsp?ctx=popup';
+            wAdd = window.open(context+url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
+            if (window.focus){wAdd.focus();}
         }
 
         function pickTable(id, name){
@@ -1186,8 +1198,8 @@ else if (mode.equals("add"))
                                                         <th></th>
                                                         <td colspan="3">
                                                             <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
-                                                            <input type="button" class="mediumbuttonb" value="Copy"
-                                                                onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
+                                                            <input type="button" class="mediumbuttonb" value="Add and Copy"
+                                                                onclick="copyTbl('<%=request.getContextPath()%>')"
                                                                 title="Copies table structure and attributes from existing dataset table"/>
                                                         </td>
                                                     </tr><%

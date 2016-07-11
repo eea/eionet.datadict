@@ -374,7 +374,7 @@ else {
                         }
                     }
 
-                    if (addCriteria.size()>0){
+                    if (addCriteria.size()>0 && !isPopup){
                         %>
                         <tr>
                             <td colspan="4" style="text-align:right">
