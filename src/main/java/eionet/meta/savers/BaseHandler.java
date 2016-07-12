@@ -12,6 +12,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import eionet.meta.DDUser;
 import eionet.meta.MrProper;
 import eionet.meta.service.IDataService;
+import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Util;
 import eionet.util.sql.SQLTransaction;
 
@@ -113,7 +114,7 @@ public abstract class BaseHandler {
 
         if (dataService == null) {
 
-            ApplicationContext appContext = new ClassPathXmlApplicationContext(SPRING_CONTEXT_XML);
+            ApplicationContext appContext = SpringApplicationContext.getContext();
             dataService = appContext.getBean(IDataService.class);
         }
 

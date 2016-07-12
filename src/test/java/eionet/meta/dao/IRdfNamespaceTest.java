@@ -1,11 +1,12 @@
 package eionet.meta.dao;
 
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import eionet.DDDatabaseTestCase;
 import eionet.meta.dao.domain.RdfNamespace;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 /**
  * RDFNamespaceDAO tests.
@@ -15,25 +16,33 @@ import eionet.meta.dao.domain.RdfNamespace;
 public class IRdfNamespaceTest extends DDDatabaseTestCase {
 
     /** local dao instance. */
-    private IRdfNamespaceDAO dao;
+    private static IRdfNamespaceDAO dao;
 
     /** spring context .*/
-    private ApplicationContext springContext;
+    private static ClassPathXmlApplicationContext springContext;
 
     @Override
     protected String getSeedFilename() {
         return "seed-rdfnamespace.xml";
     }
 
+    @BeforeClass
+    public static void setUpClass() {
+        springContext = new ClassPathXmlApplicationContext("mock-spring-context.xml");
+        dao = springContext.getBean(IRdfNamespaceDAO.class);
+    }
+    
+    @AfterClass
+    public static void tearDownClass() {
+        springContext.close();
+    }
+    
     /**
      * test for namespaceExists method.
      * @throws Exception if test fails
      */
     @Test
     public void testNameSpaceExists() throws Exception {
-
-        springContext = new ClassPathXmlApplicationContext("mock-spring-context.xml");
-        dao = springContext.getBean(IRdfNamespaceDAO.class);
         assertTrue(dao.namespaceExists("ns2"));
         assertTrue(dao.namespaceExists("ns3"));
         assertTrue(!dao.namespaceExists("ns4"));
@@ -45,9 +54,6 @@ public class IRdfNamespaceTest extends DDDatabaseTestCase {
      */
     @Test
     public void testGetNamespace() throws Exception {
-        //TODO init static
-        springContext = new ClassPathXmlApplicationContext("mock-spring-context.xml");
-        dao = springContext.getBean(IRdfNamespaceDAO.class);
         RdfNamespace namespace = dao.getNamespace("ns2");
         assertEquals("http://namespace2.somewhere.com", namespace.getUri());
 
