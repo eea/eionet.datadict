@@ -29,6 +29,7 @@ import eionet.meta.savers.DatasetHandler;
 import eionet.meta.savers.DsTableHandler;
 import eionet.meta.savers.Parameters;
 import eionet.meta.service.IDataService;
+import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
@@ -1311,7 +1312,7 @@ public class VersionManager {
 
     private void initDataService() {
         if (dataService == null) {
-            ApplicationContext appCtx = new ClassPathXmlApplicationContext("spring-context.xml");
+            ApplicationContext appCtx = SpringApplicationContext.getContext();
             dataService = appCtx.getBean(IDataService.class);
         }
 

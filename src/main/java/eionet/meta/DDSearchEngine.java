@@ -36,6 +36,7 @@ import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.IXmlConvService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SchemaConversionsData;
+import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.StringOrdinalComparator;
@@ -99,7 +100,7 @@ public class DDSearchEngine {
      * Initializes Spring context.
      */
     protected void initSpringContext() {
-        springContext = new ClassPathXmlApplicationContext("spring-context.xml");
+        springContext = SpringApplicationContext.getContext();
     }
 
     public DDSearchEngine(Connection conn, String sessionID) {
