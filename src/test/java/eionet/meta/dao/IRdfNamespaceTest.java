@@ -1,12 +1,10 @@
 package eionet.meta.dao;
 
 import org.junit.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import eionet.DDDatabaseTestCase;
 import eionet.meta.dao.domain.RdfNamespace;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import eionet.meta.spring.SpringApplicationContext;
 
 /**
  * RDFNamespaceDAO tests.
@@ -16,33 +14,20 @@ import org.junit.BeforeClass;
 public class IRdfNamespaceTest extends DDDatabaseTestCase {
 
     /** local dao instance. */
-    private static IRdfNamespaceDAO dao;
-
-    /** spring context .*/
-    private static ClassPathXmlApplicationContext springContext;
+    private IRdfNamespaceDAO dao;
 
     @Override
     protected String getSeedFilename() {
         return "seed-rdfnamespace.xml";
     }
 
-    @BeforeClass
-    public static void setUpClass() {
-        springContext = new ClassPathXmlApplicationContext("mock-spring-context.xml");
-        dao = springContext.getBean(IRdfNamespaceDAO.class);
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-        springContext.close();
-    }
-    
     /**
      * test for namespaceExists method.
      * @throws Exception if test fails
      */
     @Test
     public void testNameSpaceExists() throws Exception {
+        dao = SpringApplicationContext.getContext().getBean(IRdfNamespaceDAO.class);
         assertTrue(dao.namespaceExists("ns2"));
         assertTrue(dao.namespaceExists("ns3"));
         assertTrue(!dao.namespaceExists("ns4"));
@@ -54,6 +39,7 @@ public class IRdfNamespaceTest extends DDDatabaseTestCase {
      */
     @Test
     public void testGetNamespace() throws Exception {
+        dao = SpringApplicationContext.getContext().getBean(IRdfNamespaceDAO.class);
         RdfNamespace namespace = dao.getNamespace("ns2");
         assertEquals("http://namespace2.somewhere.com", namespace.getUri());
 
