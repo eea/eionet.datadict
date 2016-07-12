@@ -563,14 +563,6 @@
 
             var url='/search_table.jsp?ctx=popup';
             wAdd = window.open(context+url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
-            
-            wAdd.addEventListener("beforeunload", function (){
-                document.getElementById("addButton").removeAttribute("disabled");
-                return null;
-            });
-            
-            document.getElementById("addButton").setAttribute("disabled", "true");
-            
             if (window.focus){wAdd.focus();}
         }
 
@@ -1205,7 +1197,7 @@ else if (mode.equals("add"))
                                                     <tr>
                                                         <th></th>
                                                         <td colspan="3">
-                                                            <input id="addButton" type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
+                                                            <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
                                                             <input type="button" class="mediumbuttonb" value="Add and Copy"
                                                                 onclick="copyTbl('<%=request.getContextPath()%>')"
                                                                 title="Copies table structure and attributes from existing dataset table"/>
