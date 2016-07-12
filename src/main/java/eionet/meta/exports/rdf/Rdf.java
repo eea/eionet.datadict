@@ -27,6 +27,7 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.ITableService;
+import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
@@ -103,7 +104,7 @@ public class Rdf {
             this.id = Integer.parseInt(id);
         }
 
-        ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-context.xml");
+        ApplicationContext ctx = SpringApplicationContext.getContext();
 
         if (type.equals(TABLE_TYPE)) {
             tableService = ctx.getBean(ITableService.class);

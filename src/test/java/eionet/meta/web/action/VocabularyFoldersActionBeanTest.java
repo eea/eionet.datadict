@@ -41,7 +41,9 @@ public class VocabularyFoldersActionBeanTest extends DDDatabaseTestCase {
      * Name for the request attribute via which we inject rich-type (e.g. file bean) request parameters for the action bean.
      */
     public static final String RICH_TYPE_REQUEST_PARAMS_ATTR_NAME = "RICH_TYPE_REQUEST_PARAMS";
-
+    
+    private static MockServletContext ctxWithProperyBinder;
+    
     /**
      * test when not allowed user tries to go to maintain page.
      *
@@ -301,26 +303,30 @@ public class VocabularyFoldersActionBeanTest extends DDDatabaseTestCase {
      *
      * @return
      */
-    private MockServletContext getServletContextWithProperyBinder() {
-        MockServletContext ctx = new MockServletContext("test");
+    private static MockServletContext getServletContextWithProperyBinder() {
+        if (VocabularyFoldersActionBeanTest.ctxWithProperyBinder == null) {
+            MockServletContext ctx = new MockServletContext("test");
 
-        Map<String, String> filterParams = new HashMap<String, String>();
+            Map<String, String> filterParams = new HashMap<String, String>();
 
-        filterParams.put("Interceptor.Classes", "net.sourceforge.stripes.integration.spring.SpringInterceptor");
-        filterParams.put("ActionResolver.Packages", "eionet.web.action");
+            filterParams.put("Interceptor.Classes", "net.sourceforge.stripes.integration.spring.SpringInterceptor");
+            filterParams.put("ActionResolver.Packages", "eionet.web.action");
 
-        filterParams.put("ActionBeanContext.Class", "eionet.web.DDActionBeanContext");
-        filterParams.put("ActionBeanPropertyBinder.Class",
-                "eionet.meta.web.action.VocabularyFoldersActionBeanTest$MyActionBeanPropertyBinder");
+            filterParams.put("ActionBeanContext.Class", "eionet.web.DDActionBeanContext");
+            filterParams.put("ActionBeanPropertyBinder.Class",
+                    "eionet.meta.web.action.VocabularyFoldersActionBeanTest$MyActionBeanPropertyBinder");
 
-        ctx.addFilter(StripesFilter.class, "StripesFilter", filterParams);
-        ctx.addInitParameter("contextConfigLocation", "classpath:mock-spring-context.xml");
+            ctx.addFilter(StripesFilter.class, "StripesFilter", filterParams);
+            ctx.addInitParameter("contextConfigLocation", "classpath:mock-spring-context.xml");
 
-        ctx.setServlet(DispatcherServlet.class, "StripesDispatcher", null);
+            ctx.setServlet(DispatcherServlet.class, "StripesDispatcher", null);
 
-        ContextLoaderListener springContextLoader = new ContextLoaderListener();
-        springContextLoader.contextInitialized(new ServletContextEvent(ctx));
-        return ctx;
+            ContextLoaderListener springContextLoader = new ContextLoaderListener();
+            springContextLoader.contextInitialized(new ServletContextEvent(ctx));
+            VocabularyFoldersActionBeanTest.ctxWithProperyBinder = ctx;
+        }
+        
+        return VocabularyFoldersActionBeanTest.ctxWithProperyBinder;
     }// end of method getServletContextWithProperyBinder
 
     /**
