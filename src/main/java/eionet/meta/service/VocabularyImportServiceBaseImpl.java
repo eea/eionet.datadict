@@ -23,9 +23,11 @@ package eionet.meta.service;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +38,9 @@ import java.util.Set;
  * @author enver
  */
 public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImportService {
+
+    private static final int BATCH_SIZE = 1000;
+
     /**
      * Vocabulary service.
      */
@@ -74,7 +79,7 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
             }
             this.vocabularyService.deleteVocabularyConcepts(conceptIds);
         }
-    } // end of method purgeConcepts
+    }
 
     /**
      * Purge/delete bound elements from vocabulary folder.
@@ -89,7 +94,7 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
                 this.vocabularyService.removeDataElement(vocabularyFolderId, elem.getId());
             }
         }
-    } // end of method purgeBoundElements
+    }
 
     /**
      * This method import objects into DB. It creates not-existing objects and then updates values. All operation is done Spring
@@ -110,35 +115,57 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
             this.vocabularyService.addDataElement(vocabularyId, elem.getId());
         }
 
-        for (VocabularyConcept vc : vocabularyConceptsToUpdate) {
-            // STEP 1. INSERT VOCABULARY CONCEPT and UPDATE DATAELEMENT WHO ARE RELATED TO NEWLY CREATED CONCEPT
-            int id = vc.getId();
-            if (id <= 0) {
-                // INSERT VOCABULARY CONCEPT
-                int insertedConceptId = this.vocabularyService.createVocabularyConceptNonTransactional(vocabularyId, vc);
-                // after insert operation get id of the vocabulary and set it!
-                vc.setId(insertedConceptId);
-                Set<DataElement> elementsRelatedToConcept = elementsRelatedToNotCreatedConcepts.get(id);
-                if (elementsRelatedToConcept != null) {
-                    for (DataElement elem : elementsRelatedToConcept) {
-                        elem.setRelatedConceptId(insertedConceptId);
-                    }
+        VocabularyFolder vocabularyFolder = this.vocabularyService.getVocabularyFolder(vocabularyId);
+        boolean notationsEqualIdentifiers = vocabularyFolder != null && vocabularyFolder.isNotationsEqualIdentifiers();
+
+        // find and batch insert new concepts
+        List<VocabularyConcept> newConcepts = new ArrayList<VocabularyConcept>();
+
+        for (Iterator<VocabularyConcept> it = vocabularyConceptsToUpdate.iterator(); it.hasNext();) {
+            VocabularyConcept vocabularyConcept = it.next();
+            if (notationsEqualIdentifiers) {
+                vocabularyConcept.setNotation(vocabularyConcept.getIdentifier());
+            }
+            // new concepts
+            if (vocabularyConcept.getId() <= 0) {
+                if (vocabularyConcept.getStatus() == null) {
+                    vocabularyConcept.setStatus(StandardGenericStatus.VALID);
+                    vocabularyConcept.setStatusModified(new java.sql.Date(System.currentTimeMillis()));
                 }
+                vocabularyConcept.setVocabularyId(vocabularyId);
+                newConcepts.add(vocabularyConcept);
+                it.remove();
             }
         }
 
-        // STEP 2. UPDATE VOCABULARY CONCEPT
-        for (VocabularyConcept vc : vocabularyConceptsToUpdate) {
-            this.vocabularyService.updateVocabularyConceptNonTransactional(vc);
+        if (!newConcepts.isEmpty()) {
+            List<Integer> insertedIds = this.vocabularyService.batchCreateVocabularyConcepts(newConcepts, BATCH_SIZE);
+            if (newConcepts.size() != insertedIds.size()) {
+                throw new ServiceException("Not all new concepts were inserted in the database");
+            }
+           
+            // update related concept ids with those generated after db insert
+            for (int i = 0; i < newConcepts.size(); i++) {
+                VocabularyConcept newConcept = newConcepts.get(i);
+                int rdfDummyId = newConcepts.get(i).getId();
+                int insertedId = insertedIds.get(i);
+                newConcept.setId(insertedId);
+
+                Set<DataElement> elementsRelatedToConcept = elementsRelatedToNotCreatedConcepts.get(rdfDummyId);
+                if (elementsRelatedToConcept != null) {
+                    for (DataElement elem : elementsRelatedToConcept) {
+                        elem.setRelatedConceptId(insertedId);
+                    }
+                }
+            }
+            vocabularyConceptsToUpdate.addAll(newConcepts); // db ids
         }
 
-        // STEP 3. FIX RELATED REFERENCE ELEMENTS
-        this.vocabularyService.fixRelatedReferenceElements(vocabularyId, vocabularyConceptsToUpdate);
-        this.vocabularyService.fixRelatedLocalRefElementsForImport(vocabularyId, vocabularyConceptsToUpdate);
-
-        // STEP 4. DELETE VOCABULARY CONCEPT
+        this.vocabularyService.batchUpdateVocabularyConcepts(vocabularyConceptsToUpdate, BATCH_SIZE);
+        this.vocabularyService.batchUpdateVocabularyConceptsDataElementValues(vocabularyConceptsToUpdate, BATCH_SIZE);
+        this.vocabularyService.batchFixRelatedReferenceElements(vocabularyConceptsToUpdate, BATCH_SIZE);
         purgeConcepts(vocabularyConceptsToDelete);
-    } // end of method importIntoDb
+    }
 
     /**
      * {@inheritDoc}
@@ -160,6 +187,6 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
                 return null;
 
         }
-    } // end of method getStatusForMissingConceptAction
+    }
 
-} // end of abstract class VocabularyImportServiceBaseImpl
+}

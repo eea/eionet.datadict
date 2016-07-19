@@ -26,11 +26,12 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.InferenceRule;
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.DataElementsFilter;
-import eionet.meta.service.data.DataElementsResult;
 
 import java.sql.SQLException;
 import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
+import eionet.util.Triple;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -446,5 +447,13 @@ public interface IDataElementDAO {
      * @return dynamic filter
      */
     VocabularyConceptBoundElementFilter getVocabularyConceptBoundElementFilter(int dataElementId, List<Integer> vocabularyConceptIds);
+
+    void deleteVocabularyConceptDataElementValues(List<Integer> vocabularyConceptIds);
+
+    int[][] batchInsertVocabularyConceptDataElementValues(List<VocabularyConcept> vocabularyConcepts, int batchSize);
+
+    int[][] batchCreateInverseElements(List<Triple<Integer, Integer, Integer>> relatedReferenceElements, int batchSize);
+
+    Map<Integer, String> getDataElementDataTypes(Collection<Integer> dataElementIds);
 
 }

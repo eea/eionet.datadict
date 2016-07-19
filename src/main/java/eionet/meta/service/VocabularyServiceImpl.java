@@ -70,6 +70,8 @@ import eionet.util.PropsIF;
 import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.web.action.ErrorActionBean;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Vocabulary service.
@@ -1390,12 +1392,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 continue;
             }
 
-
             for (List<DataElement> dataElementValues : conceptElementAttributes) {
                 if (dataElementValues == null) {
                     continue;
                 }
-
                 for (DataElement elem : dataElementValues) {
                     //for localref elements and reference elements which reside in the same vocabulary ,
                     // create inverse links immediately to show them in the working copy as well:
@@ -1477,7 +1477,71 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
 
     }
+
+    @Override
+    public List<Integer> batchCreateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize) 
+            throws ServiceException {
+        try {
+            return vocabularyConceptDAO.batchCreateVocabularyConcepts(vocabularyConcepts, batchSize);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to batch insert vocabulary concepts: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public int[][] batchUpdateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize) throws ServiceException {
+        try {
+            return vocabularyConceptDAO.batchUpdateVocabularyConcepts(vocabularyConcepts, batchSize);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to batch update vocabulary concepts: " + e.getMessage(), e);
+        }
+    }
+
     
-    
-    
+    @Override
+    public void batchUpdateVocabularyConceptsDataElementValues(List<VocabularyConcept> vocabularyConcepts, int batchSize)
+            throws ServiceException {
+        List<Integer> vocabularyConceptIds = new ArrayList<Integer>();
+        for (VocabularyConcept vocabularyConcept : vocabularyConcepts) {
+            vocabularyConceptIds.add(vocabularyConcept.getId());
+        }
+
+        dataElementDAO.deleteVocabularyConceptDataElementValues(vocabularyConceptIds);
+        dataElementDAO.batchInsertVocabularyConceptDataElementValues(vocabularyConcepts, batchSize);
+    }
+
+    @Override
+    public void batchFixRelatedReferenceElements(List<VocabularyConcept> concepts, int batchSize) {
+        Set<Integer> dataElementsIds = new HashSet<Integer>();
+        for (VocabularyConcept concept : concepts) {
+            List<List<DataElement>> elems = concept.getElementAttributes();
+            for (List<DataElement> elemMeta : elems) {
+                dataElementsIds.add(elemMeta.get(0).getId());
+            }
+        }
+
+        if (dataElementsIds.isEmpty()) {
+            return;
+        }
+
+        Map<Integer, String> dataElementDataTypes = dataElementDAO.getDataElementDataTypes(dataElementsIds);
+
+        List<Triple<Integer, Integer, Integer>> relatedReferenceElements = new ArrayList<Triple<Integer, Integer, Integer>>();
+        for (VocabularyConcept concept : concepts) {
+            List<List<DataElement>> elems = concept.getElementAttributes();
+            for (List<DataElement> elemMeta : elems) {
+                for (DataElement elem : elemMeta) {
+                    if (elem.getRelatedConceptId() != null && elem.getRelatedConceptId() != 0) {
+                        String elemType = dataElementDataTypes.get(elem.getId());
+                        if ("localref".equals(elemType) || "reference".equals(elemType)) {
+                            Triple<Integer, Integer, Integer> triple = new Triple<Integer, Integer, Integer>(elem.getId(), concept.getId(), elem.getRelatedConceptId());
+                            relatedReferenceElements.add(triple);
+                        }
+                    }
+                }
+            }
+        }
+        dataElementDAO.batchCreateInverseElements(relatedReferenceElements, batchSize);
+    }
+
 }
