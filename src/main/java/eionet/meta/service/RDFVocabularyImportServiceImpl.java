@@ -215,7 +215,7 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         Map<String, String> boundURIs = new HashMap<String, String>();
         Map<String, Integer> elemToId = new HashMap<String, Integer>();
         Map<String, List<String>> boundElementsByNS = new HashMap<String, List<String>>();
-        //add default DD namespace to lists
+        // add default DD namespace to lists
         boundURIs.put(DD_NAME_SPACE, DD_NAME_SPACE);
         boundElementsByNS.put(DD_NAME_SPACE, new ArrayList<String>());
         for (DataElement elem : boundElements) {
@@ -349,7 +349,7 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         this.logMessages.add("Total time of execution (msecs): " + (end - start));
 
         return this.logMessages;
-    } // end of method importRdfIntoVocabularyInternal
+    }
 
     /**
      * {@inheritDoc}
@@ -376,13 +376,11 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         MissingConceptsAction missingConceptsAction = getDefaultMissingConceptsAction(false);
 
         return importRdfIntoVocabularyInternal(contents, vocabularyFolder, uploadActionBefore, uploadAction, missingConceptsAction);
-    } // end of method importRdfIntoVocabulary
+    }
 
-    
-    
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public List<String> createFolderAndVocabularyFromRDF(Reader contents,Folder folder,  VocabularyFolder vocabularyFolder, String username) throws ServiceException {
+    public List<String> createFolderAndVocabularyFromRDF(Reader contents, Folder folder, VocabularyFolder vocabularyFolder, String username) throws ServiceException {
 
         this.logMessages = new ArrayList<String>();
 
@@ -442,16 +440,6 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         return this.logMessages;
 
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     @Override
     @Transactional(rollbackFor = ServiceException.class)

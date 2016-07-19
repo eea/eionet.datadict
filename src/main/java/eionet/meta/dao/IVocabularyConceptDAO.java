@@ -251,4 +251,17 @@ public interface IVocabularyConceptDAO {
      * @return list of VocabularyConcept entities
      */
     List<VocabularyConcept> getConceptsWithValuedElement(int elementId);
+
+    /**
+     * Batch inserts the list of vocabulary concepts into the database with the provided batch size.
+     * Returns the list of newly created concept ids
+     */
+    List<Integer> batchCreateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize);
+
+    /**
+     * Batch updates the list of vocabulary concepts into the database with the provided batch size.
+     * Returns an array containing for each batch another array containing the numbers of rows affected by each update in the batch
+     */
+    int[][] batchUpdateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize);
+
 }
