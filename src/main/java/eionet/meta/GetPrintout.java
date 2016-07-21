@@ -22,6 +22,7 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
+import org.apache.log4j.Logger;
 
 /**
  * 
@@ -33,11 +34,20 @@ public class GetPrintout extends HttpServlet {
     public static final String PDF_LOGO_PATH = "images/pdf_logo.png";
 
     private static final String DEFAULT_HANDOUT_TYPE = PdfHandoutIF.GUIDELINE;
+        protected static final Logger LOGGER = Logger.getLogger(GetPrintout.class);
 
+        private static Connection conn = null;
+
+    public void service(HttpServletRequest req,HttpServletResponse res , Connection connection)throws ServletException , IOException{
+     conn = connection;
+    }
+        
+        
+        
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-        Connection conn = null;
+       // Connection conn = null;
         try {
             // get the servlet context
             ServletContext ctx = getServletContext();
@@ -94,13 +104,22 @@ public class GetPrintout extends HttpServlet {
 
             // set up the OutputStream to write to
             ByteArrayOutputStream barray = new ByteArrayOutputStream();
-
             PdfHandoutIF handout = null;
             if (outType.equals(PdfHandoutIF.GUIDELINE)) {
                 if (objType.equals(PdfHandoutIF.DATASET)) {
                     if (objIDs.length == 1) {
                         objID = objIDs[0];
-                        handout = new DstPdfGuideline(conn, barray);
+                        
+                        try {
+                        handout = new DstPdfGuideline(conn, barray);    
+                        } catch (Exception e) {
+                          e.printStackTrace();
+                          LOGGER.info(e.getMessage(), e.getCause());
+                        }
+                        
+                        
+                        
+                        
                         ((CachableIF) handout).setCachePath(cachePath);
                     } else {
                         handout = new DstCombinedPdfGuideline(conn, barray);

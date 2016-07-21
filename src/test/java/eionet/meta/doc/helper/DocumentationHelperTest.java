@@ -18,7 +18,8 @@ public class DocumentationHelperTest {
     
     @BeforeClass
     public static void setUpClass() {
-        ctx = new GenericXmlApplicationContext("classpath:mock-spring-context.xml");
+         ctx = new GenericXmlApplicationContext("classpath:mock-spring-context.xml");
+     
     }
     
     @Test

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<acl description="/attributes">
+<entries>
+<entry type="object">
+<principal id="dd_admin" type="localgroup"/>
+<permissions>
+<permission id="v"/>
+<permission id="i"/>
+<permission id="u"/>
+<permission id="d"/>
+<permission id="c"/>
+</permissions>
+</entry>
+<entry type="doc">
+<principal id="dd_admin" type="localgroup"/>
+<permissions>
+<permission id="u"/>
+<permission id="d"/>
+<permission id="c"/>
+</permissions>
+</entry>
+<entry type="doc">
+<principal id="owner" type="user"/>
+<permissions>
+<permission id="u"/>
+<permission id="d"/>
+<permission id="c"/>
+</permissions>
+</entry>
+<entry type="object">
+<principal id="anonymous" type="user"/>
+<permissions>
+<permission id="v"/>
+</permissions>
+</entry>
+</entries>
+</acl>

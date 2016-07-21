@@ -20,6 +20,11 @@ import org.easymock.EasyMock;
 import org.junit.Assert;
 
 import eionet.DDDatabaseTestCase;
+import eionet.meta.ActionBeanUtils;
+import eionet.meta.InitializeRequiredStartupFiles;
+import eionet.meta.spring.SpringApplicationContext;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -38,6 +43,7 @@ public class OdsServletTest extends DDDatabaseTestCase {
     private HttpSession sessionMock = null;
     private OdsServlet odsServletUnderTest = null;
     private ArrayList<Object> allMocks = null;
+    private ApplicationContext springContext;
 
     /*
      * (non-Javadoc)
@@ -46,12 +52,24 @@ public class OdsServletTest extends DDDatabaseTestCase {
      */
     @Override
     protected void setUp() throws Exception {
+
         super.setUp();
         initializeForTests();
+        /**
+         * Manually Invoke InitializeRequiredStartupFiles to initialize needed
+         * files for OdsServlet class 
+        *
+         */
+        ActionBeanUtils.getServletContext();
+        ApplicationContext appCtx = SpringApplicationContext.getContext();
+        AutowireCapableBeanFactory beanFactory = appCtx.getAutowireCapableBeanFactory();
+        beanFactory.autowireBeanProperties(InitializeRequiredStartupFiles.class, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
+        InitializeRequiredStartupFiles initializeRequiredStartupFiles = beanFactory.getBean(InitializeRequiredStartupFiles.class);
+        initializeRequiredStartupFiles.initialize();
     }
 
     /**
-     * Initialize variables and mocks before test suite start running. 
+     * Initialize variables and mocks before test suite start running.
      */
     private void initializeForTests() {
         allMocks = new ArrayList<Object>();
@@ -69,10 +87,9 @@ public class OdsServletTest extends DDDatabaseTestCase {
     }
 
     /**
-     * Reset mocks and instantiate and initialize class under test (OdsServlet). 
+     * Reset mocks and instantiate and initialize class under test (OdsServlet).
      *
-     * @throws Exception
-     *             if initialization fails
+     * @throws Exception if initialization fails
      */
     private void initializeForStep() throws Exception {
         // reset all mock
@@ -83,8 +100,9 @@ public class OdsServletTest extends DDDatabaseTestCase {
     }
 
     /**
-     * Reset all mock objects. Not: Can't extend EasyMockSupport and it does not work as a member field. Otherwise, resetAll method
-     * could be used instead of this
+     * Reset all mock objects. Not: Can't extend EasyMockSupport and it does not
+     * work as a member field. Otherwise, resetAll method could be used instead
+     * of this
      */
     private void resetAllMocks() {
         for (Object mock : allMocks) {
@@ -93,8 +111,9 @@ public class OdsServletTest extends DDDatabaseTestCase {
     }
 
     /**
-     * Replay all mock objects. Not: Can't extend EasyMockSupport and it does not work as a member field. Otherwise, replayAll
-     * method could be used instead of this
+     * Replay all mock objects. Not: Can't extend EasyMockSupport and it does
+     * not work as a member field. Otherwise, replayAll method could be used
+     * instead of this
      */
     private void replyAllMocks() {
         for (Object mock : allMocks) {
@@ -103,8 +122,9 @@ public class OdsServletTest extends DDDatabaseTestCase {
     }
 
     /**
-     * Verify all mock objects. Not: Can't extend EasyMockSupport and it does not work as a member field. Otherwise, verifyAll
-     * method could be used instead of this
+     * Verify all mock objects. Not: Can't extend EasyMockSupport and it does
+     * not work as a member field. Otherwise, verifyAll method could be used
+     * instead of this
      */
     private void verifyAllMocks() {
         for (Object mock : allMocks) {
@@ -133,8 +153,7 @@ public class OdsServletTest extends DDDatabaseTestCase {
     /**
      * test if ODS output is responded for a valid dataset.
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     public void testIfOdsReturnedForADataset() throws Exception {
         // initialize for step
@@ -172,8 +191,7 @@ public class OdsServletTest extends DDDatabaseTestCase {
     /**
      * test if ODS output is responded for a valid table.
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     public void testIfOdsReturnedForATable() throws Exception {
         // initialize for step
@@ -211,8 +229,7 @@ public class OdsServletTest extends DDDatabaseTestCase {
     /**
      * test if an exception thrown when object type is null
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     public void testIfExceptionThrownWhenObjTypeIsNull() throws Exception {
         // initialize for step
@@ -249,8 +266,7 @@ public class OdsServletTest extends DDDatabaseTestCase {
     /**
      * test if an exception thrown when object type is empty
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     public void testIfExceptionThrownWhenObjTypeIsEmpty() throws Exception {
         // initialize for step
@@ -287,8 +303,7 @@ public class OdsServletTest extends DDDatabaseTestCase {
     /**
      * test if an exception thrown when object id is empty
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     public void testIfExceptionThrownWhenObjIdIsEmpty() throws Exception {
         // initialize for step
@@ -324,8 +339,7 @@ public class OdsServletTest extends DDDatabaseTestCase {
     /**
      * test if an exception thrown when object id is null
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     public void testIfExceptionThrownWhenObjIdIsNull() throws Exception {
         // initialize for step
@@ -361,8 +375,7 @@ public class OdsServletTest extends DDDatabaseTestCase {
     /**
      * test if an exception thrown when object id is not valid
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     public void testIfExceptionThrownWhenObjIdNotValid() throws Exception {
         // initialize for step
@@ -401,8 +414,7 @@ public class OdsServletTest extends DDDatabaseTestCase {
     /**
      * test if an exception thrown when object id is not valid
      *
-     * @throws Exception
-     *             if test fails
+     * @throws Exception if test fails
      */
     public void testIfExceptionThrownWhenObjIdNotValidTableId() throws Exception {
         // initialize for step
@@ -441,9 +453,8 @@ public class OdsServletTest extends DDDatabaseTestCase {
     /**
      * test if an exception thrown when first object type is invalid
      *
-     * @throws Exception
-     *             if test fails
-     */    
+     * @throws Exception if test fails
+     */
     public void testIfExceptionThrownWhenObjTypeIsInvalid() throws Exception {
         // initialize for step
         initializeForStep();
@@ -485,6 +496,7 @@ public class OdsServletTest extends DDDatabaseTestCase {
     }
 
     private static class EnvServletOutputStream extends ServletOutputStream {
+
         private int numberOfBytesWritten = 0;
         private ByteArrayOutputStream baos = null;
         private boolean saveInput = false;

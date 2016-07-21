@@ -14,7 +14,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
  * 
  * @author Lena KARGIOTI eka@eworx.gr
  */
-@SpringApplicationContext("mock-spring-context.xml")
+@SpringApplicationContext("spring-context.xml")
 public class VocabularySetDAOTest extends UnitilsJUnit4 {
         
     @SpringBeanByType

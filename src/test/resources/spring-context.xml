@@ -15,7 +15,8 @@
     <!-- Scans within the base package of the application for @Components
         to configure as beans -->
     <context:component-scan base-package="eionet.meta, eionet.datadict, eionet.web, eionet.doc" />
-
+    <context:spring-configured/>
+    
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
         destroy-method="close">
         <property name="driverClassName" value="${db.drv}" />
@@ -27,6 +28,8 @@
         <property name="validationQuery" value="SELECT 1" />
         <property name="testOnBorrow" value="true" />
     </bean>
+
+    <bean id="objectMapperProvider" class="eionet.meta.exports.DDObjectMapperProvider" scope="singleton"/>
 
     <!-- enable the configuration of transactional behavior based on annotations -->
     <tx:annotation-driven transaction-manager="txManager" />
@@ -70,5 +73,5 @@
     </bean>
 
     <context:property-placeholder location="classpath:datadict.properties" />
-    
+
 </beans>

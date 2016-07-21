@@ -9,33 +9,33 @@
         <loadproperties srcFile="${propertiesFile}"/>
 
     	<!-- Copy all files from acl directory into the same directory in app-home, unless they already exist in the latter. -->
-    	<copy todir="${app.home}/acl">
+    	<!--copy todir="${app.home}/acl">
             <fileset dir="acl">
             	  <present present="srconly" targetdir="${app.home}/acl"/>
             </fileset>
-        </copy>
+        </copy-->
 
     	<!-- Always overwrite the acl directory's permission definition file(s). -->
-    	<copy todir="${app.home}/acl" overwrite="true">
+    	<!--copy todir="${app.home}/acl" overwrite="true">
             <fileset dir="acl" includes="*.prms*"/>
     		<fileset dir="acl" includes="*.permissions*"/>
-        </copy>
+        </copy-->
 
     	<!-- Always overwrite files in the opendoc directory. -->
-        <copy todir="${app.home}/opendoc" overwrite="true">
+        <!--copy todir="${app.home}/opendoc" overwrite="true">
             <fileset dir="opendoc"/>
-        </copy>
+        </copy-->
 
     	<!-- Always overwrite files in the opendoc directory. -->
-        <copy todir="${app.home}/msaccess" overwrite="true">
+        <!--copy todir="${app.home}/msaccess" overwrite="true">
             <fileset dir="msaccess"/>
-        </copy>
+        </copy-->
 
         <!-- Always overwrite VERSION.txt. -->
-        <copy file="VERSION.txt" todir="${app.home}" overwrite="true"/>
+        <!--copy file="VERSION.txt" todir="${app.home}" overwrite="true"/-->
 
         <!-- Ensure that the "tmp" directory exists in app-home. -->
-        <mkdir dir="${app.home}/tmp"/>
+        <!--mkdir dir="${app.home}/tmp"/-->
 
     </target>
 </project>

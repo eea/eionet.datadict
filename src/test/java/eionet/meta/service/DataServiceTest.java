@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
  *
  * @author Kaido Laine
  */
-@SpringApplicationContext("mock-spring-context.xml")
+@SpringApplicationContext("spring-context.xml")
 public class DataServiceTest extends UnitilsJUnit4 {
 
     /**

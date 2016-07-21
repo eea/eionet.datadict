@@ -40,7 +40,7 @@ public final class ActionBeanUtils {
             filterParams.put("ActionBeanContext.Class", "eionet.web.DDActionBeanContext");
 
             ctx.addFilter(StripesFilter.class, "StripesFilter", filterParams);
-            ctx.addInitParameter("contextConfigLocation", "classpath:mock-spring-context.xml");
+            ctx.addInitParameter("contextConfigLocation", "classpath:spring-context.xml");
 
             ctx.setServlet(DispatcherServlet.class, "StripesDispatcher", null);
 
