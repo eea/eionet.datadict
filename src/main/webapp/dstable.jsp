@@ -1198,7 +1198,7 @@ else if (mode.equals("add"))
                                                         <th></th>
                                                         <td colspan="3">
                                                             <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
-                                                            <input type="button" class="mediumbuttonb" value="Add and Copy"
+                                                            <input type="button" class="mediumbuttonb" value="Copy"
                                                                 onclick="copyTbl('<%=request.getContextPath()%>')"
                                                                 title="Copies table structure and attributes from existing dataset table"/>
                                                         </td>
