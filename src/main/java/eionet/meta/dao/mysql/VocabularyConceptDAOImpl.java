@@ -31,6 +31,8 @@ import eionet.meta.dao.mysql.concepts.util.ConceptsWithAttributesQueryBuilder;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptFilter.BoundElementFilterResult;
 import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.util.sql.SQL;
+import java.sql.Connection;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -38,6 +40,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -48,6 +51,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 /**
@@ -908,5 +912,92 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             }
         }
     }
-    
+
+    /**
+     * 
+     * Use of plain JDBC prepared statements to get the generated keys. 
+     * Spring JDBC batchUpdate does not offer a solution as the JDBC spec doesn't 
+     * guarantee that the generated keys will be made available after a batch update. 
+     * JDBC drivers are free to implement this feature as they see fit.
+     * 
+     * http://stackoverflow.com/questions/2423815/is-there-anyway-to-get-the-generated-keys-when-using-spring-jdbc-batchupdate
+     */
+    @Override
+    public List<Integer> batchCreateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, STATUS, ");
+        sql.append("ACCEPTED_DATE, NOT_ACCEPTED_DATE, STATUS_MODIFIED) ");
+        sql.append("values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        PreparedStatement pst = null;
+
+        List<Integer> generatedKeys = new ArrayList<Integer>();
+        int index = 0;
+
+        try {
+            Connection connection = getConnection();
+            pst = connection.prepareStatement(sql.toString(), PreparedStatement.RETURN_GENERATED_KEYS);
+
+            for (VocabularyConcept vocabularyConcept : vocabularyConcepts) {
+                pst.setInt(1, vocabularyConcept.getVocabularyId());
+                pst.setString(2, vocabularyConcept.getIdentifier());
+                pst.setString(3, vocabularyConcept.getLabel());
+                pst.setString(4, vocabularyConcept.getDefinition());
+                pst.setString(5, vocabularyConcept.getNotation() != null ? vocabularyConcept.getNotation().trim() : null);
+                pst.setInt(6, vocabularyConcept.getStatusValue());
+                pst.setDate(7, vocabularyConcept.getAcceptedDate() != null ? new Date(vocabularyConcept.getAcceptedDate().getTime()) : null);
+                pst.setDate(8, vocabularyConcept.getNotAcceptedDate() != null ? new Date(vocabularyConcept.getNotAcceptedDate().getTime()) : null);
+                pst.setDate(9, vocabularyConcept.getStatusModified() != null ? new Date(vocabularyConcept.getStatusModified().getTime()) : null);
+                pst.addBatch();
+
+                index++;
+
+                if (index % batchSize == 0 || index == vocabularyConcepts.size()) {
+                    pst.executeBatch();
+
+                    ResultSet rs = pst.getGeneratedKeys();
+                    if (rs != null) {
+                        while (rs.next()) {
+                            generatedKeys.add(rs.getInt(1));
+                        }
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            LOGGER.error("SQL Exception", ex);
+        } finally {
+            SQL.close(pst);
+        }
+        return generatedKeys;
+    }
+
+    @Override
+    public int[][] batchUpdateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("update VOCABULARY_CONCEPT set IDENTIFIER = ?, LABEL = ?, ");
+        sql.append("DEFINITION = ?, NOTATION = ?, STATUS = ?, ACCEPTED_DATE = ?, ");
+        sql.append("NOT_ACCEPTED_DATE= ?, STATUS_MODIFIED = ? ");
+        sql.append("where VOCABULARY_CONCEPT_ID = ?");
+
+        int[][] result = getJdbcTemplate().batchUpdate(
+                sql.toString(),
+                vocabularyConcepts,
+                batchSize,
+                new ParameterizedPreparedStatementSetter<VocabularyConcept>() {
+                    @Override
+                    public void setValues(PreparedStatement ps, VocabularyConcept vocabularyConcept) throws SQLException {
+                        ps.setString(1, vocabularyConcept.getIdentifier());
+                        ps.setString(2, vocabularyConcept.getLabel());
+                        ps.setString(3, vocabularyConcept.getDefinition());
+                        ps.setString(4, vocabularyConcept.getNotation() != null ? vocabularyConcept.getNotation().trim() : null);
+                        ps.setInt(5, vocabularyConcept.getStatusValue());
+                        ps.setDate(6, vocabularyConcept.getAcceptedDate()!=null ? new Date(vocabularyConcept.getAcceptedDate().getTime()) : null);
+                        ps.setDate(7, vocabularyConcept.getNotAcceptedDate()!=null ? new Date(vocabularyConcept.getNotAcceptedDate().getTime()) : null);
+                        ps.setDate(8, vocabularyConcept.getStatusModified()!=null ? new Date(vocabularyConcept.getStatusModified().getTime()) : null);
+                        ps.setInt(9, vocabularyConcept.getId());
+                    }
+                });
+        return result;
+    }
+
 }

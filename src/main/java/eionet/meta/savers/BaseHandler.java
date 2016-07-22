@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import eionet.meta.DDUser;
 import eionet.meta.MrProper;
@@ -20,9 +19,6 @@ import eionet.util.sql.SQLTransaction;
  * @author Jaanus Heinlaid
  */
 public abstract class BaseHandler {
-
-    /** Name of Spring context file. */
-    private static final String SPRING_CONTEXT_XML = "spring-context.xml";
 
     /** */
     private static final Logger LOGGER = Logger.getLogger(BaseHandler.class);

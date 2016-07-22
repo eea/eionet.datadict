@@ -31,6 +31,7 @@ import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.InferenceRule;
 import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.RegStatus;
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.mysql.valueconverters.BooleanToYesNoConverter;
 import eionet.meta.service.data.DataElementsFilter;
 import org.apache.commons.lang.ArrayUtils;
@@ -40,6 +41,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
+import eionet.util.Triple;
+import java.sql.PreparedStatement;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -53,6 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 
 /**
  * Data element DAO.
@@ -1293,7 +1297,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         getNamedParameterJdbcTemplate().update(sql, params);
     }
 
- 
     @Override
     public VocabularyConceptBoundElementFilter getVocabularyConceptBoundElementFilter(int dataElementId, List<Integer> vocabularyConceptIds) {
         DataElement dataElement = getDataElement(dataElementId);
@@ -1319,6 +1322,93 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             }
         });
         return filter;
+    }
+
+    @Override
+    public void deleteVocabularyConceptDataElementValues(List<Integer> vocabularyConceptIds) {
+        if (vocabularyConceptIds == null || vocabularyConceptIds.isEmpty()) {
+            return;
+        }
+
+        String sql = "delete from VOCABULARY_CONCEPT_ELEMENT where VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyConceptIds", vocabularyConceptIds);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+    @Override
+    public int[][] batchInsertVocabularyConceptDataElementValues(List<VocabularyConcept> vocabularyConcepts, int batchSize) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT ");
+        sql.append("(VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE, LANGUAGE, RELATED_CONCEPT_ID) ");
+        sql.append("values (?, ?, ?, ?, ?)");
+
+        List<DataElement> allDataElements = new ArrayList<DataElement>();
+        for (VocabularyConcept vocabularyConcept : vocabularyConcepts) {
+            List<List<DataElement>> vocabularyConceptElements = vocabularyConcept.getElementAttributes();
+            for (List<DataElement> elementMeta : vocabularyConceptElements) {
+                for (DataElement element : elementMeta) {
+                    element.setVocabularyConceptId(vocabularyConcept.getId());
+                    allDataElements.add(element);
+                }
+            }
+        }
+
+        int[][] result = getJdbcTemplate().batchUpdate(sql.toString(), allDataElements, batchSize, 
+                new ParameterizedPreparedStatementSetter<DataElement>() {
+                    @Override
+                    public void setValues(PreparedStatement ps, DataElement element) throws SQLException {
+                        ps.setInt(1, element.getVocabularyConceptId());
+                        ps.setInt(2, element.getId());
+                        ps.setString(3, element.getAttributeValue());
+                        ps.setString(4, element.getAttributeLanguage());
+                        ps.setObject(5, element.getRelatedConceptId());
+                    }
+        });
+
+        return result;
+    }
+
+    @Override
+    public int[][] batchCreateInverseElements(List<Triple<Integer, Integer, Integer>> relatedReferenceElements, int batchSize) {
+        String sql = "call CreateReverseLink(?, ?, ?)";
+
+        int[][] result = getJdbcTemplate().batchUpdate(sql.toString(), relatedReferenceElements, batchSize, 
+                new ParameterizedPreparedStatementSetter<Triple<Integer, Integer, Integer>>() {
+                    @Override
+                    public void setValues(PreparedStatement ps, Triple<Integer, Integer, Integer> triple) throws SQLException {
+                        ps.setInt(1, triple.getLeft());
+                        ps.setInt(2, triple.getCentral());
+                        ps.setInt(3, triple.getRight());
+                    }
+        });
+
+        return result;
+    }
+
+    @Override
+    public Map<Integer, String> getDataElementDataTypes(Collection<Integer> dataElementIds) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("select de.DATAELEM_ID, at.VALUE from DATAELEM de ");
+        sql.append("left join ATTRIBUTE at on at.DATAELEM_ID = de.DATAELEM_ID ");
+        sql.append("left join M_ATTRIBUTE ma on ma.M_ATTRIBUTE_ID = at.M_ATTRIBUTE_ID ");
+        sql.append("where de.DATAELEM_ID in (:dataElementIds) and ma.NAME like :dataType ");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("dataElementIds", dataElementIds);
+        params.put("dataType", "datatype");
+
+        final Map<Integer, String> result = new HashMap<Integer, String>();
+
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                result.put(rs.getInt("de.DATAELEM_ID"), rs.getString("at.VALUE"));
+            }
+        });
+        return result;
     }
 
 }

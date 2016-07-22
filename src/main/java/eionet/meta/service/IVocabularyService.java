@@ -670,4 +670,21 @@ public interface IVocabularyService {
      * @throws ServiceException
      */
     boolean vocabularyConceptExists(String vocabularySet, String vocabularyIdentifier, String conceptIdentifier) throws ServiceException;
+
+    /**
+     * Batch inserts the list of vocabulary concepts into the database with the provided batch size.
+     * Returns the list of newly created concept ids
+     */
+    List<Integer> batchCreateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize) throws ServiceException;
+
+    /**
+     * Batch updates the list of vocabulary concepts into the database with the provided batch size.
+     * Returns an array containing for each batch another array containing the numbers of rows affected by each update in the batch
+     */
+    int[][] batchUpdateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize) throws ServiceException;
+
+    void batchUpdateVocabularyConceptsDataElementValues(List<VocabularyConcept> vocabularyConcepts, int batchSize) throws ServiceException;
+
+    void batchFixRelatedReferenceElements(List<VocabularyConcept> concepts, int batchSize);
+
 }
