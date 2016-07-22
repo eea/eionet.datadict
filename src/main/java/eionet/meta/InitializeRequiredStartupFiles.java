@@ -14,21 +14,17 @@ import eionet.datadict.services.ClassPathResourcesLoadService;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import java.nio.file.Files;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
-@Component
 public class InitializeRequiredStartupFiles {
 
     private static final String ACL_FOLDER_NAME = "acl";
     private static final String MS_ACCESS_FOLDER_HOME = "msaccess";
     private static final String OPENDOC_FOLDER_HOME = "opendoc";
-    private static String WEBAPP_HOME;
+    private static String APP_HOME;
     private static final String VERSION_FILE = "VERSION.txt";
     private static final String TEMP_FOLDER = "tmp";
     private ClassPathResourcesLoadService classPathResourcesLoadService = null;
@@ -39,12 +35,10 @@ public class InitializeRequiredStartupFiles {
     }
 
     public void initialize() throws RuntimeException {
-
         try {
-            WEBAPP_HOME = Props.getRequiredProperty(PropsIF.WEBAPP_HOME);
+            APP_HOME = Props.getRequiredProperty(PropsIF.APP_HOME);
         } catch (Exception e) {
-
-            throw new BeanInitializationException("webapp.home property not found in properties file ", e.getCause());
+            throw new BeanInitializationException("app.home property not found in properties file ", e);
         }
 
         try {
@@ -53,21 +47,18 @@ public class InitializeRequiredStartupFiles {
             initializeMsAccessFiles();
             overwriteVersionFile();
             createTMPFolder();
-
         } catch (ClassPathLoadResourceException ex) {
             Logger.getLogger(InitializeRequiredStartupFiles.class.getName()).log(Level.ALL, ex.getMessage(), ex);
-            throw new BeanInitializationException(ex.getMessage(), ex.getCause());
+            throw new BeanInitializationException(ex.getMessage(), ex);
         } catch (IOException ex) {
             Logger.getLogger(InitializeRequiredStartupFiles.class.getName()).log(Level.ALL, ex.getMessage(), ex);
-            throw new BeanInitializationException(ex.getMessage(), ex.getCause());
-
+            throw new BeanInitializationException(ex.getMessage(), ex);
         }
-
     }
 
     private void initializeAclFiles() throws ClassPathLoadResourceException, IOException {
         List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(WEBAPP_HOME);
+        subdirectories.add(APP_HOME);
         subdirectories.add(ACL_FOLDER_NAME);
         File directory = buildFileDirectory(subdirectories);
         File[] sourceFiles = classPathResourcesLoadService.loadAllFilesFromFolder(ACL_FOLDER_NAME + "/");
@@ -82,7 +73,7 @@ public class InitializeRequiredStartupFiles {
 
     private void initializeMsAccessFiles() throws ClassPathLoadResourceException, IOException {
         List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(WEBAPP_HOME);
+        subdirectories.add(APP_HOME);
         subdirectories.add(MS_ACCESS_FOLDER_HOME);
         File directory = buildFileDirectory(subdirectories);
         File[] files = classPathResourcesLoadService.loadAllFilesFromFolder(MS_ACCESS_FOLDER_HOME + "/");
@@ -93,7 +84,7 @@ public class InitializeRequiredStartupFiles {
 
     private void initializeOpenDocFiles() throws ClassPathLoadResourceException, IOException {
         List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(WEBAPP_HOME);
+        subdirectories.add(APP_HOME);
         subdirectories.add(OPENDOC_FOLDER_HOME);
         subdirectories.add("/ods");//OpenDoc has inside it a folder named ods , so we need to maintain original directory structure 
         File directory = buildFileDirectory(subdirectories);
@@ -105,7 +96,7 @@ public class InitializeRequiredStartupFiles {
 
     private void overwriteVersionFile() throws ClassPathLoadResourceException, IOException {
         List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(WEBAPP_HOME);
+        subdirectories.add(APP_HOME);
         File directory = buildFileDirectory(subdirectories);
         File oldFile = classPathResourcesLoadService.loadFileFromRootClasspathDirectory(VERSION_FILE);
         FileUtils.copyFileToDirectory(oldFile, directory);
@@ -113,7 +104,7 @@ public class InitializeRequiredStartupFiles {
 
     public void createTMPFolder() throws IOException {
         List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(WEBAPP_HOME);
+        subdirectories.add(APP_HOME);
         subdirectories.add(TEMP_FOLDER);
         File directory = buildFileDirectory(subdirectories);
         if (Files.exists(directory.toPath())) {

@@ -72,9 +72,6 @@
                     <source>${java_version}</source>
                     <target>${java_version}</target>
                     <encoding>UTF-8</encoding>
-                    <testExcludes>
-        <!--testExclude>**/Initialize*</testExclude-->
-      </testExcludes>
                 </configuration>
             </plugin>
 
@@ -141,35 +138,6 @@
                             <includes>
                                 <include>dd-struct.xml</include>
                                 <include>dd-seeddata.xml</include>
-                            </includes>
-                        </resource>
-                        <resource>
-                            <directory>${basedir}/acl</directory>
-                            <targetPath>WEB-INF/classes/acl</targetPath>
-                            <includes>
-                                <include>*.*</include>
-                            </includes>
-                        </resource>
-                        <resource>
-                            <directory>${basedir}/msaccess</directory>
-                            <targetPath>WEB-INF/classes/msaccess</targetPath>
-                            <includes>
-                                <include>*.*</include>
-                            </includes>
-                        </resource>
-                        <resource>
-                            <directory>${basedir}/opendoc</directory>
-                            <targetPath>WEB-INF/classes/opendoc</targetPath>
-                            <includes>
-                                <include>*.*</include>
-                                <include>ods/*.*</include>
-                            </includes>
-                        </resource>
-                        <resource>
-                            <directory>${basedir}</directory>
-                            <targetPath>WEB-INF/classes</targetPath>
-                            <includes>
-                                <include>VERSION.txt</include>
                             </includes>
                         </resource>
                     </webResources>
@@ -321,6 +289,34 @@
                 <includes>
                     <include>*.xml</include>
                     <include>*.ttf</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}/acl</directory>
+                <targetPath>acl</targetPath>
+                <includes>
+                    <include>*.*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}/msaccess</directory>
+                <targetPath>msaccess</targetPath>
+                <includes>
+                    <include>*.*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}/opendoc</directory>
+                <targetPath>opendoc</targetPath>
+                <includes>
+                    <include>*.*</include>
+                    <include>ods/*.*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}</directory>
+                <includes>
+                    <include>VERSION.txt</include>
                 </includes>
             </resource>
         </resources>

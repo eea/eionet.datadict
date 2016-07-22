@@ -23,7 +23,6 @@ import eionet.DDDatabaseTestCase;
 import eionet.meta.ActionBeanUtils;
 import eionet.meta.InitializeRequiredStartupFiles;
 import eionet.meta.spring.SpringApplicationContext;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -62,9 +61,7 @@ public class OdsServletTest extends DDDatabaseTestCase {
          */
         ActionBeanUtils.getServletContext();
         ApplicationContext appCtx = SpringApplicationContext.getContext();
-        AutowireCapableBeanFactory beanFactory = appCtx.getAutowireCapableBeanFactory();
-        beanFactory.autowireBeanProperties(InitializeRequiredStartupFiles.class, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
-        InitializeRequiredStartupFiles initializeRequiredStartupFiles = beanFactory.getBean(InitializeRequiredStartupFiles.class);
+        InitializeRequiredStartupFiles initializeRequiredStartupFiles = appCtx.getBean(InitializeRequiredStartupFiles.class);
         initializeRequiredStartupFiles.initialize();
     }
 
