@@ -1,12 +1,13 @@
 package eionet.meta.doc.helper;
 
 import eionet.doc.dto.DocPageDTO;
+import eionet.meta.ActionBeanUtils;
+import eionet.meta.spring.SpringApplicationContext;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericXmlApplicationContext;
 
 /**
  *
@@ -18,7 +19,8 @@ public class DocumentationHelperTest {
     
     @BeforeClass
     public static void setUpClass() {
-        ctx = new GenericXmlApplicationContext("classpath:mock-spring-context.xml");
+        ActionBeanUtils.getServletContext();
+        ctx = SpringApplicationContext.getContext();
     }
     
     @Test
