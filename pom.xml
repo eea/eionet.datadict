@@ -9,7 +9,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <env>local</env>
+        <env>unittest</env>
         <java_version>1.6</java_version>
         <spring.version>3.1.1.RELEASE</spring.version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
@@ -72,6 +72,9 @@
                     <source>${java_version}</source>
                     <target>${java_version}</target>
                     <encoding>UTF-8</encoding>
+                    <testExcludes>
+        <!--testExclude>**/Initialize*</testExclude-->
+      </testExcludes>
                 </configuration>
             </plugin>
 
@@ -138,6 +141,35 @@
                             <includes>
                                 <include>dd-struct.xml</include>
                                 <include>dd-seeddata.xml</include>
+                            </includes>
+                        </resource>
+                        <resource>
+                            <directory>${basedir}/acl</directory>
+                            <targetPath>WEB-INF/classes/acl</targetPath>
+                            <includes>
+                                <include>*.*</include>
+                            </includes>
+                        </resource>
+                        <resource>
+                            <directory>${basedir}/msaccess</directory>
+                            <targetPath>WEB-INF/classes/msaccess</targetPath>
+                            <includes>
+                                <include>*.*</include>
+                            </includes>
+                        </resource>
+                        <resource>
+                            <directory>${basedir}/opendoc</directory>
+                            <targetPath>WEB-INF/classes/opendoc</targetPath>
+                            <includes>
+                                <include>*.*</include>
+                                <include>ods/*.*</include>
+                            </includes>
+                        </resource>
+                        <resource>
+                            <directory>${basedir}</directory>
+                            <targetPath>WEB-INF/classes</targetPath>
+                            <includes>
+                                <include>VERSION.txt</include>
                             </includes>
                         </resource>
                     </webResources>
