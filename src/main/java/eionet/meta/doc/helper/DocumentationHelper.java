@@ -2,8 +2,8 @@ package eionet.meta.doc.helper;
 
 import eionet.doc.DocumentationService;
 import eionet.doc.dto.DocPageDTO;
+import eionet.meta.spring.SpringApplicationContext;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericXmlApplicationContext;
 
 /**
  *
@@ -14,7 +14,7 @@ public class DocumentationHelper {
     private ApplicationContext ctx;
     
     public DocumentationHelper() {
-        this(new GenericXmlApplicationContext("classpath:spring-context.xml"));
+        this(SpringApplicationContext.getContext());
     }
     
     public DocumentationHelper(ApplicationContext ctx) {
