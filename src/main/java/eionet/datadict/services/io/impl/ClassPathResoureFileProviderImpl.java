@@ -34,16 +34,7 @@ public class ClassPathResoureFileProviderImpl implements ClassPathResourceFilePr
         
         return files;
     }
-
-    @Override
-    public File loadFileFromFolder(String folderName, String fileName) throws FileNotFoundException {
-        URL sourceURL = this.getClass().getClassLoader().getResource(folderName + "/" + fileName);
-        if (sourceURL == null) {
-            throw new FileNotFoundException("wrong or missing folder or file  in classpath");
-        }
-        return new File(sourceURL.getFile());
-    }
-
+    
     @Override
     public File loadFileFromRootClasspathDirectory(String fileName) throws FileNotFoundException {
         URL sourceURL = this.getClass().getClassLoader().getResource(fileName);

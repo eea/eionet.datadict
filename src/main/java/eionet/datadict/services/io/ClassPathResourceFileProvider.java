@@ -12,7 +12,5 @@ public interface ClassPathResourceFileProvider {
 
     public File[] loadAllFilesFromFolder(String folderName) throws IOException;
     
-    public File loadFileFromFolder(String folderName, String fileName) throws FileNotFoundException;
-    
     public File loadFileFromRootClasspathDirectory(String fileName) throws FileNotFoundException;
 }
