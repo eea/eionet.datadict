@@ -1,7 +1,8 @@
 package eionet.datadict.services.io;
 
-import eionet.datadict.errors.ClassPathLoadResourceException;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  *
@@ -9,9 +10,9 @@ import java.io.File;
  */
 public interface ClassPathResourceFileProvider {
 
-    public File[] loadAllFilesFromFolder(String folderName) throws ClassPathLoadResourceException;
+    public File[] loadAllFilesFromFolder(String folderName) throws IOException;
     
-    public File loadFileFromFolder(String folderName, String fileName) throws ClassPathLoadResourceException;
+    public File loadFileFromFolder(String folderName, String fileName) throws FileNotFoundException;
     
-    public File loadFileFromRootClasspathDirectory(String fileName) throws ClassPathLoadResourceException;
+    public File loadFileFromRootClasspathDirectory(String fileName) throws FileNotFoundException;
 }

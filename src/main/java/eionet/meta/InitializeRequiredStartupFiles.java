@@ -1,10 +1,7 @@
 package eionet.meta;
 
-import eionet.datadict.errors.ClassPathLoadResourceException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
@@ -13,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import eionet.datadict.services.io.ClassPathResourceFileProvider;
 import eionet.util.Props;
 import eionet.util.PropsIF;
-import java.nio.file.Files;
 
 /**
  *
@@ -48,16 +44,13 @@ public class InitializeRequiredStartupFiles {
             initializeMsAccessFiles();
             overwriteVersionFile();
             createTMPFolder();
-        } catch (ClassPathLoadResourceException ex) {
-            Logger.getLogger(InitializeRequiredStartupFiles.class.getName()).log(Level.ALL, ex.getMessage(), ex);
-            throw new BeanInitializationException(ex.getMessage(), ex);
         } catch (IOException ex) {
             Logger.getLogger(InitializeRequiredStartupFiles.class.getName()).log(Level.ALL, ex.getMessage(), ex);
             throw new BeanInitializationException(ex.getMessage(), ex);
         }
     }
 
-    private void initializeAclFiles() throws ClassPathLoadResourceException, IOException {
+    private void initializeAclFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, ACL_FOLDER_NAME);
         directory.mkdir();
         File[] sourceFiles = classPathResourcesLoadService.loadAllFilesFromFolder(ACL_FOLDER_NAME + "/");
@@ -78,7 +71,7 @@ public class InitializeRequiredStartupFiles {
         }
     }
 
-    private void initializeMsAccessFiles() throws ClassPathLoadResourceException, IOException {
+    private void initializeMsAccessFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, MS_ACCESS_FOLDER_HOME);
         File[] files = classPathResourcesLoadService.loadAllFilesFromFolder(MS_ACCESS_FOLDER_HOME + "/");
         
@@ -87,7 +80,7 @@ public class InitializeRequiredStartupFiles {
         }
     }
 
-    private void initializeOpenDocFiles() throws ClassPathLoadResourceException, IOException {
+    private void initializeOpenDocFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, OPENDOC_FOLDER_HOME, "ods");
         File[] files = classPathResourcesLoadService.loadAllFilesFromFolder(OPENDOC_FOLDER_HOME + "/");
         
@@ -96,7 +89,7 @@ public class InitializeRequiredStartupFiles {
         }
     }
 
-    private void overwriteVersionFile() throws ClassPathLoadResourceException, IOException {
+    private void overwriteVersionFile() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory);
         File oldFile = classPathResourcesLoadService.loadFileFromRootClasspathDirectory(VERSION_FILE);
         FileUtils.copyFileToDirectory(oldFile, directory);
