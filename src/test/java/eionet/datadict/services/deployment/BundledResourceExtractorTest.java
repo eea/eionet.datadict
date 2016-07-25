@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
@@ -28,10 +30,25 @@ public class BundledResourceExtractorTest {
     
     @Test
     public void test() throws IOException {
+        doReturn(false).when(this.bundledResourceExtractor).dirExists(any(File.class));
+        doReturn(true).when(this.bundledResourceExtractor).mkdirs(any(File.class));
+        doNothing().when(this.bundledResourceExtractor).copyDirectory(any(File.class), any(File.class));
+        doNothing().when(this.bundledResourceExtractor).copyFileToDirectory(any(File.class), any(File.class));
+        doNothing().when(this.bundledResourceExtractor).copyFileToDirectoryIfNotExists(any(File.class), any(File.class));
+        
         this.bundledResourceExtractor.initialize();
+        
+        verify(this.bundledResourceExtractor, times(1)).initializeAclFiles();
+        verify(this.bundledResourceExtractor, times(1)).initializeMsAccessFiles();
+        verify(this.bundledResourceExtractor, times(1)).initializeOpenDocFiles();
+        verify(this.bundledResourceExtractor, times(1)).createTMPFolder();
+        
         verify(this.bundledResourceExtractor, times(15)).copyFileToDirectoryIfNotExists(any(File.class), any(File.class));
         verify(this.bundledResourceExtractor, times(3)).copyFileToDirectory(any(File.class), any(File.class));
         verify(this.bundledResourceExtractor, times(1)).copyDirectory(any(File.class), any(File.class));
+        
+        verify(this.bundledResourceExtractor, times(1)).dirExists(any(File.class));
+        verify(this.bundledResourceExtractor, times(2)).mkdirs(any(File.class));
     }
     
 }

@@ -95,7 +95,7 @@ public class BundledResourceExtractor {
     protected void createTMPFolder() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, TEMP_FOLDER);
         
-        if (directory.isDirectory()) {
+        if (this.dirExists(directory)) {
             return;
         }
         
@@ -109,6 +109,10 @@ public class BundledResourceExtractor {
 
     protected boolean mkdirs(File f) {
         return f.mkdirs();
+    }
+    
+    protected boolean dirExists(File dir) {
+        return dir.isDirectory();
     }
     
     protected void copyFileToDirectory(File srcFile, File destDir) throws IOException {
