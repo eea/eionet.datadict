@@ -19,11 +19,11 @@ import org.junit.Test;
 
 public class ClassPathResoureFileProviderTest {
     
-    private ClassPathResoureFileProviderImpl classPathResourceProvider;
+    private ClassPathResourceFileProviderImpl classPathResourceProvider;
     
     @Before
     public void setUp() {
-        this.classPathResourceProvider = new ClassPathResoureFileProviderImpl();
+        this.classPathResourceProvider = new ClassPathResourceFileProviderImpl();
     }
     
     @Test

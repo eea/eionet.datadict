@@ -14,7 +14,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
 @Service
-public class ClassPathResoureFileProviderImpl implements ClassPathResourceFileProvider {
+public class ClassPathResourceFileProviderImpl implements ClassPathResourceFileProvider {
 
     @Override
     public File[] getDirectoryFiles(String... names) throws IOException {

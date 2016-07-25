@@ -1,6 +1,6 @@
 package eionet.datadict.services.deployment;
 
-import eionet.datadict.services.impl.io.ClassPathResoureFileProviderImpl;
+import eionet.datadict.services.impl.io.ClassPathResourceFileProviderImpl;
 import java.io.File;
 import java.io.IOException;
 import org.junit.Before;
@@ -19,7 +19,7 @@ public class BundledResourceExtractorTest {
     private BundledResourceExtractor bundledResourceExtractor;
     
     @Spy
-    private ClassPathResoureFileProviderImpl classPathResourceFileProvider;
+    private ClassPathResourceFileProviderImpl classPathResourceFileProvider;
     
     @Before
     public void setUp() {
