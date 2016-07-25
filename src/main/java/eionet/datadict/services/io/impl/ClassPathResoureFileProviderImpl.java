@@ -7,7 +7,7 @@ import eionet.datadict.services.io.ClassPathResourceFileProvider;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import liquibase.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
