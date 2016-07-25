@@ -24,10 +24,11 @@ public class InitializeRequiredStartupFiles {
     private static final String ACL_FOLDER_NAME = "acl";
     private static final String MS_ACCESS_FOLDER_HOME = "msaccess";
     private static final String OPENDOC_FOLDER_HOME = "opendoc";
-    private static String APP_HOME;
     private static final String VERSION_FILE = "VERSION.txt";
     private static final String TEMP_FOLDER = "tmp";
+    
     private ClassPathResourcesLoadService classPathResourcesLoadService = null;
+    private String appHomeDirectory;
 
     @Autowired
     public InitializeRequiredStartupFiles(ClassPathResourcesLoadService classPathResourcesLoadService) {
@@ -36,7 +37,7 @@ public class InitializeRequiredStartupFiles {
 
     public void initialize() throws RuntimeException {
         try {
-            APP_HOME = Props.getRequiredProperty(PropsIF.APP_HOME);
+            appHomeDirectory = Props.getRequiredProperty(PropsIF.APP_HOME);
         } catch (Exception e) {
             throw new BeanInitializationException("app.home property not found in properties file ", e);
         }
@@ -58,7 +59,7 @@ public class InitializeRequiredStartupFiles {
 
     private void initializeAclFiles() throws ClassPathLoadResourceException, IOException {
         List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(APP_HOME);
+        subdirectories.add(appHomeDirectory);
         subdirectories.add(ACL_FOLDER_NAME);
         File directory = buildFileDirectory(subdirectories);
         File[] sourceFiles = classPathResourcesLoadService.loadAllFilesFromFolder(ACL_FOLDER_NAME + "/");
@@ -73,7 +74,7 @@ public class InitializeRequiredStartupFiles {
 
     private void initializeMsAccessFiles() throws ClassPathLoadResourceException, IOException {
         List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(APP_HOME);
+        subdirectories.add(appHomeDirectory);
         subdirectories.add(MS_ACCESS_FOLDER_HOME);
         File directory = buildFileDirectory(subdirectories);
         File[] files = classPathResourcesLoadService.loadAllFilesFromFolder(MS_ACCESS_FOLDER_HOME + "/");
@@ -84,7 +85,7 @@ public class InitializeRequiredStartupFiles {
 
     private void initializeOpenDocFiles() throws ClassPathLoadResourceException, IOException {
         List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(APP_HOME);
+        subdirectories.add(appHomeDirectory);
         subdirectories.add(OPENDOC_FOLDER_HOME);
         subdirectories.add("/ods");//OpenDoc has inside it a folder named ods , so we need to maintain original directory structure 
         File directory = buildFileDirectory(subdirectories);
@@ -96,7 +97,7 @@ public class InitializeRequiredStartupFiles {
 
     private void overwriteVersionFile() throws ClassPathLoadResourceException, IOException {
         List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(APP_HOME);
+        subdirectories.add(appHomeDirectory);
         File directory = buildFileDirectory(subdirectories);
         File oldFile = classPathResourcesLoadService.loadFileFromRootClasspathDirectory(VERSION_FILE);
         FileUtils.copyFileToDirectory(oldFile, directory);
@@ -104,7 +105,7 @@ public class InitializeRequiredStartupFiles {
 
     public void createTMPFolder() throws IOException {
         List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(APP_HOME);
+        subdirectories.add(appHomeDirectory);
         subdirectories.add(TEMP_FOLDER);
         File directory = buildFileDirectory(subdirectories);
         if (Files.exists(directory.toPath())) {
