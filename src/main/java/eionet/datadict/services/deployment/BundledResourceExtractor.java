@@ -47,7 +47,7 @@ public class BundledResourceExtractor {
         createTMPFolder();
     }
 
-    private void initializeAclFiles() throws IOException {
+    protected void initializeAclFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, ACL_FOLDER_NAME);
         directory.mkdirs();
         File[] sourceFiles = classPathResourceProvider.getDirectoryFiles(ACL_FOLDER_NAME);
@@ -55,44 +55,42 @@ public class BundledResourceExtractor {
         for (File sourceFile : sourceFiles) {
             if (sourceFile.getName().endsWith(".prms") || sourceFile.getName().endsWith(".permissions")) {
                 // Always overwrite .prms files.
-                FileUtils.copyFileToDirectory(sourceFile, directory);
+                this.copyFileToDirectory(sourceFile, directory);
                 continue;
             }
             
-            File destinationFile = FileUtils.getFile(directory, sourceFile.getName());
-            
-            if (!FileUtils.directoryContains(directory, destinationFile)) {
+            if (!this.directoryContains(directory, sourceFile.getName())) {
                 // Other files must be copied only if they do not exist in destination folder.
-                FileUtils.copyFileToDirectory(sourceFile, directory);
+                this.copyFileToDirectory(sourceFile, directory);
             }
         }
     }
 
-    private void initializeMsAccessFiles() throws IOException {
+    protected void initializeMsAccessFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, MS_ACCESS_FOLDER_HOME);
         File[] files = classPathResourceProvider.getDirectoryFiles(MS_ACCESS_FOLDER_HOME);
         
         for (File file : files) {
-            FileUtils.copyFileToDirectory(file, directory);
+            this.copyFileToDirectory(file, directory);
         }
     }
 
-    private void initializeOpenDocFiles() throws IOException {
+    protected void initializeOpenDocFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, OPENDOC_FOLDER_HOME, "ods");
         File[] files = classPathResourceProvider.getDirectoryFiles(OPENDOC_FOLDER_HOME);
         
         for (File file : files) {
-            FileUtils.copyDirectory(file, directory);
+            this.copyDirectory(file, directory);
         }
     }
 
-    private void overwriteVersionFile() throws IOException {
+    protected void overwriteVersionFile() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory);
         File oldFile = classPathResourceProvider.getFile(VERSION_FILE);
-        FileUtils.copyFileToDirectory(oldFile, directory);
+        this.copyFileToDirectory(oldFile, directory);
     }
 
-    public void createTMPFolder() throws IOException {
+    protected void createTMPFolder() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, TEMP_FOLDER);
         
         if (directory.isDirectory()) {
@@ -107,4 +105,18 @@ public class BundledResourceExtractor {
         }
     }
 
+    protected boolean directoryContains(File dir, String filename) throws IOException {
+        File file = FileUtils.getFile(dir, filename);
+        
+        return FileUtils.directoryContains(dir, file);
+    }
+    
+    protected void copyFileToDirectory(File srcFile, File destDir) throws IOException {
+        FileUtils.copyFileToDirectory(srcFile, destDir);
+    }
+    
+    protected void copyDirectory(File dir, File destDir) throws IOException {
+        FileUtils.copyDirectory(dir, destDir);
+    }
+    
 }
