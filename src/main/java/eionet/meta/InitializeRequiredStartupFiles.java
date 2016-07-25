@@ -105,19 +105,14 @@ public class InitializeRequiredStartupFiles {
     public void createTMPFolder() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, TEMP_FOLDER);
         
-        if (Files.exists(directory.toPath())) {
-            return;
-        }
-        
-        if (directory.exists() && !directory.isDirectory()) {
+        if (directory.isDirectory()) {
             return;
         }
         
         directory.setWritable(true);
         directory.setReadable(true);
-        boolean successfullyCreated = directory.mkdirs();
         
-        if (!successfullyCreated) {
+        if (!directory.mkdirs()) {
             throw new IOException("tmp directory could not be created");
         }
     }
