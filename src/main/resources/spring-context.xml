@@ -71,8 +71,6 @@
             </util:properties>
         </property>
     </bean>
-    
-    <bean name="initAppStartupFiles" init-method="initialize" class="eionet.meta.InitializeRequiredStartupFiles"/>
 
     <context:property-placeholder location="classpath:datadict.properties"/>
 

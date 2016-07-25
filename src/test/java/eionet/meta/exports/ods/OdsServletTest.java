@@ -60,9 +60,6 @@ public class OdsServletTest extends DDDatabaseTestCase {
         *
          */
         ActionBeanUtils.getServletContext();
-        ApplicationContext appCtx = SpringApplicationContext.getContext();
-        InitializeRequiredStartupFiles initializeRequiredStartupFiles = appCtx.getBean(InitializeRequiredStartupFiles.class);
-        initializeRequiredStartupFiles.initialize();
     }
 
     /**

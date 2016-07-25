@@ -10,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import eionet.datadict.services.io.ClassPathResourceFileProvider;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import javax.annotation.PostConstruct;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
+@Service
 public class InitializeRequiredStartupFiles {
 
     private static final String ACL_FOLDER_NAME = "acl";
@@ -31,6 +34,7 @@ public class InitializeRequiredStartupFiles {
         this.classPathResourcesLoadService = classPathResourcesLoadService;
     }
 
+    @PostConstruct
     public void initialize() throws RuntimeException {
         try {
             appHomeDirectory = Props.getRequiredProperty(PropsIF.APP_HOME);
@@ -52,7 +56,7 @@ public class InitializeRequiredStartupFiles {
 
     private void initializeAclFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, ACL_FOLDER_NAME);
-        directory.mkdir();
+        directory.mkdirs();
         File[] sourceFiles = classPathResourcesLoadService.getDirectoryFiles(ACL_FOLDER_NAME);
         
         for (File sourceFile : sourceFiles) {
