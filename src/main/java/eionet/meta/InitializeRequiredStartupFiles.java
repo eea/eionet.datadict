@@ -2,8 +2,6 @@ package eionet.meta;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class InitializeRequiredStartupFiles {
-
+    
     private static final String ACL_FOLDER_NAME = "acl";
     private static final String MS_ACCESS_FOLDER_HOME = "msaccess";
     private static final String OPENDOC_FOLDER_HOME = "opendoc";
@@ -35,23 +33,18 @@ public class InitializeRequiredStartupFiles {
     }
 
     @PostConstruct
-    public void initialize() throws RuntimeException {
+    public void initialize() throws IOException {
         try {
             appHomeDirectory = Props.getRequiredProperty(PropsIF.APP_HOME);
-        } catch (Exception e) {
-            throw new BeanInitializationException("app.home property not found in properties file ", e);
+        } catch (Exception ex) {
+            throw new BeanInitializationException("app.home property not found in properties file.", ex);
         }
 
-        try {
-            initializeAclFiles();
-            initializeOpenDocFiles();
-            initializeMsAccessFiles();
-            overwriteVersionFile();
-            createTMPFolder();
-        } catch (IOException ex) {
-            Logger.getLogger(InitializeRequiredStartupFiles.class.getName()).log(Level.ALL, ex.getMessage(), ex);
-            throw new BeanInitializationException(ex.getMessage(), ex);
-        }
+        initializeAclFiles();
+        initializeOpenDocFiles();
+        initializeMsAccessFiles();
+        overwriteVersionFile();
+        createTMPFolder();
     }
 
     private void initializeAclFiles() throws IOException {
