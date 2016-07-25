@@ -58,11 +58,9 @@ public class InitializeRequiredStartupFiles {
     }
 
     private void initializeAclFiles() throws ClassPathLoadResourceException, IOException {
-        List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(appHomeDirectory);
-        subdirectories.add(ACL_FOLDER_NAME);
-        File directory = buildFileDirectory(subdirectories);
+        File directory = FileUtils.getFile(appHomeDirectory, ACL_FOLDER_NAME);
         File[] sourceFiles = classPathResourcesLoadService.loadAllFilesFromFolder(ACL_FOLDER_NAME + "/");
+        
         for (File sourceFile : sourceFiles) {
             if (sourceFile.getName().contains(".prms") || sourceFile.getName().contains(".permissions")) {
                 File destFile = new File(sourceFile.getName());
@@ -73,62 +71,47 @@ public class InitializeRequiredStartupFiles {
     }
 
     private void initializeMsAccessFiles() throws ClassPathLoadResourceException, IOException {
-        List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(appHomeDirectory);
-        subdirectories.add(MS_ACCESS_FOLDER_HOME);
-        File directory = buildFileDirectory(subdirectories);
+        File directory = FileUtils.getFile(appHomeDirectory, MS_ACCESS_FOLDER_HOME);
         File[] files = classPathResourcesLoadService.loadAllFilesFromFolder(MS_ACCESS_FOLDER_HOME + "/");
+        
         for (File file : files) {
             FileUtils.copyFileToDirectory(file, directory);
         }
     }
 
     private void initializeOpenDocFiles() throws ClassPathLoadResourceException, IOException {
-        List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(appHomeDirectory);
-        subdirectories.add(OPENDOC_FOLDER_HOME);
-        subdirectories.add("/ods");//OpenDoc has inside it a folder named ods , so we need to maintain original directory structure 
-        File directory = buildFileDirectory(subdirectories);
+        File directory = FileUtils.getFile(appHomeDirectory, OPENDOC_FOLDER_HOME, "ods");
         File[] files = classPathResourcesLoadService.loadAllFilesFromFolder(OPENDOC_FOLDER_HOME + "/");
+        
         for (File file : files) {
             FileUtils.copyDirectory(file, directory);
         }
     }
 
     private void overwriteVersionFile() throws ClassPathLoadResourceException, IOException {
-        List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(appHomeDirectory);
-        File directory = buildFileDirectory(subdirectories);
+        File directory = FileUtils.getFile(appHomeDirectory);
         File oldFile = classPathResourcesLoadService.loadFileFromRootClasspathDirectory(VERSION_FILE);
         FileUtils.copyFileToDirectory(oldFile, directory);
     }
 
     public void createTMPFolder() throws IOException {
-        List<String> subdirectories = new ArrayList<String>();
-        subdirectories.add(appHomeDirectory);
-        subdirectories.add(TEMP_FOLDER);
-        File directory = buildFileDirectory(subdirectories);
+        File directory = FileUtils.getFile(appHomeDirectory, TEMP_FOLDER);
+        
         if (Files.exists(directory.toPath())) {
             return;
         }
+        
         if (directory.exists() && !directory.isDirectory()) {
             return;
         }
+        
         directory.setWritable(true);
         directory.setReadable(true);
         boolean successfullyCreated = directory.mkdirs();
+        
         if (!successfullyCreated) {
             throw new IOException("tmp directory could not be created");
         }
-    }
-
-    private File buildFileDirectory(List<String> subdirectories) {
-        StringBuilder sb = new StringBuilder();
-        for (String subdirectory : subdirectories) {
-            sb.append(subdirectory).append("/");
-        }
-        File fileDirectory = new File(sb.toString());
-        return fileDirectory;
     }
 
 }
