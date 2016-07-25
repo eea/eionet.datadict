@@ -16,7 +16,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
  * 
  * @author Lena KARGIOTI eka@eworx.gr
  */
-@SpringApplicationContext("mock-spring-context.xml")
+@SpringApplicationContext("spring-context.xml")
 public class VocabularyFolderDAOTest extends UnitilsJUnit4 {
         
     @SpringBeanByType

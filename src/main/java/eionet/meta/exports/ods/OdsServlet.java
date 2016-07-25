@@ -142,9 +142,14 @@ public class OdsServlet extends HttpServlet {
 
         // create working folder
         File workginFolder = new File(buf.toString());
-        if (!workginFolder.mkdir())
+       
+        
+       
+            if (!workginFolder.mkdirs())
+            {
             throw new Exception("Failed to create directory: " + buf.toString());
-
+            }
+        
         String s = buf.toString() + File.separator;
 
         // copy ods-file into working folder

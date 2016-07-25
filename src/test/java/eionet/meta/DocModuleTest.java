@@ -25,7 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * this test shows that the fallback to properties file works.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:mock-spring-context.xml" })
+@ContextConfiguration(locations = { "classpath:spring-context.xml" })
 public class DocModuleTest {
 
     @Autowired
