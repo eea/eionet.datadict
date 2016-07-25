@@ -18,11 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class BundledResourceExtractor {
     
-    private static final String ACL_FOLDER_NAME = "acl";
-    private static final String MS_ACCESS_FOLDER_HOME = "msaccess";
-    private static final String OPENDOC_FOLDER_HOME = "opendoc";
-    private static final String VERSION_FILE = "VERSION.txt";
-    private static final String TEMP_FOLDER = "tmp";
+    protected static final String ACL_FOLDER_NAME = "acl";
+    protected static final String MS_ACCESS_FOLDER_HOME = "msaccess";
+    protected static final String OPENDOC_FOLDER_HOME = "opendoc";
+    protected static final String VERSION_FILE = "VERSION.txt";
+    protected static final String TEMP_FOLDER = "tmp";
     
     private final ClassPathResourceFileProvider classPathResourceProvider;
     private String appHomeDirectory;
@@ -46,10 +46,14 @@ public class BundledResourceExtractor {
         overwriteVersionFile();
         createTMPFolder();
     }
+    
+    protected String getAppHomeDirectory() {
+        return this.appHomeDirectory;
+    }
 
     protected void initializeAclFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, ACL_FOLDER_NAME);
-        directory.mkdirs();
+        this.mkdirs(directory);
         File[] sourceFiles = classPathResourceProvider.getDirectoryFiles(ACL_FOLDER_NAME);
         
         for (File sourceFile : sourceFiles) {
@@ -59,10 +63,8 @@ public class BundledResourceExtractor {
                 continue;
             }
             
-            if (!this.directoryContains(directory, sourceFile.getName())) {
-                // Other files must be copied only if they do not exist in destination folder.
-                this.copyFileToDirectory(sourceFile, directory);
-            }
+            // Other files must be copied only if they do not exist in destination folder.
+            this.copyFileToDirectoryIfNotExists(sourceFile, directory);
         }
     }
 
@@ -100,19 +102,25 @@ public class BundledResourceExtractor {
         directory.setWritable(true);
         directory.setReadable(true);
         
-        if (!directory.mkdirs()) {
+        if (!this.mkdirs(directory)) {
             throw new IOException("tmp directory could not be created");
         }
     }
 
-    protected boolean directoryContains(File dir, String filename) throws IOException {
-        File file = FileUtils.getFile(dir, filename);
-        
-        return FileUtils.directoryContains(dir, file);
+    protected boolean mkdirs(File f) {
+        return f.mkdirs();
     }
     
     protected void copyFileToDirectory(File srcFile, File destDir) throws IOException {
         FileUtils.copyFileToDirectory(srcFile, destDir);
+    }
+    
+    protected void copyFileToDirectoryIfNotExists(File srcFile, File destDir) throws IOException {
+        File destFile = FileUtils.getFile(destDir, srcFile.getName());
+        
+        if (!FileUtils.directoryContains(destDir, destFile)) {
+            FileUtils.copyFileToDirectory(srcFile, destDir);
+        }
     }
     
     protected void copyDirectory(File dir, File destDir) throws IOException {
