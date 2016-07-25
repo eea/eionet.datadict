@@ -7,6 +7,7 @@ import eionet.datadict.services.io.ClassPathResourceFileProvider;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import liquibase.util.StringUtils;
 
 /**
  *
@@ -16,31 +17,40 @@ import java.net.URISyntaxException;
 public class ClassPathResoureFileProviderImpl implements ClassPathResourceFileProvider {
 
     @Override
-    public File[] loadAllFilesFromFolder(String folderName) throws IOException {
-        URL sourceURL = this.getClass().getClassLoader().getResource(folderName);
+    public File[] getDirectoryFiles(String... names) throws IOException {
+        URL sourceUrl = this.getClassPathResourceUrl(names);
         
-        if (sourceURL == null) {
-            throw new FileNotFoundException("wrong or missing folder in classpath");
-        }
-
-        File[] files;
+        File sourceFolder;
 
         try {
-            File sourceFolder = new File(sourceURL.toURI());
-            files = sourceFolder.listFiles();
-        } catch (URISyntaxException e) {
-            throw new IOException("Error Loading Resources From Classpath", e);
+            sourceFolder = new File(sourceUrl.toURI());
+        } catch (URISyntaxException ex) {
+            throw new IOException("Error loading resources from classpath.", ex);
         }
         
-        return files;
+        return sourceFolder.listFiles();
     }
     
     @Override
-    public File loadFileFromRootClasspathDirectory(String fileName) throws FileNotFoundException {
-        URL sourceURL = this.getClass().getClassLoader().getResource(fileName);
-        if (sourceURL == null) {
-            throw new FileNotFoundException("wrong or missing file in classpath");
-        }
+    public File getFile(String... names) throws FileNotFoundException {
+        URL sourceURL = this.getClassPathResourceUrl(names);
+        
         return new File(sourceURL.getFile());
     }
+    
+    protected URL getClassPathResourceUrl(String... names) throws FileNotFoundException {
+        String resourcePath = this.getPath(names);
+        URL resourceUrl = this.getClass().getClassLoader().getResource(resourcePath);
+        
+        if (resourceUrl == null) {
+            throw new FileNotFoundException("Could not find classpath resource: " + resourcePath);
+        }
+        
+        return resourceUrl;
+    }
+    
+    protected String getPath(String... names) {
+        return StringUtils.join(names, File.separator);
+    }
+    
 }

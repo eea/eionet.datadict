@@ -10,7 +10,8 @@ import java.io.IOException;
  */
 public interface ClassPathResourceFileProvider {
 
-    public File[] loadAllFilesFromFolder(String folderName) throws IOException;
+    public File[] getDirectoryFiles(String... names) throws IOException;
     
-    public File loadFileFromRootClasspathDirectory(String fileName) throws FileNotFoundException;
+    public File getFile(String... names) throws FileNotFoundException;
+    
 }

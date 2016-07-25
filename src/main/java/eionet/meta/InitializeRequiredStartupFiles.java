@@ -53,7 +53,7 @@ public class InitializeRequiredStartupFiles {
     private void initializeAclFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, ACL_FOLDER_NAME);
         directory.mkdir();
-        File[] sourceFiles = classPathResourcesLoadService.loadAllFilesFromFolder(ACL_FOLDER_NAME + "/");
+        File[] sourceFiles = classPathResourcesLoadService.getDirectoryFiles(ACL_FOLDER_NAME);
         
         for (File sourceFile : sourceFiles) {
             if (sourceFile.getName().endsWith(".prms") || sourceFile.getName().endsWith(".permissions")) {
@@ -73,7 +73,7 @@ public class InitializeRequiredStartupFiles {
 
     private void initializeMsAccessFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, MS_ACCESS_FOLDER_HOME);
-        File[] files = classPathResourcesLoadService.loadAllFilesFromFolder(MS_ACCESS_FOLDER_HOME + "/");
+        File[] files = classPathResourcesLoadService.getDirectoryFiles(MS_ACCESS_FOLDER_HOME);
         
         for (File file : files) {
             FileUtils.copyFileToDirectory(file, directory);
@@ -82,7 +82,7 @@ public class InitializeRequiredStartupFiles {
 
     private void initializeOpenDocFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, OPENDOC_FOLDER_HOME, "ods");
-        File[] files = classPathResourcesLoadService.loadAllFilesFromFolder(OPENDOC_FOLDER_HOME + "/");
+        File[] files = classPathResourcesLoadService.getDirectoryFiles(OPENDOC_FOLDER_HOME);
         
         for (File file : files) {
             FileUtils.copyDirectory(file, directory);
@@ -91,7 +91,7 @@ public class InitializeRequiredStartupFiles {
 
     private void overwriteVersionFile() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory);
-        File oldFile = classPathResourcesLoadService.loadFileFromRootClasspathDirectory(VERSION_FILE);
+        File oldFile = classPathResourcesLoadService.getFile(VERSION_FILE);
         FileUtils.copyFileToDirectory(oldFile, directory);
     }
 
