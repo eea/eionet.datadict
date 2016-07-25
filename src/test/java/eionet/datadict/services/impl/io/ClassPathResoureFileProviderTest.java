@@ -1,6 +1,5 @@
 package eionet.datadict.services.impl.io;
 
-import eionet.datadict.services.io.impl.ClassPathResoureFileProviderImpl;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
