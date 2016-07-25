@@ -1,4 +1,4 @@
-package eionet.datadict.services.auth.deployment;
+package eionet.datadict.services.deployment;
 
 import java.io.File;
 import java.io.IOException;
