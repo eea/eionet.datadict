@@ -33,25 +33,25 @@ public class BundledResourceExtractor {
     }
 
     @PostConstruct
-    public void initialize() throws IOException {
+    public void extractResources() throws IOException {
         try {
             appHomeDirectory = Props.getRequiredProperty(PropsIF.APP_HOME);
         } catch (Exception ex) {
             throw new BeanInitializationException("app.home property not found in properties file.", ex);
         }
 
-        initializeAclFiles();
-        initializeOpenDocFiles();
-        initializeMsAccessFiles();
-        overwriteVersionFile();
-        createTMPFolder();
+        extractAclFiles();
+        extractOpenDocFiles();
+        extractMsAccessFiles();
+        extractVersionFile();
+        createTempFolder();
     }
     
     protected String getAppHomeDirectory() {
         return this.appHomeDirectory;
     }
 
-    protected void initializeAclFiles() throws IOException {
+    protected void extractAclFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, ACL_FOLDER_NAME);
         this.mkdirs(directory);
         File[] sourceFiles = classPathResourceProvider.getDirectoryFiles(ACL_FOLDER_NAME);
@@ -68,7 +68,7 @@ public class BundledResourceExtractor {
         }
     }
 
-    protected void initializeMsAccessFiles() throws IOException {
+    protected void extractMsAccessFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, MS_ACCESS_FOLDER_HOME);
         File[] files = classPathResourceProvider.getDirectoryFiles(MS_ACCESS_FOLDER_HOME);
         
@@ -77,7 +77,7 @@ public class BundledResourceExtractor {
         }
     }
 
-    protected void initializeOpenDocFiles() throws IOException {
+    protected void extractOpenDocFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, OPENDOC_FOLDER_HOME, "ods");
         File[] files = classPathResourceProvider.getDirectoryFiles(OPENDOC_FOLDER_HOME);
         
@@ -86,13 +86,13 @@ public class BundledResourceExtractor {
         }
     }
 
-    protected void overwriteVersionFile() throws IOException {
+    protected void extractVersionFile() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory);
         File oldFile = classPathResourceProvider.getFile(VERSION_FILE);
         this.copyFileToDirectory(oldFile, directory);
     }
 
-    protected void createTMPFolder() throws IOException {
+    protected void createTempFolder() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, TEMP_FOLDER);
         
         if (this.dirExists(directory)) {

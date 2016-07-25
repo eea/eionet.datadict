@@ -36,12 +36,12 @@ public class BundledResourceExtractorTest {
         doNothing().when(this.bundledResourceExtractor).copyFileToDirectory(any(File.class), any(File.class));
         doNothing().when(this.bundledResourceExtractor).copyFileToDirectoryIfNotExists(any(File.class), any(File.class));
         
-        this.bundledResourceExtractor.initialize();
+        this.bundledResourceExtractor.extractResources();
         
-        verify(this.bundledResourceExtractor, times(1)).initializeAclFiles();
-        verify(this.bundledResourceExtractor, times(1)).initializeMsAccessFiles();
-        verify(this.bundledResourceExtractor, times(1)).initializeOpenDocFiles();
-        verify(this.bundledResourceExtractor, times(1)).createTMPFolder();
+        verify(this.bundledResourceExtractor, times(1)).extractAclFiles();
+        verify(this.bundledResourceExtractor, times(1)).extractMsAccessFiles();
+        verify(this.bundledResourceExtractor, times(1)).extractOpenDocFiles();
+        verify(this.bundledResourceExtractor, times(1)).createTempFolder();
         
         verify(this.bundledResourceExtractor, times(15)).copyFileToDirectoryIfNotExists(any(File.class), any(File.class));
         verify(this.bundledResourceExtractor, times(3)).copyFileToDirectory(any(File.class), any(File.class));
