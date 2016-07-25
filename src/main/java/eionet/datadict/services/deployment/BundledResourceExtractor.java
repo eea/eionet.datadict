@@ -24,12 +24,12 @@ public class BundledResourceExtractor {
     private static final String VERSION_FILE = "VERSION.txt";
     private static final String TEMP_FOLDER = "tmp";
     
-    private final ClassPathResourceFileProvider classPathResourcesLoadService;
+    private final ClassPathResourceFileProvider classPathResourceProvider;
     private String appHomeDirectory;
 
     @Autowired
-    public BundledResourceExtractor(ClassPathResourceFileProvider classPathResourcesLoadService) {
-        this.classPathResourcesLoadService = classPathResourcesLoadService;
+    public BundledResourceExtractor(ClassPathResourceFileProvider classPathResourceProvider) {
+        this.classPathResourceProvider = classPathResourceProvider;
     }
 
     @PostConstruct
@@ -50,7 +50,7 @@ public class BundledResourceExtractor {
     private void initializeAclFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, ACL_FOLDER_NAME);
         directory.mkdirs();
-        File[] sourceFiles = classPathResourcesLoadService.getDirectoryFiles(ACL_FOLDER_NAME);
+        File[] sourceFiles = classPathResourceProvider.getDirectoryFiles(ACL_FOLDER_NAME);
         
         for (File sourceFile : sourceFiles) {
             if (sourceFile.getName().endsWith(".prms") || sourceFile.getName().endsWith(".permissions")) {
@@ -70,7 +70,7 @@ public class BundledResourceExtractor {
 
     private void initializeMsAccessFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, MS_ACCESS_FOLDER_HOME);
-        File[] files = classPathResourcesLoadService.getDirectoryFiles(MS_ACCESS_FOLDER_HOME);
+        File[] files = classPathResourceProvider.getDirectoryFiles(MS_ACCESS_FOLDER_HOME);
         
         for (File file : files) {
             FileUtils.copyFileToDirectory(file, directory);
@@ -79,7 +79,7 @@ public class BundledResourceExtractor {
 
     private void initializeOpenDocFiles() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory, OPENDOC_FOLDER_HOME, "ods");
-        File[] files = classPathResourcesLoadService.getDirectoryFiles(OPENDOC_FOLDER_HOME);
+        File[] files = classPathResourceProvider.getDirectoryFiles(OPENDOC_FOLDER_HOME);
         
         for (File file : files) {
             FileUtils.copyDirectory(file, directory);
@@ -88,7 +88,7 @@ public class BundledResourceExtractor {
 
     private void overwriteVersionFile() throws IOException {
         File directory = FileUtils.getFile(appHomeDirectory);
-        File oldFile = classPathResourcesLoadService.getFile(VERSION_FILE);
+        File oldFile = classPathResourceProvider.getFile(VERSION_FILE);
         FileUtils.copyFileToDirectory(oldFile, directory);
     }
 
