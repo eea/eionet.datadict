@@ -1,4 +1,4 @@
-package eionet.meta;
+package eionet.datadict.services.auth.deployment;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
 @Service
-public class InitializeRequiredStartupFiles {
+public class BundledResourceExtractor {
     
     private static final String ACL_FOLDER_NAME = "acl";
     private static final String MS_ACCESS_FOLDER_HOME = "msaccess";
@@ -28,7 +28,7 @@ public class InitializeRequiredStartupFiles {
     private String appHomeDirectory;
 
     @Autowired
-    public InitializeRequiredStartupFiles(ClassPathResourceFileProvider classPathResourcesLoadService) {
+    public BundledResourceExtractor(ClassPathResourceFileProvider classPathResourcesLoadService) {
         this.classPathResourcesLoadService = classPathResourcesLoadService;
     }
 
