@@ -59,14 +59,22 @@ public class InitializeRequiredStartupFiles {
 
     private void initializeAclFiles() throws ClassPathLoadResourceException, IOException {
         File directory = FileUtils.getFile(appHomeDirectory, ACL_FOLDER_NAME);
+        directory.mkdir();
         File[] sourceFiles = classPathResourcesLoadService.loadAllFilesFromFolder(ACL_FOLDER_NAME + "/");
         
         for (File sourceFile : sourceFiles) {
-            if (sourceFile.getName().contains(".prms") || sourceFile.getName().contains(".permissions")) {
-                File destFile = new File(sourceFile.getName());
-                FileUtils.copyFile(sourceFile, destFile);
+            if (sourceFile.getName().endsWith(".prms") || sourceFile.getName().endsWith(".permissions")) {
+                // Always overwrite .prms files.
+                FileUtils.copyFileToDirectory(sourceFile, directory);
+                continue;
             }
-            FileUtils.copyFileToDirectory(sourceFile, directory);
+            
+            File destinationFile = FileUtils.getFile(directory, sourceFile.getName());
+            
+            if (!FileUtils.directoryContains(directory, destinationFile)) {
+                // Other files must be copied only if they do not exist in destination folder.
+                FileUtils.copyFileToDirectory(sourceFile, directory);
+            }
         }
     }
 
