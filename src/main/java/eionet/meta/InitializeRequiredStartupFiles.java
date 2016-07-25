@@ -23,7 +23,7 @@ public class InitializeRequiredStartupFiles {
     private static final String VERSION_FILE = "VERSION.txt";
     private static final String TEMP_FOLDER = "tmp";
     
-    private ClassPathResourceFileProvider classPathResourcesLoadService = null;
+    private final ClassPathResourceFileProvider classPathResourcesLoadService;
     private String appHomeDirectory;
 
     @Autowired
