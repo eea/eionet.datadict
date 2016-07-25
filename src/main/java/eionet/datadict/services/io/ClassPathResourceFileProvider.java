@@ -1,4 +1,4 @@
-package eionet.datadict.services;
+package eionet.datadict.services.io;
 
 import eionet.datadict.errors.ClassPathLoadResourceException;
 import java.io.File;
@@ -7,7 +7,7 @@ import java.io.File;
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
-public interface ClassPathResourcesLoadService {
+public interface ClassPathResourceFileProvider {
 
     public File[] loadAllFilesFromFolder(String folderName) throws ClassPathLoadResourceException;
     

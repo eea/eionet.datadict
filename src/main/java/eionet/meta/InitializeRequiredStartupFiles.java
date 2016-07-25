@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import eionet.datadict.services.ClassPathResourcesLoadService;
+import eionet.datadict.services.io.ClassPathResourceFileProvider;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import java.nio.file.Files;
@@ -27,11 +27,11 @@ public class InitializeRequiredStartupFiles {
     private static final String VERSION_FILE = "VERSION.txt";
     private static final String TEMP_FOLDER = "tmp";
     
-    private ClassPathResourcesLoadService classPathResourcesLoadService = null;
+    private ClassPathResourceFileProvider classPathResourcesLoadService = null;
     private String appHomeDirectory;
 
     @Autowired
-    public InitializeRequiredStartupFiles(ClassPathResourcesLoadService classPathResourcesLoadService) {
+    public InitializeRequiredStartupFiles(ClassPathResourceFileProvider classPathResourcesLoadService) {
         this.classPathResourcesLoadService = classPathResourcesLoadService;
     }
 

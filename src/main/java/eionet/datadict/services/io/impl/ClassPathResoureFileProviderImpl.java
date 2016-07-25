@@ -1,4 +1,4 @@
-package eionet.datadict.services.impl;
+package eionet.datadict.services.io.impl;
 
 import eionet.datadict.errors.ClassPathLoadResourceException;
 import java.io.File;
@@ -6,14 +6,14 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
-import eionet.datadict.services.ClassPathResourcesLoadService;
+import eionet.datadict.services.io.ClassPathResourceFileProvider;
 
 /**
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
 @Service
-public class ClassPathResouresLoadServiceImpl implements ClassPathResourcesLoadService {
+public class ClassPathResoureFileProviderImpl implements ClassPathResourceFileProvider {
 
     @Override
     public File[] loadAllFilesFromFolder(String folderName) throws ClassPathLoadResourceException {
@@ -30,7 +30,7 @@ public class ClassPathResouresLoadServiceImpl implements ClassPathResourcesLoadS
             sourceFolder = new File(sourceURL.toURI());
             files = sourceFolder.listFiles();
         } catch (Exception e) {
-            Logger.getLogger(ClassPathResouresLoadServiceImpl.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ClassPathResoureFileProviderImpl.class.getName()).log(Level.SEVERE, null, e);
             throw new ClassPathLoadResourceException("Error Loading Resources From Classpath", e);
         }
         return files;
