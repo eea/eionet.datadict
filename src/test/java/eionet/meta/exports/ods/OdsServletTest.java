@@ -21,9 +21,6 @@ import org.junit.Assert;
 
 import eionet.DDDatabaseTestCase;
 import eionet.meta.ActionBeanUtils;
-import eionet.meta.InitializeRequiredStartupFiles;
-import eionet.meta.spring.SpringApplicationContext;
-import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -42,7 +39,6 @@ public class OdsServletTest extends DDDatabaseTestCase {
     private HttpSession sessionMock = null;
     private OdsServlet odsServletUnderTest = null;
     private ArrayList<Object> allMocks = null;
-    private ApplicationContext springContext;
 
     /*
      * (non-Javadoc)
