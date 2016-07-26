@@ -3,10 +3,12 @@ package eionet.datadict.infrastructure.asynctasks.impl;
 import eionet.datadict.dal.AsyncTaskDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManagementException;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
+import java.util.Date;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.quartz.JobBuilder;
@@ -31,15 +33,18 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     private final AsyncJobKeyBuilder asyncJobKeyBuilder;
     private final AsyncTaskDao asyncTaskDao;
     private final JobListener asyncJobListener;
+    private final AsyncTaskDataSerializer asyncTaskDataSerializer;
     
     @Autowired
     public AsyncTaskManagerImpl(@Qualifier("jobScheduler") Scheduler scheduler, 
             @Qualifier("asyncJobListener") JobListener asyncJobListener,
-            AsyncJobKeyBuilder asyncJobKeyBuilder, AsyncTaskDao asyncTaskDao) {
+            AsyncJobKeyBuilder asyncJobKeyBuilder, AsyncTaskDao asyncTaskDao,
+            AsyncTaskDataSerializer asyncTaskDataSerializer) {
         this.scheduler = scheduler;
         this.asyncJobKeyBuilder = asyncJobKeyBuilder;
         this.asyncTaskDao = asyncTaskDao;
         this.asyncJobListener = asyncJobListener;
+        this.asyncTaskDataSerializer = asyncTaskDataSerializer;
     }
     
     @PostConstruct
@@ -53,6 +58,7 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     }
     
     @Override
+    @Transactional
     public <T extends AsyncTask> String executeAsync(Class<T> taskType, Map<String, Object> parameters) 
             throws AsyncTaskManagementException {
         AsyncJobDataMapAdapter dataMapAdapter = new AsyncJobDataMapAdapter(new JobDataMap());
@@ -75,6 +81,8 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
             throw new AsyncTaskManagementException(ex);
         }
         
+        this.createTaskEntry(jobKey, dataMapAdapter);
+        
         return this.asyncJobKeyBuilder.getTaskId(jobKey);
     }
 
@@ -85,19 +93,47 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
         AsyncTaskExecutionEntry entry = this.asyncTaskDao.getStatusEntry(taskId);
         
         if (entry == null) {
-            throw new ResourceNotFoundException();
+            throw this.createTaskNotFoundException(taskId);
         }
         
-        if (entry.getExecutionStatus() != AsyncTaskExecutionStatus.ONGOING) {
+        return this.getExecutionStatusForEntry(entry);
+    }
+    
+    @Override
+    @Transactional
+    public AsyncTaskExecutionEntry getTaskEntry(String taskId) throws ResourceNotFoundException {
+        AsyncTaskExecutionEntry entry = this.asyncTaskDao.getResultEntry(taskId);
+        
+        if (entry == null) {
+            throw this.createTaskNotFoundException(taskId);
+        }
+        
+        entry.setExecutionStatus(this.getExecutionStatusForEntry(entry));
+        
+        return entry;
+    }
+    
+    protected void createTaskEntry(JobKey jobKey, AsyncJobDataMapAdapter dataMapAdapter) {
+        AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
+        entry.setTaskId(this.asyncJobKeyBuilder.getTaskId(jobKey));
+        entry.setTaskClassName(dataMapAdapter.getTaskTypeName());
+        entry.setExecutionStatus(AsyncTaskExecutionStatus.ONGOING);
+        entry.setScheduledDate(new Date());
+        entry.setSerializedParameters(this.asyncTaskDataSerializer.serializeParameters(dataMapAdapter.getParameters()));
+        this.asyncTaskDao.create(entry);
+    }
+    
+    protected AsyncTaskExecutionStatus getExecutionStatusForEntry(AsyncTaskExecutionEntry entry) {
+        if (entry.getExecutionStatus() != AsyncTaskExecutionStatus.SCHEDULED && entry.getExecutionStatus() != AsyncTaskExecutionStatus.ONGOING) {
             return entry.getExecutionStatus();
         }
         
-        if (this.hasTriggers(taskId)) {
-            return AsyncTaskExecutionStatus.ONGOING;
+        if (this.hasTriggers(entry.getTaskId())) {
+            return entry.getExecutionStatus();
         }
         
         entry.setExecutionStatus(AsyncTaskExecutionStatus.KILLED);
-        this.asyncTaskDao.updateStatus(entry);
+        this.asyncTaskDao.updateEndStatus(entry);
         
         return AsyncTaskExecutionStatus.KILLED;
     }
@@ -111,6 +147,10 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
         catch (SchedulerException ex) {
             throw new AsyncTaskManagementException(ex);
         }
+    }
+    
+    protected ResourceNotFoundException createTaskNotFoundException(String taskId) {
+        return new ResourceNotFoundException("Could not find task with id " + taskId);
     }
     
 }

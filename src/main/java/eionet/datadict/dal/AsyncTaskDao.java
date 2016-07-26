@@ -10,6 +10,8 @@ public interface AsyncTaskDao {
     
     void create(AsyncTaskExecutionEntry entry);
     
-    void updateStatus(AsyncTaskExecutionEntry entry);
+    void updateStartStatus(AsyncTaskExecutionEntry entry);
+    
+    void updateEndStatus(AsyncTaskExecutionEntry entry);
     
 }

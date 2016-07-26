@@ -7,6 +7,7 @@ public class AsyncTaskExecutionEntry {
     private String taskId;
     private String taskClassName;
     private AsyncTaskExecutionStatus executionStatus;
+    private Date scheduledDate;
     private Date startDate;
     private Date endDate;
     private String serializedParameters;
@@ -36,6 +37,14 @@ public class AsyncTaskExecutionEntry {
         this.executionStatus = executionStatus;
     }
 
+    public Date getScheduledDate() {
+        return scheduledDate;
+    }
+
+    public void setScheduledDate(Date scheduledDate) {
+        this.scheduledDate = scheduledDate;
+    }
+    
     public Date getStartDate() {
         return startDate;
     }

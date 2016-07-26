@@ -24,7 +24,6 @@ public class SchedulerFactory extends SchedulerFactoryBean {
         this.setBeanName("jobScheduler");
         this.setDataSource(this.dataSource);
         this.setTransactionManager(this.transactionManager);
-        this.setAutoStartup(false);
     }
     
 }

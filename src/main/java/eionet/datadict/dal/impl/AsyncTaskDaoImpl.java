@@ -56,20 +56,31 @@ public class AsyncTaskDaoImpl extends JdbcRepositoryBase implements AsyncTaskDao
     @Override
     public void create(AsyncTaskExecutionEntry entry) {
         String sql = 
-            "insert into ASYNC_TASK_ENTRY(TASK_ID, TASK_CLASS_NAME, EXECUTION_STATUS, START_DATE, SERIALIZED_PARAMETERS) " + 
-            "values (:taskId, :className, :executionStatus, :startDate, :serializedParameters)";
+            "insert into ASYNC_TASK_ENTRY(TASK_ID, TASK_CLASS_NAME, EXECUTION_STATUS, SCHEDULED_DATE, SERIALIZED_PARAMETERS) " + 
+            "values (:taskId, :className, :executionStatus, :scheduledDate, :serializedParameters)";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("taskId", entry.getTaskId());
         params.put("className", entry.getTaskClassName());
         params.put("executionStatus", this.executionStatusToByteConverter.convert(entry.getExecutionStatus()));
-        params.put("startDate", this.dateTimeToLongConverter.convert(entry.getStartDate()));
+        params.put("scheduledDate", this.dateTimeToLongConverter.convert(entry.getScheduledDate()));
         params.put("serializedParameters", entry.getSerializedParameters());
         this.getNamedParameterJdbcTemplate().update(sql, params);
         
     }
 
     @Override
-    public void updateStatus(AsyncTaskExecutionEntry entry) {
+    public void updateStartStatus(AsyncTaskExecutionEntry entry) {
+        String sql = 
+            "update ASYNC_TASK_ENTRY set START_DATE = :startDate, EXECUTION_STATUS = :executionStatus where TASK_ID = :taskId";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("taskId", entry.getTaskId());
+        params.put("executionStatus", this.executionStatusToByteConverter.convert(entry.getExecutionStatus()));
+        params.put("startDate", this.dateTimeToLongConverter.convert(entry.getStartDate()));
+        this.getNamedParameterJdbcTemplate().update(sql, params);
+    }
+    
+    @Override
+    public void updateEndStatus(AsyncTaskExecutionEntry entry) {
         String sql = 
             "update ASYNC_TASK_ENTRY set END_DATE = :endDate, EXECUTION_STATUS = :executionStatus, SERIALIZED_RESULT = :serializedResult where TASK_ID = :taskId";
         Map<String, Object> params = new HashMap<String, Object>();
@@ -101,7 +112,7 @@ public class AsyncTaskDaoImpl extends JdbcRepositoryBase implements AsyncTaskDao
         public AsyncTaskExecutionEntry mapRow(ResultSet rs, int i) throws SQLException {
             AsyncTaskExecutionEntry result = new AsyncTaskExecutionEntry();
             result.setTaskId(rs.getString("TASK_ID"));
-            result.setTaskClassName("TASK_CLASS_NAME");
+            result.setTaskClassName(rs.getString("TASK_CLASS_NAME"));
             result.setExecutionStatus(executionStatusToByteConverter.convertBack(rs.getByte("EXECUTION_STATUS")));
             result.setStartDate(dateTimeToLongConverter.convertBack(rs.getLong("START_DATE")));
             result.setEndDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "END_DATE")));

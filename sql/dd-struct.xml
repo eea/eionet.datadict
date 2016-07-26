@@ -2539,8 +2539,11 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column name="EXECUTION_STATUS" type="TINYINT">
                 <constraints nullable="false" />
             </column>
-            <column name="START_DATE" type="BIGINT">
+            <column name="SCHEDULED_DATE" type="BIGINT">
                 <constraints nullable="false" />
+            </column>
+            <column name="START_DATE" type="BIGINT">
+                <constraints nullable="true" />
             </column>
             <column name="END_DATE" type="BIGINT">
                 <constraints nullable="true" />

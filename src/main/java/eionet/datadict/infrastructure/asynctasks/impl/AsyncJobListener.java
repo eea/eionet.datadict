@@ -1,10 +1,10 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.dal.AsyncTaskDao;
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
 import java.util.Date;
-import net.sf.json.JSONObject;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
@@ -16,13 +16,13 @@ public class AsyncJobListener implements JobListener {
 
     private final AsyncTaskDao asyncTaskDao;
     private final AsyncJobKeyBuilder asyncJobKeyBuilder;
-    private final AsyncTaskResultSerializer asyncTaskResultSerializer;
+    private final AsyncTaskDataSerializer asyncTaskDataSerializer;
     
     @Autowired
-    public AsyncJobListener(AsyncTaskDao asyncTaskDao, AsyncJobKeyBuilder asyncJobKeyBuilder, AsyncTaskResultSerializer asyncTaskResultSerializer) {
+    public AsyncJobListener(AsyncTaskDao asyncTaskDao, AsyncJobKeyBuilder asyncJobKeyBuilder, AsyncTaskDataSerializer asyncTaskDataSerializer) {
         this.asyncTaskDao = asyncTaskDao;
         this.asyncJobKeyBuilder = asyncJobKeyBuilder;
-        this.asyncTaskResultSerializer = asyncTaskResultSerializer;
+        this.asyncTaskDataSerializer = asyncTaskDataSerializer;
     }
     
     @Override
@@ -32,14 +32,11 @@ public class AsyncJobListener implements JobListener {
 
     @Override
     public void jobToBeExecuted(JobExecutionContext jec) {
-        AsyncJobDataMapAdapter dataMapAdapter = new AsyncJobDataMapAdapter(jec.getMergedJobDataMap());
         AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
         entry.setTaskId(this.asyncJobKeyBuilder.getTaskId(jec.getJobDetail().getKey()));
-        entry.setTaskClassName(dataMapAdapter.getTaskTypeName());
         entry.setExecutionStatus(AsyncTaskExecutionStatus.ONGOING);
         entry.setStartDate(new Date());
-        entry.setSerializedParameters(JSONObject.fromObject(dataMapAdapter.getParameters()).toString());
-        this.asyncTaskDao.create(entry);
+        this.asyncTaskDao.updateStartStatus(entry);
     }
 
     @Override
@@ -48,7 +45,7 @@ public class AsyncJobListener implements JobListener {
         entry.setTaskId(this.asyncJobKeyBuilder.getTaskId(jec.getJobDetail().getKey()));
         entry.setEndDate(new Date());
         entry.setExecutionStatus(AsyncTaskExecutionStatus.ABORTED);
-        this.asyncTaskDao.updateStatus(entry);
+        this.asyncTaskDao.updateEndStatus(entry);
     }
 
     @Override
@@ -71,10 +68,10 @@ public class AsyncJobListener implements JobListener {
         entry.setExecutionStatus(status);
             
         if (jec.getResult() != null) {
-            entry.setSerializedResult(this.asyncTaskResultSerializer.serializeResult(result));
+            entry.setSerializedResult(this.asyncTaskDataSerializer.serializeResult(result));
         }
         
-        this.asyncTaskDao.updateStatus(entry);
+        this.asyncTaskDao.updateEndStatus(entry);
     }
     
 }
