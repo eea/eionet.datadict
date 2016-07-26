@@ -1,11 +1,13 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializerException;
 import java.util.HashMap;
 import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 
 public class AsyncTaskDataSerializerTest {
@@ -45,6 +47,21 @@ public class AsyncTaskDataSerializerTest {
         
         assertThat(deserializedError.getMessage(), is(equalTo(error.getMessage())));
         assertThat("Stacktrace size mismatch", deserializedError.getStackTrace().length, is(equalTo(error.getStackTrace().length)));
+    }
+    
+    @Test
+    public void testSerializerFailure() {
+        try {
+            this.asyncTaskDataSerializer.deserializeParameters("{ param1: ' }");
+            fail("Should have thrown AsyncTaskDataSerializerException");
+        }
+        catch (AsyncTaskDataSerializerException ex) { }
+        
+        try {
+            this.asyncTaskDataSerializer.deserializeResult("{ prop1: ' }");
+            fail("Should have thrown AsyncTaskDataSerializerException");
+        }
+        catch (AsyncTaskDataSerializerException ex) { }
     }
     
     private Exception generateError() {
