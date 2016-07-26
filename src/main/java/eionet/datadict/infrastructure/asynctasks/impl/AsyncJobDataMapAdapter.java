@@ -27,6 +27,10 @@ public class AsyncJobDataMapAdapter {
     public Class getTaskType() {
         String taskTypeName = this.dataMap.getString(TASK_TYPE_KEY);
         
+        if (taskTypeName == null) {
+            return null;
+        }
+        
         try {
             return Class.forName(taskTypeName);
         } 
