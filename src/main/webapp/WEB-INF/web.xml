@@ -58,9 +58,6 @@
     </listener>
 
     <listener>
-        <listener-class>eionet.meta.scheduled.DDJobScheduler</listener-class>
-    </listener>
-    <listener>
         <listener-class>eionet.meta.scheduled.VocabularyReferenceMatchJob</listener-class>
     </listener>
     <listener>
