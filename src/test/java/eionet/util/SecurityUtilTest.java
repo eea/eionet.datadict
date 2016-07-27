@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@SpringApplicationContext("mock-spring-context.xml")
+@SpringApplicationContext("spring-context.xml")
 public class SecurityUtilTest extends UnitilsJUnit4  {
 
 

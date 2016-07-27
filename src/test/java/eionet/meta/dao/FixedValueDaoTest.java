@@ -14,7 +14,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
  *
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
-@SpringApplicationContext("mock-spring-context.xml")
+@SpringApplicationContext("spring-context.xml")
 public class FixedValueDaoTest extends UnitilsJUnit4 {
     
     private static final int FXV_2_ID = 2;

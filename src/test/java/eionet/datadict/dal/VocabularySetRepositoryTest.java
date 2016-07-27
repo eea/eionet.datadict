@@ -17,7 +17,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
-@SpringApplicationContext("mock-spring-context.xml")
+@SpringApplicationContext("spring-context.xml")
 public class VocabularySetRepositoryTest extends UnitilsJUnit4 {
 
     @SpringBeanByType

@@ -169,7 +169,7 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
         filterParams.put("ActionBeanPropertyBinder.Class", MyActionBeanPropertyBinder.class.getName());//better to use this way, so class can be found by usages.
 
         ctx.addFilter(StripesFilter.class, "StripesFilter", filterParams);
-        ctx.addInitParameter("contextConfigLocation", "classpath:mock-spring-context.xml");
+        ctx.addInitParameter("contextConfigLocation", "classpath:spring-context.xml");
 
         ctx.setServlet(DispatcherServlet.class, "StripesDispatcher", null);
 

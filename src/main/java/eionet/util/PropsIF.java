@@ -35,6 +35,7 @@ public interface PropsIF {
     /** */
     String PROP_FILE = "datadict";
     String TEST_PROP_FILE = "datadict-test";
+    String APP_HOME = "app.home";
 
     /** */
     String DBDRV = "db.drv";

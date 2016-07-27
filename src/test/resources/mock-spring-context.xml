@@ -70,5 +70,5 @@
     </bean>
 
     <context:property-placeholder location="classpath:datadict.properties" />
-
+    
 </beans>
