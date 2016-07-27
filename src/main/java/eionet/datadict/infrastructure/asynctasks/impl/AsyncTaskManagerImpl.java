@@ -61,9 +61,17 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     @Transactional
     public <T extends AsyncTask> String executeAsync(Class<T> taskType, Map<String, Object> parameters) 
             throws AsyncTaskManagementException {
+        if (taskType == null) {
+            throw new IllegalArgumentException("Task type cannot be null.");
+        }
+        
         AsyncJobDataMapAdapter dataMapAdapter = new AsyncJobDataMapAdapter(new JobDataMap());
         dataMapAdapter.setTaskType(taskType);
-        dataMapAdapter.putParameters(parameters);
+        
+        if (parameters != null) {
+            dataMapAdapter.putParameters(parameters);
+        }
+        
         JobKey jobKey = this.asyncJobKeyBuilder.createNew();
         
         JobDetail jobDetail = JobBuilder.newJob(AsyncJob.class)
@@ -81,7 +89,7 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
             throw new AsyncTaskManagementException(ex);
         }
         
-        this.createTaskEntry(jobKey, dataMapAdapter);
+        this.createTaskEntry(jobKey, dataMapAdapter.getTaskTypeName(), dataMapAdapter.getParameters());
         
         return this.asyncJobKeyBuilder.getTaskId(jobKey);
     }
@@ -113,13 +121,13 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
         return entry;
     }
     
-    protected void createTaskEntry(JobKey jobKey, AsyncJobDataMapAdapter dataMapAdapter) {
+    protected void createTaskEntry(JobKey jobKey, String taskTypeName, Map<String, Object> parameters) {
         AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
         entry.setTaskId(this.asyncJobKeyBuilder.getTaskId(jobKey));
-        entry.setTaskClassName(dataMapAdapter.getTaskTypeName());
-        entry.setExecutionStatus(AsyncTaskExecutionStatus.ONGOING);
+        entry.setTaskClassName(taskTypeName);
+        entry.setExecutionStatus(AsyncTaskExecutionStatus.SCHEDULED);
         entry.setScheduledDate(new Date());
-        entry.setSerializedParameters(this.asyncTaskDataSerializer.serializeParameters(dataMapAdapter.getParameters()));
+        entry.setSerializedParameters(this.asyncTaskDataSerializer.serializeParameters(parameters));
         this.asyncTaskDao.create(entry);
     }
     
