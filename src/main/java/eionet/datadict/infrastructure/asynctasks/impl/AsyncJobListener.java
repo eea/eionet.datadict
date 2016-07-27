@@ -62,12 +62,12 @@ public class AsyncJobListener implements JobListener {
         }
         else {
             status = AsyncTaskExecutionStatus.FAILED;
-            result = jee;
+            result = jee.getCause();
         }
         
         entry.setExecutionStatus(status);
             
-        if (jec.getResult() != null) {
+        if (result != null) {
             entry.setSerializedResult(this.asyncTaskDataSerializer.serializeResult(result));
         }
         
