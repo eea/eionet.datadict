@@ -43,7 +43,7 @@ public class AsyncTaskDaoImpl extends JdbcRepositoryBase implements AsyncTaskDao
     }
 
     @Override
-    public AsyncTaskExecutionEntry getResultEntry(String taskId) {
+    public AsyncTaskExecutionEntry getFullEntry(String taskId) {
         String sql = "select * from ASYNC_TASK_ENTRY where TASK_ID = :taskId";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("taskId", taskId);

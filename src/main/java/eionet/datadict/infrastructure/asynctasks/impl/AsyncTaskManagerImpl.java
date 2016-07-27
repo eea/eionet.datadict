@@ -102,7 +102,7 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     @Override
     @Transactional
     public AsyncTaskExecutionEntry getTaskEntry(String taskId) throws ResourceNotFoundException {
-        AsyncTaskExecutionEntry entry = this.asyncTaskDao.getResultEntry(taskId);
+        AsyncTaskExecutionEntry entry = this.asyncTaskDao.getFullEntry(taskId);
         
         if (entry == null) {
             throw this.createTaskNotFoundException(taskId);

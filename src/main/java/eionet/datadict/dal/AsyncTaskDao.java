@@ -6,7 +6,7 @@ public interface AsyncTaskDao {
     
     AsyncTaskExecutionEntry getStatusEntry(String taskId);
     
-    AsyncTaskExecutionEntry getResultEntry(String taskId);
+    AsyncTaskExecutionEntry getFullEntry(String taskId);
     
     void create(AsyncTaskExecutionEntry entry);
     
