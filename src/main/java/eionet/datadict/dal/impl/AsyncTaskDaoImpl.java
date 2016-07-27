@@ -33,7 +33,7 @@ public class AsyncTaskDaoImpl extends JdbcRepositoryBase implements AsyncTaskDao
 
     @Override
     public AsyncTaskExecutionEntry getStatusEntry(String taskId) {
-        String sql = "select TASK_ID, EXECUTION_STATUS, START_DATE, END_DATE from ASYNC_TASK_ENTRY where TASK_ID = :taskId";
+        String sql = "select TASK_ID, EXECUTION_STATUS, SCHEDULED_DATE, START_DATE, END_DATE from ASYNC_TASK_ENTRY where TASK_ID = :taskId";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("taskId", taskId);
         List<AsyncTaskExecutionEntry> results = this.getNamedParameterJdbcTemplate().query(sql, params, 
@@ -98,7 +98,8 @@ public class AsyncTaskDaoImpl extends JdbcRepositoryBase implements AsyncTaskDao
             AsyncTaskExecutionEntry result = new AsyncTaskExecutionEntry();
             result.setTaskId(rs.getString("TASK_ID"));
             result.setExecutionStatus(executionStatusToByteConverter.convertBack(rs.getByte("EXECUTION_STATUS")));
-            result.setStartDate(dateTimeToLongConverter.convertBack(rs.getLong("START_DATE")));
+            result.setScheduledDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "SCHEDULED_DATE")));
+            result.setStartDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "START_DATE")));
             result.setEndDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "END_DATE")));
             
             return result;
@@ -114,7 +115,8 @@ public class AsyncTaskDaoImpl extends JdbcRepositoryBase implements AsyncTaskDao
             result.setTaskId(rs.getString("TASK_ID"));
             result.setTaskClassName(rs.getString("TASK_CLASS_NAME"));
             result.setExecutionStatus(executionStatusToByteConverter.convertBack(rs.getByte("EXECUTION_STATUS")));
-            result.setStartDate(dateTimeToLongConverter.convertBack(rs.getLong("START_DATE")));
+            result.setScheduledDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "SCHEDULED_DATE")));
+            result.setStartDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "START_DATE")));
             result.setEndDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "END_DATE")));
             result.setSerializedParameters(rs.getString("SERIALIZED_PARAMETERS"));
             result.setSerializedResult(rs.getString("SERIALIZED_RESULT"));
