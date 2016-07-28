@@ -5,8 +5,10 @@ import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManagementException;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -194,15 +196,13 @@ public class AsyncTaskManagerTest {
         final String taskId = "some-task-id";
         final AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
         entry.setTaskId(taskId);
-        final AsyncTaskExecutionStatus status = AsyncTaskExecutionStatus.KILLED;
         when(this.asyncTaskDao.getStatusEntry(taskId)).thenReturn(entry);
-        doReturn(status).when(this.asyncTaskManager).getExecutionStatusForEntry(entry);
+        doNothing().when(this.asyncTaskManager).fixEntryExecutionStatus(entry);
         
-        AsyncTaskExecutionStatus result = this.asyncTaskManager.getExecutionStatus(taskId);
+        this.asyncTaskManager.getExecutionStatus(taskId);
         
-        assertThat(result, is(equalTo(status)));
         verify(this.asyncTaskDao, times(1)).getStatusEntry(taskId);
-        verify(this.asyncTaskManager, times(1)).getExecutionStatusForEntry(entry);
+        verify(this.asyncTaskManager, times(1)).fixEntryExecutionStatus(entry);
     }
     
     @Test
@@ -217,7 +217,7 @@ public class AsyncTaskManagerTest {
         catch (ResourceNotFoundException ex) { }
         
         verify(this.asyncTaskDao, times(1)).getStatusEntry(taskId);
-        verify(this.asyncTaskManager, times(0)).getExecutionStatusForEntry(any(AsyncTaskExecutionEntry.class));
+        verify(this.asyncTaskManager, times(0)).fixEntryExecutionStatus(any(AsyncTaskExecutionEntry.class));
     }
     
     @Test
@@ -225,16 +225,14 @@ public class AsyncTaskManagerTest {
         final String taskId = "some-task-id";
         final AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
         entry.setTaskId(taskId);
-        final AsyncTaskExecutionStatus status = AsyncTaskExecutionStatus.KILLED;
         when(this.asyncTaskDao.getFullEntry(taskId)).thenReturn(entry);
-        doReturn(status).when(this.asyncTaskManager).getExecutionStatusForEntry(entry);
+        doNothing().when(this.asyncTaskManager).fixEntryExecutionStatus(entry);
         
         AsyncTaskExecutionEntry result = this.asyncTaskManager.getTaskEntry(taskId);
         
         assertThat(result, is(equalTo(entry)));
-        assertThat(result.getExecutionStatus(), is(equalTo(status)));
         verify(this.asyncTaskDao, times(1)).getFullEntry(taskId);
-        verify(this.asyncTaskManager, times(1)).getExecutionStatusForEntry(entry);
+        verify(this.asyncTaskManager, times(1)).fixEntryExecutionStatus(entry);
     }
     
     @Test
@@ -249,7 +247,89 @@ public class AsyncTaskManagerTest {
         catch (ResourceNotFoundException ex) { }
         
         verify(this.asyncTaskDao, times(1)).getFullEntry(taskId);
-        verify(this.asyncTaskManager, times(0)).getExecutionStatusForEntry(any(AsyncTaskExecutionEntry.class));
+        verify(this.asyncTaskManager, times(0)).fixEntryExecutionStatus(any(AsyncTaskExecutionEntry.class));
+    }
+    
+    @Test
+    public void testFixEntryExecutionStatus1() {
+        this.testFixEntryExecutionStatus(AsyncTaskExecutionStatus.SCHEDULED, true, AsyncTaskExecutionStatus.SCHEDULED, 1, 0);
+    }
+    
+    @Test
+    public void testFixEntryExecutionStatus2() {
+        this.testFixEntryExecutionStatus(AsyncTaskExecutionStatus.SCHEDULED, false, AsyncTaskExecutionStatus.KILLED, 1, 1);
+    }
+    
+    @Test
+    public void testFixEntryExecutionStatus3() {
+        this.testFixEntryExecutionStatus(AsyncTaskExecutionStatus.ONGOING, true, AsyncTaskExecutionStatus.ONGOING, 1, 0);
+    }
+    
+    @Test
+    public void testFixEntryExecutionStatus4() {
+        this.testFixEntryExecutionStatus(AsyncTaskExecutionStatus.ONGOING, false, AsyncTaskExecutionStatus.KILLED, 1, 1);
+    }
+    
+    @Test
+    public void testFixEntryExecutionStatus5() {
+        this.testFixEntryExecutionStatus(AsyncTaskExecutionStatus.COMPLETED, null, AsyncTaskExecutionStatus.COMPLETED, 0, 0);
+    }
+    
+    @Test
+    public void testFixEntryExecutionStatus6() {
+        this.testFixEntryExecutionStatus(AsyncTaskExecutionStatus.ABORTED, null, AsyncTaskExecutionStatus.ABORTED, 0, 0);
+    }
+    
+    @Test
+    public void testFixEntryExecutionStatus7() {
+        this.testFixEntryExecutionStatus(AsyncTaskExecutionStatus.FAILED, null, AsyncTaskExecutionStatus.FAILED, 0, 0);
+    }
+    
+    @Test
+    public void testFixEntryExecutionStatus8() {
+        this.testFixEntryExecutionStatus(AsyncTaskExecutionStatus.KILLED, null, AsyncTaskExecutionStatus.KILLED, 0, 0);
+    }
+    
+    private void testFixEntryExecutionStatus(AsyncTaskExecutionStatus dbStatus, Boolean hasTriggers, 
+            AsyncTaskExecutionStatus expectedStatus, int verifiedHasTriggersCalls, int verifiedDaoCalls) {
+        final String taskId = "some-task-id";
+        final AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
+        entry.setTaskId(taskId);
+        entry.setExecutionStatus(dbStatus);
+        
+        if (hasTriggers != null) {
+            doReturn(hasTriggers).when(this.asyncTaskManager).hasTriggers(taskId);
+        }
+        
+        this.asyncTaskManager.fixEntryExecutionStatus(entry);
+        
+        assertThat(entry.getExecutionStatus(), is(equalTo(expectedStatus)));
+        verify(this.asyncTaskManager, times(verifiedHasTriggersCalls)).hasTriggers(taskId);
+        verify(this.asyncTaskDao, times(verifiedDaoCalls)).updateEndStatus(entry);
+        
+    }
+    
+    @Test
+    public void testHasTriggers1() throws SchedulerException {
+        this.testHasTriggers();
+    }
+    
+    @Test
+    public void testHasTriggers2() throws SchedulerException {
+        this.testHasTriggers(Mockito.mock(Trigger.class));
+    }
+    
+    private void testHasTriggers(Trigger... triggers) throws SchedulerException {
+        final String taskId = "some-task-id";
+        final JobKey jobKey = this.asyncJobKeyBuilder.create(taskId);
+        Mockito.reset(this.asyncJobKeyBuilder);
+        when(this.scheduler.getTriggersOfJob(jobKey)).thenReturn((List) Arrays.asList(triggers));
+        
+        boolean result = this.asyncTaskManager.hasTriggers(taskId);
+        
+        assertThat(result, is(equalTo(triggers.length > 0)));
+        verify(this.asyncJobKeyBuilder, times(1)).create(taskId);
+        verify(this.scheduler, times(1)).getTriggersOfJob(jobKey);
     }
     
 }

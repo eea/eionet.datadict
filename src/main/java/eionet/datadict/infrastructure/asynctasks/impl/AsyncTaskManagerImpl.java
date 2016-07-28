@@ -107,7 +107,9 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
             throw this.createTaskNotFoundException(taskId);
         }
         
-        return this.getExecutionStatusForEntry(entry);
+        this.fixEntryExecutionStatus(entry);
+        
+        return entry.getExecutionStatus();
     }
     
     @Override
@@ -119,7 +121,7 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
             throw this.createTaskNotFoundException(taskId);
         }
         
-        entry.setExecutionStatus(this.getExecutionStatusForEntry(entry));
+        this.fixEntryExecutionStatus(entry);
         
         return entry;
     }
@@ -135,20 +137,18 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
         LOGGER.info(String.format("Created async task with id: %s", entry.getTaskId()));
     }
     
-    protected AsyncTaskExecutionStatus getExecutionStatusForEntry(AsyncTaskExecutionEntry entry) throws AsyncTaskManagementException {
+    protected void fixEntryExecutionStatus(AsyncTaskExecutionEntry entry) throws AsyncTaskManagementException {
         if (entry.getExecutionStatus() != AsyncTaskExecutionStatus.SCHEDULED && entry.getExecutionStatus() != AsyncTaskExecutionStatus.ONGOING) {
-            return entry.getExecutionStatus();
+            return;
         }
         
         if (this.hasTriggers(entry.getTaskId())) {
-            return entry.getExecutionStatus();
+            return;
         }
         
         entry.setExecutionStatus(AsyncTaskExecutionStatus.KILLED);
         this.asyncTaskDao.updateEndStatus(entry);
         LOGGER.info(String.format("Async task %s is assumed to have been killed upon execution.", entry.getTaskId()));
-        
-        return AsyncTaskExecutionStatus.KILLED;
     }
     
     protected boolean hasTriggers(String taskId) throws AsyncTaskManagementException {
