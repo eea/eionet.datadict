@@ -71,4 +71,6 @@
 
     <context:property-placeholder location="classpath:datadict.properties" />
     
+    <util:properties id="quartzProperties" location="classpath:quartz.properties" />
+    
 </beans>
