@@ -11,6 +11,7 @@ import eionet.datadict.model.AsyncTaskExecutionStatus;
 import java.util.Date;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import org.apache.log4j.Logger;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -29,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AsyncTaskManagerImpl implements AsyncTaskManager {
 
+    private static final Logger LOGGER = Logger.getLogger(AsyncTaskManagerImpl.class);
+    
     private final Scheduler scheduler;
     private final AsyncJobKeyBuilder asyncJobKeyBuilder;
     private final AsyncTaskDao asyncTaskDao;
@@ -129,6 +132,7 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
         entry.setScheduledDate(new Date());
         entry.setSerializedParameters(this.asyncTaskDataSerializer.serializeParameters(parameters));
         this.asyncTaskDao.create(entry);
+        LOGGER.info(String.format("Created async task with id: %s", entry.getTaskId()));
     }
     
     protected AsyncTaskExecutionStatus getExecutionStatusForEntry(AsyncTaskExecutionEntry entry) {
@@ -142,6 +146,7 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
         
         entry.setExecutionStatus(AsyncTaskExecutionStatus.KILLED);
         this.asyncTaskDao.updateEndStatus(entry);
+        LOGGER.info(String.format("Async task %s is assumed to have been killed upon execution.", entry.getTaskId()));
         
         return AsyncTaskExecutionStatus.KILLED;
     }

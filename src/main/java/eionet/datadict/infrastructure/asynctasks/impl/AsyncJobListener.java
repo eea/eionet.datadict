@@ -5,6 +5,7 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
 import java.util.Date;
+import org.apache.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 @Service("asyncJobListener")
 public class AsyncJobListener implements JobListener {
 
+    private static final Logger LOGGER = Logger.getLogger(AsyncJobListener.class);
+    
     private final AsyncTaskDao asyncTaskDao;
     private final AsyncJobKeyBuilder asyncJobKeyBuilder;
     private final AsyncTaskDataSerializer asyncTaskDataSerializer;
@@ -37,6 +40,7 @@ public class AsyncJobListener implements JobListener {
         entry.setExecutionStatus(AsyncTaskExecutionStatus.ONGOING);
         entry.setStartDate(new Date());
         this.asyncTaskDao.updateStartStatus(entry);
+        LOGGER.info(String.format("Async task %s is ongoing.", entry.getTaskId()));
     }
 
     @Override
@@ -46,6 +50,7 @@ public class AsyncJobListener implements JobListener {
         entry.setEndDate(new Date());
         entry.setExecutionStatus(AsyncTaskExecutionStatus.ABORTED);
         this.asyncTaskDao.updateEndStatus(entry);
+        LOGGER.info(String.format("Async task %s was aborted.", entry.getTaskId()));
     }
 
     @Override
@@ -72,6 +77,13 @@ public class AsyncJobListener implements JobListener {
         }
         
         this.asyncTaskDao.updateEndStatus(entry);
+        
+        if (jee == null) {
+            LOGGER.info(String.format("Async task %s execution complete.", entry.getTaskId()));
+        }
+        else {
+            LOGGER.info(String.format("Async task %s execution failed.", entry.getTaskId()), jee);
+        }
     }
     
 }
