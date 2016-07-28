@@ -1,6 +1,7 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.dal.AsyncTaskDao;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManagementException;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
@@ -186,6 +187,69 @@ public class AsyncTaskManagerTest {
         assertThat(capturedEntry.getScheduledDate(), is(greaterThanOrEqualTo(testStartDate)));
         assertThat(capturedEntry.getExecutionStatus(), is(equalTo(AsyncTaskExecutionStatus.SCHEDULED)));
         assertThat(capturedEntry.getSerializedParameters(), is(equalTo(serializedParams)));
+    }
+    
+    @Test
+    public void testGetExecutionStatus() throws ResourceNotFoundException {
+        final String taskId = "some-task-id";
+        final AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
+        entry.setTaskId(taskId);
+        final AsyncTaskExecutionStatus status = AsyncTaskExecutionStatus.KILLED;
+        when(this.asyncTaskDao.getStatusEntry(taskId)).thenReturn(entry);
+        doReturn(status).when(this.asyncTaskManager).getExecutionStatusForEntry(entry);
+        
+        AsyncTaskExecutionStatus result = this.asyncTaskManager.getExecutionStatus(taskId);
+        
+        assertThat(result, is(equalTo(status)));
+        verify(this.asyncTaskDao, times(1)).getStatusEntry(taskId);
+        verify(this.asyncTaskManager, times(1)).getExecutionStatusForEntry(entry);
+    }
+    
+    @Test
+    public void testGetExecutionStatusTaskNotFound() {
+        final String taskId = "some-task-id";
+        when(this.asyncTaskDao.getStatusEntry(taskId)).thenReturn(null);
+        
+        try {
+            this.asyncTaskManager.getExecutionStatus(taskId);
+            fail("Should have thrown ResourceNotFoundExeption");
+        }
+        catch (ResourceNotFoundException ex) { }
+        
+        verify(this.asyncTaskDao, times(1)).getStatusEntry(taskId);
+        verify(this.asyncTaskManager, times(0)).getExecutionStatusForEntry(any(AsyncTaskExecutionEntry.class));
+    }
+    
+    @Test
+    public void testGetTaskEntry() throws ResourceNotFoundException {
+        final String taskId = "some-task-id";
+        final AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
+        entry.setTaskId(taskId);
+        final AsyncTaskExecutionStatus status = AsyncTaskExecutionStatus.KILLED;
+        when(this.asyncTaskDao.getFullEntry(taskId)).thenReturn(entry);
+        doReturn(status).when(this.asyncTaskManager).getExecutionStatusForEntry(entry);
+        
+        AsyncTaskExecutionEntry result = this.asyncTaskManager.getTaskEntry(taskId);
+        
+        assertThat(result, is(equalTo(entry)));
+        assertThat(result.getExecutionStatus(), is(equalTo(status)));
+        verify(this.asyncTaskDao, times(1)).getFullEntry(taskId);
+        verify(this.asyncTaskManager, times(1)).getExecutionStatusForEntry(entry);
+    }
+    
+    @Test
+    public void testGetTaskEntryTaskNotFound() {
+        final String taskId = "some-task-id";
+        when(this.asyncTaskDao.getFullEntry(taskId)).thenReturn(null);
+        
+        try {
+            this.asyncTaskManager.getTaskEntry(taskId);
+            fail("Should have thrown ResourceNotFoundExeption");
+        }
+        catch (ResourceNotFoundException ex) { }
+        
+        verify(this.asyncTaskDao, times(1)).getFullEntry(taskId);
+        verify(this.asyncTaskManager, times(0)).getExecutionStatusForEntry(any(AsyncTaskExecutionEntry.class));
     }
     
 }
