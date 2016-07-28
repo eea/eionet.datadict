@@ -112,7 +112,7 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     
     @Override
     @Transactional
-    public AsyncTaskExecutionEntry getTaskEntry(String taskId) throws ResourceNotFoundException {
+    public AsyncTaskExecutionEntry getTaskEntry(String taskId) throws AsyncTaskManagementException, ResourceNotFoundException {
         AsyncTaskExecutionEntry entry = this.asyncTaskDao.getFullEntry(taskId);
         
         if (entry == null) {
@@ -135,7 +135,7 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
         LOGGER.info(String.format("Created async task with id: %s", entry.getTaskId()));
     }
     
-    protected AsyncTaskExecutionStatus getExecutionStatusForEntry(AsyncTaskExecutionEntry entry) {
+    protected AsyncTaskExecutionStatus getExecutionStatusForEntry(AsyncTaskExecutionEntry entry) throws AsyncTaskManagementException {
         if (entry.getExecutionStatus() != AsyncTaskExecutionStatus.SCHEDULED && entry.getExecutionStatus() != AsyncTaskExecutionStatus.ONGOING) {
             return entry.getExecutionStatus();
         }

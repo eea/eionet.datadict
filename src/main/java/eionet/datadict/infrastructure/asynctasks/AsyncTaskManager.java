@@ -14,6 +14,6 @@ public interface AsyncTaskManager {
             throws AsyncTaskManagementException, ResourceNotFoundException;
     
     AsyncTaskExecutionEntry getTaskEntry(String taskId)
-            throws ResourceNotFoundException;
+            throws AsyncTaskManagementException, ResourceNotFoundException;
     
 }

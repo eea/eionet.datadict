@@ -1,15 +1,19 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.dal.AsyncTaskDao;
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskManagementException;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -73,6 +77,20 @@ public class AsyncTaskManagerTest {
     }
     
     @Test
+    public void testInitWrapSchedulerException() throws SchedulerException {
+        when(this.scheduler.getListenerManager()).thenThrow(SchedulerException.class);
+        
+        try {
+            this.asyncTaskManager.init();
+            fail("Should have thrown AsyncTaskManagementException");
+        }
+        catch (AsyncTaskManagementException ex) {
+            assertThat(ex.getCause(), is(notNullValue()));
+            assertThat(ex.getCause(), is(instanceOf(SchedulerException.class)));
+        }
+    }
+    
+    @Test
     public void testExecuteAsync() throws SchedulerException {
         final Class<AsyncJobTestTask> taskType = AsyncJobTestTask.class;
         final Map<String, Object> taskParams = new HashMap<String, Object>();
@@ -94,6 +112,56 @@ public class AsyncTaskManagerTest {
         assertThat(dataMapAdapter.getParameters(), is(equalTo(taskParams)));
         verify(this.asyncTaskManager, times(1)).createTaskEntry(capturedJobDetail.getKey(), dataMapAdapter.getTaskTypeName(), dataMapAdapter.getParameters());
         verify(this.asyncJobKeyBuilder, times(1)).getTaskId(capturedJobDetail.getKey());
+    }
+    
+    @Test
+    public void testExecuteAsyncRejectNullTaskType() {
+        try {
+            this.asyncTaskManager.executeAsync(null, null);
+            fail("Should have not accepted null async task type.");
+        }
+        catch (IllegalArgumentException ex) { }
+    }
+    
+    @Test
+    public void testExecuteAsyncAcceptNullParameters() throws SchedulerException {
+        final Class<AsyncJobTestTask> taskType = AsyncJobTestTask.class;
+        final Map<String, Object> taskParams = new HashMap<String, Object>();
+        doNothing().when(this.asyncTaskManager).createTaskEntry(any(JobKey.class), any(String.class), any(Map.class));
+        
+        this.asyncTaskManager.executeAsync(taskType, null); // should be able to work with null as well
+        
+        verify(this.asyncJobKeyBuilder, times(1)).createNew();
+        ArgumentCaptor<JobDetail> jobDetailCaptor = ArgumentCaptor.forClass(JobDetail.class);
+        ArgumentCaptor<Trigger> triggerCaptor = ArgumentCaptor.forClass(Trigger.class);
+        verify(this.scheduler, times(1)).scheduleJob(jobDetailCaptor.capture(), triggerCaptor.capture());
+        JobDetail capturedJobDetail = jobDetailCaptor.getValue();
+        Trigger capturedTrigger = triggerCaptor.getValue();
+        assertThat(capturedJobDetail.getJobClass(), is(equalTo((Class) AsyncJob.class)));
+        assertThat(capturedTrigger.getJobKey(), is(equalTo(capturedJobDetail.getKey())));
+        AsyncJobDataMapAdapter dataMapAdapter = new AsyncJobDataMapAdapter(capturedJobDetail.getJobDataMap());
+        assertThat(dataMapAdapter.getTaskType(), is(equalTo((Class) taskType)));
+        assertThat(dataMapAdapter.getParameters(), is(equalTo(taskParams))); // The adapter should always create a map, even if empty
+        verify(this.asyncTaskManager, times(1)).createTaskEntry(capturedJobDetail.getKey(), dataMapAdapter.getTaskTypeName(), dataMapAdapter.getParameters());
+        verify(this.asyncJobKeyBuilder, times(1)).getTaskId(capturedJobDetail.getKey());
+    }
+    
+    @Test
+    public void testExecuteWrapSchedulerException() throws SchedulerException {
+        final Class<AsyncJobTestTask> taskType = AsyncJobTestTask.class;
+        final Map<String, Object> taskParams = new HashMap<String, Object>();
+        when(this.scheduler.scheduleJob(any(JobDetail.class), any(Trigger.class))).thenThrow(SchedulerException.class);
+        
+        try {
+            this.asyncTaskManager.executeAsync(taskType, taskParams);
+            fail("Should have thrown AsyncTaskManagementException");
+        }
+        catch (AsyncTaskManagementException ex) {
+            assertThat(ex.getCause(), is(notNullValue()));
+            assertThat(ex.getCause(), is(instanceOf(SchedulerException.class)));
+        }
+        
+        verify(this.asyncTaskManager, times(0)).createTaskEntry(any(JobKey.class), any(String.class), any(Map.class));
     }
     
     @Test
