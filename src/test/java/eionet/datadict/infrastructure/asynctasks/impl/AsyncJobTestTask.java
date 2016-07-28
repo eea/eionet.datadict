@@ -6,6 +6,7 @@ import java.util.Map;
 public class AsyncJobTestTask implements AsyncTask {
     
     protected static final String PARAM_RAISE_ERROR = "raiseError";
+    protected static final String PARAM_DURATION = "duration";
     protected static final int RESULT_VALUE = 5;
     protected static final String ERROR_MESSAGE = "Some error.";
     
@@ -37,10 +38,16 @@ public class AsyncJobTestTask implements AsyncTask {
             throw new IllegalStateException();
         }
         
-        boolean raiseError = (Boolean) this.parameters.get(PARAM_RAISE_ERROR);
+        Boolean raiseError = (Boolean) this.parameters.get(PARAM_RAISE_ERROR);
         
-        if (raiseError) {
+        if (raiseError != null && raiseError) {
             throw new Exception(ERROR_MESSAGE);
+        }
+        
+        Long duration = (Long) this.parameters.get(PARAM_DURATION);
+        
+        if (duration != null) {
+            Thread.sleep(duration);
         }
         
         return RESULT_VALUE;
