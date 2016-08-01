@@ -21,6 +21,8 @@
 
 package eionet.web.action;
 
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
+import eionet.datadict.web.asynctasks.VocabularyRdfImportTask;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -82,6 +84,7 @@ import eionet.util.StringEncoder;
 import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
+import java.io.File;
 
 /**
  * Edit vocabulary folder action bean.
@@ -213,6 +216,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     @SpringBean
     private IRDFVocabularyImportService vocabularyRdfImportService;
 
+    @SpringBean
+    private AsyncTaskManager asyncTaskManager;
+    
     /**
      * Other versions of the same vocabulary folder.
      */
@@ -1391,24 +1397,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 throw new ServiceException("File should be a RDF file");
             }
 
-            LOGGER.debug("Starting RDF import operation");
-            Reader rdfFileReader = new InputStreamReader(this.uploadedFileToImport.getInputStream(), CharEncoding.UTF_8);
-            // TODO use enum instead for rdf purge option
-            List<String> systemMessages =
-                    this.vocabularyRdfImportService.importRdfIntoVocabulary(rdfFileReader, vocabularyFolder,
-                            this.rdfPurgeOption == 3, this.rdfPurgeOption == 2);
-            for (String systemMessage : systemMessages) {
-                addSystemMessage(systemMessage);
-                LOGGER.info(systemMessage);
-            }
-            LOGGER.debug("RDF import completed");
+            File tmpRdfFile = File.createTempFile(fileName, ".tmp");
+            this.uploadedFileToImport.save(tmpRdfFile);
+            
+            String taskId = this.asyncTaskManager.executeAsync(VocabularyRdfImportTask.class, 
+                    VocabularyRdfImportTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), 
+                            vocabularyFolder.isWorkingCopy(), tmpRdfFile.getAbsolutePath(), rdfPurgeOption));
 
-            RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
-            resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
-            resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-            resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
-            // navigate back to edit
-            return resolution;
+            return new RedirectResolution("/asynctasks/" + taskId + "/await");
         } catch (ServiceException e) {
             LOGGER.error("Failed to import vocabulary RDF into db", e);
             e.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.INVALID_INPUT);
