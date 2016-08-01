@@ -7,6 +7,7 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializerException;
 import java.io.IOException;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 import org.quartz.JobExecutionException;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,10 @@ public class AsyncTaskDataSerializerImpl implements AsyncTaskDataSerializer {
 
     @Override
     public Map<String, Object> deserializeParameters(String serializedParameters) throws AsyncTaskDataSerializerException {
+        if (StringUtils.isBlank(serializedParameters)) {
+            return null;
+        }
+        
         try {
             return this.mapper.readValue(serializedParameters, Map.class);
         } 
@@ -46,6 +51,10 @@ public class AsyncTaskDataSerializerImpl implements AsyncTaskDataSerializer {
     
     @Override
     public String serializeResult(Object result) throws AsyncTaskDataSerializerException {
+        if (result == null) {
+            return null;
+        }
+        
         try {
             Object toSerialize = result instanceof JobExecutionException ? ((Exception) result).getCause() : result;
             
@@ -58,6 +67,10 @@ public class AsyncTaskDataSerializerImpl implements AsyncTaskDataSerializer {
     
     @Override
     public Object deserializeResult(String serializedResult) throws AsyncTaskDataSerializerException {
+        if (StringUtils.isBlank(serializedResult)) {
+            return null;
+        }
+        
         try {
             return this.mapper.readValue(serializedResult, Object.class);
         } 

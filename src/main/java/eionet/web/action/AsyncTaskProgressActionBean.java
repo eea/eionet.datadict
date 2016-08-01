@@ -8,10 +8,10 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
+import eionet.meta.spring.SpringApplicationContext;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
-import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.HandlesEvent;
 import net.sourceforge.stripes.action.RedirectResolution;
@@ -36,7 +36,6 @@ public class AsyncTaskProgressActionBean extends AbstractActionBean {
     private String feedbackText;
     private String feedbackUrl;
     
-    @DefaultHandler
     @HandlesEvent("await")
     public Resolution await() throws JsonProcessingException {
         return new ForwardResolution("/pages/asynctasks/progress.jsp");
@@ -132,7 +131,7 @@ public class AsyncTaskProgressActionBean extends AbstractActionBean {
     
     protected AsyncTask instantiateTask(AsyncTaskExecutionEntry entry) 
             throws ReflectiveOperationException {
-        return (AsyncTask) Class.forName(entry.getTaskClassName()).newInstance();
+        return (AsyncTask) SpringApplicationContext.getBean(Class.forName(entry.getTaskClassName()));
     }
     
     public AsyncTaskManager getAsyncTaskManager() {
