@@ -2,7 +2,11 @@ package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
 import java.util.Map;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component
+@Scope("prototype")
 public class AsyncJobTestTask implements AsyncTask {
     
     protected static final String PARAM_RAISE_ERROR = "raiseError";

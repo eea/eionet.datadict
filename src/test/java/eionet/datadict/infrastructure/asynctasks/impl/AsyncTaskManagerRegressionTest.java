@@ -51,13 +51,7 @@ public class AsyncTaskManagerRegressionTest {
         Thread.sleep(taskDurationMillis / 2);
         AsyncTaskExecutionStatus intermediateStatus = this.asyncTaskManager.getExecutionStatus(taskId);
         
-        AsyncTaskExecutionStatus status;
-        
-        do {
-            Thread.sleep(1000);
-            status = this.asyncTaskManager.getExecutionStatus(taskId);
-        }
-        while (status == AsyncTaskExecutionStatus.SCHEDULED || status == AsyncTaskExecutionStatus.ONGOING);
+        this.awaitTaskCompletion(taskId, 5 * 60 * 1000);
         
         AsyncTaskExecutionEntry finalEntry = this.asyncTaskManager.getTaskEntry(taskId);
         
@@ -84,13 +78,7 @@ public class AsyncTaskManagerRegressionTest {
 
         String taskId = this.asyncTaskManager.executeAsync(taskClass, parameters);
         
-        AsyncTaskExecutionStatus status;
-        
-        do {
-            Thread.sleep(1000);
-            status = this.asyncTaskManager.getExecutionStatus(taskId);
-        }
-        while (status == AsyncTaskExecutionStatus.SCHEDULED || status == AsyncTaskExecutionStatus.ONGOING);
+        this.awaitTaskCompletion(taskId, 5 * 60 * 1000);
         
         AsyncTaskExecutionEntry finalEntry = this.asyncTaskManager.getTaskEntry(taskId);
         
@@ -106,6 +94,19 @@ public class AsyncTaskManagerRegressionTest {
         Object deserializedResult = this.asyncTaskDataSerializer.deserializeResult(finalEntry.getSerializedResult());
         assertThat(deserializedResult, is(instanceOf(Exception.class)));
         assertThat(((Exception) deserializedResult).getMessage(), is(equalTo(AsyncJobTestTask.ERROR_MESSAGE)));
+    }
+    
+    private void awaitTaskCompletion(String taskId, long maxAwaitDurationMillis) throws InterruptedException, ResourceNotFoundException {
+        final long sleepDurationMillis = 1000;
+        long timeRemainingMillis = maxAwaitDurationMillis;
+        AsyncTaskExecutionStatus status;
+        
+        do {
+            timeRemainingMillis -= sleepDurationMillis;
+            Thread.sleep(sleepDurationMillis);
+            status = this.asyncTaskManager.getExecutionStatus(taskId);
+        }
+        while ((status == AsyncTaskExecutionStatus.SCHEDULED || status == AsyncTaskExecutionStatus.ONGOING) && timeRemainingMillis > 0);
     }
     
 }

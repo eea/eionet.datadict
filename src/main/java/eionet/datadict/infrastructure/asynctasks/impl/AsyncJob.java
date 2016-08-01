@@ -1,6 +1,7 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
+import eionet.meta.spring.SpringApplicationContext;
 import java.util.Map;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -29,7 +30,7 @@ public class AsyncJob implements Job {
         }
         
         Map<String, Object> taskParameters = dataMapAdapter.getParameters();
-        AsyncTask task = taskType.newInstance();
+        AsyncTask task = SpringApplicationContext.getBean(taskType);
         task.setParameters(taskParameters);
         Object result = task.call();
         jec.setResult(result);
