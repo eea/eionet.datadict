@@ -22,6 +22,7 @@
 package eionet.web.action;
 
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
+import eionet.datadict.web.asynctasks.VocabularyCsvImportTask;
 import eionet.datadict.web.asynctasks.VocabularyRdfImportTask;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -1332,33 +1333,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 throw new ServiceException("File should be a CSV file");
             }
 
-            // consume stupid bom first!! if it exists!
-            InputStream is = this.uploadedFileToImport.getInputStream();
-            byte[] firstBomBytes = new byte[VocabularyOutputHelper.BOM_BYTE_ARRAY_LENGTH];
-            int readBytes = is.read(firstBomBytes);
-            if (readBytes != VocabularyOutputHelper.BOM_BYTE_ARRAY_LENGTH) {
-                is.close();
-                throw new ServiceException("Input stream cannot be read");
-            }
+            File tmpCsvFile = File.createTempFile(fileName, ".tmp");
+            this.uploadedFileToImport.save(tmpCsvFile);
+            
+            String taskId = this.asyncTaskManager.executeAsync(VocabularyCsvImportTask.class, 
+                    VocabularyCsvImportTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), 
+                            vocabularyFolder.isWorkingCopy(), tmpCsvFile.getAbsolutePath(), purgeVocabularyData, purgeBoundElements));
 
-            if (!Arrays.equals(firstBomBytes, VocabularyOutputHelper.getBomByteArray())) {
-                is.close();
-                is = this.uploadedFileToImport.getInputStream();
-            }
-
-            Reader csvFileReader = new InputStreamReader(is, CharEncoding.UTF_8);
-            List<String> systemMessages =
-                    this.vocabularyCsvImportService.importCsvIntoVocabulary(csvFileReader, vocabularyFolder, purgeVocabularyData,
-                            purgeBoundElements);
-            for (String systemMessage : systemMessages) {
-                addSystemMessage(systemMessage);
-            }
-            RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
-            resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
-            resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-            resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
-            // navigate back to edit
-            return resolution;
+            return new RedirectResolution("/asynctasks/" + taskId + "/await");
         } catch (ServiceException e) {
             LOGGER.error("Failed to import vocabulary CSV into db", e);
             e.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.INVALID_INPUT);
