@@ -77,14 +77,23 @@ public class VocabularyRdfImportTask implements AsyncTask {
         
         VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(this.getVocabularySetIdentifier(), 
                 this.getVocabularyIdentifier(), this.isWorkingCopy());
-        Reader rdfFileReader = new FileReader(this.getRdfFileName());
-        // TODO use enum instead for rdf purge option
-        int rdfPurgeOption = this.getRdfPurgeOption();
-        List<String> systemMessages = this.vocabularyRdfImportService.importRdfIntoVocabulary(
-                rdfFileReader, vocabulary, rdfPurgeOption == 3, rdfPurgeOption == 2);
+        Reader rdfFileReader = null;
         
-        for (String systemMessage : systemMessages) {
-            LOGGER.info(systemMessage);
+        try {
+            rdfFileReader = new FileReader(this.getRdfFileName());
+            // TODO use enum instead for rdf purge option
+            int rdfPurgeOption = this.getRdfPurgeOption();
+            List<String> systemMessages = this.vocabularyRdfImportService.importRdfIntoVocabulary(
+                    rdfFileReader, vocabulary, rdfPurgeOption == 3, rdfPurgeOption == 2);
+
+            for (String systemMessage : systemMessages) {
+                LOGGER.info(systemMessage);
+            }
+        }
+        finally {
+            if (rdfFileReader != null) {
+                rdfFileReader.close();
+            }
         }
         
         LOGGER.debug("RDF import completed");
