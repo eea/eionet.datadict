@@ -3,10 +3,25 @@
 <%@ include file="/pages/common/taglibs.jsp"%>
 
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Task in progress">
+    <stripes:layout-component name="head">
+        <link type="text/css" media="all" href="<c:url value="/css/spinner.css"/>"  rel="stylesheet" />
+        <style>
+            
+            .task.spinner-loader {
+                position: absolute;
+                top: 0px;
+                right: 60px;
+                bottom: 0px;
+                margin: auto;
+            }
+            
+        </style>
+    </stripes:layout-component>
     <stripes:layout-component name="contents">
         <div class="system-msg">
             <strong>${actionBean.taskDisplayName}</strong>
             <p><span>Task in progress, please wait...</span></p>
+            <div class="task spinner-loader"></div>
         </div>
         <script type="text/javascript">
             
