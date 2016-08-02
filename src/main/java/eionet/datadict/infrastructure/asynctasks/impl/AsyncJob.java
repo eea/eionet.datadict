@@ -29,7 +29,7 @@ public class AsyncJob implements Job {
         
         Map<String, Object> taskParameters = dataMapAdapter.getParameters();
         AsyncTask task = SpringApplicationContext.getBean(taskType);
-        task.setParameters(taskParameters);
+        task.setUp(taskParameters);
         Object result = task.call();
         jec.setResult(result);
     }

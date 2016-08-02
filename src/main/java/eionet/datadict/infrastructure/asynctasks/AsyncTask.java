@@ -5,11 +5,11 @@ import java.util.concurrent.Callable;
 
 public interface AsyncTask extends Callable<Object> {
     
-    String getDisplayName();
+    void setUp(Map<String, Object> parameters);
     
     Class getResultType();
     
-    void setParameters(Map<String, Object> parameters);
+    String getDisplayName();
     
     String getResultUrl(String taskId, Map<String, Object> parameters, Object result);
     

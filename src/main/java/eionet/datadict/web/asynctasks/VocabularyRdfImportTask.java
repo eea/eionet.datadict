@@ -60,13 +60,13 @@ public class VocabularyRdfImportTask implements AsyncTask {
     }
 
     @Override
-    public void setParameters(Map<String, Object> parameters) {
+    public void setUp(Map<String, Object> parameters) {
         this.parameters = parameters;
     }
 
     @Override
     public String getResultUrl(String taskId, Map<String, Object> parameters, Object result) {
-        this.setParameters(parameters);
+        this.setUp(parameters);
         
         return String.format("/vocabulary/%s/%s/edit?vocabularyFolder.workingCopy=true", this.getVocabularySetIdentifier(), this.getVocabularyIdentifier());
     }

@@ -27,7 +27,7 @@ public class AsyncJobTestTask implements AsyncTask {
     }
 
     @Override
-    public void setParameters(Map<String, Object> parameters) {
+    public void setUp(Map<String, Object> parameters) {
         this.parameters = parameters;
     }
 
