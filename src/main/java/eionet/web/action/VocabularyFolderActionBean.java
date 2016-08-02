@@ -1325,7 +1325,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                     VocabularyCsvImportTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), 
                             vocabularyFolder.isWorkingCopy(), tmpCsvFile.getAbsolutePath(), purgeVocabularyData, purgeBoundElements));
 
-            return new RedirectResolution("/asynctasks/" + taskId + "/await");
+            return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
         } catch (ServiceException e) {
             LOGGER.error("Failed to import vocabulary CSV into db", e);
             e.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.INVALID_INPUT);
@@ -1371,7 +1371,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                     VocabularyRdfImportTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), 
                             vocabularyFolder.isWorkingCopy(), tmpRdfFile.getAbsolutePath(), rdfPurgeOption));
 
-            return new RedirectResolution("/asynctasks/" + taskId + "/await");
+            return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
         } catch (ServiceException e) {
             LOGGER.error("Failed to import vocabulary RDF into db", e);
             e.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.INVALID_INPUT);
