@@ -44,6 +44,11 @@ public class AsyncTaskProgressActionBean extends AbstractActionBean {
     @HandlesEvent("await")
     public Resolution await() throws JsonProcessingException, ResourceNotFoundException, ReflectiveOperationException {
         AsyncTaskExecutionEntry entry = this.asyncTaskManager.getTaskEntry(taskId);
+        
+        if (!AsyncTaskExecutionStatus.isPending(entry.getExecutionStatus())) {
+            return new RedirectResolution("/asynctasks/" + taskId + "/result");
+        }
+        
         Map<String, Object> parameters = this.asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters());
         AsyncTask task = this.instantiateTask(entry.getTaskClassName(), parameters);
         this.taskDisplayName = task.getDisplayName();
