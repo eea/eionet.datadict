@@ -24,9 +24,6 @@ package eionet.web.action;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.web.asynctasks.VocabularyCsvImportTask;
 import eionet.datadict.web.asynctasks.VocabularyRdfImportTask;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +33,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sourceforge.stripes.action.DefaultHandler;
@@ -52,7 +48,6 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.DataElement;
@@ -62,7 +57,6 @@ import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.exports.VocabularyOutputHelper;
 import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.meta.exports.rdf.InspireCodelistXmlWriter;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
