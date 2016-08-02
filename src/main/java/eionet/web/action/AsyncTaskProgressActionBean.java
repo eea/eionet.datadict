@@ -23,6 +23,13 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 @UrlBinding("/asynctasks/{taskId}/{$event}")
 public class AsyncTaskProgressActionBean extends AbstractActionBean {
     
+    public static RedirectResolution createAwaitResolution(String taskId) {
+        RedirectResolution resolution = new RedirectResolution(AsyncTaskProgressActionBean.class, "await");
+        resolution.addParameter("taskId", taskId);
+        
+        return resolution;
+    }
+    
     @SpringBean
     private AsyncTaskBuilder asyncTaskBuilder;
     

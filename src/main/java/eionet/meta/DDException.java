@@ -51,6 +51,10 @@ public class DDException extends Exception {
         return errorParameters;
     }
 
+    public void setErrorParameters(HashMap<String, Object> errorParameters) {
+        this.errorParameters = errorParameters;
+    }
+    
     public void setErrorParameter(String key, Object errorParameter) {
         if (errorParameters == null) {
             errorParameters = new HashMap<String, Object>();

@@ -22,8 +22,11 @@
 package eionet.web.action;
 
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
+import eionet.datadict.web.asynctasks.VocabularyCheckInTask;
+import eionet.datadict.web.asynctasks.VocabularyCheckOutTask;
 import eionet.datadict.web.asynctasks.VocabularyCsvImportTask;
 import eionet.datadict.web.asynctasks.VocabularyRdfImportTask;
+import eionet.datadict.web.asynctasks.VocabularyUndoCheckOutTask;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -722,34 +725,26 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Action for checking in vocabulary folder.
      *
      * @return resolution
-     * @throws ServiceException
-     *             if an error occurs
      */
-    public Resolution checkIn() throws ServiceException {
-        vocabularyService.checkInVocabularyFolder(vocabularyFolder.getId(), getUserName());
-        addSystemMessage("Successfully checked in");
-        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
-        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
-        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        // resolution.addParameter("vocabularyFolder.workingCopy", false);
-        return resolution;
+    public Resolution checkIn() {
+        String taskId = this.asyncTaskManager.executeAsync(VocabularyCheckInTask.class, 
+                VocabularyCheckInTask.createParamsBundle(vocabularyFolder.getId(), getUserName(), 
+                        vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier()));
+        
+        return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
     }
 
     /**
      * Action for checking out vocabulary folder.
      *
      * @return resolution
-     * @throws ServiceException
-     *             if an error occurs
      */
-    public Resolution checkOut() throws ServiceException {
-        vocabularyService.checkOutVocabularyFolder(vocabularyFolder.getId(), getUserName());
-        addSystemMessage("Successfully checked out");
-        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
-        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
-        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        resolution.addParameter("vocabularyFolder.workingCopy", true);
-        return resolution;
+    public Resolution checkOut() {
+        String taskId = this.asyncTaskManager.executeAsync(VocabularyCheckOutTask.class, 
+                VocabularyCheckOutTask.createParamsBundle(vocabularyFolder.getId(), getUserName(), 
+                        vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier()));
+        
+        return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
     }
 
     /**
@@ -760,14 +755,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution undoCheckOut() throws ServiceException {
-        int id = vocabularyService.undoCheckOut(vocabularyFolder.getId(), getUserName());
-        vocabularyFolder = vocabularyService.getVocabularyFolder(id);
-        addSystemMessage("Checked out version successfully deleted");
-        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
-        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
-        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        // resolution.addParameter("vocabularyFolder.workingCopy", false);
-        return resolution;
+        String taskId = this.asyncTaskManager.executeAsync(VocabularyUndoCheckOutTask.class, 
+                VocabularyUndoCheckOutTask.createParamsBundle(vocabularyFolder.getId(), getUserName()));
+        
+        return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
     }
 
     /**
