@@ -138,7 +138,7 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     }
     
     protected void fixEntryExecutionStatus(AsyncTaskExecutionEntry entry) throws AsyncTaskManagementException {
-        if (entry.getExecutionStatus() != AsyncTaskExecutionStatus.SCHEDULED && entry.getExecutionStatus() != AsyncTaskExecutionStatus.ONGOING) {
+        if (!AsyncTaskExecutionStatus.isPending(entry.getExecutionStatus())) {
             return;
         }
         

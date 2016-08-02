@@ -106,7 +106,7 @@ public class AsyncTaskManagerRegressionTest {
             Thread.sleep(sleepDurationMillis);
             status = this.asyncTaskManager.getExecutionStatus(taskId);
         }
-        while ((status == AsyncTaskExecutionStatus.SCHEDULED || status == AsyncTaskExecutionStatus.ONGOING) && timeRemainingMillis > 0);
+        while (AsyncTaskExecutionStatus.isPending(status) && timeRemainingMillis > 0);
     }
     
 }

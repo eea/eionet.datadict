@@ -7,6 +7,10 @@ public enum AsyncTaskExecutionStatus {
     COMPLETED,
     ABORTED,
     FAILED,
-    KILLED
+    KILLED;
+    
+    public static boolean isPending(AsyncTaskExecutionStatus status) {
+        return status == SCHEDULED || status == ONGOING;
+    }
     
 }
