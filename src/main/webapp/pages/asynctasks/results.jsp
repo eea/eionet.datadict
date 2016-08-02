@@ -8,7 +8,7 @@
             <c:when test="${actionBean.taskSuccess}">
                 <div class="system-msg">
                     <strong>${actionBean.taskDisplayName}</strong>
-                    <p>${actionBean.feedbackText} Click <a href="<stripes:url value="${actionBean.feedbackUrl}" />">here</a> for results.</p>
+                    <p>${actionBean.feedbackText} Click <a href="<stripes:url value="${actionBean.feedbackUrl}" />">here</a> to continue.</p>
                 </div>
             </c:when>
             <c:otherwise>
