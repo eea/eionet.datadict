@@ -103,7 +103,7 @@ public class AsyncTaskProgressActionBean extends AbstractActionBean {
         switch (entry.getExecutionStatus()) {
             case SCHEDULED:
             case ONGOING:
-                return new RedirectResolution("/asynctasks/" + taskId);
+                return new RedirectResolution("/asynctasks/" + taskId + "/await");
             case ABORTED:
             case KILLED:
                 this.onTaskAbortion(entry);
