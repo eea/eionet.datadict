@@ -4,8 +4,9 @@
 
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Task in progress">
     <stripes:layout-component name="contents">
-        <div class="asyncProgressContainer">
-            Please wait...
+        <div class="system-msg">
+            <strong>${actionBean.taskDisplayName}</strong>
+            <p><span>Task in progress, please wait...</span></p>
         </div>
         <script type="text/javascript">
             

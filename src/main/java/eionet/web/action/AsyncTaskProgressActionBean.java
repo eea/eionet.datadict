@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskBuilder;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
-import eionet.meta.spring.SpringApplicationContext;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +24,9 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 public class AsyncTaskProgressActionBean extends AbstractActionBean {
     
     @SpringBean
+    private AsyncTaskBuilder asyncTaskBuilder;
+    
+    @SpringBean
     private AsyncTaskManager asyncTaskManager;
     
     @SpringBean
@@ -31,13 +34,20 @@ public class AsyncTaskProgressActionBean extends AbstractActionBean {
     
     private String taskId;
     
+    private String taskDisplayName;
+    
     private boolean taskSuccess;
     
     private String feedbackText;
     private String feedbackUrl;
     
     @HandlesEvent("await")
-    public Resolution await() throws JsonProcessingException {
+    public Resolution await() throws JsonProcessingException, ResourceNotFoundException, ReflectiveOperationException {
+        AsyncTaskExecutionEntry entry = this.asyncTaskManager.getTaskEntry(taskId);
+        Map<String, Object> parameters = this.asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters());
+        AsyncTask task = this.instantiateTask(entry.getTaskClassName(), parameters);
+        this.taskDisplayName = task.getDisplayName();
+        
         return new ForwardResolution("/pages/asynctasks/progress.jsp");
     }
     
@@ -86,6 +96,9 @@ public class AsyncTaskProgressActionBean extends AbstractActionBean {
     @HandlesEvent("result")
     public Resolution result() throws ReflectiveOperationException, ResourceNotFoundException {
         AsyncTaskExecutionEntry entry = this.asyncTaskManager.getTaskEntry(taskId);
+        Map<String, Object> parameters = this.asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters());
+        AsyncTask task = this.instantiateTask(entry.getTaskClassName(), parameters);
+        this.taskDisplayName = task.getDisplayName();
         
         switch (entry.getExecutionStatus()) {
             case SCHEDULED:
@@ -99,7 +112,7 @@ public class AsyncTaskProgressActionBean extends AbstractActionBean {
                 this.onTaskFailure(entry);
                 break;
             case COMPLETED:
-                this.onTaskSuccess(entry);
+                this.onTaskSuccess(entry, task);
                 break;
             default:
                 throw new IllegalStateException("Cannot handle task status: " + entry.getExecutionStatus());
@@ -119,19 +132,25 @@ public class AsyncTaskProgressActionBean extends AbstractActionBean {
         this.feedbackText = "Task execution failed; " + error.getMessage();
     }
     
-    protected void onTaskSuccess(AsyncTaskExecutionEntry entry)
+    protected void onTaskSuccess(AsyncTaskExecutionEntry entry, AsyncTask task)
             throws ReflectiveOperationException {
         this.taskSuccess = true;
         this.feedbackText = "Task was successfully completed.";
-        AsyncTask task = this.instantiateTask(entry);
-        Map<String, Object> parameters = this.asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters());
         Object result = this.asyncTaskDataSerializer.deserializeResult(entry.getSerializedResult());
-        this.feedbackUrl = task.getResultUrl(taskId, parameters, result);
+        this.feedbackUrl = task.composeResultUrl(entry.getTaskId(), result);
     }
     
-    protected AsyncTask instantiateTask(AsyncTaskExecutionEntry entry) 
+    protected AsyncTask instantiateTask(String taskClassName, Map<String, Object> parameters) 
             throws ReflectiveOperationException {
-        return (AsyncTask) SpringApplicationContext.getBean(Class.forName(entry.getTaskClassName()));
+        return this.asyncTaskBuilder.create((Class) Class.forName(taskClassName), parameters);
+    }
+
+    public AsyncTaskBuilder getAsyncTaskBuilder() {
+        return asyncTaskBuilder;
+    }
+
+    public void setAsyncTaskBuilder(AsyncTaskBuilder asyncTaskBuilder) {
+        this.asyncTaskBuilder = asyncTaskBuilder;
     }
     
     public AsyncTaskManager getAsyncTaskManager() {
@@ -156,6 +175,14 @@ public class AsyncTaskProgressActionBean extends AbstractActionBean {
 
     public void setTaskId(String taskId) {
         this.taskId = taskId;
+    }
+
+    public String getTaskDisplayName() {
+        return taskDisplayName;
+    }
+
+    public void setTaskDisplayName(String taskDisplayName) {
+        this.taskDisplayName = taskDisplayName;
     }
 
     public boolean isTaskSuccess() {

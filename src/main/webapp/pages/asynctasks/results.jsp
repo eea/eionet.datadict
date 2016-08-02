@@ -7,13 +7,13 @@
         <c:choose>
             <c:when test="${actionBean.taskSuccess}">
                 <div class="system-msg">
-                    <strong></strong>
+                    <strong>${actionBean.taskDisplayName}</strong>
                     <p>${actionBean.feedbackText} Click <a href="<stripes:url value="${actionBean.feedbackUrl}" />">here</a> for results.</p>
                 </div>
             </c:when>
             <c:otherwise>
                 <div class="error-msg">
-                    <strong></strong>
+                    <strong>${actionBean.taskDisplayName}</strong>
                     <p>${actionBean.feedbackText}</p>
                 </div>
             </c:otherwise>

@@ -11,6 +11,6 @@ public interface AsyncTask extends Callable<Object> {
     
     String getDisplayName();
     
-    String getResultUrl(String taskId, Map<String, Object> parameters, Object result);
+    String composeResultUrl(String taskId, Object result);
     
 }

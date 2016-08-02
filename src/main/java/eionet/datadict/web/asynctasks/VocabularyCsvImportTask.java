@@ -60,7 +60,8 @@ public class VocabularyCsvImportTask implements AsyncTask {
     
     @Override
     public String getDisplayName() {
-        return "Vocabulary CSV import";
+        return String.format("Import CSV input into vocabulary %s/%s", 
+                this.getVocabularySetIdentifier(), this.getVocabularyIdentifier());
     }
 
     @Override
@@ -74,9 +75,7 @@ public class VocabularyCsvImportTask implements AsyncTask {
     }
 
     @Override
-    public String getResultUrl(String taskId, Map<String, Object> parameters, Object result) {
-        this.setUp(parameters);
-        
+    public String composeResultUrl(String taskId, Object result) {
         return String.format("/vocabulary/%s/%s/edit?vocabularyFolder.workingCopy=true", this.getVocabularySetIdentifier(), this.getVocabularyIdentifier());
     }
 

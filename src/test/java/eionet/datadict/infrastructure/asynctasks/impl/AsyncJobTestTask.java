@@ -32,7 +32,7 @@ public class AsyncJobTestTask implements AsyncTask {
     }
 
     @Override
-    public String getResultUrl(String taskId, Map<String, Object> parameters, Object result) {
+    public String composeResultUrl(String taskId, Object result) {
         return "/";
     }
 
