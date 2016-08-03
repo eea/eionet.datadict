@@ -1,9 +1,5 @@
 package eionet.datadict.errors;
 
-/**
- *
- * @author Nikolaos Nakas <nn@eworx.gr>
- */
 public class EmptyParameterException extends BadRequestException {
     
     private final String paramName;

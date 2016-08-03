@@ -1,14 +1,11 @@
 package eionet.datadict.services.impl.data;
 
-import eionet.datadict.resources.ResourceType;
 import eionet.datadict.dal.VocabularyRepository;
 import eionet.datadict.dal.VocabularySetRepository;
 import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.VocabularySet;
-import eionet.datadict.resources.VocabularyIdInfo;
-import eionet.datadict.resources.VocabularySetIdInfo;
 import eionet.datadict.services.data.VocabularyDataService;
 import eionet.meta.DDUser;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -50,8 +47,8 @@ public class VocabularyDataServiceImpl implements VocabularyDataService {
         }
 
         if (this.vocabularySetRepository.exists(vocabularySet.getIdentifier())) {
-            String msg = String.format("Vocabulary set %s already exists", vocabularySet.getIdentifier());
-            throw new DuplicateResourceException(ResourceType.VOCABULARY_SET, new VocabularySetIdInfo(vocabularySet.getIdentifier()), msg);
+            String msg = String.format("Vocabulary set %s already exists.", vocabularySet.getIdentifier());
+            throw new DuplicateResourceException(msg);
         }
 
         this.vocabularySetRepository.create(vocabularySet);
@@ -76,12 +73,15 @@ public class VocabularyDataServiceImpl implements VocabularyDataService {
         }
 
         VocabularySet existingVocabularySet = this.vocabularySetRepository.get(vocabularySetIdentifier);
+        
         if (existingVocabularySet == null) {
-            throw new ResourceNotFoundException(ResourceType.VOCABULARY_SET, new VocabularySetIdInfo(vocabularySetIdentifier));
+            String msg = String.format("Vocabulary set %s does not exist.", vocabularySetIdentifier);
+            throw new ResourceNotFoundException(msg);
         }
 
         if (this.vocabularyRepository.exists(existingVocabularySet.getId(), vocabulary.getIdentifier())) {
-            throw new DuplicateResourceException(ResourceType.VOCABULARY, new VocabularyIdInfo(vocabularySetIdentifier, vocabulary.getIdentifier()));
+            String msg = String.format("Vocabulary %s already exists.", vocabulary.getIdentifier());
+            throw new DuplicateResourceException(msg);
         }
 
         vocabulary.setFolderId(existingVocabularySet.getId());

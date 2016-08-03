@@ -1,9 +1,5 @@
 package eionet.datadict.errors;
 
-/**
- *
- * @author Nikolaos Nakas <nn@eworx.gr>
- */
 public class BadRequestException extends Exception {
 
     public BadRequestException() {
