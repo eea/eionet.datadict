@@ -2,10 +2,10 @@ package eionet.meta.controllers;
 
 import eionet.meta.application.AppContextProvider;
 import eionet.meta.application.errors.DuplicateResourceException;
-import eionet.meta.application.errors.NotAWorkingCopyException;
+import eionet.datadict.errors.NotAWorkingCopyException;
 import eionet.meta.application.errors.ResourceNotFoundException;
-import eionet.meta.application.errors.UserAuthenticationException;
-import eionet.meta.application.errors.UserAuthorizationException;
+import eionet.datadict.errors.UserAuthenticationException;
+import eionet.datadict.errors.UserAuthorizationException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;

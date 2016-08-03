@@ -1,10 +1,10 @@
 package eionet.meta.service;
 
 import eionet.meta.application.AppContextProvider;
-import eionet.meta.application.errors.NotAWorkingCopyException;
+import eionet.datadict.errors.NotAWorkingCopyException;
 import eionet.meta.application.errors.ResourceNotFoundException;
-import eionet.meta.application.errors.UserAuthenticationException;
-import eionet.meta.application.errors.UserAuthorizationException;
+import eionet.datadict.errors.UserAuthenticationException;
+import eionet.datadict.errors.UserAuthorizationException;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;

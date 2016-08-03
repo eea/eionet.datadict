@@ -4,7 +4,7 @@ import eionet.web.action.di.ActionBeanDependencyInjectionInterceptor;
 import eionet.meta.ActionBeanUtils;
 import eionet.meta.application.AppContextProvider;
 import eionet.meta.application.errors.DuplicateResourceException;
-import eionet.meta.application.errors.UserAuthenticationException;
+import eionet.datadict.errors.UserAuthenticationException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;

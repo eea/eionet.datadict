@@ -3,7 +3,7 @@ package eionet.datadict.services.impl.auth;
 import eionet.datadict.services.auth.WebApiAuthInfo;
 import eionet.datadict.services.auth.WebApiAuthService;
 import eionet.meta.DDUser;
-import eionet.meta.application.errors.UserAuthenticationException;
+import eionet.datadict.errors.UserAuthenticationException;
 import eionet.meta.dao.domain.DDApiKey;
 import eionet.meta.service.ConfigurationPropertyValueProvider;
 import eionet.meta.service.IApiKeyService;

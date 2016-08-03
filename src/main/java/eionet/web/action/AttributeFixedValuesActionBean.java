@@ -3,7 +3,7 @@ package eionet.web.action;
 import eionet.meta.application.errors.DuplicateResourceException;
 import eionet.util.CompoundDataObject;
 import eionet.meta.controllers.AttributeFixedValuesController;
-import eionet.meta.application.errors.UserAuthenticationException;
+import eionet.datadict.errors.UserAuthenticationException;
 import eionet.meta.application.errors.fixedvalues.EmptyValueException;
 import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
 import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;

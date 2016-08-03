@@ -26,7 +26,7 @@ import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.services.data.VocabularyDataService;
 import eionet.meta.DDUser;
-import eionet.meta.application.errors.UserAuthenticationException;
+import eionet.datadict.errors.UserAuthenticationException;
 import eionet.meta.dao.domain.DDApiKey;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.json.VocabularyJSONOutputHelper;
