@@ -21,6 +21,7 @@
 
 package eionet.web.extension;
 
+import eionet.datadict.errors.*;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -83,6 +84,43 @@ public class DDExceptionHandler extends DefaultExceptionHandler {
         } else {
             return new RedirectResolution(ErrorActionBean.class).addParameter("message", message).addParameter("type", errorType);
         }
+    }
+    
+    public Resolution handleBadRequestException(BadRequestException ex, HttpServletRequest request, HttpServletResponse response) {
+        return this.handleClientException(ex, HttpServletResponse.SC_BAD_REQUEST);
+    }
+    
+    public Resolution handleConflictException(ConflictException ex, HttpServletRequest request, HttpServletResponse response) {
+        return this.handleClientException(ex, HttpServletResponse.SC_CONFLICT);
+    }
+    
+    public Resolution handleDuplicateResourceException(DuplicateResourceException ex, HttpServletRequest request, HttpServletResponse response) {
+        return this.handleClientException(ex, HttpServletResponse.SC_CONFLICT);
+    }
+    
+    public Resolution handleEmptyParameterException(EmptyParameterException ex, HttpServletRequest request, HttpServletResponse response) {
+        return this.handleClientException(ex, HttpServletResponse.SC_BAD_REQUEST);
+    }
+    
+    public Resolution handleIllegalParameterException(IllegalParameterException ex, HttpServletRequest request, HttpServletResponse response) {
+        return this.handleClientException(ex, HttpServletResponse.SC_BAD_REQUEST);
+    }
+    
+    public Resolution handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request, HttpServletResponse response) {
+        return this.handleClientException(ex, HttpServletResponse.SC_NOT_FOUND);
+    }
+    
+    public Resolution handleUserAuthenticationException(UserAuthenticationException ex, HttpServletRequest request, HttpServletResponse response) {
+        return this.handleClientException(ex, HttpServletResponse.SC_UNAUTHORIZED);
+    }
+    
+    public Resolution handleUserAuthorizationException(UserAuthorizationException ex, HttpServletRequest request, HttpServletResponse response) {
+        return this.handleClientException(ex, HttpServletResponse.SC_FORBIDDEN);
+    }
+    
+    private Resolution handleClientException(BadRequestException ex, int statusCode) {
+        LOGGER.error("Exception caught", ex);
+        return new ErrorResolution(statusCode, ex.getMessage());
     }
 
 }
