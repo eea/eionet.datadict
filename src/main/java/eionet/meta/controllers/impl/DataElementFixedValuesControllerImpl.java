@@ -1,17 +1,14 @@
 package eionet.meta.controllers.impl;
 
-import eionet.meta.application.errors.DuplicateResourceException;
+import eionet.datadict.errors.ConflictException;
+import eionet.datadict.errors.DuplicateResourceException;
+import eionet.datadict.errors.EmptyParameterException;
 import eionet.meta.application.AppContextProvider;
 import eionet.util.CompoundDataObject;
 import eionet.meta.controllers.DataElementFixedValuesController;
-import eionet.datadict.errors.NotAWorkingCopyException;
-import eionet.meta.application.errors.ResourceNotFoundException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.UserAuthenticationException;
 import eionet.datadict.errors.UserAuthorizationException;
-import eionet.meta.application.errors.fixedvalues.EmptyValueException;
-import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
-import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
-import eionet.meta.application.errors.fixedvalues.NotAFixedValueOwnerException;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.domain.DataElement;
@@ -46,16 +43,8 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
 
     @Override
     public DataElement getOwnerDataElement(int ownerDataElementId) 
-            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
-        DataElement owner;
-        
-        try {
-            owner = this.dataElementsService.getDataElement(ownerDataElementId);
-        }
-        catch (ResourceNotFoundException ex) {
-            throw new FixedValueOwnerNotFoundException((Integer)ex.getResourceId());
-        }
-        
+            throws ResourceNotFoundException, ConflictException {
+        DataElement owner = this.dataElementsService.getDataElement(ownerDataElementId);
         this.ensureFixedValueOwnership(owner);
         
         return owner;
@@ -63,20 +52,8 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
 
     @Override
     public DataElement getEditableOwnerDataElement(AppContextProvider contextProvider, int ownerDataElementId) 
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
-                   FixedValueOwnerNotEditableException, UserAuthorizationException {
-        DataElement owner;
-        
-        try {
-            owner = this.dataElementsService.getEditableDataElement(contextProvider, ownerDataElementId);
-        }
-        catch (ResourceNotFoundException ex) {
-            throw new FixedValueOwnerNotFoundException((Integer)ex.getResourceId());
-        }
-        catch (NotAWorkingCopyException ex) {
-            throw new FixedValueOwnerNotEditableException(ex);
-        }
-        
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
+        DataElement owner = this.dataElementsService.getEditableDataElement(contextProvider, ownerDataElementId);
         this.ensureFixedValueOwnership(owner);
         
         return owner;
@@ -84,7 +61,7 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
 
     @Override
     public CompoundDataObject getSingleValueModel(int ownerDataElementId, int fixedValueId) 
-            throws FixedValueOwnerNotFoundException, FixedValueNotFoundException, NotAFixedValueOwnerException {
+            throws ResourceNotFoundException, ConflictException {
         DataElement ownerElement = this.getOwnerDataElement(ownerDataElementId);
         FixedValue value = this.fixedValuesService.getFixedValue(ownerElement, fixedValueId);
         
@@ -93,8 +70,7 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
 
     @Override
     public CompoundDataObject getEditableSingleValueModel(AppContextProvider contextProvider, int ownerDataElementId, int fixedValueId) 
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                   NotAFixedValueOwnerException, FixedValueOwnerNotEditableException, UserAuthorizationException {
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         DataElement ownerElement = this.getEditableOwnerDataElement(contextProvider, ownerDataElementId);
         FixedValue value = this.fixedValuesService.getFixedValue(ownerElement, fixedValueId);
         
@@ -103,7 +79,7 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
 
     @Override
     public CompoundDataObject getAllValuesModel(int ownerDataElementId) 
-            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException {
+            throws ResourceNotFoundException, ConflictException {
         DataElement ownerElement = this.getOwnerDataElement(ownerDataElementId);
         List<FixedValue> fixedValues = this.dataElementDao.getFixedValues(ownerElement.getId());
         
@@ -112,8 +88,7 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
 
     @Override
     public CompoundDataObject getEditableAllValuesModel(AppContextProvider contextProvider, int ownerDataElementId) 
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
-                   FixedValueOwnerNotEditableException, UserAuthorizationException {
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         DataElement ownerElement = this.getEditableOwnerDataElement(contextProvider, ownerDataElementId);
         List<FixedValue> fixedValues = this.dataElementDao.getFixedValues(ownerElement.getId());
         
@@ -122,8 +97,8 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
     
     @Override
     public void saveFixedValue(AppContextProvider contextProvider, int ownerDataElementId, FixedValue fixedValue) 
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, NotAFixedValueOwnerException, 
-                   FixedValueOwnerNotEditableException, UserAuthorizationException, EmptyValueException, DuplicateResourceException {
+            throws UserAuthenticationException, ResourceNotFoundException, UserAuthorizationException, 
+                   ConflictException, DuplicateResourceException, EmptyParameterException {
         if (fixedValue == null) {
             throw new IllegalArgumentException();
         }
@@ -134,8 +109,7 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
 
     @Override
     public void deleteFixedValue(AppContextProvider contextProvider, int ownerDataElementId, int fixedValueId) 
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
-                   FixedValueOwnerNotEditableException, UserAuthorizationException, FixedValueNotFoundException {
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         CompoundDataObject result = this.getEditableSingleValueModel(contextProvider, ownerDataElementId, fixedValueId);
         FixedValue  fxv = result.get(PROPERTY_FIXED_VALUE);
         this.fixedValueDao.deleteById(fxv.getId());
@@ -143,17 +117,17 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
 
     @Override
     public void deleteFixedValues(AppContextProvider contextProvider, int ownerDataElementId) 
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueOwnerNotEditableException, 
-                   NotAFixedValueOwnerException, UserAuthorizationException {
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         DataElement ownerElement = this.getEditableOwnerDataElement(contextProvider, ownerDataElementId);
         this.fixedValueDao.deleteAll(FixedValue.OwnerType.DATA_ELEMENT, ownerElement.getId());
     }
     
-    private void ensureFixedValueOwnership(DataElement owner) throws NotAFixedValueOwnerException {
+    private void ensureFixedValueOwnership(DataElement owner) throws ConflictException {
         DataElement.DataElementValueType valueType = DataElement.DataElementValueType.parse(owner.getType());
         
         if (valueType != DataElement.DataElementValueType.FIXED && valueType != DataElement.DataElementValueType.QUANTITIVE) {
-            throw new NotAFixedValueOwnerException();
+            String msg = String.format("Data elemenent with internal id %d does not support fixed values.", owner.getId());
+            throw new ConflictException(msg);
         }
     }
     

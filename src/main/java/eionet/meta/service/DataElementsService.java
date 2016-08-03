@@ -1,8 +1,8 @@
 package eionet.meta.service;
 
+import eionet.datadict.errors.ConflictException;
 import eionet.meta.application.AppContextProvider;
-import eionet.datadict.errors.NotAWorkingCopyException;
-import eionet.meta.application.errors.ResourceNotFoundException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.UserAuthenticationException;
 import eionet.datadict.errors.UserAuthorizationException;
 import eionet.meta.dao.domain.DataElement;
@@ -17,6 +17,6 @@ public interface DataElementsService {
             throws ResourceNotFoundException;
     
     DataElement getEditableDataElement(AppContextProvider contextProvider, int dataElementId)
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException;
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException;
 
 }

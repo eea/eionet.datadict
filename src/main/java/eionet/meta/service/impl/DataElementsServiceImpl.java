@@ -1,8 +1,8 @@
 package eionet.meta.service.impl;
 
+import eionet.datadict.errors.ConflictException;
 import eionet.meta.application.AppContextProvider;
-import eionet.datadict.errors.NotAWorkingCopyException;
-import eionet.meta.application.errors.ResourceNotFoundException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.UserAuthenticationException;
 import eionet.datadict.errors.UserAuthorizationException;
 import eionet.meta.dao.IDataElementDAO;
@@ -30,7 +30,8 @@ public class DataElementsServiceImpl implements DataElementsService {
     @Override
     public DataElement getDataElement(int elementId) throws ResourceNotFoundException {
         if (!this.dataElementDao.dataElementExists(elementId)) {
-            throw new ResourceNotFoundException(elementId);
+            String msg = String.format("Data element with internal id %d was not found.", elementId);
+            throw new ResourceNotFoundException(msg);
         }
         
         return this.dataElementDao.getDataElement(elementId);
@@ -38,7 +39,7 @@ public class DataElementsServiceImpl implements DataElementsService {
     
     @Override
     public DataElement getEditableDataElement(AppContextProvider contextProvider, int dataElementId) 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         if (!contextProvider.isUserAuthenticated()) {
             throw new UserAuthenticationException();
         }
@@ -50,7 +51,7 @@ public class DataElementsServiceImpl implements DataElementsService {
     }
     
     private void checkEditability(AppContextProvider contextProvider, DataElement dataElement) 
-            throws NotAWorkingCopyException, UserAuthorizationException {
+            throws ConflictException, UserAuthorizationException {
         boolean workingCopy;
         String workingUser;
         
@@ -70,7 +71,8 @@ public class DataElementsServiceImpl implements DataElementsService {
         }
         
         if (!workingCopy) {
-            throw new NotAWorkingCopyException();
+            String msg = String.format("Data element with internal id %d is not a working copy.", dataElement.getId());
+            throw new ConflictException(msg);
         }
         
         if (!ObjectUtils.equals(workingUser, contextProvider.getUserName())) {
