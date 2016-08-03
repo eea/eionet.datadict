@@ -4,7 +4,7 @@ import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.model.VocabularySet;
 import eionet.datadict.services.data.VocabularyDataService;
-import eionet.meta.application.errors.UserAuthenticationException;
+import eionet.datadict.errors.UserAuthenticationException;
 import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.datadict.services.auth.WebApiAuthInfoService;
 import eionet.datadict.services.auth.WebApiAuthService;

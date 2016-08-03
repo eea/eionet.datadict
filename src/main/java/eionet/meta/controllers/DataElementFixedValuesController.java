@@ -1,16 +1,16 @@
 package eionet.meta.controllers;
 
+import eionet.datadict.errors.ConflictException;
+import eionet.datadict.errors.DuplicateResourceException;
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.meta.application.AppContextProvider;
 import eionet.util.CompoundDataObject;
-import eionet.meta.application.errors.DuplicateResourceException;
-import eionet.meta.application.errors.UserAuthenticationException;
-import eionet.meta.application.errors.UserAuthorizationException;
-import eionet.meta.application.errors.fixedvalues.EmptyValueException;
-import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
-import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
-import eionet.meta.application.errors.fixedvalues.NotAFixedValueOwnerException;
+import eionet.datadict.errors.UserAuthenticationException;
+import eionet.datadict.errors.UserAuthorizationException;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
+import java.util.List;
 
 /**
  *
@@ -25,11 +25,11 @@ public interface DataElementFixedValuesController {
      * 
      * @return a {@link DataElement} containing the requested info.
      * 
-     * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
-     * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
+     * @throws ResourceNotFoundException if the data element cannot be found.
+     * @throws ConflictException if the data element cannot be associated to fixed values.
      */
     DataElement getOwnerDataElement(int ownerDataElementId)
-            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException;
+            throws ResourceNotFoundException, ConflictException;
     
     /**
      * Fetches info about an specific data element that accepts fixed values. 
@@ -42,14 +42,12 @@ public interface DataElementFixedValuesController {
      * @return a {@link DataElement} containing the requested info.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
-     * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
-     * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
+     * @throws ResourceNotFoundException if the data element cannot be found.
+     * @throws ConflictException if the data element cannot be associated to fixed values or the data element is not in working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
     DataElement getEditableOwnerDataElement(AppContextProvider contextProvider, int ownerDataElementId) 
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, 
-                   NotAFixedValueOwnerException, FixedValueOwnerNotEditableException, UserAuthorizationException;
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException;
     
     /**
      * Fetches all the info required about a fixed value and its respective
@@ -66,12 +64,11 @@ public interface DataElementFixedValuesController {
      * @return a {@link CompoundDataObject} instance containing info about the 
      * fixed value, and the owner data element.
      * 
-     * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
-     * @throws FixedValueNotFoundException if the fixed value cannot be found.
-     * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
+     * @throws ResourceNotFoundException if the data element or the fixed value cannot be found.
+     * @throws ConflictException if the data element cannot be associated to fixed values.
      */
     CompoundDataObject getSingleValueModel(int ownerDataElementId, int fixedValueId)
-            throws FixedValueOwnerNotFoundException, FixedValueNotFoundException, NotAFixedValueOwnerException;
+            throws ResourceNotFoundException, ConflictException;
     
     /**
      * Fetches all the info required about a fixed value and its respective
@@ -92,15 +89,12 @@ public interface DataElementFixedValuesController {
      * fixed value, and the owner data element.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
-     * @throws FixedValueNotFoundException if the fixed value cannot be found.
-     * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
-     * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
+     * @throws ResourceNotFoundException if the data element or the fixed value  cannot be found.
+     * @throws ConflictException if the data element cannot be associated to fixed values, or it is not in a working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
     CompoundDataObject getEditableSingleValueModel(AppContextProvider contextProvider, int ownerDataElementId, int fixedValueId)
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                   NotAFixedValueOwnerException, FixedValueOwnerNotEditableException, UserAuthorizationException;
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException;
     
     /**
      * Fetches all the info required about the fixed values of a specific owner.
@@ -116,11 +110,11 @@ public interface DataElementFixedValuesController {
      * @return a {@link CompoundDataObject} instance containing info about the 
      * fixed values, and the owner data element.
      * 
-     * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
-     * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
+     * @throws ResourceNotFoundException if the data element cannot be found.
+     * @throws ConflictException if the data element cannot be associated to fixed values.
      */
     CompoundDataObject getAllValuesModel(int ownerDataElementId)
-            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException;
+            throws ResourceNotFoundException, ConflictException;
     
     /**
      * Fetches all the info required about the fixed values of a specific owner.
@@ -140,14 +134,12 @@ public interface DataElementFixedValuesController {
      * fixed values, and the owner data element.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
-     * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
-     * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
+     * @throws ResourceNotFoundException if the data element cannot be found.
+     * @throws ConflictException if the data element cannot be associated to fixed values, or it is not in a working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
     CompoundDataObject getEditableAllValuesModel(AppContextProvider contextProvider, int ownerDataElementId)
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
-                   FixedValueOwnerNotEditableException, UserAuthorizationException;
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException;
     
     /**
      * Persists the modified data of the fixed value of a specified owner. 
@@ -159,18 +151,15 @@ public interface DataElementFixedValuesController {
      * @param fixedValue the modification payload.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
-     * @throws FixedValueNotFoundException if the fixed value cannot be found.
-     * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
-     * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
+     * @throws ResourceNotFoundException if the data element or the fixed value cannot be found.
+     * @throws ConflictException if the data element cannot be associated to fixed values, or it is not in a working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
-     * @throws EmptyValueException if the value property of the payload is blank.
+     * @throws EmptyParameterException if the value property of the payload is blank.
      * @throws DuplicateResourceException if the updated/created value already exists.
      */
     void saveFixedValue(AppContextProvider contextProvider, int ownerDataElementId, FixedValue fixedValue)
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException,
-                   FixedValueNotFoundException, FixedValueOwnerNotEditableException, UserAuthorizationException, 
-                   NotAFixedValueOwnerException, DuplicateResourceException, EmptyValueException;
+            throws UserAuthenticationException, ResourceNotFoundException, UserAuthorizationException, 
+                   ConflictException, DuplicateResourceException, EmptyParameterException;
     
     /**
      * Deletes the requested fixed value of a specified owner.
@@ -180,15 +169,12 @@ public interface DataElementFixedValuesController {
      * @param fixedValueId the id of the value to be deleted.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
-     * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
-     * @throws FixedValueNotFoundException if the fixed value cannot be found.
-     * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
+     * @throws ResourceNotFoundException if the data element or the fixed value cannot be found.
+     * @throws ConflictException if the data element cannot be associated to fixed values, or it is not in a working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
     void deleteFixedValue(AppContextProvider contextProvider, int ownerDataElementId, int fixedValueId)
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, 
-                   FixedValueNotFoundException, FixedValueOwnerNotEditableException, UserAuthorizationException;
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException;
     
     /**
      * Deletes all fixed values of a specified owner.
@@ -197,31 +183,15 @@ public interface DataElementFixedValuesController {
      * @param ownerDataElementId the data element id.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws FixedValueOwnerNotFoundException if the data element cannot be found.
-     * @throws NotAFixedValueOwnerException if the data element cannot be associated to fixed values.
-     * @throws FixedValueOwnerNotEditableException if the data element is not in working copy state.
+     * @throws ResourceNotFoundException if the data element cannot be found.
+     * @throws ConflictException if the data element cannot be associated to fixed values, or it is not in a working copy state.
      * @throws UserAuthorizationException if the user is not the owner of the working copy.
      */
     void deleteFixedValues(AppContextProvider contextProvider, int ownerDataElementId)
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException,
-                   NotAFixedValueOwnerException, FixedValueOwnerNotEditableException, UserAuthorizationException;
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException;
     
     public static final String PROPERTY_OWNER_DATA_ELEMENT = "owner";
     public static final String PROPERTY_FIXED_VALUE = "fixedValue";
     public static final String PROPERTY_FIXED_VALUES = "fixedValues";
-    
-    /**
-     * Thrown to indicate that the current user cannot edit the requested fixed value.
-     * Typically this will occur if the fixed value owner is not in editable/working state.
-     */
-    public static class FixedValueOwnerNotEditableException extends Exception {
-
-        public FixedValueOwnerNotEditableException() { }
-        
-        public FixedValueOwnerNotEditableException(Throwable cause) {
-            super(cause);
-        }
-        
-    }
     
 }

@@ -1,13 +1,12 @@
 package eionet.meta.controllers;
 
+import eionet.datadict.errors.ConflictException;
+import eionet.datadict.errors.DuplicateResourceException;
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.meta.application.AppContextProvider;
 import eionet.util.CompoundDataObject;
-import eionet.meta.application.errors.DuplicateResourceException;
-import eionet.meta.application.errors.UserAuthenticationException;
-import eionet.meta.application.errors.fixedvalues.EmptyValueException;
-import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
-import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
-import eionet.meta.application.errors.fixedvalues.NotAFixedValueOwnerException;
+import eionet.datadict.errors.UserAuthenticationException;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.SimpleAttribute;
 import java.util.List;
@@ -27,11 +26,11 @@ public interface AttributeFixedValuesController {
      * 
      * @return a {@link SimpleAttribute} containing the requested info.
      * 
-     * @throws FixedValueOwnerNotFoundException if the attribute cannot be found.
-     * @throws NotAFixedValueOwnerException if the attribute cannot be associated to fixed values.
+     * @throws ResourceNotFoundException if the attribute cannot be found.
+     * @throws ConflictException if the attribute cannot be associated to fixed values.
      */
     SimpleAttribute getOwnerAttribute(int ownerAttributeId)
-            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException;
+            throws ResourceNotFoundException, ConflictException;
     
     /**
      * Fetches info about an specific simple attribute that accepts fixed values.
@@ -44,11 +43,11 @@ public interface AttributeFixedValuesController {
      * @return a {@link SimpleAttribute} containing the requested info.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws FixedValueOwnerNotFoundException if the attribute cannot be found.
-     * @throws NotAFixedValueOwnerException if the attribute cannot be associated to fixed values.
+     * @throws ResourceNotFoundException if the attribute cannot be found.
+     * @throws ConflictException if the attribute cannot be associated to fixed values.
      */
     SimpleAttribute getEditableOwnerAttribute(AppContextProvider contextProvider, int ownerAttributeId)
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException;
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException;
     
     /**
      * Fetches all the info required about a fixed value and its respective
@@ -65,12 +64,11 @@ public interface AttributeFixedValuesController {
      * @return a {@link CompoundDataObject} instance containing info about the 
      * fixed value, and the owner attribute.
      * 
-     * @throws FixedValueOwnerNotFoundException if the attribute cannot be found.
-     * @throws NotAFixedValueOwnerException if the attribute cannot be associated to fixed values.
-     * @throws FixedValueNotFoundException if the requested fixed value is not found.
+     * @throws ResourceNotFoundException if the attribute or the requested fixed value cannot be found.
+     * @throws ConflictException if the attribute cannot be associated to fixed values.
      */
     CompoundDataObject getSingleValueModel(int ownerAttributeId, int fixedValueId)
-            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException;
+            throws ResourceNotFoundException, ConflictException;
     
     /**
      * Fetches all the info required about a fixed value and its respective
@@ -91,12 +89,11 @@ public interface AttributeFixedValuesController {
      * fixed value, and the owner attribute.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws FixedValueOwnerNotFoundException if the attribute cannot be found.
-     * @throws NotAFixedValueOwnerException if the attribute cannot be associated to fixed values.
-     * @throws FixedValueNotFoundException if the requested fixed value is not found.
+     * @throws ResourceNotFoundException if the attribute or the requested fixed value cannot be found.
+     * @throws ConflictException if the attribute cannot be associated to fixed values.
      */
     CompoundDataObject getEditableSingleValueModel(AppContextProvider contextProvider, int ownerAttributeId, int fixedValueId)
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException;
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException;
     
     /**
      * Fetches all the info required about the fixed values of a specific owner.
@@ -112,11 +109,11 @@ public interface AttributeFixedValuesController {
      * @return a {@link CompoundDataObject} instance containing info about the 
      * fixed values, and the owner attribute.
      * 
-     * @throws FixedValueOwnerNotFoundException if the attribute cannot be found.
-     * @throws NotAFixedValueOwnerException if the attribute cannot be associated to fixed values.
+     * @throws ResourceNotFoundException if the attribute cannot be found.
+     * @throws ConflictException if the attribute cannot be associated to fixed values.
      */
     CompoundDataObject getAllValuesModel(int ownerAttributeId)
-            throws FixedValueOwnerNotFoundException, NotAFixedValueOwnerException;
+            throws ResourceNotFoundException, ConflictException;
     
     /**
      * Fetches all the info required about the fixed values of a specific owner.
@@ -136,11 +133,11 @@ public interface AttributeFixedValuesController {
      * fixed values, and the owner attribute.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws FixedValueOwnerNotFoundException if the attribute cannot be found.
-     * @throws NotAFixedValueOwnerException if the attribute cannot be associated to fixed values.
+     * @throws ResourceNotFoundException if the attribute cannot be found.
+     * @throws ConflictException if the attribute cannot be associated to fixed values.
      */
     CompoundDataObject getEditableAllValuesModel(AppContextProvider contextProvider, int ownerAttributeId)
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException;
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException;
     
     /**
      * Persists the modified data of the fixed value of a specified owner. 
@@ -152,15 +149,13 @@ public interface AttributeFixedValuesController {
      * @param fixedValue the modification payload.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws FixedValueOwnerNotFoundException if the attribute cannot be found.
-     * @throws NotAFixedValueOwnerException if the attribute cannot be associated to fixed values.
-     * @throws FixedValueNotFoundException if the requested fixed value is not found.
-     * @throws EmptyValueException if the value property of the payload is blank.
+     * @throws ResourceNotFoundException if the attribute or the requested fixed value cannot be found.
+     * @throws ConflictException if the attribute cannot be associated to fixed values.
+     * @throws EmptyParameterException if the value property of the payload is blank.
      * @throws DuplicateResourceException if the updated/created value already exists.
      */
     void saveFixedValue(AppContextProvider contextProvider, int ownerAttributeId, FixedValue fixedValue)
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException, 
-                   EmptyValueException, DuplicateResourceException;
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, EmptyParameterException, DuplicateResourceException;
     
     /**
      * Deletes the requested fixed value of a specified owner.
@@ -170,12 +165,11 @@ public interface AttributeFixedValuesController {
      * @param fixedValueId the id of the value to be deleted.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws FixedValueOwnerNotFoundException if the attribute cannot be found.
-     * @throws NotAFixedValueOwnerException if the attribute cannot be associated to fixed values.
-     * @throws FixedValueNotFoundException if the requested fixed value is not found.
+     * @throws ResourceNotFoundException if the attribute or the requested fixed value cannot be found.
+     * @throws ConflictException if the attribute cannot be associated to fixed values.
      */
     void deleteFixedValue(AppContextProvider contextProvider, int ownerAttributeId, int fixedValueId)
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException, FixedValueNotFoundException;
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException;
     
     /**
      * Deletes all fixed values of a specified owner.
@@ -184,11 +178,11 @@ public interface AttributeFixedValuesController {
      * @param ownerAttributeId the attribute id.
      * 
      * @throws UserAuthenticationException if the user is not logged in.
-     * @throws FixedValueOwnerNotFoundException if the attribute cannot be found.
-     * @throws NotAFixedValueOwnerException if the attribute cannot be associated to fixed values.
+     * @throws ResourceNotFoundException if the attribute cannot be found.
+     * @throws ConflictException if the attribute cannot be associated to fixed values.
      */
     void deleteFixedValues(AppContextProvider contextProvider, int ownerAttributeId)
-            throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException;
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException;
     
     public static final String PROPERTY_OWNER_ATTRIBUTE = "owner";
     public static final String PROPERTY_FIXED_VALUE = "fixedValue";

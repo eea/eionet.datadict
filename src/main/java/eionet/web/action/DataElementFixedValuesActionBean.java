@@ -1,14 +1,13 @@
 package eionet.web.action;
 
-import eionet.meta.application.errors.DuplicateResourceException;
+import eionet.datadict.errors.ConflictException;
+import eionet.datadict.errors.DuplicateResourceException;
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.util.CompoundDataObject;
 import eionet.meta.controllers.DataElementFixedValuesController;
-import eionet.meta.application.errors.UserAuthenticationException;
-import eionet.meta.application.errors.UserAuthorizationException;
-import eionet.meta.application.errors.fixedvalues.EmptyValueException;
-import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
-import eionet.meta.application.errors.fixedvalues.FixedValueOwnerNotFoundException;
-import eionet.meta.application.errors.fixedvalues.NotAFixedValueOwnerException;
+import eionet.datadict.errors.UserAuthenticationException;
+import eionet.datadict.errors.UserAuthorizationException;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.web.action.fixedvalues.DataElementFixedValuesViewModelBuilder;
@@ -117,8 +116,8 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected DataElement executeAction(int ownerId, Integer fixedValueId) 
-                    throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
-                           DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+                    throws UserAuthenticationException, ResourceNotFoundException, ConflictException,
+                            UserAuthorizationException, DuplicateResourceException, EmptyParameterException {
                 return controller.getEditableOwnerDataElement(getContextProvider(), ownerId);
             }
 
@@ -138,9 +137,8 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected Void executeAction(int ownerId, Integer fixedValueId) 
-                    throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                           DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException, DuplicateResourceException, 
-                           NotAFixedValueOwnerException, EmptyValueException {
+                    throws UserAuthenticationException, ResourceNotFoundException, ConflictException,
+                            UserAuthorizationException, DuplicateResourceException, EmptyParameterException {
                 FixedValue fxv = viewModel.getFixedValue();
                 controller.saveFixedValue(getContextProvider(), ownerId, fxv);
                 
@@ -169,8 +167,8 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected CompoundDataObject executeAction(int ownerId, Integer fixedValueId) 
-                    throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                           NotAFixedValueOwnerException, DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+                    throws UserAuthenticationException, ResourceNotFoundException, ConflictException,
+                            UserAuthorizationException, DuplicateResourceException, EmptyParameterException {
                 return controller.getSingleValueModel(ownerId, fixedValueId);
             }
 
@@ -188,8 +186,8 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected CompoundDataObject executeAction(int ownerId, Integer fixedValueId) 
-                    throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
-                           DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+                    throws UserAuthenticationException, ResourceNotFoundException, ConflictException,
+                            UserAuthorizationException, DuplicateResourceException, EmptyParameterException {
                 return controller.getAllValuesModel(ownerId);
             }
 
@@ -208,8 +206,8 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected CompoundDataObject executeAction(int ownerId, Integer fixedValueId) 
-                    throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                           NotAFixedValueOwnerException, DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+                    throws UserAuthenticationException, ResourceNotFoundException, ConflictException,
+                            UserAuthorizationException, DuplicateResourceException, EmptyParameterException {
                 return controller.getEditableSingleValueModel(getContextProvider(), ownerId, fixedValueId);
             }
 
@@ -227,8 +225,8 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected CompoundDataObject executeAction(int ownerId, Integer fixedValueId) 
-                    throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
-                           DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+                    throws UserAuthenticationException, ResourceNotFoundException, ConflictException,
+                            UserAuthorizationException, DuplicateResourceException, EmptyParameterException {
                 return controller.getEditableAllValuesModel(getContextProvider(), ownerId);
             }
 
@@ -246,8 +244,8 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected Void executeAction(int ownerId, Integer fixedValueId) 
-                    throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                           NotAFixedValueOwnerException, DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+                    throws UserAuthenticationException, ResourceNotFoundException, ConflictException,
+                            UserAuthorizationException, DuplicateResourceException, EmptyParameterException {
                 controller.deleteFixedValue(getContextProvider(), ownerId, fixedValueId);
                 
                 return null;
@@ -265,8 +263,8 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
 
             @Override
             protected Void executeAction(int ownerId, Integer fixedValueId) 
-                    throws UserAuthenticationException, FixedValueOwnerNotFoundException, NotAFixedValueOwnerException,
-                           DataElementFixedValuesController.FixedValueOwnerNotEditableException, UserAuthorizationException {
+                    throws UserAuthenticationException, ResourceNotFoundException, ConflictException, 
+                            UserAuthorizationException, DuplicateResourceException, EmptyParameterException {
                 controller.deleteFixedValues(getContextProvider(), ownerId);
                 
                 return null;
@@ -294,14 +292,8 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, msg);
     }
     
-    private Resolution onOwnerDataElementNotFound(int ownerId) {
-        String msg = "Cannot find element with id: " + ownerId;
-        return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, msg);
-    }
-    
-    private Resolution onOwnerDataElementNotEditable() {
-        String msg = String.format("Data element with id '%s' is not a working copy", this.ownerId);
-        return super.createErrorResolution(ErrorActionBean.ErrorType.FORBIDDEN_403, msg);
+    private Resolution onResourceNotFound(String message) {
+        return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, message);
     }
     
     private Resolution onUnauthorizedUser() {
@@ -309,24 +301,13 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
         return super.createErrorResolution(ErrorActionBean.ErrorType.FORBIDDEN_403, msg);
     }
     
-    private Resolution onFixedValueNotFound(String value) {
-        String msg = String.format("Cannot find value '%s' for owner data element with id %s", value, this.ownerId);
-        return super.createErrorResolution(ErrorActionBean.ErrorType.NOT_FOUND_404, msg);
-    }
-    
-    private Resolution onFixedValueAlreadyExists(String value) {
-        String msg = String.format("Value '%s' already exists for owner data element with id %s", value, this.ownerId);
-        return super.createErrorResolution(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR, msg);
-    }
-    
     private Resolution onEmptyValue() {
         String msg = "Cannot use an empty value as a fixed value";
         return super.createErrorResolution(ErrorActionBean.ErrorType.INVALID_INPUT, msg);
     }
     
-    private Resolution onNotAFixedValueOwner() {
-        String msg = String.format("Data element with id %s is not a fixed values owner", this.ownerId);
-        return super.createErrorResolution(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR, msg);
+    private Resolution onConflict(String message) {
+        return super.createErrorResolution(ErrorActionBean.ErrorType.CONFLICT, message);
     }
     
     private Resolution redirectToEditValuesPage() {
@@ -374,35 +355,25 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
             catch (UserAuthenticationException ex) {
                 return this.actionBean.onAnonymousUser();
             }
-            catch (FixedValueOwnerNotFoundException ex) {
-                return this.actionBean.onOwnerDataElementNotFound(ex.getOwnerId());
-            }
-            catch (DataElementFixedValuesController.FixedValueOwnerNotEditableException ex) {
-                return this.actionBean.onOwnerDataElementNotEditable();
+            catch (ResourceNotFoundException ex) {
+                return this.actionBean.onResourceNotFound(ex.getMessage());
             }
             catch (UserAuthorizationException ex) {
                 return this.actionBean.onUnauthorizedUser();
             }
-            catch (FixedValueNotFoundException ex) {
-                return this.actionBean.onFixedValueNotFound(ex.getFixedValue());
-            }
-            catch (DuplicateResourceException ex) {
-                return this.actionBean.onFixedValueAlreadyExists(ex.getResourceId().toString());
-            }
-            catch (EmptyValueException ex) {
+            catch (EmptyParameterException ex) {
                 return this.actionBean.onEmptyValue();
             }
-            catch (NotAFixedValueOwnerException ex) {
-                return this.actionBean.onNotAFixedValueOwner();
+            catch (ConflictException ex) {
+                return this.actionBean.onConflict(ex.getMessage());
             }
             
             return this.onActionComplete(actionResult);
         }
         
         protected abstract T executeAction(int ownerId, Integer fixedValueId) 
-                throws UserAuthenticationException, FixedValueOwnerNotFoundException, FixedValueNotFoundException, 
-                       DataElementFixedValuesController.FixedValueOwnerNotEditableException, NotAFixedValueOwnerException,
-                       UserAuthorizationException, DuplicateResourceException, EmptyValueException;
+                throws UserAuthenticationException, ResourceNotFoundException, ConflictException,
+                       UserAuthorizationException, DuplicateResourceException, EmptyParameterException;
         
         protected abstract Resolution onActionComplete(T actionResult);
     }

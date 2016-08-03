@@ -1,8 +1,8 @@
 package eionet.meta.service;
 
-import eionet.meta.application.errors.DuplicateResourceException;
-import eionet.meta.application.errors.fixedvalues.EmptyValueException;
-import eionet.meta.application.errors.fixedvalues.FixedValueNotFoundException;
+import eionet.datadict.errors.DuplicateResourceException;
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
@@ -35,7 +35,7 @@ public class FixedValueServiceTest {
     }
     
     @Test
-    public void testGetFixedValueOfAttribute() throws FixedValueNotFoundException {
+    public void testGetFixedValueOfAttribute() throws ResourceNotFoundException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.ATTRIBUTE;
         final int ownerId = 1, valueId = 5;
         String value = "val";
@@ -46,15 +46,15 @@ public class FixedValueServiceTest {
         assertEquals(expected, actual);
     }
     
-    @Test(expected = FixedValueNotFoundException.class)
-    public void testGetNonExistingFixedValueOfAttribute() throws FixedValueNotFoundException {
+    @Test(expected = ResourceNotFoundException.class)
+    public void testGetNonExistingFixedValueOfAttribute() throws ResourceNotFoundException {
         SimpleAttribute owner = this.createOwnerAttribute(1);
         when(fixedValueDao.getByValue(any(FixedValue.OwnerType.class), any(Integer.class), any(String.class))).thenReturn(null);
         this.fixedValueService.getFixedValue(owner, 5);
     }
     
     @Test
-    public void testGetFixedValueOfDataElement() throws FixedValueNotFoundException {
+    public void testGetFixedValueOfDataElement() throws ResourceNotFoundException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.DATA_ELEMENT;
         int ownerId = 1, valueId = 5;
         String value = "val";
@@ -65,15 +65,15 @@ public class FixedValueServiceTest {
         assertEquals(expected, actual);
     }
     
-    @Test(expected = FixedValueNotFoundException.class)
-    public void testGetNonExistingFixedValueOfDataElement() throws FixedValueNotFoundException {
+    @Test(expected = ResourceNotFoundException.class)
+    public void testGetNonExistingFixedValueOfDataElement() throws ResourceNotFoundException {
         DataElement owner = this.createOwnerDataElement(1);
         when(fixedValueDao.getByValue(any(FixedValue.OwnerType.class), any(Integer.class), any(String.class))).thenReturn(null);
         this.fixedValueService.getFixedValue(owner, 5);
     }
     
     @Test
-    public void testCreateFixedValueOfAttribute() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    public void testCreateFixedValueOfAttribute() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.ATTRIBUTE;
         int ownerId = 1;
         String value = "val";
@@ -90,7 +90,7 @@ public class FixedValueServiceTest {
     }
     
     @Test
-    public void testCreateFixedValueOfDataElement() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    public void testCreateFixedValueOfDataElement() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.DATA_ELEMENT;
         int ownerId = 1;
         String value = "val";
@@ -107,7 +107,7 @@ public class FixedValueServiceTest {
     }
     
     @Test
-    public void testCreateDefaultFixedValueOfAttribute() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    public void testCreateDefaultFixedValueOfAttribute() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.ATTRIBUTE;
         int ownerId = 1;
         String value = "val";
@@ -124,7 +124,7 @@ public class FixedValueServiceTest {
     }
     
     @Test
-    public void testCreateDefaultFixedValueOfDataElement() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    public void testCreateDefaultFixedValueOfDataElement() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.DATA_ELEMENT;
         int ownerId = 1;
         String value = "val";
@@ -146,15 +146,15 @@ public class FixedValueServiceTest {
         verify(fixedValueDao, times(0)).updateDefaultValue(ownerType, ownerId, value);
     }
     
-    @Test (expected = EmptyValueException.class)
-    public void testFailToSaveFixedValueBecauseOfEmptyValue() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    @Test (expected = EmptyParameterException.class)
+    public void testFailToSaveFixedValueBecauseOfEmptyValue() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
         DataElement owner = this.createOwnerDataElement(1);
         FixedValue inValue = this.createFixedValue(null, "def", "desc", false);
         this.fixedValueService.saveFixedValue(owner, inValue);
     }
     
     @Test (expected = DuplicateResourceException.class)
-    public void testFailToCreateFixedValueBecauseOfDuplicate() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    public void testFailToCreateFixedValueBecauseOfDuplicate() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.ATTRIBUTE;
         int ownerId = 1;
         String value = "val";
@@ -165,7 +165,7 @@ public class FixedValueServiceTest {
     }
     
     @Test
-    public void testUpdateFixedValue() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    public void testUpdateFixedValue() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.DATA_ELEMENT;
         int ownerId = 5, valueId = 10;
         String value = "val";
@@ -184,7 +184,7 @@ public class FixedValueServiceTest {
     }
     
     @Test
-    public void testUpdateFixedValueWithChangedValue() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    public void testUpdateFixedValueWithChangedValue() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.DATA_ELEMENT;
         int ownerId = 5, valueId = 10;
         String value = "val";
@@ -204,7 +204,7 @@ public class FixedValueServiceTest {
     }
     
     @Test
-    public void testUpdateDefaultFixedValueOfAttribute() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    public void testUpdateDefaultFixedValueOfAttribute() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.ATTRIBUTE;
         int ownerId = 5, valueId = 10;
         String value = "val";
@@ -223,7 +223,7 @@ public class FixedValueServiceTest {
     }
     
     @Test
-    public void testUpdateDefaultFixedValueOfDataElement() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    public void testUpdateDefaultFixedValueOfDataElement() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.DATA_ELEMENT;
         int ownerId = 5, valueId = 10;
         String value = "val";
@@ -241,8 +241,8 @@ public class FixedValueServiceTest {
         verify(fixedValueDao, times(0)).updateDefaultValue(ownerType, ownerId, value);
     }
     
-    @Test(expected = FixedValueNotFoundException.class)
-    public void testFailToUpdateBecausePreviousNotExists() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    @Test(expected = ResourceNotFoundException.class)
+    public void testFailToUpdateBecausePreviousNotExists() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.DATA_ELEMENT;
         int ownerId = 5, valueId = 10;
         String value = "val";
@@ -254,7 +254,7 @@ public class FixedValueServiceTest {
     }
     
     @Test(expected = DuplicateResourceException.class)
-    public void testFailToUpdateBecauseOfDuplicate() throws EmptyValueException, FixedValueNotFoundException, DuplicateResourceException {
+    public void testFailToUpdateBecauseOfDuplicate() throws EmptyParameterException, ResourceNotFoundException, DuplicateResourceException {
         FixedValue.OwnerType ownerType = FixedValue.OwnerType.DATA_ELEMENT;
         int ownerId = 5, valueId = 10;
         String value = "val";

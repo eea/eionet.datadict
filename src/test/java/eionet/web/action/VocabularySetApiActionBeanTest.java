@@ -7,7 +7,7 @@ import eionet.datadict.services.auth.WebApiAuthInfoService;
 import eionet.datadict.services.auth.WebApiAuthService;
 import eionet.datadict.services.data.VocabularyDataService;
 import eionet.meta.ActionBeanUtils;
-import eionet.meta.application.errors.UserAuthenticationException;
+import eionet.datadict.errors.UserAuthenticationException;
 import eionet.web.action.di.ActionBeanDependencyInjectionInterceptor;
 import eionet.web.action.di.ActionBeanDependencyInjector;
 import eionet.web.action.uiservices.ErrorPageService;

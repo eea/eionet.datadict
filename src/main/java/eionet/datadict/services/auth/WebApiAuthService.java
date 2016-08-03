@@ -1,7 +1,7 @@
 package eionet.datadict.services.auth;
 
 import eionet.meta.DDUser;
-import eionet.meta.application.errors.UserAuthenticationException;
+import eionet.datadict.errors.UserAuthenticationException;
 
 /**
  *

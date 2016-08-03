@@ -1,33 +1,20 @@
 package eionet.datadict.errors;
 
-import eionet.datadict.resources.ResourceIdInfo;
-import eionet.datadict.resources.ResourceType;
+public class DuplicateResourceException extends ConflictException {
 
-/**
- *
- * @author Nikolaos Nakas <nn@eworx.gr>
- */
-public class DuplicateResourceException extends Exception {
-
-    private final ResourceType resourceType;
-    private final ResourceIdInfo resourceIdInfo;
-    
-    public DuplicateResourceException(ResourceType resourceType, ResourceIdInfo resourceIdInfo) {
-        this(resourceType, resourceIdInfo, null);
+    public DuplicateResourceException() {
     }
 
-    public DuplicateResourceException(ResourceType resourceType, ResourceIdInfo resourceIdInfo ,String message) {
+    public DuplicateResourceException(String message) {
         super(message);
-        this.resourceType = resourceType;
-        this.resourceIdInfo = resourceIdInfo;
     }
 
-    public ResourceType getResourceType() {
-        return resourceType;
+    public DuplicateResourceException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public ResourceIdInfo getResourceIdInfo() {
-        return resourceIdInfo;
+    public DuplicateResourceException(Throwable cause) {
+        super(cause);
     }
     
 }

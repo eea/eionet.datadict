@@ -1,16 +1,6 @@
 package eionet.datadict.errors;
 
-import eionet.datadict.resources.ResourceIdInfo;
-import eionet.datadict.resources.ResourceType;
-
-/**
- *
- * @author Nikolaos Nakas <nn@eworx.gr>
- */
-public class ResourceNotFoundException extends Exception {
-
-    private final ResourceType resourceType;
-    private final ResourceIdInfo resourceIdInfo;
+public class ResourceNotFoundException extends BadRequestException {
 
     public ResourceNotFoundException() {
         this("The requested resource was not found");
@@ -18,27 +8,14 @@ public class ResourceNotFoundException extends Exception {
     
     public ResourceNotFoundException(String message) {
         super(message);
-        this.resourceType = null;
-        this.resourceIdInfo = null;
-    }
-    
-    public ResourceNotFoundException(ResourceType resourceType, ResourceIdInfo resourceIdInfo) {
-        this.resourceType = resourceType;
-        this.resourceIdInfo = resourceIdInfo;
     }
 
-    public ResourceNotFoundException(ResourceType resourceType, ResourceIdInfo resourceIdInfo, String message) {
-        super(message);
-        this.resourceType = resourceType;
-        this.resourceIdInfo = resourceIdInfo;
+    public ResourceNotFoundException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public ResourceType getResourceType() {
-        return resourceType;
-    }
-
-    public ResourceIdInfo getResourceIdInfo() {
-        return resourceIdInfo;
+    public ResourceNotFoundException(Throwable cause) {
+        super(cause);
     }
     
 }

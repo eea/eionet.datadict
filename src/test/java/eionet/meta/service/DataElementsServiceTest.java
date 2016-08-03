@@ -1,10 +1,10 @@
 package eionet.meta.service;
 
+import eionet.datadict.errors.ConflictException;
 import eionet.meta.application.AppContextProvider;
-import eionet.meta.application.errors.NotAWorkingCopyException;
-import eionet.meta.application.errors.ResourceNotFoundException;
-import eionet.meta.application.errors.UserAuthenticationException;
-import eionet.meta.application.errors.UserAuthorizationException;
+import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.errors.UserAuthenticationException;
+import eionet.datadict.errors.UserAuthorizationException;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
@@ -55,7 +55,7 @@ public class DataElementsServiceTest {
     
     @Test
     public void testGetWorkingCommonDataElement() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         final int elmId = 5;
         final String user = "user";
         DataElement expected = this.createWorkingCommon(elmId, user);
@@ -70,7 +70,7 @@ public class DataElementsServiceTest {
     
     @Test
     public void testGetWorkingNonCommonDataElement() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         final int elmId = 5;
         final String user = "user";
         DataElement expected = this.createNonCommon(elmId);
@@ -87,23 +87,23 @@ public class DataElementsServiceTest {
     
     @Test(expected = UserAuthenticationException.class)
     public void testFailGetEditableDataElementBecauseOfAuthentication() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         when(contextProvider.isUserAuthenticated()).thenReturn(false);
         this.service.getEditableDataElement(contextProvider, 5);
     }
     
     @Test(expected = ResourceNotFoundException.class)
     public void testFailGetEditableDataElementBecauseOfNotFound() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         final int elmId = 5;
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
         when(dataElementDao.dataElementExists(elmId)).thenReturn(false);
         this.service.getDataElement(elmId);
     }
     
-    @Test(expected = NotAWorkingCopyException.class)
+    @Test(expected = ConflictException.class)
     public void testFailGetCommonDataElementBecauseOfNonWorking() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         final int elmId = 5;
         DataElement expected = this.createCommon(elmId);
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
@@ -114,7 +114,7 @@ public class DataElementsServiceTest {
     
     @Test(expected = UserAuthorizationException.class)
     public void testFailGetCommonDataElementBecauseOfAuthorization() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         final int elmId = 5;
         DataElement expected = this.createWorkingCommon(elmId, "workuser");
         when(contextProvider.isUserAuthenticated()).thenReturn(true);
@@ -124,9 +124,9 @@ public class DataElementsServiceTest {
         this.service.getEditableDataElement(contextProvider, elmId);
     }
     
-    @Test(expected = NotAWorkingCopyException.class)
+    @Test(expected = ConflictException.class)
     public void testFailGetNonCommonDataElementBecauseOfNonWorking() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         final int elmId = 5;
         DataElement expected = this.createNonCommon(elmId);
         DataSet parentDataSet = this.createDataSet(20);
@@ -139,7 +139,7 @@ public class DataElementsServiceTest {
     
     @Test(expected = UserAuthorizationException.class)
     public void testFailGetNonCommonDataElementBecauseOfAuthorization() 
-            throws UserAuthenticationException, ResourceNotFoundException, NotAWorkingCopyException, UserAuthorizationException {
+            throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         final int elmId = 5;
         DataElement expected = this.createNonCommon(elmId);
         DataSet parentDataSet = this.createWorkingDataSet(20, "workuser");

@@ -1,6 +1,6 @@
 package eionet.meta.exports.codelist;
 
-import eionet.meta.application.errors.ResourceNotFoundException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.meta.exports.VocabularyOutputHelper;
 import java.nio.charset.Charset;
 import org.apache.commons.lang.ArrayUtils;
@@ -29,7 +29,7 @@ public class CodelistExporterImpl implements CodelistExporter {
         String stringContent = c.write(ownerId, objectType.toString());
         
         if (StringUtils.isBlank(stringContent)) {
-            throw new ResourceNotFoundException(ownerId);
+            throw new ResourceNotFoundException();
         }
         
         byte[] byteContent = stringContent.getBytes(Charset.forName("UTF-8"));
