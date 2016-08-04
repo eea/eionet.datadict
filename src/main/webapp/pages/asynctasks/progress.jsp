@@ -20,7 +20,7 @@
     <stripes:layout-component name="contents">
         <div class="system-msg">
             <strong>${actionBean.taskDisplayName}</strong>
-            <p><span>Task in progress, please wait...</span></p>
+            <p><span class="asyncProgressContainer">Task in progress, please wait...</span></p>
             <div class="task spinner-loader"></div>
         </div>
         <script type="text/javascript">
