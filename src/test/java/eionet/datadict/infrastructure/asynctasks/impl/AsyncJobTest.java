@@ -1,5 +1,6 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import static org.hamcrest.core.Is.is;
@@ -13,7 +14,6 @@ import org.mockito.InjectMocks;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,7 +36,11 @@ public class AsyncJobTest {
     @InjectMocks
     private AsyncJobDataMapAdapter dataMapAdapter;
     
+    @Mock
+    private AsyncTaskBuilder asyncTaskBuilder;
+    
     @Spy
+    @InjectMocks
     private AsyncJob asyncJob;
     
     @Before
@@ -50,12 +54,14 @@ public class AsyncJobTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(AsyncJobTestTask.PARAM_RAISE_ERROR, false);
         this.dataMapAdapter.putParameters(parameters);
+        when(this.asyncTaskBuilder.create(AsyncJobTestTask.class, parameters)).thenReturn(new AsyncJobTestTask(parameters));
         
         when(jec.getMergedJobDataMap()).thenReturn(this.dataMap);
         
         this.asyncJob.execute(this.jec);
         
         verify(this.jec, times(1)).getMergedJobDataMap();
+        verify(this.asyncTaskBuilder, times(1)).create(AsyncJobTestTask.class, parameters);
         verify(this.jec, times(1)).setResult(eq(AsyncJobTestTask.RESULT_VALUE));
     }
     
@@ -65,6 +71,7 @@ public class AsyncJobTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(AsyncJobTestTask.PARAM_RAISE_ERROR, true);
         this.dataMapAdapter.putParameters(parameters);
+        when(this.asyncTaskBuilder.create(AsyncJobTestTask.class, parameters)).thenReturn(new AsyncJobTestTask(parameters));
         
         when(jec.getMergedJobDataMap()).thenReturn(this.dataMap);
         
@@ -78,6 +85,7 @@ public class AsyncJobTest {
         }
         
         verify(this.jec, times(1)).getMergedJobDataMap();
+        verify(this.asyncTaskBuilder, times(1)).create(AsyncJobTestTask.class, parameters);
         verify(this.jec, times(0)).setResult(any());
     }
     
@@ -99,6 +107,7 @@ public class AsyncJobTest {
         }
         
         verify(this.jec, times(1)).getMergedJobDataMap();
+        verify(this.asyncTaskBuilder, times(0)).create(any(Class.class), any(Map.class));
         verify(this.jec, times(0)).setResult(any());
     }
     

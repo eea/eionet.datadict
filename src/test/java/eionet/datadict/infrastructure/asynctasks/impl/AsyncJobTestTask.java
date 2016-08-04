@@ -16,6 +16,12 @@ public class AsyncJobTestTask implements AsyncTask {
     
     private Map<String, Object> parameters;
     
+    public AsyncJobTestTask() { }
+    
+    public AsyncJobTestTask(Map<String, Object> parameters) {
+        this.parameters = parameters;
+    }
+    
     public Map<String, Object> getParameters() {
         return this.parameters;
     }
