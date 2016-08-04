@@ -110,7 +110,7 @@
         </init-param>
         <init-param>
             <param-name>FileUpload.MaximumPostSize</param-name>
-            <param-value>350000000</param-value>
+            <param-value>35000000</param-value>
         </init-param>
         <init-param>
             <param-name>Interceptor.Classes</param-name>
