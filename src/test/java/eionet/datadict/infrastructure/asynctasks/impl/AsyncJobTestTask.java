@@ -16,6 +16,10 @@ public class AsyncJobTestTask implements AsyncTask {
     
     private Map<String, Object> parameters;
     
+    public Map<String, Object> getParameters() {
+        return this.parameters;
+    }
+    
     @Override
     public String getDisplayName() {
         return "Async Job Test Task";
