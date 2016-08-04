@@ -48,7 +48,7 @@ public class VersionManager {
 
     /** Possible registration statuses of a dataset or common data element. */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static final Vector REGISTRATION_STATUSES = new Vector(Arrays.asList("Incomplete", "Candidate", "Recorded", "Qualified", "Released"));
+    public static final Vector REGISTRATION_STATUSES = new Vector(Arrays.asList("Retired", "Superseded", "Incomplete", "Candidate", "Recorded", "Qualified", "Released"));
 
     /** Only these registration statuses can be set for a new/existing dataset or common data element. */
     @SuppressWarnings({"unchecked", "rawtypes"})
