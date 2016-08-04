@@ -2,9 +2,11 @@ package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.dal.AsyncTaskDao;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskExecutionError;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
 import java.util.Date;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -136,13 +138,14 @@ public class AsyncJobListenerTest {
         final JobExecutionException jee = new JobExecutionException(new IllegalArgumentException("Some argument was wrong."));
         final String serializedError = "{ message: 'Some argument was wrong.' }";
         
-        when(this.asyncTaskDataSerializer.serializeResult(jee.getCause())).thenReturn(serializedError);
+        when(this.asyncTaskDataSerializer.serializeResult(any())).thenReturn(serializedError);
         
         this.asyncJobListener.jobWasExecuted(this.jec, jee);
         
         ArgumentCaptor<AsyncTaskExecutionEntry> entryCaptor = ArgumentCaptor.forClass(AsyncTaskExecutionEntry.class);
         verify(this.asyncTaskDao, times(1)).updateEndStatus(entryCaptor.capture());
-        verify(this.asyncTaskDataSerializer, times(1)).serializeResult(jee.getCause());
+        ArgumentCaptor<AsyncTaskExecutionError> errorCaptor = ArgumentCaptor.forClass(AsyncTaskExecutionError.class);
+        verify(this.asyncTaskDataSerializer, times(1)).serializeResult(errorCaptor.capture());
         
         AsyncTaskExecutionEntry capturedEntry = entryCaptor.getValue();
         
@@ -151,6 +154,11 @@ public class AsyncJobListenerTest {
         assertThat(capturedEntry.getEndDate(), is(greaterThanOrEqualTo(testStartDate)));
         assertThat(capturedEntry.getExecutionStatus(), is(equalTo(AsyncTaskExecutionStatus.FAILED)));
         assertThat(capturedEntry.getSerializedResult(), is(equalTo(serializedError)));
+        
+        AsyncTaskExecutionError capturedError = errorCaptor.getValue();
+        
+        assertThat(capturedError.getMessage(), is(equalTo(jee.getCause().getMessage())));
+        assertThat(capturedError.getTechnicalDetails(), is(equalTo(ExceptionUtils.getFullStackTrace(jee.getCause()))));
     }
     
 }

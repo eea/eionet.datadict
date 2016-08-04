@@ -6,6 +6,7 @@ import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskBuilder;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskExecutionError;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
@@ -140,7 +141,7 @@ public class AsyncTaskProgressActionBean extends AbstractActionBean {
     
     protected void onTaskFailure(AsyncTaskExecutionEntry entry) throws ReflectiveOperationException {
         this.taskSuccess = false;
-        Exception error = (Exception) this.asyncTaskDataSerializer.deserializeResult(entry.getSerializedResult());
+        AsyncTaskExecutionError error = (AsyncTaskExecutionError) this.asyncTaskDataSerializer.deserializeResult(entry.getSerializedResult());
         this.feedbackText = "Task execution failed; " + error.getMessage();
     }
     

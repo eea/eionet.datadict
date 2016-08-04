@@ -2,6 +2,7 @@ package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskExecutionError;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
@@ -12,10 +13,12 @@ import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,8 +95,9 @@ public class AsyncTaskManagerRegressionTest {
         Map<String, Object> deserializedParameters = this.asyncTaskDataSerializer.deserializeParameters(finalEntry.getSerializedParameters());
         assertThat(deserializedParameters, is(equalTo(parameters)));
         Object deserializedResult = this.asyncTaskDataSerializer.deserializeResult(finalEntry.getSerializedResult());
-        assertThat(deserializedResult, is(instanceOf(Exception.class)));
-        assertThat(((Exception) deserializedResult).getMessage(), is(equalTo(AsyncJobTestTask.ERROR_MESSAGE)));
+        assertThat(deserializedResult, is(instanceOf(AsyncTaskExecutionError.class)));
+        assertThat(((AsyncTaskExecutionError) deserializedResult).getMessage(), is(equalTo(AsyncJobTestTask.ERROR_MESSAGE)));
+        assertThat(((AsyncTaskExecutionError) deserializedResult).getTechnicalDetails(), not(isEmptyOrNullString()));
     }
     
     private void awaitTaskCompletion(String taskId, long maxAwaitDurationMillis) throws InterruptedException, ResourceNotFoundException {
