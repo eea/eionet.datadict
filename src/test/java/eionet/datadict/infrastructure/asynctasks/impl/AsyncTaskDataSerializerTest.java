@@ -67,20 +67,6 @@ public class AsyncTaskDataSerializerTest {
     }
     
     @Test
-    public void testErrorResult() {
-        Exception error = this.generateError();
-        String serializedResult = this.asyncTaskDataSerializer.serializeResult(error);
-        Object deserializedResult = this.asyncTaskDataSerializer.deserializeResult(serializedResult);
-        
-        assertThat(deserializedResult.getClass(), is(equalTo((Class) error.getClass())));
-        
-        Exception deserializedError = (Exception) deserializedResult;
-        
-        assertThat(deserializedError.getMessage(), is(equalTo(error.getMessage())));
-        assertThat("Stacktrace size mismatch", deserializedError.getStackTrace().length, is(equalTo(error.getStackTrace().length)));
-    }
-    
-    @Test
     public void testSerializerFailure() {
         try {
             this.asyncTaskDataSerializer.deserializeParameters("{ param1: ' }");
@@ -93,15 +79,6 @@ public class AsyncTaskDataSerializerTest {
             fail("Should have thrown AsyncTaskDataSerializerException");
         }
         catch (AsyncTaskDataSerializerException ex) { }
-    }
-    
-    private Exception generateError() {
-        try {
-            throw new Exception("Something went wrong.");
-        }
-        catch (Exception ex) {
-            return ex;
-        }
     }
     
 }
