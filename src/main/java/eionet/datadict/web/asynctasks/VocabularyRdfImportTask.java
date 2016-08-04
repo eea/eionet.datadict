@@ -4,11 +4,13 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTask;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IRDFVocabularyImportService;
 import eionet.meta.service.IVocabularyService;
+import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -74,6 +76,21 @@ public class VocabularyRdfImportTask implements AsyncTask {
     public Object call() throws Exception {
         LOGGER.debug("Starting RDF import operation");
         
+        try {
+            this.importRdf();
+        }
+        finally {
+            if (!this.deleteRdfFile()) {
+                LOGGER.info("Failed to delete temporary RDF file: " + this.getRdfFileName());
+            }
+        }
+        
+        LOGGER.debug("RDF import completed");
+        
+        return null;
+    }
+    
+    protected void importRdf() throws Exception {
         VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(this.getVocabularySetIdentifier(), 
                 this.getVocabularyIdentifier(), this.isWorkingCopy());
         Reader rdfFileReader = null;
@@ -94,10 +111,10 @@ public class VocabularyRdfImportTask implements AsyncTask {
                 rdfFileReader.close();
             }
         }
-        
-        LOGGER.debug("RDF import completed");
-        
-        return null;
+    }
+    
+    protected boolean deleteRdfFile() {
+        return FileUtils.deleteQuietly(new File(this.getRdfFileName()));
     }
     
     protected String getRdfFileName() {

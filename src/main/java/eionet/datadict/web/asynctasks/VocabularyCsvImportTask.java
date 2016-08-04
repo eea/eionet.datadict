@@ -6,6 +6,7 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.VocabularyOutputHelper;
 import eionet.meta.service.ICSVVocabularyImportService;
 import eionet.meta.service.IVocabularyService;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +85,21 @@ public class VocabularyCsvImportTask implements AsyncTask {
     public Object call() throws Exception {
         LOGGER.debug("Starting CSV import operation");
         
+        try {
+            this.importCsv();
+        }
+        finally {
+            if (!this.deleteCsvFile()) {
+                LOGGER.info("Failed to delete temporary CSV file: " + this.getCsvFileName());
+            }
+        }
+        
+        LOGGER.debug("CSV import completed");
+        
+        return null;
+    }
+    
+    protected void importCsv() throws Exception {
         VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(this.getVocabularySetIdentifier(), 
                 this.getVocabularyIdentifier(), this.isWorkingCopy());
         Reader csvFileReader = null;
@@ -101,10 +118,10 @@ public class VocabularyCsvImportTask implements AsyncTask {
                 csvFileReader.close();
             }
         }
-        
-        LOGGER.debug("CSV import completed");
-        
-        return null;
+    } 
+    
+    protected boolean deleteCsvFile() {
+        return FileUtils.deleteQuietly(new File(this.getCsvFileName()));
     }
     
     protected InputStream getInputStream() throws IOException, BadRequestException {
