@@ -13,13 +13,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class SchedulerFactory extends SchedulerFactoryBean {
     
     private final DataSource dataSource;
+    private final DataSource nonTxDataSource;
     private final PlatformTransactionManager transactionManager;
     private final Properties quartzProperties;
     
     @Autowired
-    public SchedulerFactory(DataSource dataSource, PlatformTransactionManager transactionManager,
+    public SchedulerFactory(
+            @Qualifier("dataSource") DataSource dataSource, 
+            @Qualifier("nonTxDataSource") DataSource nonTxDataSource,
+            PlatformTransactionManager transactionManager,
             @Qualifier("quartzProperties") Properties quartzProperties) {
         this.dataSource = dataSource;
+        this.nonTxDataSource = nonTxDataSource;
         this.transactionManager = transactionManager;
         this.quartzProperties = quartzProperties;
     }
@@ -28,6 +33,7 @@ public class SchedulerFactory extends SchedulerFactoryBean {
     public void init() {
         this.setBeanName("jobScheduler");
         this.setDataSource(this.dataSource);
+        this.setNonTransactionalDataSource(this.nonTxDataSource);
         this.setTransactionManager(this.transactionManager);
         this.setQuartzProperties(this.quartzProperties);
     }

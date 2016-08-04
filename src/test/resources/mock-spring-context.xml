@@ -17,7 +17,7 @@
     <context:component-scan base-package="eionet.meta, eionet.datadict, eionet.web, eionet.doc" />
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-        destroy-method="close">
+        destroy-method="close" primary="true">
         <property name="driverClassName" value="${db.drv}" />
         <property name="url" value="${db.url}" />
         <property name="username" value="${db.usr}" />
@@ -26,6 +26,17 @@
             connections after 8 hours. -->
         <property name="validationQuery" value="SELECT 1" />
         <property name="testOnBorrow" value="true" />
+    </bean>
+
+    <bean id="nonTxDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${db.drv}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="username" value="${db.usr}"/>
+        <property name="password" value="${db.psw}"/>
+        <!-- The following two properties required because MySQL kills idle
+            connections after 8 hours. -->
+        <property name="validationQuery" value="SELECT 1"/>
+        <property name="testOnBorrow" value="true"/>
     </bean>
 
     <!-- enable the configuration of transactional behavior based on annotations -->
