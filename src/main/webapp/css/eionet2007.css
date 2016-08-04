@@ -672,6 +672,14 @@
 		height: 30px;
 	}
 
+        table.results td div.status.retired {
+		background: #A58A6F;
+	}
+        
+        table.results td div.status.superseded {
+		background:  #545F5F;
+	}
+        
 	table.results td div.status.incomplete {
 		background: #E2923B;
 	}
