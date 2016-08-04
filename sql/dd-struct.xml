@@ -2014,4 +2014,27 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
           referencedColumnNames="DATAELEM_ID" referencedTableName="DATAELEM" referencesUniqueColumn="false"/>
     </changeSet>
     
+    <changeSet author="kopanalk" id="rev-150">
+        <comment>
+            Add two Registration Statuses in the Dataset table (By altering the REG_STATUS data type). Refs #29879.
+        </comment>
+        <modifyDataType
+            tableName="DATASET"
+            columnName="REG_STATUS"
+            newDataType="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')"/>
+        <addNotNullConstraint tableName="DATASET" columnName="REG_STATUS" columnDataType="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')"/>
+        <addDefaultValue tableName="DATASET" columnName="REG_STATUS" defaultValue="Incomplete"/>
+    </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-151">
+        <comment>
+            Add two Registration Statuses in the DATAELEM table (By altering the REG_STATUS data type). Refs #29879.
+        </comment>
+        <modifyDataType
+            tableName="DATAELEM"
+            columnName="REG_STATUS"
+            newDataType="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')"/>
+        <addNotNullConstraint tableName="DATAELEM" columnName="REG_STATUS" columnDataType="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')"/>
+        <addDefaultValue tableName="DATAELEM" columnName="REG_STATUS" defaultValue="Incomplete"/>
+    </changeSet>
 </databaseChangeLog>
