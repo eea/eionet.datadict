@@ -28,7 +28,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:mock-spring-context.xml" })
-public class AsyncTaskManagerRegressionTest {
+public class AsyncTaskManagerIntegrationTest {
 
     @Autowired
     private AsyncTaskManager asyncTaskManager;
