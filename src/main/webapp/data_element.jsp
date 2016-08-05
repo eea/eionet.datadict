@@ -554,7 +554,9 @@
                     canCheckout = !dataElement.isWorkingCopy()
                             && elmWorkingUser == null
                             && elmRegStatus != null && user != null
-                            && isLatestElm;
+                            && isLatestElm
+                            && !elmRegStatus.equals("Retired")
+                            && !elmRegStatus.equals("Superseded");
                     if (canCheckout) {
                         if (elmRegStatus.equals("Released"))
                             // || elmRegStatus.equals("Recorded")
