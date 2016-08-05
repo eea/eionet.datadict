@@ -296,7 +296,10 @@
                         canNewVersion = editPrm || editReleasedPrm;
                 }
 
-                canCheckout = !dataset.isWorkingCopy() && workingUser == null && regStatus!=null && user!=null && isLatestDst;
+                canCheckout = !dataset.isWorkingCopy() 
+                        && workingUser == null 
+                        && regStatus!=null && !regStatus.equals("Retired") && !regStatus.equals("Superseded")
+                        && user!=null && isLatestDst;
                 if (canCheckout) {
                     if (regStatus.equals("Released"))
                             //|| regStatus.equals("Recorded"))
