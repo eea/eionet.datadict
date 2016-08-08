@@ -1366,7 +1366,7 @@
                                     <li class="checkout"><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/checkout">Check out</a></li>
                                 <%
                                     }
-                                    if ((elmCommon && canCheckout)
+                                    if ((elmCommon && (canCheckout || elmRegStatus.equals("Retired") || elmRegStatus.equals("Superseded")))
                                                     || (!elmCommon && editDstPrm)) {
                                 %>
                                     <li class="delete"><a href="javascript:submitForm('delete')">Delete</a></li>

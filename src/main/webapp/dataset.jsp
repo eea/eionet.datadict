@@ -759,6 +759,10 @@ else if (mode.equals("add"))
                                 if (canCheckout) {
                             %>
                                 <li class="checkout"><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/checkout">Check out</a></li>
+                                <%
+                                }
+                                if (canCheckout || regStatus.equals("Retired") || regStatus.equals("Superseded")) {
+                            %>
                                 <li class="delete"><a href="javascript:submitForm('delete')">Delete</a></li>
                             <%
                                 }
