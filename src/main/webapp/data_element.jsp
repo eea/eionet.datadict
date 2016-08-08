@@ -1710,13 +1710,13 @@
                                                         %>
                                                             <select name="reg_status" onchange="form_changed('form1')"> <%
                                                                     Vector regStatuses = "add".equals(mode) ? verMan.getSettableRegStatuses() : verMan.getRegStatuses();
-																	for (int i = 0; i < regStatuses.size(); i++) {
-																	    String status = (String) regStatuses.get(i);
-																	    String selected = status.equals(elmRegStatus) ? "selected=\"selected\"" : "";
-																	    String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
-		                                                                String title = disabled.length() > 0 ? "title=\"This status not allowed any more when adding/saving.\"" : "";
-		                                                                String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
-																	    %>
+                                                                for (int i = 0; i < regStatuses.size(); i++) {
+                                                                        String status = (String) regStatuses.get(i);
+                                                                        String selected = status.equals(elmRegStatus) ? "selected=\"selected\"" : "";
+                                                                        String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
+                                                                        String title = disabled.length() > 0 ? "title=\"This status not allowed any more when adding/saving.\"" : "";
+                                                                        String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
+                                                            %>
                                                                         <option <%=style%> <%=selected%> <%=disabled%> <%=title%> value="<%=Util.processForDisplay(status)%>"><%=Util.processForDisplay(status)%></option><%
                                                                     }
                                                                 %>
