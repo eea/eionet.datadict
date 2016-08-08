@@ -302,8 +302,12 @@ public class DatasetHandler extends BaseHandler {
 
         // set the status
         String status = req.getParameter("reg_status");
+        String successorId = req.getParameter("successorId");
         if (!Util.isEmpty(status)) {
             gen.setField("REG_STATUS", status);
+            if (status.equalsIgnoreCase("Superseded") && !Util.isEmpty(successorId)){
+                gen.setField("SUCCESSOR", successorId);
+            }
         }
 
         // short name

@@ -2417,6 +2417,7 @@ public class DDSearchEngine {
                 ds.setWorkingUser(rs.getString("WORKING_USER"));
                 ds.setDate(rs.getString("DATE"));
                 ds.setUser(rs.getString("USER"));
+                ds.setSuccessorId(rs.getString("SUCCESSOR"));
 
                 v.add(ds);
             }
