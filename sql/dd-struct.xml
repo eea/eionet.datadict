@@ -2037,4 +2037,24 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <addNotNullConstraint tableName="DATAELEM" columnName="REG_STATUS" columnDataType="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')"/>
         <addDefaultValue tableName="DATAELEM" columnName="REG_STATUS" defaultValue="Incomplete"/>
     </changeSet>
+    
+     <changeSet author="kopanalk" id="rev-152">
+        <comment>
+            Add a column in the DATAELEM table in order to store the link of the element which superseded the current one if this is the case (otherwise will be NULL). Refs #29879.
+        </comment>
+        <addColumn tableName="DATAELEM">
+            <column name="SUCCESSOR" type="INT UNSIGNED"/>
+        </addColumn>
+        <addForeignKeyConstraint constraintName="FK_SUPERSEDED_SUCCESSOR_DE" baseTableName="DATAELEM" baseColumnNames="SUCCESSOR" referencedColumnNames="DATAELEM_ID"  referencedTableName="DATAELEM"/> 
+    </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-153">
+        <comment>
+            Add a column in the DATAELEM table in order to store the link of the element which superseded the current one if this is the case (otherwise will be NULL). Refs #29879.
+        </comment>
+        <addColumn tableName="DATASET">
+            <column name="SUCCESSOR" type="INT UNSIGNED"/>
+        </addColumn>
+        <addForeignKeyConstraint constraintName="FK_SUPERSEDED_SUCCESSOR_DS" baseTableName="DATASET" baseColumnNames="SUCCESSOR" referencedColumnNames="DATASET_ID"  referencedTableName="DATASET"/> 
+    </changeSet>
 </databaseChangeLog>
