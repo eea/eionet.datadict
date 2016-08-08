@@ -800,6 +800,12 @@
                                 "If you want to continue, click OK. Otherwise click Cancel.");
                 if (b==false) return;
                 <%}%>
+                <%if (elmRegStatus != null && (elmRegStatus.equals("Retired") || elmRegStatus.equals("Superseded"))){%>
+                    var b = confirm("You are checking in with <%=elmRegStatus%> status! You will not be able to create another version of this data element in the future. "+
+                            "If you want to continue, click OK. Otherwise click Cancel.");
+                    if (b==false) return;
+                <%}
+             %>
             document.forms["form1"].elements["check_in"].value = "true";
             document.forms["form1"].elements["mode"].value = "edit";
             document.forms["form1"].submit();
@@ -1716,6 +1722,9 @@
                                                                         String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
                                                                         String title = disabled.length() > 0 ? "title=\"This status not allowed any more when adding/saving.\"" : "";
                                                                         String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
+                                                                        if (status.equalsIgnoreCase("retired") || status.equalsIgnoreCase("superseded")) {
+                                                                            disabled = "";
+                                                                        }
                                                             %>
                                                                         <option <%=style%> <%=selected%> <%=disabled%> <%=title%> value="<%=Util.processForDisplay(status)%>"><%=Util.processForDisplay(status)%></option><%
                                                                     }

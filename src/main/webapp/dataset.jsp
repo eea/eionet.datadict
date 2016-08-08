@@ -593,8 +593,13 @@
                                 "If you want to continue, click OK. Otherwise click Cancel.");
                 if (b==false) return;
                 <%
-            }
-            %>
+            } 
+            if (regStatus != null && (regStatus.equals("Retired") || regStatus.equals("Superseded"))){%>
+                    var b = confirm("You are checking in with <%=regStatus%> status! You will not be able to create another version of this dataset in the future. "+
+                            "If you want to continue, click OK. Otherwise click Cancel.");
+                    if (b==false) return;
+                <%}
+             %>
 
             document.forms["form1"].elements["check_in"].value = "true";
             document.forms["form1"].elements["mode"].value = "edit";
@@ -773,7 +778,7 @@ else if (mode.equals("add"))
                             // display the "Upload document" and "Manage cache" links
                             if (mode.equals("view") && (editPrm || editReleasedPrm)) {%>
                                 <li class="doc">
-                                    <a rel="nofollow" href="<%=request.getContextPath()%>/doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>" onclick="return warnDatasetType(<%=regStatus%>, 'upload')">
+                                    <a rel="nofollow" href="<%=request.getContextPath()%>/doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>" onclick="return warnDatasetType('<%=regStatus%>', 'upload')">
                                         Upload a document
                                     </a>
                                 </li>
@@ -869,7 +874,7 @@ else if (mode.equals("add"))
                                                     // MS Excel link
                                                     if (dispAll || dispXLS) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetType(<%=regStatus%>, 'download')">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetType('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
@@ -877,7 +882,7 @@ else if (mode.equals("add"))
                                                     <% }
                                                     if ((dispAll || dispXLS) && user != null) { %>
                                                          <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetType(<%=regStatus%>, 'download')">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetType('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset with drop-down boxes (BETA)
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel_dropdown"></a>
@@ -888,7 +893,7 @@ else if (mode.equals("add"))
                                                     // OpenDocument spreadsheet link
                                                     if (dispAll || dispODS) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=dst&amp;id=<%=ds_id%>" class="open-doc" onclick="return warnDatasetType(<%=regStatus%>, 'download')">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=dst&amp;id=<%=ds_id%>" class="open-doc" onclick="return warnDatasetType('<%=regStatus%>', 'download')">
                                                                 Create an OpenDocument spreadsheet template for this dataset
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=ods"></a>
@@ -898,7 +903,7 @@ else if (mode.equals("add"))
                                                     // MS Access link
                                                     if (dispAll || dispMDB) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true" class="access" onclick="return warnDatasetType(<%=regStatus%>, 'download')">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true" class="access" onclick="return warnDatasetType('<%=regStatus%>', 'download')">
                                                                 Create validation metadata for MS Access template
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=access"></a>
@@ -909,7 +914,7 @@ else if (mode.equals("add"))
                                                     if (dispAll || advancedAccess) {
                                                         %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>" class="access" onclick="return warnDatasetType(<%=regStatus%>, 'download')">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>" class="access" onclick="return warnDatasetType('<%=regStatus%>', 'download')">
                                                                 Create advanced MS Access template
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=advancedMSAccess"></a>
@@ -1085,6 +1090,9 @@ else if (mode.equals("add"))
                                                                 String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
                                                                 String title = disabled.length() > 0 ? "table=\"This status not allowed any more when adding/saving.\"" : "";
                                                                 String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
+                                                                if (status.equalsIgnoreCase("retired") || status.equalsIgnoreCase("superseded")) {
+                                                                    disabled="";
+                                                                }
                                                                 %>
                                                                 <option <%=style%> <%=selected%> <%=disabled%> <%=title%> value="<%=Util.processForDisplay(status)%>"><%=Util.processForDisplay(status)%></option><%
                                                             } %>
