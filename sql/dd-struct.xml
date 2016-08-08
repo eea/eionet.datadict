@@ -2040,7 +2040,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     
      <changeSet author="kopanalk" id="rev-152">
         <comment>
-            Add a column in the DATAELEM table in order to store the link of the element which superseded the current one if this is the case (otherwise will be NULL). Refs #29879.
+            Add a column in the DATAELEM table in order to link the superseded data elements to their successors (if this is the case). Refs #29879.
         </comment>
         <addColumn tableName="DATAELEM">
             <column name="SUCCESSOR" type="INT UNSIGNED"/>
@@ -2050,7 +2050,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     
     <changeSet author="kopanalk" id="rev-153">
         <comment>
-            Add a column in the DATAELEM table in order to store the link of the element which superseded the current one if this is the case (otherwise will be NULL). Refs #29879.
+            Add a column in the DATAELEM table in order to link the superseded datasets to their successors (if this is the case). Refs #29879.
         </comment>
         <addColumn tableName="DATASET">
             <column name="SUCCESSOR" type="INT UNSIGNED"/>
