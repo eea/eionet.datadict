@@ -770,6 +770,16 @@
     <script type="text/javascript">
         // <![CDATA[
 
+        var pickMode="";
+        function linkElem(){
+            pickMode="link";
+            var url="search.jsp?ctx=popup&common=&link=&exclude=<%=delem_id%>";
+            wLink = window.open('<%=request.getContextPath()%>'+'/'+url,"Search","height=800,width=1200,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
+            if (window.focus){
+                wLink.focus();
+            }
+        }
+        
         function statusSelectionChanged(changedForm) {
             if (document.getElementById("reg_status_select").value.toLowerCase() == 'superseded') {
                 document.getElementById("successor").style.display = 'inline';
@@ -1209,12 +1219,19 @@
             }
         }
 
+        
         function pickElem(id){
-
-            document.forms["form1"].elements["copy_elem_id"].value=id;
-            document.forms["form1"].elements["mode"].value = "copy";
-            document.forms["form1"].submit();
-            return true;
+            if (pickMode=="link") {
+                document.forms["form1"].elements["successorId"].value = id;
+                document.forms["form1"].submit();
+                return true;
+            }
+            else {
+                document.forms["form1"].elements["copy_elem_id"].value=id;
+                document.forms["form1"].elements["mode"].value = "copy";
+                document.forms["form1"].submit();
+                return true;
+            }
         }
 
         function validForXMLTag(str, isCommon){
@@ -1695,9 +1712,20 @@
                                                         %>
                                                     <td class="simple_attr_value">
                                                         <%
+                                                        DataElement successorElement = null;
+                                                        if(dataElement.getSuccessorId()!=null) {
+                                                            successorElement = searchEngine.getDataElement(dataElement.getSuccessorId());
+                                                        }
                                                         if (mode.equals("view")){ %>
                                                             <%=Util.processForDisplay(elmRegStatus)%>
                                                             <%
+                                                            if (elmRegStatus.equalsIgnoreCase("Superseded")) {%>
+                                                                <small> by 
+                                                                    <a  href="<%=request.getContextPath()%>/dataelements/<%=successorElement.getID()%>">
+                                                                        <i><c:out value="<%=successorElement.getShortName()%>"/></i>
+                                                                    </a>
+                                                                </small>
+                                                            <%}
                                                             long timestamp = dataElement.getDate()==null ? 0 : Long.parseLong(dataElement.getDate());
                                                             String dateString = timestamp==0 ? "" : eionet.util.Util.releasedDate(timestamp);
                                                             String dateTimeString = timestamp==0 ? "" : dateString + " " + eionet.util.Util.hoursMinutesSeconds(timestamp);
@@ -1741,11 +1769,21 @@
                                                             </select>
                                                                 <%String showSuccessor = elmRegStatus.equalsIgnoreCase("Superseded") ? "inline" : "none";%>
                                                                 <div id="successor" style="display: <%=showSuccessor%>;">
-                                                                    <%if (dataElement.getSuccessorId() != null) {%>
-                                                                    &emsp;&emsp;<input name="successorId" type="text" value="<%=dataElement.getSuccessorId()%>"/>
-                                                                    <%} else {%>
-                                                                    &emsp;&emsp;<input name="successorId" type="text"/>
-                                                                    <%}%>
+                                                                        &emsp;
+                                                                        <small>Replaced by: </small>
+                                                                        <%if (successorElement != null) {      
+                                                                        %>
+                                                                            <a  href="<%=request.getContextPath()%>/dataelements/<%=successorElement.getID()%>">
+                                                                                <i><c:out value="<%=successorElement.getShortName()%>"/></i>
+                                                                            </a>
+                                                                        <%} else {%>
+                                                                        <small><i>Not defined yet</i></small>
+                                                                        <%}%>
+                                                                        &emsp;
+                                                                        <a href="javascript:linkElem()">
+                                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/edit.gif" width="16" height="16" alt=""/>
+                                                                        </a>
+                                                                        <input name="successorId" type="hidden" value="<%=dataElement.getSuccessorId()%>"/>
                                                                 </div>
                                                                 <%
                                                                 }
