@@ -307,6 +307,8 @@ public class DatasetHandler extends BaseHandler {
             gen.setField("REG_STATUS", status);
             if (status.equalsIgnoreCase("Superseded") && !Util.isEmpty(successorId)){
                 gen.setField("SUCCESSOR", successorId);
+            } else {
+                gen.setFieldExpr("SUCCESSOR", "NULL");
             }
         }
 

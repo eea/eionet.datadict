@@ -1112,7 +1112,7 @@ else if (mode.equals("add"))
                                                            <%if (dataset.getSuccessorId()!=null) {%>
                                                             &emsp;&emsp;<input name="successorId" type="text" value="<%=dataset.getSuccessorId()%>"/>
                                                            <%}else {%>
-                                                           Nothing yet!
+                                                            &emsp;&emsp;<input name="successorId" type="text"/>
                                                            <%}%>
                                                         </div>
                                                             <%
