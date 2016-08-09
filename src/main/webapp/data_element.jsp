@@ -770,6 +770,15 @@
     <script type="text/javascript">
         // <![CDATA[
 
+        function statusSelectionChanged(changedForm) {
+            if (document.getElementById("reg_status_select").value.toLowerCase() == 'superseded') {
+                document.getElementById("successor").style.display = 'inline';
+            } else {
+                document.getElementById("successor").style.display = 'none';
+            }
+            form_changed(changedForm);
+        }
+        
         function forceAttrMaxLen(){
             var i = 0;
             var elms = document.forms["form1"].elements;
@@ -1714,7 +1723,7 @@
                                                         }
                                                         else {
                                                         %>
-                                                            <select name="reg_status" onchange="form_changed('form1')"> <%
+                                                            <select id="reg_status_select" name="reg_status" onchange="statusSelectionChanged('form1')"> <%
                                                                     Vector regStatuses = "add".equals(mode) ? verMan.getSettableRegStatuses() : verMan.getRegStatuses();
                                                                 for (int i = 0; i < regStatuses.size(); i++) {
                                                                         String status = (String) regStatuses.get(i);
@@ -1729,7 +1738,16 @@
                                                                         <option <%=style%> <%=selected%> <%=disabled%> <%=title%> value="<%=Util.processForDisplay(status)%>"><%=Util.processForDisplay(status)%></option><%
                                                                     }
                                                                 %>
-                                                            </select><%
+                                                            </select>
+                                                                <%String showSuccessor = elmRegStatus.equalsIgnoreCase("Superseded") ? "inline" : "none";%>
+                                                                <div id="successor" style="display: <%=showSuccessor%>;">
+                                                                    <%if (dataElement.getSuccessorId() != null) {%>
+                                                                    &emsp;&emsp;<input name="successorId" type="text" value="<%=dataElement.getSuccessorId()%>"/>
+                                                                    <%} else {%>
+                                                                    &emsp;&emsp;<input name="successorId" type="text"/>
+                                                                    <%}%>
+                                                                </div>
+                                                                <%
                                                                 }
                                                             %>
                                                     </td>

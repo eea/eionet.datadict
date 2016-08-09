@@ -1390,6 +1390,7 @@ public class DDSearchEngine {
                 elm.setCheckedoutCopyID(rs.getString("DATAELEM.CHECKEDOUT_COPY_ID"));
                 elm.setDate(rs.getString("DATAELEM.DATE"));
                 elm.setNamespace(new Namespace(rs.getString("DATAELEM.PARENT_NS"), null, null, null, null));
+                elm.setSuccessorId(rs.getString("DATAELEM.SUCCESSOR"));
 
                 if (!elmCommon) {
                     elm.setTableID(rs.getString("DS_TABLE.TABLE_ID"));
