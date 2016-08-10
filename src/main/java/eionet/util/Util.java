@@ -775,7 +775,12 @@ public final class Util {
             return "4";
         } else if (status.equals("Released")) {
             return "5";
-        } else {
+        } else if (status.equals("Retired")) {
+            return "0";
+        } else if (status.equals("Superseded")) {
+            return "-1";
+        }
+        else {
             return "1";
         }
     }
