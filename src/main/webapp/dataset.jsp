@@ -445,10 +445,10 @@
         function warnDatasetStatus(datasetStatus, action) {
             if (datasetStatus.toLowerCase() == 'retired' || datasetStatus.toLowerCase() == 'superseded') {
                 if (['a', 'e', 'i', 'o', 'u'].indexOf(datasetStatus.toLowerCase().charAt(0))!=-1) {
-                    return confirm('The '+action+' you are about to perform is based on an '+datasetStatus+' dataset. Are you sure?');
+                    return confirm('The '+action+' you are about to perform is based on an '+datasetStatus+' dataset. If you want to continue click OK. Otherwise click Cancel.');
                 }
                 else {
-                    return confirm('The '+action+' you are about to perform is based on a '+datasetStatus+' dataset. Are you sure?');
+                    return confirm('The '+action+' you are about to perform is based on a '+datasetStatus+' dataset. If you want to continue click OK. Otherwise click Cancel.');
                 }
             } else {
                 return true;
