@@ -90,6 +90,18 @@
     <title>Search results - Data Dictionary</title>
     <script type="text/javascript">
     // <![CDATA[
+        function warnStatus(status){
+            if (status.toLowerCase() == 'retired' || status.toLowerCase() == 'superseded') {
+                if (['a', 'e', 'i', 'o', 'u'].indexOf(status.toLowerCase().charAt(0))!=-1) {
+                    return confirm('You are about to select an '+status+' data element. If you want to continue click OK. Otherwise click Cancel.');
+                }
+                else {
+                    return confirm('You are about to select a '+status+' data element. If you want to continue click OK. Otherwise click Cancel.');
+                }
+            } else {
+                return true;
+            }
+        }
         <%
         if (popup){ %>
             function pickElem(elmID, rowIndex){
@@ -337,7 +349,7 @@ else{ %>
                             <td>
                                 <%if (clickable){
                                     %>
-                                    [<a href="<%=selectLink%>">select</a>]
+                                    [<a href="<%=selectLink%>" onclick="return warnStatus('<%=status%>')">select</a>]
                                 <%}%>
                             </td>
                             <%
