@@ -673,11 +673,11 @@
 	}
 
         table.results td div.status.retired {
-		background: #757979;
+		background: #D2CCB8;
 	}
         
         table.results td div.status.superseded {
-		background:  #757979;
+		background: #D2CCB8;
 	}
         
 	table.results td div.status.incomplete {
