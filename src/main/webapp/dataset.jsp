@@ -442,13 +442,13 @@
             form_changed(changedForm);
         }
         
-        function warnDatasetType(datasetType, action) {
-            if (datasetType.toLowerCase() == 'retired' || datasetType.toLowerCase() == 'superseded') {
-                if (['a', 'e', 'i', 'o', 'u'].indexOf(datasetType.toLowerCase().charAt(0))!=-1) {
-                    return confirm('The '+action+' you are about to perform is about an '+datasetType+' dataset. Are you sure?');
+        function warnDatasetStatus(datasetStatus, action) {
+            if (datasetStatus.toLowerCase() == 'retired' || datasetStatus.toLowerCase() == 'superseded') {
+                if (['a', 'e', 'i', 'o', 'u'].indexOf(datasetStatus.toLowerCase().charAt(0))!=-1) {
+                    return confirm('The '+action+' you are about to perform is based on an '+datasetStatus+' dataset. Are you sure?');
                 }
                 else {
-                    return confirm('The '+action+' you are about to perform is about a '+datasetType+' dataset. Are you sure?');
+                    return confirm('The '+action+' you are about to perform is based on a '+datasetStatus+' dataset. Are you sure?');
                 }
             } else {
                 return true;
@@ -787,7 +787,7 @@ else if (mode.equals("add"))
                             // display the "Upload document" and "Manage cache" links
                             if (mode.equals("view") && (editPrm || editReleasedPrm)) {%>
                                 <li class="doc">
-                                    <a rel="nofollow" href="<%=request.getContextPath()%>/doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>" onclick="return warnDatasetType('<%=regStatus%>', 'upload')">
+                                    <a rel="nofollow" href="<%=request.getContextPath()%>/doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>" onclick="return warnDatasetStatus('<%=regStatus%>', 'upload')">
                                         Upload a document
                                     </a>
                                 </li>
@@ -856,7 +856,7 @@ else if (mode.equals("add"))
                                                     // PDF link
                                                     if (dispAll || dispPDF) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN" class="pdf"  onclick="return warnDatasetType('<%=regStatus%>', 'download')">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN" class="pdf"  onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create technical specification for this dataset
                                                             </a>
                                                         </li><%
@@ -883,7 +883,7 @@ else if (mode.equals("add"))
                                                     // MS Excel link
                                                     if (dispAll || dispXLS) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetType('<%=regStatus%>', 'download')">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
@@ -891,7 +891,7 @@ else if (mode.equals("add"))
                                                     <% }
                                                     if ((dispAll || dispXLS) && user != null) { %>
                                                          <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetType('<%=regStatus%>', 'download')">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset with drop-down boxes (BETA)
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel_dropdown"></a>
@@ -902,7 +902,7 @@ else if (mode.equals("add"))
                                                     // OpenDocument spreadsheet link
                                                     if (dispAll || dispODS) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=dst&amp;id=<%=ds_id%>" class="open-doc" onclick="return warnDatasetType('<%=regStatus%>', 'download')">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=dst&amp;id=<%=ds_id%>" class="open-doc" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an OpenDocument spreadsheet template for this dataset
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=ods"></a>
@@ -912,7 +912,7 @@ else if (mode.equals("add"))
                                                     // MS Access link
                                                     if (dispAll || dispMDB) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true" class="access" onclick="return warnDatasetType('<%=regStatus%>', 'download')">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create validation metadata for MS Access template
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=access"></a>
@@ -923,7 +923,7 @@ else if (mode.equals("add"))
                                                     if (dispAll || advancedAccess) {
                                                         %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>" class="access" onclick="return warnDatasetType('<%=regStatus%>', 'download')">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create advanced MS Access template
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=advancedMSAccess"></a>
