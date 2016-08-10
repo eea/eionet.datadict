@@ -332,10 +332,13 @@ else{ %>
                             %>
                         </td>
                         <%
-                        if (popup && clickable){
+                        if (popup){
                             %>
                             <td>
-                                [<a href="<%=selectLink%>">select</a>]
+                                <%if (clickable){
+                                    %>
+                                    [<a href="<%=selectLink%>">select</a>]
+                                <%}%>
                             </td>
                             <%
                         }

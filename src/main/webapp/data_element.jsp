@@ -773,7 +773,7 @@
         var pickMode="";
         function linkElem(){
             pickMode="link";
-            var url="search.jsp?ctx=popup&common=&link=&exclude=<%=delem_id%>";
+            var url="search.jsp?ctx=popup&common=&link=&exclude=<%=dataElement.getCheckedoutCopyID()%>";
             wLink = window.open('<%=request.getContextPath()%>'+'/'+url,"Search","height=800,width=1200,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
             if (window.focus){
                 wLink.focus();
