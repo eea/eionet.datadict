@@ -938,7 +938,7 @@
                 var isCommon = '<%=elmCommon%>';
                 var strVocabularyId = '<%=vocabularyId%>';
                 var strType = '<%=type%>';
-                var regStatus ='<%=elmRegStatus%>';
+                var regStatus = document.getElementById("reg_status_select").value;
                 var successorId = '<%=successorId%>';
                 
                 forceAttrMaxLen();
@@ -953,8 +953,9 @@
                       return false;
                     }
                     if ((regStatus.toLowerCase() == 'superseded')
-                            && successorId == null) {
-                        alert("A superseded element must be linked to its successor. You must specify the link.")
+                            && successorId == "null") {
+                        alert("A superseded element must be linked to its successor. You must specify the link.");
+                        return false;
                     }
                 }
 

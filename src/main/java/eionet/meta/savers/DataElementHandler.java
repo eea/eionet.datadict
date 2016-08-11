@@ -544,7 +544,9 @@ public class DataElementHandler extends BaseHandler {
                 if (elmRegStatus.equalsIgnoreCase("Superseded") && !Util.isEmpty(successorId)) {
                     gen.setField("SUCCESSOR", successorId);
                 }
-                else {
+                else if (elmRegStatus.equalsIgnoreCase("Superseded")){
+                    throw new Exception("You are trying to save a superseded element without a link to its successor.");
+                } else {
                     gen.setFieldExpr("SUCCESSOR", "NULL");
                 }
             }
