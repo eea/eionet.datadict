@@ -16,6 +16,8 @@
     /**
      *
      */
+    
+
     private DElemAttribute getAttributeByName(String name, Vector mAttributes) {
 
         for (int i = 0; mAttributes != null && i < mAttributes.size(); i++) {
@@ -185,6 +187,8 @@
     Vector fixedValues = null;
     String feedbackValue = null;
     ArrayList<InferenceRule> dataElementRules = null;
+    String successorId = null;
+    DataElement successorElement = null;
 
     ServletContext ctx = getServletContext();
     DDUser user = SecurityUtil.getUser(request);
@@ -237,7 +241,7 @@
         String copy_elem_id = request.getParameter("copy_elem_id");
         String dsID = request.getParameter("ds_id");
         String tableID = request.getParameter("table_id");
-
+        
         // indicates whether element is fixed values or quantitative
         String type = request.getParameter("type");
         if (type != null && type.length() == 0) {
@@ -523,7 +527,16 @@
                     elmWorkingUser = dataElement.getWorkingUser();
                     elmRegStatus = dataElement.getStatus();
                     refTables = searchEngine.getReferringTables(delem_id);
-
+                    if (elmRegStatus.equalsIgnoreCase("superseded")) {
+                        //get successorId from request
+                        successorId = dataElement.getSuccessorId();
+                        successorElement = searchEngine.getDataElement(successorId);
+                        if (successorElement == null) {
+                            request.setAttribute("DD_ERR_MSG", "This superseded data element is not linked to a successor!");
+                            request.getRequestDispatcher("error.jsp").forward(request, response);
+                            return;
+                        }
+                    }
                     Vector v = new Vector();
                     if (user == null) {
                         v.add("Recorded");
@@ -770,16 +783,19 @@
     <script type="text/javascript">
         // <![CDATA[
 
-        var pickMode="";
-        function linkElem(){
-            pickMode="link";
-            var url="search.jsp?ctx=popup&common=&link=&exclude=<%=dataElement.getCheckedoutCopyID()%>";
-            wLink = window.open('<%=request.getContextPath()%>'+'/'+url,"Search","height=800,width=1200,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
-            if (window.focus){
-                wLink.focus();
+        <% if (elmCommon) {
+        %>
+            function linkElem(checkedoutCopyId){
+                pickMode="link";
+                var url="search.jsp?ctx=popup&common=&link=&exclude="+checkedoutCopyId;
+                wLink = window.open('<%=request.getContextPath()%>'+'/'+url,"Search","height=800,width=1200,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
+                if (window.focus){
+                    wLink.focus();
+                }
             }
-        }
+        <%}%>
         
+        var pickMode="";
         function statusSelectionChanged(changedForm) {
             if (document.getElementById("reg_status_select").value.toLowerCase() == 'superseded') {
                 document.getElementById("successor").style.display = 'inline';
@@ -922,7 +938,9 @@
                 var isCommon = '<%=elmCommon%>';
                 var strVocabularyId = '<%=vocabularyId%>';
                 var strType = '<%=type%>';
-
+                var regStatus ='<%=elmRegStatus%>';
+                var successorId = '<%=successorId%>';
+                
                 forceAttrMaxLen();
                 if (!checkObligations()){
                     alert("You have not specified one of the mandatory attributes!");
@@ -933,6 +951,10 @@
                     if (strType == 'CH3' && strVocabularyId == 'null') {
                       alert("Vocabulary is not selected.");
                       return false;
+                    }
+                    if ((regStatus.toLowerCase() == 'superseded')
+                            && successorId == null) {
+                        alert("A superseded element must be linked to its successor. You must specify the link.")
                     }
                 }
 
@@ -1220,20 +1242,23 @@
         }
 
         
-        function pickElem(id){
+        function pickElemForLink(id, name){
             if (pickMode=="link") {
-                document.forms["form1"].elements["successorId"].value = id;
-                document.forms["form1"].submit();
+                document.forms["form1"].elements["successor_id"].value = id;
+                document.getElementById("successorName").href = "<%=request.getContextPath()%>/dataelements/"+id;
+                document.getElementById("successorName").innerHTML = name;
+                document.getElementById("successorName").onclick = "return true";
                 return true;
             }
-            else {
+        }
+        
+        function pickElem(id) {
                 document.forms["form1"].elements["copy_elem_id"].value=id;
                 document.forms["form1"].elements["mode"].value = "copy";
                 document.forms["form1"].submit();
                 return true;
-            }
         }
-
+        
         function validForXMLTag(str, isCommon){
             var colonCount = 0;
             // if empty string not allowed for XML tag
@@ -1696,6 +1721,10 @@
                                             <!-- RegistrationStatus, relevant for common elements only -->
                                             <%
                                                 if (elmCommon) {
+                                                    String checkedoutCopyID = null;
+                                                    if (dataElement!=null) {
+                                                        checkedoutCopyID = dataElement.getCheckedoutCopyID();
+                                                    }
                                             %>
                                                 <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
@@ -1712,10 +1741,6 @@
                                                         %>
                                                     <td class="simple_attr_value">
                                                         <%
-                                                        DataElement successorElement = null;
-                                                        if(dataElement.getSuccessorId()!=null) {
-                                                            successorElement = searchEngine.getDataElement(dataElement.getSuccessorId());
-                                                        }
                                                         if (mode.equals("view")){ %>
                                                             <%=Util.processForDisplay(elmRegStatus)%>
                                                             <%
@@ -1751,43 +1776,54 @@
                                                         }
                                                         else {
                                                         %>
+                                                            <c:set var="selected" value=""/>
                                                             <select id="reg_status_select" name="reg_status" onchange="statusSelectionChanged('form1')"> <%
                                                                     Vector regStatuses = "add".equals(mode) ? verMan.getSettableRegStatuses() : verMan.getRegStatuses();
                                                                 for (int i = 0; i < regStatuses.size(); i++) {
                                                                         String status = (String) regStatuses.get(i);
-                                                                        String selected = status.equals(elmRegStatus) ? "selected=\"selected\"" : "";
+                                                                        String selected = status.equals(elmRegStatus) ? "selected" : "";
                                                                         String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
                                                                         String title = disabled.length() > 0 ? "title=\"This status not allowed any more when adding/saving.\"" : "";
                                                                         String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
                                                                         if (status.equalsIgnoreCase("retired") || status.equalsIgnoreCase("superseded")) {
                                                                             disabled = "";
                                                                         }
-                                                            %>
+                                                                        if (selected.equals("selected")) {%>
+                                                                        <c:set var="selected" value="<%=status%>"/>
+                                                                        <%}
+                                                                    %>
                                                                         <option <%=style%> <%=selected%> <%=disabled%> <%=title%> value="<%=Util.processForDisplay(status)%>"><%=Util.processForDisplay(status)%></option><%
                                                                     }
                                                                 %>
                                                             </select>
-                                                                <%String showSuccessor = elmRegStatus.equalsIgnoreCase("Superseded") ? "inline" : "none";%>
-                                                                <div id="successor" style="display: <%=showSuccessor%>;">
-                                                                        &emsp;
-                                                                        <small>Replaced by: </small>
-                                                                        <%if (successorElement != null) {      
-                                                                        %>
-                                                                            <a  href="<%=request.getContextPath()%>/dataelements/<%=successorElement.getID()%>">
-                                                                                <i><c:out value="<%=successorElement.getShortName()%>"/></i>
-                                                                            </a>
-                                                                        <%} else {%>
-                                                                        <small><i>Not defined yet</i></small>
-                                                                        <%}%>
-                                                                        &emsp;
-                                                                        <a href="javascript:linkElem()">
-                                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/edit.gif" width="16" height="16" alt=""/>
-                                                                        </a>
-                                                                        <input name="successorId" type="hidden" value="<%=dataElement.getSuccessorId()%>"/>
-                                                                </div>
-                                                                <%
-                                                                }
-                                                            %>
+                                                            <c:set var="display" value="none"/>
+                                                            <c:set var="successorName" value="Not defined yet"/>
+                                                            <c:set var="enableSuccessorLink" value="false"/>
+                                                            <c:set var="successorId" value=""/>
+                                                            <c:set var="checkedoutCopyId" value="<%=checkedoutCopyID%>"/>
+                                                            <%if (successorElement != null){ %>
+                                                                <c:set var="successorName" value="<%=successorElement.getShortName()%>"/>
+                                                                <c:set var="enableSuccessorLink" value="true"/> 
+                                                                <c:set var="successorId" value="<%=successorElement.getID()%>"/>
+                                                            <%}%>
+                                                            <c:if test="${selected eq 'Superseded'}">
+                                                                <c:set var="display" value="inline"/>
+                                                            </c:if>
+                                                            <div id="successor" style="display: ${display}">
+                                                                &emsp;
+                                                                <small>Replaced by: </small>
+                                                                <a id="successorName" href="<%=request.getContextPath()%>/dataelements/${successorId}" onclick="return ${enableSuccessorLink}">
+                                                                    <i>
+                                                                        <c:out value="${successorName}"/>
+                                                                    </i>
+                                                                </a>
+                                                                &emsp;
+                                                                <a href="javascript:linkElem(${checkedoutCopyId})">
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/edit.gif" width="16" height="16" alt=""/>
+                                                                </a>
+                                                                <input type="hidden" name="successor_id" value="${successorId}"/>
+                                                            </div>
+                                                        <%}%>
                                                     </td>
 
                                                     <%

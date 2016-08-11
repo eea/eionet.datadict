@@ -104,12 +104,15 @@
         }
         <%
         if (popup){ %>
-            function pickElem(elmID, rowIndex){
+            
+            function pickElem(elmID, elmName, rowIndex){
                 // make sure the opener exists and is not closed
                 if (opener && !opener.closed) {
                     // if the opener has pickElem(elmID) function at it returns true, close this popup
                     // else don't close it (multiple selection might be wanted)
-                    if (window.opener.pickElem(elmID)==true)
+                    if (window.opener.pickElemForLink(elmID, elmName)==true)
+                        closeme();
+                    else if (window.opener.pickElem(elmID)==true)
                         closeme();
                     else
                         hideRow(rowIndex);
@@ -293,8 +296,7 @@ else{ %>
                         viewLink.append("/?popup=");
                     }
 
-                    StringBuffer selectLink = new StringBuffer("javascript:pickElem(");
-                    selectLink.append(delem_id).append(",").append(displayed+1).append(")");
+                    String selectLink = "javascript:pickElem("+delem_id+",\'"+delem_name+"\',"+String.valueOf(displayed+1)+")";
 
                     boolean clickable = status!=null ? !searchEngine.skipByRegStatus(status) : true;
                     if (clickable) {

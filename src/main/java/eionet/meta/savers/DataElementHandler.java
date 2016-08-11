@@ -540,7 +540,7 @@ public class DataElementHandler extends BaseHandler {
             String elmRegStatus = req.getParameter("reg_status");
             if (!Util.isEmpty(elmRegStatus)) {
                 gen.setField("REG_STATUS", elmRegStatus);
-                String successorId = req.getParameter("successorId");
+                String successorId = req.getParameter("successor_id");
                 if (elmRegStatus.equalsIgnoreCase("Superseded") && !Util.isEmpty(successorId)) {
                     gen.setField("SUCCESSOR", successorId);
                 }
