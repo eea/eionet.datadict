@@ -35,6 +35,7 @@ import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
 import eionet.util.sql.SQLTransaction;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -53,7 +54,11 @@ public class VersionManager {
     /** Only these registration statuses can be set for a new/existing dataset or common data element. */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static final Vector SETTABLE_REGISTRATION_STATUSES = new Vector(Arrays.asList("Incomplete", "Recorded", "Released"));
+    
+    /** These registration statuses indicate that the referenced dataset or common data element is deprecated */
+    public static final Vector DEPRECATED_REGISTRATION_STATUSES = new Vector(Arrays.asList("Retired", "Superseded"));
 
+    
     private Connection conn = null;
     private DDSearchEngine searchEngine = null;
     private DDUser user = null;
@@ -1136,7 +1141,11 @@ public class VersionManager {
     public Vector getSettableRegStatuses() {
         return SETTABLE_REGISTRATION_STATUSES;
     }
-
+    
+    public Vector getDeprecatedRegStatuses() {
+        return DEPRECATED_REGISTRATION_STATUSES;
+    }
+    
     /**
      * Needed for checking if the namespace should be deleted as well
      */

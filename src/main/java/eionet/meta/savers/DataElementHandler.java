@@ -25,6 +25,8 @@ import org.apache.log4j.Logger;
 
 import eionet.acl.AccessController;
 import eionet.acl.SignOnException;
+import eionet.datadict.errors.BadRequestException;
+import eionet.datadict.errors.UserAuthorizationException;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
@@ -492,7 +494,6 @@ public class DataElementHandler extends BaseHandler {
         String switchType = req.getParameter("switch_type");
         
         String elmType = req.getParameter("curType");
-
         // if check-in, do the check-in and exit
         if (checkIn != null && checkIn.equalsIgnoreCase("true")) {
 
@@ -539,13 +540,29 @@ public class DataElementHandler extends BaseHandler {
         if (elmCommon) {
             String elmRegStatus = req.getParameter("reg_status");
             if (!Util.isEmpty(elmRegStatus)) {
+                //Security if block: Verify that user has permissions to change the registration status to deprecated
+                if (VersionManager.DEPRECATED_REGISTRATION_STATUSES.contains(elmRegStatus)){
+                     // setup search engine object
+                    if (searchEngine == null) {
+                        searchEngine = new DDSearchEngine(conn, "");
+                    }
+                    DataElement nonUpdatedElement = searchEngine.getDataElement(delem_id);
+                    if (nonUpdatedElement != null) {
+                        String nonUpdatedRegStatus = nonUpdatedElement.getStatus();
+                        if (!nonUpdatedRegStatus.equals(elmRegStatus)){
+                            if (user == null || !SecurityUtil.hasPerm(user.getUserName(), "/deprecated", "x")){
+                                throw new UserAuthorizationException("You are not authorized to turn the status of a data element into "+elmRegStatus);
+                            }
+                        } 
+                    }
+                }
                 gen.setField("REG_STATUS", elmRegStatus);
                 String successorId = req.getParameter("successor_id");
                 if (elmRegStatus.equalsIgnoreCase("Superseded") && !Util.isEmpty(successorId)) {
                     gen.setField("SUCCESSOR", successorId);
                 }
                 else if (elmRegStatus.equalsIgnoreCase("Superseded")){
-                    throw new Exception("You are trying to save a superseded element without a link to its successor.");
+                    throw new BadRequestException("You are trying to save a superseded element without a link to its successor.");
                 } else {
                     gen.setFieldExpr("SUCCESSOR", "NULL");
                 }

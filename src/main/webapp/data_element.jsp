@@ -1,3 +1,5 @@
+<%@page import="eionet.acl.AccessControlListIF"%>
+<%@page import="eionet.acl.AccessController"%>
 <%@page import="eionet.meta.dao.mysql.DataElementDAOImpl"%>
 <%@page import="eionet.meta.dao.domain.InferenceRule"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
@@ -434,11 +436,12 @@
         // security flags for common elements only
         boolean editPrm = false;
         boolean editReleasedPrm = false;
+        boolean setDeprecatedPrm = false;
         boolean canCheckout = false;
         boolean canNewVersion = false;
         boolean isMyWorkingCopy = false;
         boolean isLatestElm = false;
-
+        
         Connection conn = null;
 
         // the whole page's try block
@@ -553,6 +556,9 @@
                             && SecurityUtil.hasPerm(user.getUserName(),
                                     "/elements/" + delemIdf, "er");
 
+                    setDeprecatedPrm = user != null
+                            && SecurityUtil.hasPerm(user.getUserName(), "/deprecated", "x");
+                    
                     canNewVersion = !dataElement.isWorkingCopy()
                             && elmWorkingUser == null
                             && elmRegStatus != null && user != null
@@ -577,7 +583,7 @@
                         else
                             canCheckout = editPrm || editReleasedPrm;
                     }
-
+                        
                     isMyWorkingCopy = elmCommon
                             && dataElement.isWorkingCopy()
                             && elmWorkingUser != null && user != null
@@ -1786,7 +1792,7 @@
                                                                         String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
                                                                         String title = disabled.length() > 0 ? "title=\"This status not allowed any more when adding/saving.\"" : "";
                                                                         String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
-                                                                        if (status.equalsIgnoreCase("retired") || status.equalsIgnoreCase("superseded")) {
+                                                                        if ((status.equalsIgnoreCase("retired") || status.equalsIgnoreCase("superseded")) && setDeprecatedPrm) {
                                                                             disabled = "";
                                                                         }
                                                                         if (selected.equals("selected")) {%>
