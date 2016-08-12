@@ -540,22 +540,15 @@ public class DataElementHandler extends BaseHandler {
         if (elmCommon) {
             String elmRegStatus = req.getParameter("reg_status");
             if (!Util.isEmpty(elmRegStatus)) {
+                
                 //Security if block: Verify that user has permissions to change the registration status to deprecated
                 if (VersionManager.DEPRECATED_REGISTRATION_STATUSES.contains(elmRegStatus)){
-                     // setup search engine object
-                    if (searchEngine == null) {
-                        searchEngine = new DDSearchEngine(conn, "");
-                    }
-                    DataElement nonUpdatedElement = searchEngine.getDataElement(delem_id);
-                    if (nonUpdatedElement != null) {
-                        String nonUpdatedRegStatus = nonUpdatedElement.getStatus();
-                        if (!nonUpdatedRegStatus.equals(elmRegStatus)){
-                            if (user == null || !SecurityUtil.hasPerm(user.getUserName(), "/deprecated", "x")){
-                                throw new UserAuthorizationException("You are not authorized to turn the status of a data element into "+elmRegStatus);
-                            }
-                        } 
-                    }
+                     if (_isStatusChanged(elmRegStatus) && !_checkSetDeprecatedPermissions()) {
+                         throw new UserAuthorizationException("You are not authorized to turn the status of an element into "+elmRegStatus+"!");
+                     }
                 }
+                
+                //Set field for registration status
                 gen.setField("REG_STATUS", elmRegStatus);
                 String successorId = req.getParameter("successor_id");
                 if (elmRegStatus.equalsIgnoreCase("Superseded") && !Util.isEmpty(successorId)) {
@@ -593,6 +586,23 @@ public class DataElementHandler extends BaseHandler {
         handleDatatypeConversion(req.getParameter("datatype_conversion"));
     }
 
+    private boolean _isStatusChanged(String elmRegStatus) throws SQLException {
+         // setup search engine object
+        if (searchEngine == null) {
+            searchEngine = new DDSearchEngine(conn, "");
+        }
+        DataElement nonUpdatedElement = searchEngine.getDataElement(delem_id);
+        if (nonUpdatedElement != null) {
+            String nonUpdatedRegStatus = nonUpdatedElement.getStatus();
+            return !nonUpdatedRegStatus.equals(elmRegStatus);
+        }
+        return false;
+    }
+        
+    private boolean _checkSetDeprecatedPermissions() throws Exception {
+        return user!=null && SecurityUtil.hasPerm(user.getUserName(), "/deprecated", "x");
+    }
+    
     /**
      *
      * @param conversion
