@@ -939,7 +939,7 @@
                 var strVocabularyId = '<%=vocabularyId%>';
                 var strType = '<%=type%>';
                 var regStatus = document.getElementById("reg_status_select").value;
-                var successorId = '<%=successorId%>';
+                var successorId = document.forms["form1"].elements["successor_id"].value;
                 
                 forceAttrMaxLen();
                 if (!checkObligations()){
