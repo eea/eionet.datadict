@@ -66,6 +66,7 @@
         String sel_type = request.getParameter("sel_type");
         String short_name = request.getParameter("short_name");
         String idfier = request.getParameter("idfier");
+        String contextParam = request.getParameter("ctx");
         
         conn = ConnectionUtil.getConnection();
 
@@ -211,6 +212,8 @@
         if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")) {
             request.setAttribute("canAddDataset", "true");
         }
+        request.setAttribute("ctx", contextParam);
+        boolean isPopup = contextParam!=null && contextParam.equals("popup");
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -220,6 +223,16 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/modal_dialog.js"></script>
     <script type="text/javascript">
     // <![CDATA[
+        function pickDataset(id, shortName){
+            if (window.opener.pickDataset(id,shortName)){
+               window.close();
+            } else {
+                window.alert("An error occured! Popup window is closing");
+                window.close();
+            }
+            return;
+        }
+
         function deleteDataset() {
             // first confirm if the deletetion is about to take place at all
             var b = confirm("Selected datasets will be deleted! You will be given a chance to delete them permanently or save them for restoring later. Click OK, if you want to continue. Otherwise click Cancel.");
@@ -350,16 +363,17 @@
     </script>
 </head>
 <body>
-<div id="container">
-    <jsp:include page="nlocation.jsp" flush="true">
-        <jsp:param name="name" value="Datasets"/>
-        <jsp:param name="helpscreen" value="datasets"/>
-    </jsp:include>
-
-    <c:set var="currentSection" value="datasets" />
-    <%@ include file="/pages/common/navigation.jsp" %>
-
-    <div id="workarea">
+    <%
+    if (!isPopup){
+        %>
+        <div id="container">
+        <jsp:include page="nlocation.jsp" flush="true">
+            <jsp:param name="name" value="Datasets"/>
+            <jsp:param name="helpscreen" value="datasets"/>
+        </jsp:include>
+        <c:set var="currentSection" value="datasets" />
+        <%@ include file="/pages/common/navigation.jsp" %>
+        <div id="workarea">
         <c:choose>
             <c:when test="${param.wrk_copies eq 'true'}">
                 <h1>Working copies of dataset definitions</h1>
@@ -371,8 +385,7 @@
         <c:if test="${empty user}">
             <p class="advise-msg">Note: Datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p>
         </c:if>
-
-        <div id="drop-operations">
+            <div id="drop-operations">
             <ul>
                 <li class="search open"><a class="searchSection" href="#" title="Search datasets">Search</a></li>
                 <c:if test="${not empty user}">
@@ -391,6 +404,19 @@
                 </c:if>
             </ul>
         </div>
+    <%
+    }
+    else{ %>
+        <div id="pagehead">
+            <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
+            <div id="networktitle">Eionet</div>
+            <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
+            <div id="sitetagline">This service is part of Reportnet</div>
+        </div> <!-- pagehead -->
+        <div id="workarea">
+            <h1>Search datasets</h1>
+        <%
+    }%> 
         <form id="searchDatasetsForm" action="${pageContext.request.contextPath}/datasets.jsp" method="get">
             <div id="filters">
                 <table class="filter">
@@ -577,6 +603,7 @@
                         <input type="hidden" name="type" value="DST"/>
                         <!-- collect all the attributes already used in criterias -->
                         <input type="hidden" name="collect_attrs" value="<%=Util.processForDisplay(collect_attrs.toString(), true)%>"/>
+                        <input type="hidden" name="ctx" value="${ctx}"/>
                     </div>
                 </div>
             </form>
@@ -662,9 +689,13 @@
                                 </c:url>
                                 <a title="Sort on Status" href="${regStatusSortingUrl}">Status</a>
                             </th>
+                        <%if (!isPopup) {%>    
                             <th>
                                 Tables
                             </th>
+                        <%} else {%>
+                            <th></th>
+                        <%}%>
                         </tr>
                   </thead>
                   <tbody>
@@ -700,6 +731,7 @@
                             <td>
                                 <dd:datasetRegStatus value="${dataset.status}" />
                             </td>
+                        <%if (!isPopup) {%>    
                             <td>
                                 <c:forEach items="${entry.value}" var="table">
                                     <c:choose>
@@ -717,6 +749,11 @@
                                     <br/>
                                 </c:forEach>
                             </td>
+                        <%} else {%>
+                            <td>
+                                <a href="javascript: pickDataset('${dataset.ID}', '${dataset.shortName}')">[Select]</a>
+                            </td>
+                        <%}%>
                         </tr>
                     </c:forEach>
                 </tbody>

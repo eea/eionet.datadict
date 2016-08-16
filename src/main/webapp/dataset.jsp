@@ -1,3 +1,4 @@
+<%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
 <%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%>
@@ -62,6 +63,8 @@
     Vector tables=null;
     Vector otherVersions = null;
     String feedbackValue = null;
+    String successorId = null;
+    Dataset successorDataset = null;
 
     ServletContext ctx = getServletContext();
     DDUser user = SecurityUtil.getUser(request);
@@ -241,6 +244,7 @@
         boolean imgVisual = false;
         boolean editPrm = false;
         boolean editReleasedPrm = false;
+        boolean setDeprecatedPrm = false;
         boolean advancedAccess = false;
         boolean canCheckout = false;
         boolean canNewVersion = false;
@@ -279,7 +283,19 @@
                 editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
                 editReleasedPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "er");
                 advancedAccess = SecurityUtil.hasPerm(user != null ? user.getUserName() : null, "/datasets/" + dataset.getIdentifier(), DDUser.MSACCESS_ADVANCED_PRM);
-
+                setDeprecatedPrm = user != null 
+                        && SecurityUtil.hasPerm(user.getUserName(), "/deprecated", "x");
+                
+                if (regStatus.equalsIgnoreCase("Superseded")){
+                    successorId = dataset.getSuccessorId();
+                    successorDataset = searchEngine.getDataset(successorId);
+                    if (successorDataset == null) {
+                        request.setAttribute("DD_ERR_MSG", "This superseded dataset is not linked to a successor!");
+                        request.getRequestDispatcher("error.jsp").forward(request, response);
+                        return;
+                    }
+                }
+                
                 Vector v = null;
                 if (user == null) {
                     v = new Vector();
@@ -433,6 +449,22 @@
     <script type="text/javascript">
     // <![CDATA[
 
+        function linkDataset(checkedoutCopyId){
+            var url="datasets.jsp?ctx=popup&exclude="+checkedoutCopyId;
+            wLink = window.open('<%=request.getContextPath()%>'+'/'+url,"Search","height=800,width=1200,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
+            if (window.focus){
+                wLink.focus();
+            }
+        }
+        
+        function pickDataset(id, shortName){
+            document.forms["form1"].elements["successor_id"].value = id;
+            document.getElementById("successorName").href = "<%=request.getContextPath()%>/datasets/"+id;
+            document.getElementById("successorName").innerHTML = shortName;
+            document.getElementById("successorName").onclick = "return true";
+            return true;
+        }
+        
         function statusSelectionChanged(changedForm) {
             if (document.getElementById("reg_status_select").value.toLowerCase() == 'superseded') {
                 document.getElementById("successor").style.display = 'inline';
@@ -1061,12 +1093,20 @@ else if (mode.equals("add"))
                                                         <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory"  title="Mandatory"/>
                                                     </td><%
                                                 }
+                                                
                                                 %>
                                                 <td class="simple_attr_value">
                                                     <%
                                                     if (mode.equals("view")) { %>
                                                         <%=Util.processForDisplay(regStatus)%>
                                                         <%
+                                                        if (regStatus.equalsIgnoreCase("Superseded")) {%>
+                                                            <small> by 
+                                                                <a  href="<%=request.getContextPath()%>/datasets/<%=successorDataset.getID()%>">
+                                                                    <i><c:out value="<%=successorDataset.getShortName()%>"/></i>
+                                                                </a>
+                                                            </small>
+                                                        <%}
                                                         long timestamp = dataset.getDate() == null ? 0 : Long.parseLong(dataset.getDate());
                                                         String dateString = timestamp == 0 ? "" : eionet.util.Util.releasedDate(timestamp);
                                                         String dateTimeString = timestamp == 0 ? "" : dateString + " " + eionet.util.Util.hoursMinutesSeconds(timestamp);
@@ -1091,6 +1131,7 @@ else if (mode.equals("add"))
                                                         }
                                                     }
                                                     else{ %>
+                                                        <c:set var="selected" value=""/>
                                                         <select id="reg_status_select" name="reg_status" onchange="statusSelectionChanged('form1')"> <%
                                                             Vector regStatuses = "add".equals(mode) ? verMan.getSettableRegStatuses() : verMan.getRegStatuses();
                                                             for (int i = 0; i < regStatuses.size(); i++) {
@@ -1099,21 +1140,43 @@ else if (mode.equals("add"))
                                                                 String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
                                                                 String title = disabled.length() > 0 ? "table=\"This status not allowed any more when adding/saving.\"" : "";
                                                                 String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
-                                                                if (status.equalsIgnoreCase("retired") || status.equalsIgnoreCase("superseded")) {
+                                                                if ((status.equalsIgnoreCase("retired") || status.equalsIgnoreCase("superseded")) && setDeprecatedPrm) {
                                                                     disabled="";
                                                                 }
+                                                                if (!StringUtils.isBlank(selected)){%>
+                                                                    <c:set var="selected" value="<%=status%>"/>
+                                                                <%}
                                                                 %>
                                                                 <option <%=style%> <%=selected%> <%=disabled%> <%=title%> value="<%=Util.processForDisplay(status)%>"><%=Util.processForDisplay(status)%></option><%
 
                                                             } %>
                                                         </select>
-                                                            <%String showSuccessor = regStatus.equalsIgnoreCase("Superseded") ? "inline" : "none"; %>
-                                                        <div id="successor" style="display: <%=showSuccessor%>;">
-                                                           <%if (dataset.getSuccessorId()!=null) {%>
-                                                            &emsp;&emsp;<input name="successorId" type="text" value="<%=dataset.getSuccessorId()%>"/>
-                                                           <%}else {%>
-                                                            &emsp;&emsp;<input name="successorId" type="text"/>
-                                                           <%}%>
+                                                        <c:set var="display" value="none"/>
+                                                        <c:set var="successorName" value="Not defined yet"/>
+                                                        <c:set var="enableSuccessorLink" value="false"/>
+                                                        <c:set var="successorId" value=""/>
+                                                        <c:set var="checkedoutCopyId" value="<%=dataset.getCheckedoutCopyID()%>"/>
+                                                        <%if (successorDataset != null){ %>
+                                                            <c:set var="successorName" value="<%=successorDataset.getShortName()%>"/>
+                                                            <c:set var="enableSuccessorLink" value="true"/> 
+                                                            <c:set var="successorId" value="<%=successorDataset.getID()%>"/>
+                                                        <%}%>
+                                                        <c:if test="${selected eq 'Superseded'}">
+                                                            <c:set var="display" value="inline"/>
+                                                        </c:if>
+                                                        <div id="successor" style="display: ${display};">
+                                                            &emsp;
+                                                            <small>Replaced by: </small>
+                                                            <a id="successorName" href="<%=request.getContextPath()%>/datasets/${successorId}" onclick="return ${enableSuccessorLink}">
+                                                                <i>
+                                                                    <c:out value="${successorName}"/>
+                                                                </i>
+                                                            </a>
+                                                            &emsp;
+                                                            <a href="javascript:linkDataset(${checkedoutCopyId})">
+                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/edit.gif" width="16" height="16" alt=""/>
+                                                            </a>
+                                                            <input type="hidden" name="successor_id" value="${successorId}"/>
                                                         </div>
                                                             <%
                                                     }
@@ -1826,6 +1889,6 @@ catch (Exception e) {
 }
 finally {
     try { if (conn!=null) conn.close();
-    } catch (SQLException e) {}
+    } catch (SQLException e) {System.out.println("epiasa exception to "+e.getMessage());}
 }
 %>

@@ -20,8 +20,12 @@ import org.apache.log4j.Logger;
 
 import eionet.acl.AccessController;
 import eionet.acl.SignOnException;
+import eionet.datadict.errors.BadRequestException;
+import eionet.datadict.errors.UserAuthorizationException;
+import eionet.meta.DDSearchEngine;
 
 import eionet.meta.DDUser;
+import eionet.meta.DataElement;
 import eionet.meta.Dataset;
 import eionet.meta.VersionManager;
 import eionet.util.SecurityUtil;
@@ -302,11 +306,22 @@ public class DatasetHandler extends BaseHandler {
 
         // set the status
         String status = req.getParameter("reg_status");
-        String successorId = req.getParameter("successorId");
+        String successorId = req.getParameter("successor_id");
         if (!Util.isEmpty(status)) {
+            
+            //Security if block: Verify that user has permissions to change the registration status to deprecated
+            if (VersionManager.DEPRECATED_REGISTRATION_STATUSES.contains(status)) {
+                if (_isStatusChanged(status) && !_checkSetDeprecatedPermissions()) {
+                    throw new UserAuthorizationException("You are not authorized to turn the status of an element into " + status + "!");
+                }
+            }
+            
+            //Set field for registration status
             gen.setField("REG_STATUS", status);
             if (status.equalsIgnoreCase("Superseded") && !Util.isEmpty(successorId)){
                 gen.setField("SUCCESSOR", successorId);
+            } else if (status.equalsIgnoreCase("Superseded")) {
+                throw new BadRequestException("You are trying to save a superseded element without a link to its successor.");
             } else {
                 gen.setFieldExpr("SUCCESSOR", "NULL");
             }
@@ -332,6 +347,22 @@ public class DatasetHandler extends BaseHandler {
 
         deleteAttributes();
         processAttributes();
+    }
+    
+     private boolean _isStatusChanged(String newStatus) throws SQLException {
+         // setup search engine object
+        DDSearchEngine searchEngine= new DDSearchEngine(conn, "");
+        
+        Dataset nonUpdatedDataset = searchEngine.getDataset(ds_id);
+        if (nonUpdatedDataset != null) {
+            String nonUpdatedRegStatus = nonUpdatedDataset.getStatus();
+            return !nonUpdatedRegStatus.equals(newStatus);
+        }
+        return false;
+    }
+     
+    private boolean _checkSetDeprecatedPermissions() throws Exception {
+        return user!=null && SecurityUtil.hasPerm(user.getUserName(), "/deprecated", "x");
     }
 
     private void restore() throws Exception {
