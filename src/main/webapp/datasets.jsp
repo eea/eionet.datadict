@@ -1,3 +1,4 @@
+<%@page import="org.apache.commons.lang.ArrayUtils"%>
 <%@ page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.dao.domain.DatasetRegStatus,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil,org.apache.commons.lang.StringUtils"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
@@ -67,6 +68,12 @@
         String short_name = request.getParameter("short_name");
         String idfier = request.getParameter("idfier");
         String contextParam = request.getParameter("ctx");
+        String exclude = request.getParameter("exclude");
+        String[] excludedList = {};
+        List<Integer> excludedIndexes = new ArrayList();
+        if (exclude!=null){ 
+            excludedList = exclude.split(",");
+        }
         
         conn = ConnectionUtil.getConnection();
 
@@ -192,6 +199,10 @@
         Map<Dataset, Vector<DsTable>> datasetsToTables = new LinkedHashMap();
         Map<String, Boolean> deletableDatasets = new LinkedHashMap();
         for (Dataset dataset : datasets) {
+            if (ArrayUtils.contains(excludedList, dataset.getID())){
+                excludedIndexes.add(datasets.indexOf(dataset));
+                continue;
+            }
             datasetsToTables.put(dataset, searchEngine.getDatasetTables(dataset.getID(), true));
             
             boolean canDelete = !dataset.isWorkingCopy() && dataset.getWorkingUser()==null && dataset.getStatus()!=null && user!=null;
@@ -206,6 +217,13 @@
             }
             deletableDatasets.put(dataset.getID(), canDelete);
         }
+        
+        for (Integer indexToRemove : excludedIndexes) {
+            int toRemove = indexToRemove;
+            datasets.remove(toRemove);
+        }
+        
+        
         request.setAttribute("datasets", datasetsToTables);
         request.setAttribute("deletableDatasets", deletableDatasets);
         request.setAttribute("user", user);
@@ -700,7 +718,7 @@
                   </thead>
                   <tbody>
                     <c:forEach items="${datasets}" var="entry" varStatus="row">
-                        <c:set var="dataset" value="${entry.key}" />
+                        <c:set var="dataset" value="${entry.key}" />   
                         <tr class="${(row.index + 1) % 2 != 0 ? 'odd' : 'even'}">
                             <c:if test="${not empty user}">
                                 <td>

@@ -451,7 +451,7 @@
 
         function linkDataset(checkedoutCopyId){
             var url="datasets.jsp?ctx=popup&exclude="+checkedoutCopyId;
-            wLink = window.open('<%=request.getContextPath()%>'+'/'+url,"Search","height=800,width=1200,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
+            wLink = window.open('<%=request.getContextPath()%>'+'/'+url,"Search","height=800,width=1220,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
             if (window.focus){
                 wLink.focus();
             }
