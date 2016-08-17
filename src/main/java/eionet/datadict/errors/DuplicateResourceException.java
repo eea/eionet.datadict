@@ -16,10 +16,5 @@ public class DuplicateResourceException extends ConflictException {
     public DuplicateResourceException(Throwable cause) {
         super(cause);
     }
-
-    @Override
-    public String getMessage() {
-        return String.format("%s with %s already exists", this.resourceType.toString(), this.resourceIdInfo.getIdDescription());
-    }
     
 }

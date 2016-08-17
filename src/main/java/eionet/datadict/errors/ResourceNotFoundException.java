@@ -17,10 +17,5 @@ public class ResourceNotFoundException extends BadRequestException {
     public ResourceNotFoundException(Throwable cause) {
         super(cause);
     }
-
-    @Override
-    public String getMessage() {
-        return String.format("Could not find %s with %s", resourceType.toString().toLowerCase(), resourceIdInfo.getIdDescription());
-    }
     
 }
