@@ -2021,6 +2021,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <modifyDataType tableName="M_ATTRIBUTE" 
                         columnName="DISP_TYPE" 
                         newDataType="enum('text','textarea','select','image','vocabulary')"/>
+        <addDefaultValue tableName="M_ATTRIBUTE" columnName="DISP_TYPE" defaultValue="text"/>
     </changeSet>
     
     <changeSet author="kopanalk" id="rev-151">
