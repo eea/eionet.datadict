@@ -63,6 +63,16 @@ public class VocabularySetApiActionBeanTest {
             actionBean.setWebApiAuthService(webApiAuthService);
             actionBean.setErrorPageService(errorPageService);
         }
+
+        @Override
+        public boolean shouldReplaceActionBean() {
+            return false;
+        }
+
+        @Override
+        public ActionBean getStubActionBeanFromExecutionContextActionBean(ActionBean bean) {
+            return null;
+        }
     }
 
     @Mock

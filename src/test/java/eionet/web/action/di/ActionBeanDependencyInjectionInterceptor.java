@@ -32,6 +32,10 @@ public class ActionBeanDependencyInjectionInterceptor implements Interceptor {
         ActionBean bean = ec.getActionBean();
         
         if (dependencyInjector.accepts(bean)) {
+            if (dependencyInjector.shouldReplaceActionBean() && ec.getLifecycleStage().equals(LifecycleStage.CustomValidation)) {
+                ec.setActionBean(dependencyInjector.getStubActionBeanFromExecutionContextActionBean(bean));
+                bean = ec.getActionBean();
+            }
             dependencyInjector.injectDependencies(bean);
         }
 

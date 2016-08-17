@@ -61,6 +61,16 @@ public class DataElementFixedValuesActionBeanTest {
             actionBean.setViewModelBuilder(viewModelBuilder);
             actionBean.setErrorPageService(errorPageService);
         }
+
+        @Override
+        public boolean shouldReplaceActionBean() {
+            return false;
+        }
+
+        @Override
+        public ActionBean getStubActionBeanFromExecutionContextActionBean(ActionBean bean) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
         
     }
     

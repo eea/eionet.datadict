@@ -31,6 +31,8 @@ import org.apache.commons.lang.StringUtils;
 
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * JSTL functions to be used in JSP.
@@ -233,4 +235,10 @@ public final class JstlFunctions {
     public static char checkmark(boolean value) {
         return value ? '\u2713' : '\u2717';
     }
+    
+    public static Object[] getEnumValues(String enumName) 
+            throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+        return (Object[]) Class.forName(enumName).getMethod("values").invoke(null);
+    }
+    
 }

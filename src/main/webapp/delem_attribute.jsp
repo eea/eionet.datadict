@@ -108,9 +108,14 @@
 
                     if (mode.equals("add")){
                         String id = handler.getLastInsertID();
-                        if (id != null && id.length()!=0)
-                            redirUrl = redirUrl + "delem_attribute.jsp?mode=edit&attr_id=" + id + "&type=" + type;
-
+                        if (id != null && id.length()!=0){
+                            if (type.equals(DElemAttribute.TYPE_SIMPLE)){
+                                redirUrl = redirUrl + "attribute/edit/" + id;
+                            }
+                            else {
+                                redirUrl = redirUrl + "delem_attribute.jsp?mode=edit&attr_id=" + id + "&type=" + type;
+                            }
+                        }
                         if (history!=null){
                             int idx = history.getCurrentIndex();
                             if (backUrl.indexOf("mode=add")>0){
@@ -327,14 +332,24 @@
         }
 
         function goToEdit(){
-            document.location.assign("delem_attribute.jsp?attr_id=<%=attr_id%>&type=<%=type%>&mode=edit");
+            if (<%=type%>=='SIMPLE'){
+                 document.location.assign("attribute/edit/<%=attr_id%>");
+            }
+            else {
+                document.location.assign("delem_attribute.jsp?attr_id=<%=attr_id%>&type=<%=type%>&mode=edit");
+            }
         }
 
         function fixType(){
             var type = document.forms["form1"].typeSelect.value;
             if (type == null || type.length==0)
                 return;
-            document.location.assign("delem_attribute.jsp?mode=add&type=" + type);
+            if (type=='SIMPLE'){
+                document.location.assign("attribute/add");
+            }
+            else {
+                document.location.assign("delem_attribute.jsp?mode=add&type=" + type);
+            }
         }
 
         function openFxValues(){
