@@ -164,7 +164,13 @@ function applySearchToggle(searchFormId) {
 }
 
 function applyExportOptionsToggle() {
-    jQuery("#drop-operations ul").append('<li class="expand"><a id="exportLink" href="">Exports</a></li>');
+    var $dropOperations = jQuery("#drop-operations ul");
+    if ($dropOperations.length) {
+        $dropOperations.append('<li class="expand"><a id="exportLink" href="#">Exports</a></li>');
+    } else {
+        jQuery("#form1").before('<div id="drop-operations"><ul><li class="expand"><a id="exportLink" href="#">Exports</a></li></ul></div>');
+    }
+
     jQuery("a#exportLink").click(function() {
         jQuery("#createbox").slideToggle("slow");
         jQuery(this).parent("li.expand").toggleClass("active");
