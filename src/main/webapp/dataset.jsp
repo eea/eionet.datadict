@@ -1525,6 +1525,7 @@ else if (mode.equals("add"))
                                                                         <th>Details</th>
                                                                     </tr>
                                                                 </thead>
+                                                                <tbody>
                                                                 <%
                                                                 // rows
                                                                 for (int i=0; i<rodLinks.size(); i++) {
@@ -1548,6 +1549,7 @@ else if (mode.equals("add"))
                                                                     </tr><%
                                                                 }
                                                                 %>
+                                                                </tbody>
                                                             </table>
                                                     <%
                                                 }
