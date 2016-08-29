@@ -386,6 +386,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                         vocabularyFolder.isWorkingCopy());
 
         validateView();
+        // Check if vocabulary concept url
+        Resolution resolution = getVocabularyConceptResolution();
+        if (resolution != null) {
+            return resolution;
+        }
 
         boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
         constructBoundElementsFilterer();
@@ -1420,6 +1425,36 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             return error;
         }
     } // end of method uploadRDF
+
+    /**
+     * Forwards to vocabulary concept page, if the url patter is: /vocabulary/folderName/folderIdentifier/conceptIdentifier.
+     *
+     * @return resolution
+     */
+    private Resolution getVocabularyConceptResolution() {
+        HttpServletRequest httpRequest = getContext().getRequest();
+        String url = httpRequest.getRequestURL().toString();
+
+        String[] parameters = StringUtils.split(StringUtils.substringAfter(url, "/vocabulary/"), "/");
+
+        if (parameters.length >= 3) {
+            // check for possible server url rewrite
+            if (parameters[2].contains(";jsessionid")) {
+                parameters[2] = parameters[2].split(";jsessionid")[0];
+            }
+            if (!RESERVED_VOCABULARY_EVENTS.contains(parameters[2])) {
+                RedirectResolution resolution = new RedirectResolution(VocabularyConceptActionBean.class, "view");
+                resolution.addParameter("vocabularyFolder.folderName", parameters[0]);
+                resolution.addParameter("vocabularyFolder.identifier", parameters[1]);
+                resolution.addParameter("vocabularyConcept.identifier", parameters[2]);
+                if (vocabularyFolder.isWorkingCopy()) {
+                    resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+                }
+                return resolution;
+            }
+        }
+        return null;
+    }
 
     /**
      * Returns vocabulary concepts json.
