@@ -35,6 +35,7 @@ import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
 import eionet.util.sql.SQLTransaction;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -597,7 +598,9 @@ public class VersionManager {
 
         initDataService();
         DataElement elm = loadElm(elmID);
-        dataService.handleElementTypeChange(elmID, elm.getCheckedoutCopyID());
+        if (!StringUtils.isBlank(elm.getCheckedoutCopyID())){
+            dataService.handleElementTypeChange(elmID, elm.getCheckedoutCopyID());
+        }
 
         SQLTransaction tx = null;
         try {

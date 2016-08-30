@@ -63,17 +63,17 @@ String appName = ctx.getInitParameter("application-name");
     String lastItemName = request.getParameter("name");
     if (lastItemName!=null && contextName==null){
         %>
-        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>"><%=appName %></a></div>
+        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/"><%=appName %></a></div>
         <div class="breadcrumbitemlast"><%=lastItemName%></div><%
     }
     else if (lastItemName==null && contextName!=null){
         %>
-        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>"><%=appName %></a></div>
+        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/"><%=appName %></a></div>
         <div class="breadcrumbitemlast"><%=contextName%></div><%
     }
     else if (lastItemName!=null && contextName!=null){
         %>
-        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>"><%=appName %></a></div>
+        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/"><%=appName %></a></div>
         <div class="breadcrumbitem"><a href="<%=contextPath%>"><%=contextName%></a></div>
         <div class="breadcrumbitemlast"><%=lastItemName%></div><%
     }

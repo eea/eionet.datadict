@@ -1,6 +1,6 @@
 <%@include file="/pages/common/taglibs.jsp"%>
 
-<stripes:form partial="true" beanclass="${actionBean.class.name}">
+<stripes:form partial="true" beanclass="${actionBean['class'].name}">
     <tr class="boundElementFilter" data-filter-id="${actionBean.boundElementFilter.id}">
         <td class="label">
             <label for="boundElementFilter-${actionBean.boundElementFilter.id}"><c:out value="${actionBean.boundElementFilter.label}" /></label>
