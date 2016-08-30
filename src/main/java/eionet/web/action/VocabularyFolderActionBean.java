@@ -21,7 +21,9 @@
 
 package eionet.web.action;
 
+import eionet.datadict.errors.BadFormatException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
+import eionet.datadict.services.stripes.FileBeanDecompressor;
 import eionet.datadict.web.asynctasks.VocabularyCheckInTask;
 import eionet.datadict.web.asynctasks.VocabularyCheckOutTask;
 import eionet.datadict.web.asynctasks.VocabularyCsvImportTask;
@@ -83,6 +85,7 @@ import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Edit vocabulary folder action bean.
@@ -168,7 +171,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Extension for RDF files.
      */
     private static final String RDF_FILE_EXTENSION = ".rdf";
-
+    
     /**
      * JSON contept type.
      */
@@ -216,6 +219,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     @SpringBean
     private AsyncTaskManager asyncTaskManager;
+    
+    @SpringBean
+    private FileBeanDecompressor fileBeanDecompressor;
     
     /**
      * Other versions of the same vocabulary folder.
@@ -1313,19 +1319,35 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 throw new ServiceException("You should upload a file");
             }
 
-            String fileName = this.uploadedFileToImport.getFileName();
-            if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.CSV_FILE_EXTENSION)) {
-                throw new ServiceException("File should be a CSV file");
-            }
-
-            File tmpCsvFile = File.createTempFile(fileName, ".tmp");
-            this.uploadedFileToImport.save(tmpCsvFile);
+            FileBean importFileBean = null;
             
-            String taskId = this.asyncTaskManager.executeAsync(VocabularyCsvImportTask.class, 
-                    VocabularyCsvImportTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), 
-                            vocabularyFolder.isWorkingCopy(), tmpCsvFile.getAbsolutePath(), purgeVocabularyData, purgeBoundElements));
+            try {
+                importFileBean = this.prepareImportSource();
+                String fileName = importFileBean.getFileName();
+                
+                if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.CSV_FILE_EXTENSION)) {
+                    throw new ServiceException("File should be a CSV file");
+                }
 
-            return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
+                File tmpCsvFile = File.createTempFile(fileName, ".tmp");
+                importFileBean.save(tmpCsvFile);
+
+                String taskId = this.asyncTaskManager.executeAsync(VocabularyCsvImportTask.class, 
+                        VocabularyCsvImportTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), 
+                                vocabularyFolder.isWorkingCopy(), tmpCsvFile.getAbsolutePath(), purgeVocabularyData, purgeBoundElements));
+
+                return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
+             }
+             finally {
+                /* 
+                 * When FileBean.save() isn't called, FileBean.delete() must be called so that the
+                 * uploaded file is removed from disk.
+                 * See: https://stripesframework.atlassian.net/wiki/display/STRIPES/File+Uploads
+                 */
+                if (importFileBean != this.uploadedFileToImport) {
+                    this.uploadedFileToImport.delete();
+                }
+            }
         } catch (ServiceException e) {
             LOGGER.error("Failed to import vocabulary CSV into db", e);
             e.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.INVALID_INPUT);
@@ -1358,20 +1380,36 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             if (this.uploadedFileToImport == null) {
                 throw new ServiceException("You should upload a file");
             }
-
-            String fileName = this.uploadedFileToImport.getFileName();
-            if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.RDF_FILE_EXTENSION)) {
-                throw new ServiceException("File should be a RDF file");
-            }
-
-            File tmpRdfFile = File.createTempFile(fileName, ".tmp");
-            this.uploadedFileToImport.save(tmpRdfFile);
+         
+            FileBean importFileBean = null;
             
-            String taskId = this.asyncTaskManager.executeAsync(VocabularyRdfImportTask.class, 
-                    VocabularyRdfImportTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), 
-                            vocabularyFolder.isWorkingCopy(), tmpRdfFile.getAbsolutePath(), rdfPurgeOption));
+            try {
+                importFileBean = this.prepareImportSource();
+                String fileName = importFileBean.getFileName();
+                
+                if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.RDF_FILE_EXTENSION)) {
+                    throw new ServiceException("File should be a RDF file");
+                }
 
-            return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
+                File tmpRdfFile = File.createTempFile(fileName, ".tmp");
+                importFileBean.save(tmpRdfFile);
+
+                String taskId = this.asyncTaskManager.executeAsync(VocabularyRdfImportTask.class, 
+                        VocabularyRdfImportTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), 
+                                vocabularyFolder.isWorkingCopy(), tmpRdfFile.getAbsolutePath(), rdfPurgeOption));
+
+                return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
+            }
+            finally {
+                /* 
+                 * When FileBean.save() isn't called, FileBean.delete() must be called so that the
+                 * uploaded file is removed from disk.
+                 * See: https://stripesframework.atlassian.net/wiki/display/STRIPES/File+Uploads
+                 */
+                if (this.uploadedFileToImport != importFileBean) {
+                    this.uploadedFileToImport.delete();
+                }
+            }
         } catch (ServiceException e) {
             LOGGER.error("Failed to import vocabulary RDF into db", e);
             e.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.INVALID_INPUT);
@@ -1431,6 +1469,18 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
     } // end of method json
 
+    protected boolean isZipFileName(String filename) {
+        return StringUtils.endsWithIgnoreCase(filename, ".zip");
+    }
+    
+    protected FileBean prepareImportSource() throws IOException, BadFormatException {
+        if (this.isZipFileName(this.uploadedFileToImport.getFileName())) {
+            return this.fileBeanDecompressor.unzip(this.uploadedFileToImport);
+        }
+        
+        return this.uploadedFileToImport;
+    }
+    
     /**
      * Returns concept URI prefix.
      *
