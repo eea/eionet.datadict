@@ -30,8 +30,10 @@
                 var $container = $('.asyncProgressContainer');
                 
                 var pollUrl = '<stripes:url value="/asynctasks/${actionBean.taskId}/status" />';
-                var intervalSeconds = 15;
-                var intervalId = window.setInterval(poll, intervalSeconds * 1000);
+                var intervals = [3, 5, 10, 10, 30, 60];
+                var currentInterval = 0;
+                
+                window.setTimeout(poll, getIntervalMillis());
                 
                 function poll() {
                     $.ajax(pollUrl).done(onPollResponse).fail(onPollFailure);
@@ -41,15 +43,24 @@
                     var status = data.status;
                     
                     if (status == 'SCHEDULED' || status == 'ONGOING') {
+                        incrementInterval();
+                        window.setTimeout(poll, getIntervalMillis());
                         return;
                     }
                     
-                    window.clearInterval(intervalId);
                     window.location.href = '<stripes:url value="/asynctasks/${actionBean.taskId}/result" />';
                 }
                 
                 function onPollFailure(jqXHR, textStatus, errorThrown) {
                     $container.html('Poll failure: ' + errorThrown);
+                }
+                
+                function getIntervalMillis() {
+                    return 1000 * intervals[currentInterval];
+                }
+                
+                function incrementInterval() {
+                    currentInterval = Math.min(currentInterval + 1, intervals.length - 1);
                 }
                 
             })(window, jQuery);
