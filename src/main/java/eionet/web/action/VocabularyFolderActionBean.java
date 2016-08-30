@@ -1427,7 +1427,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     } // end of method uploadRDF
 
     /**
-     * Forwards to vocabulary concept page, if the url patter is: /vocabulary/folderName/folderIdentifier/conceptIdentifier.
+     * Forwards to vocabulary concept page, if the url pattern is: /vocabulary/folderName/folderIdentifier/conceptIdentifier.
      *
      * @return resolution
      */
