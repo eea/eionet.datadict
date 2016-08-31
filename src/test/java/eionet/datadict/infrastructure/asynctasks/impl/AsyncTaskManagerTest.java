@@ -1,6 +1,7 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.dal.AsyncTaskDao;
+import eionet.datadict.dal.QuartzSchedulerDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManagementException;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
@@ -50,6 +51,8 @@ public class AsyncTaskManagerTest {
     private AsyncJobKeyBuilder asyncJobKeyBuilder;
     @Mock
     private AsyncTaskDao asyncTaskDao;
+    @Mock
+    private QuartzSchedulerDao quartzSchedulerDao;
     @Mock
     private JobListener asyncJobListener;
     @Spy
@@ -321,15 +324,17 @@ public class AsyncTaskManagerTest {
     
     private void testHasTriggers(Trigger... triggers) throws SchedulerException {
         final String taskId = "some-task-id";
+        final String schedulerName = "sched1";
         final JobKey jobKey = this.asyncJobKeyBuilder.create(taskId);
         Mockito.reset(this.asyncJobKeyBuilder);
-        when(this.scheduler.getTriggersOfJob(jobKey)).thenReturn((List) Arrays.asList(triggers));
+        when(this.scheduler.getSchedulerName()).thenReturn(schedulerName);
+        when(this.quartzSchedulerDao.hasTriggersOfJob(schedulerName, jobKey)).thenReturn(triggers.length > 0);
         
         boolean result = this.asyncTaskManager.hasTriggers(taskId);
         
         assertThat(result, is(equalTo(triggers.length > 0)));
         verify(this.asyncJobKeyBuilder, times(1)).create(taskId);
-        verify(this.scheduler, times(1)).getTriggersOfJob(jobKey);
+        verify(this.quartzSchedulerDao, times(1)).hasTriggersOfJob(schedulerName, jobKey);
     }
     
 }

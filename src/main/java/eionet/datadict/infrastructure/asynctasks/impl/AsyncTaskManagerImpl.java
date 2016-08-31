@@ -1,6 +1,7 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.dal.AsyncTaskDao;
+import eionet.datadict.dal.QuartzSchedulerDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
@@ -35,6 +36,7 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     private final Scheduler scheduler;
     private final AsyncJobKeyBuilder asyncJobKeyBuilder;
     private final AsyncTaskDao asyncTaskDao;
+    private final QuartzSchedulerDao quartzSchedulerDao;
     private final JobListener asyncJobListener;
     private final AsyncTaskDataSerializer asyncTaskDataSerializer;
     
@@ -42,10 +44,11 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     public AsyncTaskManagerImpl(@Qualifier("jobScheduler") Scheduler scheduler, 
             @Qualifier("asyncJobListener") JobListener asyncJobListener,
             AsyncJobKeyBuilder asyncJobKeyBuilder, AsyncTaskDao asyncTaskDao,
-            AsyncTaskDataSerializer asyncTaskDataSerializer) {
+            QuartzSchedulerDao quartzSchedulerDao, AsyncTaskDataSerializer asyncTaskDataSerializer) {
         this.scheduler = scheduler;
         this.asyncJobKeyBuilder = asyncJobKeyBuilder;
         this.asyncTaskDao = asyncTaskDao;
+        this.quartzSchedulerDao = quartzSchedulerDao;
         this.asyncJobListener = asyncJobListener;
         this.asyncTaskDataSerializer = asyncTaskDataSerializer;
     }
@@ -61,7 +64,6 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     }
     
     @Override
-    @Transactional
     public <T extends AsyncTask> String executeAsync(Class<T> taskType, Map<String, Object> parameters) 
             throws AsyncTaskManagementException {
         if (taskType == null) {
@@ -155,9 +157,9 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
         JobKey jobKey = this.asyncJobKeyBuilder.create(taskId);
         
         try {
-            return !this.scheduler.getTriggersOfJob(jobKey).isEmpty();
+            return this.quartzSchedulerDao.hasTriggersOfJob(this.scheduler.getSchedulerName(), jobKey);
         }
-        catch (SchedulerException ex) {
+        catch (Exception ex) {
             throw new AsyncTaskManagementException(ex);
         }
     }

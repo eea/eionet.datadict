@@ -30,7 +30,7 @@
                 var $container = $('.asyncProgressContainer');
                 
                 var pollUrl = '<stripes:url value="/asynctasks/${actionBean.taskId}/status" />';
-                var intervals = [5, 1, 2, 2, 5, 10, 10, 30, 60];
+                var intervals = [1, 2, 2, 5, 10, 10, 30, 30, 30, 60];
                 var currentInterval = 0;
                 
                 window.setTimeout(poll, getIntervalMillis());
