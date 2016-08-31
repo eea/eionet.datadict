@@ -53,7 +53,7 @@ public class VocabularyRdfImportTask implements AsyncTask {
     
     @Override
     public String getDisplayName() {
-        return String.format("Import RDF input into vocabulary %s/%s", 
+        return String.format("Importing RDF input into vocabulary %s/%s", 
                 this.getVocabularySetIdentifier(), this.getVocabularyIdentifier());
     }
 

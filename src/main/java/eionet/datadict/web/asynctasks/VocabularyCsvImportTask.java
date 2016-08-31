@@ -62,7 +62,7 @@ public class VocabularyCsvImportTask implements AsyncTask {
     
     @Override
     public String getDisplayName() {
-        return String.format("Import CSV input into vocabulary %s/%s", 
+        return String.format("Importing CSV input into vocabulary %s/%s", 
                 this.getVocabularySetIdentifier(), this.getVocabularyIdentifier());
     }
 
