@@ -20,12 +20,16 @@ import org.apache.log4j.Logger;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
+import eionet.meta.DElemAttribute;
 import eionet.meta.DataElement;
+import eionet.meta.DsTable;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.util.RequestMessages;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DsTableHandler extends BaseHandler {
 
@@ -65,7 +69,7 @@ public class DsTableHandler extends BaseHandler {
     /** DAO for data element qyeries. */
     private IDataElementDAO dataElemDao;
     private boolean importMode = false;
-
+    private List<String> attributesToBeCopiedFromCopyTable;
     /**
      *
      * @param conn
@@ -340,7 +344,9 @@ public class DsTableHandler extends BaseHandler {
             processAttributes();
         }
         else {
+            attributesToBeCopiedFromCopyTable = new ArrayList();
             processAttributes();
+            copyAttributesFromOtherTable(req.getParameter("copy_tbl_id"));
             copyTbl2Elem(req.getParameter("copy_tbl_id"), correspNS);
             
         }
@@ -685,6 +691,7 @@ public class DsTableHandler extends BaseHandler {
             if (parName.startsWith(ATTR_PREFIX) && !parName.startsWith(ATTR_MULT_PREFIX)) {
                 String attrValue = req.getParameter(parName);
                 if (attrValue.length() == 0) {
+                    if (copy) attributesToBeCopiedFromCopyTable.add(parName.substring(ATTR_PREFIX.length()));
                     continue;
                 }
                 attrID = parName.substring(ATTR_PREFIX.length());
@@ -834,6 +841,22 @@ public class DsTableHandler extends BaseHandler {
     /**
      *
      */
+    public void copyAttributesFromOtherTable(String srcTblID) throws SQLException {
+         if (searchEngine == null) {
+            searchEngine = new DDSearchEngine(conn, "");
+        }
+        searchEngine.setUser(user);
+        Vector<DElemAttribute> attributes = searchEngine.getSimpleAttributes(srcTblID, "T");
+        for (String attrId : attributesToBeCopiedFromCopyTable) {
+            for (DElemAttribute attribute : attributes){
+                if (attribute.getID().equals(attrId)) {
+                    this.insertAttribute(attrId, attribute.getValue());
+                    break;
+                }
+            }
+        }
+    }
+    
     public void copyTbl2Elem(String srcTblID, String newTableNamespace) throws SQLException, Exception {
 
         if (searchEngine == null) {

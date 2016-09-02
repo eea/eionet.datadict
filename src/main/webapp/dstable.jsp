@@ -457,6 +457,12 @@
             document.forms["form1"].elements["mode"].value = "delete";
             document.forms["form1"].submit();
         }
+        
+        function isIdentifierFilled(){
+            var idf = document.forms["form1"].idfier;
+            if (idf!=null && idf.value.length == 0) return false;
+            return true;
+        }
 
         function checkObligations(){
 
@@ -543,8 +549,8 @@
 
         function copyTbl(context){
 
-            if (!checkObligations()){
-                    alert("You have not specified one of the mandatory fields!");
+            if (!isIdentifierFilled()){
+                    alert("You have not specified the table's identifier.");
                     return;
             }
 
