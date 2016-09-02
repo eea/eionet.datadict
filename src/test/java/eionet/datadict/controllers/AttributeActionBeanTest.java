@@ -270,7 +270,7 @@ public class AttributeActionBeanTest {
     @Test
     public void testDelete() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException {
         Mockito.doReturn(user).when(actionBean).getUser();
-        Mockito.doReturn(Boolean.TRUE).when(attributeDataService).exists(0);
+        Mockito.doReturn(Boolean.TRUE).when(attributeDataService).existsAttribute(0);
         Mockito.doReturn(0).when(attribute).getId();
         Mockito.doNothing().when(attributeService).delete(anyInt(), any(DDUser.class));
         Resolution resolution = actionBean.delete();
@@ -282,7 +282,7 @@ public class AttributeActionBeanTest {
     @Test (expected = ResourceNotFoundException.class)
     public void testDeleteResourceNotFound() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException {
         Mockito.doReturn(user).when(actionBean).getUser();
-        Mockito.doReturn(Boolean.FALSE).when(attributeDataService).exists(anyInt());
+        Mockito.doReturn(Boolean.FALSE).when(attributeDataService).existsAttribute(anyInt());
         Mockito.doReturn(0).when(attribute).getId();
         actionBean.delete();
     }
@@ -292,12 +292,12 @@ public class AttributeActionBeanTest {
         Mockito.doReturn(user).when(actionBean).getUser();
         Mockito.doReturn(0).when(attribute).getId();
         Mockito.doReturn(Boolean.TRUE).when(aclService).hasPermission(any(DDUser.class), any(AclEntity.class), anyString(), any(Permission.class));
-        Mockito.doReturn(Boolean.TRUE).when(attributeDataService).exists(anyInt());
+        Mockito.doReturn(Boolean.TRUE).when(attributeDataService).existsAttribute(anyInt());
         Mockito.doReturn(0).when(attributeDataService).countAttributeValues(0);
         Mockito.doReturn(null).when(actionBean).delete();
         actionBean.confirmDelete();
         Mockito.verify(aclService).hasPermission(user, AclEntity.ATTRIBUTE, "s0", Permission.DELETE);
-        Mockito.verify(attributeDataService).exists(0);
+        Mockito.verify(attributeDataService).existsAttribute(0);
         Mockito.verify(attributeDataService).countAttributeValues(0);
         Mockito.verify(actionBean).delete();
     }
@@ -307,7 +307,7 @@ public class AttributeActionBeanTest {
         Mockito.doReturn(user).when(actionBean).getUser();
         Mockito.doReturn(0).when(attribute).getId();
         Mockito.doReturn(Boolean.TRUE).when(aclService).hasPermission(any(DDUser.class), any(AclEntity.class), anyString(), any(Permission.class));
-        Mockito.doReturn(Boolean.TRUE).when(attributeDataService).exists(anyInt());
+        Mockito.doReturn(Boolean.TRUE).when(attributeDataService).existsAttribute(anyInt());
         Mockito.doReturn(1).when(attributeDataService).countAttributeValues(0);
         Mockito.doReturn(null).when(attributeDataService).getDistinctTypesWithAttributeValues(0);
         Resolution resolution = actionBean.confirmDelete();
@@ -335,7 +335,7 @@ public class AttributeActionBeanTest {
         Mockito.doReturn(user).when(actionBean).getUser();
         Mockito.doReturn(0).when(attribute).getId();
         Mockito.doReturn(Boolean.TRUE).when(aclService).hasPermission(any(DDUser.class), any(AclEntity.class), anyString(), any(Permission.class));
-        Mockito.doReturn(Boolean.FALSE).when(attributeDataService).exists(0);
+        Mockito.doReturn(Boolean.FALSE).when(attributeDataService).existsAttribute(0);
         actionBean.confirmDelete();
     }
     

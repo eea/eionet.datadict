@@ -1,6 +1,7 @@
 package eionet.datadict.services.impl;
 
 import eionet.datadict.errors.BadRequestException;
+import eionet.datadict.errors.ConflictException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.services.AttributeService;
 import eionet.datadict.services.acl.AclEntity;
@@ -10,6 +11,8 @@ import eionet.datadict.services.data.AttributeDataService;
 import eionet.meta.DDUser;
 import eionet.datadict.errors.UserAuthenticationException;
 import eionet.datadict.errors.UserAuthorizationException;
+import eionet.datadict.model.DataDictEntity;
+import eionet.datadict.services.data.VocabularyDataService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,11 +23,13 @@ public class AttributeServiceImpl implements AttributeService {
 
     private final AclService aclService;
     private final AttributeDataService attributeDataService;
+    private final VocabularyDataService vocabularyDataService;
 
     @Autowired
-    public AttributeServiceImpl(AclService aclService, AttributeDataService attributeDataService) {
+    public AttributeServiceImpl(AclService aclService, AttributeDataService attributeDataService, VocabularyDataService vocabularyDataService) {
         this.aclService = aclService;
         this.attributeDataService = attributeDataService;
+        this.vocabularyDataService = vocabularyDataService;
     }
 
     @Override
@@ -56,6 +61,36 @@ public class AttributeServiceImpl implements AttributeService {
             return this.saveWithUpdate(attribute, user);
         }
     }
+    
+    @Override
+    @Transactional
+    public void saveAttributeVocabularyValue(int attributeId, DataDictEntity ownerEntity, String value, DDUser user) 
+            throws ConflictException, UserAuthenticationException, UserAuthorizationException {
+        Integer vocabularyId = this.attributeDataService.getVocabularyBinding(attributeId);
+        if (vocabularyId!=null && !this.vocabularyDataService.existsVocabularyConcept(vocabularyId, value)){
+            throw new ConflictException("You are trying to save a value which corresponds to a non existing vocabulary concept!");
+        }
+        this.attributeDataService.createAttributeValue(attributeId, ownerEntity, value);
+    }
+    
+    @Override
+    public void deleteAttributeValue(int attributeId, DataDictEntity ownerEntity, String value, DDUser user) 
+            throws UserAuthenticationException, UserAuthorizationException {
+        if (user == null) {
+            throw new UserAuthenticationException("You must be signed in in order to delete attribute values.");
+        }
+        this.attributeDataService.deleteAttributeValue(attributeId, ownerEntity, value);
+    }
+    
+    @Override
+    public void deleteAllAttributeValues(int attributeId, DataDictEntity ownerEntity, DDUser user) throws UserAuthenticationException, UserAuthorizationException {
+        if (user == null) {
+            throw new UserAuthenticationException("You must be signed in in order to delete attribute values.");
+        }
+        this.attributeDataService.deleteAllAttributeValues(attributeId, ownerEntity);
+        
+    }
+
 
     protected int saveWithCreate(Attribute attribute, DDUser user) throws UserAuthorizationException, BadRequestException {
         if (!this.aclService.hasPermission(user, AclEntity.ATTRIBUTE, Permission.INSERT)) {

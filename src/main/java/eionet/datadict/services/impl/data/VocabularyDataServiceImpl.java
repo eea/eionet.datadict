@@ -1,5 +1,6 @@
 package eionet.datadict.services.impl.data;
 
+import eionet.datadict.dal.VocabularyDAO;
 import eionet.datadict.dal.VocabularyRepository;
 import eionet.datadict.dal.VocabularySetRepository;
 import eionet.datadict.errors.DuplicateResourceException;
@@ -8,9 +9,13 @@ import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.VocabularySet;
 import eionet.datadict.services.data.VocabularyDataService;
 import eionet.meta.DDUser;
+import eionet.meta.dao.domain.StandardGenericStatus;
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,12 +31,14 @@ public class VocabularyDataServiceImpl implements VocabularyDataService {
     private final VocabularySetRepository vocabularySetRepository;
     private final VocabularyRepository vocabularyRepository;
     private final IVocabularyService legacyVocabularyService;
+    private final VocabularyDAO vocabularyDAO;
 
     @Autowired
-    public VocabularyDataServiceImpl(VocabularySetRepository vocabularySetRepository, VocabularyRepository vocabularyRepository, IVocabularyService legacyVocabularyService) {
+    public VocabularyDataServiceImpl(VocabularySetRepository vocabularySetRepository, VocabularyRepository vocabularyRepository, IVocabularyService legacyVocabularyService, VocabularyDAO vocabularyDAO) {
         this.vocabularySetRepository = vocabularySetRepository;
         this.vocabularyRepository = vocabularyRepository;
         this.legacyVocabularyService = legacyVocabularyService;
+        this.vocabularyDAO = vocabularyDAO;
     }
 
     @Override
@@ -93,6 +100,24 @@ public class VocabularyDataServiceImpl implements VocabularyDataService {
         } catch (ServiceException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public List<VocabularyConcept> getVocabularyConcepts(int vocabularyId, StandardGenericStatus superStatus) {
+        List<VocabularyConcept> vocabularyConcepts = this.vocabularyDAO.getVocabularyConcepts(vocabularyId);
+        List<VocabularyConcept> statusSortedConcepts = new ArrayList<VocabularyConcept>();
+        for (VocabularyConcept concept : vocabularyConcepts) {
+            StandardGenericStatus status = concept.getStatus();
+            if (status.isSubStatus(superStatus)) {
+                statusSortedConcepts.add(concept);
+            }
+        }
+        return statusSortedConcepts;
+    }
+
+    @Override
+    public boolean existsVocabularyConcept(int vocabularyId, String identifier) {
+        return this.vocabularyDAO.existsVocabularyConcept(vocabularyId, identifier);
     }
 
 }

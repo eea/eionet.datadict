@@ -40,7 +40,7 @@ public interface AttributeDao {
      * @param attribute the payload of the attribute to be updated.
      */
     public void update(Attribute attribute);
-
+    
     /**
      * Updates the binding between an attribute and a vocabulary with given ids.
      * 
@@ -48,6 +48,15 @@ public interface AttributeDao {
      * @param vocabularyId the id of the vocabulary to be bound with the attribute.
      */
     public void updateVocabularyBinding(int attributeId, int vocabularyId);
+    
+    /**
+     * Fetches the vocabulary associated with the attribute with the given id
+     * 
+     * @param attributeId the id of the attribute whose vocabulary binding is to be found.
+     * @return the id of the vocabulary associated to the attribute with the given id 
+     * or null if no such vocabulary is found.
+     */
+    public Integer getVocabularyBinding(int attributeId);
     
     /**
      * Deletes an attribute with the given id.

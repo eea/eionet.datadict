@@ -1,36 +1,55 @@
 package eionet.datadict.services.impl.data;
 
 import eionet.datadict.dal.AttributeDao;
+import eionet.datadict.dal.AttributeValueDao;
+import eionet.datadict.dal.DataElementDao;
+import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.dal.VocabularyDAO;
+import eionet.datadict.errors.DuplicateResourceException;
+import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
+import eionet.datadict.model.Attribute.ValueInheritanceMode;
 import eionet.meta.dao.IFixedValueDAO;
+import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- *
- * @author Aliki Kopaneli
- */
+
 @Service
 public class AttributeDataServiceImpl implements AttributeDataService {
 
     private final AttributeDao attributeDao;
+    private final AttributeValueDao attributeValueDao;
     private final VocabularyDAO vocabularyDao;
+    private final IVocabularyConceptDAO vocabularyConceptDAO;
     private final IFixedValueDAO fixedValueDao;
+    private final DatasetTableDao datasetTableDao;
+    private final DataElementDao dataElementDao;
     
     @Autowired
-    public AttributeDataServiceImpl(AttributeDao attributeDao, VocabularyDAO vocabularyDao, IFixedValueDAO fixedValueDao) {
+    public AttributeDataServiceImpl
+        (AttributeDao attributeDao, AttributeValueDao attributeValueDao, VocabularyDAO vocabularyDao, 
+                IVocabularyConceptDAO vocabularyConceptDAO, IFixedValueDAO fixedValueDao, 
+                DatasetTableDao datasetTableDao, DataElementDao dataElementDao) {
         this.attributeDao = attributeDao;
+        this.attributeValueDao = attributeValueDao;
         this.vocabularyDao = vocabularyDao;
         this.fixedValueDao = fixedValueDao;
+        this.vocabularyConceptDAO = vocabularyConceptDAO;
+        this.datasetTableDao = datasetTableDao;
+        this.dataElementDao = dataElementDao;
     }
     
     @Override
@@ -52,7 +71,7 @@ public class AttributeDataServiceImpl implements AttributeDataService {
     }
     
     @Override
-    public boolean exists(int id) {
+    public boolean existsAttribute(int id) {
         return this.attributeDao.exists(id);
     }
     
@@ -112,4 +131,176 @@ public class AttributeDataServiceImpl implements AttributeDataService {
     public List<FixedValue> getFixedValues(int attributeId) {
         return this.fixedValueDao.getValueByOwner(FixedValue.OwnerType.ATTRIBUTE, attributeId);
     }
+
+    @Override
+    public List<AttributeValue> getOriginalAttributeValues(int attributeId, DataDictEntity ddEntity) {
+        return this.attributeValueDao.getByAttributeAndOwner(attributeId, ddEntity);
+    }
+    
+    @Override
+    @Transactional
+    public List<VocabularyConcept> getVocabularyConceptsAsAttributeValues(int vocabularyId, int attributeId, DataDictEntity attributeOwner, ValueInheritanceMode inheritanceMode) 
+            throws ResourceNotFoundException, EmptyParameterException {
+       
+        List<AttributeValue> attributeValues = getAttributeValues(attributeId, attributeOwner, inheritanceMode);
+        if (attributeValues == null) return null;
+        List<VocabularyConcept> vocabularyConcepts = convertAttributeValuesToVocabularyConcepts(attributeValues, vocabularyId);
+        return vocabularyConcepts;
+    }
+    
+    @Override
+    @Transactional
+    public List<VocabularyConcept> getVocabularyConceptsAsOriginalAttributeValues(int vocabularyId, int attributeId, DataDictEntity attributeOwner) 
+            throws ResourceNotFoundException, EmptyParameterException {
+       
+        List<AttributeValue> attributeValues = getOriginalAttributeValues(attributeId, attributeOwner);
+        if (attributeValues == null) return null;
+        List<VocabularyConcept> vocabularyConcepts = convertAttributeValuesToVocabularyConcepts(attributeValues, vocabularyId);
+        return vocabularyConcepts;
+    }
+    
+    @Override
+    @Transactional
+    public List<VocabularyConcept> getVocabularyConceptsAsInheritedAttributeValues(int vocabularyId, int attributeId, DataDictEntity attributeOwner) 
+            throws ResourceNotFoundException, EmptyParameterException {
+       
+        List<AttributeValue> attributeValues = getInheritedAttributeValues(attributeId, attributeOwner);
+        if (attributeValues == null) return null;
+        List<VocabularyConcept> vocabularyConcepts = convertAttributeValuesToVocabularyConcepts(attributeValues, vocabularyId);
+        return vocabularyConcepts;
+    }
+    
+    @Override
+    public void deleteAttributeValue(int attributeId, DataDictEntity ddEntity, String value) {
+        this.attributeValueDao.deleteAttributeValue(attributeId, ddEntity, value);
+    }
+
+    @Override
+    public void deleteAllAttributeValues(int attributeId, DataDictEntity ddEntity) {
+        this.attributeValueDao.deleteAllAttributeValues(attributeId, ddEntity);
+    }
+
+    @Override
+    public void createAttributeValue(int attributeId, DataDictEntity ownerEntity, String value) throws DuplicateResourceException{
+       this.attributeValueDao.addAttributeValue(attributeId, ownerEntity, value);
+    }
+
+    @Override
+    public Integer getVocabularyBinding(int attributeId) {
+        return this.attributeDao.getVocabularyBinding(attributeId);
+    }
+
+    @Override
+    @Transactional
+    public List<AttributeValue> getInheritedAttributeValues(int attributeId, DataDictEntity ddEntity) throws ResourceNotFoundException {
+        
+        if (ddEntity.getType() == DataDictEntity.Entity.DS){
+            return new ArrayList();
+        }
+        
+        if(ddEntity.getType() == DataDictEntity.Entity.T){
+            Integer datasetId = this.datasetTableDao.getParentDatasetId(ddEntity.getId());
+            if (datasetId == null) {
+                throw new ResourceNotFoundException("Parent dataset id does not exist!");
+            }
+            return this.attributeValueDao.getByAttributeAndOwner(attributeId, new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
+        }
+        
+        if(ddEntity.getType() == DataDictEntity.Entity.E) {    
+            
+            Integer tableId = this.dataElementDao.getParentTableId(ddEntity.getId());
+            Integer datasetId = this.datasetTableDao.getParentDatasetId(tableId);
+            
+            if (tableId == null) {
+                return null;
+            }
+            if (datasetId == null) {
+                throw new ResourceNotFoundException("Parent dataset does not exist!");
+            }
+            
+            List<AttributeValue> tableInheritedValues = this.attributeValueDao.getByAttributeAndOwner(attributeId, new DataDictEntity(tableId, DataDictEntity.Entity.T));
+            List<AttributeValue> datasetInheritedValues = this.attributeValueDao.getByAttributeAndOwner(attributeId, new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
+            
+            return this.concatenateListsRemovingDuplicates(tableInheritedValues, datasetInheritedValues);
+            
+        }
+        
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public List<AttributeValue> getAttributeValues(int attributeId, DataDictEntity attributeOwner, ValueInheritanceMode inheritance) 
+            throws ResourceNotFoundException, EmptyParameterException {
+        
+        if (inheritance.equals(ValueInheritanceMode.NONE)) {
+            return this.getOriginalAttributeValues(attributeId, attributeOwner);
+        }
+        
+        if (inheritance.equals(ValueInheritanceMode.PARENT_WITH_EXTEND)){
+            List<AttributeValue> original = this.getOriginalAttributeValues(attributeId, attributeOwner);
+            List<AttributeValue> inherited = this.getInheritedAttributeValues(attributeId, attributeOwner);
+            
+            if (original != null && inherited != null){
+                return this.concatenateListsRemovingDuplicates(original, inherited);
+            } 
+            else if (original != null){
+                return original;
+            }
+            else if (inherited != null) {
+                return inherited;
+            }
+        }
+        
+        if (inheritance.equals(ValueInheritanceMode.PARENT_WITH_OVERRIDE)){
+            List<AttributeValue> original = this.getOriginalAttributeValues(attributeId, attributeOwner);
+            if (original!=null && original.size()>0) {
+                return original;
+            }
+            else {
+                List<AttributeValue> inherited = this.getInheritedAttributeValues(attributeId, attributeOwner);
+                return inherited;
+            }
+        }
+        
+        throw new EmptyParameterException("Inheritance type is not defined!");
+        
+    }
+    
+    protected List<AttributeValue> concatenateListsRemovingDuplicates(List<AttributeValue> listA, List<AttributeValue> listB) {
+        
+        if (listA == null && listB == null) return new ArrayList();
+        if (listA == null) return listB;
+        if (listB == null) return listA;
+        
+        List<AttributeValue> resultList = new ArrayList();
+        resultList.addAll(listB);
+        for (AttributeValue valueToBeAdded : listA) {
+            boolean exists = false;
+            for (AttributeValue existingValue : resultList) {
+                if (existingValue.getValue().equals(valueToBeAdded.getValue())) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                resultList.add(valueToBeAdded);
+            }
+        }
+        return resultList;
+    }
+    
+    protected List<VocabularyConcept> convertAttributeValuesToVocabularyConcepts(List<AttributeValue> attributeValues, int vocabularyId) {
+        List<VocabularyConcept> vocabularyConcepts = new ArrayList(); 
+        for(AttributeValue attributeValue : attributeValues) {
+            try {
+                VocabularyConcept vocabularyConcept = this.vocabularyConceptDAO.getVocabularyConcept(vocabularyId, attributeValue.getValue());
+                vocabularyConcepts.add(vocabularyConcept);
+            } catch (EmptyResultDataAccessException e) {
+                //TODO This Exception is thrown when a value is stored as this attribute's value but does not correspond to a vocabulary concept of this vocabulary. Must be solved somehow!
+            }
+        }
+        return vocabularyConcepts;
+    }
+    
 }

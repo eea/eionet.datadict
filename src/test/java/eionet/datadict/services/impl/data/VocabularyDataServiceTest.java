@@ -1,5 +1,6 @@
 package eionet.datadict.services.impl.data;
 
+import eionet.datadict.dal.VocabularyDAO;
 import eionet.datadict.dal.VocabularyRepository;
 import eionet.datadict.dal.VocabularySetRepository;
 import eionet.datadict.errors.EmptyParameterException;
@@ -39,7 +40,9 @@ public class VocabularyDataServiceTest {
     private VocabularyRepository vocabularyRepository;
     @Mock
     private IVocabularyService legacyVocabularyService;
-
+    @Mock
+    private VocabularyDAO vocabularyDao;
+    
     private VocabularyDataService vocabularyDataService;
 
     @Rule
@@ -48,7 +51,7 @@ public class VocabularyDataServiceTest {
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
-        this.vocabularyDataService = new VocabularyDataServiceImpl(vocabularySetRepository, vocabularyRepository, legacyVocabularyService);
+        this.vocabularyDataService = new VocabularyDataServiceImpl(vocabularySetRepository, vocabularyRepository, legacyVocabularyService, vocabularyDao);
     }
 
     @Test

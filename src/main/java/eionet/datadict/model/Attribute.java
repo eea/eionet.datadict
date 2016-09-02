@@ -4,10 +4,6 @@ import eionet.datadict.model.enums.Enumerations.AttributeDataType;
 import eionet.meta.dao.domain.VocabularyFolder;
 import java.util.Set;
 
-/**
- *
- * @author Aliki Kopaneli
- */
 public class Attribute {
 
     

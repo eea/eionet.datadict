@@ -1,3 +1,5 @@
+<%@page import="eionet.meta.dao.domain.VocabularyConcept"%>
+<%@page import="eionet.datadict.model.DataDictEntity"%>
 <%@page import="eionet.meta.dao.domain.VocabularyFolder"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.meta.service.data.*,eionet.util.sql.ConnectionUtil"%>
@@ -966,6 +968,10 @@ else if (mode.equals("add"))
                                                 if (mode.equals("add") || (mode.equals("edit") && user==null) || (mode.equals("view") && Util.isEmpty(attrValue)))
                                                     continue;
                                             }
+                                            
+                                            if (dispType.equals("vocabulary") && mode.equals("add")) {
+                                                continue;
+                                            }
 
                                             Vector multiValues=null;
                                             String inheritedValue=null;
@@ -1036,6 +1042,14 @@ else if (mode.equals("add"))
                                                         }
                                                     }
                                                     // if view mode, display simple text
+                                                    else if (mode.equals("view") && dispType.equals("vocabulary")){
+                                                        DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
+                                                        List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
+                                                        %>
+                                                        <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
+                                                            <c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if>
+                                                        </c:forEach>
+                                                  <%}
                                                     else if (mode.equals("view")){ %>
                                                         <%=Util.processForDisplay(attrValue)%><%
                                                     }
@@ -1043,8 +1057,27 @@ else if (mode.equals("add"))
                                                     else{
 
                                                         // inherited value(s)
-                                                        if (inherit && inheritedValue!=null){
-
+                                                        if (inherit && dispType.equals("vocabulary")){
+                                                            DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);                                                            
+                                                            List<VocabularyConcept> inheritedValues = searchEngine.getInheritedAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity);
+                                                            if(inheritedValues!=null && !inheritedValues.isEmpty()){
+                                                            %>
+                                                                <c:set var="inheritable" value="<%=attribute.getInheritable()%>" />
+                                                                <c:choose>
+                                                                    <c:when test="${inheritable eq '2'}">
+                                                                        <c:out value="Overriding parent level value: "/>
+                                                                    </c:when>
+                                                                    <c:when test="${inheritable eq '1'}">
+                                                                        <c:out value="Inherited from parent level: "/>
+                                                                    </c:when>
+                                                                </c:choose>
+                                                                <c:forEach var="value" items="<%=inheritedValues%>" varStatus="count">
+                                                                    <c:out value="${value.label}"/><c:if test="${!count.last}">, </c:if>
+                                                                </c:forEach>
+                                                                </br>
+                                                            <%}
+                                                        }
+                                                        else if (inherit && inheritedValue!=null){
                                                             String sInhText = (((dispMultiple && multiValues!=null) ||
                                                                                 (!dispMultiple && attrValue!=null)) &&
                                                                                 attribute.getInheritable().equals("2")) ?
@@ -1057,7 +1090,7 @@ else if (mode.equals("add"))
                                                         }
 
                                                         // mutliple display
-                                                        if (dispMultiple && !dispType.equals("image")){
+                                                        if (dispMultiple && !dispType.equals("image") && !dispType.equals("vocabulary")){
 
                                                             Vector allPossibleValues = null;
                                                             if (dispType.equals("select"))
@@ -1100,6 +1133,16 @@ else if (mode.equals("add"))
                                                                 %>
                                                             </div><%
                                                         }
+                                                        else if (dispMultiple && dispType.equals("vocabulary")) {
+                                                            DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
+                                                            List<VocabularyConcept> vocabularyConcepts = searchEngine.getOriginalAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity);
+                                                            if (vocabularyConcepts!=null) {
+                                                                for (VocabularyConcept concept : vocabularyConcepts) {%>
+                                                                    <input type="hidden" name="attr_mult_<%=attrID%>" value="<%=concept.getIdentifier()%>"/>
+                                                                <%}
+                                                            }%>
+                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
+                                                      <%}
                                                         // no multiple display
                                                         else{
 
@@ -1151,8 +1194,9 @@ else if (mode.equals("add"))
                                                                 </select>
                                                                     <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID + "/" + ("view".equals(mode) ? "view" : "edit")%>"></a>
                                                                 <%
-                                                            }
-                                                            else{ %>
+                                                            }else if (dispType.equals("vocabulary")){%>
+                                                                        <a href="javascript:window.alert('Here you must create a new page!')">[Manage links to the vocabulary]</a>
+                                                                    <%}else {%>
                                                                 Unknown display type!<%
                                                             }
                                                         }

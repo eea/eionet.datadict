@@ -222,7 +222,7 @@ public class AttributeActionBean extends AbstractActionBean {
        
        int attributeId = attribute.getId();
        
-       if (!this.attributeDataService.exists(attributeId)) {
+       if (!this.attributeDataService.existsAttribute(attributeId)) {
            throw new ResourceNotFoundException("Attribute with id: "+attributeId+" does not exist.");
        }
        
@@ -253,7 +253,7 @@ public class AttributeActionBean extends AbstractActionBean {
             throw new UserAuthorizationException("You are not authorized to delete this attribute.");
         }
         
-        if (!this.attributeDataService.exists(attributeId)) {
+        if (!this.attributeDataService.existsAttribute(attributeId)) {
             throw new ResourceNotFoundException("Attribute with id: "+attributeId+" does not exist.");
         }
         

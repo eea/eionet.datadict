@@ -1,5 +1,10 @@
 package eionet.meta;
 
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.model.Attribute;
+import eionet.datadict.model.DataDictEntity;
+import eionet.datadict.services.data.AttributeDataService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -2010,7 +2015,7 @@ public class DDSearchEngine {
                     attr.setInheritedLevel(inherited);
                 } else {
                     if (attr.getInheritedLevel().equals("DS") && inherited.equals("T")) {
-                        attr.clearInherited(); // element should inherit table values if exists and then dataset values
+                        attr.clearInherited(); // element should inherit table values if existsAttribute and then dataset values
                     }
                     if (attr.getInheritedLevel().equals(inherited) || inherited.equals("T")) {
                         attr.addInheritedValue(rowHash);
@@ -5242,5 +5247,73 @@ public class DDSearchEngine {
         //to avoid seniding weeks for redesign use this legacy code to bind vocabulary to data elements
         IVocabularyFolderDAO dao = springContext.getBean(IVocabularyFolderDAO.class);
         return dao.getVocabularyFolder(vocabularyId);
+    }
+    
+    
+    public Vector<String> getAttributeVocabularyConceptLabels(int attributeId,  DataDictEntity ddEntity, String inheritanceModeCode) 
+            throws ResourceNotFoundException, EmptyParameterException {
+        Attribute.ValueInheritanceMode inheritanceMode = convertValueInheritanceModeCode(inheritanceModeCode);
+        AttributeDataService attributeDataService = springContext.getBean(AttributeDataService.class);
+        Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
+        if (vocabularyId != null) {
+            Vector<String> labelVector = new Vector<String>();
+            List<VocabularyConcept> resultList = attributeDataService.getVocabularyConceptsAsAttributeValues(vocabularyId, attributeId, ddEntity, inheritanceMode);
+            for(VocabularyConcept concept : resultList){
+                labelVector.add(concept.getLabel());
+            }
+            return labelVector;
+        }
+        return null;
+    }
+    
+    public List<VocabularyConcept> getAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity, String inheritanceModeCode) 
+            throws ResourceNotFoundException, EmptyParameterException {
+        Attribute.ValueInheritanceMode inheritanceMode = convertValueInheritanceModeCode(inheritanceModeCode);
+        AttributeDataService attributeDataService = springContext.getBean(AttributeDataService.class);
+        Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
+        if (vocabularyId != null) {
+             List<VocabularyConcept> vocabularyConcepts = attributeDataService.getVocabularyConceptsAsAttributeValues(vocabularyId, attributeId, ddEntity, inheritanceMode);
+             return vocabularyConcepts;
+        }
+        return null;
+    }
+    
+    public List<VocabularyConcept> getOriginalAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity) 
+            throws ResourceNotFoundException, EmptyParameterException {
+        AttributeDataService attributeDataService = springContext.getBean(AttributeDataService.class);
+        Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
+        if (vocabularyId != null) {
+            List<VocabularyConcept> vocabularyConcepts = attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(vocabularyId, attributeId, ddEntity);
+            return vocabularyConcepts;
+        }
+        return null;
+    }
+    
+    public List<VocabularyConcept> getInheritedAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity) 
+            throws ResourceNotFoundException, EmptyParameterException {
+        AttributeDataService attributeDataService = springContext.getBean(AttributeDataService.class);
+        Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
+        if (vocabularyId != null) {
+            List<VocabularyConcept> vocabularyConcepts = attributeDataService.getVocabularyConceptsAsInheritedAttributeValues(vocabularyId, attributeId, ddEntity);
+            return vocabularyConcepts;
+        }
+        return null;
+    }
+    
+    protected Attribute.ValueInheritanceMode convertValueInheritanceModeCode(String inheritanceModeCode) {
+        Attribute.ValueInheritanceMode inheritanceMode;
+        if (inheritanceModeCode.equals("0")) {
+                inheritanceMode = Attribute.ValueInheritanceMode.NONE;
+        }
+        else if (inheritanceModeCode.equals("1")){
+            inheritanceMode = Attribute.ValueInheritanceMode.PARENT_WITH_EXTEND;
+        } 
+        else if (inheritanceModeCode.equals("2")) {
+            inheritanceMode = Attribute.ValueInheritanceMode.PARENT_WITH_OVERRIDE;
+        }
+        else {
+            throw new IllegalArgumentException(String.format("Unknown value inheritance mode"));
+        }
+        return inheritanceMode;
     }
 }

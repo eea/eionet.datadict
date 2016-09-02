@@ -75,7 +75,7 @@ public class AttributeDataServiceTest {
     @Test
     public void testExists() {
         Mockito.doReturn(Boolean.TRUE).when(attributeDao).exists(anyInt());
-        attributeDataService.exists(0);
+        attributeDataService.existsAttribute(0);
         Mockito.verify(attributeDao, times(1)).exists(0);
     }
     

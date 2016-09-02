@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -190,6 +191,18 @@ public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao
             }
         }
         return map;
+    }
+
+    @Override
+    public Integer getVocabularyBinding(int attributeId) {
+        String sql = "select VOCABULARY_ID from M_ATTRIBUTE_VOCABULARY where M_ATTRIBUTE_ID = :attributeId";
+        Map<String, Object> params = this.createParameterMap();
+        params.put("attributeId", attributeId);
+        try {
+            return this.getNamedParameterJdbcTemplate().queryForInt(sql, params);
+        } catch (IncorrectResultSizeDataAccessException ex) {
+            return null;
+        }
     }
 
     protected static class MapRowMapper implements RowMapper<Map<DataDictEntity.Entity, Integer>> {

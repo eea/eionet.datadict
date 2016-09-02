@@ -6,21 +6,20 @@
 package eionet.datadict.dal.impl;
 
 import eionet.datadict.dal.VocabularyDAO;
-import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-/**
- *
- * @author Aliki Kopaneli
- */
+
 @Repository
 public class VocabularyDAOImpl extends JdbcRepositoryBase implements VocabularyDAO {
 
@@ -33,7 +32,7 @@ public class VocabularyDAOImpl extends JdbcRepositoryBase implements VocabularyD
     }
 
     @Override
-    public VocabularyFolder getPlainVocabularyById(int id) throws ResourceNotFoundException {
+    public VocabularyFolder getPlainVocabularyById(int id) {
         String sql = GET_BY_ID;
         Map paramMap = new HashMap<String, Object>();
         paramMap.put("id", id);
@@ -49,6 +48,44 @@ public class VocabularyDAOImpl extends JdbcRepositoryBase implements VocabularyD
         });
         voc.setId(id);
         return voc;
+    }
+
+    
+    @Override
+    public boolean existsVocabularyConcept(int vocabularyId, String identifier) {
+        String sql = "SELECT IDENTIFIER FROM VOCABULARY_CONCEPT WHERE VOCABULARY_ID = :vocabularyId AND IDENTIFIER = :identifier";
+        
+        Map paramMap = new HashMap<String, Object>();
+        paramMap.put("vocabularyId", vocabularyId);
+        paramMap.put("identifier", identifier);
+        
+        try {
+            getNamedParameterJdbcTemplate().queryForObject(sql, paramMap, String.class);
+            return true;
+        } catch (IncorrectResultSizeDataAccessException ex){
+            return false;
+        }
+    }
+    
+    @Override
+    public List<VocabularyConcept> getVocabularyConcepts(int vocabularyId) {
+        String sql = "SELECT IDENTIFIER, LABEL, STATUS FROM VOCABULARY_CONCEPT WHERE VOCABULARY_ID = :vocabularyId";
+        Map paramMap = new HashMap<String, Object>();
+        paramMap.put("vocabularyId", vocabularyId);
+        return getNamedParameterJdbcTemplate().query(sql, paramMap, new VocabularyConceptRowMapper());
+    }
+    
+    public static class VocabularyConceptRowMapper implements RowMapper<VocabularyConcept> {
+
+        @Override
+        public VocabularyConcept mapRow(ResultSet rs, int i) throws SQLException {
+            VocabularyConcept concept = new VocabularyConcept();
+            concept.setIdentifier(rs.getString("IDENTIFIER"));
+            concept.setLabel(rs.getString("LABEL"));
+            concept.setStatus(rs.getInt("STATUS"));
+            return concept;
+        }
+        
     }
 
 }

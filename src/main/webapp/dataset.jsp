@@ -1,3 +1,5 @@
+<%@page import="eionet.meta.dao.domain.VocabularyConcept"%>
+<%@page import="eionet.datadict.model.DataDictEntity"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
 <%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%>
@@ -1121,6 +1123,9 @@ else if (mode.equals("add"))
                                                 if (mode.equals("view") && (attrValue == null || attrValue.length() == 0))
                                                     continue;
 
+                                                if (dispType.equals("voocabulary") && mode.equals("add")){
+                                                    continue;
+                                                }
                                                 //displayed++; - done below
 
                                                 String width  = attribute.getDisplayWidth();
@@ -1155,7 +1160,16 @@ else if (mode.equals("add"))
                                                         <%
 
                                                         // if mode is 'view', display simple a text, otherwise an input
-                                                        if (mode.equals("view")) {
+                                                        if (mode.equals("view") && dispType.equals("vocabulary")){
+                                                             DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
+                                                            List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
+                                                            if(vocabularyConcepts != null) {%>
+                                                                <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
+                                                                    <c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if>
+                                                                </c:forEach>
+                                                            <%}
+                                                        }    
+                                                        else if (mode.equals("view")) {
                                                             if (dispMultiple) {
                                                                 for (int k=0; multiValues!=null && k<multiValues.size(); k++) {
                                                                     attrValue = (String)multiValues.get(k);
@@ -1168,14 +1182,13 @@ else if (mode.equals("add"))
                                                         }
                                                         else{ // start display input
 
-                                                            if (dispMultiple) { // mutliple display
+                                                            if (dispMultiple && !dispType.equals("vocabulary")) { // mutliple display
 
                                                                 Vector allPossibleValues = null;
                                                                 if (dispType.equals("select"))
                                                                     allPossibleValues = searchEngine.getFixedValues(attrID, "attr");
                                                                 else if (dispType.equals("text"))
                                                                     allPossibleValues = searchEngine.getSimpleAttributeValues(attrID);
-
                                                                 String divHeight = "7.5em";
                                                                 String textName = "other_value_attr_" + attrID;
                                                                 String divID = "multiselect_div_attr_" + attrID;
@@ -1212,6 +1225,16 @@ else if (mode.equals("add"))
                                                                 </div>
                                                                 <%
                                                             }
+                                                            else if (dispType.equals("vocabulary")){
+                                                                DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
+                                                                List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
+                                                                if (vocabularyConcepts != null) {
+                                                                    for(VocabularyConcept concept : vocabularyConcepts) {%>
+                                                                        <input type="hidden" name="attr_mult_<%=attrID%>" value="<%=concept.getIdentifier()%>"/>
+                                                                   <%}
+                                                                }%>
+                                                                <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
+                                                          <%}
                                                             else{ // no multiple display
 
                                                                 if (dispType.equals("text")) {
@@ -1267,8 +1290,9 @@ else if (mode.equals("add"))
                                                                         
                                                                     </a>
                                                                     <%
-                                                                }
-                                                                else{ %>
+                                                                } else if (dispType.equals("vocabulary")){%>
+                                                                        <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
+                                                                    <%}else {%>
                                                                     Unknown display type!<%
                                                                 }
 

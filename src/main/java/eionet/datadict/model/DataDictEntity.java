@@ -1,10 +1,17 @@
 
 package eionet.datadict.model;
 
+import org.apache.commons.lang.StringUtils;
+
 public class DataDictEntity {
     
+    public DataDictEntity(Integer id, Entity type) {
+        this.id = id;
+        this.type = type;
+    }
+    
     public static enum Entity  {
-        E("Element"),
+        E("DataElement"),
         T("Table"),
         DS("Dataset"),
         SCH("Schema"),
@@ -19,6 +26,18 @@ public class DataDictEntity {
         
         public String getLabel(){
             return this.label;
+        }
+        
+        public static Entity getFromString(String stringLabel) {
+            for (Entity entity : Entity.values()){
+                if (StringUtils.equalsIgnoreCase(entity.name(), stringLabel)) {
+                    return entity;
+                } 
+                if (StringUtils.equalsIgnoreCase(entity.getLabel(), stringLabel)) {
+                    return entity;
+                }
+            }
+            return null;
         }
     }
     

@@ -5,10 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- *
- * @author Aliki Kopaneli
- */
 public class Enumerations {
     
     /**
@@ -210,5 +206,5 @@ public class Enumerations {
         }
         
     }
-     
+    
 }

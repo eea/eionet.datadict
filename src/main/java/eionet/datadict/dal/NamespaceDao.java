@@ -3,10 +3,7 @@ package eionet.datadict.dal;
 import eionet.datadict.model.Namespace;
 import java.util.List;
 
-/**
- *
- * @author Aliki Kopaneli
- */
+
 public interface NamespaceDao {
 
     /**

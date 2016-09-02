@@ -3,7 +3,6 @@ package eionet.datadict.model;
 public class AttributeValue {
     
     private Integer attributeId;
-    private Integer dataDictEntityId;
     private String value;
     private DataDictEntity parentEntity;
 
@@ -13,14 +12,6 @@ public class AttributeValue {
 
     public void setAttributeId(Integer attributeId) {
         this.attributeId = attributeId;
-    }
-
-    public Integer getDataDictEntityId() {
-        return dataDictEntityId;
-    }
-
-    public void setDataDictEntityId(Integer dataDictEntityId) {
-        this.dataDictEntityId = dataDictEntityId;
     }
 
     public String getValue() {
