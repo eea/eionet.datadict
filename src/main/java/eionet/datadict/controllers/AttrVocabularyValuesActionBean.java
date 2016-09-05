@@ -186,7 +186,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         } 
         else if (attrOwnerType.equals("dataset")) {
             configureDataset();
-            if (!this.dataset.getWorkingCopy() || !(this.dataset.getWorkingUser() == null) || !this.dataset.getWorkingUser().equals(user.getUserName())){
+            if (!this.dataset.getWorkingCopy() || this.dataset.getWorkingUser() != null && !this.dataset.getWorkingUser().equals(user.getUserName())){
                 throw new UserAuthorizationException("You are not authorized to edit this dataset.");
             }
         }
