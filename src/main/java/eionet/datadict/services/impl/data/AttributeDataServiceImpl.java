@@ -209,11 +209,11 @@ public class AttributeDataServiceImpl implements AttributeDataService {
         if(ddEntity.getType() == DataDictEntity.Entity.E) {    
             
             Integer tableId = this.dataElementDao.getParentTableId(ddEntity.getId());
-            Integer datasetId = this.datasetTableDao.getParentDatasetId(tableId);
-            
             if (tableId == null) {
                 return null;
             }
+            
+            Integer datasetId = this.datasetTableDao.getParentDatasetId(tableId);
             if (datasetId == null) {
                 throw new ResourceNotFoundException("Parent dataset does not exist!");
             }
