@@ -789,10 +789,6 @@ public class DsTableHandler extends BaseHandler {
      */
     public boolean existsInDataset(String dstID, String tblIdfier) throws SQLException {
 
-        if (copy) {
-            return false;
-        }
-
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer();
         buf.append("select count(DS_TABLE.TABLE_ID) from DST2TBL ")
@@ -821,10 +817,6 @@ public class DsTableHandler extends BaseHandler {
      * @throws SQLException
      */
     public String existsInDatasetVersions(String dstNamespaceID, String tblIdfier) throws SQLException {
-
-        if (copy) {
-            return null;
-        }
         INParameters inParams = new INParameters();
 
         String qry =
@@ -881,7 +873,7 @@ public class DsTableHandler extends BaseHandler {
             else {
 
                 Parameters pars = new Parameters();
-                // "copy" is a new mode where exists() is not performed
+                
                 pars.addParameterValue("mode", "copy");
                 pars.addParameterValue("table_id", getLastInsertID());
                 pars.addParameterValue("delem_name", elem.getShortName());
