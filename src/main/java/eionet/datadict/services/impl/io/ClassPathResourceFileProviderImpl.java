@@ -16,6 +16,10 @@ import org.apache.commons.lang.StringUtils;
 @Service
 public class ClassPathResourceFileProviderImpl implements ClassPathResourceFileProvider {
 
+    
+    private final String FILE_SEPARATOR ="/";
+    
+    
     @Override
     public File[] getDirectoryFiles(String... names) throws IOException {
         URL sourceUrl = this.getClassPathResourceUrl(names);
@@ -50,7 +54,7 @@ public class ClassPathResourceFileProviderImpl implements ClassPathResourceFileP
     }
     
     protected String getPath(String... names) {
-        return StringUtils.join(names, File.separator);
+        return StringUtils.join(names, FILE_SEPARATOR);
     }
     
 }
