@@ -35,46 +35,24 @@
                 </li>
             </ul>
         </div>
-        <div class="vocabularyConceptResults" style="overflow: auto;">
-            <table class="datatable results">
-                <thead>
-                    <tr>
-                        <th style="min-width:50px">Id</th>
-                        <th>Label</th>
-                        <th style="min-width:60px">&nbsp;</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:set var="zebra" value="odd"/>
-                    <c:forEach items="${actionBean.vocabularyConcepts}" var="concept">
-                        <c:choose>
-                            <c:when test="${zebra eq 'odd'}">
-                                <c:set var="zebra" value="even"/>
-                            </c:when>
-                            <c:otherwise>
-                                <c:set var="zebra" value="odd"/>
-                            </c:otherwise>
-                        </c:choose>
-                        <tr class="${zebra}">
-                            <td>
-                                <c:out value="${concept.identifier}"/>
-                            </td>
-                            <td>
-                                <c:out value="${concept.label}"/>
-                            </td>
-                            <td>
-                                <stripes:link beanclass="${actionBean['class']}" event="saveAdd">
-                                    <stripes:param name="conceptIdentifier" value="${concept.identifier}"/>
-                                    <stripes:param name="attributeId" value="${actionBean.attributeId}"/>
-                                    <stripes:param name="attrOwnerType" value="${actionBean.attrOwnerType}"/>
-                                    <stripes:param name="attrOwnerId" value="${actionBean.attrOwnerId}"/>
-                                    [Select]
-                                </stripes:link>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-        </div>
+        <display:table class="datatable results" name="${actionBean.vocabularyConcepts}"
+                       requestURI="${actionBean.contextPath}/vocabularyvalues/attribute/${actionBean.attributeId}/${actionBean.attrOwnerType}/${actionBean.attrOwnerId}"
+                       id="concept" pagesize="30">
+            <display:column title="Id">
+                ${concept.identifier}
+            </display:column>
+            <display:column title="Label">
+                ${concept.label}
+            </display:column>
+            <display:column>
+                <stripes:link beanclass="${actionBean['class']}" event="saveAdd">
+                    <stripes:param name="conceptIdentifier" value="${concept.identifier}"/>
+                    <stripes:param name="attributeId" value="${actionBean.attributeId}"/>
+                    <stripes:param name="attrOwnerType" value="${actionBean.attrOwnerType}"/>
+                    <stripes:param name="attrOwnerId" value="${actionBean.attrOwnerId}"/>
+                    [Select]
+                </stripes:link>
+            </display:column>
+        </display:table>
     </stripes:layout-component>
 </stripes:layout-render>

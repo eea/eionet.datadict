@@ -6,6 +6,7 @@
 package eionet.datadict.dal.impl;
 
 import eionet.datadict.dal.VocabularyDAO;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import java.sql.ResultSet;
@@ -72,6 +73,24 @@ public class VocabularyDAOImpl extends JdbcRepositoryBase implements VocabularyD
         String sql = "SELECT IDENTIFIER, LABEL, STATUS FROM VOCABULARY_CONCEPT WHERE VOCABULARY_ID = :vocabularyId";
         Map paramMap = new HashMap<String, Object>();
         paramMap.put("vocabularyId", vocabularyId);
+        return getNamedParameterJdbcTemplate().query(sql, paramMap, new VocabularyConceptRowMapper());
+    }
+    
+    @Override
+    public List<VocabularyConcept> getVocabularyConcepts(int vocabularyId, List<StandardGenericStatus> allowedStatuses) {
+        String sql = "SELECT IDENTIFIER, LABEL, STATUS FROM VOCABULARY_CONCEPT WHERE VOCABULARY_ID = :vocabularyId  AND (";
+        Map paramMap = new HashMap<String, Object>();
+        paramMap.put("vocabularyId", vocabularyId);
+        int statusCounter = 0;
+        for (StandardGenericStatus status : allowedStatuses) {
+            if (statusCounter != 0) {
+                sql = sql + " OR ";
+            }
+            paramMap.put("status"+statusCounter, status.getValue());
+            sql = sql + "STATUS = :status"+statusCounter;
+            statusCounter++;
+        }
+        sql = sql + ")";
         return getNamedParameterJdbcTemplate().query(sql, paramMap, new VocabularyConceptRowMapper());
     }
     

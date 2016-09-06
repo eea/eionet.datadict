@@ -104,15 +104,15 @@ public class VocabularyDataServiceImpl implements VocabularyDataService {
 
     @Override
     public List<VocabularyConcept> getVocabularyConcepts(int vocabularyId, StandardGenericStatus superStatus) {
-        List<VocabularyConcept> vocabularyConcepts = this.vocabularyDAO.getVocabularyConcepts(vocabularyId);
-        List<VocabularyConcept> statusSortedConcepts = new ArrayList<VocabularyConcept>();
-        for (VocabularyConcept concept : vocabularyConcepts) {
-            StandardGenericStatus status = concept.getStatus();
+        
+        List<StandardGenericStatus> allowedStatuses = new ArrayList();
+        allowedStatuses.add(superStatus);
+        for (StandardGenericStatus status : StandardGenericStatus.valuesAsList()) {
             if (status.isSubStatus(superStatus)) {
-                statusSortedConcepts.add(concept);
+                allowedStatuses.add(status);
             }
         }
-        return statusSortedConcepts;
+        return this.vocabularyDAO.getVocabularyConcepts(vocabularyId, allowedStatuses);
     }
 
     @Override
