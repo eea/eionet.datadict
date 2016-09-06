@@ -1232,10 +1232,13 @@ else if (mode.equals("add"))
                                                                     for(VocabularyConcept concept : vocabularyConcepts) {%>
                                                                         <input type="hidden" name="attr_mult_<%=attrID%>" value="<%=concept.getIdentifier()%>"/>
                                                                    <%}
-                                                                }%>
-                                                                <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
-                                                          <%}
-                                                            else{ // no multiple display
+                                                                }
+                                                                if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
+                                                                    <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
+                                                                <% } else {%>
+                                                                        [Manage links to the vocabulary]         
+                                                                <%}
+                                                            } else{ // no multiple display
 
                                                                 if (dispType.equals("text")) {
                                                                     if (attrValue!=null) {

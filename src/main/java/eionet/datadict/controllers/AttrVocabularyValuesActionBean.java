@@ -131,6 +131,10 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         }
         
         this.attribute = attributeDataService.getAttribute(Integer.parseInt(attributeId));
+        
+        if(attribute.getVocabulary() == null) {
+            throw new BadRequestException("No vocabulary binding exists for this attribute.");
+        }
         this.vocabularyConcepts = this.attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(attribute.getVocabulary().getId(), attribute.getId(), attributeOwnerEntity);
         
         return new ForwardResolution(ATTRIBUTE_VOCABULARY_VALUES);

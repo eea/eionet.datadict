@@ -5300,6 +5300,12 @@ public class DDSearchEngine {
         return null;
     }
     
+    public boolean existsVocabularyBinding(int attributeId){
+        AttributeDataService attributeDataService = springContext.getBean(AttributeDataService.class);
+        Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
+        return vocabularyId != null;
+    }
+    
     protected Attribute.ValueInheritanceMode convertValueInheritanceModeCode(String inheritanceModeCode) {
         Attribute.ValueInheritanceMode inheritanceMode;
         if (inheritanceModeCode.equals("0")) {
