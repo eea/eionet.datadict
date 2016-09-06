@@ -1140,9 +1140,13 @@ else if (mode.equals("add"))
                                                                 for (VocabularyConcept concept : vocabularyConcepts) {%>
                                                                     <input type="hidden" name="attr_mult_<%=attrID%>" value="<%=concept.getIdentifier()%>"/>
                                                                 <%}
-                                                            }%>
-                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
-                                                      <%}
+                                                            } 
+                                                            if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
+                                                                <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
+                                                            <%} else { %>
+                                                                [Manage links to the vocabulary]
+                                                            <%}
+                                                      }
                                                         // no multiple display
                                                         else{
 
@@ -1194,9 +1198,13 @@ else if (mode.equals("add"))
                                                                 </select>
                                                                     <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID + "/" + ("view".equals(mode) ? "view" : "edit")%>"></a>
                                                                 <%
-                                                            }else if (dispType.equals("vocabulary")){%>
-                                                                        <a href="javascript:window.alert('Here you must create a new page!')">[Manage links to the vocabulary]</a>
-                                                                    <%}else {%>
+                                                            }else if (dispType.equals("vocabulary")){
+                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>%>
+                                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
+                                                                        <%} else { %>
+                                                                            [Manage links to the vocabulary]
+                                                                        <%}
+                                                            }else {%>
                                                                 Unknown display type!<%
                                                             }
                                                         }

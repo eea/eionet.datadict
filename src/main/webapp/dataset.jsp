@@ -1293,9 +1293,13 @@ else if (mode.equals("add"))
                                                                         
                                                                     </a>
                                                                     <%
-                                                                } else if (dispType.equals("vocabulary")){%>
-                                                                        <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
-                                                                    <%}else {%>
+                                                                } else if (dispType.equals("vocabulary")){
+                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
+                                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
+                                                                        <% } else {%>
+                                                                            [Manage links to the vocabulary]         
+                                                                        <%}
+                                                                    }else {%>
                                                                     Unknown display type!<%
                                                                 }
 

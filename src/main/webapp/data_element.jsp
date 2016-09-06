@@ -1929,8 +1929,12 @@
                                                                         <c:forEach var="concept" items="<%=originalValues%>">
                                                                             <input type="hidden" name="attr_mult_<%=attrID%>" value="${concept.identifier}"/>
                                                                         </c:forEach>
-                                                                        <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
-                                                                  <%}%>
+                                                                        <%if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
+                                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
+                                                                        <%} else {%>
+                                                                            [Manage links to the vocabulary]
+                                                                        <%}
+                                                                  }%>
                                                               <%}
                                                         // handle image attribute first
                                                                 else if (dispType.equals("image")) {
@@ -2112,9 +2116,13 @@
                                                                     </select>
                                                                     <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>"></a>
                                                                     <%
-                                                                        } else if (dispType.equals("vocabulary")){%>
-                                                                        <a href="javascript:window.alert('Here you must create a new page!')">[Manage links to the vocabulary]</a>
-                                                                    <%}else {%>
+                                                                        } else if (dispType.equals("vocabulary")){
+                                                                            if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
+                                                                                <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
+                                                                            <%} else {%>
+                                                                                [Manage links to the vocabulary]
+                                                                            <%}
+                                                                    }else {%>
                                                                     Unknown display type!<%
                                                                         }
                                                                                     }
