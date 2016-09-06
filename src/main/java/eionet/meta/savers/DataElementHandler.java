@@ -439,6 +439,25 @@ public class DataElementHandler extends BaseHandler {
         }
     }
 
+    //used when a table is copied 
+    private void attachElementToTableWithPredefinedValues(String isMandatory, String isPrimaryKey, String valuesDelimiter, String positionInTable) throws SQLException {
+        SQLGenerator gen = new SQLGenerator();
+        INParameters inParams = new INParameters();
+       
+        gen.setTable("TBL2ELEM");
+        gen.setFieldExpr("TABLE_ID", inParams.add(tableID, Types.INTEGER));
+        gen.setFieldExpr("DATAELEM_ID", inParams.add(getLastInsertID(), Types.INTEGER));
+        gen.setFieldExpr("MANDATORY", inParams.add(isMandatory, Types.BOOLEAN));
+        gen.setFieldExpr("PRIM_KEY", inParams.add(isPrimaryKey, Types.BOOLEAN));
+        gen.setFieldExpr("MULTIVAL_DELIM", inParams.add(valuesDelimiter, Types.VARCHAR));
+        gen.setFieldExpr("POSITION", inParams.add(positionInTable, Types.INTEGER));
+        
+        PreparedStatement stmt = SQL.preparedStatement(gen.insertStatement(), inParams, conn);
+        System.out.println(stmt.toString());
+        stmt.executeUpdate();
+        stmt.close();
+    }
+    
     /**
      * @throws SignOnException
      *
@@ -1559,10 +1578,15 @@ public class DataElementHandler extends BaseHandler {
             if (tableID == null || tableID.length() == 0) {
                 throw new Exception("Missing tableID");
             }
-            sqlBuf = new StringBuffer("insert into TBL2ELEM (TABLE_ID, DATAELEM_ID, POSITION) select ");
-            sqlBuf.append(tableID).append(", ").append(lastInsertID);
-            sqlBuf.append(", max(POSITION)+1 from TBL2ELEM where TABLE_ID=").append(tableID);
-            stmt.executeUpdate(sqlBuf.toString());
+             if (req.getParameter("copy_exact_table_structure").equals("Y")){
+                attachElementToTableWithPredefinedValues(req.getParameter("is_mandatory"), req.getParameter("is_primary_key"), req.getParameter("multival_delimiter"), req.getParameter("position_in_table"));
+            }
+            else {
+                sqlBuf = new StringBuffer("insert into TBL2ELEM (TABLE_ID, DATAELEM_ID, POSITION) select ");
+                sqlBuf.append(tableID).append(", ").append(lastInsertID);
+                sqlBuf.append(", max(POSITION)+1 from TBL2ELEM where TABLE_ID=").append(tableID);
+                stmt.executeUpdate(sqlBuf.toString());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             if (stmt != null) {
