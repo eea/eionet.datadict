@@ -18,7 +18,7 @@
         </c:choose>
         <h1>
             Add value for <c:out value="${actionBean.attribute.shortName}"/> attribute corresponding to the 
-            <stripes:link href="${actionBean.contextPath}${ddEntityUrl}">
+            <stripes:link href="${actionBean.contextPath}/${ddEntityUrl}">
                 ${ddEntity.shortName}
             </stripes:link> 
             ${actionBean.attrOwnerType}
@@ -38,13 +38,13 @@
         <display:table class="datatable results" name="${actionBean.vocabularyConcepts}"
                        requestURI="${actionBean.contextPath}/vocabularyvalues/attribute/${actionBean.attributeId}/${actionBean.attrOwnerType}/${actionBean.attrOwnerId}"
                        id="concept" pagesize="30">
-            <display:column title="Id">
+            <display:column title="Id" style="min-width:30px">
                 ${concept.identifier}
             </display:column>
             <display:column title="Label">
                 ${concept.label}
             </display:column>
-            <display:column>
+            <display:column style="min-width:50px">
                 <stripes:link beanclass="${actionBean['class']}" event="saveAdd">
                     <stripes:param name="conceptIdentifier" value="${concept.identifier}"/>
                     <stripes:param name="attributeId" value="${actionBean.attributeId}"/>
