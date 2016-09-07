@@ -7,18 +7,20 @@
         <c:choose>
             <c:when test="${actionBean.attrOwnerType eq 'dataset'}">
                 <c:set var="ddEntity" value="${actionBean.dataset}"/>
-                <c:set var="ddEntityUrl" value="/datasets/${ddEntity.id}"/>
+                <c:set var="ddEntityUrl" value="${actionBean.contextPath}/datasets/${ddEntity.id}"/>
             </c:when>
             <c:when test="${actionBean.attrOwnerType eq 'dataelement'}">
                 <c:set var="ddEntity" value="${actionBean.dataElement}"/>
+                <c:set var="ddEntityUrl" value="${actionBean.contextPath}/dataelements/${ddEntity.id}"/>
             </c:when>
             <c:when test="${actionBean.attrOwnerType eq 'table'}">
                 <c:set var="ddEntity" value="${actionBean.datasetTable}"/>
+                <c:set var="ddEntityUrl" value="${actionBean.contextPath}/tables/${ddEntity.id}"/>
             </c:when>
         </c:choose>
         <h1>
             Add value for <c:out value="${actionBean.attribute.shortName}"/> attribute corresponding to the 
-            <stripes:link href="${actionBean.contextPath}/${ddEntityUrl}">
+            <stripes:link href="${ddEntityUrl}">
                 ${ddEntity.shortName}
             </stripes:link> 
             ${actionBean.attrOwnerType}
