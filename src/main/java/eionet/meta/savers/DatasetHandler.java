@@ -633,7 +633,7 @@ public class DatasetHandler extends BaseHandler {
             // find out image attributes, so to skip them later
 
             StringBuffer buf = new StringBuffer("select M_ATTRIBUTE_ID ");
-            buf.append("from M_ATTRIBUTE where DISP_TYPE='image'");
+            buf.append("from M_ATTRIBUTE where DISP_TYPE='image' or DISP_TYPE='vocabulary'");
 
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             rs = stmt.executeQuery();

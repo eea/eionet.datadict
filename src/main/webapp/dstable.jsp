@@ -1134,13 +1134,6 @@ else if (mode.equals("add"))
                                                             </div><%
                                                         }
                                                         else if (dispMultiple && dispType.equals("vocabulary")) {
-                                                            DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
-                                                            List<VocabularyConcept> vocabularyConcepts = searchEngine.getOriginalAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity);
-                                                            if (vocabularyConcepts!=null) {
-                                                                for (VocabularyConcept concept : vocabularyConcepts) {%>
-                                                                    <input type="hidden" name="attr_mult_<%=attrID%>" value="<%=concept.getIdentifier()%>"/>
-                                                                <%}
-                                                            } 
                                                             if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
                                                                 <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
                                                             <%} else { %>
@@ -1198,8 +1191,8 @@ else if (mode.equals("add"))
                                                                 </select>
                                                                     <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID + "/" + ("view".equals(mode) ? "view" : "edit")%>"></a>
                                                                 <%
-                                                            }else if (dispType.equals("vocabulary")){
-                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>%>
+                                                            }else if (dispType.equals("vocabulary")){ 
+                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
                                                                             <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
                                                                         <%} else { %>
                                                                             [Manage links to the vocabulary]

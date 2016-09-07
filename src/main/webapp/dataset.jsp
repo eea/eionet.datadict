@@ -1161,7 +1161,7 @@ else if (mode.equals("add"))
 
                                                         // if mode is 'view', display simple a text, otherwise an input
                                                         if (mode.equals("view") && dispType.equals("vocabulary")){
-                                                             DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
+                                                            DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
                                                             List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
                                                             if(vocabularyConcepts != null) {%>
                                                                 <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
@@ -1226,13 +1226,6 @@ else if (mode.equals("add"))
                                                                 <%
                                                             }
                                                             else if (dispType.equals("vocabulary")){
-                                                                DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
-                                                                List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
-                                                                if (vocabularyConcepts != null) {
-                                                                    for(VocabularyConcept concept : vocabularyConcepts) {%>
-                                                                        <input type="hidden" name="attr_mult_<%=attrID%>" value="<%=concept.getIdentifier()%>"/>
-                                                                   <%}
-                                                                }
                                                                 if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
                                                                     <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
                                                                 <% } else {%>

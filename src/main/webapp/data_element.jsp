@@ -1924,12 +1924,7 @@
                                                                                 </br>
                                                                           <%}
                                                                         }
-                                                                        List<VocabularyConcept> originalValues = searchEngine.getOriginalAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity);
-                                                                          %>
-                                                                        <c:forEach var="concept" items="<%=originalValues%>">
-                                                                            <input type="hidden" name="attr_mult_<%=attrID%>" value="${concept.identifier}"/>
-                                                                        </c:forEach>
-                                                                        <%if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
+                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
                                                                             <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
                                                                         <%} else {%>
                                                                             [Manage links to the vocabulary]

@@ -822,7 +822,7 @@ public class DataElementHandler extends BaseHandler {
         // that all must be deleted with no exceptions.
         String completeDelete = req.getParameter("complete");
         if (completeDelete == null || !completeDelete.equals("true")) {
-            buf.append(" and M_ATTRIBUTE_ID not in ").append("(select M_ATTRIBUTE_ID from M_ATTRIBUTE where DISP_TYPE='image')");
+            buf.append(" and M_ATTRIBUTE_ID not in ").append("(select M_ATTRIBUTE_ID from M_ATTRIBUTE where DISP_TYPE='image' or DISP_TYPE='vocabulary')");
         }
 
         LOGGER.debug(buf.toString());
