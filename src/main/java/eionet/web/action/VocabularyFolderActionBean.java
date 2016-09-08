@@ -70,6 +70,7 @@ import eionet.meta.service.ICSVVocabularyImportService;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.IRDFVocabularyImportService;
 import eionet.meta.service.ISiteCodeService;
+import eionet.meta.service.IVocabularyImportService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DataElementsFilter;
@@ -325,6 +326,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     private int rdfPurgeOption;
 
+    private IVocabularyImportService.MissingConceptsAction missingConceptsAction;
+    
     /**
      * Language for search.
      */
@@ -1402,7 +1405,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
                 String taskId = this.asyncTaskManager.executeAsync(VocabularyRdfImportTask.class, 
                         VocabularyRdfImportTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), 
-                                vocabularyFolder.isWorkingCopy(), tmpRdfFile.getAbsolutePath(), rdfPurgeOption));
+                                vocabularyFolder.isWorkingCopy(), tmpRdfFile.getAbsolutePath(), rdfPurgeOption, missingConceptsAction));
 
                 return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
             }
@@ -1880,6 +1883,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         return rdfPurgeOption;
     }
 
+    public IVocabularyImportService.MissingConceptsAction getMissingConceptsAction() {
+        return missingConceptsAction;
+    }
+
+    public void setMissingConceptsAction(IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
+        this.missingConceptsAction = missingConceptsAction;
+    }
+    
     public void setLang(String lang) {
         this.lang = lang;
     }

@@ -65,6 +65,21 @@
                     return true;
                 });
 
+                $("input[name=\"rdfPurgeOption\"]:radio").change( function( event ){
+                    var el = $(event.currentTarget);
+                    var value = el.attr("value");
+                    
+                    var showMoreOptions = (( value === "2" || value === "1" ) );
+                    
+                    var moreOptions = el.closest(".upload-dialog").find(".more-options");
+                    
+                    if ( showMoreOptions ){
+                        moreOptions.slideDown();
+                    } else {
+                        moreOptions.slideUp();
+                    }
+                });
+
                 $("#uploadRdf").click(function(){
                     $('input#uploadRdf').attr("disabled", true);
                     $('input#closeUploadRDFDialog').attr("disabled", true);
@@ -733,7 +748,7 @@
 	    </div>
 
 	    <%-- The upload RDF dialog. Hidden unless activated. --%>
-	    <div id="uploadRDFDialog" title="Upload RDF">
+	    <div id="uploadRDFDialog" class="upload-dialog" title="Upload RDF">
 	        <stripes:form id="uploadRDFForm" beanclass="${actionBean['class'].name}" method="post" action="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/uploadRdf">
 	        	<stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                 <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
@@ -751,13 +766,55 @@
 				</div>
 
                 <div>
-                    <stripes:radio id="rdfDontPurge" name="rdfPurgeOption" value="1"/><label for="rdfDontPurge" class="question">Don't purge vocabulary data</label>
+                    <stripes:radio id="rdfDontPurge" name="rdfPurgeOption" value="1"/>
+                    <label for="rdfDontPurge" class="question">Don't purge vocabulary data</label>
+                    <div class="elaboration">
+                        In this case, existing vocabulary information will be updated with information from imported concepts.
+                    </div>
                 </div>
                 <div>
-                    <stripes:radio id="rdfPurgePerPredicate" name="rdfPurgeOption" value="2"/><label for="rdfPurgePerPredicate" class="question">Purge Per Predicate</label>
+                    <stripes:radio id="rdfPurgePerPredicate" name="rdfPurgeOption" value="2"/>
+                    <label for="rdfPurgePerPredicate" class="question">Purge Per Predicate</label>
+                    <div class="elaboration">
+                        In this case, predicates of existing concepts will be replaced with the imported predicates.
+                    </div>
                 </div>
                 <div>
-                    <stripes:radio id="rdfPurgeVocabularyData" name="rdfPurgeOption" value="3"/><label for="rdfPurgeVocabularyData" class="question">Purge All Vocabulary Data</label>
+                    <stripes:radio id="rdfPurgeVocabularyData" name="rdfPurgeOption" value="3"/>
+                    <label for="rdfPurgeVocabularyData" class="question">Purge All Vocabulary Data</label>
+                    <div class="elaboration">
+                        In this case, all existing concepts will be removed and the imported concepts will be added.
+                    </div>
+                </div>
+                    
+                <div id="missing-concepts-strategy" class="more-options">
+                    <div class="subtitle">How to handle missing concepts?</div>
+                    <div class="strategies">
+                        <div class="strategy-ignore">
+                            <stripes:radio id="strategy-ignore" name="missingConceptsAction" value="keep" checked="keep"/>
+                            <label for="missingConceptsStrategy" class="question">Maintain as is, ignore</label>
+                        </div>
+                        <div class="strategy-remove">
+                            <stripes:radio id="strategy-remove" name="missingConceptsAction" value="remove"/>
+                            <label for="missingConceptsStrategy" class="question">Remove</label>
+                        </div>
+                        <div class="strategy-status-invalid">
+                            <stripes:radio id="strategy-status-invalid" name="missingConceptsAction" value="invalid"/>
+                            <label for="missingConceptsStrategy" class="question">Maintain, but update status to "Invalid"</label>
+                        </div>
+                        <div class="strategy-status-deprecated">
+                            <stripes:radio id="strategy-status-deprecated" name="missingConceptsAction" value="deprecated"/>
+                            <label for="missingConceptsStrategy" class="question">Maintain, but update status to "Deprecated"</label>
+                        </div>
+                        <div class="strategy-status-deprecated-retired">
+                            <stripes:radio id="strategy-status-deprecated-retired" name="missingConceptsAction" value="retired"/>
+                            <label for="missingConceptsStrategy" class="question">Maintain, but update status to "Deprecated-Retired"</label>
+                        </div>
+                        <div class="strategy-status-deprecated-superseded">
+                            <stripes:radio id="strategy-status-deprecated-superseded" name="missingConceptsAction" value="superseded"/>
+                            <label for="missingConceptsStrategy" class="question">Maintain, but update status to "Deprecated-Superseded"</label>
+                        </div>
+                    </div>
                 </div>
 
 	            <stripes:file name="uploadedFileToImport" id="fileToUpload" size="40"  title="Select a .rdf file to import"/>

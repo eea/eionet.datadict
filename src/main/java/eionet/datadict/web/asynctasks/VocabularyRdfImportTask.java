@@ -3,6 +3,7 @@ package eionet.datadict.web.asynctasks;
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IRDFVocabularyImportService;
+import eionet.meta.service.IVocabularyImportService;
 import eionet.meta.service.IVocabularyService;
 import java.io.File;
 import java.io.FileReader;
@@ -25,15 +26,17 @@ public class VocabularyRdfImportTask implements AsyncTask {
     public static final String PARAM_WORKING_COPY = "workingCopy";
     public static final String PARAM_RDF_FILE_NAME = "rdfFileName";
     public static final String PARAM_RDF_PURGE_OPTION = "rdfPurgeOption";
+    public static final String PARAM_MISSING_CONCEPTS_ACTION = "missingConceptsAction";
     
     public static Map<String, Object> createParamsBundle(String vocabularySetIdentifier, String vocabularyIdentifier, 
-            boolean workingCopy, String rdfFileName, int rdfPurgeOption) {
+            boolean workingCopy, String rdfFileName, int rdfPurgeOption, IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(PARAM_VOCABULARY_SET_IDENTIFIER, vocabularySetIdentifier);
         parameters.put(PARAM_VOCABULARY_IDENTIFIER, vocabularyIdentifier);
         parameters.put(PARAM_WORKING_COPY, workingCopy);
         parameters.put(PARAM_RDF_FILE_NAME, rdfFileName);
         parameters.put(PARAM_RDF_PURGE_OPTION, rdfPurgeOption);
+        parameters.put(PARAM_MISSING_CONCEPTS_ACTION, missingConceptsAction);
         
         return parameters;
     }
@@ -100,7 +103,7 @@ public class VocabularyRdfImportTask implements AsyncTask {
             // TODO use enum instead for rdf purge option
             int rdfPurgeOption = this.getRdfPurgeOption();
             List<String> systemMessages = this.vocabularyRdfImportService.importRdfIntoVocabulary(
-                    rdfFileReader, vocabulary, rdfPurgeOption == 3, rdfPurgeOption == 2);
+                    rdfFileReader, vocabulary, rdfPurgeOption == 3, rdfPurgeOption == 2, this.getMissingConceptsAction());
 
             for (String systemMessage : systemMessages) {
                 LOGGER.info(systemMessage);
@@ -135,6 +138,10 @@ public class VocabularyRdfImportTask implements AsyncTask {
     
     protected int getRdfPurgeOption() {
         return (Integer) this.parameters.get(PARAM_RDF_PURGE_OPTION);
+    }
+    
+    protected IVocabularyImportService.MissingConceptsAction getMissingConceptsAction() {
+        return (IVocabularyImportService.MissingConceptsAction) this.parameters.get(PARAM_MISSING_CONCEPTS_ACTION);
     }
     
 }

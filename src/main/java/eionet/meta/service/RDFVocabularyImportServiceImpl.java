@@ -359,6 +359,24 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
     public List<String> importRdfIntoVocabulary(Reader contents, final VocabularyFolder vocabularyFolder,
                                                 boolean purgeVocabularyData, boolean purgePredicateBasis) throws ServiceException {
 
+        MissingConceptsAction missingConceptsAction = getDefaultMissingConceptsAction(false);
+
+        return this.importRdfIntoVocabularyLegacyInternal(contents, vocabularyFolder, purgeVocabularyData, purgePredicateBasis, missingConceptsAction);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(rollbackFor = ServiceException.class)
+    public List<String> importRdfIntoVocabulary(Reader contents, final VocabularyFolder vocabularyFolder,
+            boolean purgeVocabularyData, boolean purgePredicateBasis, MissingConceptsAction missingConceptsAction) throws ServiceException {
+
+        return this.importRdfIntoVocabularyLegacyInternal(contents, vocabularyFolder, purgeVocabularyData, purgePredicateBasis, missingConceptsAction);
+    }
+
+    private List<String> importRdfIntoVocabularyLegacyInternal(Reader contents, final VocabularyFolder vocabularyFolder,
+            boolean purgeVocabularyData, boolean purgePredicateBasis, MissingConceptsAction missingConceptsAction) throws ServiceException {
         UploadActionBefore uploadActionBefore;
         if (purgeVocabularyData) {
             uploadActionBefore = UploadActionBefore.remove;
@@ -373,11 +391,9 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
             uploadAction = getDefaultAction(false);
         }
 
-        MissingConceptsAction missingConceptsAction = getDefaultMissingConceptsAction(false);
-
         return importRdfIntoVocabularyInternal(contents, vocabularyFolder, uploadActionBefore, uploadAction, missingConceptsAction);
     }
-
+    
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public List<String> createFolderAndVocabularyFromRDF(Reader contents, Folder folder, VocabularyFolder vocabularyFolder, String username) throws ServiceException {
