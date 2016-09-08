@@ -40,7 +40,7 @@
 
                 $('#uploadCSVDialog').dialog({
                     autoOpen: false,
-                    width: 500
+                    width: 530
                 });
 
                 $("#closeUploadCSVDialog").click(function() {
@@ -55,7 +55,7 @@
 
                 $('#uploadRDFDialog').dialog({
                     autoOpen: false,
-                    width: 500,
+                    width: 530,
                     closeOnEscape: false,
                     open: function(event, ui) { $(".ui-dialog-titlebar-close").hide();}
                 });
