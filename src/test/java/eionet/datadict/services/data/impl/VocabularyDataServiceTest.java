@@ -1,4 +1,4 @@
-package eionet.datadict.services.impl.data;
+package eionet.datadict.services.data.impl;
 
 import eionet.datadict.dal.VocabularyRepository;
 import eionet.datadict.dal.VocabularySetRepository;

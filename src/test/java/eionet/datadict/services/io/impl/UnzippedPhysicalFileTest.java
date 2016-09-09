@@ -1,4 +1,4 @@
-package eionet.datadict.services.impl.io;
+package eionet.datadict.services.io.impl;
 
 import eionet.datadict.services.io.UnzippedPhysicalFile;
 import java.io.File;

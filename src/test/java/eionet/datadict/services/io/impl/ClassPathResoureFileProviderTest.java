@@ -1,4 +1,4 @@
-package eionet.datadict.services.impl.io;
+package eionet.datadict.services.io.impl;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,7 +28,7 @@ public class ClassPathResoureFileProviderTest {
     
     @Test
     public void testGetDirectoryFiles() throws IOException {
-        File[] packageFiles = this.classPathResourceProvider.getDirectoryFiles("eionet", "datadict", "services", "impl", "io");
+        File[] packageFiles = this.classPathResourceProvider.getDirectoryFiles("eionet", "datadict", "services", "io", "impl");
         assertThat(packageFiles, is(notNullValue()));
         assertThat(Arrays.asList(packageFiles), not(empty()));
         assertThat("Test class not found in classpath.", CollectionUtils.find(Arrays.asList(packageFiles), new Predicate() {
@@ -42,8 +42,8 @@ public class ClassPathResoureFileProviderTest {
         }), is(notNullValue()));
         
         try {
-            final String fakePackageName = "io222";
-            this.classPathResourceProvider.getDirectoryFiles("eionet", "datadict", "services", "impl", fakePackageName);
+            final String fakePackageName = "impl222";
+            this.classPathResourceProvider.getDirectoryFiles("eionet", "datadict", "services", "io", fakePackageName);
             fail("Sub package " + fakePackageName + " should not exist.");
         }
         catch(IOException ex) {
@@ -54,13 +54,13 @@ public class ClassPathResoureFileProviderTest {
     @Test
     public void testGetFile() throws FileNotFoundException {
         final String testClassFileName = "ClassPathResoureFileProviderTest.class";
-        File testClassFile = this.classPathResourceProvider.getFile("eionet", "datadict", "services", "impl", "io", testClassFileName);
+        File testClassFile = this.classPathResourceProvider.getFile("eionet", "datadict", "services", "io", "impl", testClassFileName);
         assertThat(testClassFile, is(notNullValue()));
         assertThat(testClassFile.getName(), is(equalTo(testClassFileName)));
         
         try {
             final String fakeClassName = "testClassFileName + \"1234\"";
-            this.classPathResourceProvider.getFile("eionet", "datadict", "services", "impl", "io", fakeClassName);
+            this.classPathResourceProvider.getFile("eionet", "datadict", "services", "io", "impl", fakeClassName);
             fail("Test class " + fakeClassName + " should not exist.");
         }
         catch (FileNotFoundException ex) { }
