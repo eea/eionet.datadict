@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AsyncTaskDaoImpl extends JdbcRepositoryBase implements AsyncTaskDao {
+public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
 
     private final ExecutionStatusToByteConverter executionStatusToByteConverter;
     private final DateTimeToLongConverter dateTimeToLongConverter;

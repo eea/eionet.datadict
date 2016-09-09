@@ -6,7 +6,7 @@ import eionet.datadict.model.VocabularySet;
  *
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
-public interface VocabularySetRepository {
+public interface VocabularySetDao {
 
     boolean exists(String identifier);
     

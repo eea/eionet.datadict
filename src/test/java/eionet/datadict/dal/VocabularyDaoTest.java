@@ -14,10 +14,10 @@ import org.unitils.spring.annotation.SpringBeanByType;
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
 @SpringApplicationContext("spring-context.xml")
-public class VocabularyRepositoryTest extends UnitilsJUnit4 {
+public class VocabularyDaoTest extends UnitilsJUnit4 {
 
     @SpringBeanByType
-    private VocabularyRepository vocabularyRepository;
+    private VocabularyDao vocabularyDao;
 
     @Before
     public void setup() throws Exception {
@@ -26,16 +26,16 @@ public class VocabularyRepositoryTest extends UnitilsJUnit4 {
 
     @Test
     public void existsByVocabularySetIdAndVocabularyIdentifier() {
-        assertTrue(this.vocabularyRepository.exists(1, "test_vocabulary1"));
-        assertFalse(this.vocabularyRepository.exists(101, "test_vocabulary1"));
-        assertFalse(this.vocabularyRepository.exists(1, "test_vocabulary_not_here"));
+        assertTrue(this.vocabularyDao.exists(1, "test_vocabulary1"));
+        assertFalse(this.vocabularyDao.exists(101, "test_vocabulary1"));
+        assertFalse(this.vocabularyDao.exists(1, "test_vocabulary_not_here"));
     }
 
     @Test
     public void existsByVocabularySetIdentifierAndVocabularyIdentifier() {
-        assertTrue(this.vocabularyRepository.exists("common", "test_vocabulary2"));
-        assertFalse(this.vocabularyRepository.exists("common", "test_vocabulary102"));
-        assertFalse(this.vocabularyRepository.exists("xxx", "test_vocabulary2"));
+        assertTrue(this.vocabularyDao.exists("common", "test_vocabulary2"));
+        assertFalse(this.vocabularyDao.exists("common", "test_vocabulary102"));
+        assertFalse(this.vocabularyDao.exists("xxx", "test_vocabulary2"));
     }
 
 }

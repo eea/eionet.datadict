@@ -1,6 +1,6 @@
 package eionet.datadict.dal.impl;
 
-import eionet.datadict.dal.VocabularySetRepository;
+import eionet.datadict.dal.VocabularySetDao;
 import eionet.datadict.model.VocabularySet;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,10 +17,10 @@ import org.springframework.stereotype.Repository;
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
 @Repository
-public class VocabularySetRepositoryImpl extends JdbcRepositoryBase implements VocabularySetRepository {
+public class VocabularySetDaoImpl extends JdbcDaoBase implements VocabularySetDao {
 
     @Autowired
-    public VocabularySetRepositoryImpl(DataSource dataSource) {
+    public VocabularySetDaoImpl(DataSource dataSource) {
         super(dataSource);
     }
     

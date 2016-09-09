@@ -1,6 +1,6 @@
 package eionet.datadict.dal.impl;
 
-import eionet.datadict.dal.VocabularyRepository;
+import eionet.datadict.dal.VocabularyDao;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Repository;
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
 @Repository
-public class VocabularyRepositoryImpl extends JdbcRepositoryBase implements VocabularyRepository {
+public class VocabularyDaoImpl extends JdbcDaoBase implements VocabularyDao {
 
     @Autowired
-    public VocabularyRepositoryImpl(DataSource dataSource) {
+    public VocabularyDaoImpl(DataSource dataSource) {
         super(dataSource);
     }
 
