@@ -34,16 +34,6 @@
 
     <!-- Liquibase configuration  -->
     <context-param>
-        <param-name>liquibase.changelog</param-name>
-        <param-value>sql/dd-struct.xml</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>liquibase.datasource</param-name>
-        <param-value>java:comp/env/jdbc/datadict</param-value>
-    </context-param>
-
-    <context-param>
         <param-name>liquibase.onerror.fail</param-name>
         <param-value>true</param-value>
     </context-param>
@@ -53,9 +43,9 @@
         <param-value>production</param-value>
     </context-param>
 
-    <listener>
+<!--    <listener>
         <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
-    </listener>
+    </listener>-->
 
     <listener>
         <listener-class>eionet.meta.scheduled.VocabularyReferenceMatchJob</listener-class>
@@ -584,14 +574,6 @@
 
     <!-- the application server might allow directory listing. The welcome-files
     are used to overcome workings of such feature -->
-
-
-    <resource-ref>
-        <description>DataDict DB</description>
-        <res-ref-name>jdbc/datadict</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-    </resource-ref>
 
     <security-constraint>
         <web-resource-collection>

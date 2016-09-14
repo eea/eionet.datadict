@@ -53,6 +53,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Service implementation to import RDF into a Vocabulary Folder.
@@ -60,6 +61,7 @@ import org.openrdf.rio.RDFParseException;
  * @author enver
  */
 @Service
+@DependsOn("contextAware")
 public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseImpl implements IRDFVocabularyImportService {
 
     /**

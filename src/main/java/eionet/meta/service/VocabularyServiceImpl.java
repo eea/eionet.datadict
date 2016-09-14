@@ -72,6 +72,7 @@ import eionet.util.Util;
 import eionet.web.action.ErrorActionBean;
 import java.util.HashSet;
 import java.util.Set;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Vocabulary service.
@@ -80,6 +81,7 @@ import java.util.Set;
  */
 @Service
 @Transactional
+@DependsOn("contextAware")
 public class VocabularyServiceImpl implements IVocabularyService {
 
     /**
