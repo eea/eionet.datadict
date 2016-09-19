@@ -16,29 +16,20 @@ public class DstPdfGuidelineTest extends DDDatabaseTestCase {
     private Connection conn = null;
     private DstPdfGuideline dstPdfGuideline = null;
 
-    /*
-     *  (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         conn = ConnectionUtil.getConnection();
         dstPdfGuideline = new DstPdfGuideline(conn);
     }
 
-    /**
-     * @throws Exception
-     */
     public void testStoreAndDelete() throws Exception {
         String fileName = "test.txt";
         int i = dstPdfGuideline.storeCacheEntry("9999", fileName, conn);
         assertTrue(i > 0);
     }
 
-    /*
-     *  (non-Javadoc)
-     * @see junit.framework.TestCase#tearDown()
-     */
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         try {
@@ -46,6 +37,11 @@ public class DstPdfGuidelineTest extends DDDatabaseTestCase {
                 conn.close();
             }
         } catch (SQLException e) {}
+    }
+
+    @Override
+    protected String getSeedFilename() {
+        return "seed-small-dataset.xml";
     }
 
 }
