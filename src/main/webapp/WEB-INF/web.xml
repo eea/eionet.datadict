@@ -32,21 +32,6 @@
         <param-value>classpath:spring-context.xml</param-value>
     </context-param>
 
-    <!-- Liquibase configuration  -->
-    <context-param>
-        <param-name>liquibase.onerror.fail</param-name>
-        <param-value>true</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>liquibase.contexts</param-name>
-        <param-value>production</param-value>
-    </context-param>
-
-<!--    <listener>
-        <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
-    </listener>-->
-
     <listener>
         <listener-class>eionet.meta.scheduled.VocabularyReferenceMatchJob</listener-class>
     </listener>
