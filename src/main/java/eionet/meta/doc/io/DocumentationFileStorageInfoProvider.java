@@ -5,6 +5,7 @@ import eionet.meta.DDRuntimeException;
 import eionet.util.Props;
 import java.io.IOException;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
  * @author Nikolaos Nakas
  */
 @Component
+@DependsOn("contextAware")
 public final class DocumentationFileStorageInfoProvider implements FileStorageInfoProvider {
     
     private static final String DOC_FOLDER_PROPERTY_NAME = "doc.files.folder";
