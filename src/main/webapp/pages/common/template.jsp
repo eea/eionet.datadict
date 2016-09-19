@@ -34,6 +34,7 @@
             <script type="text/javascript" src="<c:url value="/scripts/prototype.js"/>"></script>
             <script type="text/javascript" src="<c:url value="/scripts/util.js"/>"></script>
             <script type="text/javascript" src="<c:url value="/script.js"/>"></script>
+            <script type="text/javascript" src="<c:url value="/helpPopup.js"/>"></script>
             <stripes:layout-component name="head"/>
         </head>
 
@@ -55,6 +56,9 @@
                             </c:otherwise>
                         </c:choose>
 
+                        <c:if test="${not empty helpScreen}">
+                            <a id="pagehelplink" class="helpButton" title="Get help on this page" href="${pageContext.request.contextPath}/help.jsp?screen=${fn:escapeXml(helpScreen)}&amp;area=pagehelp"><span>Page help</span></a>
+                        </c:if>
                         <a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
                         <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>
                         <a id="acronymlink" href="about.action" title="About ${initParam.appDispName}"><span>About</span></a>
