@@ -144,7 +144,6 @@
     <bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
         <property name="dataSource" ref="dataSource" />
         <property name="changeLog" value="classpath:dd-struct.xml" />
-        <property name="dropFirst" value="true"/>
     </bean>
 
     <util:properties id="quartzProperties" location="classpath:quartz.properties" />
