@@ -1,10 +1,10 @@
-package eionet.meta.service.impl;
+package eionet.datadict.services.data.impl;
 
-import eionet.meta.dao.CacheDao;
+import eionet.datadict.dal.CacheDao;
 import eionet.meta.dao.IDataSetDAO;
 import eionet.meta.dao.ITableDAO;
-import eionet.meta.dao.domain.CacheEntry;
-import eionet.meta.service.CacheService;
+import eionet.datadict.model.CacheEntry;
+import eionet.datadict.services.data.CacheService;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import java.io.File;

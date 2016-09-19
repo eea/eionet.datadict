@@ -1,20 +1,16 @@
-package eionet.meta.service;
+package eionet.datadict.dal;
 
-import eionet.meta.dao.domain.CacheEntry;
+import eionet.datadict.model.CacheEntry;
 import java.util.List;
 
-public interface CacheService {
-
-    String getCachePath();
+public interface CacheDao {
 
     CacheEntry getCacheEntry(int objectId, CacheEntry.ObjectType objectType, CacheEntry.ArticleType articleType);
 
     List<CacheEntry> getCacheEntriesForObjectType(int objectId, CacheEntry.ObjectType objectType);
 
     void deleteCacheEntry(int objectId, CacheEntry.ObjectType objectType, CacheEntry.ArticleType articleType);
-
-    boolean deletePhysicalFile(String fileName);
-
-    String getCachableObjectIdentifier(int objectId, CacheEntry.ObjectType objectType);
+    
+    void saveCacheEntry(CacheEntry cacheEntry);
 
 }

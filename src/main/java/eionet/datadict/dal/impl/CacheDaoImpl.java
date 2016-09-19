@@ -1,17 +1,24 @@
-package eionet.meta.dao.mysql;
+package eionet.datadict.dal.impl;
 
-import eionet.meta.dao.CacheDao;
-import eionet.meta.dao.domain.CacheEntry;
+import eionet.datadict.dal.CacheDao;
+import eionet.datadict.model.CacheEntry;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class CacheDaoImpl extends GeneralDAOImpl implements CacheDao {
+public class CacheDaoImpl extends JdbcDaoBase implements CacheDao {
+
+    @Autowired
+    public CacheDaoImpl(DataSource dataSource) {
+        super(dataSource);
+    }
 
     @Override
     public CacheEntry getCacheEntry(int objectId, CacheEntry.ObjectType objectType, CacheEntry.ArticleType articleType) {

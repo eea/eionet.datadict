@@ -1,4 +1,4 @@
-package eionet.meta.dao.domain;
+package eionet.datadict.model;
 
 import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;

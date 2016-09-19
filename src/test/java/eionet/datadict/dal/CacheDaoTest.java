@@ -1,6 +1,6 @@
-package eionet.meta.dao;
+package eionet.datadict.dal;
 
-import eionet.meta.dao.domain.CacheEntry;
+import eionet.datadict.model.CacheEntry;
 import eionet.meta.service.DBUnitHelper;
 import java.util.List;
 import static org.junit.Assert.*;
@@ -75,7 +75,7 @@ public class CacheDaoTest extends UnitilsJUnit4 {
         this.cacheDao.deleteCacheEntry(1, CacheEntry.ObjectType.TABLE, CacheEntry.ArticleType.PDF);
         cacheEntries = this.cacheDao.getCacheEntriesForObjectType(1, CacheEntry.ObjectType.DATASET);
         assertEquals(1, cacheEntries.size());
-        
+
         this.cacheDao.deleteCacheEntry(1, CacheEntry.ObjectType.DATASET, CacheEntry.ArticleType.XLS);
         cacheEntries = this.cacheDao.getCacheEntriesForObjectType(1, CacheEntry.ObjectType.DATASET);
         assertTrue(cacheEntries.isEmpty());

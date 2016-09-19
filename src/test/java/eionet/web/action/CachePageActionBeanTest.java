@@ -3,8 +3,8 @@ package eionet.web.action;
 import eionet.meta.ActionBeanUtils;
 import eionet.meta.DDUser;
 import eionet.meta.FakeUser;
-import eionet.meta.dao.domain.CacheEntry;
-import eionet.meta.service.CacheService;
+import eionet.datadict.model.CacheEntry;
+import eionet.datadict.services.data.CacheService;
 import eionet.util.SecurityUtil;
 import eionet.web.action.CachePageActionBean.CacheTypeConfig;
 import eionet.web.action.di.ActionBeanDependencyInjectionInterceptor;
@@ -291,35 +291,6 @@ public class CachePageActionBeanTest {
         assertTrue(trip.getRedirectUrl().contains("objectTypeKey=dst"));
     }
 
-//    @Test
-//    public void testUpdate() throws Exception {
-//        final String objectId = "100";
-//        final String objectTypeKey = "dst";
-//        final String identifier = "foo";
-//        final Set<String> articleTypeKeys = new HashSet<String>();
-//        final EnumSet<CacheEntry.ArticleType> articleTypes = EnumSet.allOf(CacheEntry.ArticleType.class);
-//
-//        for (CacheEntry.ArticleType articleType : articleTypes) {
-//            articleTypeKeys.add(articleType.getKey());
-//            when(cacheService.getCacheEntry(eq(Integer.parseInt(objectId)), eq(CacheEntry.ObjectType.DATASET), eq(articleType))).
-//                    thenReturn(createCacheEntry(Integer.parseInt(objectId), CacheEntry.ObjectType.DATASET, articleType, "file." + articleType.getKey(), System.currentTimeMillis()));
-//        }
-//
-//        when(cacheService.getCachableObjectIdentifier(eq(Integer.parseInt(objectId)), eq(CacheEntry.ObjectType.DATASET))).thenReturn(identifier);
-//
-//        MockRoundtrip trip = this.prepareRoundTrip(objectId, objectTypeKey, articleTypeKeys);
-//        trip.execute("delete");
-//
-//        verify(errorPageService, times(0)).createErrorResolution(any(ErrorActionBean.ErrorType.class), any(String.class));
-//        for (CacheEntry.ArticleType articleType : articleTypes) {
-//            verify(cacheService, times(1)).deleteCacheEntry(Integer.parseInt(objectId), CacheEntry.ObjectType.DATASET, articleType);
-//            verify(cacheService, times(1)).deletePhysicalFile("file." + articleType.getKey());
-//        }
-//        assertTrue(trip.getRedirectUrl().contains("cache"));
-//        assertTrue(trip.getRedirectUrl().contains("objectId=100"));
-//        assertTrue(trip.getRedirectUrl().contains("objectTypeKey=dst"));
-//    }
-            
     private MockRoundtrip prepareRoundTrip(String objectId, String objectTypeKey, Set<String> articleTypeKeys) {
         MockRoundtrip trip = this.createAuthenticatedRoundtrip();
         if (objectId != null) {

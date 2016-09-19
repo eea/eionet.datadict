@@ -1,10 +1,10 @@
-package eionet.meta.service;
+package eionet.datadict.services.data.impl;
 
-import eionet.meta.dao.CacheDao;
+import eionet.datadict.services.data.CacheService;
+import eionet.datadict.dal.CacheDao;
 import eionet.meta.dao.IDataSetDAO;
 import eionet.meta.dao.ITableDAO;
-import eionet.meta.dao.domain.CacheEntry;
-import eionet.meta.service.impl.CacheServiceImpl;
+import eionet.datadict.model.CacheEntry;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

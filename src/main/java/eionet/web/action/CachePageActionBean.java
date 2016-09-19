@@ -1,14 +1,14 @@
 package eionet.web.action;
 
 import eionet.meta.GetPrintout;
-import eionet.meta.dao.domain.CacheEntry;
-import eionet.meta.dao.domain.CacheEntry.ArticleType;
+import eionet.datadict.model.CacheEntry;
+import eionet.datadict.model.CacheEntry.ArticleType;
 import eionet.meta.exports.CachableIF;
 import eionet.meta.exports.pdf.DstPdfGuideline;
 import eionet.meta.exports.pdf.PdfHandout;
 import eionet.meta.exports.xls.DstXls;
 import eionet.meta.exports.xls.TblXls;
-import eionet.meta.service.CacheService;
+import eionet.datadict.services.data.CacheService;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
