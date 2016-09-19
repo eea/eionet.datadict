@@ -57,4 +57,7 @@ public interface IDataSetDAO {
      * @return List of DataSet objects.
      */
     List<DataSet> getRecentlyReleasedDatasets(int limit);
+
+    String getIdentifierById(int id);
+
 }

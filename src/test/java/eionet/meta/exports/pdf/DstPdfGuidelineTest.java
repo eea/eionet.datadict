@@ -1,9 +1,9 @@
 package eionet.meta.exports.pdf;
 
+import eionet.DDDatabaseTestCase;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import junit.framework.TestCase;
 import eionet.util.sql.ConnectionUtil;
 
 /**
@@ -11,11 +11,10 @@ import eionet.util.sql.ConnectionUtil;
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
-public class DstPdfGuidelineTest extends TestCase {
+public class DstPdfGuidelineTest extends DDDatabaseTestCase {
 
-//FIXME: This should be a DBUNIT test.
-    /** */
     private Connection conn = null;
+    private DstPdfGuideline dstPdfGuideline = null;
 
     /*
      *  (non-Javadoc)
@@ -24,6 +23,7 @@ public class DstPdfGuidelineTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         conn = ConnectionUtil.getConnection();
+        dstPdfGuideline = new DstPdfGuideline(conn);
     }
 
     /**
@@ -31,10 +31,8 @@ public class DstPdfGuidelineTest extends TestCase {
      */
     public void testStoreAndDelete() throws Exception {
         String fileName = "test.txt";
-        int i = DstPdfGuideline.storeCacheEntry("9999", fileName, conn);
+        int i = dstPdfGuideline.storeCacheEntry("9999", fileName, conn);
         assertTrue(i > 0);
-        String s = DstPdfGuideline.deleteCacheEntry("9999", conn);
-        assertEquals(fileName, s);
     }
 
     /*

@@ -756,7 +756,7 @@ else if (mode.equals("add"))
                                     <a rel="nofollow" href="<%=request.getContextPath()%>/doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Upload a document</a>
                                 </li>
                                 <li class="doc">
-                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Open cache</a>
+                                    <a rel="nofollow" href="<%=request.getContextPath()%>/cache?objectId=<%=ds_id%>&amp;objectTypeKey=dst">Open cache</a>
                                 </li>
                             <%}
                         }%>

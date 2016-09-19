@@ -24,7 +24,6 @@ package eionet.meta.dao.mysql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +40,7 @@ import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.DataSetTable;
 import eionet.meta.service.data.TableFilter;
+import org.springframework.jdbc.core.RowMapper;
 
 /**
  * Table DAO.
@@ -206,4 +206,20 @@ public class TableDAOImpl extends GeneralDAOImpl implements ITableDAO {
         });
         return resultList;
     }
+
+    @Override
+    public String getIdentifierById(int id) {
+        String sql = "select IDENTIFIER from DS_TABLE where TABLE_ID = :id";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("id", id);
+
+        List<String> result = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString("IDENTIFIER");
+            }
+        });
+        return result.isEmpty() ? null : result.get(0);
+    }
+
 }

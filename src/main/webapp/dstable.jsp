@@ -666,7 +666,7 @@ else if (mode.equals("add"))
                     // display the link about cache
                     boolean dispCache = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
                     if (editDstPrm || dispCache) {%>
-                        <li class="doc"><a rel="nofollow" href="<%=request.getContextPath()%>/GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache</a></li>
+                        <li class="doc"><a rel="nofollow" href="<%=request.getContextPath()%>/cache?objectId=<%=tableID%>&amp;objectTypeKey=tbl">Open cache</a></li>
                     <%}%>
                 </ul>
             </div>

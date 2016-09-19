@@ -65,10 +65,8 @@ public class TblXlsTest extends DDDatabaseTestCase {
     public void testStoreAndDelete() {
         try {
             String fileName = "test.txt";
-            int i = TblXls.storeCacheEntry("999999", fileName, conn);
+            int i = classInstanceUnderTest.storeCacheEntry("999999", fileName, conn);
             Assert.assertTrue(i > 0);
-            String s = TblXls.deleteCacheEntry("999999", conn);
-            Assert.assertEquals(fileName, s);
         } catch (Exception e) {
             Assert.fail("Was not expecting any exceptions, but catched " + e.toString());
         }
