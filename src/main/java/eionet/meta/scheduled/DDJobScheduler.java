@@ -21,10 +21,7 @@
 package eionet.meta.scheduled;
 
 import java.text.ParseException;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
+import javax.annotation.PostConstruct;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.CronScheduleBuilder;
@@ -34,14 +31,18 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
-import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 /**
  * Class to set up quartz jobs.
  *
  * @author Kaido Laine, enver
  */
-public class DDJobScheduler implements ServletContextListener {
+@Component
+public class DDJobScheduler {
+    
     /**
      * default interval for jobs if not defined in the props file. 24h.
      */
@@ -53,52 +54,38 @@ public class DDJobScheduler implements ServletContextListener {
     /** Scheduler instance. */
     private static Scheduler quartzScheduler = null;
 
-    @Override
-    public void contextInitialized(ServletContextEvent servletContextEvent) {
-        try {
-            initQuartzScheduler();
-            LOGGER.debug("DDJobScheduler is initialized");
-        } catch (SchedulerException e) {
-            LOGGER.fatal("Cannot initialize quartz scheduler: " + e.getMessage());
-            e.printStackTrace();
-        }
-    } // end of method contextInitialized
+    private final Scheduler scheduler;
 
-    @Override
-    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+    @Autowired
+    public DDJobScheduler(@Qualifier("jobScheduler") Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
+    
+    @PostConstruct
+    public void init() {
         try {
-            shutdownQuartzScheduler();
-        } catch (SchedulerException e) {
-            LOGGER.warn("Cannot shutdown quartz scheduler: " + e.getMessage());
-            e.printStackTrace();
+            initQuartzScheduler(this.scheduler);
+            LOGGER.debug("DDJobScheduler is initialized");
+        } catch (IllegalStateException ex) {
+            LOGGER.fatal("Cannot initialize quartz scheduler: " + ex.getMessage(), ex);
         }
-    } // end of method contextDestroyed
+    }
 
     /**
      * Initialize quartz scheduler.
      *
-     * @throws SchedulerException
-     *             when an error occurs during initialization.
+     * @throws IllegalStateException when an error occurs during initialization.
      */
-    private static synchronized void initQuartzScheduler() throws SchedulerException {
+    private static synchronized void initQuartzScheduler(Scheduler scheduler) throws IllegalStateException {
+        if (scheduler == null) {
+            throw new IllegalStateException("Schaduler bean has not been initialized.");
+        }
+        
         if (quartzScheduler == null) {
-            quartzScheduler = StdSchedulerFactory.getDefaultScheduler();
-            quartzScheduler.start();
+            quartzScheduler = scheduler;
         }
-    } // end of function initQuartzScheduler
-
-    /**
-     * De-initialize quartz scheduler.
-     *
-     * @throws SchedulerException
-     *             when an error occurs during shutdown.
-     */
-    private static synchronized void shutdownQuartzScheduler() throws SchedulerException {
-        if (quartzScheduler != null) {
-            quartzScheduler.shutdown();
-        }
-    } // end of function shutdownQuartzScheduler
-
+    }
+    
     /**
      * Schedules an interval job.
      *

@@ -58,9 +58,6 @@
     </listener>
 
     <listener>
-        <listener-class>eionet.meta.scheduled.DDJobScheduler</listener-class>
-    </listener>
-    <listener>
         <listener-class>eionet.meta.scheduled.VocabularyReferenceMatchJob</listener-class>
     </listener>
     <listener>
@@ -307,6 +304,10 @@
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/codelists/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/asynctasks/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>

@@ -21,9 +21,14 @@
 
 package eionet.web.action;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import eionet.datadict.errors.BadFormatException;
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
+import eionet.datadict.services.stripes.FileBeanDecompressor;
+import eionet.datadict.web.asynctasks.VocabularyCheckInTask;
+import eionet.datadict.web.asynctasks.VocabularyCheckOutTask;
+import eionet.datadict.web.asynctasks.VocabularyCsvImportTask;
+import eionet.datadict.web.asynctasks.VocabularyRdfImportTask;
+import eionet.datadict.web.asynctasks.VocabularyUndoCheckOutTask;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +54,6 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.DataElement;
@@ -59,7 +63,6 @@ import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.exports.VocabularyOutputHelper;
 import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.meta.exports.rdf.InspireCodelistXmlWriter;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
@@ -67,6 +70,7 @@ import eionet.meta.service.ICSVVocabularyImportService;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.IRDFVocabularyImportService;
 import eionet.meta.service.ISiteCodeService;
+import eionet.meta.service.IVocabularyImportService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DataElementsFilter;
@@ -82,6 +86,8 @@ import eionet.util.StringEncoder;
 import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Edit vocabulary folder action bean.
@@ -167,7 +173,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Extension for RDF files.
      */
     private static final String RDF_FILE_EXTENSION = ".rdf";
-
+    
     /**
      * JSON contept type.
      */
@@ -213,6 +219,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     @SpringBean
     private IRDFVocabularyImportService vocabularyRdfImportService;
 
+    @SpringBean
+    private AsyncTaskManager asyncTaskManager;
+    
+    @SpringBean
+    private FileBeanDecompressor fileBeanDecompressor;
+    
     /**
      * Other versions of the same vocabulary folder.
      */
@@ -314,6 +326,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     private int rdfPurgeOption;
 
+    private IVocabularyImportService.MissingConceptsAction missingConceptsAction;
+    
     /**
      * Language for search.
      */
@@ -726,34 +740,26 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Action for checking in vocabulary folder.
      *
      * @return resolution
-     * @throws ServiceException
-     *             if an error occurs
      */
-    public Resolution checkIn() throws ServiceException {
-        vocabularyService.checkInVocabularyFolder(vocabularyFolder.getId(), getUserName());
-        addSystemMessage("Successfully checked in");
-        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
-        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
-        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        // resolution.addParameter("vocabularyFolder.workingCopy", false);
-        return resolution;
+    public Resolution checkIn() {
+        String taskId = this.asyncTaskManager.executeAsync(VocabularyCheckInTask.class, 
+                VocabularyCheckInTask.createParamsBundle(vocabularyFolder.getId(), getUserName(), 
+                        vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier()));
+        
+        return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
     }
 
     /**
      * Action for checking out vocabulary folder.
      *
      * @return resolution
-     * @throws ServiceException
-     *             if an error occurs
      */
-    public Resolution checkOut() throws ServiceException {
-        vocabularyService.checkOutVocabularyFolder(vocabularyFolder.getId(), getUserName());
-        addSystemMessage("Successfully checked out");
-        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
-        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
-        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        resolution.addParameter("vocabularyFolder.workingCopy", true);
-        return resolution;
+    public Resolution checkOut() {
+        String taskId = this.asyncTaskManager.executeAsync(VocabularyCheckOutTask.class, 
+                VocabularyCheckOutTask.createParamsBundle(vocabularyFolder.getId(), getUserName(), 
+                        vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier()));
+        
+        return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
     }
 
     /**
@@ -764,14 +770,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution undoCheckOut() throws ServiceException {
-        int id = vocabularyService.undoCheckOut(vocabularyFolder.getId(), getUserName());
-        vocabularyFolder = vocabularyService.getVocabularyFolder(id);
-        addSystemMessage("Checked out version successfully deleted");
-        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
-        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
-        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        // resolution.addParameter("vocabularyFolder.workingCopy", false);
-        return resolution;
+        String taskId = this.asyncTaskManager.executeAsync(VocabularyUndoCheckOutTask.class, 
+                VocabularyUndoCheckOutTask.createParamsBundle(vocabularyFolder.getId(), getUserName()));
+        
+        return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
     }
 
     /**
@@ -1326,38 +1328,35 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 throw new ServiceException("You should upload a file");
             }
 
-            String fileName = this.uploadedFileToImport.getFileName();
-            if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.CSV_FILE_EXTENSION)) {
-                throw new ServiceException("File should be a CSV file");
-            }
+            FileBean importFileBean = null;
+            
+            try {
+                importFileBean = this.prepareImportSource();
+                String fileName = importFileBean.getFileName();
+                
+                if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.CSV_FILE_EXTENSION)) {
+                    throw new ServiceException("File should be a CSV file");
+                }
 
-            // consume stupid bom first!! if it exists!
-            InputStream is = this.uploadedFileToImport.getInputStream();
-            byte[] firstBomBytes = new byte[VocabularyOutputHelper.BOM_BYTE_ARRAY_LENGTH];
-            int readBytes = is.read(firstBomBytes);
-            if (readBytes != VocabularyOutputHelper.BOM_BYTE_ARRAY_LENGTH) {
-                is.close();
-                throw new ServiceException("Input stream cannot be read");
-            }
+                File tmpCsvFile = File.createTempFile(fileName, ".tmp");
+                importFileBean.save(tmpCsvFile);
 
-            if (!Arrays.equals(firstBomBytes, VocabularyOutputHelper.getBomByteArray())) {
-                is.close();
-                is = this.uploadedFileToImport.getInputStream();
-            }
+                String taskId = this.asyncTaskManager.executeAsync(VocabularyCsvImportTask.class, 
+                        VocabularyCsvImportTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), 
+                                vocabularyFolder.isWorkingCopy(), tmpCsvFile.getAbsolutePath(), purgeVocabularyData, purgeBoundElements));
 
-            Reader csvFileReader = new InputStreamReader(is, CharEncoding.UTF_8);
-            List<String> systemMessages =
-                    this.vocabularyCsvImportService.importCsvIntoVocabulary(csvFileReader, vocabularyFolder, purgeVocabularyData,
-                            purgeBoundElements);
-            for (String systemMessage : systemMessages) {
-                addSystemMessage(systemMessage);
+                return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
+             }
+             finally {
+                /* 
+                 * When FileBean.save() isn't called, FileBean.delete() must be called so that the
+                 * uploaded file is removed from disk.
+                 * See: https://stripesframework.atlassian.net/wiki/display/STRIPES/File+Uploads
+                 */
+                if (importFileBean != this.uploadedFileToImport) {
+                    this.uploadedFileToImport.delete();
+                }
             }
-            RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
-            resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
-            resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-            resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
-            // navigate back to edit
-            return resolution;
         } catch (ServiceException e) {
             LOGGER.error("Failed to import vocabulary CSV into db", e);
             e.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.INVALID_INPUT);
@@ -1390,30 +1389,36 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             if (this.uploadedFileToImport == null) {
                 throw new ServiceException("You should upload a file");
             }
+         
+            FileBean importFileBean = null;
+            
+            try {
+                importFileBean = this.prepareImportSource();
+                String fileName = importFileBean.getFileName();
+                
+                if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.RDF_FILE_EXTENSION)) {
+                    throw new ServiceException("File should be a RDF file");
+                }
 
-            String fileName = this.uploadedFileToImport.getFileName();
-            if (StringUtils.isEmpty(fileName) || !fileName.toLowerCase().endsWith(VocabularyFolderActionBean.RDF_FILE_EXTENSION)) {
-                throw new ServiceException("File should be a RDF file");
+                File tmpRdfFile = File.createTempFile(fileName, ".tmp");
+                importFileBean.save(tmpRdfFile);
+
+                String taskId = this.asyncTaskManager.executeAsync(VocabularyRdfImportTask.class, 
+                        VocabularyRdfImportTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), 
+                                vocabularyFolder.isWorkingCopy(), tmpRdfFile.getAbsolutePath(), rdfPurgeOption, missingConceptsAction));
+
+                return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
             }
-
-            LOGGER.debug("Starting RDF import operation");
-            Reader rdfFileReader = new InputStreamReader(this.uploadedFileToImport.getInputStream(), CharEncoding.UTF_8);
-            // TODO use enum instead for rdf purge option
-            List<String> systemMessages =
-                    this.vocabularyRdfImportService.importRdfIntoVocabulary(rdfFileReader, vocabularyFolder,
-                            this.rdfPurgeOption == 3, this.rdfPurgeOption == 2);
-            for (String systemMessage : systemMessages) {
-                addSystemMessage(systemMessage);
-                LOGGER.info(systemMessage);
+            finally {
+                /* 
+                 * When FileBean.save() isn't called, FileBean.delete() must be called so that the
+                 * uploaded file is removed from disk.
+                 * See: https://stripesframework.atlassian.net/wiki/display/STRIPES/File+Uploads
+                 */
+                if (this.uploadedFileToImport != importFileBean) {
+                    this.uploadedFileToImport.delete();
+                }
             }
-            LOGGER.debug("RDF import completed");
-
-            RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
-            resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
-            resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-            resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
-            // navigate back to edit
-            return resolution;
         } catch (ServiceException e) {
             LOGGER.error("Failed to import vocabulary RDF into db", e);
             e.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.INVALID_INPUT);
@@ -1503,6 +1508,18 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
     } // end of method json
 
+    protected boolean isZipFileName(String filename) {
+        return StringUtils.endsWithIgnoreCase(filename, ".zip");
+    }
+    
+    protected FileBean prepareImportSource() throws IOException, BadFormatException {
+        if (this.isZipFileName(this.uploadedFileToImport.getFileName())) {
+            return this.fileBeanDecompressor.unzip(this.uploadedFileToImport);
+        }
+        
+        return this.uploadedFileToImport;
+    }
+    
     /**
      * Returns concept URI prefix.
      *
@@ -1866,6 +1883,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         return rdfPurgeOption;
     }
 
+    public IVocabularyImportService.MissingConceptsAction getMissingConceptsAction() {
+        return missingConceptsAction;
+    }
+
+    public void setMissingConceptsAction(IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
+        this.missingConceptsAction = missingConceptsAction;
+    }
+    
     public void setLang(String lang) {
         this.lang = lang;
     }

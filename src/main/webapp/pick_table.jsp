@@ -99,14 +99,16 @@
         <script type="text/javascript">
         // <![CDATA[
             function pickTable(id, i, name) {
-                if (opener && !opener.closed) {
-                    if (window.opener.pickTable(id, name)==true)  //window opener should have function pickTABLE with 2 params - tbl id & tbl name
-                                                                // and if it returns true, then the popup window is closed,
-                                                                // otherwise multiple selection is allowed
-                        closeme();
-                    hideRow(i);
-                } else {
-                    alert("You have closed the main window.\n\nNo action will be taken.")
+                if (window.confirm("You have selected to copy data elements and table structure from the '"+name+ "' table. \nPlease confirm or press cancel.")){
+                    if (opener && !opener.closed) {
+                        if (window.opener.pickTable(id, name)==true)  //window opener should have function pickTABLE with 2 params - tbl id & tbl name
+                                                                 // and if it returns true, then the popup window is closed,
+                                                                 // otherwise multiple selection is allowed
+                            closeme();
+                        hideRow(i);
+                    } else {
+                        alert("You have closed the main window.\n\nNo action will be taken.")
+                    }
                 }
             }
             function hideRow(i){
