@@ -14,6 +14,7 @@
         <spring.version>3.1.1.RELEASE</spring.version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
         <sesame.openrdf.version>2.7.10</sesame.openrdf.version>
+        <liquibase.changelogFile>sql/dd-struct.xml</liquibase.changelogFile>
         <jackson-version>2.4.0</jackson-version>
     </properties>
 
@@ -141,6 +142,31 @@
                         </resource>
                     </webResources>
                 </configuration>
+            </plugin>
+            
+            <!-- Update database tables -->
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>2.0.5</version>
+                <configuration>
+                    <!-- Default configuration for application database. -->
+                    <propertyFile>target/classes/env.properties</propertyFile>
+                    <changeLogFile>${liquibase.changeLogFile}</changeLogFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>drop-before-tests</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>dropAll</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${maven.test.skip}</skip>
+                            <propertyFile>target/test-classes/liquibase.properties</propertyFile>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             
             <plugin>
