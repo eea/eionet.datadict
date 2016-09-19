@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Set;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Utility class for retrieving the configured properties of this application.
@@ -30,7 +29,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class Props implements PropsIF {
 
-    private ConfigurationPropertyResolver configurationPropertyResolver;
+    public static ConfigurationPropertyResolver configurationPropertyResolver;
     /**
      * Static logger for this class.
      */
@@ -56,13 +55,7 @@ public class Props implements PropsIF {
             defaults = new Hashtable();
             setDefaults(defaults);
             String workingLanguage;
-            try {
-                workingLanguage = StringUtils.trimToNull(getPropertyInternal(DD_WORKING_LANGUAGE_KEY));
-            } catch (UnresolvedPropertyException ex) {
-                workingLanguage = null;
-            } catch (CircularReferenceException ex) {
-                workingLanguage = null;
-            }
+            workingLanguage = StringUtils.trimToNull(getPropertyInternal(DD_WORKING_LANGUAGE_KEY));
             boolean isValidWorkingLanguage = false;
             try {
                 Locale locale = LocaleUtils.toLocale(workingLanguage);
@@ -117,13 +110,7 @@ public class Props implements PropsIF {
      * @return The value.
      */
     public static synchronized String getProperty(String name) {
-        try {
-            return Props.getInstance().getPropertyInternal(name);
-        } catch (UnresolvedPropertyException ex) {
-            return null;
-        } catch (CircularReferenceException ex) {
-            return null;
-        }
+       return Props.getInstance().getPropertyInternal(name);
     }
 
     /**
@@ -137,13 +124,7 @@ public class Props implements PropsIF {
 
         Props propsInstance = Props.getInstance();
         String stringValue;
-        try {          
-            stringValue = propsInstance.getPropertyInternal(name);
-        } catch (UnresolvedPropertyException ex) {
-            stringValue = null;
-        } catch (CircularReferenceException ex) {
-            stringValue = null;
-        }
+        stringValue = propsInstance.getPropertyInternal(name);
         // If string value is null, then it means it wasn't configured and no default was found either.
         try {
             return Integer.parseInt(stringValue);
@@ -160,17 +141,10 @@ public class Props implements PropsIF {
      * @return The value.
      */
     public static String getRequiredProperty(String name) {
-        String value = null;
-        try {
-            value = Props.getInstance().getPropertyInternal(name);
-        } catch (UnresolvedPropertyException ex) {
-            throw new DDRuntimeException("Failed to find required property: " + name);
-        } catch (CircularReferenceException ex) {
+        String value = Props.getInstance().getPropertyInternal(name);
+        if (value == null || value.trim().length() == 0) {
             throw new DDRuntimeException("Failed to find required property: " + name);
         }
-//        if (value == null || value.trim().length() == 0) {
-//            throw new DDRuntimeException("Failed to find required property: " + name);
-//        }
         return value;
     }
 
@@ -179,17 +153,17 @@ public class Props implements PropsIF {
      *
      * @param name Given property name.
      * @return The value.
-     * @throws eionet.propertyplaceholderresolver.UnresolvedPropertyException
-     * @throws eionet.propertyplaceholderresolver.CircularReferenceException
      */
-    protected final String getPropertyInternal(String name) throws UnresolvedPropertyException, CircularReferenceException {
+    protected final String getPropertyInternal(String name)  {
         String value;
-//        configurationPropertyResolver = SpringApplicationContext.getContext().getBean(ConfigurationPropertyResolver.class);
-        value = configurationPropertyResolver.resolveValue(name);
-        if (value == null) {
-            value = (String) defaults.get(name);
+        try {
+            value = configurationPropertyResolver.resolveValue(name);
+            return value;
+        } catch (UnresolvedPropertyException ex) {
+            return (String) defaults.get(name);
+        } catch (CircularReferenceException ex) {
+            return (String) defaults.get(name);
         }
-        return value;
     }
 
     /**
@@ -202,13 +176,8 @@ public class Props implements PropsIF {
     public static synchronized Long getTimePropertyMilliseconds(final String key, Long defaultValue) {
         Long longValue = defaultValue;
         String value;
-        try {
-            value = Props.getInstance().getPropertyInternal(key);
-        } catch (UnresolvedPropertyException ex) {
-            value = null;
-        } catch (CircularReferenceException ex) {
-            value = null;
-        }
+        value = Props.getInstance().getPropertyInternal(key);
+        
         value = StringUtils.trimToEmpty(value);
         if (StringUtils.isNotEmpty(value)) {
             int coefficient = 1;

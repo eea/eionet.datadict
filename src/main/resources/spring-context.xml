@@ -10,7 +10,7 @@
         http://www.springframework.org/schema/context/spring-context-3.0.xsd
         http://www.springframework.org/schema/tx
         http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
     <!-- Scans within the base package of the application for @Components
         to configure as beans -->
@@ -66,7 +66,7 @@
         <constructor-arg index="0" ref="aclProperties" />
     </bean>
     
-    <bean id="helpsDbProperties" class="eionet.help.HelpsDbProperties">
+<!--    <bean id="helpsDbProperties" class="eionet.help.HelpsDbProperties">
         <property name="dbUser" value="${env.db.user}" />
         <property name="dbPassword" value="${env.db.password}" />
         <property name="dbDriver" value="${env.db.driver}"/>
@@ -75,7 +75,7 @@
     
     <bean id="helpsDbPropertiesLoader" class="eionet.help.DbPropertiesLoader">
         <property name="dbProperties" ref="helpsDbProperties"/>
-    </bean>
+    </bean>-->
 
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
