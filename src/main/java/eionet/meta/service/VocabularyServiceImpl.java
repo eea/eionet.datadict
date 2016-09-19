@@ -1497,7 +1497,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
     }
 
-    
     @Override
     public void batchUpdateVocabularyConceptsDataElementValues(List<VocabularyConcept> vocabularyConcepts, int batchSize)
             throws ServiceException {
