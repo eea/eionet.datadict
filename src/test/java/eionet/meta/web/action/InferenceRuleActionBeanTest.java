@@ -37,6 +37,7 @@ public class InferenceRuleActionBeanTest {
      */
     @BeforeClass
     public static void loadData() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData("seed-dataelements.xml");
         DBUnitHelper.loadData("seed-inferenceRules.xml");
     }

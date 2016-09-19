@@ -16,12 +16,14 @@ import org.junit.Assert;
 import eionet.DDDatabaseTestCase;
 import eionet.meta.DDSearchEngine;
 import eionet.util.sql.ConnectionUtil;
+import org.unitils.spring.annotation.SpringApplicationContext;
 
 /**
  * 
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus@tripledev.ee">jaanus@tripledev.ee</a>
  * 
  */
+@SpringApplicationContext("mock-spring-context")
 public class TblXlsTest extends DDDatabaseTestCase {
 
     protected Connection conn = null;

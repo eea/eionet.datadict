@@ -1,5 +1,6 @@
 package eionet.meta.service;
 
+import eionet.meta.ActionBeanUtils;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.InferenceRule.RuleType;
@@ -27,7 +28,7 @@ import static org.junit.Assert.*;
  *
  * @author Kaido Laine
  */
-@SpringApplicationContext("spring-context.xml")
+@SpringApplicationContext("mock-spring-context.xml")
 public class DataServiceTest extends UnitilsJUnit4 {
 
     /**
@@ -44,6 +45,7 @@ public class DataServiceTest extends UnitilsJUnit4 {
      */
     @BeforeClass
     public static void loadData() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData("seed-dataelements.xml");
         DBUnitHelper.loadData("seed-inferenceRules.xml");
     }

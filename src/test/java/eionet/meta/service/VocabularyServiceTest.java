@@ -21,6 +21,7 @@
 
 package eionet.meta.service;
 
+import eionet.meta.ActionBeanUtils;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
@@ -63,7 +64,7 @@ import static org.junit.Assert.*;
  * @author Juhan Voolaid
  */
 // @DataSet({"seed-vocabularies.xml"})
-@SpringApplicationContext("spring-context.xml")
+@SpringApplicationContext("mock-spring-context.xml")
 public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     /**
@@ -86,6 +87,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
     @BeforeClass
     public static void loadData() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData("seed-vocabularies.xml");
     }
 
