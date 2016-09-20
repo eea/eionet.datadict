@@ -1,4 +1,4 @@
-package eionet.datadict.services.impl.auth;
+package eionet.datadict.services.auth.impl;
 
 import eionet.datadict.services.auth.WebApiAuthInfo;
 import eionet.datadict.services.auth.WebApiAuthInfoService;

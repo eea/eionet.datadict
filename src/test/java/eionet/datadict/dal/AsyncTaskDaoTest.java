@@ -1,6 +1,6 @@
 package eionet.datadict.dal;
 
-import eionet.datadict.dal.impl.JdbcRepositoryBase;
+import eionet.datadict.dal.impl.JdbcDaoBase;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
 import java.util.Date;
@@ -136,7 +136,7 @@ public class AsyncTaskDaoTest extends UnitilsJUnit4 {
         return entry;
     }
     
-    private static class TestAssistanceDao extends JdbcRepositoryBase {
+    private static class TestAssistanceDao extends JdbcDaoBase {
 
         public TestAssistanceDao(DataSource dataSource) {
             super(dataSource);

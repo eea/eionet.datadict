@@ -1,4 +1,4 @@
-package eionet.datadict.services.impl.io;
+package eionet.datadict.services.io.impl;
 
 import eionet.datadict.errors.BadFormatException;
 import eionet.datadict.services.io.UnzippedFile;

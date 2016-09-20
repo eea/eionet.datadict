@@ -1,4 +1,4 @@
-package eionet.datadict.services.impl.io;
+package eionet.datadict.services.io.impl;
 
 import java.io.File;
 import java.net.URL;

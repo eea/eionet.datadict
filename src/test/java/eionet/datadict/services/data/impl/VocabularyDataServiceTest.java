@@ -1,7 +1,7 @@
-package eionet.datadict.services.impl.data;
+package eionet.datadict.services.data.impl;
 
-import eionet.datadict.dal.VocabularyRepository;
-import eionet.datadict.dal.VocabularySetRepository;
+import eionet.datadict.dal.VocabularyDao;
+import eionet.datadict.dal.VocabularySetDao;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.model.VocabularySet;
 import eionet.datadict.services.data.VocabularyDataService;
@@ -34,9 +34,9 @@ import org.mockito.MockitoAnnotations;
 public class VocabularyDataServiceTest {
 
     @Mock
-    private VocabularySetRepository vocabularySetRepository;
+    private VocabularySetDao vocabularySetDao;
     @Mock
-    private VocabularyRepository vocabularyRepository;
+    private VocabularyDao vocabularyDao;
     @Mock
     private IVocabularyService legacyVocabularyService;
 
@@ -48,7 +48,7 @@ public class VocabularyDataServiceTest {
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
-        this.vocabularyDataService = new VocabularyDataServiceImpl(vocabularySetRepository, vocabularyRepository, legacyVocabularyService);
+        this.vocabularyDataService = new VocabularyDataServiceImpl(vocabularySetDao, vocabularyDao, legacyVocabularyService);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class VocabularyDataServiceTest {
         VocabularySet inSet = new VocabularySet();
         inSet.setIdentifier("state");
         inSet.setLabel("enemy");
-        when(vocabularySetRepository.exists(inSet.getIdentifier())).thenReturn(true);
+        when(vocabularySetDao.exists(inSet.getIdentifier())).thenReturn(true);
         this.vocabularyDataService.createVocabularySet(inSet);
     }
 
@@ -90,10 +90,10 @@ public class VocabularyDataServiceTest {
         vocSet.setId(1);
         vocSet.setIdentifier("identifier");
         vocSet.setLabel("label");
-        when(vocabularySetRepository.exists(vocSet.getIdentifier())).thenReturn(false);
+        when(vocabularySetDao.exists(vocSet.getIdentifier())).thenReturn(false);
         this.vocabularyDataService.createVocabularySet(vocSet);
         ArgumentCaptor<VocabularySet> toInsertCaptor = ArgumentCaptor.forClass(VocabularySet.class);
-        verify(vocabularySetRepository, times(1)).create(toInsertCaptor.capture());
+        verify(vocabularySetDao, times(1)).create(toInsertCaptor.capture());
         VocabularySet toBeInserted = toInsertCaptor.getValue();
         assertTrue(EqualsBuilder.reflectionEquals(vocSet, toBeInserted));
     }
@@ -142,7 +142,7 @@ public class VocabularyDataServiceTest {
         vocabulary.setIdentifier("identifier");
         vocabulary.setLabel("label");
         DDUser ddUser = new DDUser();
-        when(vocabularySetRepository.get(vocabularySetIdentifier)).thenReturn(null);
+        when(vocabularySetDao.get(vocabularySetIdentifier)).thenReturn(null);
         this.vocabularyDataService.createVocabulary(vocabularySetIdentifier, vocabulary, ddUser);
     }
 
@@ -156,8 +156,8 @@ public class VocabularyDataServiceTest {
         DDUser ddUser = new DDUser();
         Integer vocabularySetId = 102;
         vocabularySet.setId(vocabularySetId);
-        when(vocabularySetRepository.get(vocabularySetIdentifier)).thenReturn(vocabularySet);
-        when(vocabularyRepository.exists(vocabularySetId, vocabulary.getIdentifier())).thenReturn(true);
+        when(vocabularySetDao.get(vocabularySetIdentifier)).thenReturn(vocabularySet);
+        when(vocabularyDao.exists(vocabularySetId, vocabulary.getIdentifier())).thenReturn(true);
         this.vocabularyDataService.createVocabulary(vocabularySetIdentifier, vocabulary, ddUser);
     }
 
@@ -172,8 +172,8 @@ public class VocabularyDataServiceTest {
         vocabularySet.setIdentifier(vocabularySetIdentifier);
         Integer vocabularySetId = 102;
         vocabularySet.setId(vocabularySetId);
-        when(vocabularySetRepository.get(vocabularySetIdentifier)).thenReturn(vocabularySet);
-        when(vocabularyRepository.exists(vocabularySetId, vocabulary.getIdentifier())).thenReturn(false);
+        when(vocabularySetDao.get(vocabularySetIdentifier)).thenReturn(vocabularySet);
+        when(vocabularyDao.exists(vocabularySetId, vocabulary.getIdentifier())).thenReturn(false);
         this.vocabularyDataService.createVocabulary(vocabularySetIdentifier, vocabulary, ddUser);
         ArgumentCaptor<VocabularyFolder> toInsertVocabularyCaptor = ArgumentCaptor.forClass(VocabularyFolder.class);
         ArgumentCaptor<Folder> folderCaptor = ArgumentCaptor.forClass(Folder.class);

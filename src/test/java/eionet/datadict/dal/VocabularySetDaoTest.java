@@ -17,11 +17,11 @@ import org.unitils.spring.annotation.SpringBeanByType;
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
-@SpringApplicationContext("mock-spring-context.xml")
-public class VocabularySetRepositoryTest extends UnitilsJUnit4 {
+@SpringApplicationContext("spring-context.xml")
+public class VocabularySetDaoTest extends UnitilsJUnit4 {
 
     @SpringBeanByType
-    VocabularySetRepository vocabularySetRepository;
+    VocabularySetDao vocabularySetDao;
 
     @Before
     public void setUp() throws Exception {
@@ -30,26 +30,26 @@ public class VocabularySetRepositoryTest extends UnitilsJUnit4 {
 
     @Test
     public void testExistsByIdentifier() {
-        assertTrue(this.vocabularySetRepository.exists("common2"));
-        assertFalse(this.vocabularySetRepository.exists("uncommon"));
-        assertTrue(this.vocabularySetRepository.exists("test1"));
+        assertTrue(this.vocabularySetDao.exists("common2"));
+        assertFalse(this.vocabularySetDao.exists("uncommon"));
+        assertTrue(this.vocabularySetDao.exists("test1"));
     }
 
     @Test
     public void testResolveByIdentifier() {
-        assertNull(this.vocabularySetRepository.resolve("common1042"));
-        assertEquals(Integer.valueOf(11), this.vocabularySetRepository.resolve("common2"));
+        assertNull(this.vocabularySetDao.resolve("common1042"));
+        assertEquals(Integer.valueOf(11), this.vocabularySetDao.resolve("common2"));
     }
 
     @Test
     public void testGetByIdentifier() {
-        assertNull(this.vocabularySetRepository.get("common1042"));
+        assertNull(this.vocabularySetDao.get("common1042"));
         
         VocabularySet expected = new VocabularySet();
         expected.setId(11);
         expected.setIdentifier("common2");
         expected.setLabel("Common2");
-        VocabularySet actual = this.vocabularySetRepository.get(expected.getIdentifier());
+        VocabularySet actual = this.vocabularySetDao.get(expected.getIdentifier());
         
         assertNotNull(actual);
         this.assertVocabularySet(expected, actual, false);
@@ -60,8 +60,8 @@ public class VocabularySetRepositoryTest extends UnitilsJUnit4 {
         VocabularySet vocabularySet = new VocabularySet();
         vocabularySet.setIdentifier("state");
         vocabularySet.setLabel("enemy");
-        this.vocabularySetRepository.create(vocabularySet);
-        VocabularySet vocSet = this.vocabularySetRepository.get(vocabularySet.getIdentifier());
+        this.vocabularySetDao.create(vocabularySet);
+        VocabularySet vocSet = this.vocabularySetDao.get(vocabularySet.getIdentifier());
         assertNotNull(vocSet);
         this.assertVocabularySet(vocabularySet, vocSet, true);
     }

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class QuartzSchedulerDaoImpl extends JdbcRepositoryBase implements QuartzSchedulerDao {
+public class QuartzSchedulerDaoImpl extends JdbcDaoBase implements QuartzSchedulerDao {
 
     @Autowired
     public QuartzSchedulerDaoImpl(DataSource dataSource) {

@@ -1,7 +1,7 @@
-package eionet.datadict.services.impl.data;
+package eionet.datadict.services.data.impl;
 
-import eionet.datadict.dal.VocabularyRepository;
-import eionet.datadict.dal.VocabularySetRepository;
+import eionet.datadict.dal.VocabularyDao;
+import eionet.datadict.dal.VocabularySetDao;
 import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
@@ -23,14 +23,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class VocabularyDataServiceImpl implements VocabularyDataService {
 
-    private final VocabularySetRepository vocabularySetRepository;
-    private final VocabularyRepository vocabularyRepository;
+    private final VocabularySetDao vocabularySetDao;
+    private final VocabularyDao vocabularyDao;
     private final IVocabularyService legacyVocabularyService;
 
     @Autowired
-    public VocabularyDataServiceImpl(VocabularySetRepository vocabularySetRepository, VocabularyRepository vocabularyRepository, IVocabularyService legacyVocabularyService) {
-        this.vocabularySetRepository = vocabularySetRepository;
-        this.vocabularyRepository = vocabularyRepository;
+    public VocabularyDataServiceImpl(VocabularySetDao vocabularySetDao, VocabularyDao vocabularyDao, IVocabularyService legacyVocabularyService) {
+        this.vocabularySetDao = vocabularySetDao;
+        this.vocabularyDao = vocabularyDao;
         this.legacyVocabularyService = legacyVocabularyService;
     }
 
@@ -46,14 +46,14 @@ public class VocabularyDataServiceImpl implements VocabularyDataService {
             throw new EmptyParameterException("label");
         }
 
-        if (this.vocabularySetRepository.exists(vocabularySet.getIdentifier())) {
+        if (this.vocabularySetDao.exists(vocabularySet.getIdentifier())) {
             String msg = String.format("Vocabulary set %s already exists.", vocabularySet.getIdentifier());
             throw new DuplicateResourceException(msg);
         }
 
-        this.vocabularySetRepository.create(vocabularySet);
+        this.vocabularySetDao.create(vocabularySet);
 
-        return this.vocabularySetRepository.get(vocabularySet.getIdentifier());
+        return this.vocabularySetDao.get(vocabularySet.getIdentifier());
     }
 
     @Override
@@ -72,14 +72,14 @@ public class VocabularyDataServiceImpl implements VocabularyDataService {
             throw new EmptyParameterException("vocabularyLabel");
         }
 
-        VocabularySet existingVocabularySet = this.vocabularySetRepository.get(vocabularySetIdentifier);
+        VocabularySet existingVocabularySet = this.vocabularySetDao.get(vocabularySetIdentifier);
         
         if (existingVocabularySet == null) {
             String msg = String.format("Vocabulary set %s does not exist.", vocabularySetIdentifier);
             throw new ResourceNotFoundException(msg);
         }
 
-        if (this.vocabularyRepository.exists(existingVocabularySet.getId(), vocabulary.getIdentifier())) {
+        if (this.vocabularyDao.exists(existingVocabularySet.getId(), vocabulary.getIdentifier())) {
             String msg = String.format("Vocabulary %s already exists.", vocabulary.getIdentifier());
             throw new DuplicateResourceException(msg);
         }
