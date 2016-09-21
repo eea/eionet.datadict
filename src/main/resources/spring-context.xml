@@ -146,7 +146,7 @@
     <!-- Runs on Tomcat startup. -->
     <bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
         <property name="dataSource" ref="dataSource" />
-        <property name="changeLog" value="classpath:sql/dd-struct.xml" />
+        <property name="changeLog" value="classpath:sql/dd-struct-and-seeddata.xml" />
     </bean>
     
     <util:properties id="quartzProperties" location="classpath:quartz.properties" />
