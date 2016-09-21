@@ -9,7 +9,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <env>local</env>
+        <env>default</env>
         <java_version>1.6</java_version>
         <spring.version>3.1.1.RELEASE</spring.version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
@@ -149,11 +149,6 @@
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>2.0.5</version>
-                <configuration>
-                    <!-- Default configuration for application database. -->
-                    <propertyFile>target/classes/env.properties</propertyFile>
-                    <changeLogFile>${liquibase.changeLogFile}</changeLogFile>
-                </configuration>
                 <executions>
                     <execution>
                         <id>drop-before-tests</id>
