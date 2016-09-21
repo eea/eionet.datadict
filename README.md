@@ -94,7 +94,7 @@ $ mkdir docker_build
 $ cd docker_build
 $ cp $CHECKOUT_HOME/target/datadict.war .
 $ cp $CHeCKOUT_HOME/env_setup/docker_build/Dockerfile .
-$ docker build -t eeacms/datadict:tag-here 
+$ docker build -t eeacms/datadict:tag-here .
 ```
 [Optional] In case you need to push the image you have created to DockerHub:
 
