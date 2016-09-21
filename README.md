@@ -27,7 +27,7 @@ The necessary versions are as follows:
 * Tomcat 6 or higher
 * GIT 1.8.4 or higher
 * MySql 5.1.71 or higher
-* (Optional) 
+* (Optional) Docker 1.6 or higher
 
 ### Download DD source code
 
