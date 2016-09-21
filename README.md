@@ -88,12 +88,13 @@ $ mvn -Denv=unittest -Dmaven.test.skip=false test
 ### Build for docker
 
 Build the application as already described and then create a docker image by executing the docker build command in a directory containing both the Dockerfile and the datadict.war. If no tag is provided then the image will be tagged as "latest".
+The docker file can be found at the env_setup/docker_build directory.
 
 ```sh
 $ mkdir docker_build
 $ cd docker_build
 $ cp $CHECKOUT_HOME/target/datadict.war .
-$ cp $CHeCKOUT_HOME/env_setup/docker_build/Dockerfile .
+$ cp $CHECKOUT_HOME/env_setup/docker_build/Dockerfile .
 $ docker build -t eeacms/datadict:tag-here .
 ```
 [Optional] In case you need to push the image you have created to DockerHub:
@@ -104,7 +105,7 @@ $ docker push eeacms/datadict:tag-here
 
 ### Rancher/Docker deployment
 
-In the env_setup/datadict directory you can find example files to be renamed and used as docker-compose.yml files for docker/rancher.
+In the env_setup/docker_rancher directory you can find example files to be renamed and used as docker-compose.yml files for docker/rancher.
 Both use the docker.env file for runtime properties configuration.
 
 *Note: After running the docker-compose up or the rancher-compose up commands you have to create the DB and the corresponding user-password and restart the tomcat container.*
