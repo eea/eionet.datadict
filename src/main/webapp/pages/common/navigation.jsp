@@ -10,7 +10,7 @@
         DDUser _user = SecurityUtil.getUser(request);
         if (_user!=null){
             %>
-            <li ${currentSection eq 'checkouts' ? 'class="current"' : ''}><a href="${pageContext.request.contextPath}/checkedout.jsp">Your checkouts</a></li>
+            <li ${currentSection eq 'checkouts' ? 'class="current"' : ''}><a href="${pageContext.request.contextPath}/checkouts">Your checkouts</a></li>
             <li ${currentSection eq 'attributes' ? 'class="current"' : ''}><a href="${pageContext.request.contextPath}/attributes.jsp">Attributes</a></li><%
         }
 

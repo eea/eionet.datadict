@@ -253,4 +253,17 @@ public class DataSetDAOImpl extends GeneralDAOImpl implements IDataSetDAO {
         return result.isEmpty() ? null : result.get(0);
     }
 
+    @Override
+    public List<DataSet> getWorkingCopiesOf(String userName) {
+        String sql = "select * from DATASET where DELETED is null " +
+                "and WORKING_COPY = 'Y' and WORKING_USER = :userName order by IDENTIFIER asc, DATASET_ID desc";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("userName", userName);
+
+        DataSetRowCallbackHandler dataSetRowCallbackHandler = new DataSetRowCallbackHandler();
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, dataSetRowCallbackHandler);
+        return dataSetRowCallbackHandler.getResult();
+    }
+
 }

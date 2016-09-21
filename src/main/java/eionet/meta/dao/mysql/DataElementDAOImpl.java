@@ -1411,4 +1411,34 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         return result;
     }
 
+    @Override
+    public List<DataElement> getCommonDataElementsWorkingCopiesOf(String userName) {
+        String sql = "select * from DATAELEM de where de.PARENT_NS is null and de.WORKING_COPY = 'Y' and de.WORKING_USER = :userName " +
+                "order by de.IDENTIFIER asc, de.DATAELEM_ID desc";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("userName", userName);
+
+        List<DataElement> result = getNamedParameterJdbcTemplate().query(sql, parameters, new RowMapper<DataElement>() {
+            @Override
+            public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DataElement de = new DataElement();
+                de.setId(rs.getInt("de.DATAELEM_ID"));
+                de.setIdentifier(rs.getString("de.IDENTIFIER"));
+                de.setShortName(rs.getString("de.SHORT_NAME"));
+                de.setStatus(rs.getString("de.REG_STATUS"));
+                de.setType(rs.getString("de.TYPE"));
+                de.setModified(new Date(rs.getLong("de.DATE")));
+                de.setWorkingCopy(new BooleanToYesNoConverter().convertBack(rs.getString("de.WORKING_COPY")));
+                de.setWorkingUser(rs.getString("de.WORKING_USER"));
+                de.setDate(rs.getString("de.DATE"));
+                setParentNamespace(de, rs, "de.PARENT_NS");
+                de.setAllConceptsValid(rs.getBoolean("de.ALL_CONCEPTS_LEGAL"));
+                de.setVocabularyId(rs.getInt("de.VOCABULARY_ID"));
+
+                return de;
+            }
+        });
+        return result;
+    }
+
 }

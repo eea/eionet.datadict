@@ -36,16 +36,22 @@ import java.util.Map;
 public class DataElement {
 
     public static enum DataElementValueType {
-        FIXED("CH1"),
-        QUANTITIVE("CH2"),
-        VOCABULARY("CH3");
+        FIXED("CH1", "Fixed values - code list"),
+        QUANTITIVE("CH2", "Quantitative"),
+        VOCABULARY("CH3", "Fixed values - vocabulary");
         
         private final String value;
-        
-        private DataElementValueType(String value) {
+        private final String title;
+
+        private DataElementValueType(String value, String title) {
             this.value = value;
+            this.title = title;
         }
-        
+
+        public String getTitle() {
+            return title;
+        }
+
         public boolean isMatch(String value) {
             return this.value.equalsIgnoreCase(value);
         }
@@ -237,6 +243,10 @@ public class DataElement {
 
     public String getType() {
         return type;
+    }
+
+    public String getValueTypeTitle() {
+        return DataElementValueType.parse(type).getTitle();
     }
 
     public void setType(String type) {

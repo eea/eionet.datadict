@@ -456,4 +456,6 @@ public interface IDataElementDAO {
 
     Map<Integer, String> getDataElementDataTypes(Collection<Integer> dataElementIds);
 
+    List<DataElement> getCommonDataElementsWorkingCopiesOf(String userName);
+
 }

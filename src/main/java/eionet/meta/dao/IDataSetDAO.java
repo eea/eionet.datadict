@@ -60,4 +60,6 @@ public interface IDataSetDAO {
 
     String getIdentifierById(int id);
 
+    List<DataSet> getWorkingCopiesOf(String userName);
+
 }
