@@ -2,7 +2,7 @@ package eionet.datadict.model;
 
 public class SimpleAttributeFixedValues extends SimpleAttribute {
 
-    private FixedValueList fixedValueList;
+    private FixedValueList fixedValues;
     
     @Override
     public DisplayType getDisplayType() {
@@ -16,11 +16,15 @@ public class SimpleAttributeFixedValues extends SimpleAttribute {
 
     @Override
     public FixedValueList getValueList() {
-        return fixedValueList;
+        return fixedValues;
     }
     
-    public void setValueList(FixedValueList fixedValueList) {
-        this.fixedValueList = fixedValueList;
+    public FixedValueList getFixedValues() {
+        return fixedValues;
+    }
+    
+    public void setFixedValues(FixedValueList fixedValues) {
+        this.fixedValues = fixedValues;
     }
     
 }

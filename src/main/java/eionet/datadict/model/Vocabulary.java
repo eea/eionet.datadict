@@ -1,10 +1,9 @@
 package eionet.datadict.model;
 
-import eionet.datadict.util.IteratorUpcastAdapter;
 import java.util.Iterator;
 import java.util.List;
 
-public class Vocabulary implements ValueList, SimpleAttributeOwner {
+public class Vocabulary implements ValueList<Concept>, SimpleAttributeOwner {
 
     private Integer id;
     private String identifier;
@@ -44,8 +43,8 @@ public class Vocabulary implements ValueList, SimpleAttributeOwner {
     }
 
     @Override
-    public Iterator<ValueListItem> iterator() {
-        return new IteratorUpcastAdapter<ValueListItem, Concept>(this.concepts.iterator());
+    public Iterator<Concept> iterator() {
+        return this.concepts.iterator();
     }
     
     @Override

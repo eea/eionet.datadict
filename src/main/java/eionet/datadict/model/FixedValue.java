@@ -2,16 +2,27 @@ package eionet.datadict.model;
 
 public class FixedValue implements ValueListItem {
 
+    private FixedValueList list;
+    
     private String code;
     private String label;
     private String definition;
 
     public FixedValue() { }
     
-    public FixedValue(String code, String label, String definition) {
+    public FixedValue(FixedValueList list, String code, String label, String definition) {
+        this.list = list;
         this.code = code;
         this.label = label;
         this.definition = definition;
+    }
+
+    public FixedValueList getList() {
+        return list;
+    }
+
+    public void setList(FixedValueList list) {
+        this.list = list;
     }
     
     @Override

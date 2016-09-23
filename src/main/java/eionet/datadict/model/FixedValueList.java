@@ -1,22 +1,32 @@
 package eionet.datadict.model;
 
-import eionet.datadict.util.IteratorUpcastAdapter;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-public class FixedValueList implements ValueList {
+public class FixedValueList implements ValueList<FixedValue> {
 
-    private final List<FixedValue> fixedValues;
+    private FixedValuesOwner owner;
+    private List<FixedValue> fixedValues;
     
-    public FixedValueList(Collection<FixedValue> fixedValues) {
-        this.fixedValues = new ArrayList<FixedValue>(fixedValues);
+    public FixedValuesOwner getOwner() {
+        return owner;
+    }
+
+    public void setOwner(FixedValuesOwner owner) {
+        this.owner = owner;
+    }
+
+    public List<FixedValue> getFixedValues() {
+        return fixedValues;
+    }
+
+    public void setFixedValues(List<FixedValue> fixedValues) {
+        this.fixedValues = fixedValues;
     }
     
     @Override
-    public Iterator<ValueListItem> iterator() {
-        return new IteratorUpcastAdapter<ValueListItem, FixedValue>(this.fixedValues.iterator());
+    public Iterator<FixedValue> iterator() {
+        return this.fixedValues.iterator();
     }
     
 }

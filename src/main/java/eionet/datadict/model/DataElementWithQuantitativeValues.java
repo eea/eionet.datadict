@@ -1,8 +1,8 @@
 package eionet.datadict.model;
 
-public class DataElementWithQuantitativeValues extends DataElement {
+public class DataElementWithQuantitativeValues extends DataElement implements FixedValuesOwner {
     
-    private FixedValueList suggestedValues;
+    private FixedValueList fixedValues;
     
     @Override
     public SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory() {
@@ -11,7 +11,7 @@ public class DataElementWithQuantitativeValues extends DataElement {
     
     @Override
     public ValueType getValueType() {
-        return ValueType.FIXED;
+        return ValueType.QUANTITATIVE;
     }
 
     @Override
@@ -21,15 +21,17 @@ public class DataElementWithQuantitativeValues extends DataElement {
 
     @Override
     public FixedValueList getValueList() {
-        return suggestedValues;
+        return fixedValues;
     }
 
-    public FixedValueList getSuggestedValues() {
-        return suggestedValues;
+    @Override
+    public FixedValueList getFixedValues() {
+        return fixedValues;
     }
     
-    public void setSuggestedValues(FixedValueList valueList) {
-        this.suggestedValues = valueList;
+    @Override
+    public void setFixedValues(FixedValueList fixedValues) {
+        this.fixedValues = fixedValues;
     }
     
 }

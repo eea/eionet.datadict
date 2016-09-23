@@ -119,6 +119,6 @@ public abstract class DataElement implements SimpleAttributeOwner {
     
     public abstract boolean supportsValueList();
     
-    public abstract ValueList getValueList();
+    public abstract ValueList<? extends ValueListItem> getValueList();
 
 }

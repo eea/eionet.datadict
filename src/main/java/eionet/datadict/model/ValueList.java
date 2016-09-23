@@ -1,5 +1,5 @@
 package eionet.datadict.model;
 
-public interface ValueList extends Iterable<ValueListItem> {
+public interface ValueList<T extends ValueListItem> extends Iterable<T> {
     
 }

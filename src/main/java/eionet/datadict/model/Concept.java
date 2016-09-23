@@ -2,12 +2,22 @@ package eionet.datadict.model;
 
 public class Concept implements ValueListItem {
 
+    private Vocabulary vocabulary;
+    
     private Integer id;
     private String identifier;
     private String notation;
     private String label;
     private String definition;
 
+    public Vocabulary getVocabulary() {
+        return vocabulary;
+    }
+
+    public void setVocabulary(Vocabulary vocabulary) {
+        this.vocabulary = vocabulary;
+    }
+    
     public Integer getId() {
         return id;
     }

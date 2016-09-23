@@ -130,6 +130,6 @@ public abstract class SimpleAttribute {
     
     public abstract boolean supportsValueList();
     
-    public abstract ValueList getValueList();
+    public abstract ValueList<? extends ValueListItem> getValueList();
     
 }

@@ -1,6 +1,6 @@
 package eionet.datadict.model;
 
-public class DataElementWithFixedValues extends DataElement {
+public class DataElementWithFixedValues extends DataElement implements FixedValuesOwner {
     
     private FixedValueList fixedValues;
     
@@ -24,12 +24,14 @@ public class DataElementWithFixedValues extends DataElement {
         return fixedValues;
     }
 
+    @Override
     public FixedValueList getFixedValues() {
         return fixedValues;
     }
     
-    public void setFixedValues(FixedValueList valueList) {
-        this.fixedValues = valueList;
+    @Override
+    public void setFixedValues(FixedValueList fixedValues) {
+        this.fixedValues = fixedValues;
     }
     
 }
