@@ -51,4 +51,8 @@ public interface ITableDAO {
 
     String getIdentifierById(int id);
 
+    List<Integer> getOrphanTableIds();
+
+    int delete(List<Integer> ids);
+
 }

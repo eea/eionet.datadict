@@ -18,7 +18,7 @@
             <li ${currentSection eq 'import' ? 'class="current"' : ''}><a href="${pageContext.request.contextPath}/import.jsp">Import datasets</a></li><%
         }
         if (SecurityUtil.userHasPerm(request, "/cleanup", "x")){ %>
-            <li ${currentSection eq 'cleanup' ? 'class="current"' : ''}><a href="${pageContext.request.contextPath}/clean.jsp">Cleanup</a></li> <%
+            <li ${currentSection eq 'cleanup' ? 'class="current"' : ''}><a href="${pageContext.request.contextPath}/cleanup">Cleanup</a></li> <%
         }
         if (_user!=null){ %>
             <li ${currentSection eq 'subscribe' ? 'class="current"' : ''}><a href="${pageContext.request.contextPath}/subscribe.jsp">Subscribe</a></li><%

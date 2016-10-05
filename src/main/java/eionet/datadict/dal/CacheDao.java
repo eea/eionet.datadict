@@ -10,7 +10,9 @@ public interface CacheDao {
     List<CacheEntry> getCacheEntriesForObjectType(int objectId, CacheEntry.ObjectType objectType);
 
     void deleteCacheEntry(int objectId, CacheEntry.ObjectType objectType, CacheEntry.ArticleType articleType);
-    
+
+    int deleteCacheEntries(List<Integer> objectIds, CacheEntry.ObjectType objectType);
+
     void saveCacheEntry(CacheEntry cacheEntry);
 
 }

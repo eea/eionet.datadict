@@ -458,4 +458,8 @@ public interface IDataElementDAO {
 
     List<DataElement> getCommonDataElementsWorkingCopiesOf(String userName);
 
+    List<Integer> getOrphanNonCommonDataElementIds();
+
+    int delete(List<Integer> ids);
+
 }

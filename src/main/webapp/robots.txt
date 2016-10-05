@@ -22,5 +22,4 @@ Disallow: /GetTableDef
 Disallow: /GetMdb
 Disallow: /Subscribe
 Disallow: /GetOds
-Disallow: /CleanupServlet
 Disallow: /GetDbf/

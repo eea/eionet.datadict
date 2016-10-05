@@ -56,6 +56,17 @@ public class CacheDaoImpl extends JdbcDaoBase implements CacheDao {
     }
 
     @Override
+    public int deleteCacheEntries(List<Integer> objectIds, CacheEntry.ObjectType objectType) {
+        String sql = "delete from CACHE where OBJ_TYPE = :objectType and OBJ_ID in (:objectIds)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("objectType", objectType.getKey());
+        params.put("objectIds", objectIds);
+
+        return getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+    @Override
     public void saveCacheEntry(CacheEntry cacheEntry) {
         String sql = "insert into CACHE (OBJ_ID, OBJ_TYPE, ARTICLE, FILENAME, CREATED) " +
                 "values (:objectId, :objectType, :articleType, :fileName, :createdAt)";

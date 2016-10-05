@@ -222,4 +222,23 @@ public class TableDAOImpl extends GeneralDAOImpl implements ITableDAO {
         return result.isEmpty() ? null : result.get(0);
     }
 
+    @Override
+    public List<Integer> getOrphanTableIds() {
+        String sql = 
+                "select distinct DS_TABLE.TABLE_ID from DS_TABLE left join DST2TBL on DS_TABLE.TABLE_ID = DST2TBL.TABLE_ID " +
+                "where DST2TBL.TABLE_ID is null";
+        
+        return getJdbcTemplate().queryForList(sql, Integer.class);
+    }
+
+    @Override
+    public int delete(List<Integer> ids) {
+        String sql = "delete from DS_TABLE where TABLE_ID in (:ids)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ids", ids);
+
+        return getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
 }

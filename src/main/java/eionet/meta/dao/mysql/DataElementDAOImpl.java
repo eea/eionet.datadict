@@ -1441,4 +1441,23 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         return result;
     }
 
+    @Override
+    public List<Integer> getOrphanNonCommonDataElementIds() {
+        String sql = 
+                "select distinct DATAELEM.DATAELEM_ID from DATAELEM left join TBL2ELEM on DATAELEM.DATAELEM_ID = TBL2ELEM.DATAELEM_ID " +
+                "where DATAELEM.PARENT_NS is not null and TBL2ELEM.DATAELEM_ID is null";
+        
+        return getJdbcTemplate().queryForList(sql, Integer.class);
+    }
+
+    @Override
+    public int delete(List<Integer> ids) {
+        String sql = "delete from DATAELEM where DATAELEM_ID in (:ids)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ids", ids);
+
+        return getNamedParameterJdbcTemplate().update(sql, params);
+    }
+    
 }

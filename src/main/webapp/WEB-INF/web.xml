@@ -321,6 +321,10 @@
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/checkouts</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/cleanup</url-pattern>
+    </servlet-mapping>
     <servlet>
         <servlet-name>rpcrouter</servlet-name>
         <servlet-class>eionet.rpcserver.servlets.XmlRpcRouter</servlet-class>
@@ -352,10 +356,6 @@
     <servlet>
         <servlet-name>GetPrintout</servlet-name>
         <servlet-class>eionet.meta.GetPrintout</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CleanupServlet</servlet-name>
-        <servlet-class>eionet.meta.CleanupServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetXmlInstance</servlet-name>
@@ -476,10 +476,6 @@
     <servlet-mapping>
         <servlet-name>GetPrintout</servlet-name>
         <url-pattern>/GetPrintout</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CleanupServlet</servlet-name>
-        <url-pattern>/CleanupServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetXmlInstance</servlet-name>
