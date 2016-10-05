@@ -246,7 +246,11 @@ public class DataElement {
     }
 
     public String getValueTypeTitle() {
-        return DataElementValueType.parse(type).getTitle();
+        DataElementValueType valueType = DataElementValueType.parse(type);
+        if (valueType == null) {
+            return "";
+        }
+        return valueType.getTitle();
     }
 
     public void setType(String type) {
