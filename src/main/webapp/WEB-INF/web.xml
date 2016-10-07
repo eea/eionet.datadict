@@ -22,16 +22,6 @@
         <param-value>${useCentralAuthenticationService}</param-value>
     </context-param>
 
-    <!-- Spring configuration -->
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
-
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:spring-context.xml</param-value>
-    </context-param>
-
     <!-- Liquibase configuration  -->
     <context-param>
         <param-name>liquibase.changelog</param-name>
@@ -56,6 +46,16 @@
     <listener>
         <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
     </listener>
+
+    <!-- Spring configuration -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:spring-context.xml</param-value>
+    </context-param>
 
     <listener>
         <listener-class>eionet.meta.scheduled.VocabularyReferenceMatchJob</listener-class>
