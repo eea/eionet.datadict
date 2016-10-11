@@ -76,7 +76,7 @@ public class CacheDaoImpl extends JdbcDaoBase implements CacheDao {
         params.put("objectType", cacheEntry.getObjectType().getKey());
         params.put("articleType", cacheEntry.getArticleType().getKey());
         params.put("fileName", cacheEntry.getFileName());
-        params.put("fileName", cacheEntry.getCreatedAt());
+        params.put("createdAt", cacheEntry.getCreatedAt());
 
         getNamedParameterJdbcTemplate().update(sql, params);
     }
