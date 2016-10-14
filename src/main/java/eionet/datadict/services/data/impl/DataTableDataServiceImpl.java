@@ -1,5 +1,5 @@
 package eionet.datadict.services.data.impl;
-
+/*
 import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DataTableDao;
 import eionet.datadict.dal.FixedValuesDao;
@@ -38,7 +38,7 @@ public class DataTableDataServiceImpl implements DataTableDataService {
         
         table.setSimpleAttributes(this.simpleAttributeDao.getSimpleAttributesOfDataTable(tableId));
         table.setSimpleAttributesValues(this.simpleAttributeDao.getSimpleAttributesValuesOfDataTable(tableId));
-        /*
+  
         DataObjectUtils.linkParentChild(table.getSimpleAttributes(), table.getSimpleAttributesValues(), 
                 new SimpleAttributeToValuesLinker(), new SimpleAttributeIdProvider(), new SimpleAttributeValuesAttributeIdProvider());
         
@@ -65,8 +65,9 @@ public class DataTableDataServiceImpl implements DataTableDataService {
                 }
             }
         );
-        */
+        
         return null;
     }
     
 }
+*/
