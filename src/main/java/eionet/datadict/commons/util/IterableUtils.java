@@ -9,9 +9,15 @@ public class IterableUtils {
     }
     
     public static <T> T firstOrDefault(Iterable<T> source, T defaultValue) {
-        Iterator<T> iter = source.iterator();
-        
-        return iter.hasNext() ? iter.next() : defaultValue;
+        return nextOrDefault(source.iterator(), defaultValue);
+    }
+    
+    public static <T> T nextOrDefault(Iterator<T> it) {
+        return nextOrDefault(it, null);
+    }
+    
+    public static <T> T nextOrDefault(Iterator<T> it, T defaultValue) {
+        return it.hasNext() ? it.next() : defaultValue;
     }
     
 }
