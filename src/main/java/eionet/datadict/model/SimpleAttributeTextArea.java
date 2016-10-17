@@ -13,7 +13,7 @@ public class SimpleAttributeTextArea extends SimpleAttribute {
     }
 
     @Override
-    public ValueList getValueList() {
+    public Iterable<FixedValue> getValueList() {
         throw new UnsupportedOperationException();
     }
     

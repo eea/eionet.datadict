@@ -1,8 +1,12 @@
 package eionet.datadict.model;
 
-public class SimpleAttributeFixedValues extends SimpleAttribute {
+import java.util.Set;
+import javax.persistence.OneToMany;
 
-    private FixedValueList fixedValues;
+public class SimpleAttributeFixedValues extends SimpleAttribute implements FixedValuesOwner {
+
+    @OneToMany(mappedBy = "owner")
+    private Set<FixedValue> fixedValues;
     
     @Override
     public DisplayType getDisplayType() {
@@ -15,15 +19,17 @@ public class SimpleAttributeFixedValues extends SimpleAttribute {
     }
 
     @Override
-    public FixedValueList getValueList() {
+    public Iterable<FixedValue> getValueList() {
         return fixedValues;
     }
     
-    public FixedValueList getFixedValues() {
+    @Override
+    public Set<FixedValue> getFixedValues() {
         return fixedValues;
     }
     
-    public void setFixedValues(FixedValueList fixedValues) {
+    @Override
+    public void setFixedValues(Set<FixedValue> fixedValues) {
         this.fixedValues = fixedValues;
     }
     

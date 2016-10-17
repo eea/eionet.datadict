@@ -1,13 +1,18 @@
 package eionet.datadict.model;
 
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
 public class Namespace {
 
+    @Id
     private Integer id;
     private String shortName;
     private String fullName;
     private String definition;
     private String workingUser;
     
+    @ManyToOne
     private Namespace parent;
 
     public Integer getId() {

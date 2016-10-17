@@ -1,9 +1,15 @@
 package eionet.datadict.model;
 
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import org.apache.commons.lang.StringUtils;
+
 public class Concept implements ValueListItem {
 
+    @ManyToOne
     private Vocabulary vocabulary;
     
+    @Id
     private Integer id;
     private String identifier;
     private String notation;
@@ -62,7 +68,31 @@ public class Concept implements ValueListItem {
 
     @Override
     public String getCode() {
-        return this.notation;
+        return StringUtils.isBlank(this.notation) ? this.identifier : this.notation;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+        if (!(obj instanceof Concept)) {
+            return false;
+        }
+        
+        if (this.id == null) {
+            return false;
+        }
+        
+        Concept other = (Concept) obj;
+        
+        return this.id.equals(other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id == null ?  super.hashCode() : this.id.hashCode();
     }
     
 }

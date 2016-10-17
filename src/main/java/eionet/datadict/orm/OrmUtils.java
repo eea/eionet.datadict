@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import eionet.datadict.commons.util.IterableUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class OrmUtils {
 
@@ -26,11 +27,11 @@ public class OrmUtils {
         
         Class<?> parentType = parentEntities.get(0).getClass();
         Class<?> childType = childEntities.get(0).getClass();
-        Field parentIdField = OrmReflectionUtils.getIdField(parentType);
+        Field[] parentIdFields = OrmReflectionUtils.getIdDrilldownFields(parentType);
         RelationInfo relationInfo = OrmReflectionUtils.getParentChildRelationInfo(parentType, childType, childEndpointName);
-        Field[] childDrillDownFields = new Field[] { relationInfo.getChildEndpoint(), parentIdField };
+        Field[] childDrillDownFields = ArrayUtils.addAll(new Field[] { relationInfo.getChildEndpoint() }, parentIdFields);
         
-        Collections.sort(parentEntities, new ReflectiveDrillDownComparator<T>(parentIdField));
+        Collections.sort(parentEntities, new ReflectiveDrillDownComparator<T>(parentIdFields));
         Collections.sort(childEntities, new ReflectiveDrillDownComparator<S>(childDrillDownFields));
         
         OneToAnyPairLinker<T, S> pairLinker = createPairLinker(relationInfo.getRelationType());
@@ -40,7 +41,7 @@ public class OrmUtils {
         S childObject = IterableUtils.nextOrDefault(childIt);
         
         while (parentObject != null && childObject != null) {
-            Comparable parentObjectKey = (Comparable) OrmReflectionUtils.readField(parentIdField, parentObject);
+            Comparable parentObjectKey = (Comparable) OrmReflectionUtils.readFieldDrillDown(parentIdFields, parentObject);
             Comparable childObjectKey = (Comparable) OrmReflectionUtils.readFieldDrillDown(childDrillDownFields, childObject);
             int cmpResult = parentObjectKey.compareTo(childObjectKey);
             

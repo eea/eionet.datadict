@@ -1,8 +1,13 @@
 package eionet.datadict.model;
 
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+
 public class DataTableElement {
 
+    @ManyToOne
     private DataTable dataTable;
+    @OneToOne
     private DataElement dataElement;
     private int position;
     private boolean mandatory;
@@ -64,4 +69,28 @@ public class DataTableElement {
         this.multiValueDelimiter = multiValueDelimiter;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+        if (!(obj instanceof DataTableElement)) {
+            return false;
+        }
+        
+        if (this.dataElement == null) {
+            return false;
+        }
+        
+        DataTableElement other = (DataTableElement) obj;
+        
+        return this.dataElement.equals(other.dataElement);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.dataElement == null ?  super.hashCode() : this.dataElement.hashCode();
+    }
+    
 }

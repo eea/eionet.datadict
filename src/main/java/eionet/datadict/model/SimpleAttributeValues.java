@@ -1,10 +1,15 @@
 package eionet.datadict.model;
 
+import java.util.Arrays;
 import java.util.List;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 public class SimpleAttributeValues {
     
+    @OneToOne
     private SimpleAttributeOwner owner;
+    @ManyToOne
     private SimpleAttribute attribute;
     private List<String> values;
 
@@ -30,6 +35,34 @@ public class SimpleAttributeValues {
 
     public void setValues(List<String> values) {
         this.values = values;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+        if (!(obj instanceof SimpleAttributeValues)) {
+            return false;
+        }
+        
+        if (this.owner == null || this.attribute == null) {
+            return false;
+        }
+        
+        SimpleAttributeValues other = (SimpleAttributeValues) obj;
+        
+        return this.owner.equals(other.owner) && this.attribute.equals(other.attribute);
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.owner == null || this.attribute == null) {
+            return super.hashCode();
+        }
+        
+        return Arrays.hashCode(new Object[] { this.owner, this.attribute });
     }
     
 }

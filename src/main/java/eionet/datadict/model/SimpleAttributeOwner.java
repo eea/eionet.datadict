@@ -1,6 +1,6 @@
 package eionet.datadict.model;
 
-import java.util.List;
+import java.util.Set;
 
 public interface SimpleAttributeOwner {
 
@@ -8,12 +8,12 @@ public interface SimpleAttributeOwner {
     
     Comparable getId();
     
-    List<SimpleAttribute> getSimpleAttributes();
+    Set<SimpleAttribute> getSimpleAttributes();
     
-    void setSimpleAttributes(List<SimpleAttribute> simpleAttributes);
+    void setSimpleAttributes(Set<SimpleAttribute> simpleAttributes);
     
-    List<SimpleAttributeValues> getSimpleAttributesValues();
+    Set<SimpleAttributeValues> getSimpleAttributesValues();
     
-    void setSimpleAttributesValues(List<SimpleAttributeValues> simpleAttributesValues);
+    void setSimpleAttributesValues(Set<SimpleAttributeValues> simpleAttributesValues);
     
 }

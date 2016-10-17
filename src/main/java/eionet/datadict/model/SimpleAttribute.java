@@ -1,6 +1,8 @@
 package eionet.datadict.model;
 
 import java.util.Set;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 public abstract class SimpleAttribute {
 
@@ -24,6 +26,7 @@ public abstract class SimpleAttribute {
         INHERIT_OVERRIDE
     }
     
+    @Id
     private Integer id;
     private String shortName;
     private String name;
@@ -35,7 +38,7 @@ public abstract class SimpleAttribute {
     private Integer displayOrder;
     private Integer displayWidth;
     
-    
+    @ManyToOne
     private Namespace namespace;
 
     public Integer getId() {
@@ -130,6 +133,30 @@ public abstract class SimpleAttribute {
     
     public abstract boolean supportsValueList();
     
-    public abstract ValueList<? extends ValueListItem> getValueList();
+    public abstract Iterable<? extends ValueListItem> getValueList();
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+        if (!(obj instanceof SimpleAttribute)) {
+            return false;
+        }
+        
+        if (this.id == null) {
+            return false;
+        }
+        
+        SimpleAttribute other = (SimpleAttribute) obj;
+        
+        return this.id.equals(other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id == null ?  super.hashCode() : this.id.hashCode();
+    }
     
 }

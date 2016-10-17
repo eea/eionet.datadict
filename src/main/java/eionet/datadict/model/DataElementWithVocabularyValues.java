@@ -1,7 +1,10 @@
 package eionet.datadict.model;
 
+import javax.persistence.ManyToOne;
+
 public class DataElementWithVocabularyValues extends DataElement {
 
+    @ManyToOne
     private Vocabulary vocabulary;
     
     @Override
@@ -20,7 +23,7 @@ public class DataElementWithVocabularyValues extends DataElement {
     }
 
     @Override
-    public ValueList getValueList() {
+    public Iterable<Concept> getValueList() {
         return vocabulary;
     }
 

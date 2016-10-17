@@ -1,11 +1,13 @@
 package eionet.datadict.model;
 
+import java.util.Set;
+
 public interface FixedValuesOwner {
 
     Comparable getId();
     
-    FixedValueList getFixedValues();
+    Set<FixedValue> getFixedValues();
     
-    void setFixedValues(FixedValueList fixedValues);
+    void setFixedValues(Set<FixedValue> fixedValues);
     
 }

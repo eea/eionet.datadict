@@ -1,16 +1,24 @@
 package eionet.datadict.model;
 
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
-public class Vocabulary implements ValueList<Concept>, SimpleAttributeOwner {
+public class Vocabulary implements Iterable<Concept>, SimpleAttributeOwner {
 
+    @Id
     private Integer id;
     private String identifier;
     
-    private List<Concept> concepts;
-    private List<SimpleAttribute> simpleAttributes;
-    private List<SimpleAttributeValues> simpleAttributesValues;
+    @ManyToOne
+    private VocabularySet vocabularySet;
+    @OneToMany(mappedBy = "vocabulary")
+    private Set<Concept> concepts;
+    private Set<SimpleAttribute> simpleAttributes;
+    @OneToMany(mappedBy = "owner")
+    private Set<SimpleAttributeValues> simpleAttributesValues;
 
     @Override
     public SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory() {
@@ -34,11 +42,19 @@ public class Vocabulary implements ValueList<Concept>, SimpleAttributeOwner {
         this.identifier = identifier;
     }
 
-    public List<Concept> getConcepts() {
+    public VocabularySet getVocabularySet() {
+        return vocabularySet;
+    }
+
+    public void setVocabularySet(VocabularySet vocabularySet) {
+        this.vocabularySet = vocabularySet;
+    }
+    
+    public Set<Concept> getConcepts() {
         return concepts;
     }
 
-    public void setConcepts(List<Concept> concepts) {
+    public void setConcepts(Set<Concept> concepts) {
         this.concepts = concepts;
     }
 
@@ -48,23 +64,47 @@ public class Vocabulary implements ValueList<Concept>, SimpleAttributeOwner {
     }
     
     @Override
-    public List<SimpleAttribute> getSimpleAttributes() {
+    public Set<SimpleAttribute> getSimpleAttributes() {
         return simpleAttributes;
     }
 
     @Override
-    public void setSimpleAttributes(List<SimpleAttribute> simpleAttributes) {
+    public void setSimpleAttributes(Set<SimpleAttribute> simpleAttributes) {
         this.simpleAttributes = simpleAttributes;
     }
 
     @Override
-    public List<SimpleAttributeValues> getSimpleAttributesValues() {
+    public Set<SimpleAttributeValues> getSimpleAttributesValues() {
         return simpleAttributesValues;
     }
 
     @Override
-    public void setSimpleAttributesValues(List<SimpleAttributeValues> simpleAttributeValues) {
+    public void setSimpleAttributesValues(Set<SimpleAttributeValues> simpleAttributeValues) {
         this.simpleAttributesValues = simpleAttributeValues;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+        if (!(obj instanceof Vocabulary)) {
+            return false;
+        }
+        
+        if (this.id == null) {
+            return false;
+        }
+        
+        Vocabulary other = (Vocabulary) obj;
+        
+        return this.id.equals(other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id == null ?  super.hashCode() : this.id.hashCode();
     }
     
 }

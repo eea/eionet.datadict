@@ -1,6 +1,9 @@
 package eionet.datadict.model;
 
-import java.util.List;
+import java.util.Set;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 public abstract class DataElement implements SimpleAttributeOwner {
  
@@ -18,6 +21,7 @@ public abstract class DataElement implements SimpleAttributeOwner {
         RELEASED
     }
     
+    @Id
     private Integer id;
     private String identifier;
     private String shortName;
@@ -25,10 +29,13 @@ public abstract class DataElement implements SimpleAttributeOwner {
     private String workingUser;
     private boolean workingCopy;
     
+    @ManyToOne
     private Namespace namespace;
+    @ManyToOne
     private DataTable owner;
-    private List<SimpleAttribute> simpleAttributes;
-    private List<SimpleAttributeValues> simpleAttributesValues;
+    private Set<SimpleAttribute> simpleAttributes;
+    @OneToMany(mappedBy = "owner")
+    private Set<SimpleAttributeValues> simpleAttributesValues;
 
     @Override
     public Integer getId() {
@@ -96,22 +103,22 @@ public abstract class DataElement implements SimpleAttributeOwner {
     }
 
     @Override
-    public List<SimpleAttribute> getSimpleAttributes() {
+    public Set<SimpleAttribute> getSimpleAttributes() {
         return simpleAttributes;
     }
 
     @Override
-    public void setSimpleAttributes(List<SimpleAttribute> simpleAttributes) {
+    public void setSimpleAttributes(Set<SimpleAttribute> simpleAttributes) {
         this.simpleAttributes = simpleAttributes;
     }
 
     @Override
-    public List<SimpleAttributeValues> getSimpleAttributesValues() {
+    public Set<SimpleAttributeValues> getSimpleAttributesValues() {
         return simpleAttributesValues;
     }
 
     @Override
-    public void setSimpleAttributesValues(List<SimpleAttributeValues> simpleAttributeValues) {
+    public void setSimpleAttributesValues(Set<SimpleAttributeValues> simpleAttributeValues) {
         this.simpleAttributesValues = simpleAttributeValues;
     }
     
@@ -119,6 +126,30 @@ public abstract class DataElement implements SimpleAttributeOwner {
     
     public abstract boolean supportsValueList();
     
-    public abstract ValueList<? extends ValueListItem> getValueList();
+    public abstract Iterable<? extends ValueListItem> getValueList();
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+        if (!(obj instanceof DataElement)) {
+            return false;
+        }
+        
+        if (this.id == null) {
+            return false;
+        }
+        
+        DataElement other = (DataElement) obj;
+        
+        return this.id.equals(other.getId());
+    }
 
+    @Override
+    public int hashCode() {
+        return this.id == null ?  super.hashCode() : this.id.hashCode();
+    }
+    
 }

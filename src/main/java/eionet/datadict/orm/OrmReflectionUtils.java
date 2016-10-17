@@ -1,6 +1,8 @@
 package eionet.datadict.orm;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Id;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -20,6 +22,20 @@ class OrmReflectionUtils {
         }
         
         return fields[0];
+    }
+    
+    public static Field[] getIdDrilldownFields(Class<?> entityType) {
+        List<Field> fields = new ArrayList<Field>();
+        Class<?> type = entityType;
+        
+        do {
+            Field f = OrmReflectionUtils.getIdField(type);
+            fields.add(f);
+            type = f.getType();
+        }
+        while (!Comparable.class.isAssignableFrom(type));
+        
+        return fields.toArray(new Field[fields.size()]);
     }
     
     public static RelationInfo getParentChildRelationInfo(Class<?> parentType, Class<?> childType, String childPropertyName) {

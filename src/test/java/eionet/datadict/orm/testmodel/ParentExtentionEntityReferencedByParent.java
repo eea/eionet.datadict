@@ -8,7 +8,7 @@ public class ParentExtentionEntityReferencedByParent {
     @Id
     private Long id;
     
-    @OneToOne(mappedBy = "extension")
+    @OneToOne
     private ParentEntityWithReferenceToChildren parent;
     
     private String value1;

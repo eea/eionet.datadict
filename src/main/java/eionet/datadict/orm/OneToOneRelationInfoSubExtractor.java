@@ -11,7 +11,7 @@ class OneToOneRelationInfoSubExtractor implements OneToAnyRelationInfoSubExtract
 
     @Override
     public boolean isMatch(Field childEndpoint) {
-        return this.getChildEndpointAnnotation(childEndpoint) != null;
+        return childEndpoint.getAnnotation(OneToOne.class) != null;
     }
 
     @Override
@@ -21,44 +21,7 @@ class OneToOneRelationInfoSubExtractor implements OneToAnyRelationInfoSubExtract
 
     @Override
     public Field getParentEndpoint(Class<?> parentType, Field childEndpoint) {
-        OneToOne childEndpointAnnotation = this.getChildEndpointAnnotation(childEndpoint);
-
-        if (StringUtils.isBlank(childEndpointAnnotation.mappedBy())) {
-            return this.getParentEndpointByMatch(parentType, childEndpoint.getName());
-        }
-        else {
-            return this.getParentEndpointByChildAnnotationMapping(parentType, childEndpoint.getName(), childEndpointAnnotation);
-        }
-    }
-
-    private OneToOne getChildEndpointAnnotation(Field childEndpoint) {
-        return childEndpoint.getAnnotation(OneToOne.class);
-    }
-
-    private Field getParentEndpointByChildAnnotationMapping(Class<?> parentType, String childPropertyName, OneToOne childEndpointAnnotation) {
-        Field parentEndpoint = FieldUtils.getField(parentType, childEndpointAnnotation.mappedBy(), true);
-
-        if (parentEndpoint == null) {
-            return parentEndpoint;
-        }
-
-        OneToOne parentEndpointAnnotation = parentEndpoint.getAnnotation(OneToOne.class);
-
-        if (parentEndpointAnnotation == null || StringUtils.isBlank(parentEndpointAnnotation.mappedBy())) {
-            return parentEndpoint;
-        }
-
-        if (!StringUtils.equals(parentEndpointAnnotation.mappedBy(), childPropertyName)) {
-            String msg = String.format("Invalid relation endpoint target in %s. Found: %s; required: %s.", 
-                    parentType.getName(), parentEndpointAnnotation.mappedBy(), childPropertyName);
-            throw new InvalidRelationException(msg);
-        }
-
-        return parentEndpoint;
-    }
-
-    private Field getParentEndpointByMatch(Class<?> parentType, String childPropertyName) {
-        final String mappedBy = childPropertyName;
+        final String mappedBy = childEndpoint.getName();
 
         return (Field) CollectionUtils.find(
             FieldUtils.getFieldsListWithAnnotation(parentType, OneToOne.class),
