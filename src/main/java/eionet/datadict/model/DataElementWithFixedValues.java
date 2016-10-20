@@ -7,6 +7,14 @@ public class DataElementWithFixedValues extends DataElement implements FixedValu
     
     @OneToMany(mappedBy = "owner")
     private Set<FixedValue> fixedValues;
+
+    public DataElementWithFixedValues() {
+        super();
+    }
+
+    public DataElementWithFixedValues(Integer id) {
+        super(id);
+    }
     
     @Override
     public SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory() {

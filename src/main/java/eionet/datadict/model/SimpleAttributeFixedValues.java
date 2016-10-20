@@ -7,6 +7,14 @@ public class SimpleAttributeFixedValues extends SimpleAttribute implements Fixed
 
     @OneToMany(mappedBy = "owner")
     private Set<FixedValue> fixedValues;
+
+    public SimpleAttributeFixedValues() {
+        super();
+    }
+
+    public SimpleAttributeFixedValues(Integer id) {
+        super(id);
+    }
     
     @Override
     public DisplayType getDisplayType() {
@@ -31,6 +39,11 @@ public class SimpleAttributeFixedValues extends SimpleAttribute implements Fixed
     @Override
     public void setFixedValues(Set<FixedValue> fixedValues) {
         this.fixedValues = fixedValues;
+    }
+
+    @Override
+    protected boolean isInstanceOfClass(Object obj) {
+        return obj instanceof SimpleAttributeFixedValues;
     }
     
 }

@@ -6,6 +6,14 @@ public class DataElementWithVocabularyValues extends DataElement {
 
     @ManyToOne
     private Vocabulary vocabulary;
+
+    public DataElementWithVocabularyValues() {
+        super();
+    }
+
+    public DataElementWithVocabularyValues(Integer id) {
+        super(id);
+    }
     
     @Override
     public SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory() {

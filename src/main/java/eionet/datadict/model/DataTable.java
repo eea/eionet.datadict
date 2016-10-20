@@ -23,6 +23,14 @@ public class DataTable implements SimpleAttributeOwner {
     @OneToMany(mappedBy = "owner")
     private Set<SimpleAttributeValues> simpleAttributesValues;
 
+    public DataTable() {
+        super();
+    }
+    
+    public DataTable(Integer id) {
+        this.id = id;
+    }
+    
     @Override
     public SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory() {
         return SimpleAttributeOwnerCategory.DATA_TABLE;

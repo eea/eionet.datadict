@@ -4,6 +4,7 @@ import java.util.Set;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 public abstract class DataElement implements SimpleAttributeOwner {
  
@@ -31,12 +32,20 @@ public abstract class DataElement implements SimpleAttributeOwner {
     
     @ManyToOne
     private Namespace namespace;
-    @ManyToOne
-    private DataTable owner;
+    @OneToOne(mappedBy = "dataElement")
+    private DataTableElement dataTableElement;
     private Set<SimpleAttribute> simpleAttributes;
     @OneToMany(mappedBy = "owner")
     private Set<SimpleAttributeValues> simpleAttributesValues;
 
+    public DataElement() {
+        super();
+    }
+    
+    public DataElement(Integer id) {
+        this.id = id;
+    }
+    
     @Override
     public Integer getId() {
         return id;
@@ -94,12 +103,12 @@ public abstract class DataElement implements SimpleAttributeOwner {
         this.namespace = namespace;
     }
 
-    public DataTable getOwner() {
-        return owner;
+    public DataTableElement getDataTableElement() {
+        return dataTableElement;
     }
 
-    public void setOwner(DataTable owner) {
-        this.owner = owner;
+    public void setDataTableElement(DataTableElement dataTableElement) {
+        this.dataTableElement = dataTableElement;
     }
 
     @Override

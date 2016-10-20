@@ -28,7 +28,7 @@ public class OrmReflectionUtilsTest {
             OrmReflectionUtils.getIdField(EntityWithMultipleIds.class);
             fail("Should have thrown AmbiguousPropertyMatchException");
         }
-        catch(AmbiguousPropertyMatchException ex) { }
+        catch(AmbiguousMatchException ex) { }
     }
     
     @Test
@@ -60,6 +60,47 @@ public class OrmReflectionUtilsTest {
         assertThat(info3.getChildEndpoint().getName(), is(equalTo("parent")));
         
         RelationInfo info4 = OrmReflectionUtils.getParentChildRelationInfo(ParentEntityWithoutReferenceToChildren.class, ParentExtentionEntityUnreferencedByParent.class, "parent");
+        assertThat(info4, is(notNullValue()));
+        assertThat(info4.getParentEndpoint(), is(nullValue()));
+        assertThat(info4.getChildEndpoint(), is(notNullValue()));
+        assertThat(info4.getChildEndpoint().getName(), is(equalTo("parent")));
+    }
+    
+    @Test
+    public void testInferRelationInfo() {
+        RelationInfo info1 = OrmReflectionUtils.inferParentChildRelationInfo(ParentEntityWithReferenceToChildren.class, ChildEntityReferencedByParent.class);
+        assertThat(info1, is(notNullValue()));
+        assertThat(info1.getParentEndpoint(), is(notNullValue()));
+        assertThat(info1.getChildEndpoint(), is(notNullValue()));
+        assertThat(info1.getParentEndpoint().getName(), is(equalTo("children")));
+        assertThat(info1.getChildEndpoint().getName(), is(equalTo("parent")));
+        
+        try {
+            OrmReflectionUtils.inferParentChildRelationInfo(ParentEntityWithReferenceToChildren.class, ChildEntityUnreferencedByParent.class);
+            fail("Should have thrown InvalidRelationException");
+        }
+        catch (InvalidRelationException ex) { }
+        
+        try {
+            OrmReflectionUtils.inferParentChildRelationInfo(EntityWithSiblings.class, EntityWithSiblings.class);
+            fail("Should have thrown AmbiguousMatchException");
+        }
+        catch (AmbiguousMatchException ex) { }
+        
+        RelationInfo info2 = OrmReflectionUtils.inferParentChildRelationInfo(ParentEntityWithoutReferenceToChildren.class, ChildEntityUnreferencedByParent.class);
+        assertThat(info2, is(notNullValue()));
+        assertThat(info2.getParentEndpoint(), is(nullValue()));
+        assertThat(info2.getChildEndpoint(), is(notNullValue()));
+        assertThat(info2.getChildEndpoint().getName(), is(equalTo("parent")));
+        
+        RelationInfo info3 = OrmReflectionUtils.inferParentChildRelationInfo(ParentEntityWithReferenceToChildren.class, ParentExtentionEntityReferencedByParent.class);
+        assertThat(info3, is(notNullValue()));
+        assertThat(info3.getParentEndpoint(), is(notNullValue()));
+        assertThat(info3.getChildEndpoint(), is(notNullValue()));
+        assertThat(info3.getParentEndpoint().getName(), is(equalTo("extension")));
+        assertThat(info3.getChildEndpoint().getName(), is(equalTo("parent")));
+        
+        RelationInfo info4 = OrmReflectionUtils.inferParentChildRelationInfo(ParentEntityWithoutReferenceToChildren.class, ParentExtentionEntityUnreferencedByParent.class);
         assertThat(info4, is(notNullValue()));
         assertThat(info4.getParentEndpoint(), is(nullValue()));
         assertThat(info4.getChildEndpoint(), is(notNullValue()));

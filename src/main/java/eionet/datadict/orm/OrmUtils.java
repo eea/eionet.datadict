@@ -20,15 +20,39 @@ public class OrmUtils {
         Collections.sort(entities, cmp);
     }
     
+    public static <T, S> void link(T parentEntity, S childEntity) {
+        link(OrmCollectionUtils.toList(parentEntity), OrmCollectionUtils.toList(childEntity));
+    }
+    
+    public static <T, S> void link(T parentEntity, S childEntity, String childEndpointName) {
+        link(OrmCollectionUtils.toList(parentEntity), OrmCollectionUtils.toList(childEntity), childEndpointName);
+    }
+    
+    public static <T, S> void link(T parentEntity, List<S> childEntities) {
+        link(OrmCollectionUtils.toList(parentEntity), childEntities);
+    }
+    
+    public static <T, S> void link(T parentEntity, List<S> childEntities, String childEndpointName) {
+        link(OrmCollectionUtils.toList(parentEntity), childEntities, childEndpointName);
+    }
+    
+    public static <T, S> void link(List<T> parentEntities, List<S> childEntities) {
+        link(parentEntities, childEntities, new RelationRetrievalByInferenceStrategy());
+    }
+    
     public static <T, S> void link(List<T> parentEntities, List<S> childEntities, String childEndpointName) {
+        link(parentEntities, childEntities, new RelationRetrievalByNamedEndpointStrategy(childEndpointName));
+    }
+    
+    static <T, S> void link(List<T> parentEntities, List<S> childEntities, RelationRetrievalStrategy relationRetrievalStrategy) {
         if (parentEntities.isEmpty() || childEntities.isEmpty()) {
             return;
         }
         
         Class<?> parentType = parentEntities.get(0).getClass();
         Class<?> childType = childEntities.get(0).getClass();
+        RelationInfo relationInfo = relationRetrievalStrategy.retrieveRelationInfo(parentType, childType);
         Field[] parentIdFields = OrmReflectionUtils.getIdDrilldownFields(parentType);
-        RelationInfo relationInfo = OrmReflectionUtils.getParentChildRelationInfo(parentType, childType, childEndpointName);
         Field[] childDrillDownFields = ArrayUtils.addAll(new Field[] { relationInfo.getChildEndpoint() }, parentIdFields);
         
         Collections.sort(parentEntities, new ReflectiveDrillDownComparator<T>(parentIdFields));
@@ -60,7 +84,7 @@ public class OrmUtils {
         }
     }
     
-    private static <T, S> OneToAnyPairLinker<T, S> createPairLinker(RelationType relationType) {
+    static <T, S> OneToAnyPairLinker<T, S> createPairLinker(RelationType relationType) {
         switch (relationType) {
             case ONE_TO_MANY:
                 return new OneToManyPairLinker<T, S>();            
@@ -71,7 +95,37 @@ public class OrmUtils {
         }
     }
     
-    private static class ReflectiveDrillDownComparator<T> implements Comparator<T> {
+    static interface RelationRetrievalStrategy {
+        
+        RelationInfo retrieveRelationInfo(Class<?> parentType, Class<?> childType);
+        
+    }
+    
+    static class RelationRetrievalByInferenceStrategy implements RelationRetrievalStrategy {
+
+        @Override
+        public RelationInfo retrieveRelationInfo(Class<?> parentType, Class<?> childType) {
+            return OrmReflectionUtils.inferParentChildRelationInfo(parentType, childType);
+        }
+        
+    }
+    
+    static class RelationRetrievalByNamedEndpointStrategy implements RelationRetrievalStrategy {
+
+        private final String childEndpointName;
+        
+        public RelationRetrievalByNamedEndpointStrategy(String childEndpointName) {
+            this.childEndpointName = childEndpointName;
+        }
+        
+        @Override
+        public RelationInfo retrieveRelationInfo(Class<?> parentType, Class<?> childType) {
+            return OrmReflectionUtils.getParentChildRelationInfo(parentType, childType, childEndpointName);
+        }
+        
+    }
+    
+    static class ReflectiveDrillDownComparator<T> implements Comparator<T> {
 
         private final Field[] drillDownFields;
 

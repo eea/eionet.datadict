@@ -7,6 +7,14 @@ public class DataElementWithQuantitativeValues extends DataElement implements Fi
     
     @OneToMany(mappedBy = "owner")
     private Set<FixedValue> fixedValues;
+
+    public DataElementWithQuantitativeValues() {
+        super();
+    }
+
+    public DataElementWithQuantitativeValues(Integer id) {
+        super(id);
+    }
     
     @Override
     public SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory() {

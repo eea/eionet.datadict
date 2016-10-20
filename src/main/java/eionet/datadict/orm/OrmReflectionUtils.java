@@ -1,9 +1,13 @@
 package eionet.datadict.orm;
 
+import eionet.datadict.commons.util.IterableUtils;
+import eionet.datadict.commons.util.Predicate;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 class OrmReflectionUtils {
@@ -18,7 +22,7 @@ class OrmReflectionUtils {
         
         if (fields.length > 1) {
             String msg = String.format("Multiple definitions of @Id property in %s", entityType.getName());
-            throw new AmbiguousPropertyMatchException(msg);
+            throw new AmbiguousMatchException(msg);
         }
         
         return fields[0];
@@ -40,6 +44,37 @@ class OrmReflectionUtils {
     
     public static RelationInfo getParentChildRelationInfo(Class<?> parentType, Class<?> childType, String childPropertyName) {
         return new OneToAnyRelationInfoExtractor().getRelationInfo(parentType, childType, childPropertyName);
+    }
+    
+    public static RelationInfo inferParentChildRelationInfo(final Class<?> parentType, final Class<?> childType) {
+        List<Field> childTypeCandidates = IterableUtils.filter(FieldUtils.getAllFieldsList(childType), new Predicate<Field>() {
+
+            @Override
+            public boolean evaluate(Field obj) {
+                ManyToOne manyToOneAnnotation = obj.getAnnotation(ManyToOne.class);
+                
+                if (manyToOneAnnotation != null) {
+                    return obj.getType().equals(parentType);
+                }
+                
+                OneToOne oneToOneAnnotation = obj.getAnnotation(OneToOne.class);
+                
+                return oneToOneAnnotation != null && obj.getType().equals(parentType);
+            }
+            
+        });
+        
+        if (childTypeCandidates.size() == 0) {
+            String msg = String.format("No relation candidates found between %s and %s.", parentType.getName(), childType.getName());
+            throw new InvalidRelationException(msg);
+        }
+        
+        if (childTypeCandidates.size() > 1) {
+            String msg = String.format("Multiple relation candidates found between %s and %s.", parentType.getName(), childType.getName());
+            throw new AmbiguousMatchException(msg);
+        }
+        
+        return getParentChildRelationInfo(parentType, childType, childTypeCandidates.get(0).getName());
     }
     
     public static Object readField(Field field, Object target) {

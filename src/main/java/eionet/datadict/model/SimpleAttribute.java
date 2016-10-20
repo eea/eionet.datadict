@@ -41,6 +41,14 @@ public abstract class SimpleAttribute {
     @ManyToOne
     private Namespace namespace;
 
+    public SimpleAttribute() {
+        super();
+    }
+    
+    public SimpleAttribute(Integer id) {
+        this.id = id;
+    }
+    
     public Integer getId() {
         return id;
     }
@@ -145,6 +153,10 @@ public abstract class SimpleAttribute {
             return false;
         }
         
+        if (!this.isInstanceOfClass(obj)) {
+            return false;
+        }
+        
         if (this.id == null) {
             return false;
         }
@@ -153,10 +165,12 @@ public abstract class SimpleAttribute {
         
         return this.id.equals(other.getId());
     }
-
+    
     @Override
     public int hashCode() {
         return this.id == null ?  super.hashCode() : this.id.hashCode();
     }
+    
+    protected abstract boolean isInstanceOfClass(Object obj);
     
 }

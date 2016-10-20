@@ -2,6 +2,14 @@ package eionet.datadict.model;
 
 public class SimpleAttributeHidden extends SimpleAttribute {
 
+    public SimpleAttributeHidden() {
+        super();
+    }
+
+    public SimpleAttributeHidden(Integer id) {
+        super(id);
+    }
+    
     @Override
     public DisplayType getDisplayType() {
         return DisplayType.NONE;
@@ -15,6 +23,11 @@ public class SimpleAttributeHidden extends SimpleAttribute {
     @Override
     public Iterable<FixedValue> getValueList() {
         throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    protected boolean isInstanceOfClass(Object obj) {
+        return obj instanceof SimpleAttributeHidden;
     }
     
 }

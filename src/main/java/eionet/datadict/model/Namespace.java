@@ -15,6 +15,14 @@ public class Namespace {
     @ManyToOne
     private Namespace parent;
 
+    public Namespace() {
+        super();
+    }
+    
+    public Namespace(Integer id) {
+        this.id = id;
+    }
+    
     public Integer getId() {
         return id;
     }

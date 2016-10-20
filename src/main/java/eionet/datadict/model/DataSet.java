@@ -19,6 +19,14 @@ public class DataSet implements SimpleAttributeOwner {
     @OneToMany(mappedBy = "owner")
     private Set<SimpleAttributeValues> simpleAttributesValues;
 
+    public DataSet() {
+        super();
+    }
+    
+    public DataSet(Integer id) {
+        this.id = id;
+    }
+    
     @Override
     public SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory() {
         return SimpleAttributeOwnerCategory.DATA_SET;
