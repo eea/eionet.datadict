@@ -8,7 +8,7 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Add schema set" currentSection="schemas">
 
     <stripes:layout-component name="contents">
-        <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
+
     <h1>Create schema set</h1>
 
     <stripes:form method="post" beanclass="eionet.web.action.SchemaSetActionBean">

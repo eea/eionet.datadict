@@ -9,8 +9,6 @@
 
     <stripes:layout-component name="contents">
     <h1>Add root-level schema</h1>
-    
-    <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
 
     <stripes:form method="post" beanclass="${actionBean['class'].name}">
         <div id="outerframe">

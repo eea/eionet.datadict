@@ -39,16 +39,6 @@ public class Mdb implements CachableIF {
     /*
      * (non-Javadoc)
      *
-     * @see eionet.meta.exports.CachableIF#clearCache(java.lang.String)
-     */
-    @Override
-    public void clearCache(String id) throws Exception {
-        // Empty implementation.
-    }
-
-    /*
-     * (non-Javadoc)
-     *
      * @see eionet.meta.exports.CachableIF#setCachePath(java.lang.String)
      */
     @Override

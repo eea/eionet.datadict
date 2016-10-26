@@ -31,10 +31,8 @@ public class DstXlsTest extends TblXlsTest {
     public void testStoreAndDelete() {
         try {
             String fileName = "test.txt";
-            int i = DstXls.storeCacheEntry("999999", fileName, conn);
+            int i = classInstanceUnderTest.storeCacheEntry("999999", fileName, conn);
             Assert.assertTrue(i > 0);
-            String s = DstXls.deleteCacheEntry("999999", conn);
-            Assert.assertEquals(fileName, s);
         } catch (Exception e) {
             Assert.fail("Was not expecting any exceptions, but catched " + e.toString());
         }

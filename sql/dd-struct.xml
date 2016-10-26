@@ -1264,7 +1264,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
              UPDATE T_VOCABULARY_CONCEPT SET CREATION_DATE = now()</sql>
     </changeSet>
 
-    <changeSet author="roug" id="rev-100">
+    <changeSet author="roug" id="rev-100" >
+        <validCheckSum>3:21693a0c478ad24dac451d622ddc53bc</validCheckSum>
         <comment>Auto increments can't be added in the create table change set.</comment>
         <addAutoIncrement tableName="ACLS" columnName="ACL_ID" columnDataType="INT"/>
         <addAutoIncrement tableName="DATAELEM" columnName="DATAELEM_ID" columnDataType="INT UNSIGNED"/>
@@ -1272,18 +1273,54 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <addAutoIncrement tableName="DS_TABLE" columnName="TABLE_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="FK_RELATION" columnName="REL_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="FXV" columnName="FXV_ID" columnDataType="INT UNSIGNED"/>
+
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" constraintName="FK_M_ATTRIBUTE_ATTRIBUTE_ID"/>
         <addAutoIncrement tableName="M_ATTRIBUTE" columnName="M_ATTRIBUTE_ID" columnDataType="INT UNSIGNED"/>
+        <addForeignKeyConstraint baseColumnNames="M_ATTRIBUTE_ID" baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" 
+                constraintName="FK_M_ATTRIBUTE_ATTRIBUTE_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="M_ATTRIBUTE_ID" referencedTableName="M_ATTRIBUTE" referencesUniqueColumn="false"/>
+
         <addAutoIncrement tableName="M_COMPLEX_ATTR" columnName="M_COMPLEX_ATTR_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="M_COMPLEX_ATTR_FIELD" columnName="M_COMPLEX_ATTR_FIELD_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="NAMESPACE" columnName="NAMESPACE_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="SCHEMA" columnName="SCHEMA_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="SCHEMA_SET" columnName="SCHEMA_SET_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="T_SCHEMA" columnName="SCHEMA_ID" columnDataType="INT UNSIGNED"/>
+
+        <dropForeignKeyConstraint baseTableName="T_SCHEMA" constraintName="FK_SCHEMA_SET_ID"/>
         <addAutoIncrement tableName="T_SCHEMA_SET" columnName="SCHEMA_SET_ID" columnDataType="INT UNSIGNED"/>
+        <addForeignKeyConstraint baseColumnNames="SCHEMA_SET_ID" baseTableName="T_SCHEMA"
+                constraintName="FK_SCHEMA_SET_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="SCHEMA_SET_ID" referencedTableName="T_SCHEMA_SET" referencesUniqueColumn="false"/>
+
         <addAutoIncrement tableName="T_SITE_CODE" columnName="SITE_CODE_ID" columnDataType="INT UNSIGNED"/>
+
+        <dropForeignKeyConstraint baseTableName="T_SITE_CODE" constraintName="FK_VOCABULARY_CONCEPT_ID"/>
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" constraintName="FK_CONCEPT_ATTRIBUTE_ID"/>
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" constraintName="FK_RELATED_CONCEPT_ID"/>
         <addAutoIncrement tableName="T_VOCABULARY_CONCEPT" columnName="VOCABULARY_CONCEPT_ID" columnDataType="INT UNSIGNED"/>
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_CONCEPT_ID" baseTableName="T_SITE_CODE"
+                constraintName="FK_VOCABULARY_CONCEPT_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE"
+                referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_CONCEPT_ID" baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE"
+                constraintName="FK_CONCEPT_ATTRIBUTE_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="RELATED_CONCEPT_ID" baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE"
+                constraintName="FK_RELATED_CONCEPT_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
+
         <addAutoIncrement tableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" columnName="ID" columnDataType="INT UNSIGNED"/>
+
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_CONCEPT" constraintName="FK_VOCABULARY_FOLDER_ID"/>
         <addAutoIncrement tableName="T_VOCABULARY_FOLDER" columnName="VOCABULARY_FOLDER_ID" columnDataType="INT UNSIGNED"/>
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_FOLDER_ID" baseTableName="T_VOCABULARY_CONCEPT"
+                constraintName="FK_VOCABULARY_FOLDER_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="VOCABULARY_FOLDER_ID" referencedTableName="T_VOCABULARY_FOLDER" referencesUniqueColumn="false"/>
     </changeSet>
 
     <!-- Dropping the second of two identical indexes on FXV. See roug@rev-80 -->

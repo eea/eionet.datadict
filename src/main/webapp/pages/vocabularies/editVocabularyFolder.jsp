@@ -792,27 +792,27 @@
                     <div class="strategies">
                         <div class="strategy-ignore">
                             <stripes:radio id="strategy-ignore" name="missingConceptsAction" value="keep" checked="keep"/>
-                            <label for="missingConceptsStrategy" class="question">Maintain as is, ignore</label>
+                            <label for="strategy-ignore" class="question">Maintain as is, ignore</label>
                         </div>
                         <div class="strategy-remove">
                             <stripes:radio id="strategy-remove" name="missingConceptsAction" value="remove"/>
-                            <label for="missingConceptsStrategy" class="question">Remove</label>
+                            <label for="strategy-remove" class="question">Remove</label>
                         </div>
                         <div class="strategy-status-invalid">
                             <stripes:radio id="strategy-status-invalid" name="missingConceptsAction" value="invalid"/>
-                            <label for="missingConceptsStrategy" class="question">Maintain, but update status to "Invalid"</label>
+                            <label for="strategy-status-invalid" class="question">Maintain, but update status to "Invalid"</label>
                         </div>
                         <div class="strategy-status-deprecated">
                             <stripes:radio id="strategy-status-deprecated" name="missingConceptsAction" value="deprecated"/>
-                            <label for="missingConceptsStrategy" class="question">Maintain, but update status to "Deprecated"</label>
+                            <label for="strategy-status-deprecated" class="question">Maintain, but update status to "Deprecated"</label>
                         </div>
                         <div class="strategy-status-deprecated-retired">
                             <stripes:radio id="strategy-status-deprecated-retired" name="missingConceptsAction" value="retired"/>
-                            <label for="missingConceptsStrategy" class="question">Maintain, but update status to "Deprecated-Retired"</label>
+                            <label for="strategy-status-deprecated-retired" class="question">Maintain, but update status to "Deprecated-Retired"</label>
                         </div>
                         <div class="strategy-status-deprecated-superseded">
                             <stripes:radio id="strategy-status-deprecated-superseded" name="missingConceptsAction" value="superseded"/>
-                            <label for="missingConceptsStrategy" class="question">Maintain, but update status to "Deprecated-Superseded"</label>
+                            <label for="strategy-status-deprecated-superseded" class="question">Maintain, but update status to "Deprecated-Superseded"</label>
                         </div>
                     </div>
                 </div>
