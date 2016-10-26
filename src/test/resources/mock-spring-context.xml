@@ -66,7 +66,7 @@
         <constructor-arg index="0" ref="aclProperties" />
     </bean>
     
-<!--    <bean id="helpsDbProperties" class="eionet.help.HelpsDbProperties">
+    <bean id="helpsDbProperties" class="eionet.help.HelpsDbProperties">
         <property name="dbUser" value="${db.usr}" />
         <property name="dbPassword" value="${db.psw}" />
         <property name="dbDriver" value="${db.drv}"/>
@@ -76,7 +76,7 @@
     <bean id="helpsDbPropertiesLoader" class="eionet.help.DbPropertiesLoader">
         <property name="dbProperties" ref="helpsDbProperties"/>
     </bean>
-    -->
+    
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
         destroy-method="close" primary="true">
         <property name="driverClassName" value="${db.drv}" />

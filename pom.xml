@@ -14,7 +14,6 @@
         <spring.version>3.1.1.RELEASE</spring.version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
         <sesame.openrdf.version>2.7.10</sesame.openrdf.version>
-        <liquibase.changelogFile>sql/dd-struct.xml</liquibase.changelogFile>
         <jackson-version>2.4.0</jackson-version>
     </properties>
 
@@ -579,7 +578,7 @@
         <dependency>
             <groupId>eionet</groupId>
             <artifactId>help</artifactId>
-            <version>2.0</version>
+            <version>4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eionet</groupId>
