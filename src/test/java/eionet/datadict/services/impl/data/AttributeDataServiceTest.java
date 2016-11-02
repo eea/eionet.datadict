@@ -1,7 +1,7 @@
 package eionet.datadict.services.impl.data;
 
 import eionet.datadict.dal.AttributeDao;
-import eionet.datadict.dal.VocabularyDAO;
+import eionet.datadict.dal.VocabularyDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.Attribute;
 import eionet.meta.dao.IFixedValueDAO;
@@ -33,7 +33,7 @@ public class AttributeDataServiceTest {
     AttributeDao attributeDao;
     
     @Mock
-    VocabularyDAO vocabularyDao;
+    VocabularyDao vocabularyDao;
     
     @Mock
     IFixedValueDAO fixedValueDao;

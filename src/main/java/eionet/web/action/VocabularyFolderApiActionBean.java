@@ -228,7 +228,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             user = this.webApiAuthService.authenticate(this.webApiAuthInfoService.getAuthenticationInfo(getContext().getRequest()));
         }
         catch (UserAuthenticationException ex) {
-            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, ex.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, ex.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
         }
         
         VocabularyFolder vocabulary = new VocabularyFolder();
@@ -648,7 +648,5 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     public void setNotationsEqualIdentifiers(boolean notationsEqualIdentifiers) {
         this.notationsEqualIdentifiers = notationsEqualIdentifiers;
     }
-    
-    
     
 } // end of class VocabularyFolderApiActionBean

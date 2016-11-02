@@ -18,7 +18,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AttributeValueDaoImpl extends JdbcRepositoryBase implements AttributeValueDao{
+public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValueDao{
 
     @Autowired
     public AttributeValueDaoImpl(DataSource dataSource) {

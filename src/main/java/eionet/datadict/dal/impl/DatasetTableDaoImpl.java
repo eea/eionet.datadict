@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public class DatasetTableDaoImpl extends JdbcRepositoryBase implements DatasetTableDao {
+public class DatasetTableDaoImpl extends JdbcDaoBase implements DatasetTableDao {
    
     @Autowired
     public DatasetTableDaoImpl(DataSource dataSource) {

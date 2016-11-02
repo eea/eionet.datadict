@@ -49,7 +49,9 @@ try{
             Dataset dst = (Dataset)datasets.get(i);
             dst.setComparation(dst.getShortName(), 1);
         }
-        Collections.sort(datasets);
+        if (datasets != null) {
+            Collections.sort(datasets);
+        }
 
         // get tables,
         // take out the ones in datasets that were skipped above
@@ -70,7 +72,9 @@ try{
             DsTable tbl = (DsTable)tables.get(i);
             tbl.setCompStr(tbl.getShortName());
         }
-        Collections.sort(tables);
+        if (tables != null) {
+            Collections.sort(tables);
+        }
 
         // get common elements (we don't do skip-by-registration-status here,
         // because it's already done inside searchEngine.getCommonElements)
@@ -79,7 +83,9 @@ try{
             DataElement elm = (DataElement)commonElms.get(i);
             elm.setComparation(elm.getShortName(), 1);
         }
-        Collections.sort(commonElms);
+        if (commonElms != null) {
+            Collections.sort(commonElms);
+        }
 
     } // end if (user!=null)
 }

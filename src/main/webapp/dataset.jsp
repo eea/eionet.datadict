@@ -758,7 +758,7 @@ else if (mode.equals("add"))
                                     <a rel="nofollow" href="<%=request.getContextPath()%>/doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Upload a document</a>
                                 </li>
                                 <li class="doc">
-                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Open cache</a>
+                                    <a rel="nofollow" href="<%=request.getContextPath()%>/cache?objectId=<%=ds_id%>&amp;objectTypeKey=dst">Open cache</a>
                                 </li>
                             <%}
                         }%>
@@ -926,12 +926,11 @@ else if (mode.equals("add"))
                                                         %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/DocDownload?file=<%=Util.processForDisplay(md5)%>"><img style="border:0" src="<%=request.getContextPath()%>/images/<%=Util.processForDisplay(icon)%>" width="16" height="16" alt="icon"/><%=Util.processForDisplay(title)%></a>
-                                                                <%
-                                                                if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")) {
-                                                                    %><a  href="<%=request.getContextPath()%>/DocUpload?ds_id=<%=ds_id%>&amp;delete=<%=Util.processForDisplay(md5)%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>"><img style="border:0" src="<%=request.getContextPath()%>/images/delete.gif" width="14" height="14"/></a><%
-                                                                }
-                                                                %>
-                                                            </td>
+                                                            <%
+                                                            if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")) {
+                                                                %><a  href="<%=request.getContextPath()%>/DocUpload?ds_id=<%=ds_id%>&amp;delete=<%=Util.processForDisplay(md5)%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>"><img style="border:0" src="<%=request.getContextPath()%>/images/delete.gif" width="14" height="14"/></a><%
+                                                            }
+                                                            %>
                                                         </li>
                                                         <%
                                                     }
@@ -1550,6 +1549,7 @@ else if (mode.equals("add"))
                                                                         <th>Details</th>
                                                                     </tr>
                                                                 </thead>
+                                                                <tbody>
                                                                 <%
                                                                 // rows
                                                                 for (int i=0; i<rodLinks.size(); i++) {
@@ -1573,6 +1573,7 @@ else if (mode.equals("add"))
                                                                     </tr><%
                                                                 }
                                                                 %>
+                                                                </tbody>
                                                             </table>
                                                     <%
                                                 }

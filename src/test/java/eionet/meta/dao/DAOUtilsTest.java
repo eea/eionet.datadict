@@ -1,5 +1,6 @@
 package eionet.meta.dao;
 
+import eionet.meta.ActionBeanUtils;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.DBUnitHelper;
@@ -18,7 +19,7 @@ import java.util.List;
 /**
  * DAOUtils test.
  */
-@SpringApplicationContext("spring-context.xml")
+@SpringApplicationContext("mock-spring-context.xml")
 public class DAOUtilsTest extends UnitilsJUnit4 {
 
 private static  final  String SEEDFILE = "seed-daoutils.xml";
@@ -28,6 +29,7 @@ private static  final  String SEEDFILE = "seed-daoutils.xml";
 
     @BeforeClass
     public static void loadData() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData(SEEDFILE);
     }
 

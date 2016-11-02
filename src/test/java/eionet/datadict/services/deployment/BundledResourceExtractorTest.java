@@ -1,6 +1,6 @@
 package eionet.datadict.services.deployment;
 
-import eionet.datadict.services.impl.io.ClassPathResourceFileProviderImpl;
+import eionet.datadict.services.io.impl.ClassPathResourceFileProviderImpl;
 import java.io.File;
 import java.io.IOException;
 import org.junit.Before;

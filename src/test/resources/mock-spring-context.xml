@@ -15,9 +15,70 @@
     <!-- Scans within the base package of the application for @Components
         to configure as beans -->
     <context:component-scan base-package="eionet.meta, eionet.datadict, eionet.web, eionet.doc" />
-
+    <context:spring-configured/>
+    
+    <bean id="appConfigDefinitionProvider" class="eionet.propertyplaceholderresolver.ConfigurationDefinitionProviderImpl">
+        <constructor-arg index="0">
+            <array>
+                <value>datadict.properties</value>
+                <value>env.properties</value>
+                <value>uit.properties</value>
+                <value>doc.properties</value>
+                <value>rdfexport.properties</value>
+                <value>quartz.properties</value>
+                <value>logging.properties</value>
+                <value>languages.properties</value>
+                <value>testlanguagesbase.properties</value>
+                <value>eionetdir.properties</value>
+                <value>displaytag.properties</value>
+                <value>teXDBMsg.properties</value>
+                <value>StripesResources.properties</value>
+            </array>
+        </constructor-arg>
+    </bean>
+    
+    <bean id="configurationPropertyResolver" class="eionet.propertyplaceholderresolver.ConfigurationPropertyResolverImpl">
+        <constructor-arg ref="appConfigDefinitionProvider" />
+    </bean>
+        
+    <bean id="configurationPostProcessor" class="eionet.propertyplaceholderresolver.spring.EionetPlaceholderConfigurer">
+        <constructor-arg ref="configurationPropertyResolver" />
+    </bean>
+    
+     <bean id="aclProperties" class="eionet.acl.AclProperties">
+        <property name="ownerPermission" value="${owner.permission}" />
+        <property name="anonymousAccess" value="${anonymous.access}" />
+        <property name="authenticatedAccess" value="${authenticated.access}" />
+        <property name="defaultdocPermissions" value="${defaultdoc.permissions}" />
+        <property name="persistenceProvider" value="${persistence.provider}" />
+        <property name="initialAdmin" value="${initial.admin}" />
+        <property name="fileAclfolder" value="${file.aclfolder}" />
+        <property name="fileLocalusers" value="${file.localusers}" />
+        <property name="fileLocalgroups" value="${file.localgroups}" />
+        <property name="filePermissions" value="${file.permissions}" />
+        <property name="dbDriver" value="${db.drv}" />
+        <property name="dbUrl" value="${db.url}" />
+        <property name="dbUser" value="${db.usr}" />
+        <property name="dbPwd" value="${db.psw}" />
+    </bean>
+    
+    <bean id="accessController" class="eionet.acl.AccessController">
+        <constructor-arg index="0" ref="aclProperties" />
+    </bean>
+    
+    <bean id="helpsDbProperties" class="eionet.help.HelpsDbProperties">
+        <property name="dbUser" value="${db.usr}" />
+        <property name="dbPassword" value="${db.psw}" />
+        <property name="dbDriver" value="${db.drv}"/>
+        <property name="dbUrl" value="${db.url}"/>
+    </bean>
+    
+    <bean id="helpsDbPropertiesLoader" class="eionet.help.DbPropertiesLoader">
+        <property name="dbProperties" ref="helpsDbProperties"/>
+    </bean>
+    
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-        destroy-method="close">
+        destroy-method="close" primary="true">
         <property name="driverClassName" value="${db.drv}" />
         <property name="url" value="${db.url}" />
         <property name="username" value="${db.usr}" />
@@ -26,6 +87,17 @@
             connections after 8 hours. -->
         <property name="validationQuery" value="SELECT 1" />
         <property name="testOnBorrow" value="true" />
+    </bean>
+
+    <bean id="nonTxDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${db.drv}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="username" value="${db.usr}"/>
+        <property name="password" value="${db.psw}"/>
+        <!-- The following two properties required because MySQL kills idle
+            connections after 8 hours. -->
+        <property name="validationQuery" value="SELECT 1"/>
+        <property name="testOnBorrow" value="true"/>
     </bean>
 
     <!-- enable the configuration of transactional behavior based on annotations -->
@@ -68,7 +140,12 @@
             </util:properties>
         </property>
     </bean>
+   
+    <bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
+        <property name="dataSource" ref="dataSource" />
+        <property name="changeLog" value="classpath:dd-struct.xml" />
+    </bean>
 
-    <context:property-placeholder location="classpath:datadict.properties" />
+    <util:properties id="quartzProperties" location="classpath:quartz.properties" />
     
 </beans>

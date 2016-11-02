@@ -20,12 +20,16 @@ import org.apache.log4j.Logger;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
+import eionet.meta.DElemAttribute;
 import eionet.meta.DataElement;
+import eionet.meta.DsTable;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.util.RequestMessages;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DsTableHandler extends BaseHandler {
 
@@ -65,7 +69,7 @@ public class DsTableHandler extends BaseHandler {
     /** DAO for data element qyeries. */
     private IDataElementDAO dataElemDao;
     private boolean importMode = false;
-
+    private List<String> attributesToBeCopiedFromCopyTable;
     /**
      *
      * @param conn
@@ -321,7 +325,7 @@ public class DsTableHandler extends BaseHandler {
         PreparedStatement stmt = SQL.preparedStatement(gen.insertStatement(), inParams, conn);
         stmt.executeUpdate();
         stmt.close();
-
+//this point is where the new ds_table is inserted!
         setLastInsertID();
 
         // create row in DST2TBL
@@ -338,6 +342,13 @@ public class DsTableHandler extends BaseHandler {
 
         if (!copy) {
             processAttributes();
+        }
+        else {
+            attributesToBeCopiedFromCopyTable = new ArrayList();
+            processAttributes();
+            copyAttributesFromOtherTable(req.getParameter("copy_tbl_id"));
+            copyTbl2Elem(req.getParameter("copy_tbl_id"), correspNS);
+            
         }
     }
 
@@ -680,6 +691,7 @@ public class DsTableHandler extends BaseHandler {
             if (parName.startsWith(ATTR_PREFIX) && !parName.startsWith(ATTR_MULT_PREFIX)) {
                 String attrValue = req.getParameter(parName);
                 if (attrValue.length() == 0) {
+                    if (copy) attributesToBeCopiedFromCopyTable.add(parName.substring(ATTR_PREFIX.length()));
                     continue;
                 }
                 attrID = parName.substring(ATTR_PREFIX.length());
@@ -777,10 +789,6 @@ public class DsTableHandler extends BaseHandler {
      */
     public boolean existsInDataset(String dstID, String tblIdfier) throws SQLException {
 
-        if (copy) {
-            return false;
-        }
-
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer();
         buf.append("select count(DS_TABLE.TABLE_ID) from DST2TBL ")
@@ -809,10 +817,6 @@ public class DsTableHandler extends BaseHandler {
      * @throws SQLException
      */
     public String existsInDatasetVersions(String dstNamespaceID, String tblIdfier) throws SQLException {
-
-        if (copy) {
-            return null;
-        }
         INParameters inParams = new INParameters();
 
         String qry =
@@ -829,7 +833,23 @@ public class DsTableHandler extends BaseHandler {
     /**
      *
      */
-    public void copyTbl2Elem(String srcTblID) throws SQLException {
+    public void copyAttributesFromOtherTable(String srcTblID) throws SQLException {
+         if (searchEngine == null) {
+            searchEngine = new DDSearchEngine(conn, "");
+        }
+        searchEngine.setUser(user);
+        Vector<DElemAttribute> attributes = searchEngine.getSimpleAttributes(srcTblID, "T");
+        for (String attrId : attributesToBeCopiedFromCopyTable) {
+            for (DElemAttribute attribute : attributes){
+                if (attribute.getID().equals(attrId)) {
+                    this.insertAttribute(attrId, attribute.getValue());
+                    break;
+                }
+            }
+        }
+    }
+    
+    public void copyTbl2Elem(String srcTblID, String newTableNamespace) throws SQLException, Exception {
 
         if (searchEngine == null) {
             searchEngine = new DDSearchEngine(conn, "");
@@ -843,29 +863,62 @@ public class DsTableHandler extends BaseHandler {
 
         for (int i = 0; i < elems.size(); i++) {
             DataElement elem = (DataElement) elems.get(i);
-
+            
             String elem_id = elem.getID();
 
-            Parameters pars = new Parameters();
-            // "copy" is a new mode where exists() is not performed
-            pars.addParameterValue("mode", "copy");
-            pars.addParameterValue("table_id", getLastInsertID());
-            pars.addParameterValue("delem_name", elem.getShortName());
-            pars.addParameterValue("idfier", elem.getIdentifier());
-            pars.addParameterValue("ns", elem.getNamespace().getID());
-            pars.addParameterValue("type", elem.getType());
-            pars.addParameterValue("copy_elem_id", elem_id);
+            //Common element so it should not be re-inserted
+            if (elem.getNamespace().getID() == null) {
+                attachExistingCommonElement(elem, lastInsertID);
+            }
+            else {
 
-            try {
-                DataElementHandler handler = new DataElementHandler(conn, pars, ctx);
-                handler.setUser(user);
-                handler.setVersioning(false);
-                handler.execute();
-            } catch (Exception e) {
-                throw new SQLException(e.toString());
+                Parameters pars = new Parameters();
+                
+                pars.addParameterValue("mode", "copy");
+                pars.addParameterValue("table_id", getLastInsertID());
+                pars.addParameterValue("delem_name", elem.getShortName());
+                pars.addParameterValue("idfier", elem.getIdentifier());
+                pars.addParameterValue("ns", newTableNamespace);
+                pars.addParameterValue("dst_namespace_id", getParentNamespaceID());
+                pars.addParameterValue("type", elem.getType());
+                pars.addParameterValue("copy_elem_id", elem_id);
+                
+                //This parameters are used in order for the DataElementHandler to 
+                //create this specific table structure and not the default one.
+                pars.addParameterValue("copy_exact_table_structure", "Y");
+                pars.addParameterValue("is_mandatory", elem.isMandatoryFlag()?"1":"0");
+                pars.addParameterValue("is_primary_key", elem.isPrimaryKey()?"1":"0");
+                pars.addParameterValue("multival_delimiter", elem.getValueDelimiter());
+                pars.addParameterValue("position_in_table", elem.getPositionInTable());
+                try {
+                    DataElementHandler handler = new DataElementHandler(conn, pars, ctx);
+                    handler.setUser(user);
+                    handler.setVersioning(false);
+                    handler.execute();
+                } catch (Exception e) {
+                    throw new SQLException(e.toString());
+                }
             }
         }
 
+    }
+    
+    private void attachExistingCommonElement(DataElement element, String tableId) throws SQLException{
+        SQLGenerator gen = new SQLGenerator();
+        INParameters inParams = new INParameters();
+       
+        gen.setTable("TBL2ELEM");
+        gen.setFieldExpr("TABLE_ID", inParams.add(tableId, Types.INTEGER));
+        gen.setFieldExpr("DATAELEM_ID", inParams.add(element.getID(), Types.INTEGER));
+        gen.setFieldExpr("MANDATORY", inParams.add(element.isMandatoryFlag(), Types.BOOLEAN));
+        gen.setFieldExpr("PRIM_KEY", inParams.add(element.isPrimaryKey(), Types.BOOLEAN));
+        gen.setFieldExpr("MULTIVAL_DELIM", inParams.add(element.getValueDelimiter(), Types.VARCHAR));
+        gen.setFieldExpr("POSITION", inParams.add(element.getPositionInTable(), Types.INTEGER));
+        
+        PreparedStatement stmt = SQL.preparedStatement(gen.insertStatement(), inParams, conn);
+        System.out.println(stmt.toString());
+        stmt.executeUpdate();
+        stmt.close();
     }
 
     public void setUser(DDUser user) {

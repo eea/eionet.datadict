@@ -4,7 +4,7 @@ import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.AttributeValueDao;
 import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DatasetTableDao;
-import eionet.datadict.dal.VocabularyDAO;
+import eionet.datadict.dal.VocabularyDao;
 import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.model.Attribute;
@@ -32,7 +32,7 @@ public class AttributeDataServiceImpl implements AttributeDataService {
 
     private final AttributeDao attributeDao;
     private final AttributeValueDao attributeValueDao;
-    private final VocabularyDAO vocabularyDao;
+    private final VocabularyDao vocabularyDao;
     private final IVocabularyConceptDAO vocabularyConceptDAO;
     private final IFixedValueDAO fixedValueDao;
     private final DatasetTableDao datasetTableDao;
@@ -40,7 +40,7 @@ public class AttributeDataServiceImpl implements AttributeDataService {
     
     @Autowired
     public AttributeDataServiceImpl
-        (AttributeDao attributeDao, AttributeValueDao attributeValueDao, VocabularyDAO vocabularyDao, 
+        (AttributeDao attributeDao, AttributeValueDao attributeValueDao, VocabularyDao vocabularyDao, 
                 IVocabularyConceptDAO vocabularyConceptDAO, IFixedValueDAO fixedValueDao, 
                 DatasetTableDao datasetTableDao, DataElementDao dataElementDao) {
         this.attributeDao = attributeDao;

@@ -32,7 +32,7 @@ import org.springframework.jdbc.support.KeyHolder;
  * @author Aliki Kopaneli
  */
 @Repository
-public class AttributeDaoImpl extends JdbcRepositoryBase implements AttributeDao {
+public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
 
     @Autowired
     public AttributeDaoImpl(DataSource dataSource) {

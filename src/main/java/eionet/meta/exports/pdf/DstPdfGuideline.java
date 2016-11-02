@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -991,22 +990,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see eionet.meta.exports.CachableIF#clearCache(java.lang.String)
-     */
-    @Override
-    public void clearCache(String id) throws Exception {
-
-        String fn = deleteCacheEntry(id, conn);
-        File file = new File(cachePath + fn);
-        if (file.exists() && file.isFile()) {
-            file.delete();
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
+     *      
      * @see eionet.meta.exports.CachableIF#setCachePath(java.lang.String)
      */
     @Override
@@ -1100,7 +1084,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
      * @throws SQLException
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    protected static int storeCacheEntry(String id, String fn, Connection conn) throws SQLException {
+    protected int storeCacheEntry(String id, String fn, Connection conn) throws SQLException {
 
         if (id == null || fn == null || conn == null) {
             return -1;
@@ -1139,50 +1123,4 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         }
     }
 
-    /**
-     * 
-     * @param id
-     * @return
-     * @throws SQLException
-     */
-    protected static String deleteCacheEntry(String id, Connection conn) throws SQLException {
-
-        if (id == null || conn == null) {
-            return null;
-        }
-
-        INParameters inParams = new INParameters();
-        StringBuffer buf =
-                new StringBuffer("select FILENAME from CACHE where ").append("OBJ_TYPE='dst' and ARTICLE='pdf' and OBJ_ID=")
-                        .append(inParams.add(id, Types.INTEGER));
-
-        String fn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                fn = rs.getString(1);
-                inParams = new INParameters();
-                buf =
-                        new StringBuffer("delete from CACHE where ").append("OBJ_TYPE='dst' and ARTICLE='pdf' and OBJ_ID=")
-                                .append(inParams.add(id, Types.INTEGER));
-                stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-                stmt.executeUpdate();
-            }
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-            }
-        }
-
-        return fn;
-    }
 }

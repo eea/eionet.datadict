@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
  * @author Aliki Kopaneli
  */
 @Repository
-public class NamespaceDaoImpl extends JdbcRepositoryBase implements NamespaceDao {
+public class NamespaceDaoImpl extends JdbcDaoBase implements NamespaceDao {
 
     @Autowired
     public NamespaceDaoImpl(DataSource dataSource) {

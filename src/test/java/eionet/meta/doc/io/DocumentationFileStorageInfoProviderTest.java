@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author Nikolaos Nakas <nn@eworx.gr>
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring-context.xml"})
+@ContextConfiguration(locations = {"classpath:mock-spring-context.xml"})
 public class DocumentationFileStorageInfoProviderTest {
     
     @Autowired

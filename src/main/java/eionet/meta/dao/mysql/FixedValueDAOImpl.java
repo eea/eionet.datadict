@@ -74,6 +74,17 @@ public class FixedValueDAOImpl extends GeneralDAOImpl implements IFixedValueDAO 
     }
 
     @Override
+    public int delete(FixedValue.OwnerType ownerType, List<Integer> ownerIds) {
+        String sql = "delete from FXV where OWNER_TYPE = :ownerType and OWNER_ID in (:ownerIds)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ownerType", ownerType.toString());
+        params.put("ownerIds", ownerIds);
+
+        return this.getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+    @Override
     public void update(FixedValue fixedValue){
         StringBuilder sql = new StringBuilder();
         sql.append("update FXV ");

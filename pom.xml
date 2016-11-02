@@ -9,11 +9,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <env>local</env>
+        <env>default</env>
         <java_version>1.6</java_version>
         <spring.version>3.1.1.RELEASE</spring.version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
-        <liquibase.changeLogFile>sql/dd-struct.xml</liquibase.changeLogFile>
         <sesame.openrdf.version>2.7.10</sesame.openrdf.version>
         <jackson-version>2.4.0</jackson-version>
     </properties>
@@ -138,34 +137,63 @@
                             <includes>
                                 <include>dd-struct.xml</include>
                                 <include>dd-seeddata.xml</include>
+                                <include>dd-struct-and-seeddata.xml</include>
                             </includes>
                         </resource>
                     </webResources>
                 </configuration>
             </plugin>
-
+            
             <!-- Update database tables -->
             <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>2.0.5</version>
-                <configuration>
-                    <!-- Default configuration for application database. -->
-                    <propertyFile>target/classes/liquibase.properties</propertyFile>
-                    <changeLogFile>${liquibase.changeLogFile}</changeLogFile>
-                </configuration>
                 <executions>
                     <execution>
-                        <id>Update test database</id>
-                        <phase>process-test-resources</phase>
+                        <id>drop-before-tests</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>dropAll</goal>
+                        </goals>
                         <configuration>
                             <skip>${maven.test.skip}</skip>
                             <propertyFile>target/test-classes/liquibase.properties</propertyFile>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>copy-local-properties</id>
+                        <phase>prepare-package</phase>
                         <goals>
-                            <goal>dropAll</goal>
-                            <goal>update</goal>
+                            <goal>run</goal>
                         </goals>
+                        <configuration>
+                            <tasks>
+                                <copy file="${basedir}/${env}.properties"
+                                      toFile="${project.build.directory}/classes/env.properties" />
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-test-properties</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <copy file="${basedir}/${env}.properties"
+                                      toFile="${project.build.directory}/test-classes/env.properties" />
+                            </tasks>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -233,7 +261,7 @@
                 </configuration>
             </plugin>
         </plugins>
-
+        
         <!-- filters for src/main/resources and src/test/resources -->
 
         <filters>
@@ -246,7 +274,6 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <filtering>true</filtering>
                 <includes>
                     <include>*.properties</include>
                 </includes>
@@ -312,6 +339,13 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>*.properties</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>sql</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>dd-struct.xml</include>
                 </includes>
             </testResource>
         </testResources>
@@ -524,7 +558,7 @@
         <dependency>
             <groupId>eionet</groupId>
             <artifactId>acl</artifactId>
-            <version>2.0</version>
+            <version>4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eionet</groupId>
@@ -544,14 +578,19 @@
         <dependency>
             <groupId>eionet</groupId>
             <artifactId>help</artifactId>
-            <version>2.0</version>
+            <version>4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eionet</groupId>
             <artifactId>eionet-dir</artifactId>
-            <version>2.5</version>
+            <version>3.2-SNAPSHOT</version>
         </dependency>
-
+        <dependency>
+            <groupId>eionet</groupId>
+            <artifactId>property-placeholder-resolver</artifactId>
+            <version>1.0</version>
+        </dependency>
+        
         <!--Used for output (PDF mostly)-->
         <dependency>
             <groupId>com.lowagie</groupId>
@@ -730,6 +769,12 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

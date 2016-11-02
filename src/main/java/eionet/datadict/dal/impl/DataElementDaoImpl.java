@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class DataElementDaoImpl extends JdbcRepositoryBase implements DataElementDao {
+public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
 
     @Autowired
     public DataElementDaoImpl(DataSource dataSource) {

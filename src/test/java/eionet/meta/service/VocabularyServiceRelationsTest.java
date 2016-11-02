@@ -22,6 +22,7 @@
 
 package eionet.meta.service;
 
+import eionet.meta.ActionBeanUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,7 @@ import eionet.meta.dao.domain.VocabularyConcept;
  *
  * @author Kaido Laine
  */
-@SpringApplicationContext("spring-context.xml")
+@SpringApplicationContext("mock-spring-context.xml")
 // @DataSet({"seed-vocabularies.xml"})
 public class VocabularyServiceRelationsTest extends UnitilsJUnit4 {
 
@@ -55,6 +56,7 @@ public class VocabularyServiceRelationsTest extends UnitilsJUnit4 {
 
     @BeforeClass
     public static void loadData() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData("seed-vocabularyrelations.xml");
     }
 

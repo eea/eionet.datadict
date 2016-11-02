@@ -7,7 +7,6 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Search data elements" currentSection="dataElements">
 
     <stripes:layout-component name="head">
-        <script type="text/javascript" src="<%=request.getContextPath()%>/helpPopup.js"></script>
         <script type="text/javascript">
         // <![CDATA[
 

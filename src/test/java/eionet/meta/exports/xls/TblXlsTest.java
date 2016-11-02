@@ -16,12 +16,14 @@ import org.junit.Assert;
 import eionet.DDDatabaseTestCase;
 import eionet.meta.DDSearchEngine;
 import eionet.util.sql.ConnectionUtil;
+import org.unitils.spring.annotation.SpringApplicationContext;
 
 /**
  * 
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus@tripledev.ee">jaanus@tripledev.ee</a>
  * 
  */
+@SpringApplicationContext("mock-spring-context")
 public class TblXlsTest extends DDDatabaseTestCase {
 
     protected Connection conn = null;
@@ -65,10 +67,8 @@ public class TblXlsTest extends DDDatabaseTestCase {
     public void testStoreAndDelete() {
         try {
             String fileName = "test.txt";
-            int i = TblXls.storeCacheEntry("999999", fileName, conn);
+            int i = classInstanceUnderTest.storeCacheEntry("999999", fileName, conn);
             Assert.assertTrue(i > 0);
-            String s = TblXls.deleteCacheEntry("999999", conn);
-            Assert.assertEquals(fileName, s);
         } catch (Exception e) {
             Assert.fail("Was not expecting any exceptions, but catched " + e.toString());
         }

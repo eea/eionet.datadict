@@ -16,12 +16,14 @@ import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  *
  * @author Jaanus Heinlaid
  */
 @Component
+@DependsOn ("contextAware")
 public class SchemaRepository {
 
     /** */
