@@ -2595,7 +2595,9 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <modifySql dbms="mysql">
             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
         </modifySql>
-    <changeSet author="kopanalk" id="rev-150">
+    </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-187">
         <comment>
             Add display type vocabulary for attributes linked to vocabularies
         </comment>
@@ -2605,7 +2607,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <addDefaultValue tableName="M_ATTRIBUTE" columnName="DISP_TYPE" defaultValue="text"/>
     </changeSet>
     
-    <changeSet author="kopanalk" id="rev-151">
+    <changeSet author="kopanalk" id="rev-188">
         <comment>
             Add a table used for linking attribute definitions to vocabularies
         </comment>
