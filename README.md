@@ -27,8 +27,9 @@ The necessary versions are as follows:
 * Tomcat 6 or higher
 * GIT 1.8.4 or higher
 * MySql 5.1.71 or higher
+* (Optional) Docker 1.6 or higher
 
-#### Download DD source code
+### Download DD source code
 
 Create build directory for source code and get code from GitHub
 ```sh
@@ -38,67 +39,76 @@ $ git clone https://github.com/eea/eionet.datadict.git
 
 NB! The resulting /var/local/build/eionet.datadict directory will be denoted  below as $CHECKOUT_HOME
 
-#### Adjust properties
-Create _local.properties_ file by making a copy of _default.properties_.
-```sh
-$ cd $CHECKOUT_HOME
-$ cp default.properties local.properties
-```
+### Build the application
 
-In the freshly created _local.properties_ file, change property values as  appropriate for your environment. You will find meanings of every property  from inside the file as comments.
-
-#### Database
-Create DD database and database user in MySql matching the db configuration values in _local.properties_
-```sh
-$ mysql -u root -p
-```
-
-```sql
-create database DataDict;
-CREATE USER 'dduser'@'localhost' IDENTIFIED BY 'password-here';
-GRANT ALL PRIVILEGES ON DataDict.* TO 'dduser'@'localhost';
-```
-
-#### Unit testing
-
-The unit test mechanism will install its own embedded  database and create the tables when you execute them. Note that the MySQL database will keep running afterwards. You can run individual tests with: -Dtest=DatasetImportHandlerTest
-```sh
-$ cd $CHECKOUT_HOME
-$ mvn -Denv=unittest -Dmaven.test.skip=false test
-```
-
-#### Custom headers and footers configuration (OPTIONAL)
-Revise $CHECKOUT_HOME/custom/*.txt files for modifying the content of headers and footers in DD web pages texts and links.  You will find guidelines from inside $CHECKOUT_HOME/custom/README.txt.
-
-#### Build the DD web application
-
-The application install package is built with maven
 ```sh
 $ cd $CHECKOUT_HOME
 $ mvn -Dmaven.test.skip=true clean install
 ```
 
-#### Import initial Seed data
+##### Custom headers and footers configuration (OPTIONAL):
 
-Create  initial database structure
+Revise $CHECKOUT_HOME/custom/*.txt files for modifying the content of headers and footers in DD web pages texts and links.  You will find guidelines from inside $CHECKOUT_HOME/custom/README.txt.
+
+
+### Local tomcat deployment
+
+##### 1. Set up DB and DB user
+
+Create the DataDict database and the DataDict user identified by a password.
+
+```sh
+$ mysql -u root -p
+```
+
+```sql
+CREATE DATABASE DataDict;
+CREATE USER 'dduser-here'@'localhost' IDENTIFIED BY 'password-here';
+GRANT ALL PRIVILEGES ON DataDict.* TO 'dduser-here'@'localhost';
+```
+
+##### 2. Configure environment variables for tomcat:
+
+In the env_setup/local/catalina_opts.txt file you will find all the CATALINA_OPTS that need to be configured with 
+the specific values for your environment. Set these variables for your local tomcat installation.
+
+##### 3. Deploy on tomcat
+
+Place the resulting $CHECKOUT_HOME/target/datadict.war into Tomcat's webapps directory, and start Tomcat.
+At tomcat startup liquibase will create the initial DB structure.
+
+### Unit tests
+
+The unit test mechanism will install its own embedded database and create the tables when you execute them. Note that the embedded database will keep running afterwards. You can run individual tests with: -Dtest=DatasetImportHandlerTest
 ```sh
 $ cd $CHECKOUT_HOME
-$ mvn liquibase:update
+$ mvn -Denv=unittest -Dmaven.test.skip=false test
 ```
-Import seed data required for DD to operate
+
+### Build for docker
+
+Build the application as already described and then create a docker image by executing the docker build command in a directory containing both the Dockerfile and the datadict.war. If no tag is provided then the image will be tagged as "latest".
+The docker file can be found at the env_setup/docker_build directory.
+
 ```sh
-$ mvn -Dliquibase.changeLogFile=sql/dd-seeddata.xml liquibase:update
+$ mkdir docker_build
+$ cd docker_build
+$ cp $CHECKOUT_HOME/target/datadict.war .
+$ cp $CHECKOUT_HOME/env_setup/docker_build/Dockerfile .
+$ docker build -t eeacms/datadict:tag-here .
+```
+[Optional] In case you need to push the image you have created to DockerHub:
+
+```sh
+$ docker push eeacms/datadict:tag-here
 ```
 
-#### Register Eionet's GlobalSign CA certificates in your JVM. (OPTIONAL)
+### Rancher/Docker deployment
 
-This step is required for making the EEA's Central Authentication Service (CAS) work with your DD. You need to register Eionet certificates in the JVM that runs the Tomcat where you deploy the DD. A small Java executable that does it, and a README on how to use it can be found here: https://svn.eionet.europa.eu/repositories/Reportnet/CASServer/contrib/installcert
+In the env_setup/docker_rancher directory you can find example files to be renamed and used as docker-compose.yml files for docker/rancher.
+Both use the docker.env file for runtime properties configuration.
 
-
-#### Deployment
-Place the resulting $CHECKOUT_HOME/target/datadict.war into Tomcat's webapps directory, and start Tomcat.
-
-For more detailed instructions see "docs/DD Installation Manual.odt"
+*Note: After running the docker-compose up or the rancher-compose up commands you have to create the DB and the corresponding user-password and restart the tomcat container.*
 
 ### Additional applications for modifying DD access permissions and help texts
 
@@ -115,11 +125,5 @@ Installing these applications is done by similar steps:
 5. Rename acladmin.properties.dist/helpadmin.properties.dist to acladmin.properties/helpadmin.properties in ROOT/WEB-INF/classes folder and revise the content of the properties files
 6. Rename *.acl.dist files to *.acl files in acladmin_contents/acls folder (only in AclAdminTool) and revise the contents of acladmin.group file
   More detailed information about ACL's is available at: http://taskman.eionet.europa.eu/projects/reportnet/wiki/AccessControlLists
-
 7. Copy the created war files to tomcat webapps folder and start tomcat
-Please find more detailed information in documentation of these applications
-
-REFERENCES for unit testing:
- - http://realsolve.co.uk/site/tech/dbunit-quickstart.php
- - http://www.onjava.com/pub/a/onjava/2004/01/21/dbunit.html
- - http://www.dbunit.org/
+Please find more detailed information in documentation of these applications.

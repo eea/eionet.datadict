@@ -1634,3 +1634,30 @@
 				width: 100%;
 			}
 		}
+                
+/* upload rdf dialog */
+
+        #uploadRDFDialog .more-options {
+            border: 1px dashed black;
+            padding: 0;
+            margin: 1.5em 2em;
+        }
+        
+        #uploadRDFDialog .more-options .subtitle{
+            background: #a5ced1;
+            padding: 0.5em 0 0.5em 2em;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        #uploadRDFDialog .more-options .strategies{
+            padding: 0 0.5em 0.5em 2em;
+        }
+        
+        #uploadRDFDialog .more-options .strategies div{
+            padding: 0.5em 0;
+        }
+        
+        #uploadRDFDialog .more-options .strategies div label{
+            font-weight: normal;
+        }

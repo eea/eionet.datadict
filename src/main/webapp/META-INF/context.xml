@@ -1,5 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context docBase="C:/projects/eionet.datadict/target/datadict" path="/datadict">
-  <Resource auth="Container" driverClassName="${db.driver}" maxActive="100" maxIdle="30" maxWait="10000" name="jdbc/datadict" password="${db.password}" testOnBorrow="true" type="javax.sql.DataSource" url="${db.jdbcurl.encoded}" username="${db.user}" validationQuery="SELECT 1">
-    </Resource>
-</Context>
+<Context path="/datadict"/>

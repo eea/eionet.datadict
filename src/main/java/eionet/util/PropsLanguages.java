@@ -3,7 +3,6 @@ package eionet.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -14,8 +13,6 @@ import org.apache.commons.lang.StringUtils;
  */
 public final class PropsLanguages {
     /* Constants */
-    /** properties file name. */
-    private static final String PROP_FILE_NAME = "languages";
     /** language label key. */
     private static final String LANGUAGE_LABEL_KEYS = "languages.labels";
     /** language code key. */
@@ -66,7 +63,7 @@ public final class PropsLanguages {
      */
     public static synchronized PropsLanguages[] getValues() {
         if (PropsLanguages.values == null) {
-            PropsLanguages.values = getValuesFrom(PropsLanguages.PROP_FILE_NAME);
+            PropsLanguages.values = getPropertyValues();
         }
         return Arrays.copyOf(PropsLanguages.values, PropsLanguages.values.length);
     } // end of static method getValues
@@ -74,14 +71,12 @@ public final class PropsLanguages {
     /**
      * Reads and returns values from given properties file. This method re-parse file every time called.
      *
-     * @param bundleFile
-     *            bundle file name
+     * 
      * @return languages from given properties file
      */
-    public static synchronized PropsLanguages[] getValuesFrom(String bundleFile) {
-        ResourceBundle bundle = ResourceBundle.getBundle(bundleFile);
-        String[] labels = bundle.getString(PropsLanguages.LANGUAGE_LABEL_KEYS).split(PropsLanguages.SPLIT_REGEX);
-        String[] codes = bundle.getString(PropsLanguages.LANGUAGE_CODE_KEYS).split(PropsLanguages.SPLIT_REGEX);
+    public static synchronized PropsLanguages[] getPropertyValues() {
+        String[] labels = Props.getProperty(PropsLanguages.LANGUAGE_LABEL_KEYS).split(PropsLanguages.SPLIT_REGEX);
+        String[] codes = Props.getProperty(PropsLanguages.LANGUAGE_CODE_KEYS).split(PropsLanguages.SPLIT_REGEX);
         List<PropsLanguages> languageList = new ArrayList<PropsLanguages>();
         if (labels.length == codes.length) {
             for (int i = 0; i < codes.length; i++) {
@@ -96,6 +91,6 @@ public final class PropsLanguages {
         languageList.toArray(languageValues);
 
         return languageValues;
-    } // end of static method getValuesFrom
+    } // end of static method getPropertyValues
 
 } // end of class PropsLanguages

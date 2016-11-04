@@ -42,7 +42,7 @@ import java.util.List;
  *
  * @author enver
  */
-@SpringApplicationContext("spring-context.xml")
+@SpringApplicationContext("mock-spring-context.xml")
 public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
 
     /**

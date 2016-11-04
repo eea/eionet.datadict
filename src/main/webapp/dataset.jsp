@@ -824,7 +824,7 @@ else if (mode.equals("add"))
                                     </a>
                                 </li>
                                 <li class="doc">
-                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Open cache</a>
+                                    <a rel="nofollow" href="<%=request.getContextPath()%>/cache?objectId=<%=ds_id%>&amp;objectTypeKey=dst">Open cache</a>
                                 </li>
                             <%}
                         }%>
@@ -992,12 +992,11 @@ else if (mode.equals("add"))
                                                         %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/DocDownload?file=<%=Util.processForDisplay(md5)%>"><img style="border:0" src="<%=request.getContextPath()%>/images/<%=Util.processForDisplay(icon)%>" width="16" height="16" alt="icon"/><%=Util.processForDisplay(title)%></a>
-                                                                <%
-                                                                if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")) {
-                                                                    %><a  href="<%=request.getContextPath()%>/DocUpload?ds_id=<%=ds_id%>&amp;delete=<%=Util.processForDisplay(md5)%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>"><img style="border:0" src="<%=request.getContextPath()%>/images/delete.gif" width="14" height="14"/></a><%
-                                                                }
-                                                                %>
-                                                            </td>
+                                                            <%
+                                                            if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")) {
+                                                                %><a  href="<%=request.getContextPath()%>/DocUpload?ds_id=<%=ds_id%>&amp;delete=<%=Util.processForDisplay(md5)%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>"><img style="border:0" src="<%=request.getContextPath()%>/images/delete.gif" width="14" height="14"/></a><%
+                                                            }
+                                                            %>
                                                         </li>
                                                         <%
                                                     }
@@ -1151,33 +1150,35 @@ else if (mode.equals("add"))
 
                                                             } %>
                                                         </select>
-                                                        <c:set var="display" value="none"/>
-                                                        <c:set var="successorName" value="Not defined yet"/>
-                                                        <c:set var="enableSuccessorLink" value="false"/>
-                                                        <c:set var="successorId" value=""/>
-                                                        <c:set var="checkedoutCopyId" value="<%=dataset.getCheckedoutCopyID()%>"/>
-                                                        <%if (successorDataset != null){ %>
-                                                            <c:set var="successorName" value="<%=successorDataset.getShortName()%>"/>
-                                                            <c:set var="enableSuccessorLink" value="true"/> 
-                                                            <c:set var="successorId" value="<%=successorDataset.getID()%>"/>
+                                                        <%if ("edit".equals(mode)){%>
+                                                            <c:set var="display" value="none"/>
+                                                            <c:set var="successorName" value="Not defined yet"/>
+                                                            <c:set var="enableSuccessorLink" value="false"/>
+                                                            <c:set var="successorId" value=""/>
+                                                            <c:set var="checkedoutCopyId" value="<%=dataset.getCheckedoutCopyID()%>"/>
+                                                            <%if (successorDataset != null){ %>
+                                                                <c:set var="successorName" value="<%=successorDataset.getShortName()%>"/>
+                                                                <c:set var="enableSuccessorLink" value="true"/> 
+                                                                <c:set var="successorId" value="<%=successorDataset.getID()%>"/>
+                                                            <%}%>
+                                                            <c:if test="${selected eq 'Superseded'}">
+                                                                <c:set var="display" value="inline"/>
+                                                            </c:if>
+                                                            <div id="successor" style="display: ${display};">
+                                                                &emsp;
+                                                                <small>Replaced by: </small>
+                                                                <a id="successorName" href="<%=request.getContextPath()%>/datasets/${successorId}" onclick="return ${enableSuccessorLink}">
+                                                                    <i>
+                                                                        <c:out value="${successorName}"/>
+                                                                    </i>
+                                                                </a>
+                                                                &emsp;
+                                                                <a href="javascript:linkDataset(${checkedoutCopyId})">
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/edit.gif" width="16" height="16" alt=""/>
+                                                                </a>
+                                                                <input type="hidden" name="successor_id" value="${successorId}"/>
+                                                            </div>
                                                         <%}%>
-                                                        <c:if test="${selected eq 'Superseded'}">
-                                                            <c:set var="display" value="inline"/>
-                                                        </c:if>
-                                                        <div id="successor" style="display: ${display};">
-                                                            &emsp;
-                                                            <small>Replaced by: </small>
-                                                            <a id="successorName" href="<%=request.getContextPath()%>/datasets/${successorId}" onclick="return ${enableSuccessorLink}">
-                                                                <i>
-                                                                    <c:out value="${successorName}"/>
-                                                                </i>
-                                                            </a>
-                                                            &emsp;
-                                                            <a href="javascript:linkDataset(${checkedoutCopyId})">
-                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/edit.gif" width="16" height="16" alt=""/>
-                                                            </a>
-                                                            <input type="hidden" name="successor_id" value="${successorId}"/>
-                                                        </div>
                                                             <%
                                                     }
                                                     %>
@@ -1638,6 +1639,7 @@ else if (mode.equals("add"))
                                                                         <th>Details</th>
                                                                     </tr>
                                                                 </thead>
+                                                                <tbody>
                                                                 <%
                                                                 // rows
                                                                 for (int i=0; i<rodLinks.size(); i++) {
@@ -1661,6 +1663,7 @@ else if (mode.equals("add"))
                                                                     </tr><%
                                                                 }
                                                                 %>
+                                                                </tbody>
                                                             </table>
                                                     <%
                                                 }

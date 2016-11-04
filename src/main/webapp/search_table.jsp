@@ -184,7 +184,7 @@ else {
     <div id="pagehead">
         <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
         <div id="networktitle">Eionet</div>
-        <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
+        <div id="sitetitle">${ddfn:getProperty("app.displayName")}</div>
         <div id="sitetagline">This service is part of Reportnet</div>
     </div>
     <%
@@ -374,7 +374,7 @@ else {
                         }
                     }
 
-                    if (addCriteria.size()>0){
+                    if (addCriteria.size()>0 && !isPopup){
                         %>
                         <tr>
                             <td colspan="4" style="text-align:right">

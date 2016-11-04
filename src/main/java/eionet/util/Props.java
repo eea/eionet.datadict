@@ -4,16 +4,23 @@
 package eionet.util;
 
 import eionet.meta.DDRuntimeException;
+import eionet.meta.spring.SpringApplicationContext;
+import eionet.propertyplaceholderresolver.CircularReferenceException;
+import eionet.propertyplaceholderresolver.ConfigurationDefinitionProvider;
+import eionet.propertyplaceholderresolver.ConfigurationDefinitionProviderImpl;
+import eionet.propertyplaceholderresolver.ConfigurationPropertyResolver;
+import eionet.propertyplaceholderresolver.ConfigurationPropertyResolverImpl;
+import eionet.propertyplaceholderresolver.UnresolvedPropertyException;
+import eionet.propertyplaceholderresolver.util.ConfigurationLoadException;
+import java.util.HashSet;
 import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.Set;
 
 /**
  * Utility class for retrieving the configured properties of this application.
@@ -22,16 +29,12 @@ import java.util.ResourceBundle;
  */
 public class Props implements PropsIF {
 
+    public static ConfigurationPropertyResolver configurationPropertyResolver;
     /**
      * Static logger for this class.
      */
     private static final Logger LOGGER = Logger.getLogger(Props.class);
-
-    /**
-     * The resource bundle where to look for the configured properties.
-     */
-    private ResourceBundle bundle = null;
-
+    
     /**
      * A hash-table of default values for the properties. To be initialized at first required instance.
      */
@@ -48,30 +51,23 @@ public class Props implements PropsIF {
      */
     @SuppressWarnings("rawtypes")
     protected Props() {
-
-        defaults = new Hashtable();
-        setDefaults(defaults);
-
-        try {
-            bundle = ResourceBundle.getBundle(getBundleName());
-        } catch (MissingResourceException mre) {
-            LOGGER.warn("Properties file " + getBundleName() + ".properties not found. Using defaults.");
-        }
-
-        String workingLanguage = StringUtils.trimToNull(getPropertyInternal(DD_WORKING_LANGUAGE_KEY));
-        boolean isValidWorkingLanguage = false;
-        try {
-            Locale locale = LocaleUtils.toLocale(workingLanguage);
-            if (locale != null) {
-                isValidWorkingLanguage = StringUtils.isNotBlank(locale.getLanguage());
+            configurationPropertyResolver = SpringApplicationContext.getBean(ConfigurationPropertyResolverImpl.class);
+            defaults = new Hashtable();
+            setDefaults(defaults);
+            String workingLanguage;
+            workingLanguage = StringUtils.trimToNull(getPropertyInternal(DD_WORKING_LANGUAGE_KEY));
+            boolean isValidWorkingLanguage = false;
+            try {
+                Locale locale = LocaleUtils.toLocale(workingLanguage);
+                if (locale != null) {
+                    isValidWorkingLanguage = StringUtils.isNotBlank(locale.getLanguage());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (!isValidWorkingLanguage) {
-            LOGGER.warn("Working language is not valid: '" + workingLanguage + "'");
-        }
+            if (!isValidWorkingLanguage) {
+                LOGGER.warn("Working language is not valid: '" + workingLanguage + "'");
+            }
 
     }
 
@@ -93,11 +89,19 @@ public class Props implements PropsIF {
      *
      * @return The enumeration.
      */
-    @SuppressWarnings("rawtypes")
-    public static synchronized Enumeration getPropertyNames() {
-        return Props.getInstance().getBundle().getKeys();
+    public static synchronized Set<String> getPropertyNames() {
+        Set<String> propertyNames = new HashSet();
+        try {
+            ConfigurationDefinitionProvider configurationDefinitionProvider = 
+            SpringApplicationContext.getContext().getBean(ConfigurationDefinitionProviderImpl.class);
+            propertyNames.addAll(configurationDefinitionProvider.getConfigurationDefinition().keySet());
+        } catch (ConfigurationLoadException ex) {
+            LOGGER.warn("Error detected while loading the configuration.");
+        } finally {
+            propertyNames.addAll(System.getProperties().stringPropertyNames());
+        }
+        return propertyNames;
     }
-
     /**
      * Returns the value of the given property. If no property is found, the default is returned if one exists. If no default is
      * found either, returns null.
@@ -106,7 +110,7 @@ public class Props implements PropsIF {
      * @return The value.
      */
     public static synchronized String getProperty(String name) {
-        return Props.getInstance().getPropertyInternal(name);
+       return Props.getInstance().getPropertyInternal(name);
     }
 
     /**
@@ -119,7 +123,8 @@ public class Props implements PropsIF {
     public static synchronized int getIntProperty(String name) {
 
         Props propsInstance = Props.getInstance();
-        String stringValue = propsInstance.getPropertyInternal(name);
+        String stringValue;
+        stringValue = propsInstance.getPropertyInternal(name);
         // If string value is null, then it means it wasn't configured and no default was found either.
         try {
             return Integer.parseInt(stringValue);
@@ -136,7 +141,6 @@ public class Props implements PropsIF {
      * @return The value.
      */
     public static String getRequiredProperty(String name) {
-
         String value = Props.getInstance().getPropertyInternal(name);
         if (value == null || value.trim().length() == 0) {
             throw new DDRuntimeException("Failed to find required property: " + name);
@@ -150,33 +154,16 @@ public class Props implements PropsIF {
      * @param name Given property name.
      * @return The value.
      */
-    protected final String getPropertyInternal(String name) {
-
-        String value = null;
-        if (bundle != null) {
-            try {
-                value = bundle.getString(name);
-            } catch (MissingResourceException mre) {
-                // Missing property is not considered a problem.
-                // If a property is mandatory, use getRequiredProperty() that throws proper exception.
-                LOGGER.info("Could not find property " + name + " in " + getBundleName());
-            }
+    protected final String getPropertyInternal(String name)  {
+        String value;
+        try {
+            value = configurationPropertyResolver.resolveValue(name);
+            return value;
+        } catch (UnresolvedPropertyException ex) {
+            return (String) defaults.get(name);
+        } catch (CircularReferenceException ex) {
+            return (String) defaults.get(name);
         }
-
-        if (value == null) {
-            value = (String) defaults.get(name);
-        } else {
-            value = value.trim();
-
-            // If the value looks like a property placeholder, then use default.
-            if (value.startsWith("${") && value.endsWith("}")) {
-                if (defaults.containsKey(name)) {
-                    value = (String) defaults.get(name);
-                }
-            }
-        }
-
-        return value;
     }
 
     /**
@@ -188,7 +175,9 @@ public class Props implements PropsIF {
      */
     public static synchronized Long getTimePropertyMilliseconds(final String key, Long defaultValue) {
         Long longValue = defaultValue;
-        String value = Props.getInstance().getPropertyInternal(key);
+        String value;
+        value = Props.getInstance().getPropertyInternal(key);
+        
         value = StringUtils.trimToEmpty(value);
         if (StringUtils.isNotEmpty(value)) {
             int coefficient = 1;
@@ -251,25 +240,7 @@ public class Props implements PropsIF {
         defaults.put(DD_VOCABULARY_API_JWT_TIMEOUT_IN_MINUTES, DD_VOCABULARY_API_JWT_TIMEOUT_DEFAULT_VALUE_IN_MINUTES);
         defaults.put(DD_VOCABULARY_ADI_JWT_ALGORITHM, DD_VOCABULARY_ADI_JWT_ALGORITHM_DEFAULT_VALUE);
     }
-
-    /**
-     * Returns the name of the resource bundle where the properties are looked for.
-     *
-     * @return The resource bundle name.
-     */
-    protected String getBundleName() {
-        return PROP_FILE;
-    }
-
-    /**
-     * Returns the resource bundle where the properties are looked for.
-     *
-     * @return The bundle.
-     */
-    protected ResourceBundle getBundle() {
-        return bundle;
-    }
-
+    
     /**
      * Getter for the defaults.
      *
@@ -290,5 +261,6 @@ public class Props implements PropsIF {
 
         String useCentralAuthenticationService = getProperty(USE_CENTRAL_AUTHENTICATION_SERVICE);
         return StringUtils.isBlank(useCentralAuthenticationService) || !useCentralAuthenticationService.equals("false");
-    }
+    }  
+    
 }

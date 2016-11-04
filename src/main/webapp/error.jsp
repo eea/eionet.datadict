@@ -2,6 +2,7 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.HashMap"%>
 <%@page contentType="text/html;charset=UTF-8" import="eionet.meta.DDUser,eionet.util.Util,org.apache.commons.lang.*"%>
+<%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
@@ -29,7 +30,7 @@ if (isPopup){
     <div id="pagehead">
         <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
         <div id="networktitle">Eionet</div>
-        <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
+        <div id="sitetitle">${ddfn:getProperty("app.displayName")}</div>
         <div id="sitetagline">This service is part of Reportnet</div>
     </div> <!-- pagehead -->
     <div id="workarea">

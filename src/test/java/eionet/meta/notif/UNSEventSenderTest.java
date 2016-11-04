@@ -15,15 +15,22 @@ import org.junit.Test;
 import eionet.meta.DataElement;
 import eionet.meta.Dataset;
 import eionet.meta.Namespace;
+import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.unitils.UnitilsJUnit4;
+import org.unitils.spring.annotation.SpringBean;
+import org.unitils.spring.annotation.SpringBeanByType;
 
 /**
  * Tests for the {@link UNSEventSender}.
  *
  * @author jaanus
  */
-public class UNSEventSenderTest {
+@org.unitils.spring.annotation.SpringApplicationContext("mock-spring-context.xml")
+public class UNSEventSenderTest extends UnitilsJUnit4{
 
     /**
      * @throws InterruptedException
@@ -31,11 +38,10 @@ public class UNSEventSenderTest {
      */
     @Test
     public void testCommonElementDefinitionChanged() throws InterruptedException {
-
+        
         DataElement elm = mockCommonDataElement();
         String eventType = Subscriber.COMMON_ELEMENT_CHANGED_EVENT;
         String user = "obama";
-
         HashSet<String> expectedPredicates = new HashSet<String>();
         expectedPredicates.add(Props.getProperty(Subscriber.PROP_UNS_COMMONELEM_PREDICATE));
         expectedPredicates.add(Props.getProperty(UNSEventSender.PROP_UNS_DEFINITION_URL_PREDICATE));

@@ -8,6 +8,7 @@ import eionet.doc.extensions.stripes.DocumentationValidator;
 import eionet.meta.service.DBUnitHelper;
 
 import java.util.List;
+import org.junit.AfterClass;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -25,7 +26,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * this test shows that the fallback to properties file works.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:spring-context.xml" })
+@ContextConfiguration(locations = { "classpath:mock-spring-context.xml" })
 public class DocModuleTest {
 
     @Autowired
@@ -39,7 +40,14 @@ public class DocModuleTest {
     
     @BeforeClass
     public static void createDataSource() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData("seed-documentation.xml");
+    }
+    
+    @AfterClass
+    public static void removeDataSource() throws Exception {
+        ActionBeanUtils.getServletContext();
+        DBUnitHelper.deleteData("seed-documentation.xml");
     }
 
     @Test

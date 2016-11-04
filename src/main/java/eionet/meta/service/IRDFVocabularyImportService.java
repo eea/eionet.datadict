@@ -94,6 +94,21 @@ public interface IRDFVocabularyImportService {
      */
     List<String> importRdfIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData,
             boolean purgePredicateBasis) throws ServiceException;
+    
+    /**
+     * A support method for legacy calls (calls importRdfIntoVocabulary
+     * internally).
+     *
+     * @param contents Reader object to read file content
+     * @param vocabularyFolder Vocabulary folder under bulk edit mode
+     * @param purgeVocabularyData Purge all vocabulary concepts of folder
+     * @param purgePredicateBasis Purge bound elements per predicate basis
+     * @param missingConceptsAction Missing concepts action for this upload
+     * @return List of log messages
+     * @throws ServiceException Error if input is not valid
+     */
+    List<String> importRdfIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData,
+            boolean purgePredicateBasis, MissingConceptsAction missingConceptsAction) throws ServiceException;
 
     /**
      * A method to get all supported action before elements, depending on upload

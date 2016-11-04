@@ -21,6 +21,7 @@
 
 package eionet.meta.service;
 
+import eionet.meta.ActionBeanUtils;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -43,7 +44,7 @@ import eionet.meta.service.data.NamespaceResult;
  *
  * @author enver
  */
-@SpringApplicationContext("spring-context.xml")
+@SpringApplicationContext("mock-spring-context.xml")
 public class NamespaceServiceTest extends UnitilsJUnit4 {
 
     private static final String SEED_FILE = "seed-namespaces.xml";
@@ -56,6 +57,7 @@ public class NamespaceServiceTest extends UnitilsJUnit4 {
 
     @BeforeClass
     public static void loadData() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData(SEED_FILE);
     }
 

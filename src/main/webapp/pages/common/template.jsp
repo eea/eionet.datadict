@@ -13,7 +13,7 @@
             <%--
             <base href="<%= BaseUrl.getBaseUrl(request) %>"/>
             --%>
-            <title>${initParam.appDispName}<c:if test="${not empty pageTitle}">" - ${pageTitle}</c:if></title>
+            <title>${ddfn:getProperty("app.displayName")}<c:if test="${not empty pageTitle}"> - ${pageTitle}</c:if></title>
 
             <link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/print.css" media="print" />
             <link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/handheld.css" media="handheld" />
@@ -34,6 +34,7 @@
             <script type="text/javascript" src="<c:url value="/scripts/prototype.js"/>"></script>
             <script type="text/javascript" src="<c:url value="/scripts/util.js"/>"></script>
             <script type="text/javascript" src="<c:url value="/script.js"/>"></script>
+            <script type="text/javascript" src="<c:url value="/helpPopup.js"/>"></script>
             <stripes:layout-component name="head"/>
         </head>
 
@@ -55,6 +56,9 @@
                             </c:otherwise>
                         </c:choose>
 
+                        <c:if test="${not empty helpScreen}">
+                            <a id="pagehelplink" class="helpButton" title="Get help on this page" href="${pageContext.request.contextPath}/help.jsp?screen=${fn:escapeXml(helpScreen)}&amp;area=pagehelp"><span>Page help</span></a>
+                        </c:if>
                         <a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
                         <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>
                         <a id="acronymlink" href="about.action" title="About ${initParam.appDispName}"><span>About</span></a>
@@ -77,7 +81,7 @@
                 <div id="pagehead">
                     <a href="/"><img src="${pageContext.request.contextPath}/images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
                     <div id="networktitle">Eionet</div>
-                    <div id="sitetitle">${initParam.appDispName}</div>
+                    <div id="sitetitle">${ddfn:getProperty("app.displayName")}</div>
                     <div id="sitetagline">This service is part of Reportnet</div>
                 </div> <!-- pagehead -->
 
@@ -92,10 +96,10 @@
                     </div>
                     <c:choose>
                         <c:when test="${empty pageTitle}">
-                            <div class="breadcrumbitemlast">${initParam.appDispName}</div>
+                            <div class="breadcrumbitemlast">${ddfn:getProperty("app.displayName")}</div>
                         </c:when>
                         <c:otherwise>
-                            <div class="breadcrumbitem"><a href="${pageContext.request.contextPath}/">${initParam.appDispName}</a></div>
+                            <div class="breadcrumbitem"><a href="${pageContext.request.contextPath}/">${ddfn:getProperty("app.displayName")}</a></div>
                             <div class="breadcrumbitemlast"><c:out value="${pageTitle}"/></div>
                         </c:otherwise>
                     </c:choose>
@@ -182,7 +186,7 @@
                     --%>
                 </div>
                 <div id="pagefoot" style="max-width: none;">
-                    <c:set var="feedbackMail" value="mailto:helpdesk@eionet.europa.eu?subject=Feedback from the ${initParam.appDispName} website"/>
+                    <c:set var="feedbackMail" value="mailto:helpdesk@eionet.europa.eu?subject=Feedback from the ${ddfn:getProperty('app.displayName')} website"/>
                     <p><a href="mailto:cr@eionet.europa.eu">E-mail</a> | <a href="${ddfn:urlEncode(feedbackMail)}">Feedback</a></p>
                     <p><a href="http://www.eea.europa.eu/"><b>European Environment Agency</b></a>
                         <br/>Kgs. Nytorv 6, DK-1050 Copenhagen K, Denmark - Phone: +45 3336 7100</p>

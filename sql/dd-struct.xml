@@ -1264,7 +1264,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
              UPDATE T_VOCABULARY_CONCEPT SET CREATION_DATE = now()</sql>
     </changeSet>
 
-    <changeSet author="roug" id="rev-100">
+    <changeSet author="roug" id="rev-100" >
+        <validCheckSum>3:21693a0c478ad24dac451d622ddc53bc</validCheckSum>
         <comment>Auto increments can't be added in the create table change set.</comment>
         <addAutoIncrement tableName="ACLS" columnName="ACL_ID" columnDataType="INT"/>
         <addAutoIncrement tableName="DATAELEM" columnName="DATAELEM_ID" columnDataType="INT UNSIGNED"/>
@@ -1272,18 +1273,54 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <addAutoIncrement tableName="DS_TABLE" columnName="TABLE_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="FK_RELATION" columnName="REL_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="FXV" columnName="FXV_ID" columnDataType="INT UNSIGNED"/>
+
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" constraintName="FK_M_ATTRIBUTE_ATTRIBUTE_ID"/>
         <addAutoIncrement tableName="M_ATTRIBUTE" columnName="M_ATTRIBUTE_ID" columnDataType="INT UNSIGNED"/>
+        <addForeignKeyConstraint baseColumnNames="M_ATTRIBUTE_ID" baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" 
+                constraintName="FK_M_ATTRIBUTE_ATTRIBUTE_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="M_ATTRIBUTE_ID" referencedTableName="M_ATTRIBUTE" referencesUniqueColumn="false"/>
+
         <addAutoIncrement tableName="M_COMPLEX_ATTR" columnName="M_COMPLEX_ATTR_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="M_COMPLEX_ATTR_FIELD" columnName="M_COMPLEX_ATTR_FIELD_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="NAMESPACE" columnName="NAMESPACE_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="SCHEMA" columnName="SCHEMA_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="SCHEMA_SET" columnName="SCHEMA_SET_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="T_SCHEMA" columnName="SCHEMA_ID" columnDataType="INT UNSIGNED"/>
+
+        <dropForeignKeyConstraint baseTableName="T_SCHEMA" constraintName="FK_SCHEMA_SET_ID"/>
         <addAutoIncrement tableName="T_SCHEMA_SET" columnName="SCHEMA_SET_ID" columnDataType="INT UNSIGNED"/>
+        <addForeignKeyConstraint baseColumnNames="SCHEMA_SET_ID" baseTableName="T_SCHEMA"
+                constraintName="FK_SCHEMA_SET_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="SCHEMA_SET_ID" referencedTableName="T_SCHEMA_SET" referencesUniqueColumn="false"/>
+
         <addAutoIncrement tableName="T_SITE_CODE" columnName="SITE_CODE_ID" columnDataType="INT UNSIGNED"/>
+
+        <dropForeignKeyConstraint baseTableName="T_SITE_CODE" constraintName="FK_VOCABULARY_CONCEPT_ID"/>
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" constraintName="FK_CONCEPT_ATTRIBUTE_ID"/>
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" constraintName="FK_RELATED_CONCEPT_ID"/>
         <addAutoIncrement tableName="T_VOCABULARY_CONCEPT" columnName="VOCABULARY_CONCEPT_ID" columnDataType="INT UNSIGNED"/>
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_CONCEPT_ID" baseTableName="T_SITE_CODE"
+                constraintName="FK_VOCABULARY_CONCEPT_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE"
+                referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_CONCEPT_ID" baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE"
+                constraintName="FK_CONCEPT_ATTRIBUTE_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="RELATED_CONCEPT_ID" baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE"
+                constraintName="FK_RELATED_CONCEPT_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
+
         <addAutoIncrement tableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" columnName="ID" columnDataType="INT UNSIGNED"/>
+
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_CONCEPT" constraintName="FK_VOCABULARY_FOLDER_ID"/>
         <addAutoIncrement tableName="T_VOCABULARY_FOLDER" columnName="VOCABULARY_FOLDER_ID" columnDataType="INT UNSIGNED"/>
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_FOLDER_ID" baseTableName="T_VOCABULARY_CONCEPT"
+                constraintName="FK_VOCABULARY_FOLDER_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="VOCABULARY_FOLDER_ID" referencedTableName="T_VOCABULARY_FOLDER" referencesUniqueColumn="false"/>
     </changeSet>
 
     <!-- Dropping the second of two identical indexes on FXV. See roug@rev-80 -->
@@ -2014,7 +2051,553 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
           referencedColumnNames="DATAELEM_ID" referencedTableName="DATAELEM" referencesUniqueColumn="false"/>
     </changeSet>
     
-    <changeSet author="kopanalk" id="rev-150">
+    <changeSet id="rev-150" author="nakasnik">
+        <createTable tableName="QRTZ_JOB_DETAILS">
+            <column name="SCHED_NAME" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_JOB_DETAILS" />
+            </column>
+            <column name="JOB_NAME" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_JOB_DETAILS" />
+            </column>
+            <column name="JOB_GROUP" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_JOB_DETAILS" />
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(250)">
+                <constraints nullable="true" />
+            </column>
+            <column name="JOB_CLASS_NAME" type="VARCHAR(250)">
+                <constraints nullable="false" />
+            </column>
+            <column name="IS_DURABLE" type="VARCHAR(1)">
+                <constraints nullable="false" />
+            </column>
+            <column name="IS_NONCONCURRENT" type="VARCHAR(1)">
+                <constraints nullable="false" />
+            </column>
+            <column name="IS_UPDATE_DATA" type="VARCHAR(1)">
+                <constraints nullable="false" />
+            </column>
+            <column name="REQUESTS_RECOVERY" type="VARCHAR(1)">
+                <constraints nullable="false" />
+            </column>
+            <column name="JOB_DATA" type="BLOB">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+       </modifySql>
+    </changeSet>
+    
+    <changeSet id="rev-151" author="nakasnik">
+        <createTable tableName="QRTZ_TRIGGERS">
+            <column name="SCHED_NAME" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_TRIGGERS" />
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_TRIGGERS" />
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_TRIGGERS" />
+            </column>
+            <column name="JOB_NAME" type="VARCHAR(200)">
+                <constraints nullable="false" />
+            </column>
+            <column name="JOB_GROUP" type="VARCHAR(200)">
+                <constraints nullable="false" />
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(250)">
+                <constraints nullable="true" />
+            </column>
+            <column name="NEXT_FIRE_TIME" type="BIGINT(13)">
+                <constraints nullable="true" />
+            </column>
+            <column name="PREV_FIRE_TIME" type="BIGINT(13)">
+                <constraints nullable="true" />
+            </column>
+            <column name="PRIORITY" type="INTEGER">
+                <constraints nullable="true" />
+            </column>
+            <column name="TRIGGER_STATE" type="VARCHAR(16)">
+                <constraints nullable="false" />
+            </column>
+            <column name="TRIGGER_TYPE" type="VARCHAR(8)">
+                <constraints nullable="false" />
+            </column>
+            <column name="START_TIME" type="BIGINT(13))">
+                <constraints nullable="false" />
+            </column>
+            <column name="END_TIME" type="BIGINT(13)">
+                <constraints nullable="true" />
+            </column>
+            <column name="CALENDAR_NAME" type="VARCHAR(250)">
+                <constraints nullable="true" />
+            </column>
+            <column name="MISFIRE_INSTR" type="SMALLINT(2)">
+                <constraints nullable="true" />
+            </column>
+            <column name="JOB_DATA" type="BLOB">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet id="rev-152" author="nakasnik">
+        <addForeignKeyConstraint 
+            constraintName="QRTZ_TRIGGERS_ibfk_1" 
+            baseTableName="QRTZ_TRIGGERS" baseColumnNames="SCHED_NAME, JOB_NAME, JOB_GROUP"  
+            referencedTableName="QRTZ_JOB_DETAILS" referencedColumnNames="SCHED_NAME, JOB_NAME, JOB_GROUP" />
+    </changeSet>
+    
+    <changeSet id="rev-153" author="nakasnik">
+        <createTable tableName="QRTZ_SIMPLE_TRIGGERS">
+            <column name="SCHED_NAME" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_SIMPLE_TRIGGERS" />
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_SIMPLE_TRIGGERS" />
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_SIMPLE_TRIGGERS" />
+            </column>
+            <column name="REPEAT_COUNT" type="BIGINT(7)">
+                <constraints nullable="false" />
+            </column>
+            <column name="REPEAT_INTERVAL" type="BIGINT(12)">
+                <constraints nullable="false" />
+            </column>
+            <column name="TIMES_TRIGGERED" type="BIGINT(13)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet id="rev-154" author="nakasnik">
+        <addForeignKeyConstraint 
+            constraintName="QRTZ_SIMPLE_TRIGGERS_ibfk_1" 
+            baseTableName="QRTZ_SIMPLE_TRIGGERS" baseColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"  
+            referencedTableName="QRTZ_TRIGGERS" referencedColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP" />
+    </changeSet>
+    
+    <changeSet id="rev-155" author="nakasnik">
+        <createTable tableName="QRTZ_CRON_TRIGGERS">
+            <column name="SCHED_NAME" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_CRON_TRIGGERS" />
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_CRON_TRIGGERS" />
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_CRON_TRIGGERS" />
+            </column>
+            <column name="CRON_EXPRESSION" type="VARCHAR(200)">
+                <constraints nullable="false" />
+            </column>
+            <column name="TIME_ZONE_ID" type="VARCHAR(80)">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet id="rev-156" author="nakasnik">
+        <addForeignKeyConstraint 
+            constraintName="QRTZ_CRON_TRIGGERS_ibfk_1" 
+            baseTableName="QRTZ_CRON_TRIGGERS" baseColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"  
+            referencedTableName="QRTZ_TRIGGERS" referencedColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP" />
+    </changeSet>
+    
+    <changeSet id="rev-157" author="nakasnik">
+        <createTable tableName="QRTZ_SIMPROP_TRIGGERS">
+            <column name="SCHED_NAME" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_SIMPROP_TRIGGERS" />
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_SIMPROP_TRIGGERS" />
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_SIMPROP_TRIGGERS" />
+            </column>
+            <column name="STR_PROP_1" type="VARCHAR(512)">
+                <constraints nullable="true" />
+            </column>
+            <column name="STR_PROP_2" type="VARCHAR(512)">
+                <constraints nullable="true" />
+            </column>
+            <column name="STR_PROP_3" type="VARCHAR(512)">
+                <constraints nullable="true" />
+            </column>
+            <column name="INT_PROP_1" type="INT">
+                <constraints nullable="true" />
+            </column>
+            <column name="INT_PROP_2" type="INT">
+                <constraints nullable="true" />
+            </column>
+            <column name="LONG_PROP_1" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="LONG_PROP_2" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="DEC_PROP_1" type="NUMERIC(13,4)">
+                <constraints nullable="true" />
+            </column>
+            <column name="DEC_PROP_2" type="NUMERIC(13,4)">
+                <constraints nullable="true" />
+            </column>
+            <column name="BOOL_PROP_1" type="VARCHAR(1)">
+                <constraints nullable="true" />
+            </column>
+            <column name="BOOL_PROP_2" type="VARCHAR(1)">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet id="rev-158" author="nakasnik">
+        <addForeignKeyConstraint 
+            constraintName="QRTZ_SIMPROP_TRIGGERS_ibfk_1" 
+            baseTableName="QRTZ_SIMPROP_TRIGGERS" baseColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"  
+            referencedTableName="QRTZ_TRIGGERS" referencedColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP" />
+    </changeSet>
+    
+    <changeSet id="rev-159" author="nakasnik">
+        <createTable tableName="QRTZ_BLOB_TRIGGERS">
+            <column name="SCHED_NAME" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_BLOB_TRIGGERS" />
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_BLOB_TRIGGERS" />
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_BLOB_TRIGGERS" />
+            </column>
+            <column name="BLOB_DATA" type="BLOB">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet id="rev-160" author="nakasnik">
+        <addForeignKeyConstraint 
+            constraintName="QRTZ_BLOB_TRIGGERS_ibfk_1" 
+            baseTableName="QRTZ_BLOB_TRIGGERS" baseColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"  
+            referencedTableName="QRTZ_TRIGGERS" referencedColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP" />
+    </changeSet>
+    
+    <changeSet id="rev-161" author="nakasnik">
+        <createTable tableName="QRTZ_CALENDARS">
+            <column name="SCHED_NAME" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_CALENDARS" />
+            </column>
+            <column name="CALENDAR_NAME" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_CALENDARS" />
+            </column>
+            <column name="CALENDAR" type="BLOB">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet id="rev-162" author="nakasnik">
+        <createTable tableName="QRTZ_PAUSED_TRIGGER_GRPS">
+            <column name="SCHED_NAME" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_PAUSED_TRIGGER_GRPS" />
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_PAUSED_TRIGGER_GRPS" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet id="rev-163" author="nakasnik">
+        <createTable tableName="QRTZ_FIRED_TRIGGERS">
+            <column name="SCHED_NAME" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_FIRED_TRIGGERS" />
+            </column>
+            <column name="ENTRY_ID" type="VARCHAR(95)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_FIRED_TRIGGERS" />
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR(200)">
+                <constraints nullable="false" />
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+                <constraints nullable="false" />
+            </column>
+            <column name="INSTANCE_NAME" type="VARCHAR(200)">
+                <constraints nullable="false" />
+            </column>
+            <column name="FIRED_TIME" type="BIGINT(13)">
+                <constraints nullable="false" />
+            </column>
+            <column name="SCHED_TIME" type="BIGINT(13)">
+                <constraints nullable="false" />
+            </column>
+            <column name="PRIORITY" type="INTEGER">
+                <constraints nullable="false" />
+            </column>
+            <column name="STATE" type="VARCHAR(16)">
+                <constraints nullable="false" />
+            </column>
+            <column name="JOB_NAME" type="VARCHAR(200)">
+                <constraints nullable="true" />
+            </column>
+            <column name="JOB_GROUP" type="VARCHAR(200)">
+                <constraints nullable="true" />
+            </column>
+            <column name="IS_NONCONCURRENT" type="VARCHAR(1)">
+                <constraints nullable="true" />
+            </column>
+            <column name="REQUESTS_RECOVERY" type="VARCHAR(1)">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet id="rev-164" author="nakasnik">
+        <createTable tableName="QRTZ_SCHEDULER_STATE">
+            <column name="SCHED_NAME" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_SCHEDULER_STATE" />
+            </column>
+            <column name="INSTANCE_NAME" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_SCHEDULER_STATE" />
+            </column>
+            <column name="LAST_CHECKIN_TIME" type="BIGINT(13)">
+                <constraints nullable="false" />
+            </column>
+            <column name="CHECKIN_INTERVAL" type="BIGINT(13)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet id="rev-165" author="nakasnik">
+        <createTable tableName="QRTZ_LOCKS">
+            <column name="SCHED_NAME" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_LOCKS" />
+            </column>
+            <column name="LOCK_NAME" type="VARCHAR(40)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QRTZ_LOCKS" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet id="rev-166" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_J_REQ_RECOVERY" tableName="QRTZ_JOB_DETAILS" >
+            <column name="SCHED_NAME" />
+            <column name="REQUESTS_RECOVERY" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-167" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_J_GRP" tableName="QRTZ_JOB_DETAILS" >
+            <column name="SCHED_NAME" />
+            <column name="JOB_GROUP" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-168" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_T_J" tableName="QRTZ_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="JOB_NAME" />
+            <column name="JOB_GROUP" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-169" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_T_JG" tableName="QRTZ_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="JOB_GROUP" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-170" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_T_C" tableName="QRTZ_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="CALENDAR_NAME" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-171" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_T_G" tableName="QRTZ_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="TRIGGER_GROUP" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-172" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_T_STATE" tableName="QRTZ_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="TRIGGER_STATE" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-173" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_T_N_STATE" tableName="QRTZ_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="TRIGGER_NAME" />
+            <column name="TRIGGER_GROUP" />
+            <column name="TRIGGER_STATE" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-174" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_T_N_G_STATE" tableName="QRTZ_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="TRIGGER_GROUP" />
+            <column name="TRIGGER_STATE" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-175" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_T_NEXT_FIRE_TIME" tableName="QRTZ_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="NEXT_FIRE_TIME" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-176" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_T_NFT_ST" tableName="QRTZ_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="TRIGGER_STATE" />
+            <column name="NEXT_FIRE_TIME" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-177" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_T_NFT_MISFIRE" tableName="QRTZ_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="MISFIRE_INSTR" />
+            <column name="NEXT_FIRE_TIME" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-178" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_T_NFT_ST_MISFIRE" tableName="QRTZ_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="MISFIRE_INSTR" />
+            <column name="NEXT_FIRE_TIME" />
+            <column name="TRIGGER_STATE" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-179" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_T_NFT_ST_MISFIRE_GRP" tableName="QRTZ_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="MISFIRE_INSTR" />
+            <column name="NEXT_FIRE_TIME" />
+            <column name="TRIGGER_GROUP" />
+            <column name="TRIGGER_STATE" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-180" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_FT_TRIG_INST_NAME" tableName="QRTZ_FIRED_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="INSTANCE_NAME" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-181" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_FT_INST_JOB_REQ_RCVRY" tableName="QRTZ_FIRED_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="INSTANCE_NAME" />
+            <column name="REQUESTS_RECOVERY" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-182" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_FT_J_G" tableName="QRTZ_FIRED_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="JOB_NAME" />
+            <column name="JOB_GROUP" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-183" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_FT_JG" tableName="QRTZ_FIRED_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="JOB_GROUP" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-184" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_FT_T_G" tableName="QRTZ_FIRED_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="TRIGGER_NAME" />
+            <column name="TRIGGER_GROUP" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-185" author="nakasnik">
+        <createIndex indexName="IDX_QRTZ_FT_TG" tableName="QRTZ_FIRED_TRIGGERS" >
+            <column name="SCHED_NAME" />
+            <column name="TRIGGER_GROUP" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="rev-186" author="nakasnik">
+        <createTable tableName="ASYNC_TASK_ENTRY">
+            <column name="TASK_ID" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_ASYNC_TASK_ENTRY" />
+            </column>
+            <column name="TASK_CLASS_NAME" type="VARCHAR(250)">
+                <constraints nullable="false" />
+            </column>
+            <column name="EXECUTION_STATUS" type="TINYINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="SCHEDULED_DATE" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="START_DATE" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="END_DATE" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="SERIALIZED_PARAMETERS" type="TEXT">
+                <constraints nullable="true" />
+            </column>
+            <column name="SERIALIZED_RESULT" type="TEXT">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-187">
         <comment>
             Add two Registration Statuses in the Dataset table (By altering the REG_STATUS data type). Refs #29879.
         </comment>
@@ -2026,7 +2609,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <addDefaultValue tableName="DATASET" columnName="REG_STATUS" defaultValue="Incomplete"/>
     </changeSet>
     
-    <changeSet author="kopanalk" id="rev-151">
+    <changeSet author="kopanalk" id="rev-188">
         <comment>
             Add two Registration Statuses in the DATAELEM table (By altering the REG_STATUS data type). Refs #29879.
         </comment>
@@ -2038,7 +2621,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <addDefaultValue tableName="DATAELEM" columnName="REG_STATUS" defaultValue="Incomplete"/>
     </changeSet>
     
-     <changeSet author="kopanalk" id="rev-152">
+     <changeSet author="kopanalk" id="rev-189">
         <comment>
             Add a column in the DATAELEM table in order to link the superseded data elements to their successors (if this is the case). Refs #29879.
         </comment>
@@ -2048,7 +2631,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <addForeignKeyConstraint constraintName="FK_SUPERSEDED_SUCCESSOR_DE" baseTableName="DATAELEM" baseColumnNames="SUCCESSOR" referencedColumnNames="DATAELEM_ID"  referencedTableName="DATAELEM"/> 
     </changeSet>
     
-    <changeSet author="kopanalk" id="rev-153">
+    <changeSet author="kopanalk" id="rev-190">
         <comment>
             Add a column in the DATAELEM table in order to link the superseded datasets to their successors (if this is the case). Refs #29879.
         </comment>

@@ -456,4 +456,10 @@ public interface IDataElementDAO {
 
     Map<Integer, String> getDataElementDataTypes(Collection<Integer> dataElementIds);
 
+    List<DataElement> getCommonDataElementsWorkingCopiesOf(String userName);
+
+    List<Integer> getOrphanNonCommonDataElementIds();
+
+    int delete(List<Integer> ids);
+
 }

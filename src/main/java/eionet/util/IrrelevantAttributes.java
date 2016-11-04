@@ -34,9 +34,8 @@ public class IrrelevantAttributes extends Hashtable<String, Set<String>> {
     private void load() {
 
         @SuppressWarnings("rawtypes")
-        Enumeration propNames = Props.getPropertyNames();
-        while (propNames != null && propNames.hasMoreElements()) {
-            String propName = (String) propNames.nextElement();
+        Set<String> propNames = Props.getPropertyNames();
+        for (String propName : propNames) {
             if (propName.trim().startsWith(PropsIF.IRRELEVANT_ATTRS_PREFIX)) {
                 int i = propName.indexOf(PropsIF.IRRELEVANT_ATTRS_PREFIX) + PropsIF.IRRELEVANT_ATTRS_PREFIX.length();
                 if (i < propName.length()) {

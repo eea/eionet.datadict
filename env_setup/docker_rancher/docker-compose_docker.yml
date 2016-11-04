@@ -1,0 +1,16 @@
+## TOMCAT SERVER
+tomcat:  
+  image: eeacms/datadict:latest
+  ports:
+    - "8989:8080"
+  env_file: docker.env
+  links:
+    - mysql
+
+## DATABASE CONTAINERS
+mysql:
+  image: mysql:5.5
+  ports:
+    - "53506:3306"
+  environment: 
+    MYSQL_ROOT_PASSWORD: password

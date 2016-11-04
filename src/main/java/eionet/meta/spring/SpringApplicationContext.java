@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("contextAware")
 public class SpringApplicationContext implements ApplicationContextAware {
 
     private static ApplicationContext context;
@@ -17,6 +17,10 @@ public class SpringApplicationContext implements ApplicationContextAware {
     
     public static ApplicationContext getContext() {
         return context;
+    }
+    
+    public static <T> T getBean(Class<T> type) {
+        return getContext().getBean(type);
     }
     
 }

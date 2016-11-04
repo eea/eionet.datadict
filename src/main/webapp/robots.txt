@@ -11,7 +11,6 @@ Disallow: /GetPrintout
 Disallow: /GetXmlInstance
 Disallow: /GetXForm
 Disallow: /GetXls
-Disallow: /GetCache
 Disallow: /ImgUpload
 Disallow: /DsVisualUpload
 Disallow: /HarvestingServlet
@@ -23,5 +22,4 @@ Disallow: /GetTableDef
 Disallow: /GetMdb
 Disallow: /Subscribe
 Disallow: /GetOds
-Disallow: /CleanupServlet
 Disallow: /GetDbf/

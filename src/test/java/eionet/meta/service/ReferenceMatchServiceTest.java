@@ -20,6 +20,7 @@
  */
 package eionet.meta.service;
 
+import eionet.meta.ActionBeanUtils;
 import java.util.List;
 
 import eionet.meta.dao.domain.StandardGenericStatus;
@@ -37,12 +38,13 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.exports.VocabularyOutputHelper;
 
+
 /**
  * JUnit integration test with Unitils for Reference Match Service.
  *
  * @author enver
  */
-@SpringApplicationContext("spring-context.xml")
+@SpringApplicationContext("mock-spring-context.xml")
 public class ReferenceMatchServiceTest extends UnitilsJUnit4 {
     /**
      * Constants for concepts.
@@ -67,6 +69,7 @@ public class ReferenceMatchServiceTest extends UnitilsJUnit4 {
 
     @BeforeClass
     public static void loadData() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData("seed-emptydb.xml");
         DBUnitHelper.loadData("seed-referencematch.xml");
     }

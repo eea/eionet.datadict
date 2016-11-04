@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
+<%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
@@ -99,14 +100,16 @@
         <script type="text/javascript">
         // <![CDATA[
             function pickTable(id, i, name) {
-                if (opener && !opener.closed) {
-                    if (window.opener.pickTable(id, name)==true)  //window opener should have function pickTABLE with 2 params - tbl id & tbl name
-                                                                // and if it returns true, then the popup window is closed,
-                                                                // otherwise multiple selection is allowed
-                        closeme();
-                    hideRow(i);
-                } else {
-                    alert("You have closed the main window.\n\nNo action will be taken.")
+                if (window.confirm("You have selected to copy data elements and table structure from the '"+name+ "' table. \nPlease confirm or press cancel.")){
+                    if (opener && !opener.closed) {
+                        if (window.opener.pickTable(id, name)==true)  //window opener should have function pickTABLE with 2 params - tbl id & tbl name
+                                                                 // and if it returns true, then the popup window is closed,
+                                                                 // otherwise multiple selection is allowed
+                            closeme();
+                        hideRow(i);
+                    } else {
+                        alert("You have closed the main window.\n\nNo action will be taken.")
+                    }
                 }
             }
             function hideRow(i){
@@ -128,7 +131,7 @@
     <div id="pagehead">
         <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
         <div id="networktitle">Eionet</div>
-        <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
+        <div id="sitetitle">${ddfn:getProperty("app.displayName")}</div>
         <div id="sitetagline">This service is part of Reportnet</div>
     </div> <!-- pagehead -->
     <div id="drop-operations">

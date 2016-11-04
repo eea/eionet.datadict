@@ -22,6 +22,7 @@
 package eionet.meta.dao;
 
 import eionet.meta.dao.domain.FixedValue;
+import java.util.List;
 
 
 /**
@@ -49,7 +50,9 @@ public interface IFixedValueDAO {
      * @param ownerId the id of the owner
      */
     void deleteAll(FixedValue.OwnerType ownerType, int ownerId);
-    
+
+    int delete(FixedValue.OwnerType ownerType, List<Integer> ownerIds);
+
     /**
      * Updates an existing fixed value
      * @param fixedValue

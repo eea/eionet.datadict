@@ -21,6 +21,7 @@
 
 package eionet.meta.service;
 
+import eionet.meta.ActionBeanUtils;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
@@ -61,6 +62,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
     @BeforeClass
     public static void loadData() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData("seed-emptydb.xml");
         DBUnitHelper.loadData("csv_import/seed-vocabularycsv-import.xml");
     }

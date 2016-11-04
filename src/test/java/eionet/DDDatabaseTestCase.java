@@ -1,5 +1,6 @@
 package eionet;
 
+import eionet.meta.ActionBeanUtils;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
@@ -30,6 +31,7 @@ public abstract class DDDatabaseTestCase extends DatabaseTestCase {
      */
     @Override
     protected IDatabaseConnection getConnection() throws Exception {
+        ActionBeanUtils.getServletContext();
         Properties properties = new Properties();
         properties.setProperty("http://www.dbunit.org/properties/datatypeFactory", "org.dbunit.ext.mysql.MySqlDataTypeFactory");
 

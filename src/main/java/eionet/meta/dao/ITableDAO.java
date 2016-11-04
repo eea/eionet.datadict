@@ -48,4 +48,11 @@ public interface ITableDAO {
      * @return
      */
     List<DataSetTable> listForDatasets(List<DataSet> datasets);
+
+    String getIdentifierById(int id);
+
+    List<Integer> getOrphanTableIds();
+
+    int delete(List<Integer> ids);
+
 }
