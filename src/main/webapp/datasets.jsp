@@ -179,15 +179,26 @@
         }
 
         String version = request.getParameter("version");
-        HashSet statuses = null;
+        
+HashSet statuses = null;
         String requestedStatus = request.getParameter("regStatus");
         if (requestedStatus!=null && requestedStatus.length()>0) {
+            String[] statusesArray = requestedStatus.split(",");
             statuses = new HashSet();
-            statuses.add(requestedStatus);
+            for (String status : statusesArray) {
+                statuses.add(status);
+            }
         }
         datasets = searchEngine.getDatasets(params, short_name, idfier, version, oper, isSearchForWorkingCopies, isIncludeHistoricVersions, statuses);
         request.setAttribute("registrationStatuses", DatasetRegStatus.values());
-
+        
+        String regStatusFilter = request.getParameter("regStatusFilter");
+        if (regStatusFilter != null && regStatusFilter.equals("false")) {
+            request.setAttribute("regStatusFilter", false);
+        }
+        else {
+            request.setAttribute("regStatusFilter", true);
+        }
         String sortName = (String) request.getParameter("sort_name");
         DataSetSort sort = DataSetSort.fromString(sortName);
         if (sort == null) {
@@ -438,20 +449,28 @@
         <form id="searchDatasetsForm" action="${pageContext.request.contextPath}/datasets.jsp" method="get">
             <div id="filters">
                 <table class="filter">
-                    <tr>
-                        <td class="label">
-                            <label for="regStatus">Registration Status</label>
-                            <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus"></a>
-                        </td>
-                        <td class="input">
-                            <select name="regStatus" id="regStatus" class="small">
-                                <option value="">All</option>
-                                <c:forEach items="${registrationStatuses}" var="status">
-                                    <option value="${fn:escapeXml(status.name)}" ${param.regStatus eq status.name ? 'selected="selected"' : ''}>${fn:escapeXml(status.name)}</option>
-                                </c:forEach>
-                            </select>
-                        </td>
-                    </tr>
+                    <c:choose>  
+                        <c:when test="${regStatusFilter}">
+                            <tr>
+                                <td class="label">
+                                    <label for="regStatus">Registration Status</label>
+                                    <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus"></a>
+                                </td>
+                                <td class="input">
+                                    <select name="regStatus" id="regStatus" class="small">
+                                        <option value="">All</option>
+                                        <c:forEach items="${registrationStatuses}" var="status">
+                                            <option value="${fn:escapeXml(status.name)}" ${param.regStatus eq status.name ? 'selected="selected"' : ''}>${fn:escapeXml(status.name)}</option>
+                                        </c:forEach>
+                                    </select>
+                                </td>
+                            </tr>
+                        </c:when>
+                        <c:otherwise>
+                            <input type="hidden" name="regStatusFilter" value="false"/>
+                            <input type="hidden" name="regStatus" value="<%=requestedStatus%>">
+                        </c:otherwise>
+                    </c:choose>
                     <tr>
                         <td class="label">
                             <label for="short_name">Short name</label>

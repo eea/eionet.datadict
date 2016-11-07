@@ -534,12 +534,7 @@
                     if (elmRegStatus.equalsIgnoreCase("superseded")) {
                         //get successorId from request
                         successorId = dataElement.getSuccessorId();
-                        successorElement = searchEngine.getDataElement(successorId);
-                        if (successorElement == null) {
-                            request.setAttribute("DD_ERR_MSG", "This superseded data element is not linked to a successor!");
-                            request.getRequestDispatcher("error.jsp").forward(request, response);
-                            return;
-                        }
+                        successorElement = successorId != null? searchEngine.getDataElement(successorId) : null;
                     }
                     Vector v = new Vector();
                     if (user == null) {
@@ -1752,7 +1747,7 @@
                                                         if (mode.equals("view")){ %>
                                                             <%=Util.processForDisplay(elmRegStatus)%>
                                                             <%
-                                                            if (elmRegStatus.equalsIgnoreCase("Superseded")) {%>
+                                                            if (elmRegStatus.equalsIgnoreCase("Superseded") && (successorElement!= null)) {%>
                                                                 <small> by 
                                                                     <a  href="<%=request.getContextPath()%>/dataelements/<%=successorElement.getID()%>">
                                                                         <i><c:out value="<%=successorElement.getShortName()%>"/></i>

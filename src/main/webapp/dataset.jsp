@@ -288,12 +288,7 @@
                 
                 if (regStatus.equalsIgnoreCase("Superseded")){
                     successorId = dataset.getSuccessorId();
-                    successorDataset = searchEngine.getDataset(successorId);
-                    if (successorDataset == null) {
-                        request.setAttribute("DD_ERR_MSG", "This superseded dataset is not linked to a successor!");
-                        request.getRequestDispatcher("error.jsp").forward(request, response);
-                        return;
-                    }
+                    successorDataset =  successorId != null ? searchEngine.getDataset(successorId) : null;
                 }
                 
                 Vector v = null;
@@ -450,7 +445,7 @@
     // <![CDATA[
 
         function linkDataset(checkedoutCopyId){
-            var url="datasets.jsp?ctx=popup&exclude="+checkedoutCopyId;
+            var url="datasets.jsp?ctx=popup&regStatus=Released,Candidate,Recorded,Qualified&regStatusFilter=false&exclude="+checkedoutCopyId;
             wLink = window.open('<%=request.getContextPath()%>'+'/'+url,"Search","height=800,width=1220,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
             if (window.focus){
                 wLink.focus();
@@ -1099,7 +1094,7 @@ else if (mode.equals("add"))
                                                     if (mode.equals("view")) { %>
                                                         <%=Util.processForDisplay(regStatus)%>
                                                         <%
-                                                        if (regStatus.equalsIgnoreCase("Superseded")) {%>
+                                                        if (regStatus.equalsIgnoreCase("Superseded") && successorDataset!=null) {%>
                                                             <small> by 
                                                                 <a  href="<%=request.getContextPath()%>/datasets/<%=successorDataset.getID()%>">
                                                                     <i><c:out value="<%=successorDataset.getShortName()%>"/></i>
