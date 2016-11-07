@@ -33,6 +33,9 @@ import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -508,7 +511,8 @@ public class DatasetHandler extends BaseHandler {
         deleteCache();
         deleteDocs();
         deleteTablesAndElements();
-
+        deleteAllSuccessorDependencies();
+        
         // delete the datasets themselves
         buf = new StringBuffer("delete from DATASET where ");
         for (i = 0; i < ds_ids.length; i++) {
@@ -609,6 +613,15 @@ public class DatasetHandler extends BaseHandler {
             buf.append("NAMESPACE_ID=").append(iter.next());
         }
         stmt.executeUpdate(buf.toString());
+    }
+    
+    private void deleteAllSuccessorDependencies () throws SQLException {
+        for (String datasetId : ds_ids) {
+            List<Integer> datasetsWithSuccessor = getIdBySuccessor(Integer.parseInt(datasetId));
+            if (datasetsWithSuccessor!= null && !datasetsWithSuccessor.isEmpty()) {
+                removeSuccessorDependency(datasetsWithSuccessor);
+            }
+        }
     }
 
     /**
@@ -1152,6 +1165,29 @@ public class DatasetHandler extends BaseHandler {
         } finally {
             SQL.close(stmt);
         }
+    }
+    
+    public List<Integer> getIdBySuccessor(int successor) throws SQLException{
+        Statement stmt = conn.createStatement();
+        String sql = "select DATASET_ID FROM DATASET where SUCCESSOR = "+ successor;
+        ResultSet rs = stmt.executeQuery(sql);
+        List<Integer> datasets = new ArrayList();
+        while (rs.next()) {
+            datasets.add(rs.getInt("DATASET_ID"));
+        }
+        return datasets;
+    }
+    
+    public void removeSuccessorDependency(List<Integer> datasets) throws SQLException{
+        Statement stmt = conn.createStatement();
+        String sql = "update DATASET set SUCCESSOR = NULL where ";
+        for (int i=0; i<datasets.size(); i++) {
+            sql = sql + "DATASET_ID = "+datasets.get(i);
+            if (i!= datasets.size()-1) {
+                sql = sql + " OR ";
+            }
+        }
+        stmt.executeUpdate(sql);
     }
 
     /**

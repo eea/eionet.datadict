@@ -758,6 +758,7 @@ public class VersionManager {
         SQLGenerator gen = new SQLGenerator();
         Statement stmt = conn.createStatement();
 
+        List<Integer> datasetWithSuccessorDependency = null;
         String checkedoutCopyID = servlRequestParams == null ? null : servlRequestParams.getParameter("checkedout_copy_id");
         if (checkedoutCopyID != null) {
             if (!versionUpdate) {
@@ -772,13 +773,18 @@ public class VersionManager {
 
                 // also remember the identifier-id mappings of non-common elements
                 Map<String, String> dataElementIdMap = this.mapDataElementIdentifiersToIds(checkedoutCopyID);
-
+                
                 // delete the previous copy
                 Parameters params = new Parameters();
                 params.addParameterValue("mode", "delete");
                 params.addParameterValue("complete", "true");
                 params.addParameterValue("ds_id", checkedoutCopyID);
                 DatasetHandler dstHandler = new DatasetHandler(conn, params, ctx);
+                
+                //Before deleting the previous copy, remember the datasets with successor dependencies.
+                datasetWithSuccessorDependency = dstHandler.getIdBySuccessor(Integer.parseInt(checkedoutCopyID));
+                
+                
                 dstHandler.setUser(user);
                 dstHandler.setVersioning(false);
                 dstHandler.setUseForce(true);
@@ -803,9 +809,25 @@ public class VersionManager {
                         DsTableHandler.replaceTableId(checkedOutTableID, tbl.getID(), this.conn);
                     }
                 }
-
+                
                 // the non-common data elements must also get the previous ids
                 this.replaceDataElementIds(checkedoutCopyID, dataElementIdMap);
+                
+                //Add the removed successor deplendencies
+                if(datasetWithSuccessorDependency != null && datasetWithSuccessorDependency.size()>0) {
+                    gen.clear();
+                    gen.setTable("DATASET");
+                    gen.setFieldExpr("SUCCESSOR", checkedoutCopyID);
+                    String sql = gen.updateStatement() + "where " ;
+                    for (int i =0; i<datasetWithSuccessorDependency.size(); i++){
+                        sql = sql + "DATASET_ID = "+datasetWithSuccessorDependency.get(i);
+                        if (i!=datasetWithSuccessorDependency.size()-1) {
+                            sql = sql + " OR ";
+                        }
+                    }
+                    stmt.executeUpdate(sql);
+                }
+                //
             } else {
                 // unlock the checked-out copy
                 gen.clear();
@@ -839,7 +861,7 @@ public class VersionManager {
                         : Subscriber.NEW_DATASET_EVENT;
 
         new UNSEventSender().definitionChanged(dst, eventType, user == null ? null : user.getUserName());
-
+        
         return true;
     }
 
