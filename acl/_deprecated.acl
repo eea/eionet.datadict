@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<acl description="/deprecated">
+    <entries>
+        <entry type="object">
+            <principal id="dd_admin" type="localgroup"/>
+            <permissions>
+                <permission id="x"/>
+            </permissions>
+        </entry>
+    </entries>
+</acl>
