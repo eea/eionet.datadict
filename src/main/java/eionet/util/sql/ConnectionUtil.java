@@ -79,7 +79,9 @@ public class ConnectionUtil {
 
         try {
             Class.forName(drv);
-            return DriverManager.getConnection(url, usr, pwd);
+            Connection conn = DriverManager.getConnection(url, usr, pwd);
+            LOGGER.info("Database connection has been established.");
+            return conn;
         } catch (ClassNotFoundException e) {
             throw new DDRuntimeException("Failed to get connection, driver class not found: " + drv, e);
         }
@@ -107,7 +109,6 @@ public class ConnectionUtil {
                         LOGGER.info("Found and initialized JNDI data source named " + DATASOURCE_NAME);
                     } catch (NamingException e) {
                         isJNDIDataSource = Boolean.FALSE;
-                        LOGGER.info("No JNDI data source named " + DATASOURCE_NAME + " could be found: " + e.toString());
                     }
                 }
             }
