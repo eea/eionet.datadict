@@ -1,3 +1,4 @@
+<%@page import="eionet.util.Props"%>
 <%@page contentType="text/html;charset=UTF-8"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
 
@@ -18,8 +19,8 @@
             </c:choose>
         </div>
         <div style="padding-top:1em">
-            Please contact <a href="mailto:helpdesk@eionet.europa.eu?subject=System error in ${fn:escapeXml(initParam.appDispName)}">Eionet helpdesk</a>
-            or ${fn:escapeXml(initParam.appDispName)} administrators for more information about this error.
+            Please contact <a href="mailto:helpdesk@eionet.europa.eu?subject=System error in ${ddfn:getProperty("app.displayName")}">Eionet helpdesk</a>
+            or ${ddfn:getProperty("app.displayName")} administrators for more information about this error.
         </div>
 
     </stripes:layout-component>

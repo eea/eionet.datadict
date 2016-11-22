@@ -1,15 +1,16 @@
 CATALINA_OPTS=
--Denv.app.home=path/to/the/application/data 
+-Dapp.displayName=DataDictionary Local Test
+-Denv.app.home=/home/exorx-alk/EEAProject/webappshome
 -Denv.db.driver=com.mysql.jdbc.Driver 
--Denv.db.jdbcurl=jdbc:mysql://localhost:3306/DataDict?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&emptyStringsConvertToZero=false&jdbcCompliantTruncation=false 
--Denv.db.jdbcurl.encoded=jdbc:mysql://localhost:3306/DataDict?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;emptyStringsConvertToZero=false&amp;jdbcCompliantTruncation=false 
--Denv.db.user=xxx 
--Denv.db.password=xxx 
+-Denv.db.jdbcurl=jdbc:mysql://localhost:3306/DataDict?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&emptyStringsConvertToZero=false&jdbcCompliantTruncation=false&rewriteBatchedStatements=true
+-Denv.db.jdbcurl.encoded=jdbc:mysql://localhost:3306/DataDict?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;emptyStringsConvertToZero=false&amp;jdbcCompliantTruncation=false&rewriteBatchedStatements=true
+-Denv.db.user=root
+-Denv.db.password=root
 -Denv.dd.host=localhost:8080 
 -Denv.dd.url=localhost:8080/datadict
 -Denv.uns.xml.rpc.server.url=
 -Denv.uns.channel.name=
--DxmlConv.url=
+-Denv.xmlConv.url=
 -Denv.ldap.url=
 -Denv.ldap.principal=
 -Denv.ldap.password=

@@ -2,7 +2,6 @@
 <%@ include file="/pages/common/taglibs.jsp"%>
 <%
 ServletContext ctx = getServletContext();
-String appName = ctx.getInitParameter("application-name");
 %>
 
 <div id="toolribbon">
@@ -63,23 +62,23 @@ String appName = ctx.getInitParameter("application-name");
     String lastItemName = request.getParameter("name");
     if (lastItemName!=null && contextName==null){
         %>
-        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/"><%=appName %></a></div>
+        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/">${ddfn:getProperty("app.displayName")}</a></div>
         <div class="breadcrumbitemlast"><%=lastItemName%></div><%
     }
     else if (lastItemName==null && contextName!=null){
         %>
-        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/"><%=appName %></a></div>
+        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/">${ddfn:getProperty("app.displayName")}</a></div>
         <div class="breadcrumbitemlast"><%=contextName%></div><%
     }
     else if (lastItemName!=null && contextName!=null){
         %>
-        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/"><%=appName %></a></div>
+        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/">${ddfn:getProperty("app.displayName")}</a></div>
         <div class="breadcrumbitem"><a href="<%=contextPath%>"><%=contextName%></a></div>
         <div class="breadcrumbitemlast"><%=lastItemName%></div><%
     }
     else if (lastItemName==null && contextName==null){
         %>
-        <div class="breadcrumbitemlast"><%=appName %></div><%
+        <div class="breadcrumbitemlast">${ddfn:getProperty("app.displayName")}</div><%
     }
     %>
     <div class="breadcrumbtail">

@@ -6,6 +6,7 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.dao.domain.VocabularyFolder,eionet.util.*,eionet.util.sql.ConnectionUtil,java.io.*,javax.servlet.http.HttpUtils"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%>
+<%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final int MAX_CELL_LEN = 40;%>
@@ -1268,7 +1269,7 @@
     <div id="pagehead">
         <a href="/"><img src="<%=request.getContextPath()%>/images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
         <div id="networktitle">Eionet</div>
-        <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
+        <div id="sitetitle">${ddfn:getProperty("app.displayName")}</div>
         <div id="sitetagline">This service is part of Reportnet</div>
     </div> <!-- pagehead -->
     <div id="workarea"><%

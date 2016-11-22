@@ -6,17 +6,6 @@
 
     <display-name>Data Dictionary</display-name>
 
-    <!-- context params -->
-    <context-param>
-        <param-name>application-name</param-name>
-        <param-value>${app.displayName}</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>appDispName</param-name>
-        <param-value>${app.displayName}</param-value>
-    </context-param>
-
     <context-param>
         <param-name>useCentralAuthenticationService</param-name>
         <param-value>${useCentralAuthenticationService}</param-value>
