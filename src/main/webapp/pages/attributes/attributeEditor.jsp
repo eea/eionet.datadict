@@ -25,7 +25,7 @@
                                 <em>${actionBean.attribute.shortName}</em>
                             </c:when>
                             <c:otherwise>
-                                <stripes:text id="Short Name" class="mandatory_field"name="attribute.shortName"/>
+                                <stripes:text id="Short Name" class="mandatory_field" name="attribute.shortName"/>
                             </c:otherwise>
                         </c:choose>
                     </td>
