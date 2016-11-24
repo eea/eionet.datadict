@@ -14,6 +14,7 @@
                 $(".delLink").click(function() {
                     clearSysMsg();
                     this.parentElement.remove();
+                    return false;
                 });
 
                 openPopup = function(divId) {
@@ -100,7 +101,7 @@
             <stripes:hidden name="vocabularyConcept.identifier" />
             <stripes:hidden id="txtEditDivId" name="editDivId" />
 
-            <table class="datatable">
+            <table class="datatable results">
                 <colgroup>
                     <col style="width:26%"/>
                     <col style="width:4%"/>

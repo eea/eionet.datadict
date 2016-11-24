@@ -113,6 +113,7 @@
 
                 $(".delLink").click(function() {
                     this.parentElement.remove();
+                    return false;
                 });
 
                 var initPopup = function(divId) {

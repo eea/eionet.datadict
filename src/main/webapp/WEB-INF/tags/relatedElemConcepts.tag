@@ -30,14 +30,14 @@
 
 <script type="text/javascript">
 // <![CDATA[
-( function($) {
+(function($) {
     $(document).ready(function() {
         var currentSize = ${fn:length(dataElements)};
 
-        $("#multiAdd${uniqueId}").live("click", function(event){
-          clearSysMsg();
+        $("#multiAdd${uniqueId}").live("click", function(event) {
+            clearSysMsg();
             var newInput = $("#newField${uniqueId}").clone(true);
-            newInput.attr("id", "multySpan${uniqueId}-" + currentSize);
+            newInput.attr("id", "multiDiv${uniqueId}-" + currentSize);
 
             newInput.find("select").attr("name", "${fieldName}[" + currentSize + "].relatedConceptId");
             //newInput.find("select").attr("id", "elem${fieldName}[" + currentSize + "].relatedConceptId");
@@ -48,19 +48,17 @@
             newInput.find("input[id='identifier-${uniqueId}.identifier']").attr("name", "${fieldName}[" + currentSize + "].identifier");
             //newInput.find("input[id='identifier${uniqueId}].identifier']").attr("value", "${dataElements[0].identifier}");
 
-
             newInput.appendTo("#multiDiv${uniqueId}");
             currentSize++;
             event.preventDefault();
         });
-
     });
-} ) ( jQuery );
+})(jQuery);
 // ]]>
 </script>
 
 <div style="display:none">
-    <div id="newField${uniqueId}">
+    <div id="newField${uniqueId}" class="delLinkWrapper">
         <input type="hidden" id="elem-${uniqueId}.id" name="" value="${elementId}" />
         <input type="hidden" id="identifier-${uniqueId}.identifier" name="" value="${dataElements[0].identifier}" />
         <select name="">
@@ -76,27 +74,28 @@
 <div id="multiDiv${uniqueId}">
     <c:forEach var="attr" items="${dataElements}" varStatus="innerLoop">
         <c:if test="${not empty attr.relatedConceptId && attr.relatedConceptId != 0}">
-        <div id="multySpan${uniqueId}-${innerLoop.index}">
-            <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
-            <input type="hidden" name="${fieldName}[${innerLoop.index}].vocabularyId" value="${attr.vocabularyId}" />
-            <input type="hidden" name="${fieldName}[${innerLoop.index}].relatedConceptId" value="${attr.relatedConceptId}" />
-            <input type="hidden" name="${fieldName}[${innerLoop.index}].identifier" value="${attr.identifier}" />
-            <select name="select-${fieldName}[${innerLoop.index}].relatedConceptId" disabled="disabled">
-                <option value=""> </option>
-                <c:forEach var="concept" items="${vocabularyConcepts}">
-                    <c:choose>
-                        <c:when test="${concept.id eq attr.relatedConceptId}">
-                            <option value="${concept.id}" selected="selected"><c:out value="${concept.identifier}" /> (<c:out value="${concept.label}" />)</option>
-                        </c:when>
-                        <c:otherwise>
-                            <option value="${concept.id}"><c:out value="${concept.identifier}" /> (<c:out value="${concept.label}" />)</option>
-                        </c:otherwise>
-                    </c:choose>
-                </c:forEach>
-            </select>
-            <a href="#" class="delLink deleteButton" title="Remove"></a>
-        </div>
+            <div id="multiDiv${uniqueId}-${innerLoop.index}" class="delLinkWrapper">
+                <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
+                <input type="hidden" name="${fieldName}[${innerLoop.index}].vocabularyId" value="${attr.vocabularyId}" />
+                <input type="hidden" name="${fieldName}[${innerLoop.index}].relatedConceptId" value="${attr.relatedConceptId}" />
+                <input type="hidden" name="${fieldName}[${innerLoop.index}].identifier" value="${attr.identifier}" />
+                <select name="select-${fieldName}[${innerLoop.index}].relatedConceptId" disabled="disabled">
+                    <option value=""> </option>
+                    <c:forEach var="concept" items="${vocabularyConcepts}">
+                        <c:choose>
+                            <c:when test="${concept.id eq attr.relatedConceptId}">
+                                <option value="${concept.id}" selected="selected"><c:out value="${concept.identifier}" /> (<c:out value="${concept.label}" />)</option>
+                            </c:when>
+                            <c:otherwise>
+                                <option value="${concept.id}"><c:out value="${concept.identifier}" /> (<c:out value="${concept.label}" />)</option>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+                </select>
+                <a href="#" class="delLink deleteButton" title="Remove"></a>
+            </div>
         </c:if>
     </c:forEach>
 </div>
+<br />
 <a href="#" id="multiAdd${uniqueId}">Add new</a>
