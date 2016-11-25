@@ -429,27 +429,13 @@ else
                 }
 
                 if (!mode.equals("view") && type==null){ %>
-                    <div class="attention">NB! Please select the attribute type first. Otherwise your entries will be lost.</div><%
+                    <p class="attention">NB! Please select the attribute type first. Otherwise your entries will be lost.</p><%
                 }
 
             int displayed = 1;
 
-            if (mode.equals("view")){
-                %>
-                <table class="datatable results" style="clear:right">
-                <col style="width:10em"/>
-                <col style="width:35em"/>
-                <%
-            } else {
             %>
-                <table class="datatable" style="clear:right">
-                <col style="width:9em"/>
-                <col style="width:2em"/>
-                <col style="width:35em"/>
-                <%
-            }
-            %>
-
+            <table class="datatable results">
             <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                 <th scope="row" class="scope-row">Type</th>
                 <%

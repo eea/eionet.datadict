@@ -1228,7 +1228,7 @@ else if (mode.equals("add"))
 
                                     <!-- table elements -->
                                     <%
-                                    if ((mode.equals("view") && elems!=null && elems.size()>0) || mode.equals("edit")){
+                                    if ((mode.equals("view") && elems!=null && elems.size()>0)) {
 
 
                                             String title = "Elements";
@@ -1241,14 +1241,11 @@ else if (mode.equals("add"))
                                             boolean hasPrimaryKeys = false;
                                             %>
 
-                                                <h2><%=Util.processForDisplay(title)%></h2>
-                                                <p>
-                                                    <a id="elements"></a>
-                                                </p>
+                                                <h2 id="elements"><%=Util.processForDisplay(title)%></h2>
 
                                                 <%
                                                 // elements table
-                                                if (mode.equals("view") && elems!=null && elems.size()>0){
+                                                if (mode.equals("view") && elems!=null && elems.size()>0) {
 
                                                     // set colwidths
                                                     String widthShortName = "50%";
@@ -1405,83 +1402,70 @@ else if (mode.equals("add"))
                                     }
                                     %>
 
-
                                     <!-- complex attributes -->
+                                    <% if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0) { %>
+                                        <h2 id="cattrs">Complex attributes</h2>
+                                            <table class="datatable results" id="dataset-attributes">
+                                                <col style="width:30%"/>
+                                                <col style="width:70%"/>
 
-                                    <%
-                                    if ((mode.equals("edit") && user!=null) || (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0)){
-                                        %>
-
-
-                                            <h2 id="cattrs">Complex attributes</h2>
                                                 <%
+                                                displayed = 1;
+                                                isOdd = Util.isOdd(displayed);
+                                                for (int i=0; i<complexAttrs.size(); i++){
+                                                    DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
+                                                    attrID = attr.getID();
+                                                    String attrName = attr.getName();
+                                                    Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
+                                                    %>
 
-                                            // the table
-                                            if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
-                                                %>
-                                                        <table class="datatable results" id="dataset-attributes">
-                                                                    <col style="width:30%"/>
-                                                                    <col style="width:70%"/>
-
+                                                    <tr class="<%=isOdd%>">
+                                                        <td>
+                                                            <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+                                                                <%=Util.processForDisplay(attrName)%>
+                                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX"></a>
+                                                            </a>
+                                                        </td>
+                                                        <td>
                                                             <%
-                                                            displayed = 1;
-                                                            isOdd = Util.isOdd(displayed);
-                                                            for (int i=0; i<complexAttrs.size(); i++){
+                                                            StringBuffer rowValue=null;
+                                                            Vector rows = attr.getRows();
+                                                            for (int j=0; rows!=null && j<rows.size(); j++){
 
-                                                                DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
-                                                                attrID = attr.getID();
-                                                                String attrName = attr.getName();
-                                                                Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
-                                                                %>
+                                                                if (j>0){%>---<br/><%}
 
-                                                                <tr class="<%=isOdd%>">
-                                                                    <td>
-                                                                        <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
-                                                                            <%=Util.processForDisplay(attrName)%>
-                                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX"></a>
-                                                                        </a>
-                                                                    </td>
-                                                                    <td>
-                                                                        <%
-                                                                        StringBuffer rowValue=null;
-                                                                        Vector rows = attr.getRows();
-                                                                        for (int j=0; rows!=null && j<rows.size(); j++){
+                                                                Hashtable rowHash = (Hashtable)rows.get(j);
+                                                                rowValue = new StringBuffer();
 
-                                                                            if (j>0){%>---<br/><%}
+                                                                for (int t=0; t<attrFields.size(); t++){
+                                                                    Hashtable hash = (Hashtable)attrFields.get(t);
+                                                                    String fieldID = (String)hash.get("id");
+                                                                    String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
+                                                                    if (fieldValue == null) fieldValue = "";
+                                                                    if (fieldValue.trim().equals("")) continue;
 
-                                                                            Hashtable rowHash = (Hashtable)rows.get(j);
-                                                                            rowValue = new StringBuffer();
+                                                                    if (t>0 && fieldValue.length()>0  && rowValue.toString().length()>0)
+                                                                        rowValue.append(", ");
 
-                                                                            for (int t=0; t<attrFields.size(); t++){
-                                                                                Hashtable hash = (Hashtable)attrFields.get(t);
-                                                                                String fieldID = (String)hash.get("id");
-                                                                                String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
-                                                                                if (fieldValue == null) fieldValue = "";
-                                                                                if (fieldValue.trim().equals("")) continue;
-
-                                                                                if (t>0 && fieldValue.length()>0  && rowValue.toString().length()>0)
-                                                                                    rowValue.append(", ");
-
-                                                                                rowValue.append(Util.processForDisplay(fieldValue));
-                                                                                %>
-                                                                                <%=Util.processForDisplay(fieldValue)%><br/><%
-                                                                            }
-                                                                        }
-                                                                        %>
-                                                                    </td>
-
-                                                                    <% isOdd = Util.isOdd(++displayed); %>
-                                                                </tr><%
+                                                                    rowValue.append(Util.processForDisplay(fieldValue));
+                                                                    %>
+                                                                    <%=Util.processForDisplay(fieldValue)%><br/><%
+                                                                }
                                                             }
                                                             %>
-                                                        </table>
-                                                <%
-                                            }
-                                    }
-                                    %>
-                                    <!-- end complex attributes -->
+                                                        </td>
 
-                            <!-- end dotted -->
+                                                        <% isOdd = Util.isOdd(++displayed); %>
+                                                    </tr><%
+                                                }
+                                                %>
+                                            </table>
+                                    <%
+                        }
+                        %>
+                        <!-- end complex attributes -->
+
+                <!-- end dotted -->
             </div>
 
             <div style="display:none">

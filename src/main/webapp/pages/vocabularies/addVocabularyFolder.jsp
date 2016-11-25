@@ -45,11 +45,11 @@
 
         <h1>New vocabulary</h1>
 
-        <stripes:form id="form" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
+        <stripes:form id="form" method="post" beanclass="${actionBean['class'].name}">
         <stripes:hidden name="copyId" />
         <div id="outerframe">
             <c:url var="mandatoryPic" value="/images/mandatory.gif" />
-            <table class="datatable">
+            <table class="datatable results">
                 <colgroup>
                     <col style="width:26%"/>
                     <col style="width:4%"/>

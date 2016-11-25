@@ -1388,8 +1388,8 @@ else if (mode.equals("add"))
                                                     <tr>
                                                         <th></th>
                                                         <td colspan="3">
-                                                            <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-                                                            <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
+                                                            <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>
+                                                            <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>
                                                             <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=ds_id%>')"/>
                                                         </td>
                                                     </tr>

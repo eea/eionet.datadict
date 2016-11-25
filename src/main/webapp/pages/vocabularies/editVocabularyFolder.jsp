@@ -231,7 +231,7 @@
             <stripes:hidden name="origIdentifier" />
 
 
-            <table class="datatable">
+            <table class="datatable results">
                 <colgroup>
                     <col style="width:26%"/>
                     <col style="width:4%"/>
