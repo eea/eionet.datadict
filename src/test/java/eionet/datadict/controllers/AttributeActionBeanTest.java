@@ -15,8 +15,6 @@ import eionet.meta.DDUser;
 import eionet.datadict.errors.UserAuthenticationException;
 import eionet.datadict.errors.UserAuthorizationException;
 import eionet.meta.dao.domain.FixedValue;
-import eionet.web.action.di.ActionBeanDependencyInjectionInterceptor;
-import eionet.web.action.di.ActionBeanDependencyInjector;
 import java.util.ArrayList;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -38,10 +36,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import eionet.web.action.di.SpyDependencyInjector;
+import eionet.web.action.di.SpyActionBeanInterceptor;
 
 
 public class AttributeActionBeanTest {
-    private static class DependencyInjector implements ActionBeanDependencyInjector {
+    private static class DependencyInjector implements SpyDependencyInjector {
         
         private final AttributeActionBean actionBean;
         
@@ -55,17 +55,7 @@ public class AttributeActionBeanTest {
         }
 
         @Override
-        public void injectDependencies(ActionBean bean) {
-            
-        }
-
-        @Override
-        public boolean shouldReplaceActionBean() {
-            return true;
-        }
-
-        @Override
-        public ActionBean getStubActionBeanFromExecutionContextActionBean(ActionBean bean) {
+        public ActionBean getSpyActionBean(ActionBean bean) {
            AttributeActionBean oldActionBean = (AttributeActionBean)bean;
            actionBean.setAttribute(oldActionBean.getAttribute());
            actionBean.setNamespaces(oldActionBean.getNamespaces());
@@ -103,7 +93,7 @@ public class AttributeActionBeanTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ActionBeanDependencyInjectionInterceptor.dependencyInjector = new DependencyInjector(actionBean);
+        SpyActionBeanInterceptor.dependencyInjector = new DependencyInjector(actionBean);
     }
     
     @Test

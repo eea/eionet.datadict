@@ -56,7 +56,8 @@ public final class ActionBeanUtils {
     private static String getInterceptorClassesParameter() {
         String[] interceptors = new String[] {
             "net.sourceforge.stripes.integration.spring.SpringInterceptor",
-            "eionet.web.action.di.ActionBeanDependencyInjectionInterceptor"
+            "eionet.web.action.di.ActionBeanDependencyInjectionInterceptor",
+            "eionet.web.action.di.SpyActionBeanInterceptor"
         };
         
         return StringUtils.join(interceptors, ", ");
