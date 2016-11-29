@@ -9,12 +9,7 @@ import net.sourceforge.stripes.controller.Intercepts;
 import net.sourceforge.stripes.controller.LifecycleStage;
 
 @Intercepts({
-    LifecycleStage.ActionBeanResolution,
-    LifecycleStage.HandlerResolution,
-    LifecycleStage.BindingAndValidation,
-    LifecycleStage.CustomValidation,
-    LifecycleStage.EventHandling,
-    LifecycleStage.ResolutionExecution
+    LifecycleStage.CustomValidation
 })
 public class SpyActionBeanInterceptor implements Interceptor{
     
