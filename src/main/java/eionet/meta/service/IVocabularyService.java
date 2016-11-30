@@ -214,13 +214,13 @@ public interface IVocabularyService {
     VocabularyConceptResult searchVocabularyConcepts(VocabularyConceptFilter filter) throws ServiceException;
 
     /**
-     * Returns valid vocabulary concepts of a vocabulary with additional attributes for RDF.
+     * Returns all vocabulary concepts of a vocabulary with additional attributes for RDF.
      *
      * @param vocabularyFolderId vocabulary id
-     * @return list of valid concepts with attributes
+     * @return list of all concepts with attributes
      * @throws ServiceException if operation fails
      */
-    List<VocabularyConcept> getAcceptedConceptsWithAttributes(int vocabularyFolderId) throws ServiceException;
+    List<VocabularyConcept> getAllConceptsWithAttributes(int vocabularyFolderId) throws ServiceException;
 
     /**
      * Returns vocabulary concepts of a vocabulary with additional attributes for RDF.
@@ -686,5 +686,7 @@ public interface IVocabularyService {
     void batchUpdateVocabularyConceptsDataElementValues(List<VocabularyConcept> vocabularyConcepts, int batchSize) throws ServiceException;
 
     void batchFixRelatedReferenceElements(List<VocabularyConcept> concepts, int batchSize);
+
+    void deleteVocabularyConcepts(int vocabularyFolderId);
 
 }
