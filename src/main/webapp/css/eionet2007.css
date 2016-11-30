@@ -1574,7 +1574,7 @@
 		background: url(../images/add-remove.png) 19px  0px no-repeat;
 	}
 
-	.vocabularyConceptResults,
+	#vocabularyConceptResults,
 	h2#otherVersions {
 		display: block;
 		clear: both;
