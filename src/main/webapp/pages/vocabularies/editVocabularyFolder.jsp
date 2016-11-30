@@ -613,8 +613,7 @@
 
         <c:if test="${actionBean.vocabularyConcepts.fullListSize == 0}">
             <c:if test="${actionBean.vocabularyFolder.commonType}">
-                <br />
-                <button id="addNewConceptBtn">Add new concept</button>
+                <input type="button" id="addNewConceptBtn" value="Add new concept" />
             </c:if>
         </c:if>
 
