@@ -103,7 +103,7 @@ public class VocabularyRdfImportTask implements AsyncTask {
             // TODO use enum instead for rdf purge option
             int rdfPurgeOption = this.getRdfPurgeOption();
             List<String> systemMessages = this.vocabularyRdfImportService.importRdfIntoVocabulary(
-                    rdfFileReader, vocabulary, rdfPurgeOption == 3, rdfPurgeOption == 2, this.getMissingConceptsAction());
+                    rdfFileReader, vocabulary, rdfPurgeOption == 4, rdfPurgeOption == 3, rdfPurgeOption == 2, this.getMissingConceptsAction());
 
             for (String systemMessage : systemMessages) {
                 LOGGER.info(systemMessage);
