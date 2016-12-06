@@ -1902,7 +1902,7 @@
                                                                         List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
                                                                         if(concepts!=null){ %>
                                                                             <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
-                                                                                <c:out value="${concept.label}"/><c:if test="${!count.last}">, </c:if>
+                                                                                <div><c:out value="${concept.label}"/><c:if test="${!count.last}">, </c:if><div>
                                                                             </c:forEach>
                                                                         <%}                                                                      
                                                                     } else if (mode.equals("edit")) {
@@ -1920,7 +1920,7 @@
                                                                                     </c:when>
                                                                                 </c:choose>
                                                                                 <c:forEach var="value" items="<%=inheritedValues%>" varStatus="count">
-                                                                                    <c:out value="${value.label}"/><c:if test="${!count.last}">, </c:if>
+                                                                                    <div><c:out value="${value.label}"/><c:if test="${!count.last}">, </c:if><div>
                                                                                 </c:forEach>
                                                                                 </br>
                                                                           <%}

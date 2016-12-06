@@ -1065,7 +1065,7 @@ else if (mode.equals("add"))
                                                         List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
                                                         %>
                                                         <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
-                                                            <c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if>
+                                                            <div><c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if><div>
                                                         </c:forEach>
                                                   <%}
                                                     else if (mode.equals("view")){ %>
@@ -1090,7 +1090,7 @@ else if (mode.equals("add"))
                                                                     </c:when>
                                                                 </c:choose>
                                                                 <c:forEach var="value" items="<%=inheritedValues%>" varStatus="count">
-                                                                    <c:out value="${value.label}"/><c:if test="${!count.last}">, </c:if>
+                                                                    <div><c:out value="${value.label}"/><c:if test="${!count.last}">, </c:if><div>
                                                                 </c:forEach>
                                                                 </br>
                                                             <%}

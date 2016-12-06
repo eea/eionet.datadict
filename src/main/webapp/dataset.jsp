@@ -1164,7 +1164,7 @@ else if (mode.equals("add"))
                                                             List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
                                                             if(vocabularyConcepts != null) {%>
                                                                 <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
-                                                                    <c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if>
+                                                                    <div><c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if><div>
                                                                 </c:forEach>
                                                             <%}
                                                         }    
