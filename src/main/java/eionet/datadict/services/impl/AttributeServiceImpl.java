@@ -2,6 +2,8 @@ package eionet.datadict.services.impl;
 
 import eionet.datadict.errors.BadRequestException;
 import eionet.datadict.errors.ConflictException;
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.services.AttributeService;
 import eionet.datadict.services.acl.AclEntity;
@@ -11,8 +13,11 @@ import eionet.datadict.services.data.AttributeDataService;
 import eionet.meta.DDUser;
 import eionet.datadict.errors.UserAuthenticationException;
 import eionet.datadict.errors.UserAuthorizationException;
+import eionet.datadict.model.Attribute.ValueInheritanceMode;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.services.data.VocabularyDataService;
+import eionet.meta.dao.domain.VocabularyConcept;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,8 +95,32 @@ public class AttributeServiceImpl implements AttributeService {
         this.attributeDataService.deleteAllAttributeValues(attributeId, ownerEntity);
         
     }
+    
+    
+    @Override
+    @Transactional
+    public List<VocabularyConcept> getAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity, ValueInheritanceMode inheritanceMode) 
+            throws ResourceNotFoundException, EmptyParameterException {
+        Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
+        if (vocabularyId != null) {
+             List<VocabularyConcept> vocabularyConcepts = attributeDataService.getVocabularyConceptsAsAttributeValues(vocabularyId, attributeId, ddEntity, inheritanceMode);
+             return vocabularyConcepts;
+        }
+        return null;
+    }
 
 
+    @Override
+    @Transactional
+    public List<VocabularyConcept> getInherittedAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity) throws ResourceNotFoundException, EmptyParameterException {
+        Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
+        if (vocabularyId != null) {
+            List<VocabularyConcept> vocabularyConcepts = attributeDataService.getVocabularyConceptsAsInheritedAttributeValues(vocabularyId, attributeId, ddEntity);
+            return vocabularyConcepts;
+        }
+        return null;
+    }
+    
     protected int saveWithCreate(Attribute attribute, DDUser user) throws UserAuthorizationException, BadRequestException {
         if (!this.aclService.hasPermission(user, AclEntity.ATTRIBUTE, Permission.INSERT)) {
             throw new UserAuthorizationException("You are not authorized to add new attributes.");

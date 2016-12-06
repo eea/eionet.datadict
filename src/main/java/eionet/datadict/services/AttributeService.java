@@ -2,11 +2,16 @@ package eionet.datadict.services;
 
 import eionet.datadict.errors.BadRequestException;
 import eionet.datadict.errors.ConflictException;
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.Attribute;
 import eionet.meta.DDUser;
 import eionet.datadict.errors.UserAuthenticationException;
 import eionet.datadict.errors.UserAuthorizationException;
+import eionet.datadict.model.Attribute.ValueInheritanceMode;
 import eionet.datadict.model.DataDictEntity;
+import eionet.meta.dao.domain.VocabularyConcept;
+import java.util.List;
 
 public interface AttributeService {
     
@@ -82,4 +87,36 @@ public interface AttributeService {
      */
     public void deleteAllAttributeValues(int attributeId, DataDictEntity ownerEntity, DDUser user)
             throws UserAuthenticationException, UserAuthorizationException;
+    
+    /**
+     * First fetches the vocabulary which is bound to the attribute with the given id. Then fetches all the vocabulary values which 
+     * are assigned to this same attribute owned by the given DataDict Entity.
+     * 
+     * @param attributeId The id of the attribute whose values are to be fetched.
+     * @param ddEntity The owner of the attribute values.
+     * @param inheritanceMode the inheritance mode
+     * 
+     * @return {@link List} of the {@link VocabularyConcept} elements.  
+     * 
+     * @throws eionet.datadict.errors.ResourceNotFoundException  
+     * @throws eionet.datadict.errors.EmptyParameterException  
+     */
+    public List<VocabularyConcept> getAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity, ValueInheritanceMode inheritanceMode)
+            throws ResourceNotFoundException, EmptyParameterException ; 
+    
+    /**
+     * First fetches the vocabulary which is bound to the attribute with the given id. Then fetches all the vocabulary values of this  
+     * attribute which the given DataDictEntity inherits.
+     * 
+     * @param attributeId The id of the attribute whose values are to be fetched.
+     * @param ddEntity The owner of the attribute values.
+     * 
+     * @return {@link List} of the {@link VocabularyConcept} elements.  
+     * 
+     * @throws eionet.datadict.errors.ResourceNotFoundException  
+     * @throws eionet.datadict.errors.EmptyParameterException  
+     */
+    public List<VocabularyConcept> getInherittedAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity)
+            throws ResourceNotFoundException, EmptyParameterException;
+    
 }

@@ -4,6 +4,7 @@ import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.DataDictEntity;
+import eionet.datadict.services.AttributeService;
 import eionet.datadict.services.data.AttributeDataService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -2015,7 +2016,7 @@ public class DDSearchEngine {
                     attr.setInheritedLevel(inherited);
                 } else {
                     if (attr.getInheritedLevel().equals("DS") && inherited.equals("T")) {
-                        attr.clearInherited(); // element should inherit table values if existsAttribute and then dataset values
+                        attr.clearInherited(); // element should inherit table values if exists and then dataset values
                     }
                     if (attr.getInheritedLevel().equals(inherited) || inherited.equals("T")) {
                         attr.addInheritedValue(rowHash);
@@ -5249,64 +5250,40 @@ public class DDSearchEngine {
         return dao.getVocabularyFolder(vocabularyId);
     }
     
-    
-    public Vector<String> getAttributeVocabularyConceptLabels(int attributeId,  DataDictEntity ddEntity, String inheritanceModeCode) 
-            throws ResourceNotFoundException, EmptyParameterException {
-        Attribute.ValueInheritanceMode inheritanceMode = convertValueInheritanceModeCode(inheritanceModeCode);
-        AttributeDataService attributeDataService = springContext.getBean(AttributeDataService.class);
-        Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
-        if (vocabularyId != null) {
-            Vector<String> labelVector = new Vector<String>();
-            List<VocabularyConcept> resultList = attributeDataService.getVocabularyConceptsAsAttributeValues(vocabularyId, attributeId, ddEntity, inheritanceMode);
-            for(VocabularyConcept concept : resultList){
-                labelVector.add(concept.getLabel());
-            }
-            return labelVector;
-        }
-        return null;
-    }
-    
+   
+    /*
+     * Method created to support data_elememnt.jsp, dataset.jsp and dstable.jsp with the AttributeService spring bean.
+     * @see AttributeService javadoc for reference. 
+     */
     public List<VocabularyConcept> getAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity, String inheritanceModeCode) 
             throws ResourceNotFoundException, EmptyParameterException {
         Attribute.ValueInheritanceMode inheritanceMode = convertValueInheritanceModeCode(inheritanceModeCode);
-        AttributeDataService attributeDataService = springContext.getBean(AttributeDataService.class);
-        Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
-        if (vocabularyId != null) {
-             List<VocabularyConcept> vocabularyConcepts = attributeDataService.getVocabularyConceptsAsAttributeValues(vocabularyId, attributeId, ddEntity, inheritanceMode);
-             return vocabularyConcepts;
-        }
-        return null;
+        AttributeService attributeService = springContext.getBean(AttributeService.class);
+        return attributeService.getAttributeVocabularyConcepts(attributeId, ddEntity, inheritanceMode);
     }
     
-    public List<VocabularyConcept> getOriginalAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity) 
-            throws ResourceNotFoundException, EmptyParameterException {
-        AttributeDataService attributeDataService = springContext.getBean(AttributeDataService.class);
-        Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
-        if (vocabularyId != null) {
-            List<VocabularyConcept> vocabularyConcepts = attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(vocabularyId, attributeId, ddEntity);
-            return vocabularyConcepts;
-        }
-        return null;
-    }
     
+    /*
+     * Method Created to support data_element.jsp and dstable.jsp with the AttributeService spring bean.
+     * @see AttributeService javadoc for reference.
+     */
     public List<VocabularyConcept> getInheritedAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity) 
             throws ResourceNotFoundException, EmptyParameterException {
-        AttributeDataService attributeDataService = springContext.getBean(AttributeDataService.class);
-        Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
-        if (vocabularyId != null) {
-            List<VocabularyConcept> vocabularyConcepts = attributeDataService.getVocabularyConceptsAsInheritedAttributeValues(vocabularyId, attributeId, ddEntity);
-            return vocabularyConcepts;
-        }
-        return null;
+        AttributeService attributeService = springContext.getBean(AttributeService.class);
+        return attributeService.getInherittedAttributeVocabularyConcepts(attributeId, ddEntity);
     }
     
+    /*
+     * Method created to support data_element.jsp, dataset.jsp and dstable.jsp with the AttributeDataService spring bean.
+     * @see AttributeDataService javadoc for reference.
+     */
     public boolean existsVocabularyBinding(int attributeId){
         AttributeDataService attributeDataService = springContext.getBean(AttributeDataService.class);
         Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
         return vocabularyId != null;
     }
     
-    protected Attribute.ValueInheritanceMode convertValueInheritanceModeCode(String inheritanceModeCode) {
+    private Attribute.ValueInheritanceMode convertValueInheritanceModeCode(String inheritanceModeCode) {
         Attribute.ValueInheritanceMode inheritanceMode;
         if (inheritanceModeCode.equals("0")) {
                 inheritanceMode = Attribute.ValueInheritanceMode.NONE;
