@@ -1,7 +1,8 @@
 
-package eionet.datadict.services.impl.data;
+package eionet.datadict.services.data.impl;
 
 
+import eionet.datadict.services.data.impl.RdfNamespaceDataServiceImpl;
 import eionet.datadict.dal.RdfNamespaceDao;
 import eionet.datadict.model.RdfNamespace;
 import java.util.ArrayList;

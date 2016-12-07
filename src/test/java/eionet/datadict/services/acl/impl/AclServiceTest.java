@@ -1,5 +1,6 @@
-package eionet.datadict.services.impl.acl;
+package eionet.datadict.services.acl.impl;
 
+import eionet.datadict.services.acl.impl.AclServiceImpl;
 import eionet.datadict.services.acl.AclEntity;
 import eionet.datadict.services.acl.Permission;
 import eionet.meta.DDUser;

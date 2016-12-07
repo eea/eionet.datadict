@@ -1,6 +1,7 @@
 
-package eionet.datadict.services.impl.data;
+package eionet.datadict.services.data.impl;
 
+import eionet.datadict.services.data.impl.NamespaceDataServiceImpl;
 import eionet.datadict.dal.NamespaceDao;
 import eionet.datadict.model.Namespace;
 import java.util.ArrayList;

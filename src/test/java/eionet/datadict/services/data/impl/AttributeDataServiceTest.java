@@ -1,5 +1,6 @@
-package eionet.datadict.services.impl.data;
+package eionet.datadict.services.data.impl;
 
+import eionet.datadict.services.data.impl.AttributeDataServiceImpl;
 import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.VocabularyDao;
 import eionet.datadict.errors.ResourceNotFoundException;
