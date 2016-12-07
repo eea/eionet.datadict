@@ -1227,9 +1227,16 @@ else if (mode.equals("add"))
                                                             else if (dispType.equals("vocabulary")){
                                                                 if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
                                                                     <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
-                                                                <% } else {%>
+                                                                  <%DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
+                                                                    List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
+                                                                    if(vocabularyConcepts != null) {%>
+                                                                        <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
+                                                                            <div><c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if><div>
+                                                                        </c:forEach>
+                                                                  <%}
+                                                                } else {%>
                                                                         [Manage links to the vocabulary]         
-                                                                <%}
+                                                              <%}
                                                             } else{ // no multiple display
 
                                                                 if (dispType.equals("text")) {

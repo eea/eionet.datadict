@@ -1913,7 +1913,7 @@
                                                                                 <c:set var="inheritable" value="<%=attribute.getInheritable()%>" />
                                                                                 <c:choose>
                                                                                     <c:when test="${inheritable eq '2'}">
-                                                                                        <c:out value="Overriding parent level value: "/>
+                                                                                        <c:out value="Overriding parent level values: "/>
                                                                                     </c:when>
                                                                                     <c:when test="${inheritable eq '1'}">
                                                                                         <c:out value="Inherited from parent level: "/>
@@ -1927,6 +1927,12 @@
                                                                         }
                                                                         if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
                                                                             <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
+                                                                          <%List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
+                                                                            if(concepts!=null){ %>
+                                                                                <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
+                                                                                    <div><c:out value="${concept.label}"/><c:if test="${!count.last}">, </c:if><div>
+                                                                                </c:forEach>
+                                                                          <%}%>
                                                                         <%} else {%>
                                                                             [Manage links to the vocabulary]
                                                                         <%}
@@ -2113,8 +2119,15 @@
                                                                     <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>"></a>
                                                                     <%
                                                                         } else if (dispType.equals("vocabulary")){
-                                                                            if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
+                                                                                DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
+                                                                                if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
                                                                                 <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
+                                                                              <%List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
+                                                                                if(concepts!=null){ %>
+                                                                                    <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
+                                                                                        <div><c:out value="${concept.label}"/><c:if test="${!count.last}">, </c:if><div>
+                                                                                    </c:forEach>
+                                                                              <%}%>
                                                                             <%} else {%>
                                                                                 [Manage links to the vocabulary]
                                                                             <%}
