@@ -13,11 +13,13 @@ import eionet.datadict.services.data.AttributeDataService;
 import eionet.meta.DDUser;
 import eionet.datadict.errors.UserAuthenticationException;
 import eionet.datadict.errors.UserAuthorizationException;
+import eionet.datadict.model.Attribute.TargetEntity;
 import eionet.datadict.model.Attribute.ValueInheritanceMode;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.services.data.VocabularyDataService;
 import eionet.meta.dao.domain.VocabularyConcept;
 import java.util.List;
+import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -127,6 +129,7 @@ public class AttributeServiceImpl implements AttributeService {
         }
         
         validateMandatoryAttributeFields(attribute);
+        filterTargetEntities(attribute);
         
         int newAttributeId = this.attributeDataService.createAttribute(attribute);
         this.aclService.grantAccess(user, AclEntity.ATTRIBUTE, this.getAttributeAclId(newAttributeId), "Short_name= " + attribute.getShortName());
@@ -141,6 +144,7 @@ public class AttributeServiceImpl implements AttributeService {
         }
 
         validateMandatoryAttributeFields(attribute);
+        filterTargetEntities(attribute);
         
         this.attributeDataService.updateAttribute(attribute);
 
@@ -161,5 +165,14 @@ public class AttributeServiceImpl implements AttributeService {
             throw new BadRequestException ("One of the mandatory fields are missing! Attribute cannot be saved.");
         }
     }
+    
+    protected void filterTargetEntities (Attribute attribute) {
+        if (attribute.getDisplayType() == Attribute.DisplayType.VOCABULARY) {
+            Set<TargetEntity> targetEntities = attribute.getTargetEntities();
+            targetEntities.remove(TargetEntity.SCH);
+            targetEntities.remove(TargetEntity.SCS);
+            targetEntities.remove(TargetEntity.VCF);
+        }
+    } 
 
 }
