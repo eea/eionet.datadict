@@ -20,6 +20,14 @@
             if (elem.value == currentDisplayType) {
                 showOnLoadSpecific(currentDisplayType);
             }
+            if (elem.value === 'VOCABULARY') {
+                document.getElementById('display-all-targetEntities').style.display = "none";
+                document.getElementById('display-some-targetEntities').style.display = "inline"; 
+            }
+            else {
+                document.getElementById('display-all-targetEntities').style.display = "inline";
+                document.getElementById('display-some-targetEntities').style.display = "none";
+            }
         }
         
         function validateEmptyVocab () {
