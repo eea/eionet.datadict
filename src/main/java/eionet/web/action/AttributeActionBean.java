@@ -1,4 +1,4 @@
-package eionet.datadict.controllers;
+package eionet.web.action;
 
 import eionet.datadict.errors.BadRequestException;
 import eionet.datadict.errors.ResourceNotFoundException;
