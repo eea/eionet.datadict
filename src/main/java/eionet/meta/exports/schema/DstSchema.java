@@ -1,13 +1,19 @@
 
 package eionet.meta.exports.schema;
 
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.model.DataDictEntity;
 import java.io.PrintWriter;
 import java.util.Vector;
 
 import eionet.meta.DDSearchEngine;
+import eionet.meta.DElemAttribute;
 import eionet.meta.Dataset;
 import eionet.meta.Namespace;
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.util.Util;
+import java.util.List;
 
 public class DstSchema extends Schema {
 
@@ -27,6 +33,7 @@ public class DstSchema extends Schema {
         if (ds != null) {
 
             Vector v = searchEngine.getSimpleAttributes(dsID, "DS");
+            processAttributeValues(v,  new DataDictEntity(Integer.parseInt(dsID), DataDictEntity.Entity.DS));
             ds.setSimpleAttributes(v);
             v = searchEngine.getComplexAttributes(dsID, "DS");
             ds.setComplexAttributes(v);
@@ -80,6 +87,24 @@ public class DstSchema extends Schema {
         addString("\t");
         addString("</xs:complexType>");
         newLine();
+    }
+    
+    //Needed in order to fetch the labels of the vocabulary attributes. If not used, then the vocabulary-concept id will be printed out
+    protected void processAttributeValues (Vector v, DataDictEntity attributeValuesOwner) throws ResourceNotFoundException, EmptyParameterException{
+        for (Object attribute : v) {
+            if (attribute instanceof DElemAttribute){
+                DElemAttribute attr = (DElemAttribute) attribute;
+                if (attr.getDisplayType().equals("vocabulary")){
+                    List<VocabularyConcept> vocs = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attr.getID()), attributeValuesOwner, "0");
+                    if(vocs != null){
+                        if (attr.getValues() != null) attr.getValues().removeAllElements();
+                        for (VocabularyConcept concept : vocs) {
+                            attr.setValue(concept.getLabel());
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
