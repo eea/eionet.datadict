@@ -1198,9 +1198,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             vocabularyFolders.add(vocabularyFolder);
             final List<RdfNamespace> nameSpaces = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
 
-            initFilter();
-            filter.setUsePaging(false);
-            filter.setConceptStatus(StandardGenericStatus.VALID);
             final List<? extends VocabularyConcept> concepts;
             if (vocabularyFolder.isSiteCodeType()) {
                 String countryCode = getContext().getRequestParameter("countryCode");
@@ -1211,7 +1208,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 siteCodeFilter.setIdentifier(identifier);
                 concepts = siteCodeService.searchSiteCodes(siteCodeFilter).getList();
             } else {
-                concepts = vocabularyService.getAcceptedConceptsWithAttributes(vocabularyFolder.getId());
+                concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
             }
 
             final String contextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
@@ -1286,7 +1283,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
 
             final String folderContextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
-            final List<VocabularyConcept> concepts = vocabularyService.getAcceptedConceptsWithAttributes(vocabularyFolder.getId());
+            final List<VocabularyConcept> concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
             final List<Triple<String, String, Integer>> fieldNamesWithLanguage =
                     vocabularyService.getVocabularyBoundElementNamesByLanguage(vocabularyFolder);
 

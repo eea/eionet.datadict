@@ -33,8 +33,8 @@
         </div>
 
         <!-- Vocabulary folder -->
-        <div id="outerframe" style="padding-top: 20px">
-            <table class="datatable">
+        <div id="outerframe">
+            <table class="datatable results">
                 <col style="min-width:8em"/>
                 <col />
                 <tr>

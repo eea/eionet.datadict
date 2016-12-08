@@ -613,6 +613,11 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     }
 
     @Override
+    public List<VocabularyConcept> getConceptsWithAttributeValues(int vocabularyId) {
+        return this.getConceptsWithAttributeValues(vocabularyId, null);
+    }
+
+    @Override
     public List<VocabularyConcept> getConceptsWithAttributeValues(int vocabularyId, StandardGenericStatus conceptStatus) {
         return this.getConceptsWithAttributeValues(vocabularyId, conceptStatus, null, null);
     }

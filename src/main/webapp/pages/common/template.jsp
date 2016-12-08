@@ -18,23 +18,24 @@
             <link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/print.css" media="print" />
             <link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/handheld.css" media="handheld" />
             <link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/screen.css" media="screen" title="Eionet 2007 style" />
-            <link rel="stylesheet" type="text/css" href="<c:url value="/css/eionet2007.css"/>" media="screen" title="Eionet 2007 style"/>
-            <link rel="shortcut icon" href="<c:url value="/favicon.ico"/>" type="image/x-icon" />
+            <link rel="stylesheet" type="text/css" href="<c:url value="/css/eionet2007.css" />" media="screen" title="Eionet 2007 style"/>
+            <link rel="shortcut icon" href="<c:url value="/favicon.ico" />" type="image/x-icon" />
 
             <link type="text/css" href="<c:url value="/css/smoothness/jquery-ui-1.8.16.custom.css" />" rel="stylesheet" />
-            <link type="text/css" media="all" href="<c:url value="/css/jscalendar/jsDatePick_ltr.min.css"/>"  rel="stylesheet" />
+            <link type="text/css" media="all" href="<c:url value="/css/jscalendar/jsDatePick_ltr.min.css" />"  rel="stylesheet" />
 
             <script type="text/javascript" src="<c:url value="/scripts/jquery-1.6.2.min.js" />"></script>
             <script type="text/javascript" src="<c:url value="/scripts/jquery-ui-1.8.16.custom.min.js" />"></script>
-            <script type="text/javascript" src="<c:url value="/scripts/jquery-timers.js"/>"></script>
-            <script type="text/javascript" src="<c:url value="/scripts/jquery.autocomplete.js"/>"></script>
-            <script type="text/javascript" src="<c:url value="/scripts/jquery.form.min.js"/>"></script>
+            <script type="text/javascript" src="<c:url value="/scripts/jquery-timers.js" />"></script>
+            <script type="text/javascript" src="<c:url value="/scripts/jquery.autocomplete.js" />"></script>
+            <script type="text/javascript" src="<c:url value="/scripts/jquery.form.min.js" />"></script>
             <script type="text/javascript" src="<c:url value="/scripts/jsDatePick.min.1.3.js" />"></script>
 
-            <script type="text/javascript" src="<c:url value="/scripts/prototype.js"/>"></script>
-            <script type="text/javascript" src="<c:url value="/scripts/util.js"/>"></script>
-            <script type="text/javascript" src="<c:url value="/script.js"/>"></script>
-            <script type="text/javascript" src="<c:url value="/helpPopup.js"/>"></script>
+            <script type="text/javascript" src="<c:url value="/scripts/prototype.js" />"></script>
+            <script type="text/javascript" src="<c:url value="/scripts/util.js" />"></script>
+            <script type="text/javascript" src="<c:url value="/script.js" />"></script>
+            <script type="text/javascript" src="<c:url value="/helpPopup.js" />"></script>
+            <script type="text/javascript" src="<c:url value="/pageops.js" />"></script>
             <stripes:layout-component name="head"/>
         </head>
 
@@ -61,7 +62,7 @@
                         </c:if>
                         <a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
                         <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>
-                        <a id="acronymlink" href="about.action" title="About ${initParam.appDispName}"><span>About</span></a>
+                        <a id="acronymlink" target="_blank" href="http://www.eionet.europa.eu/acronyms" title="Look up acronyms"><span>Acronyms</span></a>
                         <form action="http://google.com/search" method="get">
                             <div id="freesrchform">
                                 <label for="freesrchfld">Search</label>

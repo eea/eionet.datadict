@@ -28,14 +28,14 @@
 
 <script type="text/javascript">
 // <![CDATA[
-( function($) {
+(function($) {
     $(document).ready(function() {
         var currentSize = ${fn:length(attributes)};
 
-        $("#multiAdd${uniqueId}").live("click", function(event){
-          clearSysMsg();
+        $("#multiAdd${uniqueId}").live("click", function(event) {
+            clearSysMsg();
             var newInput = $("#newField${uniqueId}").clone(true);
-            newInput.attr("id", "multySpan${uniqueId}-" + currentSize);
+            newInput.attr("id", "multiDiv${uniqueId}-" + currentSize);
             newInput.find("input[type='text']").attr("name", "${fieldName}[" + currentSize + "].value");
             newInput.find("input[type='hidden']").attr("name", "${fieldName}[" + currentSize + "].attributeId");
             newInput.find("select").attr("name", "${fieldName}[" + currentSize + "].language");
@@ -43,33 +43,32 @@
             currentSize++;
             event.preventDefault();
         });
-
     });
-} ) ( jQuery );
+})(jQuery);
 // ]]>
 </script>
 
 <div style="display:none">
-    <span id="newField${uniqueId}">
+    <div id="newField${uniqueId}" class="delLinkWrapper">
         <input type="hidden" name="" value="${attributeId}" />
         <input class="smalltext" size="${fieldSize}" type="text">
         <dd:selectLang name="lang${uniqueId}]" value="en" />
         <a href="#" class="delLink deleteButton" title="Remove"></a>
-        <br/>
-    </span>
+    </div>
 </div>
 
 <div id="multiDiv${uniqueId}">
     <c:forEach var="attr" items="${attributes}" varStatus="innerLoop">
         <c:if test="${!empty attr.value}">
-        <span id="multySpan${uniqueId}-${innerLoop.index}">
-            <input type="hidden" name="${fieldName}[${innerLoop.index}].attributeId" value="${attr.attributeId}" />
-            <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
-            <input value="${attr.value}" name="${fieldName}[${innerLoop.index}].value" class="${fieldClass}" size="${fieldSize}" type="text">
-            <dd:selectLang id="lang${fieldName}[${innerLoop.index}]" value="${attr.language}" name="${fieldName}[${innerLoop.index}].language" />
-            <a href="#" class="delLink deleteButton" title="Remove"></a>
-        </span>
+            <div id="multiDiv${uniqueId}-${innerLoop.index}" class="delLinkWrapper">
+                <input type="hidden" name="${fieldName}[${innerLoop.index}].attributeId" value="${attr.attributeId}" />
+                <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
+                <input value="${attr.value}" name="${fieldName}[${innerLoop.index}].value" class="${fieldClass}" size="${fieldSize}" type="text">
+                <dd:selectLang id="lang${fieldName}[${innerLoop.index}]" value="${attr.language}" name="${fieldName}[${innerLoop.index}].language" />
+                <a href="#" class="delLink deleteButton" title="Remove"></a>
+            </div>
         </c:if>
     </c:forEach>
 </div>
+<br />
 <a href="#" id="multiAdd${uniqueId}">Add new</a>

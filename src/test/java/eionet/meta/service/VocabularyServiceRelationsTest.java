@@ -47,9 +47,7 @@ import eionet.meta.dao.domain.VocabularyConcept;
 // @DataSet({"seed-vocabularies.xml"})
 public class VocabularyServiceRelationsTest extends UnitilsJUnit4 {
 
-    /** Logger. */
     protected static final Logger LOGGER = Logger.getLogger(VocabularyServiceTest.class);
-
 
     @SpringBeanByType
     private IVocabularyService vocabularyService;
@@ -80,7 +78,7 @@ public class VocabularyServiceRelationsTest extends UnitilsJUnit4 {
         vocabularyService.deleteVocabularyFolders(ids, true);
 
         //VocabularyFolder vf2 = vocabularyService.getVocabularyFolder(2);
-        List<VocabularyConcept> concepts2 =  vocabularyService.getAcceptedConceptsWithAttributes(2);
+        List<VocabularyConcept> concepts2 =  vocabularyService.getAllConceptsWithAttributes(2);
         Assert.assertTrue(concepts2.size() == 2);
 
         VocabularyConcept concept22 = concepts2.get(1);
@@ -96,14 +94,13 @@ public class VocabularyServiceRelationsTest extends UnitilsJUnit4 {
         vocabularyService.deleteVocabularyFolders(ids, false);
 
         //VocabularyFolder vf3 = vocabularyService.getVocabularyFolder(3);
-        List<VocabularyConcept> concepts3 = vocabularyService.getAcceptedConceptsWithAttributes(3);
+        List<VocabularyConcept> concepts3 = vocabularyService.getAllConceptsWithAttributes(3);
 
         Assert.assertTrue(concepts3.size() == 2);
         VocabularyConcept concept31 = concepts3.get(0);
 
         //both relations should be deleted as requested by "false" parameter in delete()
         Assert.assertTrue(concept31.getElementAttributes().isEmpty());
-
     }
 
 }

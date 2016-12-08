@@ -67,14 +67,8 @@ import static org.junit.Assert.*;
 @SpringApplicationContext("mock-spring-context.xml")
 public class VocabularyServiceTest extends UnitilsJUnit4 {
 
-    /**
-     * Logger.
-     */
     protected static final Logger LOGGER = Logger.getLogger(VocabularyServiceTest.class);
 
-    /**
-     * Site prefix.
-     */
     private final String SITE_PREFIX = Props.getProperty(PropsIF.DD_URL);
 
     @SpringBeanByType
@@ -652,7 +646,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         assertEquals("Copied Base Uri is not correct!", baseUriExpected, vocabularyFolder.getBaseUri());
         assertEquals("Vocabulary status missmatch", result.getRegStatus(), original.getRegStatus());
         
-        List<VocabularyConcept> concepts = vocabularyService.getAcceptedConceptsWithAttributes(id);
+        List<VocabularyConcept> concepts = vocabularyService.getAllConceptsWithAttributes(id);
 
         assertEquals("Expected concepts size ", 4, concepts.size());
         int expectedRelatedID = 0;
@@ -673,7 +667,6 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
                     }
                 }
             }
-
         }
 
         assertEquals("Related ID not copied ", actualRelatedId, expectedRelatedID);
@@ -998,7 +991,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         dev = attributeNames.get(1);
         assertTrue(dev.getLeft().equals("skos:broader"));
         assertTrue(dev.getRight() == 1);
-    }// end of test step testFolderCSVInfo
+    }
 
     /**
      * tests getvocabularyFolder meta.
@@ -1033,7 +1026,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
             assertEquals(attributeName.getRight(), manualAttributeName.getRight());
         }
 
-    }// end of test step testFolderCSVInfo
+    }
 
     /**
      * test on search vocabularies.
@@ -1107,7 +1100,6 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         filter.setExactMatch(true);
         result = vocabularyService.searchVocabularyConcepts(filter);
         assertEquals("Result size", 0, result.getFullListSize());
-
     }
 
     @Test
@@ -1171,7 +1163,6 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
 
         result = vocabularyService.searchVocabularies(filter);
         assertEquals(result.getTotalItems(), 1);
-
     }
 
     @Test
@@ -1199,20 +1190,15 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         assertEquals("Reg status does not match", RegStatus.RELEASED, vocabularyFolder.getRegStatus());
         assertEquals("Folder name does not match", "common", vocabularyFolder.getFolderName());
 
-    } // end of test step testRecentlyReleasedVocabularyFolders
+    }
 
     @Test
     public void testVocabularySearch() throws Exception {
-
         VocabularyFilter filter = new VocabularyFilter();
         filter.setText("base");
         VocabularyResult result = this.vocabularyService.searchVocabularies(filter);
         
         assertTrue(4 == result.getFullListSize());
-        
-        
-        
-        
-        
     }
+
 }

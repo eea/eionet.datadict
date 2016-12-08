@@ -31,16 +31,14 @@
 
 <script type="text/javascript">
     // <![CDATA[
-    ( function($) {
+    (function($) {
         $(document).ready(function() {
-
             var currentSize = ${fn:length(dataElements)};
 
-            $("#referenceAdd${uniqueId}").live("click", function(event){
+            $("#referenceAdd${uniqueId}").live("click", function(event) {
                 $('#add-value${uniqueId}').dialog('open');
                 return false;
             });
-
 
             $("#add-value${uniqueId}").dialog({
                 autoOpen: false,
@@ -80,7 +78,7 @@
                     "No, enter the URL": function() {
                         clearSysMsg();
                         var newInput = $("#newField${uniqueId}").clone(true);
-                        newInput.attr("id", "multySpan${uniqueId}-" + currentSize);
+                        newInput.attr("id", "multiDiv${uniqueId}-" + currentSize);
                         newInput.find("input[id='elem-${uniqueId}.id']").attr("name", "${fieldName}[" + currentSize + "].id");
                         newInput.find("input[id='elem-${uniqueId}.id']").attr("value", "${elementId}");
                         newInput.find("input[type='text']").attr("name", "${fieldName}[" + currentSize + "].attributeValue");
@@ -93,17 +91,13 @@
                     }
                 }
             });
-
         });
-    }) ( jQuery );
-
-
-
+    })(jQuery);
     // ]]>
 </script>
 <!--  text field for adding regular URL -->
 <div style="display:none">
-    <div id="newField${uniqueId}">
+    <div id="newField${uniqueId}" class="delLinkWrapper">
         <input type="hidden" id="elem-${uniqueId}.id" name="" value="${elementId}" />
         <input type="hidden" id="identifier-${uniqueId}.identifier" name="" value="${dataElements[0].identifier}" />
         <input  type="text"  name="${fieldName}[${uniqueId}].attributeValue" value="" class="${fieldClass}" size="${fieldSize}"/>
@@ -114,7 +108,7 @@
 <div id="multiDiv${uniqueId}">
     <c:forEach var="attr" items="${dataElements}" varStatus="innerLoop">
         <c:if test="${not empty attr.attributeValue or (not empty attr.relatedConceptId && attr.relatedConceptId != 0)}">
-            <div id="multySpan${uniqueId}-${innerLoop.index}">
+            <div id="multiDiv${uniqueId}-${innerLoop.index}" class="delLinkWrapper">
                 <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
                 <input type="hidden" name="${fieldName}[${innerLoop.index}].identifier" value="${attr.identifier}" />
                 <input type="hidden" name="${fieldName}[${innerLoop.index}].type" value="${attr.type}" />
@@ -124,28 +118,28 @@
                 <c:choose>
                     <c:when test="${attr.relationalElement}">
                         <stripes:hidden name="${fieldName}[${innerLoop.index}].relatedConceptId" value="${attr.relatedConceptId}" />
-						<c:choose>
-							<c:when test="${not attr.relatedConceptVisibleByUri}">
-								<!--  if relational element created automatically do not show it for working copies -->
-									<c:out value="${attr.relatedConceptIdentifier}" />
-									<c:if test="${not empty attr.relatedConceptLabel}">
-		                                (<c:out value="${attr.relatedConceptLabel}" />)
-		                            </c:if>
-	                        </c:when>
-		                    <c:otherwise>
-			                	<a href="${actionBean.conceptViewPrefix}${attr.relatedConceptRelativePath}/view"><c:out value="${attr.relatedConceptIdentifier}" />
-			                    	<c:if test="${not empty attr.relatedConceptLabel}">
-			                        	(<c:out value="${attr.relatedConceptLabel}" />)
-									</c:if>
-								</a>
-							</c:otherwise>
+                        <c:choose>
+                            <c:when test="${not attr.relatedConceptVisibleByUri}">
+                                <!--  if relational element created automatically do not show it for working copies -->
+                                <c:out value="${attr.relatedConceptIdentifier}" />
+                                <c:if test="${not empty attr.relatedConceptLabel}">
+                                    (<c:out value="${attr.relatedConceptLabel}" />)
+                                </c:if>
+                            </c:when>
+                            <c:otherwise>
+                                <a href="${actionBean.conceptViewPrefix}${attr.relatedConceptRelativePath}/view"><c:out value="${attr.relatedConceptIdentifier}" />
+                                    <c:if test="${not empty attr.relatedConceptLabel}">
+                                        (<c:out value="${attr.relatedConceptLabel}" />)
+                                    </c:if>
+                                </a>
+                            </c:otherwise>
                         </c:choose>
                     </c:when>
                     <c:otherwise>
                         <input name="${fieldName}[${innerLoop.index}].attributeValue" value="${attr.attributeValue}" class="${fieldClass}" size="${fieldSize}" type="text"/>
                     </c:otherwise>
                 </c:choose>
-
+                        
                 <a href='#' class="delLink deleteButton" title="Remove"></a>
             </div>
         </c:if>

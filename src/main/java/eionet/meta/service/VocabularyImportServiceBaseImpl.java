@@ -164,7 +164,18 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
         this.vocabularyService.batchUpdateVocabularyConcepts(vocabularyConceptsToUpdate, BATCH_SIZE);
         this.vocabularyService.batchUpdateVocabularyConceptsDataElementValues(vocabularyConceptsToUpdate, BATCH_SIZE);
         this.vocabularyService.batchFixRelatedReferenceElements(vocabularyConceptsToUpdate, BATCH_SIZE);
-        purgeConcepts(vocabularyConceptsToDelete);
+
+        if (vocabularyConceptsToDelete.size() <= BATCH_SIZE) {
+            purgeConcepts(vocabularyConceptsToDelete);
+        } else {
+            int fromIndex = 0;
+            int toIndex = BATCH_SIZE;
+            while (vocabularyConceptsToDelete.size() <= toIndex) {
+                purgeConcepts(vocabularyConceptsToDelete.subList(fromIndex, toIndex));
+                fromIndex = toIndex;
+                toIndex = toIndex + BATCH_SIZE <= vocabularyConceptsToDelete.size() ?  toIndex + BATCH_SIZE : vocabularyConceptsToDelete.size();
+            }
+        }
     }
 
     /**
