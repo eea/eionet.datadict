@@ -21,12 +21,14 @@
                 showOnLoadSpecific(currentDisplayType);
             }
             if (elem.value === 'VOCABULARY') {
-                document.getElementById('display-all-targetEntities').style.display = "none";
-                document.getElementById('display-some-targetEntities').style.display = "inline"; 
+                document.getElementById('target-entity-128').style.display = "none";
+                document.getElementById('target-entity-256').style.display = "none";
+                document.getElementById('target-entity-1024').style.display = "none";
             }
             else {
-                document.getElementById('display-all-targetEntities').style.display = "inline";
-                document.getElementById('display-some-targetEntities').style.display = "none";
+                document.getElementById('target-entity-128').style.display = "block";
+                document.getElementById('target-entity-256').style.display = "block";
+                document.getElementById('target-entity-1024').style.display = "block";
             }
         }
         

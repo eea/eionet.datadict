@@ -145,29 +145,19 @@
                   <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
                   <c:choose>
                       <c:when test="${not empty actionBean.attribute.id and actionBean.attribute.displayType == 'VOCABULARY'}">
-                          <c:set var="displayAll" value="display: none" />
-                          <c:set var="displaySome" value="display: inline"/>
+                          <c:set var="filterTargetEntities" value="true" />
                       </c:when>
                       <c:otherwise>
-                          <c:set var="displayAll" value="display: inline" />
-                          <c:set var="displaySome" value="display: none"/>
+                          <c:set var="filterTargetEntites" value="false" />
                       </c:otherwise>
                   </c:choose>
-                  <td id="display-some-targetEntities" style="${displaySome}">
+                  <td id="display-some-targetEntities">
                      <c:forEach var="displayForType" items="${ddfn:getEnumValues('eionet.datadict.model.Attribute$TargetEntity')}"> 
                          <c:set var="targetEntityDisplay" value ="display: block"/>
-                         <c:if test="${displayForType.value eq 128 or displayForType.value eq 256 or displayForType.value eq 1024}">
+                         <c:if test="${(displayForType.value eq 128 or displayForType.value eq 256 or displayForType.value eq 1024) and filterTargetEntities}">
                              <c:set var="targetEntityDisplay" value ="display: none"/>
                          </c:if>
-                         <div style="${targetEntityDisplay}">
-                            <stripes:checkbox name="attribute.targetEntities" value="${displayForType}" checked="${actionBean.attribute.targetEntities}"/>
-                            ${displayForType.label}
-                         </div>
-                     </c:forEach>
-                  </td>
-                  <td id="display-all-targetEntities" style="${displayAll}">
-                     <c:forEach var="displayForType" items="${ddfn:getEnumValues('eionet.datadict.model.Attribute$TargetEntity')}"> 
-                         <div>
+                         <div id ="target-entity-${displayForType.value}" style="${targetEntityDisplay}">
                             <stripes:checkbox name="attribute.targetEntities" value="${displayForType}" checked="${actionBean.attribute.targetEntities}"/>
                             ${displayForType.label}
                          </div>
