@@ -4,6 +4,8 @@ import eionet.datadict.services.acl.impl.AclServiceImpl;
 import eionet.datadict.services.acl.AclEntity;
 import eionet.datadict.services.acl.Permission;
 import eionet.meta.DDUser;
+import eionet.meta.service.DBUnitHelper;
+import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,9 +14,12 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import static org.junit.Assert.assertFalse;
+import org.unitils.UnitilsJUnit4;
+import org.unitils.spring.annotation.SpringApplicationContext;
 
 
-public class AclServiceTest {
+@SpringApplicationContext("mock-spring-context.xml")
+public class AclServiceTest extends UnitilsJUnit4 {
    
     @Mock
     DDUser user;
@@ -23,8 +28,14 @@ public class AclServiceTest {
     AclServiceImpl aclService;
     
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        DBUnitHelper.loadData("seed-acldata.xml");
+    }
+    
+    @After
+    public void delete() throws Exception {
+        DBUnitHelper.deleteData("seed-acldata.xml");
     }
     
     @Test
