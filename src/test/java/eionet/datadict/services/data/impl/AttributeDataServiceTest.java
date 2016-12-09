@@ -1,10 +1,11 @@
 package eionet.datadict.services.data.impl;
 
-import eionet.datadict.services.data.impl.AttributeDataServiceImpl;
 import eionet.datadict.dal.AttributeDao;
+import eionet.datadict.dal.AttributeValueDao;
 import eionet.datadict.dal.VocabularyDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.Attribute;
+import eionet.datadict.model.DataDictEntity;
 import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -20,9 +21,11 @@ import org.mockito.Mockito;
 import static org.mockito.Mockito.times;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.unitils.UnitilsJUnit4;
+import org.unitils.spring.annotation.SpringApplicationContext;
 
-
-public class AttributeDataServiceTest {
+@SpringApplicationContext("mock-spring-context.xml")
+public class AttributeDataServiceTest extends UnitilsJUnit4 {
 
     @Mock
     VocabularyFolder vocabulary;
@@ -32,6 +35,9 @@ public class AttributeDataServiceTest {
     
     @Mock
     AttributeDao attributeDao;
+    
+    @Mock
+    AttributeValueDao attributeValueDao;
     
     @Mock
     VocabularyDao vocabularyDao;
@@ -159,6 +165,17 @@ public class AttributeDataServiceTest {
         Mockito.doReturn(new ArrayList<FixedValue>()).when(fixedValueDao).getValueByOwner(FixedValue.OwnerType.ATTRIBUTE, 0);
         attributeDataService.getFixedValues(0);
         Mockito.verify(fixedValueDao, times(1)).getValueByOwner(FixedValue.OwnerType.ATTRIBUTE, 0);
+    }
+    
+    @Test
+    public void testDeleteAllAttributeValues() {
+        Mockito.doNothing().when(attributeValueDao).deleteAllAttributeValues(anyInt());
+        Mockito.doNothing().when(attributeValueDao).deleteAllAttributeValues(anyInt(), any(DataDictEntity.class));
+        
+        attributeDataService.deleteAllAttributeValues(0);
+        Mockito.verify(attributeValueDao, times(1)).deleteAllAttributeValues(0);   
+        attributeDataService.deleteAllAttributeValues(anyInt(), new DataDictEntity(anyInt(), DataDictEntity.Entity.DS));
+        Mockito.verify(attributeValueDao, times(1)).deleteAllAttributeValues(anyInt(), any(DataDictEntity.class));
     }
     
 }
