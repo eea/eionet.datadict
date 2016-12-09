@@ -1,6 +1,7 @@
 
 package eionet.meta.exports.schema;
 
+import eionet.datadict.model.DataDictEntity;
 import java.io.PrintWriter;
 import java.util.Vector;
 
@@ -34,8 +35,9 @@ public class TblSchema extends Schema {
         if (dsTable != null) {
             // get simple attributes
             Vector v = searchEngine.getSimpleAttributes(tblID, "T", null, dsTable.getDatasetID());
+            processAttributeValues(v,  new DataDictEntity(Integer.parseInt(tblID), DataDictEntity.Entity.T));
             dsTable.setSimpleAttributes(v);
-
+            
             // get data elements (this will set all the simple attributes,
             // but no fixed values required by writer!)
             v = searchEngine.getDataElements(null, null, null, null, tblID);

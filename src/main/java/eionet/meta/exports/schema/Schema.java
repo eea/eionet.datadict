@@ -1,5 +1,8 @@
 package eionet.meta.exports.schema;
 
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.model.DataDictEntity;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import eionet.meta.GetSchema;
 import eionet.meta.Namespace;
 import eionet.meta.dao.IRdfNamespaceDAO;
 import eionet.meta.dao.domain.RdfNamespace;
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
@@ -490,5 +494,23 @@ public abstract class Schema implements SchemaIF {
 
         buf.append("]]>");
         return buf.toString();
+    }
+    
+     //Needed in order to fetch the labels of the vocabulary attributes. If not used, then the vocabulary-concept id will be printed out
+    protected void processAttributeValues (Vector v, DataDictEntity attributeValuesOwner) throws ResourceNotFoundException, EmptyParameterException{
+        for (Object attribute : v) {
+            if (attribute instanceof DElemAttribute){
+                DElemAttribute attr = (DElemAttribute) attribute;
+                if (attr.getDisplayType().equals("vocabulary")){
+                    List<VocabularyConcept> vocs = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attr.getID()), attributeValuesOwner, "0");
+                    if(vocs != null){
+                        if (attr.getValues() != null) attr.getValues().removeAllElements();
+                        for (VocabularyConcept concept : vocs) {
+                            attr.setValue(concept.getLabel());
+                        }
+                    }
+                }
+            }
+        }
     }
 }

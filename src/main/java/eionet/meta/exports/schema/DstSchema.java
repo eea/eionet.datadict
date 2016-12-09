@@ -88,23 +88,5 @@ public class DstSchema extends Schema {
         addString("</xs:complexType>");
         newLine();
     }
-    
-    //Needed in order to fetch the labels of the vocabulary attributes. If not used, then the vocabulary-concept id will be printed out
-    protected void processAttributeValues (Vector v, DataDictEntity attributeValuesOwner) throws ResourceNotFoundException, EmptyParameterException{
-        for (Object attribute : v) {
-            if (attribute instanceof DElemAttribute){
-                DElemAttribute attr = (DElemAttribute) attribute;
-                if (attr.getDisplayType().equals("vocabulary")){
-                    List<VocabularyConcept> vocs = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attr.getID()), attributeValuesOwner, "0");
-                    if(vocs != null){
-                        if (attr.getValues() != null) attr.getValues().removeAllElements();
-                        for (VocabularyConcept concept : vocs) {
-                            attr.setValue(concept.getLabel());
-                        }
-                    }
-                }
-            }
-        }
-    }
 
 }
