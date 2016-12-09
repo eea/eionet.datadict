@@ -45,4 +45,11 @@ public interface AttributeValueDao {
     * @param owner the [@link DataDictEntity] which owns the attribute values. 
     */
     public void deleteAllAttributeValues(int attributeId, DataDictEntity owner);
+    
+    /**
+    * Deletes all the attribute values of the attribute with the given id.
+    * 
+    * @param attributeId the id of the attribute whose values are to be deleted.
+    */
+    public void deleteAllAttributeValues(int attributeId);
 }

@@ -181,6 +181,11 @@ public class AttributeDataServiceImpl implements AttributeDataService {
     }
 
     @Override
+    public void deleteAllAttributeValues(int attributeId) {
+        this.attributeValueDao.deleteAllAttributeValues(attributeId);
+    }
+    
+    @Override
     public void createAttributeValue(int attributeId, DataDictEntity ownerEntity, String value) throws DuplicateResourceException{
        this.attributeValueDao.addAttributeValue(attributeId, ownerEntity, value);
     }

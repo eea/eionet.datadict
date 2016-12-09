@@ -145,7 +145,7 @@ public class AttributeServiceImpl implements AttributeService {
 
         validateMandatoryAttributeFields(attribute);
         filterTargetEntities(attribute);
-        
+        this.attributeDataService.deleteAllAttributeValues(attribute.getId());
         this.attributeDataService.updateAttribute(attribute);
 
         return attribute.getId();

@@ -59,7 +59,7 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
     
-     @Override
+    @Override
     public void deleteAllAttributeValues(int attributeId, DataDictEntity ddEntity) {
         String sql = "DELETE FROM ATTRIBUTE WHERE "
                 + "M_ATTRIBUTE_ID = :attributeId "
@@ -74,6 +74,17 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
 
+    @Override
+    public void deleteAllAttributeValues(int attributeId) {
+        String sql = "DELETE FROM ATTRIBUTE WHERE "
+                + "M_ATTRIBUTE_ID = :attributeId ";
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("attributeId", attributeId);
+        
+        this.getNamedParameterJdbcTemplate().update(sql, params);
+    }
+    
     @Override
     public void addAttributeValue(int attributeId, DataDictEntity ownerEntity, String value) throws DuplicateResourceException {
         String sql = "INSERT INTO ATTRIBUTE VALUES(:attributeId, :ownerId, :value, :ownerType)";

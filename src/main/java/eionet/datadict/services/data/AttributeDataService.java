@@ -174,6 +174,13 @@ public interface AttributeDataService {
      */
     void deleteAllAttributeValues(int attributeId, DataDictEntity owner);
     
+    /**
+     * Deletes all attribute values of the attribute with the given id.
+     * 
+     * @param attributeId 
+     */
+    void deleteAllAttributeValues(int attributeId);
+    
      /**
      * Fetches information about all DD concepts for which the attribute of a given id has attribute values.
      * 
