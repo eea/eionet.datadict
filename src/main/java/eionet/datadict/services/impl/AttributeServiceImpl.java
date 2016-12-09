@@ -145,7 +145,8 @@ public class AttributeServiceImpl implements AttributeService {
 
         validateMandatoryAttributeFields(attribute);
         filterTargetEntities(attribute);
-        this.attributeDataService.deleteAllAttributeValues(attribute.getId());
+        removeIncompatibleOldValues(attribute);
+       
         this.attributeDataService.updateAttribute(attribute);
 
         return attribute.getId();
@@ -174,5 +175,20 @@ public class AttributeServiceImpl implements AttributeService {
             targetEntities.remove(TargetEntity.VCF);
         }
     } 
+    
+    protected void removeIncompatibleOldValues(Attribute attribute) throws ResourceNotFoundException {
+        Attribute oldAttribute = attributeDataService.getAttribute(attribute.getId());
+        if (oldAttribute.getDisplayType() == Attribute.DisplayType.VOCABULARY && attribute.getDisplayType() != Attribute.DisplayType.VOCABULARY) {
+            this.attributeDataService.deleteAllAttributeValues(attribute.getId());
+        }
+        if(oldAttribute.getDisplayType() == Attribute.DisplayType.VOCABULARY && attribute.getDisplayType() == Attribute.DisplayType.VOCABULARY) {
+            if (oldAttribute.getVocabulary() != null && attribute.getVocabulary()!=null && oldAttribute.getVocabulary().getId() != attribute.getVocabulary().getId()) {
+                 this.attributeDataService.deleteAllAttributeValues(attribute.getId());
+            }
+            if (oldAttribute.getVocabulary()!=null && attribute.getVocabulary() == null){
+                this.attributeDataService.deleteAllAttributeValues(attribute.getId());
+            }
+        }
+    }
 
 }
