@@ -20,7 +20,6 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IAttributeDAO;
