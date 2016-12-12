@@ -96,6 +96,7 @@ public class AttributeServiceTest {
         Mockito.doNothing().when(attributeService).validateMandatoryAttributeFields(attribute);
         Mockito.doNothing().when(attributeDataService).updateAttribute(attribute);
         Mockito.doReturn(1).when(attribute).getId();
+        Mockito.doNothing().when(attributeService).removeIncompatibleOldValues(attribute);
         
         attributeService.saveWithUpdate(attribute, user);
         
