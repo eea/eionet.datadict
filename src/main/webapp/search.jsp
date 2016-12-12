@@ -400,7 +400,7 @@ if (isDisplayOperations){
                         %>
                         <tr>
                             <td width="100"><b>
-                                <a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit">
+                                <a href="attribute/edit/<%=attrID%>">
                                     <font color="black">Name</font></a></b>:</td>
                             <td width="300"><input type="text" size="40" name="attr_<%=attrID%>" value="<%=attrValue%>"/></td>
                         </tr>
@@ -415,7 +415,7 @@ if (isDisplayOperations){
                                 <span class="mainfont"><b>Language</b></span>
                             </td>
                             <td align="right" style="padding-right:10">
-                                <a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit"></a>&nbsp;
+                                <a href="attribute/edit/<%=attrID%>"></a>&nbsp;
                             </td>
                             <td colspan="2">
                                 <select name="attr_<%=attrID%>" class="small">
@@ -462,7 +462,7 @@ if (isDisplayOperations){
                         %>
                         <tr valign="top">
                             <td width="100"><b>
-                                <a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit">
+                                <a href="attribute/edit/<%=attrID%>">
                                 <font color="black">Definition</font></a></b>:
                             </td>
                             <td width="300"><input type="text" name="attr_<%=attrID%>" size="40"  value="<%=attrValue%>"/></td>
@@ -475,7 +475,7 @@ if (isDisplayOperations){
                         %>
                         <tr name="r" style="display:none">
                             <td width="100"><b>
-                                <a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit">
+                                <a href="attribute/edit/<%=attrID%>">
                                 <font color="black">Keywords</font></a></b>:
                             </td>
                             <td width="300"><input type="text" name="attr_<%=attrID%>" size="40" /></td>

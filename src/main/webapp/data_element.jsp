@@ -1,3 +1,5 @@
+<%@page import="eionet.meta.dao.domain.VocabularyConcept"%>
+<%@page import="eionet.datadict.model.DataDictEntity"%>
 <%@page import="eionet.acl.AccessControlListIF"%>
 <%@page import="eionet.acl.AccessController"%>
 <%@page import="eionet.meta.dao.mysql.DataElementDAOImpl"%>
@@ -1889,6 +1891,10 @@
                                                         String dispType = attribute.getDisplayType();
                                                         if (dispType == null)
                                                             continue;
+                                                        
+                                                        if (dispType.equals("vocabulary") && mode.equals("add")) {
+                                                            continue;
+                                                        }
 
                                                         boolean dispFor = type == null ? attribute
                                                                 .displayFor("CH2") : attribute.displayFor(type);
@@ -1930,7 +1936,7 @@
                                                                 continue;
 
                                                         if (mode.equals("view")
-                                                                && (attrValue == null || attrValue.length() == 0))
+                                                                && (attrValue == null || attrValue.length() == 0)) 
                                                             continue;
 
                                                         // if image attribute, but not the case to display it, then skip
@@ -1995,8 +2001,50 @@
 
                                                     <!-- dynamic attribute value display -->
                                                     <td class="simple_attr_value"><%
+                                                                if(dispType.equals("vocabulary")) {
+                                                                    DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
+                                                                    if(mode.equals("view")){
+                                                                        List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
+                                                                        if(concepts!=null){ %>
+                                                                            <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
+                                                                                <div><c:out value="${concept.label}"/><c:if test="${!count.last}">, </c:if><div>
+                                                                            </c:forEach>
+                                                                        <%}                                                                      
+                                                                    } else if (mode.equals("edit")) {
+                                                                        if (inherit){
+                                                                            List<VocabularyConcept> inheritedValues = searchEngine.getInheritedAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity);
+                                                                            if(inheritedValues!=null && !inheritedValues.isEmpty()){
+                                                                            %>
+                                                                                <c:set var="inheritable" value="<%=attribute.getInheritable()%>" />
+                                                                                <c:choose>
+                                                                                    <c:when test="${inheritable eq '2'}">
+                                                                                        <c:out value="Overriding parent level values: "/>
+                                                                                    </c:when>
+                                                                                    <c:when test="${inheritable eq '1'}">
+                                                                                        <c:out value="Inherited from parent level: "/>
+                                                                                    </c:when>
+                                                                                </c:choose>
+                                                                                <c:forEach var="value" items="<%=inheritedValues%>" varStatus="count">
+                                                                                    <div><c:out value="${value.label}"/><c:if test="${!count.last}">, </c:if><div>
+                                                                                </c:forEach>
+                                                                                </br>
+                                                                          <%}
+                                                                        }
+                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
+                                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
+                                                                          <%List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
+                                                                            if(concepts!=null){ %>
+                                                                                <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
+                                                                                    <div><c:out value="${concept.label}"/><c:if test="${!count.last}">, </c:if><div>
+                                                                                </c:forEach>
+                                                                          <%}%>
+                                                                        <%} else {%>
+                                                                            [Manage links to the vocabulary]
+                                                                        <%}
+                                                                  }%>
+                                                              <%}
                                                         // handle image attribute first
-                                                                if (dispType.equals("image")) {
+                                                                else if (dispType.equals("image")) {
 
                                                                     if (!imagesQuicklinkSet) {
                                                     %>
@@ -2175,8 +2223,20 @@
                                                                     </select>
                                                                     <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>"></a>
                                                                     <%
-                                                                        } else {
-                                                                    %>
+                                                                        } else if (dispType.equals("vocabulary")){
+                                                                                DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
+                                                                                if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
+                                                                                <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
+                                                                              <%List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
+                                                                                if(concepts!=null){ %>
+                                                                                    <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
+                                                                                        <div><c:out value="${concept.label}"/><c:if test="${!count.last}">, </c:if><div>
+                                                                                    </c:forEach>
+                                                                              <%}%>
+                                                                            <%} else {%>
+                                                                                [Manage links to the vocabulary]
+                                                                            <%}
+                                                                    }else {%>
                                                                     Unknown display type!<%
                                                                         }
                                                                                     }

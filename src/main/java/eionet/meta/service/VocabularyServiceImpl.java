@@ -531,6 +531,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
     }
 
+    public void deleteVocabularyConcepts(int vocabularyFolderId) {
+        vocabularyConceptDAO.deleteVocabularyConcepts(vocabularyFolderId);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -1027,14 +1031,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public List<VocabularyConcept> getAcceptedConceptsWithAttributes(int vocabularyFolderId) throws ServiceException {
+    public List<VocabularyConcept> getAllConceptsWithAttributes(int vocabularyFolderId) throws ServiceException {
         try {
-            List<VocabularyConcept> result = vocabularyConceptDAO.getConceptsWithAttributeValues(vocabularyFolderId, StandardGenericStatus.ACCEPTED);
-            return result;
+            return vocabularyConceptDAO.getConceptsWithAttributeValues(vocabularyFolderId);
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concepts: " + e.getMessage(), e);
         }

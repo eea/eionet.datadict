@@ -77,6 +77,15 @@ public interface IFixedValueDAO {
     public FixedValue getByValue(FixedValue.OwnerType ownerType, int ownerId, String value);
     
     /**
+     * Gets all the fixed values based on the owner specified.
+     * 
+     * @param ownerType the type of the owner
+     * @param ownerId the id of the owner
+     * @return a list of fixed values for the specified owner
+     */
+    public List<FixedValue> getValueByOwner(FixedValue.OwnerType ownerType, int ownerId);
+    
+    /**
      * Checks existence of specific fixed value
      * @param id
      * @return fixed value

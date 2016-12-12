@@ -1,3 +1,5 @@
+<%@page import="eionet.meta.dao.domain.VocabularyConcept"%>
+<%@page import="eionet.datadict.model.DataDictEntity"%>
 <%@page import="eionet.meta.dao.domain.VocabularyFolder"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.meta.service.data.*,eionet.util.sql.ConnectionUtil"%>
@@ -984,6 +986,10 @@ else if (mode.equals("add"))
                                                 if (mode.equals("add") || (mode.equals("edit") && user==null) || (mode.equals("view") && Util.isEmpty(attrValue)))
                                                     continue;
                                             }
+                                            
+                                            if (dispType.equals("vocabulary") && mode.equals("add")) {
+                                                continue;
+                                            }
 
                                             Vector multiValues=null;
                                             String inheritedValue=null;
@@ -1054,6 +1060,14 @@ else if (mode.equals("add"))
                                                         }
                                                     }
                                                     // if view mode, display simple text
+                                                    else if (mode.equals("view") && dispType.equals("vocabulary")){
+                                                        DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
+                                                        List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
+                                                        %>
+                                                        <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
+                                                            <div><c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if><div>
+                                                        </c:forEach>
+                                                  <%}
                                                     else if (mode.equals("view")){ %>
                                                         <%=Util.processForDisplay(attrValue)%><%
                                                     }
@@ -1061,8 +1075,27 @@ else if (mode.equals("add"))
                                                     else{
 
                                                         // inherited value(s)
-                                                        if (inherit && inheritedValue!=null){
-
+                                                        if (inherit && dispType.equals("vocabulary")){
+                                                            DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);                                                            
+                                                            List<VocabularyConcept> inheritedValues = searchEngine.getInheritedAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity);
+                                                            if(inheritedValues!=null && !inheritedValues.isEmpty()){
+                                                            %>
+                                                                <c:set var="inheritable" value="<%=attribute.getInheritable()%>" />
+                                                                <c:choose>
+                                                                    <c:when test="${inheritable eq '2'}">
+                                                                        <c:out value="Overriding parent level value: "/>
+                                                                    </c:when>
+                                                                    <c:when test="${inheritable eq '1'}">
+                                                                        <c:out value="Inherited from parent level: "/>
+                                                                    </c:when>
+                                                                </c:choose>
+                                                                <c:forEach var="value" items="<%=inheritedValues%>" varStatus="count">
+                                                                    <div><c:out value="${value.label}"/><c:if test="${!count.last}">, </c:if><div>
+                                                                </c:forEach>
+                                                                </br>
+                                                            <%}
+                                                        }
+                                                        else if (inherit && inheritedValue!=null){
                                                             String sInhText = (((dispMultiple && multiValues!=null) ||
                                                                                 (!dispMultiple && attrValue!=null)) &&
                                                                                 attribute.getInheritable().equals("2")) ?
@@ -1075,7 +1108,7 @@ else if (mode.equals("add"))
                                                         }
 
                                                         // mutliple display
-                                                        if (dispMultiple && !dispType.equals("image")){
+                                                        if (dispMultiple && !dispType.equals("image") && !dispType.equals("vocabulary")){
 
                                                             Vector allPossibleValues = null;
                                                             if (dispType.equals("select"))
@@ -1118,6 +1151,19 @@ else if (mode.equals("add"))
                                                                 %>
                                                             </div><%
                                                         }
+                                                        else if (dispMultiple && dispType.equals("vocabulary")) {
+                                                            if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
+                                                                <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
+                                                              <%DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
+                                                                List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
+                                                                %>
+                                                                <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
+                                                                    <div><c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if><div>
+                                                                </c:forEach>
+                                                            <%} else { %>
+                                                                [Manage links to the vocabulary]
+                                                            <%}
+                                                      }
                                                         // no multiple display
                                                         else{
 
@@ -1169,8 +1215,19 @@ else if (mode.equals("add"))
                                                                 </select>
                                                                     <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID + "/" + ("view".equals(mode) ? "view" : "edit")%>"></a>
                                                                 <%
-                                                            }
-                                                            else{ %>
+                                                            }else if (dispType.equals("vocabulary")){ 
+                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
+                                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
+                                                                          <%DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
+                                                                            List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
+                                                                          %>
+                                                                            <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
+                                                                                <div><c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if><div>
+                                                                            </c:forEach>
+                                                                      <%} else { %>
+                                                                            [Manage links to the vocabulary]
+                                                                        <%}
+                                                            }else {%>
                                                                 Unknown display type!<%
                                                             }
                                                         }
@@ -1228,7 +1285,7 @@ else if (mode.equals("add"))
 
                                     <!-- table elements -->
                                     <%
-                                    if ((mode.equals("view") && elems!=null && elems.size()>0) || mode.equals("edit")){
+                                    if ((mode.equals("view") && elems!=null && elems.size()>0)) {
 
 
                                             String title = "Elements";
@@ -1241,14 +1298,11 @@ else if (mode.equals("add"))
                                             boolean hasPrimaryKeys = false;
                                             %>
 
-                                                <h2><%=Util.processForDisplay(title)%></h2>
-                                                <p>
-                                                    <a id="elements"></a>
-                                                </p>
+                                                <h2 id="elements"><%=Util.processForDisplay(title)%></h2>
 
                                                 <%
                                                 // elements table
-                                                if (mode.equals("view") && elems!=null && elems.size()>0){
+                                                if (mode.equals("view") && elems!=null && elems.size()>0) {
 
                                                     // set colwidths
                                                     String widthShortName = "50%";
@@ -1405,83 +1459,70 @@ else if (mode.equals("add"))
                                     }
                                     %>
 
-
                                     <!-- complex attributes -->
+                                    <% if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0) { %>
+                                        <h2 id="cattrs">Complex attributes</h2>
+                                            <table class="datatable results" id="dataset-attributes">
+                                                <col style="width:30%"/>
+                                                <col style="width:70%"/>
 
-                                    <%
-                                    if ((mode.equals("edit") && user!=null) || (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0)){
-                                        %>
-
-
-                                            <h2 id="cattrs">Complex attributes</h2>
                                                 <%
+                                                displayed = 1;
+                                                isOdd = Util.isOdd(displayed);
+                                                for (int i=0; i<complexAttrs.size(); i++){
+                                                    DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
+                                                    attrID = attr.getID();
+                                                    String attrName = attr.getName();
+                                                    Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
+                                                    %>
 
-                                            // the table
-                                            if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
-                                                %>
-                                                        <table class="datatable results" id="dataset-attributes">
-                                                                    <col style="width:30%"/>
-                                                                    <col style="width:70%"/>
-
+                                                    <tr class="<%=isOdd%>">
+                                                        <td>
+                                                            <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+                                                                <%=Util.processForDisplay(attrName)%>
+                                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX"></a>
+                                                            </a>
+                                                        </td>
+                                                        <td>
                                                             <%
-                                                            displayed = 1;
-                                                            isOdd = Util.isOdd(displayed);
-                                                            for (int i=0; i<complexAttrs.size(); i++){
+                                                            StringBuffer rowValue=null;
+                                                            Vector rows = attr.getRows();
+                                                            for (int j=0; rows!=null && j<rows.size(); j++){
 
-                                                                DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
-                                                                attrID = attr.getID();
-                                                                String attrName = attr.getName();
-                                                                Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
-                                                                %>
+                                                                if (j>0){%>---<br/><%}
 
-                                                                <tr class="<%=isOdd%>">
-                                                                    <td>
-                                                                        <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
-                                                                            <%=Util.processForDisplay(attrName)%>
-                                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX"></a>
-                                                                        </a>
-                                                                    </td>
-                                                                    <td>
-                                                                        <%
-                                                                        StringBuffer rowValue=null;
-                                                                        Vector rows = attr.getRows();
-                                                                        for (int j=0; rows!=null && j<rows.size(); j++){
+                                                                Hashtable rowHash = (Hashtable)rows.get(j);
+                                                                rowValue = new StringBuffer();
 
-                                                                            if (j>0){%>---<br/><%}
+                                                                for (int t=0; t<attrFields.size(); t++){
+                                                                    Hashtable hash = (Hashtable)attrFields.get(t);
+                                                                    String fieldID = (String)hash.get("id");
+                                                                    String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
+                                                                    if (fieldValue == null) fieldValue = "";
+                                                                    if (fieldValue.trim().equals("")) continue;
 
-                                                                            Hashtable rowHash = (Hashtable)rows.get(j);
-                                                                            rowValue = new StringBuffer();
+                                                                    if (t>0 && fieldValue.length()>0  && rowValue.toString().length()>0)
+                                                                        rowValue.append(", ");
 
-                                                                            for (int t=0; t<attrFields.size(); t++){
-                                                                                Hashtable hash = (Hashtable)attrFields.get(t);
-                                                                                String fieldID = (String)hash.get("id");
-                                                                                String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
-                                                                                if (fieldValue == null) fieldValue = "";
-                                                                                if (fieldValue.trim().equals("")) continue;
-
-                                                                                if (t>0 && fieldValue.length()>0  && rowValue.toString().length()>0)
-                                                                                    rowValue.append(", ");
-
-                                                                                rowValue.append(Util.processForDisplay(fieldValue));
-                                                                                %>
-                                                                                <%=Util.processForDisplay(fieldValue)%><br/><%
-                                                                            }
-                                                                        }
-                                                                        %>
-                                                                    </td>
-
-                                                                    <% isOdd = Util.isOdd(++displayed); %>
-                                                                </tr><%
+                                                                    rowValue.append(Util.processForDisplay(fieldValue));
+                                                                    %>
+                                                                    <%=Util.processForDisplay(fieldValue)%><br/><%
+                                                                }
                                                             }
                                                             %>
-                                                        </table>
-                                                <%
-                                            }
-                                    }
-                                    %>
-                                    <!-- end complex attributes -->
+                                                        </td>
 
-                            <!-- end dotted -->
+                                                        <% isOdd = Util.isOdd(++displayed); %>
+                                                    </tr><%
+                                                }
+                                                %>
+                                            </table>
+                                    <%
+                        }
+                        %>
+                        <!-- end complex attributes -->
+
+                <!-- end dotted -->
             </div>
 
             <div style="display:none">

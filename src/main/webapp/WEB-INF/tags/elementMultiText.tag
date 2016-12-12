@@ -28,13 +28,14 @@
 
 <script type="text/javascript">
 // <![CDATA[
-( function($) {
+(function($) {
     $(document).ready(function() {
         var currentSize = ${fn:length(dataElements)};
 
-        $("#multiAdd${uniqueId}").live("click", function(event){
+        $("#multiAdd${uniqueId}").live("click", function(event) {
             clearSysMsg();
             var newInput = $("#newField${uniqueId}").clone(true);
+            newInput.attr("id", "multiDiv${uniqueId}-" + currentSize);
             newInput.find("input[type='text']").attr("name", "${fieldName}[" + currentSize + "].attributeValue");
             newInput.find("input[type='hidden']").attr("name", "${fieldName}[" + currentSize + "].id");
             newInput.find("input[type='hidden']").attr("value", "${elementId}");
@@ -44,28 +45,29 @@
         });
 
     });
-} ) ( jQuery );
+})(jQuery);
 // ]]>
 </script>
 
 <div style="display:none">
-    <span id="newField${uniqueId}">
+    <div id="newField${uniqueId}" class="delLinkWrapper">
         <input type="hidden" name="" value="${attributeId}" />
         <input class="smalltext" size="${fieldSize}" type="text"/>
         <a href="#" class="delLink deleteButton" title="Remove"></a>
         <br/>
-    </span>
+    </div>
 </div>
 
 <div id="multiDiv${uniqueId}">
     <c:forEach var="attr" items="${dataElements}" varStatus="innerLoop">
         <c:if test="${!empty attr.attributeValue}">
-        <span id="multySpan${uniqueId}-${innerLoop.index}">
-            <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
-            <input value="${attr.attributeValue}" name="${fieldName}[${innerLoop.index}].attributeValue" class="${fieldClass}" size="${fieldSize}" type="text"/>
-            <a href="#" class="delLink deleteButton" title="Remove"></a>
-        </span>
+            <div id="multiDiv${uniqueId}-${innerLoop.index}" class="delLinkWrapper">
+                <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
+                <input value="${attr.attributeValue}" name="${fieldName}[${innerLoop.index}].attributeValue" class="${fieldClass}" size="${fieldSize}" type="text"/>
+                <a href="#" class="delLink deleteButton" title="Remove"></a>
+            </div>
         </c:if>
     </c:forEach>
 </div>
+<br />
 <a href="#" id="multiAdd${uniqueId}">Add new</a>

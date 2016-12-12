@@ -2599,17 +2599,32 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     
     <changeSet author="kopanalk" id="rev-187">
         <comment>
-            Add two Registration Statuses in the Dataset table (By altering the REG_STATUS data type). Refs #29879.
+            Add display type vocabulary for attributes linked to vocabularies
         </comment>
-        <modifyDataType
-            tableName="DATASET"
-            columnName="REG_STATUS"
-            newDataType="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')"/>
-        <addNotNullConstraint tableName="DATASET" columnName="REG_STATUS" columnDataType="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')"/>
-        <addDefaultValue tableName="DATASET" columnName="REG_STATUS" defaultValue="Incomplete"/>
+        <modifyDataType tableName="M_ATTRIBUTE" 
+                        columnName="DISP_TYPE" 
+                        newDataType="enum('text','textarea','select','image','vocabulary')"/>
+        <addDefaultValue tableName="M_ATTRIBUTE" columnName="DISP_TYPE" defaultValue="text"/>
     </changeSet>
     
     <changeSet author="kopanalk" id="rev-188">
+        <comment>
+            Add a table used for linking attribute definitions to vocabularies
+        </comment>
+        <createTable tableName="M_ATTRIBUTE_VOCABULARY">
+            <column name="M_ATTRIBUTE_ID" type="INT UNSIGNED"/>
+            <column name="VOCABULARY_ID" type="INT UNSIGNED"/> 
+        </createTable>
+        <addPrimaryKey tableName="M_ATTRIBUTE_VOCABULARY" columnNames="M_ATTRIBUTE_ID"/>
+        <addForeignKeyConstraint baseTableName="M_ATTRIBUTE_VOCABULARY"
+                                 baseColumnNames="M_ATTRIBUTE_ID" constraintName="FK_M_ATTRIBUTE" 
+                                 referencedTableName="M_ATTRIBUTE" referencedColumnNames="M_ATTRIBUTE_ID"/>
+        <addForeignKeyConstraint baseTableName="M_ATTRIBUTE_VOCABULARY" 
+                                 baseColumnNames="VOCABULARY_ID" constraintName="FK_VOCABULARY" 
+                                 referencedTableName="VOCABULARY" referencedColumnNames="VOCABULARY_ID"/>
+    </changeSet>
+    
+     <changeSet author="kopanalk" id="rev-189">
         <comment>
             Add two Registration Statuses in the DATAELEM table (By altering the REG_STATUS data type). Refs #29879.
         </comment>
@@ -2621,7 +2636,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <addDefaultValue tableName="DATAELEM" columnName="REG_STATUS" defaultValue="Incomplete"/>
     </changeSet>
     
-     <changeSet author="kopanalk" id="rev-189">
+     <changeSet author="kopanalk" id="rev-190">
         <comment>
             Add a column in the DATAELEM table in order to link the superseded data elements to their successors (if this is the case). Refs #29879.
         </comment>
@@ -2631,7 +2646,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <addForeignKeyConstraint constraintName="FK_SUPERSEDED_SUCCESSOR_DE" baseTableName="DATAELEM" baseColumnNames="SUCCESSOR" referencedColumnNames="DATAELEM_ID"  referencedTableName="DATAELEM"/> 
     </changeSet>
     
-    <changeSet author="kopanalk" id="rev-190">
+    <changeSet author="kopanalk" id="rev-191">
         <comment>
             Add a column in the DATAELEM table in order to link the superseded datasets to their successors (if this is the case). Refs #29879.
         </comment>

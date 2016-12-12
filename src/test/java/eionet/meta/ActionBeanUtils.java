@@ -36,7 +36,7 @@ public final class ActionBeanUtils {
 
             Map filterParams = new HashMap();
             filterParams.put("Interceptor.Classes", getInterceptorClassesParameter());
-            filterParams.put("ActionResolver.Packages", "eionet.web.action");
+            filterParams.put("ActionResolver.Packages", "eionet.web.action,eionet.datadict.controllers");
             filterParams.put("ActionBeanContext.Class", "eionet.web.DDActionBeanContext");
 
             ctx.addFilter(StripesFilter.class, "StripesFilter", filterParams);
@@ -56,7 +56,8 @@ public final class ActionBeanUtils {
     private static String getInterceptorClassesParameter() {
         String[] interceptors = new String[] {
             "net.sourceforge.stripes.integration.spring.SpringInterceptor",
-            "eionet.web.action.di.ActionBeanDependencyInjectionInterceptor"
+            "eionet.web.action.di.ActionBeanDependencyInjectionInterceptor",
+            "eionet.web.action.di.SpyActionBeanInterceptor"
         };
         
         return StringUtils.join(interceptors, ", ");

@@ -62,12 +62,15 @@ public class AttributeFixedValuesViewModelBuilder {
     }
     
     private String composeOwnerUri(SimpleAttribute ownerAttribute, boolean editView) {
-        String uri = String.format("/delem_attribute.jsp?type=SIMPLE&attr_id=%d", ownerAttribute.getAttributeId());
-        
+        String mode;
         if (editView) {
-            uri += "&mode=edit";
+            mode = "edit";
         }
-        
+        else {
+            mode = "view";
+        }
+        String uri = String.format("/attribute/%s/%d", mode, ownerAttribute.getAttributeId());
+      
         return uri;
     }
     

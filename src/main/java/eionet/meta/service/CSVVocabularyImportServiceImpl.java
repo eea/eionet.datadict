@@ -59,14 +59,13 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         }
 
         this.logMessages = new ArrayList<String>();
-        List<VocabularyConcept> concepts =
-                vocabularyService.getAcceptedConceptsWithAttributes(vocabularyFolder.getId());
 
+        List<VocabularyConcept> concepts = new ArrayList<VocabularyConcept>();
         List<DataElement> boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+
         if (purgeVocabularyData) {
             String message = "All concepts ";
-            purgeConcepts(concepts);
-            concepts = new ArrayList<VocabularyConcept>();
+            this.vocabularyService.deleteVocabularyConcepts(vocabularyFolder.getId());
             if (purgeBoundElements) {
                 purgeBoundElements(vocabularyFolder.getId(), boundElements);
                 boundElements = new ArrayList<DataElement>();
@@ -74,6 +73,8 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
             }
             message += "were deleted (with purge operation).";
             this.logMessages.add(message);
+        } else {
+            concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
         }
 
         Map<String, Integer> elementToId = new HashMap<String, Integer>();
@@ -93,6 +94,6 @@ public class CSVVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         this.logMessages.add("CSV imported into Database.");
 
         return this.logMessages;
-    } // end of method importCsvIntoVocabulary
+    }
 
-} // end of class CSVVocabularyImportServiceImpl
+}

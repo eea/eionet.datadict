@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import eionet.util.Util;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openrdf.rio.RDFHandlerException;
@@ -189,10 +190,6 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         long start = System.currentTimeMillis();
         this.logMessages = new ArrayList<String>();
 
-        if (UploadAction.delete.equals(uploadAction)) {
-            throw new ServiceException("Unsupported upload action delete.");
-        }
-
         final String folderCtxRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
         //check for valid base uri
@@ -200,16 +197,14 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
             throw new ServiceException("Vocabulary does not have a valid base URI");
         }
 
-        List<VocabularyConcept> concepts = vocabularyService.getAcceptedConceptsWithAttributes(vocabularyFolder.getId());
-
+        List<VocabularyConcept> concepts = new ArrayList<VocabularyConcept>();
         final List<DataElement> boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 
-        if (UploadActionBefore.remove.equals(uploadActionBefore)) {
-            String message = "All concepts ";
-            purgeConcepts(concepts);
-            concepts = new ArrayList<VocabularyConcept>();
-            message += "are deleted (with purge operation).";
-            this.logMessages.add(message);
+        if (uploadActionBefore == UploadActionBefore.remove) {
+            this.vocabularyService.deleteVocabularyConcepts(vocabularyFolder.getId());
+            this.logMessages.add("All concepts are deleted (with purge operation).");
+        } else {
+            concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
         }
 
         List<RdfNamespace> rdfNamespaceList = this.namespaceService.getRdfNamespaces();
@@ -301,6 +296,13 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
             List<VocabularyConcept> toBeUpdatedConcepts = rdfHandler.getToBeUpdatedConcepts();
             List<VocabularyConcept> missingConcepts = rdfHandler.getMissingConcepts();
             List<VocabularyConcept> toBeRemovedConcepts = new ArrayList<VocabularyConcept>();
+            
+            // quick hack to support delete upload action
+            if (uploadAction == UploadAction.delete) {
+                toBeRemovedConcepts = toBeUpdatedConcepts;
+                toBeUpdatedConcepts = Collections.EMPTY_LIST;
+                missingConcepts = Collections.EMPTY_LIST;
+            }
 
             switch (missingConceptsAction) {
                 case remove:
@@ -360,10 +362,8 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
     @Transactional(rollbackFor = ServiceException.class)
     public List<String> importRdfIntoVocabulary(Reader contents, final VocabularyFolder vocabularyFolder,
                                                 boolean purgeVocabularyData, boolean purgePredicateBasis) throws ServiceException {
-
         MissingConceptsAction missingConceptsAction = getDefaultMissingConceptsAction(false);
-
-        return this.importRdfIntoVocabularyLegacyInternal(contents, vocabularyFolder, purgeVocabularyData, purgePredicateBasis, missingConceptsAction);
+        return this.importRdfIntoVocabularyLegacyInternal(contents, vocabularyFolder, false, purgeVocabularyData, purgePredicateBasis, missingConceptsAction);
     }
     
     /**
@@ -371,13 +371,13 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public List<String> importRdfIntoVocabulary(Reader contents, final VocabularyFolder vocabularyFolder,
+    public List<String> importRdfIntoVocabulary(Reader contents, final VocabularyFolder vocabularyFolder, boolean deleteVocabularyData,
             boolean purgeVocabularyData, boolean purgePredicateBasis, MissingConceptsAction missingConceptsAction) throws ServiceException {
 
-        return this.importRdfIntoVocabularyLegacyInternal(contents, vocabularyFolder, purgeVocabularyData, purgePredicateBasis, missingConceptsAction);
+        return this.importRdfIntoVocabularyLegacyInternal(contents, vocabularyFolder, deleteVocabularyData, purgeVocabularyData, purgePredicateBasis, missingConceptsAction);
     }
 
-    private List<String> importRdfIntoVocabularyLegacyInternal(Reader contents, final VocabularyFolder vocabularyFolder,
+    private List<String> importRdfIntoVocabularyLegacyInternal(Reader contents, final VocabularyFolder vocabularyFolder, boolean deleteVocabularyData,
             boolean purgeVocabularyData, boolean purgePredicateBasis, MissingConceptsAction missingConceptsAction) throws ServiceException {
         UploadActionBefore uploadActionBefore;
         if (purgeVocabularyData) {
@@ -389,6 +389,8 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         UploadAction uploadAction;
         if (purgePredicateBasis) {
             uploadAction = UploadAction.add_and_purge_per_predicate_basis;
+        } else if (deleteVocabularyData)  {
+            uploadAction = UploadAction.delete;
         } else {
             uploadAction = getDefaultAction(false);
         }

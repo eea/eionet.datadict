@@ -197,7 +197,11 @@
                             attrTypeDisp = "Complex";
                         %>
                         <td>
-                            <a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>">
+                            <%if(attrType.equals(DElemAttribute.TYPE_SIMPLE)) {%>
+                            <a href="attribute/view/<%=attr_id%>"> <%
+                             } else { %>
+                             <a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>"> <%
+                                 }%>
                             <%=Util.processForDisplay(attr_name)%></a>
                         </td>
                         <td><%=Util.processForDisplay(attrTypeDisp)%></td>

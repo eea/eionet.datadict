@@ -51,7 +51,6 @@ public class CachePageActionBeanTest {
             actionBean.setCacheService(cacheService);
             actionBean.setErrorPageService(errorPageService);
         }
-
     }
 
     @Spy

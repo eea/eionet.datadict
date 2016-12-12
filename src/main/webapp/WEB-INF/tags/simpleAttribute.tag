@@ -33,7 +33,7 @@
 
 <script type="text/javascript">
 // <![CDATA[
-( function($) {
+(function($) {
     $(document).ready(function() {
         var currentSize = ${fn:length(attributes)};
 
@@ -52,12 +52,12 @@
             event.preventDefault();
         });
     });
-} ) ( jQuery );
+})(jQuery);
 // ]]>
 </script>
 
 <div style="display:none">
-    <div id="newField${uniqueId}">
+    <div id="newField${uniqueId}" class="delLinkWrapper">
         <input type="hidden" name="" value="${attrMeta.attributeId}" />
         <c:if test="${attrMeta.inputType eq 'text'}">
             <input class="smalltext" size="${attrMeta.width}" type="text">
@@ -66,13 +66,12 @@
             <textarea class="smalltext" rows="${attrMeta.height}" cols="${attrMeta.width}"></textarea>
         </c:if>
         <a href="#" class="delLink deleteButton" title="Remove"></a>
-        <br/>
     </div>
 </div>
 
 <div id="multiDiv${uniqueId}">
     <c:forEach var="attr" items="${attributes}" varStatus="innerLoop">
-        <div id="multyVal${uniqueId}-${innerLoop.index}">
+        <div id="multyVal${uniqueId}-${innerLoop.index}" class="delLinkWrapper">
             <input type="hidden" name="${fieldName}[${innerLoop.index}].attributeId" value="${attr.attributeId}" />
             <c:if test="${attrMeta.inputType eq 'textarea'}">
                 <stripes:textarea name="${fieldName}[${innerLoop.index}].value" rows="${attrMeta.height}" cols="${attrMeta.width}" class="smalltext" />
@@ -84,6 +83,7 @@
         </div>
     </c:forEach>
 </div>
+<br />
 <a href="#" id="multiAdd${uniqueId}">Add new</a>
 
 </c:if>

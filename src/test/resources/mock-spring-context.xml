@@ -22,7 +22,7 @@
             <array>
                 <value>datadict.properties</value>
                 <value>env.properties</value>
-                <value>uit.properties</value>
+                <value>acl.properties</value>
                 <value>doc.properties</value>
                 <value>rdfexport.properties</value>
                 <value>quartz.properties</value>
