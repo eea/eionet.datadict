@@ -2626,6 +2626,18 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     
      <changeSet author="kopanalk" id="rev-189">
         <comment>
+            Add two Registration Statuses in the DATASET table (By altering the REG_STATUS data type). Refs #29879.
+        </comment>
+        <modifyDataType
+            tableName="DATASET"
+            columnName="REG_STATUS"
+            newDataType="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')"/>
+        <addNotNullConstraint tableName="DATASET" columnName="REG_STATUS" columnDataType="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')"/>
+        <addDefaultValue tableName="DATASET" columnName="REG_STATUS" defaultValue="Incomplete"/>
+    </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-190">
+       <comment>
             Add two Registration Statuses in the DATAELEM table (By altering the REG_STATUS data type). Refs #29879.
         </comment>
         <modifyDataType
@@ -2636,7 +2648,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <addDefaultValue tableName="DATAELEM" columnName="REG_STATUS" defaultValue="Incomplete"/>
     </changeSet>
     
-     <changeSet author="kopanalk" id="rev-190">
+    <changeSet author="kopanalk" id="rev-191">
         <comment>
             Add a column in the DATAELEM table in order to link the superseded data elements to their successors (if this is the case). Refs #29879.
         </comment>
@@ -2646,9 +2658,9 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <addForeignKeyConstraint constraintName="FK_SUPERSEDED_SUCCESSOR_DE" baseTableName="DATAELEM" baseColumnNames="SUCCESSOR" referencedColumnNames="DATAELEM_ID"  referencedTableName="DATAELEM"/> 
     </changeSet>
     
-    <changeSet author="kopanalk" id="rev-191">
+    <changeSet author="kopanalk" id="rev-192">
         <comment>
-            Add a column in the DATAELEM table in order to link the superseded datasets to their successors (if this is the case). Refs #29879.
+            Add a column in the DATASET table in order to link the superseded datasets to their successors (if this is the case). Refs #29879.
         </comment>
         <addColumn tableName="DATASET">
             <column name="SUCCESSOR" type="INT UNSIGNED"/>
