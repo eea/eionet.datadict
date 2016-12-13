@@ -46,6 +46,16 @@
         return null;
     }
 
+    private String formVocabularyConceptURI(VocabularyFolder vf, VocabularyConcept vocabularyConcept){
+        String baseUri = VocabularyFolder.getBaseUri(vf);
+        if (!baseUri.endsWith("/") && !baseUri.endsWith("#") && !baseUri.endsWith(":")) {
+            baseUri += "/";
+        }
+        baseUri = StringEncoder.encodeToIRI(baseUri);
+        baseUri = StringEncoder.encodeToIRI(baseUri+vocabularyConcept.getIdentifier());
+        return baseUri;
+    }
+
     /**
      *
      */
@@ -1900,11 +1910,20 @@
                                                                     DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
                                                                     if(mode.equals("view")){
                                                                         List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
-                                                                        if(concepts!=null){ %>
-                                                                            <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
-                                                                                <div><c:out value="${concept.label}"/><c:if test="${!count.last}">, </c:if><div>
-                                                                            </c:forEach>
-                                                                        <%}                                                                      
+                                                                        if(concepts!=null){ 
+                                                                            int count = 0;
+                                                                            VocabularyFolder vf = null;
+                                                                            for (VocabularyConcept vocabularyConcept : concepts) {
+                                                                                if (vf==null) {
+                                                                                    vf = searchEngine.getVocabulary(vocabularyConcept.getVocabularyId());
+                                                                                }%>
+                                                                                <div><a href="<%=formVocabularyConceptURI(vf, vocabularyConcept)%>"><%=vocabularyConcept.getLabel()%>
+                                                                                <%if(count!=concepts.size()-1) {%>
+                                                                                    <c:out value=", "/>
+                                                                                <%}%></a><div>
+                                                                            <%  count++;
+                                                                            }
+                                                                        }
                                                                     } else if (mode.equals("edit")) {
                                                                         if (inherit){
                                                                             List<VocabularyConcept> inheritedValues = searchEngine.getInheritedAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity);

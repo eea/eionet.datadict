@@ -46,6 +46,15 @@
         return null;
     }
 
+    private String formVocabularyConceptUri(VocabularyFolder vf, VocabularyConcept vocabularyConcept){
+        String baseUri = VocabularyFolder.getBaseUri(vf);
+        if (!baseUri.endsWith("/") && !baseUri.endsWith("#") && !baseUri.endsWith(":")) {
+            baseUri += "/";
+        }
+        baseUri = StringEncoder.encodeToIRI(baseUri);
+        return StringEncoder.encodeToIRI(baseUri+vocabularyConcept.getIdentifier());
+    }
+
     /**
      *
      */
@@ -1063,11 +1072,22 @@ else if (mode.equals("add"))
                                                     else if (mode.equals("view") && dispType.equals("vocabulary")){
                                                         DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
                                                         List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
+                                                        int count = 0;
+                                                        VocabularyFolder vf = null;
+                                                        if (vocabularyConcepts != null) {
+                                                            for (VocabularyConcept vocabularyConcept : vocabularyConcepts) {
+                                                                if (vf==null) {
+                                                                    vf = searchEngine.getVocabulary(vocabularyConcept.getVocabularyId());
+                                                                }
                                                         %>
-                                                        <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
-                                                            <div><c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if><div>
-                                                        </c:forEach>
-                                                  <%}
+                                                            <div><a href="<%=formVocabularyConceptUri(vf, vocabularyConcept)%>"><%=vocabularyConcept.getLabel()%>
+                                                                <%if(count!=vocabularyConcepts.size()-1) {%>
+                                                                    <c:out value=", "/>
+                                                                <%}%></a><div>
+                                                               
+                                                         <%  count++;}
+                                                        }
+                                                    }
                                                     else if (mode.equals("view")){ %>
                                                         <%=Util.processForDisplay(attrValue)%><%
                                                     }
