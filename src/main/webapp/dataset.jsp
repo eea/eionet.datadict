@@ -1,3 +1,4 @@
+<%@page import="eionet.meta.dao.domain.VocabularyFolder"%>
 <%@page import="eionet.meta.dao.domain.VocabularyConcept"%>
 <%@page import="eionet.datadict.model.DataDictEntity"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
@@ -43,6 +44,15 @@
         }
 
         return null;
+    }
+
+    private String formVocabularyConceptUri(VocabularyFolder vf, VocabularyConcept vocabularyConcept) {
+        String baseUri = VocabularyFolder.getBaseUri(vf);
+        if (!baseUri.endsWith("/") && !baseUri.endsWith("#") && !baseUri.endsWith(":")) {
+            baseUri += "/";
+        }
+        baseUri = StringEncoder.encodeToIRI(baseUri);
+        return StringEncoder.encodeToIRI(baseUri+vocabularyConcept.getIdentifier());
     }
     %>
 
@@ -1271,10 +1281,20 @@ else if (mode.equals("add"))
                                                         if (mode.equals("view") && dispType.equals("vocabulary")){
                                                             DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
                                                             List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
-                                                            if(vocabularyConcepts != null) {%>
-                                                                <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
-                                                                    <div><c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if><div>
-                                                                </c:forEach>
+                                                            VocabularyFolder vf = null;
+                                                            if(vocabularyConcepts != null) {
+                                                                int count = 0;
+                                                                for (VocabularyConcept vocabularyConcept : vocabularyConcepts) {
+                                                                    if (vf==null) {
+                                                                        vf = searchEngine.getVocabulary(vocabularyConcept.getVocabularyId());
+                                                                    }
+                                                                    %>
+                                                                    <div><a href="<%=formVocabularyConceptUri(vf, vocabularyConcept)%>"><c:out value="<%=vocabularyConcept.getLabel()%>"/></a>
+                                                                   <%if (count != vocabularyConcepts.size()-1){%>
+                                                                   <c:out value=", " />
+                                                                   <%}
+                                                                   count++;
+                                                                }%>
                                                             <%}
                                                         }    
                                                         else if (mode.equals("view")) {

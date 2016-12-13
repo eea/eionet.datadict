@@ -167,12 +167,21 @@ public class AttributeServiceImpl implements AttributeService {
         }
     }
     
+    /**
+     * If the given attribute has vocabulary as its display type then it is not supported for three target entities:
+     * Schema, ShcemaSet and VocabularyFolder. When support for these target entities is implemented, this method
+     * should not be used any more.
+     * 
+     * @param attribute 
+     */
     protected void filterTargetEntities (Attribute attribute) {
         if (attribute.getDisplayType() == Attribute.DisplayType.VOCABULARY) {
             Set<TargetEntity> targetEntities = attribute.getTargetEntities();
-            targetEntities.remove(TargetEntity.SCH);
-            targetEntities.remove(TargetEntity.SCS);
-            targetEntities.remove(TargetEntity.VCF);
+            if (targetEntities!=null) {
+                targetEntities.remove(TargetEntity.SCH);
+                targetEntities.remove(TargetEntity.SCS);
+                targetEntities.remove(TargetEntity.VCF);
+            }
         }
     } 
     
