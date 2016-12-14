@@ -449,7 +449,6 @@
         // security flags for common elements only
         boolean editPrm = false;
         boolean editReleasedPrm = false;
-        boolean setDeprecatedPrm = false;
         boolean canCheckout = false;
         boolean canNewVersion = false;
         boolean isMyWorkingCopy = false;
@@ -563,17 +562,15 @@
                     editReleasedPrm = user != null
                             && SecurityUtil.hasPerm(user.getUserName(),
                                     "/elements/" + delemIdf, "er");
-
-                    setDeprecatedPrm = user != null
-                            && SecurityUtil.hasPerm(user.getUserName(), "/deprecated", "x");
-                    
                     canNewVersion = !dataElement.isWorkingCopy()
                             && elmWorkingUser == null
                             && elmRegStatus != null && user != null
                             && isLatestElm;
                     if (canNewVersion) {
                         canNewVersion = elmRegStatus.equals("Released")
-                                || elmRegStatus.equals("Recorded");
+                                || elmRegStatus.equals("Recorded") 
+                                || elmRegStatus.equals("Superseded")
+                                || elmRegStatus.equals("Retired");
                         if (canNewVersion)
                             canNewVersion = editPrm || editReleasedPrm;
                     }
@@ -581,11 +578,9 @@
                     canCheckout = !dataElement.isWorkingCopy()
                             && elmWorkingUser == null
                             && elmRegStatus != null && user != null
-                            && isLatestElm
-                            && !elmRegStatus.equals("Retired")
-                            && !elmRegStatus.equals("Superseded");
+                            && isLatestElm;
                     if (canCheckout) {
-                        if (elmRegStatus.equals("Released"))
+                        if (elmRegStatus.equals("Released") || elmRegStatus.equals("Retired") || elmRegStatus.equals("Superseded"))
                             // || elmRegStatus.equals("Recorded")
                             canCheckout = editReleasedPrm;
                         else
@@ -850,7 +845,7 @@
                 if (b==false) return;
                 <%}%>
                 <%if (elmRegStatus != null && (elmRegStatus.equals("Retired") || elmRegStatus.equals("Superseded"))){%>
-                    var b = confirm("You are checking in with <%=elmRegStatus%> status! You will not be able to create another version of this data element in the future. "+
+                    var b = confirm("You are checking in with <%=elmRegStatus%> status! This is a status for deprecated data elements. "+
                             "If you want to continue, click OK. Otherwise click Cancel.");
                     if (b==false) return;
                 <%}
@@ -1800,7 +1795,7 @@
                                                                         String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
                                                                         String title = disabled.length() > 0 ? "title=\"This status not allowed any more when adding/saving.\"" : "";
                                                                         String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
-                                                                        if ((status.equalsIgnoreCase("retired") || status.equalsIgnoreCase("superseded")) && setDeprecatedPrm) {
+                                                                        if ((status.equalsIgnoreCase("retired") || status.equalsIgnoreCase("superseded"))) {
                                                                             disabled = "";
                                                                         }
                                                                         if (selected.equals("selected")) {%>

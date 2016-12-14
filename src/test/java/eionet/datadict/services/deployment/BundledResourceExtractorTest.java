@@ -43,7 +43,7 @@ public class BundledResourceExtractorTest {
         verify(this.bundledResourceExtractor, times(1)).extractOpenDocFiles();
         verify(this.bundledResourceExtractor, times(1)).createTempFolder();
         
-        verify(this.bundledResourceExtractor, times(16)).copyFileToDirectoryIfNotExists(any(File.class), any(File.class));
+        verify(this.bundledResourceExtractor, times(15)).copyFileToDirectoryIfNotExists(any(File.class), any(File.class));
         verify(this.bundledResourceExtractor, times(3)).copyFileToDirectory(any(File.class), any(File.class));
         verify(this.bundledResourceExtractor, times(1)).copyDirectory(any(File.class), any(File.class));
         

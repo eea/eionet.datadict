@@ -256,7 +256,6 @@
         boolean imgVisual = false;
         boolean editPrm = false;
         boolean editReleasedPrm = false;
-        boolean setDeprecatedPrm = false;
         boolean advancedAccess = false;
         boolean canCheckout = false;
         boolean canNewVersion = false;
@@ -295,8 +294,6 @@
                 editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
                 editReleasedPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "er");
                 advancedAccess = SecurityUtil.hasPerm(user != null ? user.getUserName() : null, "/datasets/" + dataset.getIdentifier(), DDUser.MSACCESS_ADVANCED_PRM);
-                setDeprecatedPrm = user != null 
-                        && SecurityUtil.hasPerm(user.getUserName(), "/deprecated", "x");
                 
                 if (regStatus.equalsIgnoreCase("Superseded")){
                     successorId = dataset.getSuccessorId();
@@ -314,17 +311,17 @@
 
                 canNewVersion = !dataset.isWorkingCopy() && workingUser == null && regStatus!=null && user!=null && isLatestDst;
                 if (canNewVersion) {
-                    canNewVersion = regStatus.equals("Released") || regStatus.equals("Recorded");
+                    canNewVersion = regStatus.equals("Released") || regStatus.equals("Recorded") || regStatus.equals("Retired") || regStatus.equals("Superseded");
                     if (canNewVersion)
                         canNewVersion = editPrm || editReleasedPrm;
                 }
 
                 canCheckout = !dataset.isWorkingCopy() 
                         && workingUser == null 
-                        && regStatus!=null && !regStatus.equals("Retired") && !regStatus.equals("Superseded")
+                        && regStatus!=null
                         && user!=null && isLatestDst;
                 if (canCheckout) {
-                    if (regStatus.equals("Released"))
+                    if (regStatus.equals("Released") || regStatus.equals("Superseded") || regStatus.equals("Retired"))
                             //|| regStatus.equals("Recorded"))
                         canCheckout = editReleasedPrm;
                     else
@@ -643,7 +640,7 @@
                 <%
             } 
             if (regStatus != null && (regStatus.equals("Retired") || regStatus.equals("Superseded"))){%>
-                    var b = confirm("You are checking in with <%=regStatus%> status! You will not be able to create another version of this dataset in the future. "+
+                    var b = confirm("You are checking in with <%=regStatus%> status! This is a status for deprecated datasets. "+
                             "If you want to continue, click OK. Otherwise click Cancel.");
                     if (b==false) return;
                 <%}
@@ -1146,7 +1143,7 @@ else if (mode.equals("add"))
                                                                 String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
                                                                 String title = disabled.length() > 0 ? "table=\"This status not allowed any more when adding/saving.\"" : "";
                                                                 String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
-                                                                if ((status.equalsIgnoreCase("retired") || status.equalsIgnoreCase("superseded")) && setDeprecatedPrm) {
+                                                                if (status.equalsIgnoreCase("retired") || status.equalsIgnoreCase("superseded")) {
                                                                     disabled="";
                                                                 }
                                                                 if (!StringUtils.isBlank(selected)){%>

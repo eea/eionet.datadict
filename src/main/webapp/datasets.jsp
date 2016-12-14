@@ -754,7 +754,7 @@ HashSet statuses = null;
                                     </c:choose>
                                 </td>
                             </c:if>
-                            <c:set var="clickable" value="${not empty dataset.status and (empty user or not user.authentic) and (dataset.status eq 'Incomplete' or dataset.status eq 'Candidate' or dataset.status eq 'Qualified') ? false : true}" />
+                            <c:set var="clickable" value="${not empty dataset.status and (((empty user or not user.authentic) and (dataset.status eq 'Incomplete' or dataset.status eq 'Candidate' or dataset.status eq 'Qualified' or dataset.status eq 'Retired' or dataset.status eq 'Superseded')))  ? false : true}" />
                             <td title="${fn:escapeXml(dataset.name)}">
                                 <c:if test="${clickable}">
                                     <a href="${pageContext.request.contextPath}/datasets/${dataset.ID}">

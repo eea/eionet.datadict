@@ -2734,7 +2734,7 @@ public class DDSearchEngine {
 
         if (regStatus != null) {
             if (user == null || !user.isAuthentic()) {
-                if (regStatus.equals("Incomplete") || regStatus.equals("Candidate") || regStatus.equals("Qualified")) {
+                if (regStatus.equals("Incomplete") || regStatus.equals("Candidate") || regStatus.equals("Qualified") || regStatus.equals("Retired") || regStatus.equals("Superseded")) {
                     return true;
                 }
             }
