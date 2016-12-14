@@ -22,7 +22,7 @@
                   <td>
                      <c:choose>
                          <c:when test="${not empty actionBean.attribute.id}">
-                             <em>${actionBean.attribute.shortName}</em>
+                             <em><c:out value="${actionBean.attribute.shortName}"/></em>
                          </c:when>
                          <c:otherwise>
                              <stripes:text id="Short Name" class="mandatory_field" name="attribute.shortName"/>
@@ -91,7 +91,7 @@
                            <c:choose>
                                <c:when test="${not empty actionBean.attribute.vocabulary}">
                                    <stripes:link href="${actionBean.contextPath}/vocabulary/${actionBean.attribute.vocabulary.folderLabel}/${actionBean.attribute.vocabulary.identifier}/view">
-                                       ${actionBean.attribute.vocabulary.label}
+                                       <c:out value="${actionBean.attribute.vocabulary.label}"/>
                                    </stripes:link>
                                    <stripes:hidden name="attribute.vocabulary.folderLabel"/>
                                    <stripes:hidden name="attribute.vocabulary.identifier"/>

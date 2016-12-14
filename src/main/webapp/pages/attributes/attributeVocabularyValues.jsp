@@ -26,16 +26,16 @@
         </c:choose>
         <h1>Values for the <c:out value="${actionBean.attribute.shortName}"/> attribute corresponding to the 
             <stripes:link href="${ddEntityUrl}">
-                ${ddEntity.shortName}
+                <c:out value="${ddEntity.shortName}" />
             </stripes:link> 
-            ${actionBean.attrOwnerType}
+            <c:out value="${actionBean.attrOwnerType}" />
         </h1>
 
          <div id="drop-operations">
                 <ul>
                     <li class="back">
                         <stripes:link href="${backLink}">
-                            ${backLabel}
+                            <c:out value="${backLabel}" />
                         </stripes:link>
                     </li>
                     <li class="add">
@@ -90,7 +90,7 @@
                         </td>
                         <td>
                             <stripes:link href="${actionBean.contextPath}/vocabularyconcept/${fn:toLowerCase(actionBean.attribute.vocabulary.folderLabel)}/${fn:toLowerCase(actionBean.attribute.vocabulary.label)}/${concept.identifier}">
-                                ${concept.identifier}
+                                <c:out value="${concept.identifier}" />
                             </stripes:link>
                         </td>
                         <td>

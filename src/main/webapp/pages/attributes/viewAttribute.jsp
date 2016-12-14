@@ -36,7 +36,7 @@
             <tr class="${(rowStatus+1) % 2 != 0 ? 'odd' : 'even'}">
                 <th scope="row" class="scope-row">Name</th>
                 <td>
-                    ${actionBean.attribute.name}
+                    <c:out value="${actionBean.attribute.name}"/>
                 </td>
                 <c:set var="rowStatus" value="${rowStatus + 1}"/>
             </tr>
@@ -46,10 +46,10 @@
                     <td>
                         <c:choose>
                             <c:when test="${not empty actionBean.attribute.namespace.fullName}">
-                                ${actionBean.attribute.namespace.fullName}
+                                <c:out value="${actionBean.attribute.namespace.fullName}"/>
                             </c:when>
                             <c:otherwise>
-                                ${actionBean.attribute.namespace.shortName}
+                                <c:out value="${actionBean.attribute.namespace.shortName}" />
                             </c:otherwise>
                         </c:choose>
                     </td>
@@ -59,21 +59,21 @@
             <tr class="${(rowStatus+1) % 2 != 0 ? 'odd' : 'even'}">
                 <th scope="row" class="scope-row">Definition</th>
                 <td>
-                    ${actionBean.attribute.definition}
+                    <c:out value="${actionBean.attribute.definition}" />
                 </td>
                 <c:set var="rowStatus" value="${rowStatus + 1}"/>
             </tr>
             <tr class="${(rowStatus+1) % 2 != 0 ? 'odd' : 'even'}">
                 <th scope="row" class="scope-row">Obligation</th>
                 <td>
-                    ${actionBean.attribute.obligationType.label}
+                    <c:out value="${actionBean.attribute.obligationType.label}" />
                 </td>
                 <c:set var="rowStatus" value="${rowStatus + 1}"/>
             </tr>
             <tr class="${(rowStatus+1) % 2 != 0 ? 'odd' : 'even'}">
                 <th scope="row" class="scope-row">Display type</th>
                 <td>
-                    ${actionBean.attribute.displayType.label}
+                    <c:out value="${actionBean.attribute.displayType.label}" />
                 </td>
                 <c:set var="rowStatus" value="${rowStatus + 1}"/>
             </tr>
@@ -86,7 +86,7 @@
                         <c:choose>
                             <c:when test="${not empty actionBean.attribute.vocabulary}">
                                 <stripes:link href="${actionBean.contextPath}/vocabulary/${actionBean.attribute.vocabulary.folderLabel}/${actionBean.attribute.vocabulary.identifier}/view">
-                                    ${actionBean.attribute.vocabulary.label}
+                                    <c:out value="${actionBean.attribute.vocabulary.label}" />
                                 </stripes:link>
                             </c:when>
                             <c:otherwise>
@@ -106,7 +106,7 @@
                     </th>
                     <td>
                         <c:forEach var="fixedValue" items="${actionBean.fixedValues}">
-                            ${fixedValue.value}</br>
+                            <c:out value="${fixedValue.value}" /></br>
                         </c:forEach>
                     </td>
                     <c:set var="rowStatus" value="${rowStatus + 1}"/>
@@ -129,7 +129,7 @@
             <tr class="${(rowStatus+1) % 2 != 0 ? 'odd' : 'even'}">
                 <th scope="row" class="scope-row">Inheritance</th>
                 <td>
-                    ${actionBean.attribute.valueInheritanceMode.label}
+                    <c:out value="${actionBean.attribute.valueInheritanceMode.label}" />
                 </td>
                 <c:set var="rowStatus" value="${rowStatus + 1}"/>
             </tr>
@@ -137,7 +137,7 @@
                 <th scope="row" class="scope-row">Display order</th>
                 <td>
                     <c:if test="${not empty actionBean.attribute.displayOrder and actionBean.attribute.displayOrder != 999}">
-                        ${actionBean.attribute.displayOrder}
+                        <c:out value="${actionBean.attribute.displayOrder}" />
                     </c:if>
                 </td>
                 <c:set var="rowStatus" value="${rowStatus + 1}"/>
@@ -146,30 +146,36 @@
                 <th scope="row" class="scope-row">Display for</th>
                 <td>
                     <c:forEach var="targetEntity" items="${actionBean.attribute.targetEntities}">
-                        ${targetEntity.label}<br/>
+                        <c:out value="${targetEntity.label}" /><br/>
                     </c:forEach>
                 </td>
                 <c:set var="rowStatus" value="${rowStatus + 1}"/>
             </tr>
             <tr class="${(rowStatus+1) % 2 != 0 ? 'odd' : 'even'}">
                 <th scope="row" class="scope-row">Display width</th>
-                <td>${actionBean.attribute.displayWidth}</td>
+                <td>
+                   <c:out value="${actionBean.attribute.displayWidth}" />
+                </td>
                 <c:set var="rowStatus" value="${rowStatus + 1}"/>
             </tr>
             <tr class="${(rowStatus+1) % 2 != 0 ? 'odd' : 'even'}">
                 <th scope="row" class="scope-row">Display height</th>
-                <td>${actionBean.attribute.displayHeight}</td>
+                <td>
+                   <c:out value="${actionBean.attribute.displayHeight}" />
+                </td>
                 <c:set var="rowStatus" value="${rowStatus + 1}"/>
             </tr>
             <tr class="${(rowStatus+1) % 2 != 0 ? 'odd' : 'even'}">
                 <th scope="row" class="scope-row">RDF property URI</th>
                 <td>
-                    ${actionBean.attribute.rdfNamespace.uri}
+                    <c:out value="${actionBean.attribute.rdfNamespace.uri}" />
                 </td>
                 <c:set var="rowStatus" value="${rowStatus + 1}"/>
             <tr class="${(rowStatus+1) % 2 != 0 ? 'odd' : 'even'}">
                 <th scope="row" class="scope-row">RDF property name</th>
-                <td>${actionBean.attribute.rdfPropertyName}</td>
+                <td>
+                   <c:out value="${actionBean.attribute.rdfPropertyName}"/>
+                </td>
                 <c:set var="rowStatus" value="${rowStatus + 1}"/>
             </tr>
         </table>
