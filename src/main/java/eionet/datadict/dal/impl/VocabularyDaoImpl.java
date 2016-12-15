@@ -27,8 +27,9 @@ public class VocabularyDaoImpl extends JdbcDaoBase implements VocabularyDao {
         super(dataSource);
     }
 
-     public static final String GET_BY_ID = "SELECT VOCABULARY.IDENTIFIER as IDENTIFIER, VOCABULARY.LABEL as LABEL, VOCABULARY_SET.IDENTIFIER as F_IDENTIFIER "
-            + "FROM VOCABULARY LEFT JOIN VOCABULARY_SET ON VOCABULARY.FOLDER_ID = VOCABULARY_SET.ID WHERE VOCABULARY_ID = :id";
+     public static final String GET_BY_ID = "SELECT VOCABULARY.IDENTIFIER as IDENTIFIER, VOCABULARY.LABEL as LABEL, " + 
+             "VOCABULARY.CONCEPT_IDENTIFIER_NUMERIC AS CONCEPT_IDENTIFIER_NUMERIC, VOCABULARY_SET.IDENTIFIER as F_IDENTIFIER " + 
+             "FROM VOCABULARY LEFT JOIN VOCABULARY_SET ON VOCABULARY.FOLDER_ID = VOCABULARY_SET.ID WHERE VOCABULARY_ID = :id";
 
    
     @Override
@@ -42,6 +43,7 @@ public class VocabularyDaoImpl extends JdbcDaoBase implements VocabularyDao {
                 VocabularyFolder voc = new VocabularyFolder();
                 voc.setIdentifier(rs.getString("IDENTIFIER"));
                 voc.setLabel(rs.getString("LABEL"));
+                voc.setNumericConceptIdentifiers(rs.getBoolean("CONCEPT_IDENTIFIER_NUMERIC"));
                 voc.setFolderLabel(rs.getString("F_IDENTIFIER"));
                 return voc;
             }

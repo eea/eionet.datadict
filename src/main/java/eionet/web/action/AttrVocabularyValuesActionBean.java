@@ -20,7 +20,8 @@ import eionet.datadict.services.data.VocabularyDataService;
 import eionet.meta.DDUser;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.web.action.AbstractActionBean;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -37,11 +38,11 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     private final static String ATTRIBUTE_VOCABULARY_VALUES = "/pages/attributes/attributeVocabularyValues.jsp";
     private final static String ATTRIBUTE_VOCABULARY_VALUES_ADD = "/pages/attributes/addAttributeVocabularyValue.jsp";
     
-    //block of post parameters
+    // block of post parameters
     private String conceptIdentifier;
     private String vocabularyId;
     
-    //block of url parameters
+    // block of url parameters
     private String attributeId;
     private String attrOwnerType;
     private String attrOwnerId;
@@ -50,16 +51,16 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     private DataDictEntity attributeOwnerEntity;
     private List<VocabularyConcept> vocabularyConcepts;
     
-    //Only one of them points at a real object (depending on what is the type
-    //of the owner of the attribute)
+    // Only one of them points at a real object (depending on what is the type
+    // of the owner of the attribute)
     private Dataset dataset;
     private DatasetTable datasetTable;
     private DataElement dataElement;
     
-    //The Attribute object
+    // The Attribute object
     private Attribute attribute;
     
-    //Services
+    // Services
     @SpringBean
     private AttributeService attributeService;
     @SpringBean
@@ -88,29 +89,27 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution manageValues() throws ResourceNotFoundException, EmptyParameterException, UserAuthenticationException, UserAuthorizationException, BadRequestException {
-        
         DDUser user = this.getUser();
-        
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to access the vocabulary attribute values page.");
         }
         
         if (DataDictEntity.Entity.getFromString(attrOwnerType) == null) {
-            throw new BadRequestException("Malformed request. "+attrOwnerType+ " is not a valid datadict entity type.");
+            throw new BadRequestException("Malformed request. " + attrOwnerType + " is not a valid datadict entity type.");
         }
         
         try {
             Integer.parseInt(attributeId);
         } catch (NumberFormatException ex) {
-            throw new BadRequestException("Malformend request. "+attributeId+ " is not a valid attribute id.");
+            throw new BadRequestException("Malformend request. " + attributeId + " is not a valid attribute id.");
         }
         
-         try {
+        try {
             Integer.parseInt(attrOwnerId);
         } catch (NumberFormatException ex) {
-            throw new BadRequestException("Malformend request. "+attrOwnerId+ " is not a valid datadict entity id.");
+            throw new BadRequestException("Malformend request. " + attrOwnerId + " is not a valid datadict entity id.");
         }
-         
+        
         this.attributeOwnerEntity = new DataDictEntity(Integer.parseInt(attrOwnerId), DataDictEntity.Entity.getFromString(attrOwnerType));
         
         if (attrOwnerType.equals("dataelement")) {
@@ -125,7 +124,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             }   
         } else if (attrOwnerType.equals("dataset")) {
             configureDataset();
-            if (!this.dataset.getWorkingCopy() || (this.dataset.getWorkingUser() != null && !this.dataset.getWorkingUser().equals(user.getUserName()))){
+            if (!this.dataset.getWorkingCopy() || (this.dataset.getWorkingUser() != null && !this.dataset.getWorkingUser().equals(user.getUserName()))) {
                 throw new UserAuthorizationException("You are not authorized to edit this dataset.");
             }
         }
@@ -135,10 +134,10 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         if(attribute.getVocabulary() == null) {
             throw new BadRequestException("No vocabulary binding exists for this attribute.");
         }
-        this.vocabularyConcepts = this.attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(attribute.getVocabulary().getId(), attribute.getId(), attributeOwnerEntity);
+        this.vocabularyConcepts = this.attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(
+                attribute.getVocabulary().getId(), attribute.getId(), attributeOwnerEntity);
         
         return new ForwardResolution(ATTRIBUTE_VOCABULARY_VALUES);
-        
     }
     
     /**
@@ -151,27 +150,25 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
      * @throws ResourceNotFoundException 
      */
     public Resolution add() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException, BadRequestException {
-        
         DDUser user = this.getUser();
-        
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to add a vocabulary attribute value.");
         }
         
         if (DataDictEntity.Entity.getFromString(attrOwnerType) == null) {
-            throw new BadRequestException("Malformed request. "+attrOwnerType+ " is not a valid datadict entity type.");
+            throw new BadRequestException("Malformed request. " + attrOwnerType + " is not a valid datadict entity type.");
         }
         
         try {
             Integer.parseInt(attributeId);
         } catch (NumberFormatException ex) {
-            throw new BadRequestException("Malformend request. "+attributeId+ " is not a valid attribute id.");
+            throw new BadRequestException("Malformend request. " + attributeId + " is not a valid attribute id.");
         }
         
-         try {
+        try {
             Integer.parseInt(attrOwnerId);
         } catch (NumberFormatException ex) {
-            throw new BadRequestException("Malformend request. "+attrOwnerId+ " is not a valid datadict entity id.");
+            throw new BadRequestException("Malformend request. " + attrOwnerId + " is not a valid datadict entity id.");
         }
         
         this.attributeOwnerEntity = new DataDictEntity(Integer.parseInt(attrOwnerId), DataDictEntity.Entity.getFromString(attrOwnerType));
@@ -181,23 +178,29 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             if (!this.dataElementDataService.isWorkingUser(dataElement, user)) {
                 throw new UserAuthorizationException("You are not authorized to edit this data element.");
             }
-        } 
-        else if (attrOwnerType.equals("table")) {
+        } else if (attrOwnerType.equals("table")) {
             configureTable();
             if (!this.datasetTableDataService.isWorkingCopy(datasetTable, user)){
                 throw new UserAuthorizationException("You are not authorized to edit this table.");
             }
-        } 
-        else if (attrOwnerType.equals("dataset")) {
+        } else if (attrOwnerType.equals("dataset")) {
             configureDataset();
-            if (!this.dataset.getWorkingCopy() || this.dataset.getWorkingUser() != null && !this.dataset.getWorkingUser().equals(user.getUserName())){
+            if (!this.dataset.getWorkingCopy() || this.dataset.getWorkingUser() != null && !this.dataset.getWorkingUser().equals(user.getUserName())) {
                 throw new UserAuthorizationException("You are not authorized to edit this dataset.");
             }
         }
         
         this.attribute = attributeDataService.getAttribute(Integer.parseInt(attributeId));
         this.vocabularyConcepts = this.vocabularyDataService.getVocabularyConcepts(attribute.getVocabulary().getId(), StandardGenericStatus.ACCEPTED);
-        
+        Collections.sort(vocabularyConcepts, new Comparator<VocabularyConcept>() {
+            @Override
+            public int compare(VocabularyConcept c1, VocabularyConcept c2) {
+                return attribute.getVocabulary().isNumericConceptIdentifiers() ?
+                        Long.valueOf(c1.getIdentifier()).compareTo(Long.valueOf(c2.getIdentifier())) :
+                        c1.getIdentifier().compareTo(c2.getIdentifier());
+            }
+        });
+
         return new ForwardResolution(ATTRIBUTE_VOCABULARY_VALUES_ADD);
     }
     
@@ -212,33 +215,32 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
      */
     public Resolution saveAdd() throws UserAuthorizationException, UserAuthenticationException, ConflictException, BadRequestException {
         DDUser user = this.getUser();
-        
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to save a vocabulary attribute value.");
         }
         
         if (DataDictEntity.Entity.getFromString(attrOwnerType) == null) {
-            throw new BadRequestException("Malformed request. "+attrOwnerType+ " is not a valid datadict entity type.");
+            throw new BadRequestException("Malformed request. " + attrOwnerType + " is not a valid datadict entity type.");
         }
         
         try {
             Integer.parseInt(attributeId);
         } catch (NumberFormatException ex) {
-            throw new BadRequestException("Malformend request. "+attributeId+ " is not a valid attribute id.");
+            throw new BadRequestException("Malformend request. " + attributeId + " is not a valid attribute id.");
         }
         
         try {
             Integer.parseInt(attrOwnerId);
         } catch (NumberFormatException ex) {
-            throw new BadRequestException("Malformend request. "+attrOwnerId+ " is not a valid datadict entity id.");
+            throw new BadRequestException("Malformend request. " + attrOwnerId + " is not a valid datadict entity id.");
         }
         
-        if (StringUtils.isEmpty(conceptIdentifier)){
+        if (StringUtils.isEmpty(conceptIdentifier)) {
             throw new BadRequestException("Malformed request: Attribute value missing.");
         }
         this.attributeOwnerEntity = new DataDictEntity(Integer.parseInt(attrOwnerId), DataDictEntity.Entity.getFromString(attrOwnerType)); 
-        this.attributeService.saveAttributeVocabularyValue(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIdentifier , user);
-        return new RedirectResolution("/vocabularyvalues/attribute/"+attributeId+"/"+attrOwnerType+"/"+attrOwnerId);
+        this.attributeService.saveAttributeVocabularyValue(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIdentifier, user);
+        return new RedirectResolution("/vocabularyvalues/attribute/" + attributeId + "/" + attrOwnerType + "/"+attrOwnerId);
     }
     
     /**
@@ -250,34 +252,33 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
      */
     public Resolution delete() throws UserAuthenticationException, UserAuthorizationException, BadRequestException {
         DDUser user = this.getUser();
-        
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to delete a vocabulary attribute value.");
         }
         
         if (DataDictEntity.Entity.getFromString(attrOwnerType) == null) {
-            throw new BadRequestException("Malformed request. "+attrOwnerType+ " is not a valid datadict entity type.");
+            throw new BadRequestException("Malformed request. " + attrOwnerType + " is not a valid datadict entity type.");
         }
         
         try {
             Integer.parseInt(attributeId);
         } catch (NumberFormatException ex) {
-            throw new BadRequestException("Malformend request. "+attributeId+ " is not a valid attribute id.");
+            throw new BadRequestException("Malformend request. " + attributeId + " is not a valid attribute id.");
         }
         
         try {
             Integer.parseInt(attrOwnerId);
         } catch (NumberFormatException ex) {
-            throw new BadRequestException("Malformend request. "+attrOwnerId+ " is not a valid datadict entity id.");
+            throw new BadRequestException("Malformend request. " + attrOwnerId + " is not a valid datadict entity id.");
         }
         
-        if (StringUtils.isEmpty(conceptIdentifier)){
+        if (StringUtils.isEmpty(conceptIdentifier)) {
             throw new BadRequestException("Malformed request: Attribute value missing.");
         }
         
         this.attributeOwnerEntity = new DataDictEntity(Integer.parseInt(attrOwnerId), DataDictEntity.Entity.getFromString(attrOwnerType));
         this.attributeService.deleteAttributeValue(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIdentifier, user);
-        return new RedirectResolution("/vocabularyvalues/attribute/"+attributeId+"/"+attrOwnerType+"/"+attrOwnerId);
+        return new RedirectResolution("/vocabularyvalues/attribute/" + attributeId + "/" + attrOwnerType + "/" + attrOwnerId);
     }
     
     /**
@@ -289,30 +290,29 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
      */
     public Resolution deleteAll() throws UserAuthenticationException, UserAuthorizationException, BadRequestException {
         DDUser user = this.getUser();
-        
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to delete vocabulary attribute values.");
         }
         
         if (DataDictEntity.Entity.getFromString(attrOwnerType) == null) {
-            throw new BadRequestException("Malformed request. "+attrOwnerType+ " is not a valid datadict entity type.");
+            throw new BadRequestException("Malformed request. " + attrOwnerType + " is not a valid datadict entity type.");
         }
         
         try {
             Integer.parseInt(attributeId);
         } catch (NumberFormatException ex) {
-            throw new BadRequestException("Malformend request. "+attributeId+ " is not a valid attribute id.");
+            throw new BadRequestException("Malformend request. " + attributeId + " is not a valid attribute id.");
         }
         
         try {
             Integer.parseInt(attrOwnerId);
         } catch (NumberFormatException ex) {
-            throw new BadRequestException("Malformend request. "+attrOwnerId+ " is not a valid datadict entity id.");
+            throw new BadRequestException("Malformend request. " + attrOwnerId + " is not a valid datadict entity id.");
         }
         
         this.attributeOwnerEntity = new DataDictEntity(Integer.parseInt(attrOwnerId), DataDictEntity.Entity.getFromString(attrOwnerType));
         this.attributeService.deleteAllAttributeValues(Integer.parseInt(attributeId), attributeOwnerEntity, user);
-        return new RedirectResolution("/vocabularyvalues/attribute/"+attributeId+"/"+attrOwnerType+"/"+attrOwnerId);
+        return new RedirectResolution("/vocabularyvalues/attribute/" + attributeId + "/" + attrOwnerType + "/" + attrOwnerId);
     }
     
     
@@ -434,6 +434,5 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     public void setVocabularyId(String vocabularyId) {
         this.vocabularyId = vocabularyId;
     }
-    
     
 }
