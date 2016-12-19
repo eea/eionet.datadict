@@ -944,11 +944,9 @@
 
             // if not delete mode, do validation of inputs
             if (mode != "delete"){
-                var isCommon = '<%=elmCommon%>';
+                var isCommon = <%=elmCommon%>;
                 var strVocabularyId = '<%=vocabularyId%>';
                 var strType = '<%=type%>';
-                var regStatus = document.getElementById("reg_status_select").value;
-                var successorId = document.forms["form1"].elements["successor_id"].value;
                 
                 forceAttrMaxLen();
                 if (!checkObligations()){
@@ -961,10 +959,13 @@
                       alert("Vocabulary is not selected.");
                       return false;
                     }
-                    if ((regStatus.toLowerCase() == 'superseded')
-                            && successorId == "null") {
-                        alert("A superseded element must be linked to its successor. You must specify the link.");
-                        return false;
+                    if (isCommon) {
+                        var regStatus = document.getElementById("reg_status_select").value;
+                        var successorId = document.forms["form1"].elements["successor_id"].value;
+                        if (regStatus.toLowerCase() === 'superseded' && successorId === "null") {
+                            alert("A superseded element must be linked to its successor. You must specify the link.");
+                            return false;
+                        }
                     }
                 }
 
@@ -1218,7 +1219,7 @@
         }
 
         function copyElem(){
-            var isCommon = '<%=elmCommon%>';
+            var isCommon = <%=elmCommon%>;
             if (hasWhiteSpace("idfier")){
                 alert("Identifier cannot contain any white space!");
                 return;
@@ -2010,19 +2011,19 @@
                                                                     DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
                                                                     if(mode.equals("view")){
                                                                         List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
-                                                                        if(concepts!=null){ 
-                                                                            int count = 0;
-                                                                            VocabularyFolder vf = null;
-                                                                            for (VocabularyConcept vocabularyConcept : concepts) {
-                                                                                if (vf==null) {
-                                                                                    vf = searchEngine.getVocabulary(vocabularyConcept.getVocabularyId());
-                                                                                }%>
-                                                                                <div><a href="<%=formVocabularyConceptURI(vf, vocabularyConcept)%>"><%=vocabularyConcept.getLabel()%>
-                                                                                <%if(count!=concepts.size()-1) {%>
-                                                                                    <c:out value=", "/>
-                                                                                <%}%></a><div>
-                                                                            <%  count++;
-                                                                            }
+                                                                        if (concepts!=null) { %>
+                                                                            <ul class="stripedmenu">
+                                                                            <%
+                                                                                VocabularyFolder vf = null;
+                                                                                for (VocabularyConcept vocabularyConcept : concepts) {
+                                                                                    if (vf == null) {
+                                                                                        vf = searchEngine.getVocabulary(vocabularyConcept.getVocabularyId());
+                                                                                    }
+                                                                            %>
+                                                                                <li><a href="<%=formVocabularyConceptURI(vf, vocabularyConcept)%>"><%=vocabularyConcept.getLabel()%></a></li>
+                                                                            <%}%>
+                                                                            </ul>
+                                                                    <%
                                                                         }
                                                                     } else if (mode.equals("edit")) {
                                                                         if (inherit){
@@ -2044,14 +2045,16 @@
                                                                                 </br>
                                                                           <%}
                                                                         }
-                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
-                                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
+                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) { %>
                                                                           <%List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
                                                                             if(concepts!=null){ %>
-                                                                                <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
-                                                                                    <div><c:out value="${concept.label}"/><c:if test="${!count.last}">, </c:if><div>
-                                                                                </c:forEach>
-                                                                          <%}%>
+                                                                                <ul class="stripedmenu">
+                                                                                    <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
+                                                                                        <li><c:out value="${concept.label}"/></li>
+                                                                                    </c:forEach>
+                                                                                </ul>
+                                                                            <%}%>
+                                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
                                                                         <%} else {%>
                                                                             [Manage links to the vocabulary]
                                                                         <%}
@@ -2237,16 +2240,18 @@
                                                                     </select>
                                                                     <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>"></a>
                                                                     <%
-                                                                        } else if (dispType.equals("vocabulary")){
+                                                                        } else if (dispType.equals("vocabulary")) {
                                                                                 DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
                                                                                 if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
-                                                                                <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
-                                                                              <%List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
-                                                                                if(concepts!=null){ %>
-                                                                                    <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
-                                                                                        <div><c:out value="${concept.label}"/><c:if test="${!count.last}">, </c:if><div>
-                                                                                    </c:forEach>
+                                                                                <%List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
+                                                                                if(concepts!=null) { %>
+                                                                                    <ul class="stripedmenu">
+                                                                                        <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
+                                                                                            <li><c:out value="${concept.label}"/></li>
+                                                                                        </c:forEach>
+                                                                                    </ul>
                                                                               <%}%>
+                                                                              <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
                                                                             <%} else {%>
                                                                                 [Manage links to the vocabulary]
                                                                             <%}

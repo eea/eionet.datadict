@@ -1069,26 +1069,24 @@ else if (mode.equals("add"))
                                                         }
                                                     }
                                                     // if view mode, display simple text
-                                                    else if (mode.equals("view") && dispType.equals("vocabulary")){
+                                                    else if (mode.equals("view") && dispType.equals("vocabulary")) {
                                                         DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
                                                         List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
-                                                        int count = 0;
-                                                        VocabularyFolder vf = null;
-                                                        if (vocabularyConcepts != null) {
-                                                            for (VocabularyConcept vocabularyConcept : vocabularyConcepts) {
-                                                                if (vf==null) {
-                                                                    vf = searchEngine.getVocabulary(vocabularyConcept.getVocabularyId());
-                                                                }
-                                                        %>
-                                                            <div><a href="<%=formVocabularyConceptUri(vf, vocabularyConcept)%>"><%=vocabularyConcept.getLabel()%>
-                                                                <%if(count!=vocabularyConcepts.size()-1) {%>
-                                                                    <c:out value=", "/>
-                                                                <%}%></a><div>
-                                                               
-                                                         <%  count++;}
+                                                        if (vocabularyConcepts != null) { %>
+                                                            <ul class="stripedmenu">
+                                                            <%
+                                                                VocabularyFolder vf = null;
+                                                                for (VocabularyConcept vocabularyConcept : vocabularyConcepts) {
+                                                                    if (vf == null) {
+                                                                        vf = searchEngine.getVocabulary(vocabularyConcept.getVocabularyId());
+                                                                    }
+                                                            %>
+                                                                <li><a href="<%=formVocabularyConceptUri(vf, vocabularyConcept)%>"><%=vocabularyConcept.getLabel()%></a></li>
+                                                            <%}%>
+                                                            </ul>
+                                                    <%
                                                         }
-                                                    }
-                                                    else if (mode.equals("view")){ %>
+                                                    } else if (mode.equals("view")){ %>
                                                         <%=Util.processForDisplay(attrValue)%><%
                                                     }
                                                     // if non-view mode, display input
@@ -1109,9 +1107,11 @@ else if (mode.equals("add"))
                                                                         <c:out value="Inherited from parent level: "/>
                                                                     </c:when>
                                                                 </c:choose>
-                                                                <c:forEach var="value" items="<%=inheritedValues%>" varStatus="count">
-                                                                    <div><c:out value="${value.label}"/><c:if test="${!count.last}">, </c:if><div>
-                                                                </c:forEach>
+                                                                <ul class="stripedmenu">
+                                                                    <c:forEach var="value" items="<%=inheritedValues%>" varStatus="count">
+                                                                        <li><c:out value="${value.label}"/></li>
+                                                                    </c:forEach>
+                                                                </ul>
                                                                 </br>
                                                             <%}
                                                         }
@@ -1172,14 +1172,16 @@ else if (mode.equals("add"))
                                                             </div><%
                                                         }
                                                         else if (dispMultiple && dispType.equals("vocabulary")) {
-                                                            if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
-                                                                <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
+                                                            if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) { %>
                                                               <%DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
                                                                 List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
                                                                 %>
-                                                                <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
-                                                                    <div><c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if><div>
-                                                                </c:forEach>
+                                                                <ul class="stripedmenu">
+                                                                    <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
+                                                                        <li><c:out value="${vocabularyConcept.label}"/></li>
+                                                                    </c:forEach>
+                                                                </ul>
+                                                                <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
                                                             <%} else { %>
                                                                 [Manage links to the vocabulary]
                                                             <%}
@@ -1237,13 +1239,15 @@ else if (mode.equals("add"))
                                                                 <%
                                                             }else if (dispType.equals("vocabulary")){ 
                                                                         if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
-                                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
                                                                           <%DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
                                                                             List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
                                                                           %>
-                                                                            <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
-                                                                                <div><c:out value="${vocabularyConcept.label}"/><c:if test="${!count.last}">, </c:if><div>
-                                                                            </c:forEach>
+                                                                            <ul class="stripedmenu">
+                                                                                <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
+                                                                                    <li><c:out value="${vocabularyConcept.label}"/></li>
+                                                                                </c:forEach>
+                                                                            </ul>
+                                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
                                                                       <%} else { %>
                                                                             [Manage links to the vocabulary]
                                                                         <%}
