@@ -1284,8 +1284,8 @@ else if (mode.equals("add"))
                                                     <tr>
                                                         <th></th>
                                                         <td colspan="3">
-                                                            <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
-                                                            <input type="button" class="mediumbuttonb" value="Copy"
+                                                            <input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
+                                                            <input type="submit" class="mediumbuttonb" value="Copy"
                                                                 onclick="copyTbl('<%=request.getContextPath()%>')"
                                                                 title="Copies table structure and attributes from existing dataset table"/>
                                                         </td>
@@ -1295,9 +1295,9 @@ else if (mode.equals("add"))
                                                     <tr>
                                                         <th></th>
                                                         <td colspan="3">
-                                                            <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-                                                            <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
-                                                            <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=tableID%>')"/>
+                                                            <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>
+                                                            <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>
+                                                            <input type="submit" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=tableID%>')"/>
                                                         </td>
                                                     </tr>
                                             <%

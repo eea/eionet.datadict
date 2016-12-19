@@ -1215,32 +1215,31 @@ else
         <% } // end if COMPLEX and mode=add
 
         if (!mode.equals("view")){ %>
-            <tr style="height:10px;"><td colspan="3"></td></tr>
             <tr>
-                <td colspan="3" style="text-align:center">
+                <th></th>
+                <td colspan="2">
 
                     <%
 
                     if (mode.equals("add")){ // if mode is "add"
                         if (user==null){ %>
-                            <input type="button" class="mediumbuttonb" value="Add" disabled="disabled" />&nbsp;&nbsp;
+                            <input type="submit" class="mediumbuttonb" value="Add" disabled="disabled" />
                         <%} else {%>
-                            <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')" />&nbsp;&nbsp;
+                            <input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add')" />
                         <% }
                     } // end if mode is "add"
 
                     if (!mode.equals("add")){ // if mode is not "add"
                         if (user==null){ %>
-                            <input type="button" class="mediumbuttonb" value="Save" disabled="disabled" />&nbsp;&nbsp;
-                            <input type="button" class="mediumbuttonb" value="Delete" disabled="disabled" />&nbsp;&nbsp;
+                            <input type="submit" class="mediumbuttonb" value="Save" disabled="disabled" />
+                            <input type="submit" class="mediumbuttonb" value="Delete" disabled="disabled" />
                         <%} else {%>
-                            <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')" />&nbsp;&nbsp;
-                            <input type="button" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')" />&nbsp;&nbsp;
+                            <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit')" />
+                            <input type="submit" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')" />
                         <% }
                     } // end if mode is not "add"
 
                     %>
-
                 </td>
             </tr> <%
         }
