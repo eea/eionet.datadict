@@ -72,6 +72,7 @@ import eionet.util.Util;
 import eionet.web.action.ErrorActionBean;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.context.annotation.DependsOn;
 
 /**
@@ -677,17 +678,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
             int originalVocabularyFolderId = vocabularyFolder.getCheckedOutCopyId();
 
             if (!vocabularyFolder.isSiteCodeType()) {
-
                 List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(originalVocabularyFolderId);
-
-                // TODO all elements can be queried in once with getVocabularyConceptsDataElementValues
+                injectDataElementValuesInConcepts(concepts, originalVocabularyFolderId);
                 for (VocabularyConcept concept : concepts) {
-
-                    int conceptId = concept.getId();
-                    Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
-                            dataElementDAO.getVocabularyConceptsDataElementValues(originalVocabularyFolderId,
-                                    new int[]{conceptId}, true);
-                    List<List<DataElement>> elems = vocabularyConceptsDataElementValues.get(conceptId);
+                    List<List<DataElement>> elems = concept.getElementAttributes();
                     for (List<DataElement> elemMeta : elems) {
                         if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
                             dataElementDAO.deleteReferringInverseElems(concept.getId(), elemMeta);
@@ -718,7 +712,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolderDAO.updateVocabularyFolder(vocabularyFolder);
 
             if (!vocabularyFolder.isSiteCodeType()) {
-
                 // Move new vocabulary concepts to folder
                 vocabularyConceptDAO.moveVocabularyConcepts(vocabularyFolderId, originalVocabularyFolderId);
 
@@ -726,16 +719,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 dataElementDAO.moveVocabularyDataElements(vocabularyFolderId, originalVocabularyFolderId);
 
                 List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(originalVocabularyFolderId);
-                for (VocabularyConcept concept : concepts) { //Why one by one ??
-                    int conceptId = concept.getId();
-                    Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
-                            dataElementDAO.getVocabularyConceptsDataElementValues(originalVocabularyFolderId,
-                                    new int[]{conceptId}, true);
-                    List<List<DataElement>> elems = vocabularyConceptsDataElementValues.get(conceptId);
-                    concept.setElementAttributes(elems);
-                }
+                injectDataElementValuesInConcepts(concepts, originalVocabularyFolderId);
                 fixRelatedReferenceElements(vocabularyFolderId, concepts);
-
             }
 
             // Delete old attributes first and then change the parent ID of the new ones
@@ -803,11 +788,29 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConceptDAO.createVocabularyConcept(newVocabularyFolderId, vc);
             }
             dataElementDAO.copyVocabularyConceptDataElementValues(vocabularyFolderId, newVocabularyFolderId);
-            // dataElementDAO.updateRelatedConceptIds(newVocabularyFolderId);
+
+            List<VocabularyConcept> newConcepts = vocabularyConceptDAO.getVocabularyConcepts(newVocabularyFolderId);
+            injectDataElementValuesInConcepts(newConcepts, newVocabularyFolderId);
+            fixRelatedReferenceElements(newVocabularyFolderId, newConcepts);
 
             return newVocabularyFolderId;
         } catch (Exception e) {
             throw new ServiceException("Failed to create vocabulary folder copy: " + e.getMessage(), e);
+        }
+    }
+
+    private void injectDataElementValuesInConcepts(List<VocabularyConcept> concepts, int vocabularyFolderId) {
+        if (!concepts.isEmpty()) {
+            List<Integer> conceptIds = new ArrayList<Integer>();
+            for (VocabularyConcept concept : concepts) {
+                conceptIds.add(concept.getId());
+            }
+            Map<Integer, List<List<DataElement>>> conceptsDataElementValues = getVocabularyConceptsDataElementValues(
+                    vocabularyFolderId, ArrayUtils.toPrimitive(conceptIds.toArray(new Integer[conceptIds.size()])), false);
+
+            for (VocabularyConcept concept : concepts) {
+                concept.setElementAttributes(conceptsDataElementValues.get(concept.getId()));
+            }
         }
     }
 
@@ -1340,29 +1343,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
 
         return vocabulary;
-    }
-
-    /**
-     * delete referecnes.
-     *
-     * @param vocabularyId vocabulary id
-     */
-    private void deleteInverseRelations(int vocabularyId) {
-        // set relation to this concept to null
-        List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyId);
-        // TODO all elements can be queried in once with getVocabularyConceptsDataElementValues
-        for (VocabularyConcept concept : concepts) {
-            int conceptId = concept.getId();
-            Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
-                    dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyId, new int[]{conceptId}, true);
-            List<List<DataElement>> elems = vocabularyConceptsDataElementValues.get(conceptId);
-            for (List<DataElement> elemMeta : elems) {
-                if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
-                    dataElementDAO.deleteReferringInverseElems(concept.getId(), elemMeta);
-                }
-            }
-        }
-
     }
 
     @Override

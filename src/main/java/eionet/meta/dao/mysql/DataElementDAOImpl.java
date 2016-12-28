@@ -867,6 +867,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         sql.append("and cev.RELATED_CONCEPT_ID = con2.ORIGINAL_CONCEPT_ID ");
         sql.append("and cev.DATAELEM_ID = e.DATAELEM_ID ");
         sql.append("and con1.VOCABULARY_ID = :newVocabularyFolderId ");
+        sql.append("and con2.VOCABULARY_ID = :newVocabularyFolderId ");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("newVocabularyFolderId", newVocabularyId);
