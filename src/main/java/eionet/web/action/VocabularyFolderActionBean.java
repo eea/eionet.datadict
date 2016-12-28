@@ -601,6 +601,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
+        origIdentifier = vocabularyFolder.getIdentifier();
         validateView();
         if (!vocabularyFolder.isWorkingCopy()) {
             throw new ServiceException("Vocabulary should be in working copy status");
