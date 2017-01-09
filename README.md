@@ -94,7 +94,7 @@ The docker file can be found at the env_setup/docker_build directory.
 $ mkdir docker_build
 $ cd docker_build
 $ cp $CHECKOUT_HOME/target/datadict.war .
-$ cp $CHECKOUT_HOME/env_setup/docker_build/Dockerfile .
+$ cp $CHECKOUT_HOME/env_setup/docker_build/* .
 $ docker build -t eeacms/datadict:tag-here .
 ```
 [Optional] In case you need to push the image you have created to DockerHub:
