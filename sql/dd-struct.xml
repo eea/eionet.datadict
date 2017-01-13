@@ -2667,4 +2667,9 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         </addColumn>
         <addForeignKeyConstraint constraintName="FK_SUPERSEDED_SUCCESSOR_DS" baseTableName="DATASET" baseColumnNames="SUCCESSOR" referencedColumnNames="DATASET_ID"  referencedTableName="DATASET"/> 
     </changeSet>
+
+    <changeSet author="stamojoh" id="rev-193">
+        <dropUniqueConstraint tableName="VOCABULARY_CONCEPT_ELEMENT" constraintName="UNIQ_ATTR_MD5" />
+        <addUniqueConstraint tableName="VOCABULARY_CONCEPT_ELEMENT" columnNames="VOCABULARY_CONCEPT_ID, DATAELEM_ID, ATTR_MD5" constraintName="UNIQ_ATTR_MD5" />
+    </changeSet>
 </databaseChangeLog>
