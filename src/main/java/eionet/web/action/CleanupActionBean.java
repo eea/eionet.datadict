@@ -1,8 +1,6 @@
 package eionet.web.action;
 
 import eionet.datadict.services.data.CleanupService;
-import eionet.util.SecurityUtil;
-import static eionet.web.action.AbstractActionBean.LOGGER;
 import net.sourceforge.stripes.action.Before;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
