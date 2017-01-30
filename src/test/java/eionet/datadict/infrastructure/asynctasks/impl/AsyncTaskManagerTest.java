@@ -167,7 +167,7 @@ public class AsyncTaskManagerTest {
             assertThat(ex.getCause(), is(instanceOf(SchedulerException.class)));
         }
         
-        verify(this.asyncTaskManager, times(0)).createTaskEntry(any(JobKey.class), any(String.class), any(Map.class));
+        verify(this.asyncTaskManager, times(1)).createTaskEntry(any(JobKey.class), any(String.class), any(Map.class));
     }
     
     @Test
