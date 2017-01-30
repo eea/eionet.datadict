@@ -53,6 +53,7 @@
                 
                 function onPollFailure(jqXHR, textStatus, errorThrown) {
                     $container.html('Poll failure: ' + errorThrown);
+                    window.location.href = '<stripes:url value="/asynctasks/${actionBean.taskId}/result" />';
                 }
                 
                 function getIntervalMillis() {
