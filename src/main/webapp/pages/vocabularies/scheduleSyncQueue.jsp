@@ -3,7 +3,6 @@
 <%@ include file="/pages/common/taglibs.jsp"%>
 
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schedule Vocabulary Synchronization" currentSection="vocabularies">
-
     <stripes:layout-component name="head">
         <script type="text/javascript">
             (function ($) {
@@ -13,7 +12,6 @@
             })(jQuery);
         </script>
         <script>jQuery.noConflict();</script>
-
     </stripes:layout-component>
     <stripes:layout-component name="contents">
         <h1>Scheduled Synchronizations Queue</h1>

@@ -17,14 +17,12 @@
                         'onAddTag': function (tag) {
                             console.log("on Add Tag" + tag);
                             if (!isValidEmail(tag)) {
-                                
                                 $('.email').each(function ()
                                 {
                                     if ($(this).text().trim() === tag) {
                                         $(this).parent().css('background', '#FBD8DB').css('color', '#90111A').css('border-color', '#FBD8DB');
                                     }
                                 });
-
                             }
                         }
                     });
