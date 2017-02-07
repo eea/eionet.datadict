@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("asyncTaskDao")
 public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
 
     private final ExecutionStatusToByteConverter executionStatusToByteConverter;
@@ -89,6 +89,29 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
         params.put("endDate", this.dateTimeToLongConverter.convert(entry.getEndDate()));
         params.put("serializedResult", entry.getSerializedResult());
         this.getNamedParameterJdbcTemplate().update(sql, params);
+    }
+    
+    @Override
+    public List<AsyncTaskExecutionEntry> getAllEntries() {
+
+          String sql = "select * from ASYNC_TASK_ENTRY";
+        Map<String, Object> params = new HashMap<String, Object>();
+        List<AsyncTaskExecutionEntry> results = this.getNamedParameterJdbcTemplate().query(sql, params, 
+                new ResultEntryRowMapper());
+        
+        return results;
+    }
+
+    @Override
+    public AsyncTaskExecutionEntry updateScheduledDate(AsyncTaskExecutionEntry entry) {
+
+        String sql = 
+            "update ASYNC_TASK_ENTRY set SCHEDULED_DATE = :scheduledDate where TASK_ID = :taskId";
+        Map<String, Object> params = new HashMap<String, Object>();
+                params.put("taskId", entry.getTaskId());
+        params.put("scheduledDate", this.dateTimeToLongConverter.convert(entry.getScheduledDate()));
+        this.getNamedParameterJdbcTemplate().update(sql, params);
+        return this.getFullEntry(entry.getTaskId());
     }
     
     protected class StatusEntryRowMapper implements RowMapper<AsyncTaskExecutionEntry> {

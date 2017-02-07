@@ -1,6 +1,7 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.dal.AsyncTaskDao;
+import eionet.datadict.dal.QuartzSchedulerDao;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskExecutionError;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
@@ -22,12 +23,14 @@ public class AsyncJobListener implements JobListener {
     private final AsyncTaskDao asyncTaskDao;
     private final AsyncJobKeyBuilder asyncJobKeyBuilder;
     private final AsyncTaskDataSerializer asyncTaskDataSerializer;
+    private final QuartzSchedulerDao quartzSchedulerDao;
     
     @Autowired
-    public AsyncJobListener(AsyncTaskDao asyncTaskDao, AsyncJobKeyBuilder asyncJobKeyBuilder, AsyncTaskDataSerializer asyncTaskDataSerializer) {
+    public AsyncJobListener(AsyncTaskDao asyncTaskDao, AsyncJobKeyBuilder asyncJobKeyBuilder, AsyncTaskDataSerializer asyncTaskDataSerializer, QuartzSchedulerDao quartzSchedulerDao) {
         this.asyncTaskDao = asyncTaskDao;
         this.asyncJobKeyBuilder = asyncJobKeyBuilder;
         this.asyncTaskDataSerializer = asyncTaskDataSerializer;
+        this.quartzSchedulerDao = quartzSchedulerDao;
     }
     
     @Override
@@ -77,9 +80,9 @@ public class AsyncJobListener implements JobListener {
         if (result != null) {
             entry.setSerializedResult(this.asyncTaskDataSerializer.serializeResult(result));
         }
-        
+        entry.setScheduledDate(jec.getNextFireTime());
         this.asyncTaskDao.updateEndStatus(entry);
-        
+        this.asyncTaskDao.updateScheduledDate(entry);
         if (jee == null) {
             LOGGER.info(String.format("Async task %s execution complete.", entry.getTaskId()));
         }
