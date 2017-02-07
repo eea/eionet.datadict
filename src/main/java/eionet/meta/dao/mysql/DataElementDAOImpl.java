@@ -1307,21 +1307,24 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         final VocabularyConceptBoundElementFilter filter = new VocabularyConceptBoundElementFilter(dataElement);
 
-        final Map<String, Object> params = new HashMap<String, Object>();
-        params.put("dataElementId", dataElementId);
-        params.put("vocabularyConceptIds", vocabularyConceptIds);
+        if (vocabularyConceptIds != null && !vocabularyConceptIds.isEmpty()) {
+            final Map<String, Object> params = new HashMap<String, Object>();
+            params.put("dataElementId", dataElementId);
+            params.put("vocabularyConceptIds", vocabularyConceptIds);
 
-        StringBuilder sql = new StringBuilder();
-        sql.append("select * from (select distinct ELEMENT_VALUE as `key`, ELEMENT_VALUE as `value` from VOCABULARY_CONCEPT_ELEMENT where ELEMENT_VALUE is not null and DATAELEM_ID=:dataElementId and VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds) ");
-        sql.append("union all select distinct vce.RELATED_CONCEPT_ID, vc.LABEL from VOCABULARY_CONCEPT_ELEMENT vce, VOCABULARY_CONCEPT vc where vce.RELATED_CONCEPT_ID is not null and vce.RELATED_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID ");
-        sql.append("and vce.DATAELEM_ID=:dataElementId and vce.VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds)) as filters order by `value`");
+            StringBuilder sql = new StringBuilder();
+            sql.append("select * from (select distinct ELEMENT_VALUE as `key`, ELEMENT_VALUE as `value` from VOCABULARY_CONCEPT_ELEMENT where ELEMENT_VALUE is not null and DATAELEM_ID=:dataElementId and VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds) ");
+            sql.append("union all select distinct vce.RELATED_CONCEPT_ID, vc.LABEL from VOCABULARY_CONCEPT_ELEMENT vce, VOCABULARY_CONCEPT vc where vce.RELATED_CONCEPT_ID is not null and vce.RELATED_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID ");
+            sql.append("and vce.DATAELEM_ID=:dataElementId and vce.VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds)) as filters order by `value`");
 
-        getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                filter.getOptions().put(rs.getString("key"), rs.getString("value"));
-            }
-        });
+            getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
+                @Override
+                public void processRow(ResultSet rs) throws SQLException {
+                    filter.getOptions().put(rs.getString("key"), rs.getString("value"));
+                }
+            });
+        }
+
         return filter;
     }
 
