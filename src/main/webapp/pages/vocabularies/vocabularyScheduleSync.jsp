@@ -1,7 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8"%>
-
 <%@ include file="/pages/common/taglibs.jsp"%>
-
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schedule Vocabulary Synchronization" currentSection="vocabularies">
     <stripes:layout-component name="head">
         <script type="text/javascript">
@@ -17,12 +15,14 @@
                         'onAddTag': function (tag) {
                             console.log("on Add Tag" + tag);
                             if (!isValidEmail(tag)) {
+                                
                                 $('.email').each(function ()
                                 {
                                     if ($(this).text().trim() === tag) {
                                         $(this).parent().css('background', '#FBD8DB').css('color', '#90111A').css('border-color', '#FBD8DB');
                                     }
                                 });
+
                             }
                         }
                     });
@@ -122,6 +122,7 @@
                             </div>
                         </td>
                     </tr>
+
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">
                             How to handle numeric concepts
