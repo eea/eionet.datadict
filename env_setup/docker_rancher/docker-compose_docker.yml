@@ -10,6 +10,9 @@ tomcat:
 ## DATABASE CONTAINERS
 mysql:
   image: mysql:5.5
+  command:
+    - mysqld
+    - --max_allowed_packet=16M
   ports:
     - "53506:3306"
   environment: 

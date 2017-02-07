@@ -28,6 +28,9 @@ mysql:
   image: mysql:5.5
   ports:
     - "53506:3306"
+  command:
+    - mysqld
+    - --max_allowed_packet=16M
   environment: 
     MYSQL_ROOT_PASSWORD: dbpassword
   volumes_from:
