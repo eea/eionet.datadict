@@ -2672,4 +2672,38 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropUniqueConstraint tableName="VOCABULARY_CONCEPT_ELEMENT" constraintName="UNIQ_ATTR_MD5" />
         <addUniqueConstraint tableName="VOCABULARY_CONCEPT_ELEMENT" columnNames="VOCABULARY_CONCEPT_ID, DATAELEM_ID, ATTR_MD5" constraintName="UNIQ_ATTR_MD5" />
     </changeSet>
+         <changeSet id="rev-194" author="vskiadas90">
+        <createTable tableName="ASYNC_TASK_ENTRY_HISTORY">
+            <column name="id" type="BIGINT" autoIncrement="true">            
+            <constraints nullable="false" primaryKey="true" primaryKeyName="PK_ASYNC_TASK_ENTRY_HISTORY" />
+            </column>
+            <column name="TASK_ID" type="VARCHAR(200)">
+                <constraints nullable="false"  />
+            </column>
+            <column name="TASK_CLASS_NAME" type="VARCHAR(250)">
+                <constraints nullable="false" />
+            </column>
+            <column name="EXECUTION_STATUS" type="TINYINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="SCHEDULED_DATE" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="START_DATE" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="END_DATE" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="SERIALIZED_PARAMETERS" type="TEXT">
+                <constraints nullable="true" />
+            </column>
+            <column name="SERIALIZED_RESULT" type="TEXT">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
 </databaseChangeLog>
