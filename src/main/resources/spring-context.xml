@@ -21,8 +21,8 @@
         to configure as beans -->
     <context:component-scan base-package="eionet.meta, eionet.datadict, eionet.web, eionet.doc"/>
     <context:spring-configured/>
- <aop:aspectj-autoproxy>
-</aop:aspectj-autoproxy>
+    <aop:aspectj-autoproxy>
+    </aop:aspectj-autoproxy>
     <task:annotation-driven/>
 
     <bean id="appConfigDefinitionProvider" class="eionet.propertyplaceholderresolver.ConfigurationDefinitionProviderImpl">
