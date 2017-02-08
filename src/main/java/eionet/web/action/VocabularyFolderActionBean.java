@@ -916,12 +916,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             error.setErrorMessage(e.getMessage());
             return error;
         }
-           LOGGER.info("rdfPurgeOption is "+rdfPurgeOption);
-           LOGGER.info("missingConceptsAction is "+missingConceptsAction);
         this.scheduleJobService.scheduleJob(VocabularyRdfImportFromUrlTask.class,
                         VocabularyRdfImportFromUrlTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
-                                vocabularyFolder.isWorkingCopy(), vocabularyRdfUrl,emails, rdfPurgeOption, missingConceptsAction),scheduleSyncIntervalMinutes);
-        return this.ScheduledSynchronizationQueue();
+                                vocabularyFolder.isWorkingCopy(), vocabularyRdfUrl,emails, rdfPurgeOption, missingConceptsAction),scheduleInterval*scheduleSyncIntervalMinutes);
+        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "ScheduledSynchronizationQueue");
+        return resolution;
     }
     
     /**
