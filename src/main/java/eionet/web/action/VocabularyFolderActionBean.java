@@ -121,8 +121,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     private static final String BOUND_ELEMENT_FILTER_JSP = "/pages/vocabularies/boundElementFilter.jsp";
 
+    /**
+     *Page responsible for scheduling the RDF import for a Vocabulary
+     */
     private static final String SCHEDULE_VOCABULARY_SYNC = "/pages/vocabularies/vocabularyScheduleSync.jsp";
 
+     /**
+     *Page showing the scheduled jobs queue and past job execution attempts
+     */
     private static final String SCHEDULED_SYNCHRONIZATIONS_VIEW="/pages/vocabularies/scheduleSyncQueue.jsp";
     /**
      * Popup div's id prefix on jsp page.
@@ -875,10 +881,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *
      */
     public Resolution ScheduleSynchronizationView() throws ServiceException {
-        vocabularyFolder
-                = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
-                        vocabularyFolder.isWorkingCopy());
- 
+        vocabularyFolder= vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),vocabularyFolder.isWorkingCopy());
         return new ForwardResolution(SCHEDULE_VOCABULARY_SYNC);
     }
     
@@ -897,9 +900,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public Resolution createSyncSchedule() throws ServiceException {
            try {
-            vocabularyFolder
-                    = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
-                            vocabularyFolder.isWorkingCopy());
+            vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),vocabularyFolder.isWorkingCopy());
             validateView();
         } catch (ServiceException e) {
             LOGGER.error("Failed to import vocabulary RDF into db", e);
@@ -911,12 +912,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             error.setErrorMessage(e.getMessage());
             return error;
         }
-this.scheduleJobService.scheduleJob(VocabularyRdfImportFromUrlTask.class,
+        this.scheduleJobService.scheduleJob(VocabularyRdfImportFromUrlTask.class,
                         VocabularyRdfImportFromUrlTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                                 vocabularyFolder.isWorkingCopy(), vocabularyRdfUrl,emails, rdfPurgeOption, missingConceptsAction),scheduleSyncIntervalMinutes);
 
-                RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
-resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
+        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
         return resolution;
@@ -1251,7 +1252,7 @@ resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolde
 
     
     /***
-     * Validate Schedule Synchronization of a Vocabulary
+     * Validate Schedule Synchronization of a Vocabulary 
      **/
       @ValidationMethod(on = {"createSyncSchedule"})
     public void ValidateCreateSyncSchedule() throws ServiceException {
@@ -1275,11 +1276,10 @@ resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolde
          if (scheduleSyncIntervalMinutes==0) {
             addGlobalValidationError("Please Specify a valid number for Schedule Intervals");
         }
-        if (isValidationErrors()) {
+         if (isValidationErrors()) {
             folders = vocabularyService.getFolders(getUserName(), null);
             initFilter();
         }      
-        
     }
 
     /**
@@ -2093,21 +2093,15 @@ resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolde
      */
     public void setScheduleInterval(int scheduleInterval) {
         this.scheduleInterval = scheduleInterval;
-}
-
+    }
 
     public int getScheduleInterval() {
         return scheduleInterval;
     }
     
-    
-
-    
     public Map<Integer, String> getScheduleIntervals() {
-
         return scheduleIntervals;
     }
-
     
     public int getSelectedScheduleInterval() {
         return getScheduleIntervals().keySet().iterator().next().intValue();
