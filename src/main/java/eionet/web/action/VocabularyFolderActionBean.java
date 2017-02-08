@@ -91,7 +91,9 @@ import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
 import java.io.File;
 import java.io.IOException;
+import static java.lang.System.out;
 import java.util.LinkedHashMap;
+import org.apache.commons.validator.routines.EmailValidator;
 
 /**
  * Edit vocabulary folder action bean.
@@ -430,7 +432,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     
     private List<AsyncTaskExecutionEntry> asyncTaskEntries;
 
-        private List<AsyncTaskExecutionEntry> asyncTaskEntriesHistory;
+    private List<AsyncTaskExecutionEntry> asyncTaskEntriesHistory;
+    
+    private EmailValidator emailValidator = EmailValidator.getInstance();
 
     /**
      * Navigates to view vocabulary folder page.
@@ -912,15 +916,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             error.setErrorMessage(e.getMessage());
             return error;
         }
+           LOGGER.info("rdfPurgeOption is "+rdfPurgeOption);
+           LOGGER.info("missingConceptsAction is "+missingConceptsAction);
         this.scheduleJobService.scheduleJob(VocabularyRdfImportFromUrlTask.class,
                         VocabularyRdfImportFromUrlTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                                 vocabularyFolder.isWorkingCopy(), vocabularyRdfUrl,emails, rdfPurgeOption, missingConceptsAction),scheduleSyncIntervalMinutes);
-
-        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
-        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
-        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
-        return resolution;
+        return this.ScheduledSynchronizationQueue();
     }
     
     /**
@@ -1254,32 +1255,41 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /***
      * Validate Schedule Synchronization of a Vocabulary 
      **/
-      @ValidationMethod(on = {"createSyncSchedule"})
+    @ValidationMethod(on = {"createSyncSchedule"})
     public void ValidateCreateSyncSchedule() throws ServiceException {
-           if (vocabularyFolder.getId() == 0) {
+        if (vocabularyFolder.getId() == 0) {
             if (!isCreateRight()) {
                 addGlobalValidationError("No permission to create new vocabulary");
             }
         } else if (!isUpdateRight()) {
             addGlobalValidationError("No permission to modify vocabulary");
         }
-
-          if (StringUtils.isNotEmpty(vocabularyRdfUrl)) {
+        if (StringUtils.isNotEmpty(vocabularyRdfUrl)) {
             if (!Util.isURL(vocabularyRdfUrl)) {
                 addGlobalValidationError("Provided Vocabulary Rdf URL is not a valid URL. \n The allowed schemes are: "
                         + "http, https, ftp, mailto, tel and urn. ");
             }
+        } else {
+            addGlobalValidationError("RDF URL cannot be Empty.");
         }
-         if (StringUtils.isEmpty(emails)) {
+        if (StringUtils.isEmpty(emails)) {
             addGlobalValidationError("You should provide at least one valid Email Address");
         }
-         if (scheduleSyncIntervalMinutes==0) {
+        if (StringUtils.isNotEmpty(emails)) {
+            String[] emailsArray = emails.split(",");
+            for (String email : emailsArray) {
+                if (!emailValidator.isValid(email)) {
+                    addGlobalValidationError("Email Address:" + email + " is not valid");
+                }
+            }
+        }
+        if (scheduleSyncIntervalMinutes == null || scheduleSyncIntervalMinutes == 0) {
             addGlobalValidationError("Please Specify a valid number for Schedule Intervals");
         }
-         if (isValidationErrors()) {
+        if (isValidationErrors()) {
             folders = vocabularyService.getFolders(getUserName(), null);
             initFilter();
-        }      
+        }
     }
 
     /**

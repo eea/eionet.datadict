@@ -15,19 +15,21 @@
                         'onAddTag': function (tag) {
                             console.log("on Add Tag" + tag);
                             if (!isValidEmail(tag)) {
-                                
                                 $('.email').each(function ()
                                 {
                                     if ($(this).text().trim() === tag) {
                                         $(this).parent().css('background', '#FBD8DB').css('color', '#90111A').css('border-color', '#FBD8DB');
                                     }
                                 });
-
                             }
                         }
                     });
+                    $('.numbersOnly').keyup(function () {
+                        this.value = this.value.replace(/[^0-9\.]/g, '');
+                    });
                 });
             })(jQuery);
+
         </script>
         <script>jQuery.noConflict();</script>
     </stripes:layout-component>
@@ -35,10 +37,10 @@
         <h1>Schedule Synchronization of  Vocabulary</h1>
         <stripes:form id="scheduleVocabularySync" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
             <div id="outerframe">
-                    <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                    <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
-                    <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                    <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                 <table class="datatable results">
                     <colgroup>
                         <col style="width:26%"/>
@@ -75,7 +77,7 @@
                             <dd:mandatoryIcon />
                         </td>
                         <td class="simple_attr_value">
-                            <stripes:text id="interval" name="scheduleSyncIntervalMinutes" size="10" value="6"/>
+                            <stripes:text id="interval" name="scheduleSyncIntervalMinutes" size="10" value="6" class="numbersOnly" />
                             <stripes:select name="scheduleInterval" value="10080">
                                 <c:forEach items="${actionBean.scheduleIntervals}" var="scheduleInterval">
                                     <stripes:option value="${scheduleInterval.key}" label="${scheduleInterval.value}"/>
@@ -93,7 +95,7 @@
                         </td>
                         <td class="simple_attr_value">
                             <div>
-                                <stripes:radio id="rdfDontPurge" name="rdfPurgeOption" value="1"/>
+                                <stripes:radio id="rdfDontPurge" name="rdfPurgeOption" value="1" />
                                 <label for="rdfDontPurge" class="question">Don't purge vocabulary data</label>
                                 <div class="elaboration">
                                     In this case, existing vocabulary information will be updated with information from imported concepts.
