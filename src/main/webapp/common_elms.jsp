@@ -106,20 +106,21 @@
         <%
         if (popup){ %>
             
-            function pickElem(elmID, elmName, rowIndex){
+            function pickElem(elmID, elmName, rowIndex) {
                 // make sure the opener exists and is not closed
                 if (opener && !opener.closed) {
                     // if the opener has pickElem(elmID) function at it returns true, close this popup
                     // else don't close it (multiple selection might be wanted)
-                    if (window.opener.pickElemForLink(elmID, elmName)==true)
+                    if (typeof window.opener.pickElemForLink  === 'function' && window.opener.pickElemForLink(elmID, elmName) === true) {
                         closeme();
-                    else if (window.opener.pickElem(elmID)==true)
+                    } else if (typeof window.opener.pickElem  === 'function' && window.opener.pickElem(elmID) === true) {
                         closeme();
-                    else
+                    } else {
                         hideRow(rowIndex);
-                }
-                else
+                    }
+                } else {
                     alert("You have closed the main window!\n\nNo action will be taken.")
+                }
             }
             function hideRow(i){
                 var t = document.getElementById("tbl");
