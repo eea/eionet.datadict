@@ -2674,7 +2674,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
          <changeSet id="rev-194" author="vskiadas90">
         <createTable tableName="ASYNC_TASK_ENTRY_HISTORY">
-            <column name="id" type="BIGINT" autoIncrement="true">            
+            <column name="ID" type="BIGINT" autoIncrement="true">            
             <constraints nullable="false" primaryKey="true" primaryKeyName="PK_ASYNC_TASK_ENTRY_HISTORY" />
             </column>
             <column name="TASK_ID" type="VARCHAR(200)">

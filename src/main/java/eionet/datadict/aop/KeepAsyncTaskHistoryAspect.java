@@ -3,10 +3,10 @@ package eionet.datadict.aop;
 import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.meta.spring.SpringApplicationContext;
+import org.apache.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,11 +17,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class KeepAsyncTaskHistoryAspect {
 
-
-    
     private  AsyncTaskHistoryDao asyncTaskHistoryDao;
-    
-    
+    private static final Logger LOGGER = Logger.getLogger(KeepAsyncTaskHistoryAspect.class);
     
      @AfterReturning(
       pointcut = "execution(* eionet.datadict.dal.AsyncTaskDao.updateScheduledDate(..))",
@@ -29,12 +26,7 @@ public class KeepAsyncTaskHistoryAspect {
 	public void logBefore(JoinPoint joinPoint,Object result) {
 
             asyncTaskHistoryDao = SpringApplicationContext.getBean(AsyncTaskHistoryDao.class);
-		System.out.println("logBefore() is running!");
-		System.out.println("hijacked : " + joinPoint.getSignature().getName());
-		System.out.println("******");
-                System.out.println("AsyncTaskDao.updateScheduledDate() returned :"+((AsyncTaskExecutionEntry)result).getTaskClassName());
-                System.out.println("AsyncTaskDao.updateScheduledDate() returned :"+((AsyncTaskExecutionEntry)result).getSerializedParameters());
-                                System.out.println("AsyncTaskDao.updateScheduledDate() returned :"+((AsyncTaskExecutionEntry)result).getTaskId());
+	LOGGER.info("Invocation of Aspect to Store AsyncTaskEntry History");
                  asyncTaskHistoryDao.store((AsyncTaskExecutionEntry)result);
                                 
         }
