@@ -17,17 +17,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class KeepAsyncTaskHistoryAspect {
 
-    private  AsyncTaskHistoryDao asyncTaskHistoryDao;
+    private AsyncTaskHistoryDao asyncTaskHistoryDao;
     private static final Logger LOGGER = Logger.getLogger(KeepAsyncTaskHistoryAspect.class);
-    
-     @AfterReturning(
-      pointcut = "execution(* eionet.datadict.dal.AsyncTaskDao.updateScheduledDate(..))",
-      returning= "result")
-	public void persistAsyncTaskEntryHistory(JoinPoint joinPoint,Object result) {
 
-            asyncTaskHistoryDao = SpringApplicationContext.getBean(AsyncTaskHistoryDao.class);
-	LOGGER.info("Invocation of Aspect to Store AsyncTaskEntry History");
-                 asyncTaskHistoryDao.store((AsyncTaskExecutionEntry)result);
-                                
-        }
+    @AfterReturning(
+            pointcut = "execution(* eionet.datadict.dal.AsyncTaskDao.updateScheduledDate(..))",
+            returning = "result")
+    public void persistAsyncTaskEntryHistory(JoinPoint joinPoint, Object result) {
+        asyncTaskHistoryDao = SpringApplicationContext.getBean(AsyncTaskHistoryDao.class);
+        LOGGER.info("Invocation of Aspect to Store AsyncTaskEntry History");
+        asyncTaskHistoryDao.store((AsyncTaskExecutionEntry) result);
+
+    }
 }
