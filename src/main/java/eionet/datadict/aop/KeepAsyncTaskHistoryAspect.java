@@ -23,7 +23,7 @@ public class KeepAsyncTaskHistoryAspect {
      @AfterReturning(
       pointcut = "execution(* eionet.datadict.dal.AsyncTaskDao.updateScheduledDate(..))",
       returning= "result")
-	public void logBefore(JoinPoint joinPoint,Object result) {
+	public void persistAsyncTaskEntryHistory(JoinPoint joinPoint,Object result) {
 
             asyncTaskHistoryDao = SpringApplicationContext.getBean(AsyncTaskHistoryDao.class);
 	LOGGER.info("Invocation of Aspect to Store AsyncTaskEntry History");
