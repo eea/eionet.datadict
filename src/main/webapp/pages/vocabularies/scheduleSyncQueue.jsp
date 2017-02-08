@@ -46,12 +46,13 @@
                 display: none;
                 padding: 6px 12px;
                 border: 1px solid #ccc;
-                border-top: none;
             }
         </style>
         <script type="text/javascript">
             (function ($) {
                 $(document).ready(function () {
+                      $('#scheduledTask').dataTable();
+                      $('#pastScheduledTask').dataTable();
                     document.getElementById("defaultOpen").click();
                     $(".dataTables_filter").css('margin-bottom', '20px');
                     $("#scheduledTask").css('width', '100%');
@@ -79,10 +80,13 @@
     </stripes:layout-component>
     <stripes:layout-component name="contents">
         <h1>Scheduled Synchronizations Queue</h1>
-        <ul class="tab">
-            <li><a href="javascript:void(0)" class="tablinks" onclick="openDataView(event, 'scheduledSynchronizationJobs')" id="defaultOpen">Current Scheduled Jobs</a></li>
-            <li><a href="javascript:void(0)" class="tablinks" onclick="openDataView(event, 'ScheduledJobsHistory')"> Scheduled Jobs History</a></li>
-        </ul>
+        <div id="drop-operations">
+            <ul >
+                <li class="scheduleJobsTab search " ><a href="javascript:void(0)" class="tablinks " onclick="openDataView(event, 'scheduledSynchronizationJobs')" id="defaultOpen">Current Scheduled Jobs</a></li>
+                <li class="scheduleJobsHistoryTab search "><a  href="javascript:void(0)" class="tablinks " onclick="openDataView(event, 'ScheduledJobsHistory')"> Scheduled Jobs History</a></li>
+
+            </ul>
+        </div>
         <div id="scheduledSynchronizationJobs" class="tabcontent">
             <display:table name="actionBean.asyncTaskEntries" class="datatable results" id="scheduledTask"
                            style="width:100%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view#scheduledSynchronizationJobs">
@@ -108,7 +112,7 @@
         </div>
         <div id="ScheduledJobsHistory" class="tabcontent">
             <display:table name="actionBean.asyncTaskEntriesHistory" class="datatable results" id="pastScheduledTask"
-                           style="width:100%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view#ScheduledJobsHistory">
+                           style="width:100% !important" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view#ScheduledJobsHistory">
                 <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No scheduled Jobs found.</p>" />
                 <display:setProperty name="paging.banner.item_name" value="pastScheduledTask" />
                 <display:setProperty name="paging.banner.items_name" value="pastScheduledTasks" />
