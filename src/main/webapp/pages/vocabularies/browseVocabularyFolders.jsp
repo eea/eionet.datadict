@@ -117,9 +117,6 @@
                 <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
                     <li class="maintain"><stripes:link id="maintainLnk"  href="#">Maintain vocabularies</stripes:link></li>
                 </c:if>
-                     <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
-                    <li class="maintain"><stripes:link id="maintainLnk"  href="#">Maintain vocabularies</stripes:link></li>
-                </c:if>
                 <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
                    <li class="maintain">
                         <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="ScheduledSynchronizationQueue"> 
