@@ -1590,10 +1590,10 @@ public class DataElementHandler extends BaseHandler {
             if (tableID == null || tableID.length() == 0) {
                 throw new Exception("Missing tableID");
             }
-             if (req.getParameter("copy_exact_table_structure").equals("Y")){
+            if (req.getParameter("copy_exact_table_structure") != null && 
+                    req.getParameter("copy_exact_table_structure").equals("Y")) {
                 attachElementToTableWithPredefinedValues(req.getParameter("is_mandatory"), req.getParameter("is_primary_key"), req.getParameter("multival_delimiter"), req.getParameter("position_in_table"));
-            }
-            else {
+            } else {
                 sqlBuf = new StringBuffer("insert into TBL2ELEM (TABLE_ID, DATAELEM_ID, POSITION) select ");
                 sqlBuf.append(tableID).append(", ").append(lastInsertID);
                 sqlBuf.append(", max(POSITION)+1 from TBL2ELEM where TABLE_ID=").append(tableID);

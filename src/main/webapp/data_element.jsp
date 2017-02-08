@@ -1225,7 +1225,7 @@
                 return;
             }
 
-            if (!validForXMLTag(document.forms["form1"].elements["idfier"].value, isCommon)){
+            if (!validForXMLTag(document.forms["form1"].elements["idfier"].value, isCommon)) {
                 alert("Identifier not valid for usage as an XML tag! " +
                           "In the first character only underscore or latin characters are allowed! " +
                           "In the rest of characters only underscore or hyphen or dot or 0-9 or latin characters are allowed!");
@@ -2392,7 +2392,7 @@
                                                     <td colspan="3">
                                                         <input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
                                                         <input type="submit" class="mediumbuttonb" value="Copy"
-                                                            onclick="copyElem()"
+                                                            onclick="copyElem(); return false;"
                                                             title="Opens an element search window, and from the search results you can select an element to copy."/>
                                                     </td>
                                                 </tr>
