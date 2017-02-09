@@ -909,14 +909,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         return new ForwardResolution(SCHEDULE_VOCABULARY_SYNC);
     }
     
-    public Resolution viewScheduledTaskDetails(){
-    
+    public Resolution viewScheduledTaskDetails() {
         AsyncTaskExecutionEntry entry = scheduleJobService.getTaskEntry(scheduledTaskId);
-                     scheduledTaskView = new ScheduledTaskView();
-                    scheduledTaskView.setDetails(entry);
-                    scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
-                    scheduledTaskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters()));
-    return new ForwardResolution(SCHEDULED_TASK_DETAILS);
+        scheduledTaskView = new ScheduledTaskView();
+        scheduledTaskView.setDetails(entry);
+        scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
+        scheduledTaskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters()));
+        return new ForwardResolution(SCHEDULED_TASK_DETAILS);
     }
     
     public Resolution ScheduledJobsQueue() throws ServiceException {

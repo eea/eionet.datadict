@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
-public class KeepAsyncTaskHistoryAspect {
+public class KeepScheduledTaskHistoryAspect {
 
     private AsyncTaskHistoryDao asyncTaskHistoryDao;
-    private static final Logger LOGGER = Logger.getLogger(KeepAsyncTaskHistoryAspect.class);
+    private static final Logger LOGGER = Logger.getLogger(KeepScheduledTaskHistoryAspect.class);
 
     @AfterReturning(
             pointcut = "execution(* eionet.datadict.dal.AsyncTaskDao.updateScheduledDate(..))",
