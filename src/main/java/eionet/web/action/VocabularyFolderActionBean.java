@@ -26,12 +26,14 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.infrastructure.scheduling.ScheduleJobService;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.services.stripes.FileBeanDecompressor;
+import eionet.datadict.util.ScheduledTaskResolver;
 import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
 import eionet.datadict.web.asynctasks.VocabularyCheckInTask;
 import eionet.datadict.web.asynctasks.VocabularyCheckOutTask;
 import eionet.datadict.web.asynctasks.VocabularyCsvImportTask;
 import eionet.datadict.web.asynctasks.VocabularyRdfImportTask;
 import eionet.datadict.web.asynctasks.VocabularyUndoCheckOutTask;
+import eionet.datadict.web.viewmodel.ScheduledTaskView;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -259,6 +261,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     @SpringBean
     private FileBeanDecompressor fileBeanDecompressor;
     
+    @SpringBean
+    private ScheduledTaskResolver scheduledTaskResolver;
     /**
      * Other versions of the same vocabulary folder.
      */
@@ -433,6 +437,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private List<AsyncTaskExecutionEntry> asyncTaskEntries;
 
     private List<AsyncTaskExecutionEntry> asyncTaskEntriesHistory;
+    
+    private List<ScheduledTaskView> scheduledTaskViews = new ArrayList<ScheduledTaskView>();
+    
+    private List<ScheduledTaskView> scheduledTaskHistoryViews = new ArrayList<ScheduledTaskView>();
     
     private EmailValidator emailValidator = EmailValidator.getInstance();
 
@@ -891,7 +899,22 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     
     public Resolution ScheduledSynchronizationQueue() throws ServiceException {
         asyncTaskEntries = scheduleJobService.getAllScheduledTaskEntries();
+        for (AsyncTaskExecutionEntry entry : asyncTaskEntries) {
+            ScheduledTaskView taskView = new ScheduledTaskView();
+            taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
+            taskView.setDetails(entry);
+            taskView.setAdditionalDetails(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(entry));
+          System.out.println(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(entry));
+            
+            scheduledTaskViews.add(taskView);
+        }
         asyncTaskEntriesHistory = scheduleJobService.getTaskEntriesHistory();
+        for (AsyncTaskExecutionEntry historyEntry : asyncTaskEntriesHistory) {
+          ScheduledTaskView taskView = new ScheduledTaskView();
+            taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(historyEntry.getTaskClassName()));
+            taskView.setDetails(historyEntry);
+            scheduledTaskHistoryViews.add(taskView);
+        }
         return new ForwardResolution(SCHEDULED_SYNCHRONIZATIONS_VIEW);
     }
     
@@ -2155,4 +2178,22 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public void setAsyncTaskEntriesHistory(List<AsyncTaskExecutionEntry> asyncTaskEntriesHistory) {
         this.asyncTaskEntriesHistory = asyncTaskEntriesHistory;
     }
+
+    public List<ScheduledTaskView> getScheduledTaskViews() {
+        return scheduledTaskViews;
+    }
+
+    public void setScheduledTaskViews(List<ScheduledTaskView> scheduledTaskViews) {
+        this.scheduledTaskViews = scheduledTaskViews;
+    }
+
+    public List<ScheduledTaskView> getScheduledTaskHistoryViews() {
+        return scheduledTaskHistoryViews;
+    }
+
+    public void setScheduledTaskHistoryViews(List<ScheduledTaskView> scheduledTaskHistoryViews) {
+        this.scheduledTaskHistoryViews = scheduledTaskHistoryViews;
+    }
+
+
 }

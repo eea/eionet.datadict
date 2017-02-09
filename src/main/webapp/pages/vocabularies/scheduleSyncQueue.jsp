@@ -56,8 +56,22 @@
                     document.getElementById("defaultOpen").click();
                     $(".dataTables_filter").css('margin-bottom', '20px');
                     $("#scheduledTask").css('width', '100%');
-                    $("#scheduleTasksHistory").css('width', '100%');
+                    $("#pastScheduledTask").css('width', '100%');
                     $(".dataTables_length select").css('margin-left', '15px');
+                       $("#taskId").append('<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+        '<tr>'+
+            '<td>Full name:</td>'+
+            '<td>some name </td>'+
+        '</tr>'+
+        '<tr>'+
+            '<td>Extension number:</td>'+
+            '<td> some number </td>'+
+        '</tr>'+
+        '<tr>'+
+            '<td>Extra info:</td>'+
+            '<td>And any further details here (images etc)...</td>'+
+        '</tr>'+
+    '</table>');
                 });
             })(jQuery);
         </script>
@@ -76,6 +90,11 @@
                 document.getElementById(cityName).style.display = "block";
                 evt.currentTarget.className += " active";
             }
+            
+            function appendRow ( ) {
+    // `d` is the original data object for the row
+
+}
         </script>
     </stripes:layout-component>
     <stripes:layout-component name="contents">
@@ -88,49 +107,57 @@
             </ul>
         </div>
         <div id="scheduledSynchronizationJobs" class="tabcontent">
-            <display:table name="actionBean.asyncTaskEntries" class="datatable results" id="scheduledTask"
+            <display:table name="actionBean.scheduledTaskViews" class="datatable results" id="scheduledTask"
                            style="width:100%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view#scheduledSynchronizationJobs">
                 <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No scheduled Jobs found.</p>" />
                 <display:setProperty name="paging.banner.item_name" value="scheduledTask" />
                 <display:setProperty name="paging.banner.items_name" value="scheduledTasks" />
-                <display:column title="Task Id" escapeXml="false" style="width: 15%">
-                    <dd:attributeValue attrValue="${scheduledTask.taskId}"/>
+                <display:column title="Task Id"  url="www.google.gr;" escapeXml="false" style="width: 15%">
+                    <dd:attributeValue attrValue="${scheduledTask.details.taskId}"/>
                 </display:column>
-                <display:column title="Execution Status" escapeXml="false" style="width: 15%">
-                    <dd:attributeValue attrValue="${scheduledTask.executionStatus}"/>
+                 <display:column title="Task Type" escapeXml="false" style="width: 15%">
+                    <dd:attributeValue attrValue="${scheduledTask.type}"/>
+                </display:column>
+                <display:column title="Additional Task Details" escapeXml="false" style="width: 15%">
+                     <c:out value="${scheduledTask.additionalDetails}" />
+                </display:column>
+                  <display:column title="Execution Status" escapeXml="false"  style="width: 15%">
+                      <dd:attributeValue  attrValue="${scheduledTask.details.executionStatus}" />
                 </display:column>
                 <display:column title="Execution Start Date" escapeXml="false" style="width: 15%">
-                    <fmt:formatDate value="${scheduledTask.startDate}" pattern="dd.MM.yyyy hh:mm"/>
+                    <fmt:formatDate value="${scheduledTask.details.startDate}" pattern="dd.MM.yyyy hh:mm"/>
                 </display:column> 
                 <display:column title="Execution End Date" escapeXml="false" style="width: 15%">
-                    <fmt:formatDate value="${scheduledTask.endDate}" pattern="dd.MM.yyyy hh:mm"/>
+                    <fmt:formatDate value="${scheduledTask.details.endDate}" pattern="dd.MM.yyyy hh:mm"/>
                 </display:column>  
                 <display:column title="Next Scheduled Date" escapeXml="false" style="width: 15%">
-                    <fmt:formatDate value="${scheduledTask.scheduledDate}" pattern="dd.MM.yyyy hh:mm"/>
+                    <fmt:formatDate value="${scheduledTask.details.scheduledDate}" pattern="dd.MM.yyyy hh:mm"/>
                 </display:column>
             </display:table>
         </div>
         <div id="ScheduledJobsHistory" class="tabcontent">
-            <display:table name="actionBean.asyncTaskEntriesHistory" class="datatable results" id="pastScheduledTask"
+            <display:table name="actionBean.scheduledTaskHistoryViews" class="datatable results" id="pastScheduledTask"
                            style="width:100% !important" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view#ScheduledJobsHistory">
                 <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No scheduled Jobs found.</p>" />
                 <display:setProperty name="paging.banner.item_name" value="pastScheduledTask" />
                 <display:setProperty name="paging.banner.items_name" value="pastScheduledTasks" />
-
                 <display:column title="Task Id" escapeXml="false" style="width: 15%">
-                    <dd:attributeValue attrValue="${pastScheduledTask.taskId}"/>
+                    <dd:attributeValue attrValue="${pastScheduledTask.details.taskId}"/>
+                </display:column>
+               <display:column title="Task Type" escapeXml="false" style="width: 15%">
+                    <dd:attributeValue attrValue="${pastScheduledTask.type}"/>
                 </display:column>
                 <display:column title="Execution Status" escapeXml="false" style="width: 15%">
-                    <dd:attributeValue attrValue="${pastScheduledTask.executionStatus}"/>
+                    <dd:attributeValue attrValue="${pastScheduledTask.details.executionStatus}"/>
                 </display:column>
                 <display:column title="Execution Start Date" escapeXml="false" style="width: 15%">
-                    <fmt:formatDate value="${pastScheduledTask.startDate}" pattern="dd.MM.yyyy hh:mm"/>
+                    <fmt:formatDate value="${pastScheduledTask.details.startDate}" pattern="dd.MM.yyyy hh:mm"/>
                 </display:column> 
                 <display:column title="Execution End Date" escapeXml="false" style="width: 15%">
-                    <fmt:formatDate value="${pastScheduledTask.endDate}" pattern="dd.MM.yyyy hh:mm"/>
+                    <fmt:formatDate value="${pastScheduledTask.details.endDate}" pattern="dd.MM.yyyy hh:mm"/>
                 </display:column>  
                 <display:column title="Next Scheduled Date" escapeXml="false" style="width: 15%">
-                    <fmt:formatDate value="${pastScheduledTask.scheduledDate}" pattern="dd.MM.yyyy hh:mm"/>
+                    <fmt:formatDate value="${pastScheduledTask.details.scheduledDate}" pattern="dd.MM.yyyy hh:mm"/>
                 </display:column>
             </display:table>
         </div>
