@@ -104,16 +104,10 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
     @Override
     public Object call() throws Exception {
         LOGGER.debug("Starting RDF import operation");
-        
-       
        List<String> systemMessages =     this.importRdf();
-        
-        
-        
         LOGGER.debug("RDF import completed");
          LOGGER.info("Email Sending Mechanism invocation");
            this.notifyEmailusers(this.getNotifiersEmails(), systemMessages);
-           
         return null;
     }
     

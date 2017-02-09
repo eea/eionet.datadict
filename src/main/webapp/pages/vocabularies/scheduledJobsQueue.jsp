@@ -49,10 +49,13 @@
             }
         </style>
         <script type="text/javascript">
+            window.setTimeout(function () {
+                document.location.reload(true);
+            }, 60000);
             (function ($) {
                 $(document).ready(function () {
-                      $('#scheduledTask').dataTable();
-                      $('#pastScheduledTask').dataTable();
+                    $('#scheduledTask').dataTable();
+                    $('#pastScheduledTask').dataTable();
                     document.getElementById("defaultOpen").click();
                     $(".dataTables_filter").css('margin-bottom', '20px');
                     $("#scheduledTask").css('width', '100%');
@@ -96,14 +99,14 @@
                 <display:column title="Task Id"  url="/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${scheduledTask.details.taskId}" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${scheduledTask.details.taskId}"/>
                 </display:column>
-                 <display:column title="Task Type" escapeXml="false" style="width: 15%">
+                <display:column title="Task Type" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${scheduledTask.type}"/>
                 </display:column>
                 <display:column title="Additional Task Details" escapeXml="false" style="width: 15%">
-                     <c:out value="${scheduledTask.additionalDetails}" />
+                    <c:out value="${scheduledTask.additionalDetails}" />
                 </display:column>
-                  <display:column title="Execution Status" escapeXml="false"  style="width: 15%">
-                      <dd:attributeValue  attrValue="${scheduledTask.details.executionStatus}" />
+                <display:column title="Execution Status" escapeXml="false"  style="width: 15%">
+                    <dd:attributeValue  attrValue="${scheduledTask.details.executionStatus}" />
                 </display:column>
                 <display:column title="Execution Start Date" escapeXml="false" style="width: 15%">
                     <fmt:formatDate value="${scheduledTask.details.startDate}" pattern="dd.MM.yyyy hh:mm"/>
@@ -125,11 +128,11 @@
                 <display:column title="Task Id"  url="/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${pastScheduledTask.details.taskId}" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${pastScheduledTask.details.taskId}"/>
                 </display:column>
-               <display:column title="Task Type" escapeXml="false" style="width: 15%">
+                <display:column title="Task Type" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${pastScheduledTask.type}"/>
                 </display:column>
-                 <display:column title="Additional Task Details" escapeXml="false" style="width: 15%">
-                     <c:out value="${pastScheduledTask.additionalDetails}" />
+                <display:column title="Additional Task Details" escapeXml="false" style="width: 15%">
+                    <c:out value="${pastScheduledTask.additionalDetails}" />
                 </display:column>
                 <display:column title="Execution Status" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${pastScheduledTask.details.executionStatus}"/>
