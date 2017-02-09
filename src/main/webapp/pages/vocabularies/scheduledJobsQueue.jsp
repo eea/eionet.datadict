@@ -79,7 +79,7 @@
         </script>
     </stripes:layout-component>
     <stripes:layout-component name="contents">
-        <h1>Scheduled Synchronizations Queue</h1>
+        <h1>Scheduled Jobs Queue</h1>
         <div id="drop-operations">
             <ul >
                 <li class="scheduleJobsTab search " ><a href="javascript:void(0)" class="tablinks " onclick="openDataView(event, 'scheduledSynchronizationJobs')" id="defaultOpen">Current Scheduled Jobs</a></li>
@@ -122,7 +122,7 @@
                 <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No scheduled Jobs found.</p>" />
                 <display:setProperty name="paging.banner.item_name" value="pastScheduledTask" />
                 <display:setProperty name="paging.banner.items_name" value="pastScheduledTasks" />
-                <display:column title="Task Id" escapeXml="false" style="width: 15%">
+                <display:column title="Task Id"  url="/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${pastScheduledTask.details.taskId}" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${pastScheduledTask.details.taskId}"/>
                 </display:column>
                <display:column title="Task Type" escapeXml="false" style="width: 15%">

@@ -134,7 +134,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      /**
      *Page showing the scheduled jobs queue and past job execution attempts
      */
-    private static final String SCHEDULED_SYNCHRONIZATIONS_VIEW="/pages/vocabularies/scheduleSyncQueue.jsp";
+    private static final String SCHEDULED_JOBS_VIEW="/pages/vocabularies/scheduledJobsQueue.jsp";
     
     /**
      * Page to view the details of a scheduled task
@@ -919,7 +919,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     return new ForwardResolution(SCHEDULED_TASK_DETAILS);
     }
     
-    public Resolution ScheduledSynchronizationQueue() throws ServiceException {
+    public Resolution ScheduledJobsQueue() throws ServiceException {
         asyncTaskEntries = scheduleJobService.getAllScheduledTaskEntries();
         for (AsyncTaskExecutionEntry entry : asyncTaskEntries) {
             ScheduledTaskView taskView = new ScheduledTaskView();
@@ -936,7 +936,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             taskView.setAdditionalDetails(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(historyEntry));
             scheduledTaskHistoryViews.add(taskView);
         }
-        return new ForwardResolution(SCHEDULED_SYNCHRONIZATIONS_VIEW);
+        return new ForwardResolution(SCHEDULED_JOBS_VIEW);
     }
     
     /**

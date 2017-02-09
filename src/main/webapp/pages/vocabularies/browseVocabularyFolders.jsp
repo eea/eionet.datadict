@@ -119,7 +119,7 @@
                 </c:if>
                 <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
                    <li class="maintain">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="ScheduledSynchronizationQueue"> 
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="ScheduledJobsQueue"> 
                             Scheduled Vocabulary Jobs Queue</stripes:link>
                     </li>
                     </c:if>
