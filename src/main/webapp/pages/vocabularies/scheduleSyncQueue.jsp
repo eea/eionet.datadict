@@ -58,20 +58,6 @@
                     $("#scheduledTask").css('width', '100%');
                     $("#pastScheduledTask").css('width', '100%');
                     $(".dataTables_length select").css('margin-left', '15px');
-                       $("#taskId").append('<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
-        '<tr>'+
-            '<td>Full name:</td>'+
-            '<td>some name </td>'+
-        '</tr>'+
-        '<tr>'+
-            '<td>Extension number:</td>'+
-            '<td> some number </td>'+
-        '</tr>'+
-        '<tr>'+
-            '<td>Extra info:</td>'+
-            '<td>And any further details here (images etc)...</td>'+
-        '</tr>'+
-    '</table>');
                 });
             })(jQuery);
         </script>
@@ -90,11 +76,6 @@
                 document.getElementById(cityName).style.display = "block";
                 evt.currentTarget.className += " active";
             }
-            
-            function appendRow ( ) {
-    // `d` is the original data object for the row
-
-}
         </script>
     </stripes:layout-component>
     <stripes:layout-component name="contents">
@@ -112,7 +93,7 @@
                 <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No scheduled Jobs found.</p>" />
                 <display:setProperty name="paging.banner.item_name" value="scheduledTask" />
                 <display:setProperty name="paging.banner.items_name" value="scheduledTasks" />
-                <display:column title="Task Id"  url="www.google.gr;" escapeXml="false" style="width: 15%">
+                <display:column title="Task Id"  url="/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${scheduledTask.details.taskId}" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${scheduledTask.details.taskId}"/>
                 </display:column>
                  <display:column title="Task Type" escapeXml="false" style="width: 15%">
@@ -146,6 +127,9 @@
                 </display:column>
                <display:column title="Task Type" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${pastScheduledTask.type}"/>
+                </display:column>
+                 <display:column title="Additional Task Details" escapeXml="false" style="width: 15%">
+                     <c:out value="${pastScheduledTask.additionalDetails}" />
                 </display:column>
                 <display:column title="Execution Status" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${pastScheduledTask.details.executionStatus}"/>

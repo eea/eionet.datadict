@@ -140,8 +140,12 @@ public class ScheduleJobServiceImpl implements ScheduleJobService{
 
     @Override
     public List<AsyncTaskExecutionEntry> getTaskEntriesHistory() {
-
         return this.asyncTaskHistoryDao.retrieveAllTasksHistory();
+    }
+
+    @Override
+    public AsyncTaskExecutionEntry getTaskEntry(String jobId) {
+        return this.asyncTaskDao.getFullEntry(jobId);
     }
     
 

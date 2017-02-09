@@ -53,7 +53,6 @@ public class ScheduledTaskResolver {
     
         if (entry.getTaskClassName().contains("VocabularyRdfImportFromUrlTask")) {
             String rdfFileUrl = (asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters())).get("rdfFileURL").toString();
-            System.out.println("RDF FILE URL IS"+rdfFileUrl);
             return "ImportURL: "+rdfFileUrl;
         }
     return null;

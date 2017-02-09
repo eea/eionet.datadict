@@ -22,6 +22,7 @@
 package eionet.web.action;
 
 import eionet.datadict.errors.BadFormatException;
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.infrastructure.scheduling.ScheduleJobService;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
@@ -134,6 +135,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *Page showing the scheduled jobs queue and past job execution attempts
      */
     private static final String SCHEDULED_SYNCHRONIZATIONS_VIEW="/pages/vocabularies/scheduleSyncQueue.jsp";
+    
+    /**
+     * Page to view the details of a scheduled task
+     */
+    private static final String SCHEDULED_TASK_DETAILS="/pages/vocabularies/scheduledTaskDetails.jsp";
     /**
      * Popup div's id prefix on jsp page.
      */
@@ -263,6 +269,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     
     @SpringBean
     private ScheduledTaskResolver scheduledTaskResolver;
+    
+    @SpringBean
+    private AsyncTaskDataSerializer asyncTaskDataSerializer;
     /**
      * Other versions of the same vocabulary folder.
      */
@@ -444,6 +453,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     
     private EmailValidator emailValidator = EmailValidator.getInstance();
 
+    private String scheduledTaskId;
+    
+    private ScheduledTaskView scheduledTaskView;
     /**
      * Navigates to view vocabulary folder page.
      *
@@ -897,6 +909,16 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         return new ForwardResolution(SCHEDULE_VOCABULARY_SYNC);
     }
     
+    public Resolution viewScheduledTaskDetails(){
+    
+        AsyncTaskExecutionEntry entry = scheduleJobService.getTaskEntry(scheduledTaskId);
+                     scheduledTaskView = new ScheduledTaskView();
+                    scheduledTaskView.setDetails(entry);
+                    scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
+                    scheduledTaskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters()));
+    return new ForwardResolution(SCHEDULED_TASK_DETAILS);
+    }
+    
     public Resolution ScheduledSynchronizationQueue() throws ServiceException {
         asyncTaskEntries = scheduleJobService.getAllScheduledTaskEntries();
         for (AsyncTaskExecutionEntry entry : asyncTaskEntries) {
@@ -904,22 +926,18 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
             taskView.setDetails(entry);
             taskView.setAdditionalDetails(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(entry));
-          System.out.println(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(entry));
-            
             scheduledTaskViews.add(taskView);
         }
         asyncTaskEntriesHistory = scheduleJobService.getTaskEntriesHistory();
         for (AsyncTaskExecutionEntry historyEntry : asyncTaskEntriesHistory) {
-          ScheduledTaskView taskView = new ScheduledTaskView();
+            ScheduledTaskView taskView = new ScheduledTaskView();
             taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(historyEntry.getTaskClassName()));
             taskView.setDetails(historyEntry);
+            taskView.setAdditionalDetails(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(historyEntry));
             scheduledTaskHistoryViews.add(taskView);
         }
         return new ForwardResolution(SCHEDULED_SYNCHRONIZATIONS_VIEW);
     }
-    
-    
-
     
     /**
      *Schedule Synchronization of Vocabularies
@@ -2195,5 +2213,21 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         this.scheduledTaskHistoryViews = scheduledTaskHistoryViews;
     }
 
+    public String getScheduledTaskId() {
+        return scheduledTaskId;
+    }
 
+    public void setScheduledTaskId(String scheduledTaskId) {
+        this.scheduledTaskId = scheduledTaskId;
+    }
+
+    public ScheduledTaskView getScheduledTaskView() {
+        return scheduledTaskView;
+    }
+
+    public void setScheduledTaskView(ScheduledTaskView scheduledTaskView) {
+        this.scheduledTaskView = scheduledTaskView;
+    }
+    
+    
 }

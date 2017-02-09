@@ -1,6 +1,7 @@
 package eionet.datadict.web.viewmodel;
 
 import eionet.datadict.model.AsyncTaskExecutionEntry;
+import java.util.Map;
 
 /**
  *
@@ -11,7 +12,9 @@ public class ScheduledTaskView {
     private String type;
     private AsyncTaskExecutionEntry details;
     private String additionalDetails;
-
+    private Map<String,Object> taskParameters;
+    private Object taskResult;
+    
     public String getType() {
         return type;
     }
@@ -35,6 +38,22 @@ public class ScheduledTaskView {
     public void setAdditionalDetails(String additionalDetails) {
         this.additionalDetails = additionalDetails;
     }
-    
+
+    public Map<String, Object> getTaskParameters() {
+        return taskParameters;
+    }
+
+    public void setTaskParameters(Map<String, Object> taskParameters) {
+        this.taskParameters = taskParameters;
+    }
+
+    public Object getTaskResult() {
+        return taskResult;
+    }
+
+    public void setTaskResult(Object taskResult) {
+        this.taskResult = taskResult;
+    }
+
     
 }
