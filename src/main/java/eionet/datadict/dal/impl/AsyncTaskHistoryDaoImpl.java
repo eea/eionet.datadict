@@ -53,12 +53,14 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
     @Override
     public void store(AsyncTaskExecutionEntry entry) {
         String sql
-                = "insert into ASYNC_TASK_ENTRY_HISTORY(TASK_ID, TASK_CLASS_NAME, EXECUTION_STATUS, SCHEDULED_DATE, SERIALIZED_PARAMETERS) "
-                + "values (:taskId, :className, :executionStatus, :scheduledDate, :serializedParameters)";
+                = "insert into ASYNC_TASK_ENTRY_HISTORY(TASK_ID, TASK_CLASS_NAME, EXECUTION_STATUS,START_DATE ,END_DATE, SCHEDULED_DATE, SERIALIZED_PARAMETERS) "
+                + "values (:taskId, :className, :executionStatus, :startDate, :endDate, :scheduledDate, :serializedParameters)";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("taskId", entry.getTaskId());
         params.put("className", entry.getTaskClassName());
         params.put("executionStatus", this.executionStatusToByteConverter.convert(entry.getExecutionStatus()));
+        params.put("startDate", this.dateTimeToLongConverter.convert(entry.getStartDate()));
+        params.put("endDate", this.dateTimeToLongConverter.convert(entry.getEndDate()));
         params.put("scheduledDate", this.dateTimeToLongConverter.convert(entry.getScheduledDate()));
         params.put("serializedParameters", entry.getSerializedParameters());
         this.getNamedParameterJdbcTemplate().update(sql, params);
@@ -105,7 +107,6 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
             result.setEndDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "END_DATE")));
             result.setSerializedParameters(rs.getString("SERIALIZED_PARAMETERS"));
             result.setSerializedResult(rs.getString("SERIALIZED_RESULT"));
-
             return result;
         }
 
