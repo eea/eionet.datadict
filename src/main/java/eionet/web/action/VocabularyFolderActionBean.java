@@ -959,7 +959,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         this.scheduleJobService.scheduleJob(VocabularyRdfImportFromUrlTask.class,
                         VocabularyRdfImportFromUrlTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                                 vocabularyFolder.isWorkingCopy(), vocabularyRdfUrl,emails, rdfPurgeOption, missingConceptsAction),scheduleInterval*scheduleSyncIntervalMinutes);
-        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "ScheduledSynchronizationQueue");
+        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "ScheduledJobsQueue");
         return resolution;
     }
     

@@ -41,20 +41,20 @@ import org.springframework.web.client.RestTemplate;
 @Component
 @Scope("prototype")
 public class VocabularyRdfImportFromUrlTask implements AsyncTask {
-    
-    
+
     @Autowired
     private JavaMailSender mailSender;
-    
+
     public static final String PARAM_VOCABULARY_SET_IDENTIFIER = "vocabularySetIdentifier";
     public static final String PARAM_VOCABULARY_IDENTIFIER = "vocabularyIdentifier";
     public static final String PARAM_WORKING_COPY = "workingCopy";
     public static final String PARAM_RDF_FILE_URL = "rdfFileURL";
     public static final String PARAM_RDF_PURGE_OPTION = "rdfPurgeOption";
     public static final String PARAM_MISSING_CONCEPTS_ACTION = "missingConceptsAction";
-    public static final String PARAM_NOTIFIERS_EMAILS="emails";
-    public static Map<String, Object> createParamsBundle(String vocabularySetIdentifier, String vocabularyIdentifier, 
-            boolean workingCopy, String rdfFileURL,String emails, int rdfPurgeOption, IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
+    public static final String PARAM_NOTIFIERS_EMAILS = "emails";
+
+    public static Map<String, Object> createParamsBundle(String vocabularySetIdentifier, String vocabularyIdentifier,
+            boolean workingCopy, String rdfFileURL, String emails, int rdfPurgeOption, IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(PARAM_VOCABULARY_SET_IDENTIFIER, vocabularySetIdentifier);
         parameters.put(PARAM_VOCABULARY_IDENTIFIER, vocabularyIdentifier);
@@ -63,26 +63,26 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
         parameters.put(PARAM_RDF_PURGE_OPTION, rdfPurgeOption);
         parameters.put(PARAM_NOTIFIERS_EMAILS, emails);
         parameters.put(PARAM_MISSING_CONCEPTS_ACTION, missingConceptsAction);
-        
+
         return parameters;
     }
-    
+
     private static final Logger LOGGER = Logger.getLogger(VocabularyRdfImportFromUrlTask.class);
-     
-   private final IVocabularyService vocabularyService;
+
+    private final IVocabularyService vocabularyService;
     private final IRDFVocabularyImportService vocabularyRdfImportService;
-    
+
     private Map<String, Object> parameters;
-    
+
     @Autowired
     public VocabularyRdfImportFromUrlTask(IVocabularyService vocabularyService, IRDFVocabularyImportService vocabularyRdfImportService) {
         this.vocabularyService = vocabularyService;
         this.vocabularyRdfImportService = vocabularyRdfImportService;
     }
-    
+
     @Override
     public String getDisplayName() {
-        return String.format("Importing RDF input into vocabulary %s/%s", 
+        return String.format("Importing RDF input into vocabulary %s/%s",
                 this.getVocabularySetIdentifier(), this.getVocabularyIdentifier());
     }
 
@@ -104,103 +104,99 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
     @Override
     public Object call() throws Exception {
         LOGGER.debug("Starting RDF import operation");
-       List<String> systemMessages =     this.importRdf();
+        List<String> systemMessages = this.importRdf();
         LOGGER.debug("RDF import completed");
-         LOGGER.info("Email Sending Mechanism invocation");
-           this.notifyEmailusers(this.getNotifiersEmails(), systemMessages);
+        LOGGER.info("Email Sending Mechanism invocation");
+        this.notifyEmailusers(this.getNotifiersEmails(), systemMessages);
         return null;
     }
-    
+
     protected List<String> importRdf() throws Exception {
-        VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(this.getVocabularySetIdentifier(), 
+        VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(this.getVocabularySetIdentifier(),
                 this.getVocabularyIdentifier(), this.isWorkingCopy());
         Reader rdfFileReader = null;
-        
+
         try {
-            rdfFileReader =  new InputStreamReader(new ByteArrayInputStream(this.downloadVocabularyRdf(this.getRdfFileURL())));
+            rdfFileReader = new InputStreamReader(new ByteArrayInputStream(this.downloadVocabularyRdf(this.getRdfFileURL())));
             // TODO use enum instead for rdf purge option
             int rdfPurgeOption = this.getRdfPurgeOption();
             List<String> systemMessages = this.vocabularyRdfImportService.importRdfIntoVocabulary(
                     rdfFileReader, vocabulary, rdfPurgeOption == 4, rdfPurgeOption == 3, rdfPurgeOption == 2, this.getMissingConceptsAction());
 
-           return systemMessages;
-            
-        }
-        finally {
+            return systemMessages;
+
+        } finally {
             if (rdfFileReader != null) {
                 rdfFileReader.close();
             }
         }
     }
-    
-    
-    protected byte[] downloadVocabularyRdf(String url){
-    
-    RestTemplate restTemplate = new RestTemplate();
-    restTemplate.getMessageConverters().add(
-            new ByteArrayHttpMessageConverter());
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
+    protected byte[] downloadVocabularyRdf(String url) {
 
-    HttpEntity<String> entity = new HttpEntity<String>(headers);
-    
-    ResponseEntity<byte[]> response = restTemplate.exchange(
-            url,
-            HttpMethod.GET, entity, byte[].class, "1");
-         return response.getBody();
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(
+                new ByteArrayHttpMessageConverter());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
+
+        HttpEntity<String> entity = new HttpEntity<String>(headers);
+
+        ResponseEntity<byte[]> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET, entity, byte[].class, "1");
+        return response.getBody();
     }
-    
-    protected void notifyEmailusers(String emails, final List<String> messages){
-      String[] emailsList = emails.split(",");
-       for (final String email : emailsList) {
-     
+
+    protected void notifyEmailusers(String emails, final List<String> messages) {
+      final  StringBuilder sb = new StringBuilder();
+        for (String message : messages) {
+            sb.append(message);
+            sb.append("\t");
+        }
+        String[] emailsList = emails.split(",");
+        for (final String email : emailsList) {
             MimeMessagePreparator mimeMessagePreparator = new MimeMessagePreparator() {
                 @Override
                 public void prepare(MimeMessage mimeMessage) throws Exception {
                     MimeMessageHelper message = new MimeMessageHelper(mimeMessage, false);
-                    message.setText(messages.toString(), false);
+                    message.setText(sb.toString(), false);
                     message.setFrom(new InternetAddress("billskia@hotmail.com"));
                     message.setSubject("Scheduled RDF Import into Vocabulary Completed");
                     message.setTo(email);
                 }
             };
             mailSender.send(mimeMessagePreparator);
-       }
-        
-     
+        }
     }
-   
-    
+
     protected String getRdfFileURL() {
         return (String) this.parameters.get(PARAM_RDF_FILE_URL);
     }
-   
-     protected String getNotifiersEmails() {
+
+    protected String getNotifiersEmails() {
         return (String) this.parameters.get(PARAM_NOTIFIERS_EMAILS);
     }
-     
+
     protected String getVocabularySetIdentifier() {
         return (String) this.parameters.get(PARAM_VOCABULARY_SET_IDENTIFIER);
     }
-    
+
     protected String getVocabularyIdentifier() {
         return (String) this.parameters.get(PARAM_VOCABULARY_IDENTIFIER);
     }
-    
+
     protected boolean isWorkingCopy() {
         return (Boolean) this.parameters.get(PARAM_WORKING_COPY);
     }
-    
+
     protected int getRdfPurgeOption() {
         return (Integer) this.parameters.get(PARAM_RDF_PURGE_OPTION);
     }
-    
+
     protected IVocabularyImportService.MissingConceptsAction getMissingConceptsAction() {
         return (IVocabularyImportService.MissingConceptsAction) this.parameters.get(PARAM_MISSING_CONCEPTS_ACTION);
     }
-    
-    
-    
-}
 
+}
