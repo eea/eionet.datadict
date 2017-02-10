@@ -75,21 +75,16 @@ public class ScheduleJobServiceImpl implements ScheduleJobService{
    
     @Override
     public <T> String scheduleJob(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes) {
-
-        
           if (taskType == null) {
             throw new IllegalArgumentException("Task type cannot be null.");
         }
-        
         AsyncJobDataMapAdapter dataMapAdapter = new AsyncJobDataMapAdapter(new JobDataMap());
         dataMapAdapter.setTaskType(taskType);
-        
         if (parameters != null) {
             dataMapAdapter.putParameters(parameters);
         }
         
-        JobKey jobKey = this.asyncJobKeyBuilder.createNew();
-        
+        JobKey jobKey = this.asyncJobKeyBuilder.createNew();   
         JobDetail jobDetail = JobBuilder.newJob(AsyncJob.class)
                 .withIdentity(jobKey)
                 .setJobData(dataMapAdapter.getDataMap())
@@ -105,22 +100,16 @@ public class ScheduleJobServiceImpl implements ScheduleJobService{
         }
         catch (SchedulerException ex) {
             throw new AsyncTaskManagementException(ex);
-        }
-        
+        }  
         this.createTaskEntry(jobKey, dataMapAdapter.getTaskTypeName(), dataMapAdapter.getParameters());
-        
         return this.asyncJobKeyBuilder.getTaskId(jobKey);
     }
 
-    
-    
-    
 
     @Override
     public String getJobStatus(String jobId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 
  protected void createTaskEntry(JobKey jobKey, String taskTypeName, Map<String, Object> parameters) {
         AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
@@ -146,8 +135,5 @@ public class ScheduleJobServiceImpl implements ScheduleJobService{
     @Override
     public AsyncTaskExecutionEntry getTaskEntry(String jobId) {
         return this.asyncTaskDao.getFullEntry(jobId);
-    }
-    
-
-    
+    }    
 }
