@@ -140,6 +140,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Page to view the details of a scheduled task
      */
     private static final String SCHEDULED_TASK_DETAILS="/pages/vocabularies/scheduledTaskDetails.jsp";
+    
+    
+    /**
+     *Generic Datadict error page
+     **/
+    private static final String DATADICT_GENERIC_ERROR_PAGE="/pages/error.jsp";
     /**
      * Popup div's id prefix on jsp page.
      */
@@ -456,6 +462,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private String scheduledTaskId;
     
     private ScheduledTaskView scheduledTaskView;
+    
+    /***
+     *This Field is mandatory if one wishes to redirect the user to the Generic Datadict Error page.
+     **/
+    private String errorTypeMsg;
     /**
      * Navigates to view vocabulary folder page.
      *
@@ -899,7 +910,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * Display page to schedule Synchronization of Vocabularies
+\     * Display page to schedule Synchronization of Vocabularies
      *
      * @return resolution
      *
@@ -919,6 +930,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
     
     public Resolution ScheduledJobsQueue() throws ServiceException {
+        if (!isCreateRight()) {
+                addGlobalValidationError("No permission to create new vocabulary");
+              //  errorTypeMsg="No Permission to View the Scheduled Jobs Queue";
+                super.addCautionMessage("some message");
+                super.addGlobalValidationError("some Validation Error");
+                return new RedirectResolution(DATADICT_GENERIC_ERROR_PAGE);
+        }
+        
         asyncTaskEntries = scheduleJobService.getAllScheduledTaskEntries();
         for (AsyncTaskExecutionEntry entry : asyncTaskEntries) {
             ScheduledTaskView taskView = new ScheduledTaskView();
@@ -2236,6 +2255,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public void setScheduledTaskView(ScheduledTaskView scheduledTaskView) {
         this.scheduledTaskView = scheduledTaskView;
     }
-    
-    
+
+    public String getErrorTypeMsg() {
+        return errorTypeMsg;
+    }
+
+    public void setErrorTypeMsg(String errorTypeMsg) {
+        this.errorTypeMsg = errorTypeMsg;
+    }
 }
