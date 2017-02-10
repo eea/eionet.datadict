@@ -2,18 +2,29 @@
 <%@ include file="/pages/common/taglibs.jsp"%>
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Scheduled Task Details" >
     <stripes:layout-component name="contents">
+        <script type="text/javascript">
+            (function ($) {
+                $(document).ready(function () {
+                    $("#delete").click(function () {
+                        alert("This Job Will be Deleted.  The Job Execution History Though Will Remain For a month in the system.");
+                    });
+                });
+            })(jQuery);
+
+        </script>
         <div id="drop-operations">
             <ul>
 
                 <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
                     <li class="maintain">
                         <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="ScheduledJobsQueue"> 
-                           Back To Scheduled Vocabulary Jobs Queue</stripes:link>
+                            Back To Scheduled Vocabulary Jobs Queue</stripes:link>
                         </li>
                 </c:if>
             </ul>
         </div>
         <h2>Task Parameters</h2>
+
         <div id="outerframe">
             <table class="datatable results">
                 <tr>
@@ -60,7 +71,12 @@
                         ${details.scheduledDate}
                     </td>
                 </tr>
+
             </table>
         </div>
+        <stripes:form id="deleteScheduledJob" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
+            <stripes:param name="scheduledTaskId" value="${actionBean.scheduledTaskId}" />
+            <stripes:submit name="deleteScheduledJob" value="Delete" class="mediumbuttonb" id="delete"/>
+        </stripes:form>
     </stripes:layout-component>
 </stripes:layout-render>

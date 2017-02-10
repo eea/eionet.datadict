@@ -20,4 +20,6 @@ public interface AsyncTaskDao {
     
     AsyncTaskExecutionEntry updateScheduledDate(AsyncTaskExecutionEntry entry);
     
+    void delete(AsyncTaskExecutionEntry entry);
+    
 }

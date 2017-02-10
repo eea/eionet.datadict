@@ -113,6 +113,14 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
         this.getNamedParameterJdbcTemplate().update(sql, params);
         return this.getFullEntry(entry.getTaskId());
     }
+
+    @Override
+    public void delete(AsyncTaskExecutionEntry entry) {
+        String sql = "delete from ASYNC_TASK_ENTRY where TASK_ID = :taskId";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("taskId", entry.getTaskId());
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
     
     protected class StatusEntryRowMapper implements RowMapper<AsyncTaskExecutionEntry> {
         

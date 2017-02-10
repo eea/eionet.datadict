@@ -18,6 +18,7 @@ import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 import org.quartz.JobBuilder;
@@ -39,9 +40,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Service
 public class ScheduleJobServiceImpl implements ScheduleJobService{
 
-        private static final Logger LOGGER = Logger.getLogger(ScheduleJobServiceImpl.class);
+    private static final Logger LOGGER = Logger.getLogger(ScheduleJobServiceImpl.class);
     
-     private final Scheduler scheduler;
+    private final Scheduler scheduler;
     private final AsyncJobKeyBuilder asyncJobKeyBuilder;
     private final @Qualifier("asyncTaskDao")AsyncTaskDao asyncTaskDao;
     private final QuartzSchedulerDao quartzSchedulerDao;
@@ -60,7 +61,6 @@ public class ScheduleJobServiceImpl implements ScheduleJobService{
         this.asyncTaskHistoryDao = asyncTaskHistoryDao;
     }
 
-   
 
      @PostConstruct
     public void init() {
@@ -72,7 +72,6 @@ public class ScheduleJobServiceImpl implements ScheduleJobService{
         }
     }
 
-   
     @Override
     public <T> String scheduleJob(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes) {
           if (taskType == null) {
@@ -136,4 +135,17 @@ public class ScheduleJobServiceImpl implements ScheduleJobService{
     public AsyncTaskExecutionEntry getTaskEntry(String jobId) {
         return this.asyncTaskDao.getFullEntry(jobId);
     }    
+
+    @Override
+    public void deleteJob(String jobId) {
+        JobKey key = this.asyncJobKeyBuilder.create(jobId);
+            try {
+                this.scheduler.deleteJob(key);
+                AsyncTaskExecutionEntry entry = this.asyncTaskDao.getFullEntry(jobId);
+                this.asyncTaskDao.delete(entry);
+            } catch (SchedulerException ex) {
+                java.util.logging.Logger.getLogger(ScheduleJobServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                 throw new AsyncTaskManagementException(ex);
+            }
+    }
 }

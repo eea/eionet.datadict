@@ -964,6 +964,15 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
     
     /**
+     *Delete a Scheduled Job 
+     **/
+    public Resolution deleteScheduledJob(){
+      scheduleJobService.deleteJob(scheduledTaskId);
+      RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "ScheduledJobsQueue");
+      return resolution;
+    }
+    
+    /**
      * Validates check out.
      *
      * @throws ServiceException
