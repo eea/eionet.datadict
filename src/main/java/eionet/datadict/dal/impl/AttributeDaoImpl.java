@@ -68,7 +68,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);
 
-        int count = getNamedParameterJdbcTemplate().queryForInt(sql, params);
+        int count = getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
         if (count > 0) {
             return true;
         } else {
@@ -151,7 +151,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         String sql = "select count(Distinct(PARENT_TYPE), DATAELEM_ID) from ATTRIBUTE where M_ATTRIBUTE_ID = :id and not PARENT_TYPE = ''";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", attributeId);
-        return getNamedParameterJdbcTemplate().queryForInt(sql, params);
+        return getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
     }
 
     @Override
@@ -199,7 +199,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         Map<String, Object> params = this.createParameterMap();
         params.put("attributeId", attributeId);
         try {
-            return this.getNamedParameterJdbcTemplate().queryForInt(sql, params);
+            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
         } catch (IncorrectResultSizeDataAccessException ex) {
             return null;
         }

@@ -241,7 +241,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 });
 
         String totalSql = "SELECT FOUND_ROWS()";
-        int totalItems = getJdbcTemplate().queryForInt(totalSql);
+        int totalItems = getJdbcTemplate().queryForObject(totalSql,Integer.class);
 
         VocabularyConceptResult result = new VocabularyConceptResult(resultList, totalItems, filter);
 
@@ -417,7 +417,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             parameters.put("vocabularyConceptId", vocabularyConceptId);
         }
 
-        int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
+        int result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), parameters,Integer.class);
 
         return result == 0;
     }
@@ -435,7 +435,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         parameters.put("vocabularyFolderId", vocabularyFolderId);
 
         try {
-            int result = getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+            int result = getNamedParameterJdbcTemplate().queryForObject(sql, parameters,Integer.class);
             return result + 1;
         } catch (EmptyResultDataAccessException e) {
             return 1;

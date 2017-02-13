@@ -148,7 +148,7 @@ public class FixedValueDAOImpl extends GeneralDAOImpl implements IFixedValueDAO 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);
 
-        int count = getNamedParameterJdbcTemplate().queryForInt(sql, params);
+        int count = getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
 
         return (count > 0);
     }
@@ -162,7 +162,7 @@ public class FixedValueDAOImpl extends GeneralDAOImpl implements IFixedValueDAO 
         params.put("ownerType", ownerType.toString());
         params.put("value", value);
 
-        int count = getNamedParameterJdbcTemplate().queryForInt(sql, params);
+        int count = getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
 
         return (count > 0);
     }

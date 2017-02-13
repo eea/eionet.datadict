@@ -414,7 +414,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", id);
         
-        int count = getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+        int count = getNamedParameterJdbcTemplate().queryForObject(sql, parameters,Integer.class);
         return (count > 0);
     }
 
@@ -438,7 +438,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         parameters.put("identifier", identifier);
         parameters.put("regStatus", RegStatus.RELEASED.toString());
 
-        return getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+        return getNamedParameterJdbcTemplate().queryForObject(sql, parameters,Integer.class);
     }
 
     /**
@@ -848,7 +848,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         sql.append("select count(VOCABULARY_ID) from VOCABULARY2ELEM ");
         sql.append("where DATAELEM_ID = :elementId and VOCABULARY_ID = :vocabularyId ");
 
-        int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
+        int result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), parameters,Integer.class);
 
         return result > 0;
     }
@@ -1083,7 +1083,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("elemId", dataElementId);
 
-        Integer result = getNamedParameterJdbcTemplate().queryForInt(sql, params);
+        Integer result = getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
 
         return result;
     }
@@ -1234,7 +1234,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         params.put("ruleName", rule.getTypeName());
         params.put("targetElementId", rule.getTargetDElement().getId());
         
-        int count = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
+        int count = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
         return (count > 0);
     }
     

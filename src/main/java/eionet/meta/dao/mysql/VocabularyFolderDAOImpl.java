@@ -541,7 +541,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
             parameters.put("excludedVocabularyFolderIds", excluded);
         }
 
-        int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
+        int result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), parameters,Integer.class);
 
         return result == 0;
     }
@@ -738,7 +738,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                 });
 
         String totalSql = "SELECT FOUND_ROWS()";
-        int totalItems = getJdbcTemplate().queryForInt(totalSql);
+        int totalItems = getJdbcTemplate().queryForObject(totalSql,Integer.class);
 
         VocabularyResult result = new VocabularyResult(items, totalItems, filter);
 
@@ -781,7 +781,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         sql.append("select count(1) from VOCABULARY ");
         sql.append("where BASE_URI IS NOT NULL and VOCABULARY_ID IN (:vocabularyIds) ");
 
-        int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
+        int result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), parameters,Integer.class);
 
         return result > 0;
     }
