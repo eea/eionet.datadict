@@ -198,7 +198,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
@@ -209,7 +208,6 @@
                     </formats>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
@@ -234,13 +232,11 @@
                     </execution>
                 </executions>
             </plugin>
-
             <!-- FindBugs Static Analysis
                  Find Security Bugs: https://github.com/h3xstream/find-sec-bugs/wiki/Maven-configuration
                  To only find security bugs, add these filters
                  <includeFilterFile>${session.executionRootDirectory}/doc/findbugs-security-include.xml</includeFilterFile>
                  <excludeFilterFile>${session.executionRootDirectory}/doc/findbugs-security-exclude.xml</excludeFilterFile>
-
             -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -515,7 +511,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-    <version>3.15</version>
+            <version>3.15</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
