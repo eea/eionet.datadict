@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,6 +27,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   private EntryPointUnauthorizedHandler unauthorizedHandler;
 
 
+  @Autowired
+  public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+    authenticationManagerBuilder.parentAuthenticationManager(authenticationManagerBean());
+  }
+     
+
  @Bean
   @Override
   public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -33,12 +40,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   @Bean
-  public AuthenticationReqFilter authenticationRequestFilterBean( ) throws Exception {
-    AuthenticationReqFilter authenticationReqFilter = new AuthenticationReqFilter();
+  public AuthenticationRequestFilter authenticationRequestFilterBean( ) throws Exception {
+    AuthenticationRequestFilter authenticationReqFilter = new AuthenticationRequestFilter();
     authenticationReqFilter.setAuthenticationManager(authenticationManagerBean());
     return authenticationReqFilter;
   }
-
 
 
   @Override

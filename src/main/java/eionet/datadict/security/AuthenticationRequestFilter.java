@@ -5,7 +5,9 @@ import eionet.util.SecurityUtil;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -18,35 +20,42 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
-public class AuthenticationReqFilter extends UsernamePasswordAuthenticationFilter {
+public class AuthenticationRequestFilter extends UsernamePasswordAuthenticationFilter {
 
-    private static final List<String> INTERCEPTED_URLS = Collections.unmodifiableList(Arrays.asList("ScheduleSynchronizationView", "viewScheduledTaskDetails","ScheduledJobsQueue"));
-    private static final List<String> INTERCEPTED_URL_PARAMETERS=Collections.unmodifiableList(Arrays.asList("ScheduledJobsQueue","viewScheduledTaskDetails","ScheduledJobsQueue"));
+    private static final String VOCABULARY_RESOURCE = "vocabulary";
+    private static final Map<String, List<String>> INTERCEPTED_DATADICT_ACTIONS;
+  
+    //TODO get datadict application context path from properties file
+    private static final String GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL="/datadict/error.action?type=NOT_AUTHENTICATED_401&message=You+have+to+login+to+access+this+page";
+    static {
+        Map<String, List<String>> vocabularyActions = new LinkedHashMap<String, List<String>>();
+        vocabularyActions.put(VOCABULARY_RESOURCE, Arrays.asList("add"));
+        INTERCEPTED_DATADICT_ACTIONS = Collections.unmodifiableMap(vocabularyActions);
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         String requestURL = httpRequest.getRequestURL().toString();
 
-        //Comes the user, he requires authentication?
         if (!requiresAuthentication(requestURL, httpRequest)) {
             chain.doFilter(request, response);
             return;
         } else {
-         httpServletResponse.sendRedirect("/datadict/error.action?type=NOT_AUTHENTICATED_401&message=You+have+to+login+to+access+this+page");
+            httpServletResponse.sendRedirect(GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL);
         }
-
     }
 
     private boolean requiresAuthentication(String url, HttpServletRequest request) {
-        for (String interceptedUrl : INTERCEPTED_URLS) {
-            if (url.contains(interceptedUrl)) {
-                return getUser(request)!= null;
-            }
-        }
-        for (String urlParameter : INTERCEPTED_URL_PARAMETERS) {
-            if (request.getParameterMap().containsKey(urlParameter)) {
-                return getUser(request)!= null;                
+        if (url.contains(VOCABULARY_RESOURCE)) {
+            List<String> vocabularyActions = INTERCEPTED_DATADICT_ACTIONS.get(VOCABULARY_RESOURCE);
+            for (String vocabularyAction : vocabularyActions) {
+                if (request.getParameter(vocabularyAction)!=null) {
+                    if(getUser(request)==null){
+                     return true; 
+                    }
+                }
             }
         }
         return false;
@@ -55,5 +64,4 @@ public class AuthenticationReqFilter extends UsernamePasswordAuthenticationFilte
     private DDUser getUser(HttpServletRequest request) {
         return SecurityUtil.getUser(request);
     }
-
 }
