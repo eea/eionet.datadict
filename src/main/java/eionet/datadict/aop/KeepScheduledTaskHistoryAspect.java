@@ -26,6 +26,6 @@ public class KeepScheduledTaskHistoryAspect {
     public void persistAsyncTaskEntryHistory(JoinPoint joinPoint, Object result) {
         asyncTaskHistoryDao = SpringApplicationContext.getBean(AsyncTaskHistoryDao.class);
         LOGGER.info("Invocation of Aspect to Store AsyncTaskEntry History upon updating the Scheduled Date of an Async Task Entry");
-        asyncTaskHistoryDao.store((AsyncTaskExecutionEntry) result);
+        asyncTaskHistoryDao.storeAsyncTaskEntry((AsyncTaskExecutionEntry) result);
     }
 }

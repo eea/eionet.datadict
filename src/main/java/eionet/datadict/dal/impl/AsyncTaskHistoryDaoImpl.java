@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eionet.datadict.dal.impl;
 
 import eionet.datadict.commons.sql.ResultSetUtils;
@@ -11,6 +6,7 @@ import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.dal.impl.converters.DateTimeToLongConverter;
 import eionet.datadict.dal.impl.converters.ExecutionStatusToByteConverter;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
+import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
@@ -40,18 +36,18 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
     }
 
     @Override
-    public AsyncTaskExecutionEntry retrieveTaskById(String id) {
+    public AsyncTaskExecutionEntryHistory retrieveTaskById(String id) {
         String sql = "select * from ASYNC_TASK_ENTRY_HISTORY where ID = :id";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);
-        List<AsyncTaskExecutionEntry> results = this.getNamedParameterJdbcTemplate().query(sql, params,
+        List<AsyncTaskExecutionEntryHistory> results = this.getNamedParameterJdbcTemplate().query(sql, params,
                 new ResultEntryRowMapper());
 
         return IterableUtils.firstOrDefault(results);
     }
 
     @Override
-    public void store(AsyncTaskExecutionEntry entry) {
+    public void storeAsyncTaskEntry(AsyncTaskExecutionEntry entry) {
         String sql
                 = "insert into ASYNC_TASK_ENTRY_HISTORY(TASK_ID, TASK_CLASS_NAME, EXECUTION_STATUS,START_DATE ,END_DATE, SCHEDULED_DATE, SERIALIZED_PARAMETERS) "
                 + "values (:taskId, :className, :executionStatus, :startDate, :endDate, :scheduledDate, :serializedParameters)";
@@ -67,22 +63,21 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
     }
 
     @Override
-    public List<AsyncTaskExecutionEntry> retrieveTasksByTaskId(String taskId) {
+    public List<AsyncTaskExecutionEntryHistory> retrieveTasksByTaskId(String taskId) {
         String sql = "select * from ASYNC_TASK_ENTRY_HISTORY where TASK_ID = :taskId";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("taskId", taskId);
-        List<AsyncTaskExecutionEntry> results = this.getNamedParameterJdbcTemplate().query(sql, params,
+        List<AsyncTaskExecutionEntryHistory> results = this.getNamedParameterJdbcTemplate().query(sql, params,
                 new ResultEntryRowMapper());
         return results;
     }
 
     @Override
-    public List<AsyncTaskExecutionEntry> retrieveAllTasksHistory() {
+    public List<AsyncTaskExecutionEntryHistory> retrieveAllTasksHistory() {
         String sql = "select * from ASYNC_TASK_ENTRY_HISTORY";
         Map<String, Object> params = new HashMap<String, Object>();
-        List<AsyncTaskExecutionEntry> results = this.getNamedParameterJdbcTemplate().query(sql, params,
+        List<AsyncTaskExecutionEntryHistory> results = this.getNamedParameterJdbcTemplate().query(sql, params,
                 new AsyncTaskHistoryDaoImpl.ResultEntryRowMapper());
-
         return results;
     }
 
@@ -94,21 +89,22 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
 
-    protected class ResultEntryRowMapper implements RowMapper<AsyncTaskExecutionEntry> {
+    protected class ResultEntryRowMapper implements RowMapper<AsyncTaskExecutionEntryHistory> {
 
         @Override
-        public AsyncTaskExecutionEntry mapRow(ResultSet rs, int i) throws SQLException {
-            AsyncTaskExecutionEntry result = new AsyncTaskExecutionEntry();
-            result.setTaskId(rs.getString("TASK_ID"));
-            result.setTaskClassName(rs.getString("TASK_CLASS_NAME"));
-            result.setExecutionStatus(executionStatusToByteConverter.convertBack(rs.getByte("EXECUTION_STATUS")));
-            result.setScheduledDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "SCHEDULED_DATE")));
-            result.setStartDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "START_DATE")));
-            result.setEndDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "END_DATE")));
-            result.setSerializedParameters(rs.getString("SERIALIZED_PARAMETERS"));
-            result.setSerializedResult(rs.getString("SERIALIZED_RESULT"));
-            return result;
+        public AsyncTaskExecutionEntryHistory mapRow(ResultSet rs, int i) throws SQLException {
+            AsyncTaskExecutionEntry asyncTaskEntry = new AsyncTaskExecutionEntry();
+            asyncTaskEntry.setTaskId(rs.getString("TASK_ID"));
+            asyncTaskEntry.setTaskClassName(rs.getString("TASK_CLASS_NAME"));
+            asyncTaskEntry.setExecutionStatus(executionStatusToByteConverter.convertBack(rs.getByte("EXECUTION_STATUS")));
+            asyncTaskEntry.setScheduledDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "SCHEDULED_DATE")));
+            asyncTaskEntry.setStartDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "START_DATE")));
+            asyncTaskEntry.setEndDate(dateTimeToLongConverter.convertBack(ResultSetUtils.getLong(rs, "END_DATE")));
+            asyncTaskEntry.setSerializedParameters(rs.getString("SERIALIZED_PARAMETERS"));
+            asyncTaskEntry.setSerializedResult(rs.getString("SERIALIZED_RESULT"));
+            AsyncTaskExecutionEntryHistory entryHistory = new AsyncTaskExecutionEntryHistory(asyncTaskEntry);
+            entryHistory.setId(rs.getLong("ID"));
+            return entryHistory;
         }
-
     }
 }

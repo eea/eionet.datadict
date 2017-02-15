@@ -1,6 +1,7 @@
 package eionet.datadict.dal;
 
 import eionet.datadict.model.AsyncTaskExecutionEntry;
+import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import java.util.Date;
 import java.util.List;
 
@@ -10,12 +11,12 @@ import java.util.List;
  */
 public interface AsyncTaskHistoryDao {
 
-    AsyncTaskExecutionEntry retrieveTaskById(String id);
+    AsyncTaskExecutionEntryHistory retrieveTaskById(String id);
     
-    List<AsyncTaskExecutionEntry> retrieveTasksByTaskId(String taskId);
-    void store(AsyncTaskExecutionEntry entry);
+    List<AsyncTaskExecutionEntryHistory> retrieveTasksByTaskId(String taskId);
+    void storeAsyncTaskEntry(AsyncTaskExecutionEntry entry);
     
-    List<AsyncTaskExecutionEntry> retrieveAllTasksHistory();
+    List<AsyncTaskExecutionEntryHistory> retrieveAllTasksHistory();
     
     void deleteRecordsOlderThan(Date date);
 }

@@ -125,7 +125,7 @@
                 <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No scheduled Jobs found.</p>" />
                 <display:setProperty name="paging.banner.item_name" value="pastScheduledTask" />
                 <display:setProperty name="paging.banner.items_name" value="pastScheduledTasks" />
-                <display:column title="Task Id"  url="/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${pastScheduledTask.details.taskId}" escapeXml="false" style="width: 15%">
+                <display:column title="Task Id"  url="/vocabulary/viewScheduledTaskHistoryDetails?scheduledTaskHistoryId=${pastScheduledTask.asyncTaskExecutionEntryHistoryId}" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${pastScheduledTask.details.taskId}"/>
                 </display:column>
                 <display:column title="Task Type" escapeXml="false" style="width: 15%">

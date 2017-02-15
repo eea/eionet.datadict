@@ -26,6 +26,7 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.infrastructure.scheduling.ScheduleJobService;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
+import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import eionet.datadict.services.stripes.FileBeanDecompressor;
 import eionet.datadict.util.ScheduledTaskResolver;
 import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
@@ -451,7 +452,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     
     private List<AsyncTaskExecutionEntry> asyncTaskEntries;
 
-    private List<AsyncTaskExecutionEntry> asyncTaskEntriesHistory;
+    private List<AsyncTaskExecutionEntryHistory> asyncTaskEntriesHistory;
     
     private List<ScheduledTaskView> scheduledTaskViews = new ArrayList<ScheduledTaskView>();
     
@@ -460,6 +461,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private EmailValidator emailValidator = EmailValidator.getInstance();
 
     private String scheduledTaskId;
+    
+    private String scheduledTaskHistoryId;
     
     private ScheduledTaskView scheduledTaskView;
     
@@ -929,6 +932,15 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         return new ForwardResolution(SCHEDULED_TASK_DETAILS);
     }
     
+    public Resolution viewScheduledTaskHistoryDetails() {
+        AsyncTaskExecutionEntry entry = scheduleJobService.getTaskEntryHistory(scheduledTaskHistoryId);
+        scheduledTaskView = new ScheduledTaskView();
+        scheduledTaskView.setDetails(entry);
+        scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
+        scheduledTaskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters()));
+        return new ForwardResolution(SCHEDULED_TASK_DETAILS);
+    }
+    
     public Resolution ScheduledJobsQueue() throws ServiceException {
         if (!isCreateRight()) {
                 addGlobalValidationError("No permission to create new vocabulary");
@@ -947,11 +959,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             scheduledTaskViews.add(taskView);
         }
         asyncTaskEntriesHistory = scheduleJobService.getTaskEntriesHistory();
-        for (AsyncTaskExecutionEntry historyEntry : asyncTaskEntriesHistory) {
+        for (AsyncTaskExecutionEntryHistory historyEntry : asyncTaskEntriesHistory) {
             ScheduledTaskView taskView = new ScheduledTaskView();
             taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(historyEntry.getTaskClassName()));
             taskView.setDetails(historyEntry);
             taskView.setAdditionalDetails(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(historyEntry));
+            taskView.setAsyncTaskExecutionEntryHistoryId(historyEntry.getId());
             scheduledTaskHistoryViews.add(taskView);
         }
         return new ForwardResolution(SCHEDULED_JOBS_VIEW);
@@ -2216,13 +2229,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         this.asyncTaskEntries = asyncTaskEntries;
     }
 
-    public List<AsyncTaskExecutionEntry> getAsyncTaskEntriesHistory() {
+    public List<AsyncTaskExecutionEntryHistory> getAsyncTaskEntriesHistory() {
         return asyncTaskEntriesHistory;
     }
 
-    public void setAsyncTaskEntriesHistory(List<AsyncTaskExecutionEntry> asyncTaskEntriesHistory) {
+    public void setAsyncTaskEntriesHistory(List<AsyncTaskExecutionEntryHistory> asyncTaskEntriesHistory) {
         this.asyncTaskEntriesHistory = asyncTaskEntriesHistory;
     }
+
 
     public List<ScheduledTaskView> getScheduledTaskViews() {
         return scheduledTaskViews;
@@ -2262,5 +2276,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     public void setErrorTypeMsg(String errorTypeMsg) {
         this.errorTypeMsg = errorTypeMsg;
+    }
+
+    public String getScheduledTaskHistoryId() {
+        return scheduledTaskHistoryId;
+    }
+
+    public void setScheduledTaskHistoryId(String scheduledTaskHistoryId) {
+        this.scheduledTaskHistoryId = scheduledTaskHistoryId;
     }
 }

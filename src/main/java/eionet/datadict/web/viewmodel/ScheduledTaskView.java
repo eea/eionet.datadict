@@ -10,6 +10,7 @@ import java.util.Map;
 public class ScheduledTaskView {
 
     private String type;
+    private Long asyncTaskExecutionEntryHistoryId;
     private AsyncTaskExecutionEntry details;
     private String additionalDetails;
     private Map<String,Object> taskParameters;
@@ -53,6 +54,14 @@ public class ScheduledTaskView {
 
     public void setTaskResult(Object taskResult) {
         this.taskResult = taskResult;
+    }
+
+    public Long getAsyncTaskExecutionEntryHistoryId() {
+        return asyncTaskExecutionEntryHistoryId;
+    }
+
+    public void setAsyncTaskExecutionEntryHistoryId(Long asyncTaskExecutionEntryHistoryId) {
+        this.asyncTaskExecutionEntryHistoryId = asyncTaskExecutionEntryHistoryId;
     }
 
     

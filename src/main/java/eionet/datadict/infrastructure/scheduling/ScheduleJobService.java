@@ -1,6 +1,7 @@
 package eionet.datadict.infrastructure.scheduling;
 
 import eionet.datadict.model.AsyncTaskExecutionEntry;
+import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,8 @@ public interface ScheduleJobService {
         <T> String scheduleJob(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes);
             String getJobStatus(String jobId);
             List<AsyncTaskExecutionEntry> getAllScheduledTaskEntries();
-            List<AsyncTaskExecutionEntry> getTaskEntriesHistory();
+            List<AsyncTaskExecutionEntryHistory> getTaskEntriesHistory();
             AsyncTaskExecutionEntry getTaskEntry(String jobId);
+            AsyncTaskExecutionEntry getTaskEntryHistory(String jobId);
             void deleteJob(String jobId);
 }

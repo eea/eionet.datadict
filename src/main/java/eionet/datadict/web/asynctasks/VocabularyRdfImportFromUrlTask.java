@@ -107,8 +107,12 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
         List<String> systemMessages = this.importRdf();
         LOGGER.debug("RDF import completed");
         LOGGER.info("Email Sending Mechanism invocation");
+        try{
         this.notifyEmailusers(this.getNotifiersEmails(), systemMessages);
-        return null;
+        }catch(Exception e){
+        LOGGER.error("Error sending Email to users",e);
+        }
+        return systemMessages;
     }
 
     protected List<String> importRdf() throws Exception {
@@ -140,9 +144,7 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
-
         HttpEntity<String> entity = new HttpEntity<String>(headers);
-
         ResponseEntity<byte[]> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET, entity, byte[].class, "1");

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import eionet.datadict.infrastructure.scheduling.ScheduleJobService;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
+import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
 import java.util.Date;
 import java.util.List;
@@ -127,7 +128,7 @@ public class ScheduleJobServiceImpl implements ScheduleJobService{
     }
 
     @Override
-    public List<AsyncTaskExecutionEntry> getTaskEntriesHistory() {
+    public List<AsyncTaskExecutionEntryHistory> getTaskEntriesHistory() {
         return this.asyncTaskHistoryDao.retrieveAllTasksHistory();
     }
 
@@ -147,5 +148,10 @@ public class ScheduleJobServiceImpl implements ScheduleJobService{
                 java.util.logging.Logger.getLogger(ScheduleJobServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
                  throw new AsyncTaskManagementException(ex);
             }
+    }
+
+    @Override
+    public AsyncTaskExecutionEntry getTaskEntryHistory(String jobId) {
+        return this.asyncTaskHistoryDao.retrieveTaskById(jobId);
     }
 }
