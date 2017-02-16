@@ -93,11 +93,11 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
     @Override
     public void updateEndStatusAndSerializedResult(AsyncTaskExecutionEntry entry) {
           String sql = 
-            "update ASYNC_TASK_ENTRY_HISTORY set END_DATE = :endDate, EXECUTION_STATUS = :executionStatus, SERIALIZED_RESULT = :serializedResult where TASK_ID = :taskId";
+            "update ASYNC_TASK_ENTRY_HISTORY set  EXECUTION_STATUS = :executionStatus, SERIALIZED_RESULT = :serializedResult where TASK_ID = :taskId and START_DATE = :startDate";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("taskId", entry.getTaskId());
         params.put("executionStatus", this.executionStatusToByteConverter.convert(entry.getExecutionStatus()));
-        params.put("endDate", this.dateTimeToLongConverter.convert(entry.getEndDate()));
+        params.put("startDate", this.dateTimeToLongConverter.convert(entry.getStartDate()));
         params.put("serializedResult", entry.getSerializedResult());
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
