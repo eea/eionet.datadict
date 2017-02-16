@@ -43,6 +43,17 @@
                 </c:forEach>
             </table>
         </div>
+
+        <h2> Task Execution Result</h2>
+        <div id="outerframe">
+            <table class="datatable results">
+                <tr>
+                    <td class="simple_attr_value">
+                        ${actionBean.scheduledTaskView.taskResult}
+                    </td>
+                </tr>
+            </table>
+        </div>
         <h2>Task Execution Details</h2>
         <div id="outerframe">
             <table class="datatable results">

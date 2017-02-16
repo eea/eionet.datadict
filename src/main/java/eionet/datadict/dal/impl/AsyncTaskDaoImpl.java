@@ -80,7 +80,7 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
     }
     
     @Override
-    public void updateEndStatus(AsyncTaskExecutionEntry entry) {
+    public AsyncTaskExecutionEntry updateEndStatus(AsyncTaskExecutionEntry entry) {
         String sql = 
             "update ASYNC_TASK_ENTRY set END_DATE = :endDate, EXECUTION_STATUS = :executionStatus, SERIALIZED_RESULT = :serializedResult where TASK_ID = :taskId";
         Map<String, Object> params = new HashMap<String, Object>();
@@ -89,6 +89,7 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
         params.put("endDate", this.dateTimeToLongConverter.convert(entry.getEndDate()));
         params.put("serializedResult", entry.getSerializedResult());
         this.getNamedParameterJdbcTemplate().update(sql, params);
+        return this.getFullEntry(entry.getTaskId());
     }
     
     @Override

@@ -15,6 +15,7 @@ public interface AsyncTaskHistoryDao {
     
     List<AsyncTaskExecutionEntryHistory> retrieveTasksByTaskId(String taskId);
     void storeAsyncTaskEntry(AsyncTaskExecutionEntry entry);
+    void updateEndStatusAndSerializedResult(AsyncTaskExecutionEntry entry);
     
     List<AsyncTaskExecutionEntryHistory> retrieveAllTasksHistory();
     

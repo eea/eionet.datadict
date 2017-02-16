@@ -49,8 +49,8 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
     @Override
     public void storeAsyncTaskEntry(AsyncTaskExecutionEntry entry) {
         String sql
-                = "insert into ASYNC_TASK_ENTRY_HISTORY(TASK_ID, TASK_CLASS_NAME, EXECUTION_STATUS,START_DATE ,END_DATE, SCHEDULED_DATE, SERIALIZED_PARAMETERS) "
-                + "values (:taskId, :className, :executionStatus, :startDate, :endDate, :scheduledDate, :serializedParameters)";
+                = "insert into ASYNC_TASK_ENTRY_HISTORY(TASK_ID, TASK_CLASS_NAME, EXECUTION_STATUS,START_DATE ,END_DATE, SCHEDULED_DATE, SERIALIZED_PARAMETERS, SERIALIZED_RESULT) "
+                + "values (:taskId, :className, :executionStatus, :startDate, :endDate, :scheduledDate, :serializedParameters, :serializedResult)";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("taskId", entry.getTaskId());
         params.put("className", entry.getTaskClassName());
@@ -59,6 +59,7 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
         params.put("endDate", this.dateTimeToLongConverter.convert(entry.getEndDate()));
         params.put("scheduledDate", this.dateTimeToLongConverter.convert(entry.getScheduledDate()));
         params.put("serializedParameters", entry.getSerializedParameters());
+        params.put("serializedResult",entry.getSerializedResult());
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
 
@@ -86,6 +87,18 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
         String sql = "DELETE  FROM ASYNC_TASK_ENTRY_HISTORY  WHERE FROM_UNIXTIME(SCHEDULED_DATE/1000) < FROM_UNIXTIME(:time/1000)";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("time", date.getTime());
+        this.getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+    @Override
+    public void updateEndStatusAndSerializedResult(AsyncTaskExecutionEntry entry) {
+          String sql = 
+            "update ASYNC_TASK_ENTRY_HISTORY set END_DATE = :endDate, EXECUTION_STATUS = :executionStatus, SERIALIZED_RESULT = :serializedResult where TASK_ID = :taskId";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("taskId", entry.getTaskId());
+        params.put("executionStatus", this.executionStatusToByteConverter.convert(entry.getExecutionStatus()));
+        params.put("endDate", this.dateTimeToLongConverter.convert(entry.getEndDate()));
+        params.put("serializedResult", entry.getSerializedResult());
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
 

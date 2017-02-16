@@ -16,7 +16,7 @@ public interface AsyncTaskDao {
     
     void updateStartStatus(AsyncTaskExecutionEntry entry);
     
-    void updateEndStatus(AsyncTaskExecutionEntry entry);
+    AsyncTaskExecutionEntry updateEndStatus(AsyncTaskExecutionEntry entry);
     
     AsyncTaskExecutionEntry updateScheduledDate(AsyncTaskExecutionEntry entry);
     
