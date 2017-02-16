@@ -96,8 +96,8 @@
                 <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No scheduled Jobs found.</p>" />
                 <display:setProperty name="paging.banner.item_name" value="scheduledTask" />
                 <display:setProperty name="paging.banner.items_name" value="scheduledTasks" />
-                <display:column title="Task Id"  url="/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${scheduledTask.details.taskId}" escapeXml="false" style="width: 15%">
-                    <dd:attributeValue attrValue="${scheduledTask.details.taskId}"/>
+                <display:column title="Task Id"  escapeXml="false" style="width: 15%">
+                   <stripes:link  href="${pageContext.request.contextPath}/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${scheduledTask.details.taskId}">${scheduledTask.details.taskId}</stripes:link>
                 </display:column>
                 <display:column title="Task Type" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${scheduledTask.type}"/>
@@ -125,8 +125,8 @@
                 <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No scheduled Jobs found.</p>" />
                 <display:setProperty name="paging.banner.item_name" value="pastScheduledTask" />
                 <display:setProperty name="paging.banner.items_name" value="pastScheduledTasks" />
-                <display:column title="Task Id"  url="/vocabulary/viewScheduledTaskHistoryDetails?scheduledTaskHistoryId=${pastScheduledTask.asyncTaskExecutionEntryHistoryId}" escapeXml="false" style="width: 15%">
-                    <dd:attributeValue attrValue="${pastScheduledTask.details.taskId}"/>
+                <display:column title="Task Id"  href="${pageContext.request.contextPath}/vocabulary/viewScheduledTaskHistoryDetails?scheduledTaskHistoryId=${pastScheduledTask.asyncTaskExecutionEntryHistoryId}" escapeXml="false" style="width: 15%">
+                    <stripes:link  href="${pageContext.request.contextPath}/vocabulary/viewScheduledTaskHistoryDetails?scheduledTaskHistoryId=${pastScheduledTask.asyncTaskExecutionEntryHistoryId}">${pastScheduledTask.details.taskId}</stripes:link>
                 </display:column>
                 <display:column title="Task Type" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${pastScheduledTask.type}"/>
