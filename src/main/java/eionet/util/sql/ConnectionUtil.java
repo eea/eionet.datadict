@@ -80,7 +80,6 @@ public class ConnectionUtil {
         try {
             Class.forName(drv);
             Connection conn = DriverManager.getConnection(url, usr, pwd);
-            LOGGER.info("Database connection has been established.");
             return conn;
         } catch (ClassNotFoundException e) {
             throw new DDRuntimeException("Failed to get connection, driver class not found: " + drv, e);
