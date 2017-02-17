@@ -42,7 +42,6 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
         params.put("id", id);
         List<AsyncTaskExecutionEntryHistory> results = this.getNamedParameterJdbcTemplate().query(sql, params,
                 new ResultEntryRowMapper());
-
         return IterableUtils.firstOrDefault(results);
     }
 
@@ -83,7 +82,7 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
     }
 
     @Override
-    public void deleteRecordsOlderThan(Date date) {
+    public void deleteRecordsWithScheduledDateOlderThan(Date date) {
         String sql = "DELETE  FROM ASYNC_TASK_ENTRY_HISTORY  WHERE FROM_UNIXTIME(SCHEDULED_DATE/1000) < FROM_UNIXTIME(:time/1000)";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("time", date.getTime());
@@ -91,7 +90,7 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
     }
 
     @Override
-    public void updateEndStatusAndSerializedResult(AsyncTaskExecutionEntry entry) {
+    public void updateExecutionStatusAndSerializedResult(AsyncTaskExecutionEntry entry) {
           String sql = 
             "update ASYNC_TASK_ENTRY_HISTORY set  EXECUTION_STATUS = :executionStatus, SERIALIZED_RESULT = :serializedResult where TASK_ID = :taskId and START_DATE = :startDate";
         Map<String, Object> params = new HashMap<String, Object>();

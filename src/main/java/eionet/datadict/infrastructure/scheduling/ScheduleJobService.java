@@ -12,10 +12,9 @@ import java.util.Map;
 public interface ScheduleJobService {
     
         <T> String scheduleJob(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes);
-            String getJobStatus(String jobId);
             List<AsyncTaskExecutionEntry> getAllScheduledTaskEntries();
             List<AsyncTaskExecutionEntryHistory> getTaskEntriesHistory();
-            AsyncTaskExecutionEntry getTaskEntry(String jobId);
-            AsyncTaskExecutionEntry getTaskEntryHistory(String jobId);
-            void deleteJob(String jobId);
+            AsyncTaskExecutionEntry getTaskEntry(String taskId);
+            AsyncTaskExecutionEntry getTaskEntryHistory(String taskId);
+            void deleteJob(String taskId);
 }

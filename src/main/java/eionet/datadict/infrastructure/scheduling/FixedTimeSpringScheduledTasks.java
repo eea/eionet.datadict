@@ -29,7 +29,7 @@ public class FixedTimeSpringScheduledTasks {
        Calendar cal = Calendar.getInstance();
        cal.add(Calendar.MONTH, -1);
        Date olderDate = cal.getTime();
-        asyncTaskHistoryDao.deleteRecordsOlderThan(olderDate);
+        asyncTaskHistoryDao.deleteRecordsWithScheduledDateOlderThan(olderDate);
         LOGGER.info("Monthly Scheduled Task To Delete Data in ASYNC_TASK_ENTRY_HISTORY table older than : " +olderDate);
     }
 }

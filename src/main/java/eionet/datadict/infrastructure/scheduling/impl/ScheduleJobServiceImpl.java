@@ -1,4 +1,3 @@
-
 package eionet.datadict.infrastructure.scheduling.impl;
 
 import eionet.datadict.dal.AsyncTaskDao;
@@ -14,12 +13,12 @@ import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import eionet.datadict.infrastructure.scheduling.ScheduleJobService;
+import eionet.datadict.infrastructure.scheduling.ScheduleJobServiceException;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 import org.quartz.JobBuilder;
@@ -33,19 +32,21 @@ import org.quartz.SimpleTrigger;
 import static org.quartz.TriggerBuilder.newTrigger;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
 @Service
-public class ScheduleJobServiceImpl implements ScheduleJobService{
+public class ScheduleJobServiceImpl implements ScheduleJobService {
 
     private static final Logger LOGGER = Logger.getLogger(ScheduleJobServiceImpl.class);
-    
+
     private final Scheduler scheduler;
     private final AsyncJobKeyBuilder asyncJobKeyBuilder;
-    private final @Qualifier("asyncTaskDao")AsyncTaskDao asyncTaskDao;
+    private final @Qualifier("asyncTaskDao")
+    AsyncTaskDao asyncTaskDao;
     private final QuartzSchedulerDao quartzSchedulerDao;
     private final JobListener asyncJobListener;
     private final AsyncTaskDataSerializer asyncTaskDataSerializer;
@@ -62,20 +63,19 @@ public class ScheduleJobServiceImpl implements ScheduleJobService{
         this.asyncTaskHistoryDao = asyncTaskHistoryDao;
     }
 
-
-     @PostConstruct
+    @PostConstruct
     public void init() {
+       
         try {
             this.scheduler.getListenerManager().addJobListener(asyncJobListener, GroupMatcher.jobGroupEquals(asyncJobKeyBuilder.getGroup()));
-        }
-        catch(SchedulerException ex) {
-            throw new AsyncTaskManagementException(ex);
-        }
+        } catch (SchedulerException ex) {
+            throw new ScheduleJobServiceException(ex);
+        }  
     }
 
     @Override
     public <T> String scheduleJob(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes) {
-          if (taskType == null) {
+        if (taskType == null) {
             throw new IllegalArgumentException("Task type cannot be null.");
         }
         AsyncJobDataMapAdapter dataMapAdapter = new AsyncJobDataMapAdapter(new JobDataMap());
@@ -83,35 +83,28 @@ public class ScheduleJobServiceImpl implements ScheduleJobService{
         if (parameters != null) {
             dataMapAdapter.putParameters(parameters);
         }
-        
-        JobKey jobKey = this.asyncJobKeyBuilder.createNew();   
+
+        JobKey jobKey = this.asyncJobKeyBuilder.createNew();
         JobDetail jobDetail = JobBuilder.newJob(AsyncJob.class)
                 .withIdentity(jobKey)
                 .setJobData(dataMapAdapter.getDataMap())
                 .build();
-        
-          SimpleTrigger trigger = newTrigger()
+
+        SimpleTrigger trigger = newTrigger()
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMinutes(intervalMinutes).repeatForever()
                         .withMisfireHandlingInstructionIgnoreMisfires())
                 .forJob(jobDetail.getKey())
                 .build();
         try {
             this.scheduler.scheduleJob(jobDetail, trigger);
-        }
-        catch (SchedulerException ex) {
+        } catch (SchedulerException ex) {
             throw new AsyncTaskManagementException(ex);
-        }  
+        }
         this.createTaskEntry(jobKey, dataMapAdapter.getTaskTypeName(), dataMapAdapter.getParameters());
         return this.asyncJobKeyBuilder.getTaskId(jobKey);
     }
-
-
-    @Override
-    public String getJobStatus(String jobId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
- protected void createTaskEntry(JobKey jobKey, String taskTypeName, Map<String, Object> parameters) {
+    
+    public void createTaskEntry(JobKey jobKey, String taskTypeName, Map<String, Object> parameters) {
         AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
         entry.setTaskId(this.asyncJobKeyBuilder.getTaskId(jobKey));
         entry.setTaskClassName(taskTypeName);
@@ -133,21 +126,21 @@ public class ScheduleJobServiceImpl implements ScheduleJobService{
     }
 
     @Override
-    public AsyncTaskExecutionEntry getTaskEntry(String jobId) {
-        return this.asyncTaskDao.getFullEntry(jobId);
-    }    
+    @Transactional
+    public AsyncTaskExecutionEntry getTaskEntry(String taskId) {
+        return this.asyncTaskDao.getFullEntry(taskId);
+    }
 
     @Override
-    public void deleteJob(String jobId) {
-        JobKey key = this.asyncJobKeyBuilder.create(jobId);
-            try {
-                this.scheduler.deleteJob(key);
-                AsyncTaskExecutionEntry entry = this.asyncTaskDao.getFullEntry(jobId);
-                this.asyncTaskDao.delete(entry);
-            } catch (SchedulerException ex) {
-                java.util.logging.Logger.getLogger(ScheduleJobServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-                 throw new AsyncTaskManagementException(ex);
-            }
+    public void deleteJob(String taskId) {
+        JobKey key = this.asyncJobKeyBuilder.create(taskId);
+        try {
+            this.scheduler.deleteJob(key);
+            AsyncTaskExecutionEntry entry = this.asyncTaskDao.getFullEntry(taskId);
+            this.asyncTaskDao.delete(entry);
+        } catch (SchedulerException ex) {
+            throw new ScheduleJobServiceException(ex);
+        }
     }
 
     @Override

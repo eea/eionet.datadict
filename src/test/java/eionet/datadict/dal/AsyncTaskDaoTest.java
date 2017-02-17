@@ -13,6 +13,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.After;
+import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.unitils.UnitilsJUnit4;
@@ -120,6 +121,13 @@ public class AsyncTaskDaoTest extends UnitilsJUnit4 {
         assertThat(entry3Full.getTaskClassName(), is(nullValue()));
         assertThat(entry3Full.getSerializedParameters(), is(nullValue()));
         assertThat(entry3Full.getSerializedResult(), is(nullValue()));
+    }
+    
+    @Test
+    public void testDeleteAsyncTaskEntry(){
+        this.asyncTaskDao.delete(baseEntry);
+        AsyncTaskExecutionEntry entry1Full = this.asyncTaskDao.getFullEntry(baseEntry.getTaskId());
+        assertNull(entry1Full);
     }
     
     private AsyncTaskExecutionEntry createBaseEntry() {
