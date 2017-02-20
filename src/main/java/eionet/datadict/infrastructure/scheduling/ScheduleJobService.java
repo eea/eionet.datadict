@@ -15,6 +15,6 @@ public interface ScheduleJobService {
             List<AsyncTaskExecutionEntry> getAllScheduledTaskEntries();
             List<AsyncTaskExecutionEntryHistory> getTaskEntriesHistory();
             AsyncTaskExecutionEntry getTaskEntry(String taskId);
-            AsyncTaskExecutionEntry getTaskEntryHistory(String taskId);
+            AsyncTaskExecutionEntryHistory getTaskEntryHistory(String taskId);
             void deleteJob(String taskId);
 }

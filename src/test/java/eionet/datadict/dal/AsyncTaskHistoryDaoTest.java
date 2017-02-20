@@ -66,7 +66,7 @@ public class AsyncTaskHistoryDaoTest extends UnitilsJUnit4 {
 
     @Test
     public void testRetrieveTaskById() {
-        AsyncTaskExecutionEntryHistory historyEntry = this.asyncTaskHistoryDao.retrieveTaskById(this.asyncTaskHistoryDao.retrieveTasksByTaskId(baseHistoryEntry.getTaskId()).get(0).getId().toString());
+        AsyncTaskExecutionEntryHistory historyEntry = this.asyncTaskHistoryDao.retrieveTaskByTaskHistoryId(this.asyncTaskHistoryDao.retrieveTasksByTaskId(baseHistoryEntry.getTaskId()).get(0).getId().toString());
         assertThat(historyEntry.getId(), is(equalTo(this.asyncTaskHistoryDao.retrieveTasksByTaskId(baseHistoryEntry.getTaskId()).get(0).getId())));
         assertThat(historyEntry.getTaskClassName(), is(equalTo(baseHistoryEntry.getTaskClassName())));
         assertThat(historyEntry.getExecutionStatus(), is(equalTo(baseHistoryEntry.getExecutionStatus())));
@@ -81,7 +81,7 @@ public class AsyncTaskHistoryDaoTest extends UnitilsJUnit4 {
     public void testStoreAsyncTaskEntry() {
         this.testAssistanceDao.deleteHistoryEntry(baseHistoryEntry.getTaskId());
         this.asyncTaskHistoryDao.storeAsyncTaskEntry(baseHistoryEntry);
-        AsyncTaskExecutionEntryHistory newHistoryEntry = this.asyncTaskHistoryDao.retrieveTaskById(this.asyncTaskHistoryDao.retrieveTasksByTaskId(baseHistoryEntry.getTaskId()).get(0).getId().toString());
+        AsyncTaskExecutionEntryHistory newHistoryEntry = this.asyncTaskHistoryDao.retrieveTaskByTaskHistoryId(this.asyncTaskHistoryDao.retrieveTasksByTaskId(baseHistoryEntry.getTaskId()).get(0).getId().toString());
         assertThat(newHistoryEntry.getTaskId(), is(equalTo(baseHistoryEntry.getTaskId())));
         assertThat(newHistoryEntry.getTaskClassName(), is(equalTo(baseHistoryEntry.getTaskClassName())));
         assertThat(newHistoryEntry.getExecutionStatus(), is(equalTo(baseHistoryEntry.getExecutionStatus())));
@@ -164,7 +164,7 @@ public class AsyncTaskHistoryDaoTest extends UnitilsJUnit4 {
         this.baseHistoryEntry.setExecutionStatus(AsyncTaskExecutionStatus.COMPLETED);
         this.baseHistoryEntry.setSerializedResult("{ value: 42 }");
         this.asyncTaskHistoryDao.updateExecutionStatusAndSerializedResult(baseHistoryEntry);
-        AsyncTaskExecutionEntryHistory updatedEntry = this.asyncTaskHistoryDao.retrieveTaskById(this.asyncTaskHistoryDao.retrieveTasksByTaskId(baseHistoryEntry.getTaskId()).get(0).getId().toString());
+        AsyncTaskExecutionEntryHistory updatedEntry = this.asyncTaskHistoryDao.retrieveTaskByTaskHistoryId(this.asyncTaskHistoryDao.retrieveTasksByTaskId(baseHistoryEntry.getTaskId()).get(0).getId().toString());
         assertThat(updatedEntry.getExecutionStatus(), is(equalTo(baseHistoryEntry.getExecutionStatus())));
         assertThat(updatedEntry.getSerializedResult(), is(equalTo(baseHistoryEntry.getSerializedResult())));
     }

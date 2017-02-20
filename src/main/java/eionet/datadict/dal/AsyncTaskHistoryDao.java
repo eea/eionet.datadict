@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface AsyncTaskHistoryDao {
 
-    AsyncTaskExecutionEntryHistory retrieveTaskById(String id);
+    AsyncTaskExecutionEntryHistory retrieveTaskByTaskHistoryId(String id);
     List<AsyncTaskExecutionEntryHistory> retrieveTasksByTaskId(String taskId);
     void storeAsyncTaskEntry(AsyncTaskExecutionEntry entry);
     void updateExecutionStatusAndSerializedResult(AsyncTaskExecutionEntry entry);

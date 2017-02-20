@@ -1,4 +1,4 @@
-package eionet.datadict.infrastructure.asynctasks.scheduling;
+package eionet.datadict.infrastructure.scheduling;
 
 import eionet.datadict.dal.AsyncTaskDao;
 import eionet.datadict.dal.AsyncTaskHistoryDao;
@@ -101,17 +101,6 @@ public class ScheduleJobServiceTest {
 
     @Test
     public void testScheduleJob() throws SchedulerException {
-
-        // Scenario: place a job for scheduling
-        // Check if the job is scheduled correctly.
-        /**
-         * this.scheduleJobService.scheduleJob(VocabularyRdfImportFromUrlTask.class,
-         * VocabularyRdfImportFromUrlTask.createParamsBundle(vocabularyFolder.getFolderName(),
-         * vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy(),
-         * vocabularyRdfUrl,emails, rdfPurgeOption,
-         * missingConceptsAction),scheduleInterval*scheduleSyncIntervalMinutes);
-     **
-         */
         final Class<VocabularyRdfImportFromUrlTask> taskType = VocabularyRdfImportFromUrlTask.class;
         final Map<String, Object> taskParams = new HashMap<String, Object>();
         taskParams.put("param1", 1);
@@ -126,15 +115,15 @@ public class ScheduleJobServiceTest {
         SimpleTrigger capturedTrigger = triggerCaptor.getValue();
         assertThat(capturedJobDetail.getJobClass(), is(equalTo((Class) AsyncJob.class)));
         assertThat(capturedTrigger.getJobKey(), is(equalTo(capturedJobDetail.getKey())));
-        assertThat(capturedTrigger.getRepeatInterval(),is(equalTo(TimeUnit.MINUTES.toMillis(scheduleIntervalMinutes.longValue()))));
+        assertThat(capturedTrigger.getRepeatInterval(), is(equalTo(TimeUnit.MINUTES.toMillis(scheduleIntervalMinutes.longValue()))));
         AsyncJobDataMapAdapter dataMapAdapter = new AsyncJobDataMapAdapter(capturedJobDetail.getJobDataMap());
         assertThat(dataMapAdapter.getTaskType(), is(equalTo((Class) taskType)));
         assertThat(dataMapAdapter.getParameters(), is(equalTo(taskParams)));
         verify(this.scheduleJobsService, times(1)).createTaskEntry(capturedJobDetail.getKey(), dataMapAdapter.getTaskTypeName(), dataMapAdapter.getParameters());
         verify(this.asyncJobKeyBuilder, times(1)).getTaskId(capturedJobDetail.getKey());
     }
-    
-        @Test
+
+    @Test
     public void testCreateTaskEntry() {
         Date testStartDate = new Date();
         final JobKey jobKey = this.asyncJobKeyBuilder.createNew();
@@ -155,9 +144,9 @@ public class ScheduleJobServiceTest {
         assertThat(capturedEntry.getExecutionStatus(), is(equalTo(AsyncTaskExecutionStatus.SCHEDULED)));
         assertThat(capturedEntry.getSerializedParameters(), is(equalTo(serializedParams)));
     }
-    
+
     @Test
-    public void testGetAllScheduledTaskEntries(){
+    public void testGetAllScheduledTaskEntries() {
         AsyncTaskExecutionEntry entry1 = new AsyncTaskExecutionEntry();
         entry1.setTaskId("1");
         AsyncTaskExecutionEntry entry2 = new AsyncTaskExecutionEntry();
@@ -167,13 +156,13 @@ public class ScheduleJobServiceTest {
         taskEntries.add(entry2);
         when(this.asyncTaskDao.getAllEntries()).thenReturn(taskEntries);
         List<AsyncTaskExecutionEntry> allEntries = this.scheduleJobsService.getAllScheduledTaskEntries();
-        verify(this.asyncTaskDao,times(1)).getAllEntries();
-        Assert.assertEquals(taskEntries,allEntries);
+        verify(this.asyncTaskDao, times(1)).getAllEntries();
+        Assert.assertEquals(taskEntries, allEntries);
     }
 
     @Test
-    public void testGetAllScheduledTaskEntriesHistory(){
-    AsyncTaskExecutionEntry entry1 = new AsyncTaskExecutionEntry();
+    public void testGetAllScheduledTaskEntriesHistory() {
+        AsyncTaskExecutionEntry entry1 = new AsyncTaskExecutionEntry();
         entry1.setTaskId("1");
         AsyncTaskExecutionEntryHistory hEntry1 = new AsyncTaskExecutionEntryHistory(entry1);
         AsyncTaskExecutionEntry entry2 = new AsyncTaskExecutionEntry();
@@ -184,8 +173,43 @@ public class ScheduleJobServiceTest {
         entriesHistory.add(hEntry2);
         when(this.asyncTaskHistoryDao.retrieveAllTasksHistory()).thenReturn(entriesHistory);
         List<AsyncTaskExecutionEntryHistory> allEntriesHistoryToBeTested = this.scheduleJobsService.getTaskEntriesHistory();
-        verify(this.asyncTaskHistoryDao,times(1)).retrieveAllTasksHistory();
-        Assert.assertEquals(entriesHistory,allEntriesHistoryToBeTested);
+        verify(this.asyncTaskHistoryDao, times(1)).retrieveAllTasksHistory();
+        Assert.assertEquals(entriesHistory, allEntriesHistoryToBeTested);
     }
-    
+
+    @Test
+    public void testGetTaskEntry() {
+        AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
+        String taskId = "22";
+        entry.setTaskId(taskId);
+        when(this.asyncTaskDao.getFullEntry(taskId)).thenReturn(entry);
+        AsyncTaskExecutionEntry result = this.scheduleJobsService.getTaskEntry(taskId);
+        assertThat(result, is(equalTo(entry)));
+        verify(this.asyncTaskDao, times(1)).getFullEntry(taskId);
+    }
+
+    @Test
+    public void testGetTaskEntryHistory() {
+        AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
+        String taskId = "22";
+        entry.setTaskId(taskId);
+        AsyncTaskExecutionEntryHistory hEntry = new AsyncTaskExecutionEntryHistory(entry);
+        hEntry.setId(Long.parseLong("1"));
+        when(this.asyncTaskHistoryDao.retrieveTaskByTaskHistoryId("1")).thenReturn(hEntry);
+        AsyncTaskExecutionEntryHistory result = this.scheduleJobsService.getTaskEntryHistory("1");
+        assertThat(result, is(equalTo(hEntry)));
+        verify(this.asyncTaskHistoryDao, times(1)).retrieveTaskByTaskHistoryId("1");
+    }
+
+    @Test
+    public void testDeleteJob() throws SchedulerException {
+        AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
+        String taskId = "22";
+        entry.setTaskId(taskId);
+        when(this.asyncTaskDao.getFullEntry(taskId)).thenReturn(entry);
+        this.scheduleJobsService.deleteJob(taskId);
+        verify(this.asyncJobKeyBuilder, times(1)).create(taskId);
+        verify(this.scheduler, times(1)).deleteJob(any(JobKey.class));
+        verify(this.asyncTaskDao,times(1)).delete(entry);
+    }
 }

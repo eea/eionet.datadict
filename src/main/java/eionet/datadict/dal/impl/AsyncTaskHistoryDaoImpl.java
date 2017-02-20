@@ -36,7 +36,7 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
     }
 
     @Override
-    public AsyncTaskExecutionEntryHistory retrieveTaskById(String id) {
+    public AsyncTaskExecutionEntryHistory retrieveTaskByTaskHistoryId(String id) {
         String sql = "select * from ASYNC_TASK_ENTRY_HISTORY where ID = :id";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);

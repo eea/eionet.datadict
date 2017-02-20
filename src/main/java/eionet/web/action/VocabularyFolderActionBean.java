@@ -934,12 +934,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
     
     public Resolution viewScheduledTaskHistoryDetails() {
-        AsyncTaskExecutionEntry entry = scheduleJobService.getTaskEntryHistory(scheduledTaskHistoryId);
+        AsyncTaskExecutionEntryHistory entryHistory = scheduleJobService.getTaskEntryHistory(scheduledTaskHistoryId);
         scheduledTaskView = new ScheduledTaskView();
-        scheduledTaskView.setDetails(entry);
-        scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
-        scheduledTaskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters()));
-        scheduledTaskView.setTaskResult(asyncTaskDataSerializer.deserializeResult(entry.getSerializedResult()));
+        scheduledTaskView.setDetails(entryHistory);
+        scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entryHistory.getTaskClassName()));
+        scheduledTaskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entryHistory.getSerializedParameters()));
+        scheduledTaskView.setTaskResult(asyncTaskDataSerializer.deserializeResult(entryHistory.getSerializedResult()));
         return new ForwardResolution(SCHEDULED_TASK_DETAILS);
     }
     
