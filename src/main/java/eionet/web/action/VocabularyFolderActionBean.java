@@ -914,15 +914,16 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
 \     * Display page to schedule Synchronization of Vocabularies
-     *
      * @return resolution
-     *
      */
     public Resolution ScheduleSynchronizationView() throws ServiceException {
         vocabularyFolder= vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),vocabularyFolder.isWorkingCopy());
         return new ForwardResolution(SCHEDULE_VOCABULARY_SYNC);
     }
-    
+       
+    /**
+     *View A specific Scheduled Task's Details
+     **/  
     public Resolution viewScheduledTaskDetails() {
         AsyncTaskExecutionEntry entry = scheduleJobService.getTaskEntry(scheduledTaskId);
         scheduledTaskView = new ScheduledTaskView();
@@ -932,7 +933,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         scheduledTaskView.setTaskResult(asyncTaskDataSerializer.deserializeResult(entry.getSerializedResult()));
         return new ForwardResolution(SCHEDULED_TASK_DETAILS);
     }
-    
+     
+    /**
+     *View A specific Scheduled Task's History  Details
+     **/
     public Resolution viewScheduledTaskHistoryDetails() {
         AsyncTaskExecutionEntryHistory entryHistory = scheduleJobService.getTaskEntryHistory(scheduledTaskHistoryId);
         scheduledTaskView = new ScheduledTaskView();
@@ -943,6 +947,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         return new ForwardResolution(SCHEDULED_TASK_DETAILS);
     }
     
+    /**
+     *View the Scheduled Jobs queue page 
+     **/
     public Resolution ScheduledJobsQueue() throws ServiceException {
         if (!isCreateRight()) {
                 addGlobalValidationError("No permission to create new vocabulary");
