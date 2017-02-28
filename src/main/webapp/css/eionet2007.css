@@ -1707,10 +1707,3 @@
             border: 1px solid #ccc;
         }
 
-        .dataTables_filter {margin-bottom :20px;}
-
-        #scheduledTask{width:100%; }
-
-        #pastScheduledTask{ width:100%;}
-
-        .dataTables_length select{margin-left:15px;}
