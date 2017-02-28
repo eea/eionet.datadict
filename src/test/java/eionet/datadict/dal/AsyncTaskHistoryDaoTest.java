@@ -58,10 +58,8 @@ public class AsyncTaskHistoryDaoTest extends UnitilsJUnit4 {
 
     @After
     public void tearDown() {
-        this.testAssistanceDao.deleteHistoryEntry(this.baseHistoryEntry.getTaskId());
-        for (String baseHistoryEntriesTaskId : testHistoryEntriesTaskIds) {
-            this.testAssistanceDao.deleteHistoryEntry(baseHistoryEntriesTaskId);
-        }
+        this.testAssistanceDao.deleteAllHistoryEntries();
+
     }
 
     @Test
@@ -227,6 +225,11 @@ public class AsyncTaskHistoryDaoTest extends UnitilsJUnit4 {
             this.getNamedParameterJdbcTemplate().update(sql, params);
         }
 
+        public void deleteAllHistoryEntries() {
+            String sql = "truncate ASYNC_TASK_ENTRY_HISTORY ";
+            Map<String, Object> params = new HashMap<String, Object>();
+            this.getNamedParameterJdbcTemplate().update(sql, params);
+        }
         public void updateHistoryEntryScheduledDate(String taskId, Date date) {
             String sql = "update ASYNC_TASK_ENTRY_HISTORY set  SCHEDULED_DATE = :scheduledDate  where TASK_ID = :taskId";
             Map<String, Object> params = new HashMap<String, Object>();

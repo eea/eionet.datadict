@@ -951,12 +951,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *View the Scheduled Jobs queue page 
      **/
     public Resolution ScheduledJobsQueue() throws ServiceException {
-        if (!isCreateRight()) {
-                addGlobalValidationError("No permission to create new vocabulary");
-                super.addCautionMessage("some message");
-                super.addGlobalValidationError("some Validation Error");
-                return new RedirectResolution(DATADICT_GENERIC_ERROR_PAGE);
-        }
         
         asyncTaskEntries = scheduleJobService.getAllScheduledTaskEntries();
         for (AsyncTaskExecutionEntry entry : asyncTaskEntries) {
