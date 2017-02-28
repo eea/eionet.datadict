@@ -6,9 +6,9 @@
 
     <stripes:layout-component name="head">
         <script type="text/javascript">
-            window.setTimeout(function () {
-                document.location.reload(true);
-            }, 60000);
+  //          window.setTimeout(function () {
+  //              document.location.reload(true);
+  //          }, 60000);
             (function ($) {
                 $(document).ready(function () {
                     $('#scheduledTask').dataTable();
@@ -45,7 +45,7 @@
         </div>
         <div id="scheduledSynchronizationJobs" class="tabcontent">
             <display:table name="actionBean.scheduledTaskViews" class="datatable results" id="scheduledTask"
-                           style="width:100%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view#scheduledSynchronizationJobs">
+                            requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view#scheduledSynchronizationJobs">
                 <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No scheduled Jobs found.</p>" />
                 <display:setProperty name="paging.banner.item_name" value="scheduledTask" />
                 <display:setProperty name="paging.banner.items_name" value="scheduledTasks" />
