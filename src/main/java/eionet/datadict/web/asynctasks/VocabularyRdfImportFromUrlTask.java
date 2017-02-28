@@ -164,7 +164,7 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
                 public void prepare(MimeMessage mimeMessage) throws Exception {
                     MimeMessageHelper message = new MimeMessageHelper(mimeMessage, false);
                     message.setText(sb.toString(), false);
-                    message.setFrom(new InternetAddress("billskia@hotmail.com"));
+                    message.setFrom(new InternetAddress("no-reply@eea.europa.eu"));
                     message.setSubject("Scheduled RDF Import into Vocabulary Completed");
                     message.setTo(email);
                 }
