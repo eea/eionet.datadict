@@ -23,14 +23,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class AuthenticationRequestFilter extends UsernamePasswordAuthenticationFilter {
 
     private static final String VOCABULARY_RESOURCE = "vocabulary";
+    private static final String VOCABULARIES_RESOURCE ="vocabularies";
     private static final Map<String, List<String>> INTERCEPTED_DATADICT_ACTIONS;
   
     //TODO get datadict application context path from properties file
     private static final String GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL="/datadict/error.action?type=NOT_AUTHENTICATED_401&message=You+have+to+login+to+access+this+page";
     static {
-        Map<String, List<String>> vocabularyActions = new LinkedHashMap<String, List<String>>();
-        vocabularyActions.put(VOCABULARY_RESOURCE, Arrays.asList("add"));
-        INTERCEPTED_DATADICT_ACTIONS = Collections.unmodifiableMap(vocabularyActions);
+        Map<String, List<String>> dataDictActions = new LinkedHashMap<String, List<String>>();
+        dataDictActions.put(VOCABULARY_RESOURCE, Arrays.asList("add","ScheduledJobsQueue","ScheduleSynchronizationView"));
+        dataDictActions.put(VOCABULARIES_RESOURCE, Arrays.asList("maintain"));
+        INTERCEPTED_DATADICT_ACTIONS = Collections.unmodifiableMap(dataDictActions);
     }
 
     @Override
