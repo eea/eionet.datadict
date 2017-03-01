@@ -9,11 +9,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.FilterChain;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -22,12 +24,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 public class AuthenticationRequestFilter extends UsernamePasswordAuthenticationFilter {
 
+    @Autowired
+    private ServletContext servletContext;
+
     private static final String VOCABULARY_RESOURCE = "vocabulary";
     private static final String VOCABULARIES_RESOURCE ="vocabularies";
     private static final Map<String, List<String>> INTERCEPTED_DATADICT_ACTIONS;
   
-    //TODO get datadict application context path from properties file
-    private static final String GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL="/datadict/error.action?type=NOT_AUTHENTICATED_401&message=You+have+to+login+to+access+this+page";
+    private static final String GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL="/error.action?type=NOT_AUTHENTICATED_401&message=You+have+to+login+to+access+this+page";
     static {
         Map<String, List<String>> dataDictActions = new LinkedHashMap<String, List<String>>();
         dataDictActions.put(VOCABULARY_RESOURCE, Arrays.asList("add","ScheduledJobsQueue","ScheduleSynchronizationView"));
@@ -45,7 +49,8 @@ public class AuthenticationRequestFilter extends UsernamePasswordAuthenticationF
             chain.doFilter(request, response);
             return;
         } else {
-            httpServletResponse.sendRedirect(GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL);
+           String contextPath = servletContext.getContextPath();
+            httpServletResponse.sendRedirect(contextPath==null?"":""+contextPath+GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL);
         }
     }
 
@@ -66,4 +71,5 @@ public class AuthenticationRequestFilter extends UsernamePasswordAuthenticationF
     private DDUser getUser(HttpServletRequest request) {
         return SecurityUtil.getUser(request);
     }
+    
 }
