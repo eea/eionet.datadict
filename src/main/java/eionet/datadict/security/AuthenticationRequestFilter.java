@@ -68,7 +68,6 @@ public class AuthenticationRequestFilter extends UsernamePasswordAuthenticationF
     private String getFullURL(HttpServletRequest request) {
         StringBuffer requestURL = request.getRequestURL();
         String queryString = request.getQueryString();
-
         if (queryString == null) {
             return requestURL.toString();
         } else {
