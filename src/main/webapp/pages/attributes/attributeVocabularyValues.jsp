@@ -32,21 +32,22 @@
         </h1>
 
          <div id="drop-operations">
-                <ul>
-                    <li class="back">
-                        <stripes:link href="${backLink}">
-                            <c:out value="${backLabel}" />
-                        </stripes:link>
-                    </li>
-                    <li class="add">
-                        <stripes:link beanclass="${actionBean['class']}" event="add">
-                            Add value
-                            <stripes:param name="currentSection" value="${actionBean.currentSection}"/>
-                            <stripes:param name="attributeId" value="${actionBean.attributeId}"/>
-                            <stripes:param name="attrOwnerType" value="${actionBean.attrOwnerType}"/>
-                            <stripes:param name="attrOwnerId" value="${actionBean.attrOwnerId}"/>
-                        </stripes:link>
-                    </li>
+            <ul>
+                <li class="back">
+                    <stripes:link href="${backLink}">
+                        <c:out value="${backLabel}" />
+                    </stripes:link>
+                </li>
+                <li class="add">
+                    <stripes:link beanclass="${actionBean['class']}" event="add">
+                        Add value
+                        <stripes:param name="currentSection" value="${actionBean.currentSection}"/>
+                        <stripes:param name="attributeId" value="${actionBean.attributeId}"/>
+                        <stripes:param name="attrOwnerType" value="${actionBean.attrOwnerType}"/>
+                        <stripes:param name="attrOwnerId" value="${actionBean.attrOwnerId}"/>
+                    </stripes:link>
+                </li>
+                <c:if test="${not empty actionBean.vocabularyConcepts}">
                     <li class="delete">
                         <stripes:link beanclass="${actionBean['class']}" event="deleteAll" 
                                       onclick="return confirm('Are you sure you want to remove all values?');" >
@@ -56,49 +57,59 @@
                             <stripes:param name="attrOwnerId" value="${actionBean.attrOwnerId}"/>
                         </stripes:link>
                     </li>
-                </ul>
-            </div>
-        <table class="datatable results" style="clear:right">
-            <thead>
-                <tr>
-                    <th>&nbsp;</th>
-                    <th>Identifier</th>
-                    <th>Label</th>
-                </tr>
-            </thead>
-            <tbody>
-                <c:set var="zebra" value="even"/>
-                <c:forEach var="concept" items="${actionBean.vocabularyConcepts}" varStatus="count">
-                    <c:choose>
-                        <c:when test="${zebra eq 'even'}">
-                            <c:set var="zebra" value="odd"/>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="zebra" value="even"/>
-                        </c:otherwise>
-                    </c:choose>
-                    <tr class="${zebra}">
-                        <td>
-                            <stripes:form beanclass="${actionBean['class']}" 
-                                          onclick="return confirm('Are you sure you want to remove this attribute value?');" >
-                                <stripes:hidden name="conceptIdentifier" value="${concept.identifier}"/>
-                                <stripes:hidden name="attributeId"/>
-                                <stripes:hidden name="attrOwnerType"/>
-                                <stripes:hidden name="attrOwnerId"/>
-                                <stripes:submit name="delete" value="Delete" />
-                            </stripes:form>
-                        </td>
-                        <td>
-                            <stripes:link href="${actionBean.contextPath}/vocabularyconcept/${fn:toLowerCase(actionBean.attribute.vocabulary.folderLabel)}/${fn:toLowerCase(actionBean.attribute.vocabulary.label)}/${concept.identifier}">
-                                <c:out value="${concept.identifier}" />
-                            </stripes:link>
-                        </td>
-                        <td>
-                            <c:out value="${concept.label}"/>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </tbody>
-        </table>
+                </c:if>
+            </ul>
+        </div>
+
+        <c:choose>
+            <c:when test="${not empty actionBean.vocabularyConcepts}">
+                <table class="datatable results">
+                    <thead>
+                        <tr>
+                            <th>Identifier</th>
+                            <th>Label</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:set var="zebra" value="even"/>
+                        <c:forEach var="concept" items="${actionBean.vocabularyConcepts}" varStatus="count">
+                            <c:choose>
+                                <c:when test="${zebra eq 'even'}">
+                                    <c:set var="zebra" value="odd"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:set var="zebra" value="even"/>
+                                </c:otherwise>
+                            </c:choose>
+                            <tr class="${zebra}">
+                                <td>
+                                    <stripes:link href="${actionBean.contextPath}/vocabularyconcept/${fn:toLowerCase(actionBean.attribute.vocabulary.folderLabel)}/${fn:toLowerCase(actionBean.attribute.vocabulary.label)}/${concept.identifier}">
+                                        <c:out value="${concept.identifier}" />
+                                    </stripes:link>
+                                </td>
+                                <td>
+                                    <c:out value="${concept.label}"/>
+                                </td>
+                                <td>
+                                    <stripes:form beanclass="${actionBean['class']}" 
+                                                  onclick="return confirm('Are you sure you want to remove this attribute value?');" >
+                                        <stripes:hidden name="conceptIdentifier" value="${concept.identifier}"/>
+                                        <stripes:hidden name="attributeId"/>
+                                        <stripes:hidden name="attrOwnerType"/>
+                                        <stripes:hidden name="attrOwnerId"/>
+                                        <stripes:submit name="delete" value="Delete" />
+                                    </stripes:form>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </c:when>
+            <c:otherwise>
+                <p class='not-found'>No links found.</p>
+            </c:otherwise>
+        </c:choose>
+
     </stripes:layout-component>
 </stripes:layout-render>
