@@ -2,7 +2,6 @@ package eionet.datadict.dal.impl;
 
 
 import eionet.datadict.dal.AttributeValueDao;
-import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
 import java.sql.ResultSet;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -86,25 +84,21 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
     }
     
     @Override
-    public void addAttributeValue(int attributeId, DataDictEntity ownerEntity, String value) throws DuplicateResourceException {
+    public void addAttributeValues(int attributeId, DataDictEntity ownerEntity, List<String> values) {
         String sql = "INSERT INTO ATTRIBUTE VALUES(:attributeId, :ownerId, :value, :ownerType)";
-        
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("attributeId", attributeId);
-        params.put("ownerId", ownerEntity.getId());
-        params.put("value", value);
-        params.put("ownerType", ownerEntity.getType().toString());
-        
-        try {
-            this.getNamedParameterJdbcTemplate().update(sql, params);
-        } catch (DataAccessException ex){
-            if (ex.getCause() instanceof SQLException){
-                if (((SQLException)ex.getCause()).getErrorCode() == 1062){
-                    throw new DuplicateResourceException("Attribute value already exists for this "+ownerEntity.getType().getLabel().toLowerCase()+".");
-                }
-            }
-            throw ex;
+
+        Map<String, Object>[] batchValues = new HashMap[values.size()];
+
+        for (int i = 0; i < values.size(); i++) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("attributeId", attributeId);
+            params.put("ownerId", ownerEntity.getId());
+            params.put("value", values.get(i));
+            params.put("ownerType", ownerEntity.getType().toString());
+            batchValues[i] = params;
         }
+
+        getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
     }
     
     public static class AttributeValueRowMapper implements RowMapper {

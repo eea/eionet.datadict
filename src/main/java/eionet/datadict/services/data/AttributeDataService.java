@@ -1,6 +1,5 @@
 package eionet.datadict.services.data;
 
-import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.errors.ResourceNotFoundException;
@@ -110,15 +109,13 @@ public interface AttributeDataService {
     List<FixedValue> getFixedValues(int attributeId);
     
     /**
-     * Adds an attribute value with the given value for the attribute with the given id, owned by the specified owner.
-     * 
-     * @param attributeId the id of the attribute whose attribute value is to be added.
-     * @param ownerEntity the owner of the attribute value to be added.
-     * @param value the value of the attribute value to be added.
-     * 
-     * @throws DuplicateResourceException thrown when trying to save an already existing attribute.
+     * Adds a list of attribute values for the attribute with the given id.
+     *
+     * @param attributeId the id of the attribute whose values are added.
+     * @param owner the {@link DataDictEntity} who owns the attribute values.
+     * @param values the values to be saved for the attribute with the given id.
      */
-    void createAttributeValue(int attributeId, DataDictEntity ownerEntity, String value) throws DuplicateResourceException;
+    void createAttributeValues(int attributeId, DataDictEntity ownerEntity, List<String> values);
     
     /**
      * Creates the given attribute.

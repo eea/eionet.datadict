@@ -240,6 +240,10 @@
 		content: "\e90a";
 	}
 
+	#quickbar ul li.back a:before {
+		content: "\e901";
+	}
+
 /* @group DROP OPERATIONS */
 
 	#drop-operations {

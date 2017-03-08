@@ -50,16 +50,6 @@
         return null;
     }
 
-    private String formVocabularyConceptURI(VocabularyFolder vf, VocabularyConcept vocabularyConcept){
-        String baseUri = VocabularyFolder.getBaseUri(vf);
-        if (!baseUri.endsWith("/") && !baseUri.endsWith("#") && !baseUri.endsWith(":")) {
-            baseUri += "/";
-        }
-        baseUri = StringEncoder.encodeToIRI(baseUri);
-        baseUri = StringEncoder.encodeToIRI(baseUri+vocabularyConcept.getIdentifier());
-        return baseUri;
-    }
-
     /**
      *
      */
@@ -2020,7 +2010,11 @@
                                                                                         vf = searchEngine.getVocabulary(vocabularyConcept.getVocabularyId());
                                                                                     }
                                                                             %>
-                                                                                <li><a href="<%=formVocabularyConceptURI(vf, vocabularyConcept)%>"><%=vocabularyConcept.getLabel()%></a></li>
+                                                                                <li>
+                                                                                    <a href="<%=request.getContextPath()%>/vocabularyconcept/<%=Util.processForDisplay(vf.getFolderName())%>/<%=Util.processForDisplay(vf.getIdentifier())%>/<%=Util.processForDisplay(vocabularyConcept.getIdentifier())%>">
+                                                                                        <%=vocabularyConcept.getLabel()%>
+                                                                                    </a>
+                                                                                </li>
                                                                             <%}%>
                                                                             </ul>
                                                                     <%

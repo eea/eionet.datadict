@@ -1,7 +1,6 @@
 package eionet.datadict.services;
 
 import eionet.datadict.errors.BadRequestException;
-import eionet.datadict.errors.ConflictException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.Attribute;
@@ -28,24 +27,6 @@ public interface AttributeService {
      */
     public int save(Attribute attribute, DDUser user) 
             throws UserAuthenticationException, UserAuthorizationException, BadRequestException;
-    
-    
-    /**
-     * Saves the given attribute value of the attribute with the given id, owned by the specified owner,
-     * on behalf of the specified user. This attribute value corresponds to a vocabulary concept of the vocabulary 
-     * linked to the attribute with the given id.
-     * 
-     * @param attributeId the id of the attribute whose value is to be saved.
-     * @param ownerEntity the owner of the attribute value to be saved.
-     * @param value the value to be saved.
-     * @param user the {@link DDUser} who requested for the attribute value to be saved.
-     * 
-     * @throws ConflictException
-     * @throws UserAuthenticationException
-     * @throws UserAuthorizationException 
-     */
-    public void saveAttributeVocabularyValue(int attributeId, DataDictEntity ownerEntity, String value, DDUser user)
-            throws ConflictException, UserAuthenticationException, UserAuthorizationException;
     
     /**
      * Deletes the attribute with the given id on behalf of the given user.
@@ -116,7 +97,7 @@ public interface AttributeService {
      * @throws eionet.datadict.errors.ResourceNotFoundException  
      * @throws eionet.datadict.errors.EmptyParameterException  
      */
-    public List<VocabularyConcept> getInherittedAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity)
+public List<VocabularyConcept> getInherittedAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity)
             throws ResourceNotFoundException, EmptyParameterException;
     
 }

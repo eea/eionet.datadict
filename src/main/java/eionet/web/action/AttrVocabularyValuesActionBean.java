@@ -16,20 +16,28 @@ import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DatasetDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
-import eionet.datadict.services.data.VocabularyDataService;
 import eionet.meta.DDUser;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.IVocabularyService;
+import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
-import org.apache.commons.lang.StringUtils;
 
 
 @UrlBinding("/vocabularyvalues/attribute/{attributeId}/{attrOwnerType}/{attrOwnerId}")
@@ -39,9 +47,8 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     private final static String ATTRIBUTE_VOCABULARY_VALUES_ADD = "/pages/attributes/addAttributeVocabularyValue.jsp";
     
     // block of post parameters
-    private String conceptIdentifier;
-    private String vocabularyId;
-    
+    private List<String> conceptIdentifiers = new ArrayList<String>();
+
     // block of url parameters
     private String attributeId;
     private String attrOwnerType;
@@ -50,7 +57,8 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     
     private DataDictEntity attributeOwnerEntity;
     private List<VocabularyConcept> vocabularyConcepts;
-    
+    private VocabularyConceptResult vocabularyConceptResult;
+
     // Only one of them points at a real object (depending on what is the type
     // of the owner of the attribute)
     private Dataset dataset;
@@ -66,15 +74,35 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     @SpringBean
     private AttributeDataService attributeDataService;
     @SpringBean
-    private VocabularyDataService vocabularyDataService;
+    private IVocabularyService vocabularyService;
     @SpringBean
     private DatasetDataService datasetDataService;
     @SpringBean
     private DatasetTableDataService datasetTableDataService;
     @SpringBean
     private DataElementDataService dataElementDataService;
-    
-    
+
+    /**
+     * Vocabulary concept filter.
+     */
+    private VocabularyConceptFilter filter;
+
+    /**
+     * Vocabulary bound data elements.
+     */
+    private List<eionet.meta.dao.domain.DataElement> boundElements;
+
+    /**
+     * List of bound element filters
+     */
+    private List<VocabularyConceptBoundElementFilter> boundElementFilters = new ArrayList<VocabularyConceptBoundElementFilter>();
+
+    /**
+     * Concepts table page number.
+     */
+    private int page = 1;
+
+
     //-----------------Handlers---------------------------
     
     /**
@@ -191,19 +219,50 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         }
         
         this.attribute = attributeDataService.getAttribute(Integer.parseInt(attributeId));
-        this.vocabularyConcepts = this.vocabularyDataService.getVocabularyConcepts(attribute.getVocabulary().getId(), StandardGenericStatus.ACCEPTED);
-        Collections.sort(vocabularyConcepts, new Comparator<VocabularyConcept>() {
-            @Override
-            public int compare(VocabularyConcept c1, VocabularyConcept c2) {
-                return attribute.getVocabulary().isNumericConceptIdentifiers() ?
-                        Long.valueOf(c1.getIdentifier()).compareTo(Long.valueOf(c2.getIdentifier())) :
-                        c1.getIdentifier().compareTo(c2.getIdentifier());
-            }
-        });
+        
+        try {
+            boundElements = vocabularyService.getVocabularyDataElements(attribute.getVocabulary().getId());
+            Collections.sort(boundElements, new Comparator<eionet.meta.dao.domain.DataElement>() {
+                @Override
+                public int compare(eionet.meta.dao.domain.DataElement o1, eionet.meta.dao.domain.DataElement o2) {
+                    return (o1.getIdentifier().compareToIgnoreCase(o2.getIdentifier()));
+                }
+            });
+            
+            initFilter();
+            vocabularyConceptResult = vocabularyService.searchVocabularyConcepts(filter);
+        } catch(ServiceException ex) {
+            throw new RuntimeException();
+        }
 
         return new ForwardResolution(ATTRIBUTE_VOCABULARY_VALUES_ADD);
     }
-    
+
+    public List<Integer> getBoundElementFilterIds() {
+        List<Integer> boundElementFilterIds = new ArrayList<Integer>();
+        for (VocabularyConceptBoundElementFilter currentFilter : boundElementFilters) {
+            boundElementFilterIds.add(currentFilter.getId());
+        }
+        return boundElementFilterIds;
+    }
+
+    private void initFilter() {
+        if (filter == null) {
+            filter = new VocabularyConceptFilter();
+            filter.setConceptStatus(StandardGenericStatus.ACCEPTED);
+        }
+        filter.setVocabularyFolderId(attribute.getVocabulary().getId());
+        filter.setPageNumber(page);
+        filter.setNumericIdentifierSorting(attribute.getVocabulary().isNumericConceptIdentifiers());
+
+        if (!filter.getBoundElementIds().isEmpty()) {
+            List<Integer> cids = vocabularyService.getVocabularyConceptIds(attribute.getVocabulary().getId());
+            for (Integer boundElementId : filter.getBoundElementIds()) {
+                boundElementFilters.add(vocabularyService.getVocabularyConceptBoundElementFilter(boundElementId, cids));
+            }
+        }
+    }
+
     /**
      * Handles post requests for adding a new attribute-vocabulary value.
      * 
@@ -235,12 +294,28 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             throw new BadRequestException("Malformend request. " + attrOwnerId + " is not a valid datadict entity id.");
         }
         
-        if (StringUtils.isEmpty(conceptIdentifier)) {
-            throw new BadRequestException("Malformed request: Attribute value missing.");
+        if (!conceptIdentifiers.isEmpty()) {
+            this.attribute = attributeDataService.getAttribute(Integer.parseInt(attributeId));
+            if (attribute.getVocabulary() == null) {
+                throw new BadRequestException("No vocabulary binding exists for this attribute.");
+            }
+            this.attributeOwnerEntity = new DataDictEntity(Integer.parseInt(attrOwnerId), DataDictEntity.Entity.getFromString(attrOwnerType));
+            this.vocabularyConcepts = this.attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(
+                    attribute.getVocabulary().getId(), attribute.getId(), attributeOwnerEntity);
+
+            Set noDuplicateConceptIdentifiers = new LinkedHashSet(conceptIdentifiers);
+            Set<String> existingIdentifiers = new HashSet<String>();
+            for (Iterator<VocabularyConcept> it = vocabularyConcepts.iterator(); it.hasNext();) {
+                VocabularyConcept concept = it.next();
+                existingIdentifiers.add(concept.getIdentifier());
+            }
+
+            noDuplicateConceptIdentifiers.removeAll(existingIdentifiers);
+            conceptIdentifiers = new ArrayList(noDuplicateConceptIdentifiers);
+
+            this.attributeDataService.createAttributeValues(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIdentifiers);
         }
-        this.attributeOwnerEntity = new DataDictEntity(Integer.parseInt(attrOwnerId), DataDictEntity.Entity.getFromString(attrOwnerType)); 
-        this.attributeService.saveAttributeVocabularyValue(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIdentifier, user);
-        return new RedirectResolution("/vocabularyvalues/attribute/" + attributeId + "/" + attrOwnerType + "/"+attrOwnerId);
+        return new RedirectResolution("/vocabularyvalues/attribute/" + attributeId + "/" + attrOwnerType + "/" + attrOwnerId);
     }
     
     /**
@@ -272,12 +347,12 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             throw new BadRequestException("Malformend request. " + attrOwnerId + " is not a valid datadict entity id.");
         }
         
-        if (StringUtils.isEmpty(conceptIdentifier)) {
+        if (conceptIdentifiers.isEmpty()) {
             throw new BadRequestException("Malformed request: Attribute value missing.");
         }
         
         this.attributeOwnerEntity = new DataDictEntity(Integer.parseInt(attrOwnerId), DataDictEntity.Entity.getFromString(attrOwnerType));
-        this.attributeService.deleteAttributeValue(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIdentifier, user);
+        this.attributeService.deleteAttributeValue(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIdentifiers.iterator().next(), user);
         return new RedirectResolution("/vocabularyvalues/attribute/" + attributeId + "/" + attrOwnerType + "/" + attrOwnerId);
     }
     
@@ -419,20 +494,48 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         return vocabularyConcepts;
     }
 
-    public String getConceptIdentifier() {
-        return conceptIdentifier;
+    public List<String> getConceptIdentifiers() {
+        return conceptIdentifiers;
     }
 
-    public void setConceptIdentifier(String conceptIdentifier) {
-        this.conceptIdentifier = conceptIdentifier;
+    public void setConceptIdentifiers(List<String> conceptIdentifiers) {
+        this.conceptIdentifiers = conceptIdentifiers;
     }
 
-    public String getVocabularyId() {
-        return vocabularyId;
+    public VocabularyConceptResult getVocabularyConceptResult() {
+        return vocabularyConceptResult;
     }
 
-    public void setVocabularyId(String vocabularyId) {
-        this.vocabularyId = vocabularyId;
+    public VocabularyConceptFilter getFilter() {
+        return filter;
     }
-    
+
+    public void setFilter(VocabularyConceptFilter filter) {
+        this.filter = filter;
+    }
+
+    public List<eionet.meta.dao.domain.DataElement> getBoundElements() {
+        return boundElements;
+    }
+
+    public void setBoundElements(List<eionet.meta.dao.domain.DataElement> boundElements) {
+        this.boundElements = boundElements;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public List<VocabularyConceptBoundElementFilter> getBoundElementFilters() {
+        return boundElementFilters;
+    }
+
+    public void setBoundElementFilters(List<VocabularyConceptBoundElementFilter> boundElementFilters) {
+        this.boundElementFilters = boundElementFilters;
+    }
+
 }

@@ -5,7 +5,6 @@ import eionet.datadict.dal.AttributeValueDao;
 import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.dal.VocabularyDao;
-import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.services.data.AttributeDataService;
@@ -186,8 +185,8 @@ public class AttributeDataServiceImpl implements AttributeDataService {
     }
     
     @Override
-    public void createAttributeValue(int attributeId, DataDictEntity ownerEntity, String value) throws DuplicateResourceException{
-       this.attributeValueDao.addAttributeValue(attributeId, ownerEntity, value);
+    public void createAttributeValues(int attributeId, DataDictEntity ownerEntity, List<String> values) {
+       this.attributeValueDao.addAttributeValues(attributeId, ownerEntity, values);
     }
 
     @Override
@@ -203,7 +202,7 @@ public class AttributeDataServiceImpl implements AttributeDataService {
             return new ArrayList();
         }
         
-        if(ddEntity.getType() == DataDictEntity.Entity.T){
+        if (ddEntity.getType() == DataDictEntity.Entity.T){
             Integer datasetId = this.datasetTableDao.getParentDatasetId(ddEntity.getId());
             if (datasetId == null) {
                 throw new ResourceNotFoundException("Parent dataset id does not exist!");
@@ -211,7 +210,7 @@ public class AttributeDataServiceImpl implements AttributeDataService {
             return this.attributeValueDao.getByAttributeAndOwner(attributeId, new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
         }
         
-        if(ddEntity.getType() == DataDictEntity.Entity.E) {    
+        if (ddEntity.getType() == DataDictEntity.Entity.E) {    
             
             Integer tableId = this.dataElementDao.getParentTableId(ddEntity.getId());
             if (tableId == null) {

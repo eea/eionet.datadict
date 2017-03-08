@@ -1,6 +1,5 @@
 package eionet.datadict.dal;
 
-import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
 import java.util.List;
@@ -18,16 +17,13 @@ public interface AttributeValueDao {
     public List<AttributeValue> getByAttributeAndOwner(int attributeId, DataDictEntity owner);
     
     /**
-     * Adds an attribute value for the attribute with the given id.
+     * Adds a list of attribute values for the attribute with the given id.
      *
-     * @param attributeId the id of the attribute whose value is added.
-     * @param owner the {@link DataDictEntity} who owns the attribute
-     * value.
-     * @param value the value to be saved for the attribute with the given id.
-     * 
-     * @throws eionet.datadict.errors.DuplicateResourceException
+     * @param attributeId the id of the attribute whose values are added.
+     * @param owner the {@link DataDictEntity} who owns the attribute values.
+     * @param values the values to be saved for the attribute with the given id.
      */
-    public void addAttributeValue(int attributeId, DataDictEntity owner, String value) throws DuplicateResourceException;
+    public void addAttributeValues(int attributeId, DataDictEntity owner, List<String> values);
 
     /**
      * Deletes the specified attribute value of the attribute with the given id which corresponds to the specified owner.

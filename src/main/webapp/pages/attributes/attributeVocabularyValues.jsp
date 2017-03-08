@@ -41,7 +41,6 @@
                 <li class="add">
                     <stripes:link beanclass="${actionBean['class']}" event="add">
                         Add value
-                        <stripes:param name="currentSection" value="${actionBean.currentSection}"/>
                         <stripes:param name="attributeId" value="${actionBean.attributeId}"/>
                         <stripes:param name="attrOwnerType" value="${actionBean.attrOwnerType}"/>
                         <stripes:param name="attrOwnerId" value="${actionBean.attrOwnerId}"/>
@@ -84,17 +83,17 @@
                             </c:choose>
                             <tr class="${zebra}">
                                 <td>
-                                    <stripes:link href="${actionBean.contextPath}/vocabularyconcept/${fn:toLowerCase(actionBean.attribute.vocabulary.folderLabel)}/${fn:toLowerCase(actionBean.attribute.vocabulary.label)}/${concept.identifier}">
-                                        <c:out value="${concept.identifier}" />
-                                    </stripes:link>
+                                    <c:out value="${concept.identifier}" />
                                 </td>
                                 <td>
-                                    <c:out value="${concept.label}"/>
+                                     <stripes:link href="/vocabularyconcept/${actionBean.attribute.vocabulary.folderLabel}/${actionBean.attribute.vocabulary.identifier}/${concept.identifier}/view" title="${concept.label}">
+                                        <c:out value="${concept.label}" />
+                                     </stripes:link>
                                 </td>
                                 <td>
                                     <stripes:form beanclass="${actionBean['class']}" 
                                                   onclick="return confirm('Are you sure you want to remove this attribute value?');" >
-                                        <stripes:hidden name="conceptIdentifier" value="${concept.identifier}"/>
+                                        <stripes:hidden name="conceptIdentifiers[0]" value="${concept.identifier}"/>
                                         <stripes:hidden name="attributeId"/>
                                         <stripes:hidden name="attrOwnerType"/>
                                         <stripes:hidden name="attrOwnerId"/>
