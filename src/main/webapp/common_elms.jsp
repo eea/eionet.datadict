@@ -1,3 +1,4 @@
+<%@page import="eionet.util.Props"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil,org.apache.commons.lang.StringUtils"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <%@ include file="/pages/common/taglibs.jsp"%>
@@ -90,20 +91,36 @@
     <title>Search results - Data Dictionary</title>
     <script type="text/javascript">
     // <![CDATA[
+        function warnStatus(status){
+            if (status.toLowerCase() == 'retired' || status.toLowerCase() == 'superseded') {
+                if (['a', 'e', 'i', 'o', 'u'].indexOf(status.toLowerCase().charAt(0))!=-1) {
+                    return confirm('You are about to select an '+status+' data element. If you want to continue click OK. Otherwise click Cancel.');
+                }
+                else {
+                    return confirm('You are about to select a '+status+' data element. If you want to continue click OK. Otherwise click Cancel.');
+                }
+            } else {
+                return true;
+            }
+        }
         <%
         if (popup){ %>
-            function pickElem(elmID, rowIndex){
+            
+            function pickElem(elmID, elmName, rowIndex) {
                 // make sure the opener exists and is not closed
                 if (opener && !opener.closed) {
                     // if the opener has pickElem(elmID) function at it returns true, close this popup
                     // else don't close it (multiple selection might be wanted)
-                    if (window.opener.pickElem(elmID)==true)
+                    if (typeof window.opener.pickElemForLink  === 'function' && window.opener.pickElemForLink(elmID, elmName) === true) {
                         closeme();
-                    else
+                    } else if (typeof window.opener.pickElem  === 'function' && window.opener.pickElem(elmID) === true) {
+                        closeme();
+                    } else {
                         hideRow(rowIndex);
-                }
-                else
+                    }
+                } else {
                     alert("You have closed the main window!\n\nNo action will be taken.")
+                }
             }
             function hideRow(i){
                 var t = document.getElementById("tbl");
@@ -127,7 +144,7 @@ if (popup){
         <div id="pagehead">
             <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
             <div id="networktitle">Eionet</div>
-            <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
+            <div id="sitetitle">${ddfn:getProperty("app.displayName")}</div>
             <div id="sitetagline">This service is part of Reportnet</div>
         </div> <!-- pagehead -->
         <div id="workarea">
@@ -281,8 +298,7 @@ else{ %>
                         viewLink.append("/?popup=");
                     }
 
-                    StringBuffer selectLink = new StringBuffer("javascript:pickElem(");
-                    selectLink.append(delem_id).append(",").append(displayed+1).append(")");
+                    String selectLink = "javascript:pickElem("+delem_id+",\'"+delem_name+"\',"+String.valueOf(displayed+1)+")";
 
                     boolean clickable = status!=null ? !searchEngine.skipByRegStatus(status) : true;
                     if (clickable) {
@@ -332,10 +348,13 @@ else{ %>
                             %>
                         </td>
                         <%
-                        if (popup && clickable){
+                        if (popup){
                             %>
                             <td>
-                                [<a href="<%=selectLink%>">select</a>]
+                                <%if (clickable){
+                                    %>
+                                    [<a href="<%=selectLink%>" onclick="return warnStatus('<%=status%>')">select</a>]
+                                <%}%>
                             </td>
                             <%
                         }

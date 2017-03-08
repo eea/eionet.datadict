@@ -21,48 +21,47 @@
 
 <script type="text/javascript">
 // <![CDATA[
-( function($) {
+(function($) {
     $(document).ready(function() {
         var currentSize = ${fn:length(dataElements)};
 
-        $("#multiAddFixed${uniqueId}").live("click", function(event){
-          clearSysMsg();
-          var newSelect = $("#newFixedField${uniqueId}").clone(true);
+        $("#multiAddFixed${uniqueId}").live("click", function(event) {
+            clearSysMsg();
+            var newSelect = $("#newFixedField${uniqueId}").clone(true);
 
-          newSelect.find("select").attr("name", "${fieldName}[" + currentSize + "].attributeValue");
-          newSelect.find("input[type='hidden']").attr("value", "${elementId}");
-          newSelect.find("input[type='hidden']").attr("name",  "${fieldName}[" + currentSize + "].id");
-          newSelect.find("select").attr("id", "elem${fieldName}[" + currentSize + "]");
+            newSelect.attr("id", "multiDiv${uniqueId}-" + currentSize);
+            newSelect.find("select").attr("name", "${fieldName}[" + currentSize + "].attributeValue");
+            newSelect.find("input[type='hidden']").attr("value", "${elementId}");
+            newSelect.find("input[type='hidden']").attr("name",  "${fieldName}[" + currentSize + "].id");
+            newSelect.find("select").attr("id", "elem${fieldName}[" + currentSize + "]");
 
-          newSelect.appendTo("#multiDiv${uniqueId}");
-          currentSize++;
-          event.preventDefault();
+            newSelect.appendTo("#multiDiv${uniqueId}");
+            currentSize++;
+            event.preventDefault();
         });
-
     });
-} ) ( jQuery );
+})(jQuery);
 // ]]>
 </script>
 
 <div style="display:none">
-    <span id="newFixedField${uniqueId}">
+    <div id="newFixedField${uniqueId}" class="delLinkWrapper">
         <input type="hidden" name="" value="${attributeId}" />
         <dd:selectFixedValue fixedValues="${fixedValues}" value="" id="elem${uniqueId}" ></dd:selectFixedValue>
         <a href="#" class="delLink deleteButton" title="Remove"></a>
-        <br/>
-    </span>
+    </div>
 </div>
 
 <div id="multiDiv${uniqueId}">
     <c:forEach var="attr" items="${dataElements}" varStatus="innerLoop">
         <c:if test="${!empty attr.attributeValue}">
-        <span id="multySpan${uniqueId}-${innerLoop.index}">
-            <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
-            <dd:selectFixedValue fixedValues="${attr.fixedValues}" value="${attr.attributeValue}" name="${fieldName}[${innerLoop.index}].attributeValue" id="elem${fieldName}[${innerLoop.index}]" ></dd:selectFixedValue>
-            <a href="#" class="delLink deleteButton" title="Remove"></a>
-        </span>
+            <div id="multiDiv${uniqueId}-${innerLoop.index}" class="delLinkWrapper">
+                <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
+                <dd:selectFixedValue fixedValues="${attr.fixedValues}" value="${attr.attributeValue}" name="${fieldName}[${innerLoop.index}].attributeValue" id="elem${fieldName}[${innerLoop.index}]" ></dd:selectFixedValue>
+                <a href="#" class="delLink deleteButton" title="Remove"></a>
+            </div>
         </c:if>
-
     </c:forEach>
 </div>
+<br />
 <a href="#" id="multiAddFixed${uniqueId}">Add new</a>

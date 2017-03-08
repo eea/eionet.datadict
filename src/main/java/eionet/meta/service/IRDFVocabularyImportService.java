@@ -101,13 +101,14 @@ public interface IRDFVocabularyImportService {
      *
      * @param contents Reader object to read file content
      * @param vocabularyFolder Vocabulary folder under bulk edit mode
+     * @param deleteVocabularyData Deletes the imported concepts
      * @param purgeVocabularyData Purge all vocabulary concepts of folder
      * @param purgePredicateBasis Purge bound elements per predicate basis
      * @param missingConceptsAction Missing concepts action for this upload
      * @return List of log messages
      * @throws ServiceException Error if input is not valid
      */
-    List<String> importRdfIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder, boolean purgeVocabularyData,
+    List<String> importRdfIntoVocabulary(Reader contents, VocabularyFolder vocabularyFolder, boolean deleteVocabularyData, boolean purgeVocabularyData,
             boolean purgePredicateBasis, MissingConceptsAction missingConceptsAction) throws ServiceException;
 
     /**

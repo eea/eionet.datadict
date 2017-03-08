@@ -66,6 +66,7 @@ public class VocabularyFolderApiActionBeanTest {
             actionBean.setWebApiAuthService(webApiAuthService);
             actionBean.setErrorPageService(errorPageService);
         }
+
     }
 
     @Mock

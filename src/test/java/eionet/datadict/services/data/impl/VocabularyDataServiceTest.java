@@ -40,6 +40,7 @@ public class VocabularyDataServiceTest {
     @Mock
     private IVocabularyService legacyVocabularyService;
 
+    
     private VocabularyDataService vocabularyDataService;
 
     @Rule

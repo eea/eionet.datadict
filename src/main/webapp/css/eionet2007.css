@@ -240,6 +240,10 @@
 		content: "\e90a";
 	}
 
+	#quickbar ul li.back a:before {
+		content: "\e901";
+	}
+
 /* @group DROP OPERATIONS */
 
 	#drop-operations {
@@ -574,15 +578,21 @@
 		position: absolute;
 		top: 9px;
 		right: -25px
-		}
-		a.deleteButton:after {
-			font-family: 'eea';
-			content: "\e905";
-			color: #C1272D;
-			font-size: 16px;
-			display: inline-block;
-			float: right;
-		}
+	}
+
+	a.deleteButton:after {
+		font-family: 'eea';
+		content: "\e905";
+		color: #C1272D;
+		font-size: 16px;
+		display: inline-block;
+		float: right;
+	}
+
+	.delLinkWrapper {
+		position: relative;
+		width: calc(100% - 25px);
+	}
 
 /* @group RESULT TABLE STYLES */
 
@@ -649,7 +659,6 @@
 		border-bottom: 1px solid #CFE3E4;
 		padding: 7px;	
 		vertical-align: top;
-		word-break: break-all;
 	}
 
 	table.results tr.even {
@@ -672,6 +681,14 @@
 		height: 30px;
 	}
 
+        table.results td div.status.retired {
+		background: #5A574C;
+	}
+        
+        table.results td div.status.superseded {
+		background: #5A574C;
+	}
+        
 	table.results td div.status.incomplete {
 		background: #E2923B;
 	}
@@ -1175,8 +1192,7 @@
 		border-bottom: 1px solid #315076;
 	}
 
-	.popup #
-	 {
+	.popup {
 		margin-left: 0;
 		border-left: 0;
 		padding: 1em;
@@ -1570,7 +1586,7 @@
 		background: url(../images/add-remove.png) 19px  0px no-repeat;
 	}
 
-	.vocabularyConceptResults,
+	#vocabularyConceptResults,
 	h2#otherVersions {
 		display: block;
 		clear: both;

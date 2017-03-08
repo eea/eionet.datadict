@@ -87,14 +87,14 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
                 .forJob(jobDetail)
                 .startNow();
         
+        this.createTaskEntry(jobKey, dataMapAdapter.getTaskTypeName(), dataMapAdapter.getParameters());
+
         try {
             this.scheduler.scheduleJob(jobDetail, triggerBuilder.build());
         }
         catch (SchedulerException ex) {
             throw new AsyncTaskManagementException(ex);
         }
-        
-        this.createTaskEntry(jobKey, dataMapAdapter.getTaskTypeName(), dataMapAdapter.getParameters());
         
         return this.asyncJobKeyBuilder.getTaskId(jobKey);
     }

@@ -418,6 +418,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 } else if (ConceptAttribute.STATUS.getNsPrefix().equals(predicateNsPrefix)
                         && ConceptAttribute.STATUS.getIdentifier().equals(attributeIdentifier)) {
                     setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
+                    candidateForConceptAttribute = false; // update adms:status bound element if exists
                 }
                 if (object instanceof Literal) {
                     String elemLang = StringUtils.substring(((Literal) object).getLanguage(), 0, 2);
@@ -446,7 +447,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 this.lastCandidateForConceptAttribute.put(this.lastFoundConcept.getId() + dataElemIdentifier, previousCandidate);
                 candidateForConceptAttribute = false;
             }
-
             if (updateValue) {
                 String val = StringUtils.trimToNull(object.stringValue());
                 if (ConceptAttribute.DEFINITION.getNsPrefix().equals(predicateNsPrefix)
@@ -644,7 +644,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      * @throws RDFHandlerException
      */
     private void setConceptStatusFromRdfObjectValue(VocabularyConcept concept, String objectValue, boolean isLiteralValue) throws RDFHandlerException {
-
         if (concept == null || StringUtils.isBlank(objectValue)) {
             return;
         } else {

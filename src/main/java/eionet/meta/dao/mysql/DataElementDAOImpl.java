@@ -867,6 +867,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         sql.append("and cev.RELATED_CONCEPT_ID = con2.ORIGINAL_CONCEPT_ID ");
         sql.append("and cev.DATAELEM_ID = e.DATAELEM_ID ");
         sql.append("and con1.VOCABULARY_ID = :newVocabularyFolderId ");
+        sql.append("and con2.VOCABULARY_ID = :newVocabularyFolderId ");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("newVocabularyFolderId", newVocabularyId);
@@ -1306,21 +1307,24 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         final VocabularyConceptBoundElementFilter filter = new VocabularyConceptBoundElementFilter(dataElement);
 
-        final Map<String, Object> params = new HashMap<String, Object>();
-        params.put("dataElementId", dataElementId);
-        params.put("vocabularyConceptIds", vocabularyConceptIds);
+        if (vocabularyConceptIds != null && !vocabularyConceptIds.isEmpty()) {
+            final Map<String, Object> params = new HashMap<String, Object>();
+            params.put("dataElementId", dataElementId);
+            params.put("vocabularyConceptIds", vocabularyConceptIds);
 
-        StringBuilder sql = new StringBuilder();
-        sql.append("select * from (select distinct ELEMENT_VALUE as `key`, ELEMENT_VALUE as `value` from VOCABULARY_CONCEPT_ELEMENT where ELEMENT_VALUE is not null and DATAELEM_ID=:dataElementId and VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds) ");
-        sql.append("union all select distinct vce.RELATED_CONCEPT_ID, vc.LABEL from VOCABULARY_CONCEPT_ELEMENT vce, VOCABULARY_CONCEPT vc where vce.RELATED_CONCEPT_ID is not null and vce.RELATED_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID ");
-        sql.append("and vce.DATAELEM_ID=:dataElementId and vce.VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds)) as filters order by `value`");
+            StringBuilder sql = new StringBuilder();
+            sql.append("select * from (select distinct ELEMENT_VALUE as `key`, ELEMENT_VALUE as `value` from VOCABULARY_CONCEPT_ELEMENT where ELEMENT_VALUE is not null and DATAELEM_ID=:dataElementId and VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds) ");
+            sql.append("union all select distinct vce.RELATED_CONCEPT_ID, vc.LABEL from VOCABULARY_CONCEPT_ELEMENT vce, VOCABULARY_CONCEPT vc where vce.RELATED_CONCEPT_ID is not null and vce.RELATED_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID ");
+            sql.append("and vce.DATAELEM_ID=:dataElementId and vce.VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds)) as filters order by `value`");
 
-        getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                filter.getOptions().put(rs.getString("key"), rs.getString("value"));
-            }
-        });
+            getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
+                @Override
+                public void processRow(ResultSet rs) throws SQLException {
+                    filter.getOptions().put(rs.getString("key"), rs.getString("value"));
+                }
+            });
+        }
+
         return filter;
     }
 
@@ -1411,4 +1415,53 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         return result;
     }
 
+    @Override
+    public List<DataElement> getCommonDataElementsWorkingCopiesOf(String userName) {
+        String sql = "select * from DATAELEM de where de.PARENT_NS is null and de.WORKING_COPY = 'Y' and de.WORKING_USER = :userName " +
+                "order by de.IDENTIFIER asc, de.DATAELEM_ID desc";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("userName", userName);
+
+        List<DataElement> result = getNamedParameterJdbcTemplate().query(sql, parameters, new RowMapper<DataElement>() {
+            @Override
+            public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DataElement de = new DataElement();
+                de.setId(rs.getInt("de.DATAELEM_ID"));
+                de.setIdentifier(rs.getString("de.IDENTIFIER"));
+                de.setShortName(rs.getString("de.SHORT_NAME"));
+                de.setStatus(rs.getString("de.REG_STATUS"));
+                de.setType(rs.getString("de.TYPE"));
+                de.setModified(new Date(rs.getLong("de.DATE")));
+                de.setWorkingCopy(new BooleanToYesNoConverter().convertBack(rs.getString("de.WORKING_COPY")));
+                de.setWorkingUser(rs.getString("de.WORKING_USER"));
+                de.setDate(rs.getString("de.DATE"));
+                setParentNamespace(de, rs, "de.PARENT_NS");
+                de.setAllConceptsValid(rs.getBoolean("de.ALL_CONCEPTS_LEGAL"));
+                de.setVocabularyId(rs.getInt("de.VOCABULARY_ID"));
+
+                return de;
+            }
+        });
+        return result;
+    }
+
+    @Override
+    public List<Integer> getOrphanNonCommonDataElementIds() {
+        String sql = 
+                "select distinct DATAELEM.DATAELEM_ID from DATAELEM left join TBL2ELEM on DATAELEM.DATAELEM_ID = TBL2ELEM.DATAELEM_ID " +
+                "where DATAELEM.PARENT_NS is not null and TBL2ELEM.DATAELEM_ID is null";
+        
+        return getJdbcTemplate().queryForList(sql, Integer.class);
+    }
+
+    @Override
+    public int delete(List<Integer> ids) {
+        String sql = "delete from DATAELEM where DATAELEM_ID in (:ids)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ids", ids);
+
+        return getNamedParameterJdbcTemplate().update(sql, params);
+    }
+    
 }

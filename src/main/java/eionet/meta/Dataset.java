@@ -38,6 +38,7 @@ public class Dataset implements Comparable {
     private String sortString = null;
 
     private String checkedoutCopyID = null;
+    private String successorId = null;
 
     /** */
     private String user;
@@ -368,6 +369,16 @@ public class Dataset implements Comparable {
     public void setCheckedoutCopyID(String checkedoutCopyID) {
         this.checkedoutCopyID = checkedoutCopyID;
     }
+
+    public String getSuccessorId() {
+        return successorId;
+    }
+
+    public void setSuccessorId(String successorId) {
+        this.successorId = successorId;
+    }
+    
+    
 
     /**
      *

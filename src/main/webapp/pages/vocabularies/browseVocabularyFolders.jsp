@@ -125,8 +125,8 @@
         <stripes:form id="vocabulariesForm" beanclass="${actionBean['class'].name}" method="post" style="margin-top:1em">
             <ul class="tree-nav">
                 <c:forEach var="folder" items="${actionBean.folders}">
-                    <li<c:if test="${folder.expanded}"> class="expanded"</c:if>>
-                        <stripes:link beanclass="${actionBean['class'].name}" class="title">
+                    <li<c:if test="${folder.expanded}"> class="expanded"</c:if> id="folder-${folder.id}">
+                        <stripes:link beanclass="${actionBean['class'].name}" class="title" anchor="folder-${folder.id}">
                             <stripes:param name="folderId" value="${folder.id}" />
                             <stripes:param name="expand" value="${not folder.expanded}" />
                             <stripes:param name="expanded" value="${actionBean.expanded}" />

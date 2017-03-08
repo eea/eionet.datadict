@@ -108,9 +108,14 @@
 
                     if (mode.equals("add")){
                         String id = handler.getLastInsertID();
-                        if (id != null && id.length()!=0)
-                            redirUrl = redirUrl + "delem_attribute.jsp?mode=edit&attr_id=" + id + "&type=" + type;
-
+                        if (id != null && id.length()!=0){
+                            if (type.equals(DElemAttribute.TYPE_SIMPLE)){
+                                redirUrl = redirUrl + "attribute/edit/" + id;
+                            }
+                            else {
+                                redirUrl = redirUrl + "delem_attribute.jsp?mode=edit&attr_id=" + id + "&type=" + type;
+                            }
+                        }
                         if (history!=null){
                             int idx = history.getCurrentIndex();
                             if (backUrl.indexOf("mode=add")>0){
@@ -327,14 +332,24 @@
         }
 
         function goToEdit(){
-            document.location.assign("delem_attribute.jsp?attr_id=<%=attr_id%>&type=<%=type%>&mode=edit");
+            if (<%=type%>=='SIMPLE'){
+                 document.location.assign("attribute/edit/<%=attr_id%>");
+            }
+            else {
+                document.location.assign("delem_attribute.jsp?attr_id=<%=attr_id%>&type=<%=type%>&mode=edit");
+            }
         }
 
         function fixType(){
             var type = document.forms["form1"].typeSelect.value;
             if (type == null || type.length==0)
                 return;
-            document.location.assign("delem_attribute.jsp?mode=add&type=" + type);
+            if (type=='SIMPLE'){
+                document.location.assign("attribute/add");
+            }
+            else {
+                document.location.assign("delem_attribute.jsp?mode=add&type=" + type);
+            }
         }
 
         function openFxValues(){
@@ -429,27 +444,13 @@ else
                 }
 
                 if (!mode.equals("view") && type==null){ %>
-                    <div class="attention">NB! Please select the attribute type first. Otherwise your entries will be lost.</div><%
+                    <p class="attention">NB! Please select the attribute type first. Otherwise your entries will be lost.</p><%
                 }
 
             int displayed = 1;
 
-            if (mode.equals("view")){
-                %>
-                <table class="datatable results" style="clear:right">
-                <col style="width:10em"/>
-                <col style="width:35em"/>
-                <%
-            } else {
             %>
-                <table class="datatable" style="clear:right">
-                <col style="width:9em"/>
-                <col style="width:2em"/>
-                <col style="width:35em"/>
-                <%
-            }
-            %>
-
+            <table class="datatable results">
             <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                 <th scope="row" class="scope-row">Type</th>
                 <%
@@ -1214,32 +1215,31 @@ else
         <% } // end if COMPLEX and mode=add
 
         if (!mode.equals("view")){ %>
-            <tr style="height:10px;"><td colspan="3"></td></tr>
             <tr>
-                <td colspan="3" style="text-align:center">
+                <th></th>
+                <td colspan="2">
 
                     <%
 
                     if (mode.equals("add")){ // if mode is "add"
                         if (user==null){ %>
-                            <input type="button" class="mediumbuttonb" value="Add" disabled="disabled" />&nbsp;&nbsp;
+                            <input type="submit" class="mediumbuttonb" value="Add" disabled="disabled" />
                         <%} else {%>
-                            <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')" />&nbsp;&nbsp;
+                            <input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add')" />
                         <% }
                     } // end if mode is "add"
 
                     if (!mode.equals("add")){ // if mode is not "add"
                         if (user==null){ %>
-                            <input type="button" class="mediumbuttonb" value="Save" disabled="disabled" />&nbsp;&nbsp;
-                            <input type="button" class="mediumbuttonb" value="Delete" disabled="disabled" />&nbsp;&nbsp;
+                            <input type="submit" class="mediumbuttonb" value="Save" disabled="disabled" />
+                            <input type="submit" class="mediumbuttonb" value="Delete" disabled="disabled" />
                         <%} else {%>
-                            <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')" />&nbsp;&nbsp;
-                            <input type="button" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')" />&nbsp;&nbsp;
+                            <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit')" />
+                            <input type="submit" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')" />
                         <% }
                     } // end if mode is not "add"
 
                     %>
-
                 </td>
             </tr> <%
         }

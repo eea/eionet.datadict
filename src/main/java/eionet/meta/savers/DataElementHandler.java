@@ -25,6 +25,8 @@ import org.apache.log4j.Logger;
 
 import eionet.acl.AccessController;
 import eionet.acl.SignOnException;
+import eionet.datadict.errors.BadRequestException;
+import eionet.datadict.errors.UserAuthorizationException;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
@@ -511,7 +513,6 @@ public class DataElementHandler extends BaseHandler {
         String switchType = req.getParameter("switch_type");
         
         String elmType = req.getParameter("curType");
-
         // if check-in, do the check-in and exit
         if (checkIn != null && checkIn.equalsIgnoreCase("true")) {
 
@@ -558,7 +559,18 @@ public class DataElementHandler extends BaseHandler {
         if (elmCommon) {
             String elmRegStatus = req.getParameter("reg_status");
             if (!Util.isEmpty(elmRegStatus)) {
+                
+                //Set field for registration status
                 gen.setField("REG_STATUS", elmRegStatus);
+                String successorId = req.getParameter("successor_id");
+                if (elmRegStatus.equalsIgnoreCase("Superseded") && !Util.isEmpty(successorId)) {
+                    gen.setField("SUCCESSOR", successorId);
+                }
+                else if (elmRegStatus.equalsIgnoreCase("Superseded")){
+                    throw new BadRequestException("You are trying to save a superseded element without a link to its successor.");
+                } else {
+                    gen.setFieldExpr("SUCCESSOR", "NULL");
+                }
             }
         }
 
@@ -585,7 +597,7 @@ public class DataElementHandler extends BaseHandler {
         // handle datatype conversion
         handleDatatypeConversion(req.getParameter("datatype_conversion"));
     }
-
+    
     /**
      *
      * @param conversion
@@ -841,7 +853,7 @@ public class DataElementHandler extends BaseHandler {
         // that all must be deleted with no exceptions.
         String completeDelete = req.getParameter("complete");
         if (completeDelete == null || !completeDelete.equals("true")) {
-            buf.append(" and M_ATTRIBUTE_ID not in ").append("(select M_ATTRIBUTE_ID from M_ATTRIBUTE where DISP_TYPE='image')");
+            buf.append(" and M_ATTRIBUTE_ID not in ").append("(select M_ATTRIBUTE_ID from M_ATTRIBUTE where DISP_TYPE='image' or DISP_TYPE='vocabulary')");
         }
 
         LOGGER.debug(buf.toString());
@@ -1578,10 +1590,10 @@ public class DataElementHandler extends BaseHandler {
             if (tableID == null || tableID.length() == 0) {
                 throw new Exception("Missing tableID");
             }
-             if (req.getParameter("copy_exact_table_structure").equals("Y")){
+            if (req.getParameter("copy_exact_table_structure") != null && 
+                    req.getParameter("copy_exact_table_structure").equals("Y")) {
                 attachElementToTableWithPredefinedValues(req.getParameter("is_mandatory"), req.getParameter("is_primary_key"), req.getParameter("multival_delimiter"), req.getParameter("position_in_table"));
-            }
-            else {
+            } else {
                 sqlBuf = new StringBuffer("insert into TBL2ELEM (TABLE_ID, DATAELEM_ID, POSITION) select ");
                 sqlBuf.append(tableID).append(", ").append(lastInsertID);
                 sqlBuf.append(", max(POSITION)+1 from TBL2ELEM where TABLE_ID=").append(tableID);

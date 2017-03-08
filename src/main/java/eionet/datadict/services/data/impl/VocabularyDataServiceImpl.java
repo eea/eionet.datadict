@@ -8,9 +8,13 @@ import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.VocabularySet;
 import eionet.datadict.services.data.VocabularyDataService;
 import eionet.meta.DDUser;
+import eionet.meta.dao.domain.StandardGenericStatus;
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -93,6 +97,24 @@ public class VocabularyDataServiceImpl implements VocabularyDataService {
         } catch (ServiceException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public List<VocabularyConcept> getVocabularyConcepts(int vocabularyId, StandardGenericStatus superStatus) {
+        
+        List<StandardGenericStatus> allowedStatuses = new ArrayList();
+        allowedStatuses.add(superStatus);
+        for (StandardGenericStatus status : StandardGenericStatus.valuesAsList()) {
+            if (status.isSubStatus(superStatus)) {
+                allowedStatuses.add(status);
+            }
+        }
+        return this.vocabularyDao.getVocabularyConcepts(vocabularyId, allowedStatuses);
+    }
+
+    @Override
+    public boolean existsVocabularyConcept(int vocabularyId, String identifier) {
+        return this.vocabularyDao.existsVocabularyConcept(vocabularyId, identifier);
     }
 
 }

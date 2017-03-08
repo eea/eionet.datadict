@@ -11,5 +11,4 @@ public interface ActionBeanDependencyInjector {
     boolean accepts(ActionBean bean);
     
     void injectDependencies(ActionBean bean);
-    
 }

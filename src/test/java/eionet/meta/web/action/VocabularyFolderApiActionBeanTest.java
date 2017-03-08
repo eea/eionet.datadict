@@ -58,7 +58,7 @@ import java.util.Map.Entry;
  *
  * @author enver
  */
-@SpringApplicationContext("spring-context.xml")
+@SpringApplicationContext("mock-spring-context.xml")
 public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
     /**
      * Keyword for content type.
@@ -143,6 +143,7 @@ public class VocabularyFolderApiActionBeanTest extends UnitilsJUnit4 {
 
     @BeforeClass
     public static void loadData() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData("seed-emptydb.xml");
         DBUnitHelper.loadData("seed-vocabulary-folder-api.xml");
     }

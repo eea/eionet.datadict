@@ -1,3 +1,7 @@
+<%@page import="eionet.meta.dao.domain.VocabularyFolder"%>
+<%@page import="eionet.meta.dao.domain.VocabularyConcept"%>
+<%@page import="eionet.datadict.model.DataDictEntity"%>
+<%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
 <%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%>
@@ -41,6 +45,7 @@
 
         return null;
     }
+
     %>
 
     <%
@@ -62,6 +67,8 @@
     Vector tables=null;
     Vector otherVersions = null;
     String feedbackValue = null;
+    String successorId = null;
+    Dataset successorDataset = null;
 
     ServletContext ctx = getServletContext();
     DDUser user = SecurityUtil.getUser(request);
@@ -279,7 +286,12 @@
                 editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
                 editReleasedPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "er");
                 advancedAccess = SecurityUtil.hasPerm(user != null ? user.getUserName() : null, "/datasets/" + dataset.getIdentifier(), DDUser.MSACCESS_ADVANCED_PRM);
-
+                
+                if (regStatus.equalsIgnoreCase("Superseded")){
+                    successorId = dataset.getSuccessorId();
+                    successorDataset =  successorId != null ? searchEngine.getDataset(successorId) : null;
+                }
+                
                 Vector v = null;
                 if (user == null) {
                     v = new Vector();
@@ -291,14 +303,17 @@
 
                 canNewVersion = !dataset.isWorkingCopy() && workingUser == null && regStatus!=null && user!=null && isLatestDst;
                 if (canNewVersion) {
-                    canNewVersion = regStatus.equals("Released") || regStatus.equals("Recorded");
+                    canNewVersion = regStatus.equals("Released") || regStatus.equals("Recorded") || regStatus.equals("Retired") || regStatus.equals("Superseded");
                     if (canNewVersion)
                         canNewVersion = editPrm || editReleasedPrm;
                 }
 
-                canCheckout = !dataset.isWorkingCopy() && workingUser == null && regStatus!=null && user!=null && isLatestDst;
+                canCheckout = !dataset.isWorkingCopy() 
+                        && workingUser == null 
+                        && regStatus!=null
+                        && user!=null && isLatestDst;
                 if (canCheckout) {
-                    if (regStatus.equals("Released"))
+                    if (regStatus.equals("Released") || regStatus.equals("Superseded") || regStatus.equals("Retired"))
                             //|| regStatus.equals("Recorded"))
                         canCheckout = editReleasedPrm;
                     else
@@ -430,11 +445,49 @@
     <script type="text/javascript">
     // <![CDATA[
 
+        function linkDataset(checkedoutCopyId){
+            var url="datasets.jsp?ctx=popup&regStatus=Released,Candidate,Recorded,Qualified&regStatusFilter=false&exclude="+checkedoutCopyId;
+            wLink = window.open('<%=request.getContextPath()%>'+'/'+url,"Search","height=800,width=1220,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
+            if (window.focus){
+                wLink.focus();
+            }
+        }
+        
+        function pickDataset(id, shortName){
+            document.forms["form1"].elements["successor_id"].value = id;
+            document.getElementById("successorName").href = "<%=request.getContextPath()%>/datasets/"+id;
+            document.getElementById("successorName").innerHTML = shortName;
+            document.getElementById("successorName").onclick = "return true";
+            return true;
+        }
+        
+        function statusSelectionChanged(changedForm) {
+            if (document.getElementById("reg_status_select").value.toLowerCase() == 'superseded') {
+                document.getElementById("successor").style.display = 'inline';
+            } else {
+                document.getElementById("successor").style.display = 'none';
+            }
+            form_changed(changedForm);
+        }
+        
+        function warnDatasetStatus(datasetStatus, action) {
+            if (datasetStatus.toLowerCase() == 'retired' || datasetStatus.toLowerCase() == 'superseded') {
+                if (['a', 'e', 'i', 'o', 'u'].indexOf(datasetStatus.toLowerCase().charAt(0))!=-1) {
+                    return confirm('The '+action+' you are about to perform is based on an '+datasetStatus+' dataset. If you want to continue click OK. Otherwise click Cancel.');
+                }
+                else {
+                    return confirm('The '+action+' you are about to perform is based on a '+datasetStatus+' dataset. If you want to continue click OK. Otherwise click Cancel.');
+                }
+            } else {
+                return true;
+            }
+        }
+        
         function deleteDatasetReady() {
             document.forms["form1"].elements["mode"].value = "delete";
             document.forms["form1"].submit();
         }
-
+        
         function submitForm(mode) {
 
             if (mode == "delete") {
@@ -577,8 +630,13 @@
                                 "If you want to continue, click OK. Otherwise click Cancel.");
                 if (b==false) return;
                 <%
-            }
-            %>
+            } 
+            if (regStatus != null && (regStatus.equals("Retired") || regStatus.equals("Superseded"))){%>
+                    var b = confirm("You are checking in with <%=regStatus%> status! This is a status for deprecated datasets. "+
+                            "If you want to continue, click OK. Otherwise click Cancel.");
+                    if (b==false) return;
+                <%}
+             %>
 
             document.forms["form1"].elements["check_in"].value = "true";
             document.forms["form1"].elements["mode"].value = "edit";
@@ -743,6 +801,10 @@ else if (mode.equals("add"))
                                 if (canCheckout) {
                             %>
                                 <li class="checkout"><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/checkout">Check out</a></li>
+                                <%
+                                }
+                                if (canCheckout || regStatus.equals("Retired") || regStatus.equals("Superseded")) {
+                            %>
                                 <li class="delete"><a href="javascript:submitForm('delete')">Delete</a></li>
                             <%
                                 }
@@ -753,10 +815,12 @@ else if (mode.equals("add"))
                             // display the "Upload document" and "Manage cache" links
                             if (mode.equals("view") && (editPrm || editReleasedPrm)) {%>
                                 <li class="doc">
-                                    <a rel="nofollow" href="<%=request.getContextPath()%>/doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Upload a document</a>
+                                    <a rel="nofollow" href="<%=request.getContextPath()%>/doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>" onclick="return warnDatasetStatus('<%=regStatus%>', 'upload')">
+                                        Upload a document
+                                    </a>
                                 </li>
                                 <li class="doc">
-                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Open cache</a>
+                                    <a rel="nofollow" href="<%=request.getContextPath()%>/cache?objectId=<%=ds_id%>&amp;objectTypeKey=dst">Open cache</a>
                                 </li>
                             <%}
                         }%>
@@ -820,7 +884,7 @@ else if (mode.equals("add"))
                                                     // PDF link
                                                     if (dispAll || dispPDF) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN" class="pdf">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN" class="pdf"  onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create technical specification for this dataset
                                                             </a>
                                                         </li><%
@@ -847,7 +911,7 @@ else if (mode.equals("add"))
                                                     // MS Excel link
                                                     if (dispAll || dispXLS) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>" class="excel">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
@@ -855,7 +919,7 @@ else if (mode.equals("add"))
                                                     <% }
                                                     if ((dispAll || dispXLS) && user != null) { %>
                                                          <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>" class="excel">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset with drop-down boxes (BETA)
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel_dropdown"></a>
@@ -866,7 +930,7 @@ else if (mode.equals("add"))
                                                     // OpenDocument spreadsheet link
                                                     if (dispAll || dispODS) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=dst&amp;id=<%=ds_id%>" class="open-doc">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=dst&amp;id=<%=ds_id%>" class="open-doc" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an OpenDocument spreadsheet template for this dataset
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=ods"></a>
@@ -876,7 +940,7 @@ else if (mode.equals("add"))
                                                     // MS Access link
                                                     if (dispAll || dispMDB) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true" class="access">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create validation metadata for MS Access template
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=access"></a>
@@ -887,7 +951,7 @@ else if (mode.equals("add"))
                                                     if (dispAll || advancedAccess) {
                                                         %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>" class="access">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create advanced MS Access template
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=advancedMSAccess"></a>
@@ -1024,12 +1088,20 @@ else if (mode.equals("add"))
                                                         <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory"  title="Mandatory"/>
                                                     </td><%
                                                 }
+                                                
                                                 %>
                                                 <td class="simple_attr_value">
                                                     <%
                                                     if (mode.equals("view")) { %>
                                                         <%=Util.processForDisplay(regStatus)%>
                                                         <%
+                                                        if (regStatus.equalsIgnoreCase("Superseded") && successorDataset!=null) {%>
+                                                            <small> by 
+                                                                <a  href="<%=request.getContextPath()%>/datasets/<%=successorDataset.getID()%>">
+                                                                    <i><c:out value="<%=successorDataset.getShortName()%>"/></i>
+                                                                </a>
+                                                            </small>
+                                                        <%}
                                                         long timestamp = dataset.getDate() == null ? 0 : Long.parseLong(dataset.getDate());
                                                         String dateString = timestamp == 0 ? "" : eionet.util.Util.releasedDate(timestamp);
                                                         String dateTimeString = timestamp == 0 ? "" : dateString + " " + eionet.util.Util.hoursMinutesSeconds(timestamp);
@@ -1054,18 +1126,56 @@ else if (mode.equals("add"))
                                                         }
                                                     }
                                                     else{ %>
-                                                        <select name="reg_status" onchange="form_changed('form1')"> <%
+                                                        <c:set var="selected" value=""/>
+                                                        <select id="reg_status_select" name="reg_status" onchange="statusSelectionChanged('form1')"> <%
                                                             Vector regStatuses = "add".equals(mode) ? verMan.getSettableRegStatuses() : verMan.getRegStatuses();
                                                             for (int i = 0; i < regStatuses.size(); i++) {
                                                                 String status = (String)regStatuses.get(i);
                                                                 String selected = status.equals(regStatus) ? "selected=\"selected\"" : "";
                                                                 String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
-                                                                String title = disabled.length() > 0 ? "title=\"This status not allowed any more when adding/saving.\"" : "";
+                                                                String title = disabled.length() > 0 ? "table=\"This status not allowed any more when adding/saving.\"" : "";
                                                                 String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
+                                                                if (status.equalsIgnoreCase("retired") || status.equalsIgnoreCase("superseded")) {
+                                                                    disabled="";
+                                                                }
+                                                                if (!StringUtils.isBlank(selected)){%>
+                                                                    <c:set var="selected" value="<%=status%>"/>
+                                                                <%}
                                                                 %>
                                                                 <option <%=style%> <%=selected%> <%=disabled%> <%=title%> value="<%=Util.processForDisplay(status)%>"><%=Util.processForDisplay(status)%></option><%
+
                                                             } %>
-                                                        </select><%
+                                                        </select>
+                                                        <%if ("edit".equals(mode)){%>
+                                                            <c:set var="display" value="none"/>
+                                                            <c:set var="successorName" value="Not defined yet"/>
+                                                            <c:set var="enableSuccessorLink" value="false"/>
+                                                            <c:set var="successorId" value=""/>
+                                                            <c:set var="checkedoutCopyId" value="<%=dataset.getCheckedoutCopyID()%>"/>
+                                                            <%if (successorDataset != null){ %>
+                                                                <c:set var="successorName" value="<%=successorDataset.getShortName()%>"/>
+                                                                <c:set var="enableSuccessorLink" value="true"/> 
+                                                                <c:set var="successorId" value="<%=successorDataset.getID()%>"/>
+                                                            <%}%>
+                                                            <c:if test="${selected eq 'Superseded'}">
+                                                                <c:set var="display" value="inline"/>
+                                                            </c:if>
+                                                            <div id="successor" style="display: ${display};">
+                                                                &emsp;
+                                                                <small>Replaced by: </small>
+                                                                <a id="successorName" href="<%=request.getContextPath()%>/datasets/${successorId}" onclick="return ${enableSuccessorLink}">
+                                                                    <i>
+                                                                        <c:out value="${successorName}"/>
+                                                                    </i>
+                                                                </a>
+                                                                &emsp;
+                                                                <a href="javascript:linkDataset(${checkedoutCopyId})">
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/edit.gif" width="16" height="16" alt=""/>
+                                                                </a>
+                                                                <input type="hidden" name="successor_id" value="${successorId}"/>
+                                                            </div>
+                                                        <%}%>
+                                                            <%
                                                     }
                                                     %>
                                                 </td>
@@ -1120,6 +1230,9 @@ else if (mode.equals("add"))
                                                 if (mode.equals("view") && (attrValue == null || attrValue.length() == 0))
                                                     continue;
 
+                                                if (dispType.equals("voocabulary") && mode.equals("add")){
+                                                    continue;
+                                                }
                                                 //displayed++; - done below
 
                                                 String width  = attribute.getDisplayWidth();
@@ -1154,7 +1267,28 @@ else if (mode.equals("add"))
                                                         <%
 
                                                         // if mode is 'view', display simple a text, otherwise an input
-                                                        if (mode.equals("view")) {
+                                                        if (mode.equals("view") && dispType.equals("vocabulary")) {
+                                                            DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
+                                                            List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
+                                                            if(vocabularyConcepts != null) { %>
+                                                                <ul class="stripedmenu">
+                                                                <%
+                                                                    VocabularyFolder vf = null;
+                                                                    for (VocabularyConcept vocabularyConcept : vocabularyConcepts) {
+                                                                        if (vf == null) {
+                                                                            vf = searchEngine.getVocabulary(vocabularyConcept.getVocabularyId());
+                                                                        }
+                                                                %>
+                                                                    <li>
+                                                                        <a href="<%=request.getContextPath()%>/vocabularyconcept/<%=Util.processForDisplay(vf.getFolderName())%>/<%=Util.processForDisplay(vf.getIdentifier())%>/<%=Util.processForDisplay(vocabularyConcept.getIdentifier())%>">
+                                                                            <%=vocabularyConcept.getLabel()%>
+                                                                        </a>
+                                                                    </li>
+                                                                <%}%>
+                                                                </ul>
+                                                        <%
+                                                            }
+                                                        } else if (mode.equals("view")) {
                                                             if (dispMultiple) {
                                                                 for (int k=0; multiValues!=null && k<multiValues.size(); k++) {
                                                                     attrValue = (String)multiValues.get(k);
@@ -1167,14 +1301,13 @@ else if (mode.equals("add"))
                                                         }
                                                         else{ // start display input
 
-                                                            if (dispMultiple) { // mutliple display
+                                                            if (dispMultiple && !dispType.equals("vocabulary")) { // mutliple display
 
                                                                 Vector allPossibleValues = null;
                                                                 if (dispType.equals("select"))
                                                                     allPossibleValues = searchEngine.getFixedValues(attrID, "attr");
                                                                 else if (dispType.equals("text"))
                                                                     allPossibleValues = searchEngine.getSimpleAttributeValues(attrID);
-
                                                                 String divHeight = "7.5em";
                                                                 String textName = "other_value_attr_" + attrID;
                                                                 String divID = "multiselect_div_attr_" + attrID;
@@ -1211,7 +1344,22 @@ else if (mode.equals("add"))
                                                                 </div>
                                                                 <%
                                                             }
-                                                            else{ // no multiple display
+                                                            else if (dispType.equals("vocabulary")){
+                                                                if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) { %>
+                                                                  <%DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
+                                                                    List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
+                                                                    if(vocabularyConcepts != null) {%>
+                                                                        <ul class="stripedmenu">
+                                                                            <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
+                                                                                <li><c:out value="${vocabularyConcept.label}"/></li>
+                                                                            </c:forEach>
+                                                                        </ul>
+                                                                    <%}%>
+                                                                    <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
+                                                              <%} else {%>
+                                                                    [Manage links to the vocabulary]
+                                                              <%}
+                                                            } else{ // no multiple display
 
                                                                 if (dispType.equals("text")) {
                                                                     if (attrValue!=null) {
@@ -1266,8 +1414,13 @@ else if (mode.equals("add"))
                                                                         
                                                                     </a>
                                                                     <%
-                                                                }
-                                                                else{ %>
+                                                                } else if (dispType.equals("vocabulary")){
+                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
+                                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
+                                                                        <% } else {%>
+                                                                            [Manage links to the vocabulary]         
+                                                                        <%}
+                                                                    }else {%>
                                                                     Unknown display type!<%
                                                                 }
 
@@ -1388,8 +1541,8 @@ else if (mode.equals("add"))
                                                     <tr>
                                                         <th></th>
                                                         <td colspan="3">
-                                                            <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-                                                            <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
+                                                            <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>
+                                                            <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>
                                                             <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=ds_id%>')"/>
                                                         </td>
                                                     </tr>
@@ -1778,6 +1931,6 @@ catch (Exception e) {
 }
 finally {
     try { if (conn!=null) conn.close();
-    } catch (SQLException e) {}
+    } catch (SQLException e) {System.out.println("epiasa exception to "+e.getMessage());}
 }
 %>

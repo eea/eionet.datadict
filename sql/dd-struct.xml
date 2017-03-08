@@ -1264,7 +1264,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
              UPDATE T_VOCABULARY_CONCEPT SET CREATION_DATE = now()</sql>
     </changeSet>
 
-    <changeSet author="roug" id="rev-100">
+    <changeSet author="roug" id="rev-100" >
+        <validCheckSum>3:21693a0c478ad24dac451d622ddc53bc</validCheckSum>
         <comment>Auto increments can't be added in the create table change set.</comment>
         <addAutoIncrement tableName="ACLS" columnName="ACL_ID" columnDataType="INT"/>
         <addAutoIncrement tableName="DATAELEM" columnName="DATAELEM_ID" columnDataType="INT UNSIGNED"/>
@@ -1272,18 +1273,54 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <addAutoIncrement tableName="DS_TABLE" columnName="TABLE_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="FK_RELATION" columnName="REL_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="FXV" columnName="FXV_ID" columnDataType="INT UNSIGNED"/>
+
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" constraintName="FK_M_ATTRIBUTE_ATTRIBUTE_ID"/>
         <addAutoIncrement tableName="M_ATTRIBUTE" columnName="M_ATTRIBUTE_ID" columnDataType="INT UNSIGNED"/>
+        <addForeignKeyConstraint baseColumnNames="M_ATTRIBUTE_ID" baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" 
+                constraintName="FK_M_ATTRIBUTE_ATTRIBUTE_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="M_ATTRIBUTE_ID" referencedTableName="M_ATTRIBUTE" referencesUniqueColumn="false"/>
+
         <addAutoIncrement tableName="M_COMPLEX_ATTR" columnName="M_COMPLEX_ATTR_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="M_COMPLEX_ATTR_FIELD" columnName="M_COMPLEX_ATTR_FIELD_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="NAMESPACE" columnName="NAMESPACE_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="SCHEMA" columnName="SCHEMA_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="SCHEMA_SET" columnName="SCHEMA_SET_ID" columnDataType="INT UNSIGNED"/>
         <addAutoIncrement tableName="T_SCHEMA" columnName="SCHEMA_ID" columnDataType="INT UNSIGNED"/>
+
+        <dropForeignKeyConstraint baseTableName="T_SCHEMA" constraintName="FK_SCHEMA_SET_ID"/>
         <addAutoIncrement tableName="T_SCHEMA_SET" columnName="SCHEMA_SET_ID" columnDataType="INT UNSIGNED"/>
+        <addForeignKeyConstraint baseColumnNames="SCHEMA_SET_ID" baseTableName="T_SCHEMA"
+                constraintName="FK_SCHEMA_SET_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="SCHEMA_SET_ID" referencedTableName="T_SCHEMA_SET" referencesUniqueColumn="false"/>
+
         <addAutoIncrement tableName="T_SITE_CODE" columnName="SITE_CODE_ID" columnDataType="INT UNSIGNED"/>
+
+        <dropForeignKeyConstraint baseTableName="T_SITE_CODE" constraintName="FK_VOCABULARY_CONCEPT_ID"/>
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" constraintName="FK_CONCEPT_ATTRIBUTE_ID"/>
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" constraintName="FK_RELATED_CONCEPT_ID"/>
         <addAutoIncrement tableName="T_VOCABULARY_CONCEPT" columnName="VOCABULARY_CONCEPT_ID" columnDataType="INT UNSIGNED"/>
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_CONCEPT_ID" baseTableName="T_SITE_CODE"
+                constraintName="FK_VOCABULARY_CONCEPT_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE"
+                referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_CONCEPT_ID" baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE"
+                constraintName="FK_CONCEPT_ATTRIBUTE_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="RELATED_CONCEPT_ID" baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE"
+                constraintName="FK_RELATED_CONCEPT_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
+
         <addAutoIncrement tableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" columnName="ID" columnDataType="INT UNSIGNED"/>
+
+        <dropForeignKeyConstraint baseTableName="T_VOCABULARY_CONCEPT" constraintName="FK_VOCABULARY_FOLDER_ID"/>
         <addAutoIncrement tableName="T_VOCABULARY_FOLDER" columnName="VOCABULARY_FOLDER_ID" columnDataType="INT UNSIGNED"/>
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_FOLDER_ID" baseTableName="T_VOCABULARY_CONCEPT"
+                constraintName="FK_VOCABULARY_FOLDER_ID" deferrable="false" initiallyDeferred="false"
+                onDelete="CASCADE" onUpdate="CASCADE"
+                referencedColumnNames="VOCABULARY_FOLDER_ID" referencedTableName="T_VOCABULARY_FOLDER" referencesUniqueColumn="false"/>
     </changeSet>
 
     <!-- Dropping the second of two identical indexes on FXV. See roug@rev-80 -->
@@ -2560,4 +2597,79 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         </modifySql>
     </changeSet>
     
+    <changeSet author="kopanalk" id="rev-187">
+        <comment>
+            Add display type vocabulary for attributes linked to vocabularies
+        </comment>
+        <modifyDataType tableName="M_ATTRIBUTE" 
+                        columnName="DISP_TYPE" 
+                        newDataType="enum('text','textarea','select','image','vocabulary')"/>
+        <addDefaultValue tableName="M_ATTRIBUTE" columnName="DISP_TYPE" defaultValue="text"/>
+    </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-188">
+        <comment>
+            Add a table used for linking attribute definitions to vocabularies
+        </comment>
+        <createTable tableName="M_ATTRIBUTE_VOCABULARY">
+            <column name="M_ATTRIBUTE_ID" type="INT UNSIGNED"/>
+            <column name="VOCABULARY_ID" type="INT UNSIGNED"/> 
+        </createTable>
+        <addPrimaryKey tableName="M_ATTRIBUTE_VOCABULARY" columnNames="M_ATTRIBUTE_ID"/>
+        <addForeignKeyConstraint baseTableName="M_ATTRIBUTE_VOCABULARY"
+                                 baseColumnNames="M_ATTRIBUTE_ID" constraintName="FK_M_ATTRIBUTE" 
+                                 referencedTableName="M_ATTRIBUTE" referencedColumnNames="M_ATTRIBUTE_ID"/>
+        <addForeignKeyConstraint baseTableName="M_ATTRIBUTE_VOCABULARY" 
+                                 baseColumnNames="VOCABULARY_ID" constraintName="FK_VOCABULARY" 
+                                 referencedTableName="VOCABULARY" referencedColumnNames="VOCABULARY_ID"/>
+    </changeSet>
+    
+     <changeSet author="kopanalk" id="rev-189">
+        <comment>
+            Add two Registration Statuses in the DATASET table (By altering the REG_STATUS data type). Refs #29879.
+        </comment>
+        <modifyDataType
+            tableName="DATASET"
+            columnName="REG_STATUS"
+            newDataType="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')"/>
+        <addNotNullConstraint tableName="DATASET" columnName="REG_STATUS" columnDataType="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')"/>
+        <addDefaultValue tableName="DATASET" columnName="REG_STATUS" defaultValue="Incomplete"/>
+    </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-190">
+       <comment>
+            Add two Registration Statuses in the DATAELEM table (By altering the REG_STATUS data type). Refs #29879.
+        </comment>
+        <modifyDataType
+            tableName="DATAELEM"
+            columnName="REG_STATUS"
+            newDataType="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')"/>
+        <addNotNullConstraint tableName="DATAELEM" columnName="REG_STATUS" columnDataType="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')"/>
+        <addDefaultValue tableName="DATAELEM" columnName="REG_STATUS" defaultValue="Incomplete"/>
+    </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-191">
+        <comment>
+            Add a column in the DATAELEM table in order to link the superseded data elements to their successors (if this is the case). Refs #29879.
+        </comment>
+        <addColumn tableName="DATAELEM">
+            <column name="SUCCESSOR" type="INT UNSIGNED"/>
+        </addColumn>
+        <addForeignKeyConstraint constraintName="FK_SUPERSEDED_SUCCESSOR_DE" baseTableName="DATAELEM" baseColumnNames="SUCCESSOR" referencedColumnNames="DATAELEM_ID"  referencedTableName="DATAELEM"/> 
+    </changeSet>
+    
+    <changeSet author="kopanalk" id="rev-192">
+        <comment>
+            Add a column in the DATASET table in order to link the superseded datasets to their successors (if this is the case). Refs #29879.
+        </comment>
+        <addColumn tableName="DATASET">
+            <column name="SUCCESSOR" type="INT UNSIGNED"/>
+        </addColumn>
+        <addForeignKeyConstraint constraintName="FK_SUPERSEDED_SUCCESSOR_DS" baseTableName="DATASET" baseColumnNames="SUCCESSOR" referencedColumnNames="DATASET_ID"  referencedTableName="DATASET"/> 
+    </changeSet>
+
+    <changeSet author="stamojoh" id="rev-193">
+        <dropUniqueConstraint tableName="VOCABULARY_CONCEPT_ELEMENT" constraintName="UNIQ_ATTR_MD5" />
+        <addUniqueConstraint tableName="VOCABULARY_CONCEPT_ELEMENT" columnNames="VOCABULARY_CONCEPT_ID, DATAELEM_ID, ATTR_MD5" constraintName="UNIQ_ATTR_MD5" />
+    </changeSet>
 </databaseChangeLog>

@@ -1,6 +1,7 @@
+<%@page import="eionet.util.Props"%>
 <%@page contentType="text/html;charset=UTF-8" import="eionet.help.Helps, java.sql.*, eionet.meta.*,eionet.util.sql.ConnectionUtil,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-
+<%@ include file="/pages/common/taglibs.jsp"%>
 <%
 response.setHeader("Pragma", "No-cache");
 response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
@@ -64,7 +65,7 @@ else{
     <div id="pagehead">
         <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
         <div id="networktitle">Eionet</div>
-        <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
+        <div id="sitetitle">${ddfn:getProperty("app.displayName")}</div>
         <div id="sitetagline">This service is part of Reportnet</div>
     </div> <!-- pagehead -->
 

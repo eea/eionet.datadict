@@ -123,7 +123,7 @@ public class ConceptsWithAttributesQueryBuilder {
                 this.isConceptIdentifierDefined()
             ) +
             "order by \n" +
-            "   c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.LANGUAGE";
+            "   c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.LANGUAGE, v.ID";
     }
     
     protected String buildConceptAttributesWithLabelFilteringSqlQuery() {
@@ -170,7 +170,7 @@ public class ConceptsWithAttributesQueryBuilder {
             "where \n" +
             "	d.IDENTIFIER <> 'skos:prefLabel' or v.ELEMENT_VALUE collate UTF8_GENERAL_CI like :conceptLabelPattern \n" +
             "order by \n" +
-            "   c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.LANGUAGE";
+            "   c.VOCABULARY_CONCEPT_ID, v.DATAELEM_ID, v.LANGUAGE, v.ID";
     }
     
     protected String append(String sqlSegment, boolean append) {

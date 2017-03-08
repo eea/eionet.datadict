@@ -5,11 +5,10 @@
  */
 package eionet.meta.service;
 
+import eionet.meta.ActionBeanUtils;
 import eionet.meta.dao.domain.RegStatus;
-import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
-import org.displaytag.properties.SortOrderEnum;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -23,7 +22,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
  * 
  * @author dev-nn
  */
-@SpringApplicationContext("spring-context.xml")
+@SpringApplicationContext("mock-spring-context.xml")
 public class SchemaServiceTest extends UnitilsJUnit4 {
     
     private static final String SEED_FILE_ATTRIBUTE = "seed-searchSchemaSets-attribute.xml";
@@ -38,6 +37,7 @@ public class SchemaServiceTest extends UnitilsJUnit4 {
     
     @BeforeClass
     public static void setUpClass() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData(SEED_FILE_ATTRIBUTE);
         DBUnitHelper.loadData(SEED_FILE_SCHEMA_SETS);
         DBUnitHelper.loadData(SEED_FILE_SCHEMAS);

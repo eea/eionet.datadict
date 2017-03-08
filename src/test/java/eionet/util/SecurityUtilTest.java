@@ -1,5 +1,6 @@
 package eionet.util;
 
+import eionet.meta.ActionBeanUtils;
 import eionet.meta.DDUser;
 import eionet.meta.service.DBUnitHelper;
 import org.easymock.EasyMock;
@@ -8,22 +9,19 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.util.CollectionUtils;
 import org.unitils.UnitilsJUnit4;
-import org.unitils.spring.annotation.SpringApplicationContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@SpringApplicationContext("spring-context.xml")
 public class SecurityUtilTest extends UnitilsJUnit4  {
-
-
     /**
      * Load seed data file.
      * @throws Exception if loading fails
      */
     @BeforeClass
     public static void loadData() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData("seed-acldata.xml");
     }
 

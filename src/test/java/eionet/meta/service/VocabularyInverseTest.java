@@ -22,6 +22,7 @@
 
 package eionet.meta.service;
 
+import eionet.meta.ActionBeanUtils;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -30,20 +31,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.imp.VocabularyImportBaseHandler;
 import eionet.util.Props;
 import eionet.util.PropsIF;
@@ -53,9 +49,9 @@ import eionet.util.PropsIF;
  *
  * @author Kaido Laine
  */
-@SpringApplicationContext("spring-context.xml")
+@SpringApplicationContext("mock-spring-context.xml")
 public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
-
+    
     /**
      * Logger.
      */
@@ -69,6 +65,7 @@ public class VocabularyInverseTest extends VocabularyImportServiceTestBase {
 
     @BeforeClass
     public static void loadData() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData("seed-vocabularyinverse.xml");
     }
 

@@ -40,6 +40,7 @@ import eionet.meta.dao.IDataSetDAO;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.DatasetRegStatus;
 import eionet.meta.service.data.DatasetFilter;
+import org.springframework.jdbc.core.RowMapper;
 
 /**
  * Data set DAO implementation.
@@ -236,5 +237,33 @@ public class DataSetDAOImpl extends GeneralDAOImpl implements IDataSetDAO {
             return this.result;
         }
     } // end of inner class DataSetRowCallbackHandler
+
+    @Override
+    public String getIdentifierById(int id) {
+        String sql = "select IDENTIFIER from DATASET where DATASET_ID = :id";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("id", id);
+
+        List<String> result = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString("IDENTIFIER");
+            }
+        });
+        return result.isEmpty() ? null : result.get(0);
+    }
+
+    @Override
+    public List<DataSet> getWorkingCopiesOf(String userName) {
+        String sql = "select * from DATASET where DELETED is null " +
+                "and WORKING_COPY = 'Y' and WORKING_USER = :userName order by IDENTIFIER asc, DATASET_ID desc";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("userName", userName);
+
+        DataSetRowCallbackHandler dataSetRowCallbackHandler = new DataSetRowCallbackHandler();
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, dataSetRowCallbackHandler);
+        return dataSetRowCallbackHandler.getResult();
+    }
 
 }

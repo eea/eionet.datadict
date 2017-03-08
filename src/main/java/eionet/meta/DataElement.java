@@ -50,6 +50,8 @@ public class DataElement implements Comparable {
     private String sortString = null;
 
     private String checkedoutCopyID = null;
+    private String successorId = null;
+    
     private String date = null;
 
     private String valueDelimiter;
@@ -425,6 +427,14 @@ public class DataElement implements Comparable {
      */
     public void setCheckedoutCopyID(String checkedoutCopyID) {
         this.checkedoutCopyID = checkedoutCopyID;
+    }
+
+    public String getSuccessorId() {
+        return successorId;
+    }
+
+    public void setSuccessorId(String successorId) {
+        this.successorId = successorId;
     }
 
     /**

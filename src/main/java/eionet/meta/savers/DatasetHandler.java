@@ -20,6 +20,8 @@ import org.apache.log4j.Logger;
 
 import eionet.acl.AccessController;
 import eionet.acl.SignOnException;
+import eionet.datadict.errors.BadRequestException;
+import eionet.meta.DDSearchEngine;
 
 import eionet.meta.DDUser;
 import eionet.meta.Dataset;
@@ -29,6 +31,8 @@ import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -302,8 +306,18 @@ public class DatasetHandler extends BaseHandler {
 
         // set the status
         String status = req.getParameter("reg_status");
+        String successorId = req.getParameter("successor_id");
         if (!Util.isEmpty(status)) {
+            
+            //Set field for registration status
             gen.setField("REG_STATUS", status);
+            if (status.equalsIgnoreCase("Superseded") && !Util.isEmpty(successorId)){
+                gen.setField("SUCCESSOR", successorId);
+            } else if (status.equalsIgnoreCase("Superseded")) {
+                throw new BadRequestException("You are trying to save a superseded element without a link to its successor.");
+            } else {
+                gen.setFieldExpr("SUCCESSOR", "NULL");
+            }
         }
 
         // short name
@@ -324,10 +338,11 @@ public class DatasetHandler extends BaseHandler {
         stmt.executeUpdate();
         stmt.close();
 
-        deleteAttributes();
+        deleteAttributes(true);
         processAttributes();
     }
-
+    
+     
     private void restore() throws Exception {
 
         if (ds_ids == null || ds_ids.length == 0) {
@@ -465,13 +480,14 @@ public class DatasetHandler extends BaseHandler {
         }
 
         // delete dataset dependencies
-        deleteAttributes();
+        deleteAttributes(false);
         deleteComplexAttributes();
         deleteRodLinks();
         deleteCache();
         deleteDocs();
         deleteTablesAndElements();
-
+        deleteAllSuccessorDependencies();
+        
         // delete the datasets themselves
         buf = new StringBuffer("delete from DATASET where ");
         for (i = 0; i < ds_ids.length; i++) {
@@ -573,6 +589,15 @@ public class DatasetHandler extends BaseHandler {
         }
         stmt.executeUpdate(buf.toString());
     }
+    
+    private void deleteAllSuccessorDependencies () throws SQLException {
+        for (String datasetId : ds_ids) {
+            List<Integer> datasetsWithSuccessor = getIdBySuccessor(Integer.parseInt(datasetId));
+            if (datasetsWithSuccessor!= null && !datasetsWithSuccessor.isEmpty()) {
+                removeSuccessorDependency(datasetsWithSuccessor);
+            }
+        }
+    }
 
     /**
      * @throws SQLException
@@ -624,23 +649,26 @@ public class DatasetHandler extends BaseHandler {
         return nsHandler.getLastInsertID();
     }
 
-    private void deleteAttributes() throws SQLException {
+    private void deleteAttributes(boolean isForUpdate) throws SQLException {
 
         ResultSet rs = null;
         PreparedStatement stmt = null;
         INParameters inParams = new INParameters();
         try {
-            // find out image attributes, so to skip them later
-
+            // find out image and vocabulary attributes, so as to skip them later
+            
             StringBuffer buf = new StringBuffer("select M_ATTRIBUTE_ID ");
             buf.append("from M_ATTRIBUTE where DISP_TYPE='image'");
-
+            
+            if (isForUpdate) {
+                buf.append("or DISP_TYPE='vocabulary'");
+            }
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             rs = stmt.executeQuery();
 
-            Vector imgAttrs = new Vector();
+            Vector skipDeletionAttrs = new Vector();
             while (rs.next()) {
-                imgAttrs.add(rs.getString(1));
+                skipDeletionAttrs.add(rs.getString(1));
             }
             SQL.close(rs);
             SQL.close(stmt);
@@ -656,9 +684,9 @@ public class DatasetHandler extends BaseHandler {
                 buf.append(inParams.add(ds_ids[i], Types.INTEGER));
             }
             buf.append(") and PARENT_TYPE='DS'");
-            // skip image attributes
-            for (int i = 0; i < imgAttrs.size(); i++) {
-                buf.append(" and M_ATTRIBUTE_ID<>").append((String) imgAttrs.get(i));
+            // skip image and vocabulary attributes
+            for (int i = 0; i < skipDeletionAttrs.size(); i++) {
+                buf.append(" and M_ATTRIBUTE_ID<>").append((String) skipDeletionAttrs.get(i));
             }
 
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
@@ -1115,6 +1143,29 @@ public class DatasetHandler extends BaseHandler {
         } finally {
             SQL.close(stmt);
         }
+    }
+    
+    public List<Integer> getIdBySuccessor(int successor) throws SQLException{
+        Statement stmt = conn.createStatement();
+        String sql = "select DATASET_ID FROM DATASET where SUCCESSOR = "+ successor;
+        ResultSet rs = stmt.executeQuery(sql);
+        List<Integer> datasets = new ArrayList();
+        while (rs.next()) {
+            datasets.add(rs.getInt("DATASET_ID"));
+        }
+        return datasets;
+    }
+    
+    public void removeSuccessorDependency(List<Integer> datasets) throws SQLException{
+        Statement stmt = conn.createStatement();
+        String sql = "update DATASET set SUCCESSOR = NULL where ";
+        for (int i=0; i<datasets.size(); i++) {
+            sql = sql + "DATASET_ID = "+datasets.get(i);
+            if (i!= datasets.size()-1) {
+                sql = sql + " OR ";
+            }
+        }
+        stmt.executeUpdate(sql);
     }
 
     /**

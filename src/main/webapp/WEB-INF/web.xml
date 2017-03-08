@@ -6,17 +6,6 @@
 
     <display-name>Data Dictionary</display-name>
 
-    <!-- context params -->
-    <context-param>
-        <param-name>application-name</param-name>
-        <param-value>${app.displayName}</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>appDispName</param-name>
-        <param-value>${app.displayName}</param-value>
-    </context-param>
-
     <context-param>
         <param-name>useCentralAuthenticationService</param-name>
         <param-value>${useCentralAuthenticationService}</param-value>
@@ -31,31 +20,6 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>classpath:spring-context.xml</param-value>
     </context-param>
-
-    <!-- Liquibase configuration  -->
-    <context-param>
-        <param-name>liquibase.changelog</param-name>
-        <param-value>sql/dd-struct.xml</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>liquibase.datasource</param-name>
-        <param-value>java:comp/env/jdbc/datadict</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>liquibase.onerror.fail</param-name>
-        <param-value>true</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>liquibase.contexts</param-name>
-        <param-value>production</param-value>
-    </context-param>
-
-    <listener>
-        <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
-    </listener>
 
     <listener>
         <listener-class>eionet.meta.scheduled.VocabularyReferenceMatchJob</listener-class>
@@ -90,7 +54,7 @@
         <filter-class>net.sourceforge.stripes.controller.StripesFilter</filter-class>
         <init-param>
             <param-name>ActionResolver.Packages</param-name>
-            <param-value>eionet.web.action</param-value>
+            <param-value>eionet.web.action,eionet.datadict.action,eionet.datadict.controllers</param-value>
         </init-param>
         <init-param>
             <param-name>ActionBeanContext.Class</param-name>
@@ -223,6 +187,10 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/attribute/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>*.action</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
@@ -307,13 +275,28 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/vocabularyvalues/attribute/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/asynctasks/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/index</url-pattern>
     </servlet-mapping>
-   
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/cache/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/checkouts</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/cleanup</url-pattern>
+    </servlet-mapping>
     <servlet>
         <servlet-name>rpcrouter</servlet-name>
         <servlet-class>eionet.rpcserver.servlets.XmlRpcRouter</servlet-class>
@@ -347,10 +330,6 @@
         <servlet-class>eionet.meta.GetPrintout</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CleanupServlet</servlet-name>
-        <servlet-class>eionet.meta.CleanupServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetXmlInstance</servlet-name>
         <servlet-class>eionet.meta.exports.xmlinst.XmlInstServlet</servlet-class>
     </servlet>
@@ -358,10 +337,6 @@
     <servlet>
         <servlet-name>XlsServlet</servlet-name>
         <servlet-class>eionet.meta.exports.xls.XlsServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CacheServlet</servlet-name>
-        <servlet-class>eionet.meta.exports.CacheServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DsVisualUpload</servlet-name>
@@ -475,10 +450,6 @@
         <url-pattern>/GetPrintout</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CleanupServlet</servlet-name>
-        <url-pattern>/CleanupServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GetXmlInstance</servlet-name>
         <url-pattern>/GetXmlInstance</url-pattern>
     </servlet-mapping>
@@ -486,10 +457,6 @@
     <servlet-mapping>
         <servlet-name>XlsServlet</servlet-name>
         <url-pattern>/GetXls</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CacheServlet</servlet-name>
-        <url-pattern>/GetCache</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ImgUpload</servlet-name>
@@ -584,14 +551,6 @@
 
     <!-- the application server might allow directory listing. The welcome-files
     are used to overcome workings of such feature -->
-
-
-    <resource-ref>
-        <description>DataDict DB</description>
-        <res-ref-name>jdbc/datadict</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-    </resource-ref>
 
     <security-constraint>
         <web-resource-collection>

@@ -21,6 +21,7 @@
 
 package eionet.meta.service;
 
+import eionet.meta.ActionBeanUtils;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
@@ -61,6 +62,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
 
     @BeforeClass
     public static void loadData() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData("seed-emptydb.xml");
         DBUnitHelper.loadData("csv_import/seed-vocabularycsv-import.xml");
     }
@@ -103,7 +105,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> concepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
         Reader reader = getReaderFromResource("csv_import/csv_import_test_1.csv");
@@ -140,7 +142,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         elems.add(element);
 
         // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // compare manually updated objects with queried ones (after import operation)
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
@@ -160,7 +162,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> concepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
         Reader reader = getReaderFromResource("csv_import/csv_import_test_2.csv");
@@ -220,7 +222,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         elems.add(element);
 
         // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // compare manually updated objects with queried ones (after import operation)
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
@@ -239,7 +241,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> concepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
         Reader reader = getReaderFromResource("csv_import/csv_import_test_3.csv");
@@ -302,7 +304,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concepts.add(vc11);
 
         // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
         Assert.assertEquals("Updated Concepts does not include 4 vocabulary concepts", updatedConcepts.size(), 4);
 
         // last object should be the inserted one, so use it is id to set (all other fields are updated manually)
@@ -326,7 +328,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> concepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
         Reader reader = getReaderFromResource("csv_import/csv_import_test_13.csv");
@@ -389,7 +391,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concepts.add(vc11);
 
         // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
         Assert.assertEquals("Updated Concepts does not include 4 vocabulary concepts", updatedConcepts.size(), 4);
 
         // last object should be the inserted one, so use it is id to set (all other fields are updated manually)
@@ -412,7 +414,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> concepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
         Reader reader = getReaderFromResource("csv_import/csv_import_test_3.csv");
@@ -476,7 +478,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concepts.add(vc11);
 
         // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
         Assert.assertEquals("Updated Concepts does not include 1 vocabulary concept", 1, updatedConcepts.size());
 
         // last object should be the inserted one, so use it is id to set (all other fields are updated manually)
@@ -500,7 +502,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> concepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
         Reader reader = getReaderFromResource("csv_import/csv_import_test_2.csv");
@@ -546,7 +548,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         element.setAttributeValue("pl_csv_test_concept_3_updated");
 
         // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
         Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", updatedConcepts.size(), 2);
 
         VocabularyConcept vc8Updated = findVocabularyConceptByIdentifier(updatedConcepts, vc8.getIdentifier());
@@ -575,7 +577,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> concepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
         Reader reader = getReaderFromResource("csv_import/csv_import_test_4.csv");
@@ -601,7 +603,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concepts.get(1).setStatusModified(new Date(System.currentTimeMillis()));
 
         // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
         Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", 2, updatedConcepts.size());
 
         // concepts should be inserted in the same order as they are in csv file, get ids from updated beans
@@ -626,7 +628,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> concepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
         Reader reader = getReaderFromResource("csv_import/csv_import_test_4.csv");
@@ -652,7 +654,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concepts.get(1).setStatusModified(new Date(System.currentTimeMillis()));
 
         // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
         Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", 2, updatedConcepts.size());
 
         // concepts should be inserted in the same order as they are in csv file, get ids from updated beans
@@ -677,7 +679,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> concepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // get reader for CSV file
         Reader reader = getReaderFromResource("csv_import/csv_import_test_5.csv");
@@ -897,7 +899,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         concepts.get(1).setElementAttributes(elementAttributes);
 
         // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
         Assert.assertEquals("Updated Concepts does not include 2 vocabulary concepts", 2, updatedConcepts.size());
 
         // concepts should be inserted in the same order as they are in csv file, get ids from updated beans
@@ -928,7 +930,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
 
         // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> concepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
         // get initial values of data elements of this vocabulary folder
         List<DataElement> boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
 
@@ -962,7 +964,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         elems.add(element);
 
         // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
 
         // compare manually updated objects with queried ones (after import operation)
         ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES,
@@ -1007,7 +1009,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
 
         // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
         Assert.assertEquals("Updated concepts does not include 2 items", 2, updatedConcepts.size());
 
         // Check for first concept
@@ -1235,7 +1237,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
 
         // get updated concepts
-        List<VocabularyConcept> updatedConcepts = getValidVocabularyConceptsWithAttributes(vocabularyFolder);
+        List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
         Assert.assertTrue(updatedConcepts.size() > 0);
 
         VocabularyConcept firstConcept = updatedConcepts.get(0);

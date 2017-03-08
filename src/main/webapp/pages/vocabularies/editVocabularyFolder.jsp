@@ -113,6 +113,7 @@
 
                 $(".delLink").click(function() {
                     this.parentElement.remove();
+                    return false;
                 });
 
                 var initPopup = function(divId) {
@@ -230,7 +231,7 @@
             <stripes:hidden name="origIdentifier" />
 
 
-            <table class="datatable">
+            <table class="datatable results">
                 <colgroup>
                     <col style="width:26%"/>
                     <col style="width:4%"/>
@@ -612,8 +613,7 @@
 
         <c:if test="${actionBean.vocabularyConcepts.fullListSize == 0}">
             <c:if test="${actionBean.vocabularyFolder.commonType}">
-                <br />
-                <button id="addNewConceptBtn">Add new concept</button>
+                <input type="button" id="addNewConceptBtn" value="Add new concept" />
             </c:if>
         </c:if>
 
@@ -714,114 +714,119 @@
 	    <%-- The upload CSV dialog. Hidden unless activated. --%>
 	    <div id="uploadCSVDialog" title="Upload CSV">
 	        <stripes:form beanclass="${actionBean['class'].name}" method="post">
-	        	<stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
-                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                    <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                    <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                    <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                    <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
 
 	            <div class="system-msg">
-                    <strong>CSV Import</strong>
-                    <br><br>The CSV file should contain a header row for element names and data rows for concepts.
-                    <br>It is strongly recommended to use an exported CSV file as a template for bulk editing. Columns and rows can be added to or deleted from the template file.
-                    <br>A concept can be ignored by prepending a double-slash '//' to the concept row in the CSV
-                    <ul>
-                        Notes:
-                        <li>If the header row contains unknown elements the import will aborted and data will be rolled back</li>
-                        <li>Erroneous concept rows are ignored, valid data rows are still imported</li>
-                        <li>Successful import cannot be undone (unless "undo checkout" is performed)</li>
-                        <li>If a concept with the same identifier already exists in the vocabulary it will be overwritten</li>
-                        <li>"Purge Vocabulary" option deletes all the vocabulary concepts before import</li>
-                    </ul>
+                        <strong>CSV Import</strong>
+                        <br><br>The CSV file should contain a header row for element names and data rows for concepts.
+                        <br>It is strongly recommended to use an exported CSV file as a template for bulk editing. Columns and rows can be added to or deleted from the template file.
+                        <br>A concept can be ignored by prepending a double-slash '//' to the concept row in the CSV
+                        <ul>
+                            Notes:
+                            <li>If the header row contains unknown elements the import will aborted and data will be rolled back</li>
+                            <li>Erroneous concept rows are ignored, valid data rows are still imported</li>
+                            <li>Successful import cannot be undone (unless "undo checkout" is performed)</li>
+                            <li>If a concept with the same identifier already exists in the vocabulary it will be overwritten</li>
+                            <li>"Purge Vocabulary" option deletes all the vocabulary concepts before import</li>
+                        </ul>
 	            </div>
 
-				<div>
-					<stripes:checkbox id="purgeVocabularyData" name="purgeVocabularyData"/><label for="purgeVocabularyData" class="question">Purge Vocabulary Data</label>
-				</div>
-				<div>
-					<stripes:checkbox id="purgeBoundElements" name="purgeBoundElements" disabled="true"/><label for="purgeBoundElements" class="question">Purge Bound Elements</label>
-				</div>
+                    <div>
+                        <stripes:checkbox id="purgeVocabularyData" name="purgeVocabularyData"/><label for="purgeVocabularyData" class="question">Purge Vocabulary Data</label>
+                    </div>
+                    <div>
+                        <stripes:checkbox id="purgeBoundElements" name="purgeBoundElements" disabled="true"/><label for="purgeBoundElements" class="question">Purge Bound Elements</label>
+                    </div>
 	            <stripes:file name="uploadedFileToImport" id="fileToUpload" size="40" accept="text/csv" title="Select a .csv file to import"/>
 	            <stripes:submit name="uploadCsv" value="Upload"/>
 	            <input type="button" id="closeUploadCSVDialog" value="Cancel"/>
-
 	        </stripes:form>
 	    </div>
 
 	    <%-- The upload RDF dialog. Hidden unless activated. --%>
 	    <div id="uploadRDFDialog" class="upload-dialog" title="Upload RDF">
 	        <stripes:form id="uploadRDFForm" beanclass="${actionBean['class'].name}" method="post" action="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.origIdentifier}/uploadRdf">
-	        	<stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
-                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                <div class="system-msg">
-				    <strong>Note</strong>
-				       <ul>
-				          <li>With this operation, contents of RDF file will be imported into vocabulary folder.</li>
-				          <li>Only a working copy can be updated with a RDF file upload.</li>
-                          <li>If user select "Purge Per Predicate" option. All seen predicates will be removed from vocabulary.</li>
-                          <li>If user select "Purge All Vocabulary Data" option. All data will be removed from vocabulary.</li>
-                          <li>Once import is successful, operation cannot be undone. If an error occurs during import, then all data will be rolled back.</li>
-				       </ul>
-				</div>
+                    <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                    <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                    <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                    <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                    <div class="system-msg">
+                        <strong>Note</strong>
+                        <ul>
+                            <li>With this operation, contents of RDF file will be imported into vocabulary folder.</li>
+                            <li>Only a working copy can be updated with a RDF file upload.</li>
+                            <li>If user select "Purge Per Predicate" option. All seen predicates will be removed from vocabulary.</li>
+                            <li>If user select "Purge All Vocabulary Data" option. All data will be removed from vocabulary.</li>
+                            <li>Once import is successful, operation cannot be undone. If an error occurs during import, then all data will be rolled back.</li>
+                        </ul>
+                    </div>
 
-                <div>
-                    <stripes:radio id="rdfDontPurge" name="rdfPurgeOption" value="1"/>
-                    <label for="rdfDontPurge" class="question">Don't purge vocabulary data</label>
-                    <div class="elaboration">
-                        In this case, existing vocabulary information will be updated with information from imported concepts.
+                    <div>
+                        <stripes:radio id="rdfDontPurge" name="rdfPurgeOption" value="1"/>
+                        <label for="rdfDontPurge" class="question">Don't purge vocabulary data</label>
+                        <div class="elaboration">
+                            In this case, existing vocabulary information will be updated with information from imported concepts.
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <stripes:radio id="rdfPurgePerPredicate" name="rdfPurgeOption" value="2"/>
-                    <label for="rdfPurgePerPredicate" class="question">Purge Per Predicate</label>
-                    <div class="elaboration">
-                        In this case, predicates of existing concepts will be replaced with the imported predicates.
+                    <div>
+                        <stripes:radio id="rdfPurgePerPredicate" name="rdfPurgeOption" value="2"/>
+                        <label for="rdfPurgePerPredicate" class="question">Purge Per Predicate</label>
+                        <div class="elaboration">
+                            In this case, predicates of existing concepts will be replaced with the imported predicates.
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <stripes:radio id="rdfPurgeVocabularyData" name="rdfPurgeOption" value="3"/>
-                    <label for="rdfPurgeVocabularyData" class="question">Purge All Vocabulary Data</label>
-                    <div class="elaboration">
-                        In this case, all existing concepts will be removed and the imported concepts will be added.
+                    <div>
+                        <stripes:radio id="rdfPurgeVocabularyData" name="rdfPurgeOption" value="3"/>
+                        <label for="rdfPurgeVocabularyData" class="question">Purge All Vocabulary Data</label>
+                        <div class="elaboration">
+                            In this case, all existing concepts will be removed and the imported concepts will be added.
+                        </div>
                     </div>
-                </div>
+                    <div>
+                        <stripes:radio id="rdfDeleteVocabularyData" name="rdfPurgeOption" value="4"/>
+                        <label for="rdfDeleteVocabularyData" class="question">Delete Vocabulary Data</label>
+                        <div class="elaboration">
+                            In this case, all imported concepts will be removed from the vocabulary.
+                        </div>
+                    </div>
                     
-                <div id="missing-concepts-strategy" class="more-options">
-                    <div class="subtitle">How to handle missing concepts?</div>
-                    <div class="strategies">
-                        <div class="strategy-ignore">
-                            <stripes:radio id="strategy-ignore" name="missingConceptsAction" value="keep" checked="keep"/>
-                            <label for="missingConceptsStrategy" class="question">Maintain as is, ignore</label>
-                        </div>
-                        <div class="strategy-remove">
-                            <stripes:radio id="strategy-remove" name="missingConceptsAction" value="remove"/>
-                            <label for="missingConceptsStrategy" class="question">Remove</label>
-                        </div>
-                        <div class="strategy-status-invalid">
-                            <stripes:radio id="strategy-status-invalid" name="missingConceptsAction" value="invalid"/>
-                            <label for="missingConceptsStrategy" class="question">Maintain, but update status to "Invalid"</label>
-                        </div>
-                        <div class="strategy-status-deprecated">
-                            <stripes:radio id="strategy-status-deprecated" name="missingConceptsAction" value="deprecated"/>
-                            <label for="missingConceptsStrategy" class="question">Maintain, but update status to "Deprecated"</label>
-                        </div>
-                        <div class="strategy-status-deprecated-retired">
-                            <stripes:radio id="strategy-status-deprecated-retired" name="missingConceptsAction" value="retired"/>
-                            <label for="missingConceptsStrategy" class="question">Maintain, but update status to "Deprecated-Retired"</label>
-                        </div>
-                        <div class="strategy-status-deprecated-superseded">
-                            <stripes:radio id="strategy-status-deprecated-superseded" name="missingConceptsAction" value="superseded"/>
-                            <label for="missingConceptsStrategy" class="question">Maintain, but update status to "Deprecated-Superseded"</label>
+                    <div id="missing-concepts-strategy" class="more-options">
+                        <div class="subtitle">How to handle missing concepts?</div>
+                        <div class="strategies">
+                            <div class="strategy-ignore">
+                                <stripes:radio id="strategy-ignore" name="missingConceptsAction" value="keep" checked="keep"/>
+                                <label for="strategy-ignore" class="question">Maintain as is, ignore</label>
+                            </div>
+                            <div class="strategy-remove">
+                                <stripes:radio id="strategy-remove" name="missingConceptsAction" value="remove"/>
+                                <label for="strategy-remove" class="question">Remove</label>
+                            </div>
+                            <div class="strategy-status-invalid">
+                                <stripes:radio id="strategy-status-invalid" name="missingConceptsAction" value="invalid"/>
+                                <label for="strategy-status-invalid" class="question">Maintain, but update status to "Invalid"</label>
+                            </div>
+                            <div class="strategy-status-deprecated">
+                                <stripes:radio id="strategy-status-deprecated" name="missingConceptsAction" value="deprecated"/>
+                                <label for="strategy-status-deprecated" class="question">Maintain, but update status to "Deprecated"</label>
+                            </div>
+                            <div class="strategy-status-deprecated-retired">
+                                <stripes:radio id="strategy-status-deprecated-retired" name="missingConceptsAction" value="retired"/>
+                                <label for="strategy-status-deprecated-retired" class="question">Maintain, but update status to "Deprecated-Retired"</label>
+                            </div>
+                            <div class="strategy-status-deprecated-superseded">
+                                <stripes:radio id="strategy-status-deprecated-superseded" name="missingConceptsAction" value="superseded"/>
+                                <label for="strategy-status-deprecated-superseded" class="question">Maintain, but update status to "Deprecated-Superseded"</label>
+                            </div>
                         </div>
                     </div>
-                </div>
 
 	            <stripes:file name="uploadedFileToImport" id="fileToUpload" size="40"  title="Select a .rdf file to import"/>
 	            <stripes:submit id="uploadRdf" name="uploadRdf" value="Upload"/>
 	            <input type="button" id="closeUploadRDFDialog" value="Cancel"/>
-                <img id="spinningImage" src="<%=request.getContextPath()%>/images/indicator.gif" alt="Importing..." style="display: none;"/>
-
+                    <img id="spinningImage" src="<%=request.getContextPath()%>/images/indicator.gif" alt="Importing..." style="display: none;"/>
 	        </stripes:form>
 	    </div>
 

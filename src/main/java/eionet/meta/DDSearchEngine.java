@@ -1,5 +1,11 @@
 package eionet.meta;
 
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.model.Attribute;
+import eionet.datadict.model.DataDictEntity;
+import eionet.datadict.services.AttributeService;
+import eionet.datadict.services.data.AttributeDataService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,7 +26,6 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IAttributeDAO;
@@ -1390,6 +1395,7 @@ public class DDSearchEngine {
                 elm.setCheckedoutCopyID(rs.getString("DATAELEM.CHECKEDOUT_COPY_ID"));
                 elm.setDate(rs.getString("DATAELEM.DATE"));
                 elm.setNamespace(new Namespace(rs.getString("DATAELEM.PARENT_NS"), null, null, null, null));
+                elm.setSuccessorId(rs.getString("DATAELEM.SUCCESSOR"));
 
                 if (!elmCommon) {
                     elm.setTableID(rs.getString("DS_TABLE.TABLE_ID"));
@@ -2417,6 +2423,7 @@ public class DDSearchEngine {
                 ds.setWorkingUser(rs.getString("WORKING_USER"));
                 ds.setDate(rs.getString("DATE"));
                 ds.setUser(rs.getString("USER"));
+                ds.setSuccessorId(rs.getString("SUCCESSOR"));
 
                 v.add(ds);
             }
@@ -2727,7 +2734,7 @@ public class DDSearchEngine {
 
         if (regStatus != null) {
             if (user == null || !user.isAuthentic()) {
-                if (regStatus.equals("Incomplete") || regStatus.equals("Candidate") || regStatus.equals("Qualified")) {
+                if (regStatus.equals("Incomplete") || regStatus.equals("Candidate") || regStatus.equals("Qualified") || regStatus.equals("Retired") || regStatus.equals("Superseded")) {
                     return true;
                 }
             }
@@ -5242,5 +5249,55 @@ public class DDSearchEngine {
         //to avoid seniding weeks for redesign use this legacy code to bind vocabulary to data elements
         IVocabularyFolderDAO dao = springContext.getBean(IVocabularyFolderDAO.class);
         return dao.getVocabularyFolder(vocabularyId);
+    }
+    
+   
+    /*
+     * Method created to support data_elememnt.jsp, dataset.jsp and dstable.jsp with the AttributeService spring bean.
+     * @see AttributeService javadoc for reference. 
+     */
+    public List<VocabularyConcept> getAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity, String inheritanceModeCode) 
+            throws ResourceNotFoundException, EmptyParameterException {
+        Attribute.ValueInheritanceMode inheritanceMode = convertValueInheritanceModeCode(inheritanceModeCode);
+        AttributeService attributeService = springContext.getBean(AttributeService.class);
+        return attributeService.getAttributeVocabularyConcepts(attributeId, ddEntity, inheritanceMode);
+    }
+    
+    
+    /*
+     * Method Created to support data_element.jsp and dstable.jsp with the AttributeService spring bean.
+     * @see AttributeService javadoc for reference.
+     */
+    public List<VocabularyConcept> getInheritedAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity) 
+            throws ResourceNotFoundException, EmptyParameterException {
+        AttributeService attributeService = springContext.getBean(AttributeService.class);
+        return attributeService.getInherittedAttributeVocabularyConcepts(attributeId, ddEntity);
+    }
+    
+    /*
+     * Method created to support data_element.jsp, dataset.jsp and dstable.jsp with the AttributeDataService spring bean.
+     * @see AttributeDataService javadoc for reference.
+     */
+    public boolean existsVocabularyBinding(int attributeId){
+        AttributeDataService attributeDataService = springContext.getBean(AttributeDataService.class);
+        Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
+        return vocabularyId != null;
+    }
+    
+    private Attribute.ValueInheritanceMode convertValueInheritanceModeCode(String inheritanceModeCode) {
+        Attribute.ValueInheritanceMode inheritanceMode;
+        if (inheritanceModeCode.equals("0")) {
+                inheritanceMode = Attribute.ValueInheritanceMode.NONE;
+        }
+        else if (inheritanceModeCode.equals("1")){
+            inheritanceMode = Attribute.ValueInheritanceMode.PARENT_WITH_EXTEND;
+        } 
+        else if (inheritanceModeCode.equals("2")) {
+            inheritanceMode = Attribute.ValueInheritanceMode.PARENT_WITH_OVERRIDE;
+        }
+        else {
+            throw new IllegalArgumentException(String.format("Unknown value inheritance mode"));
+        }
+        return inheritanceMode;
     }
 }

@@ -28,7 +28,7 @@ package eionet.meta.dao.domain;
  */
 public enum DatasetRegStatus {
 
-    INCOMPLETE("Incomplete", 1), CANDIDATE("Candidate", 2), RECORDED("Recorded", 3), QUALIFIED("Qualified", 4), RELEASED("Released", 5);
+    SUPERSEDED("Superseded", 0), RETIRED("Retired", 0), INCOMPLETE("Incomplete", 1), CANDIDATE("Candidate", 2), RECORDED("Recorded", 3), QUALIFIED("Qualified", 4), RELEASED("Released", 5);
 
     private String name;
     private int phaseOrder;

@@ -1,0 +1,55 @@
+## TOMCAT SERVER
+tomcat:  
+  image: eeacms/datadict:latest
+  env_file: docker.env
+  links:
+    - mysql
+  volumes_from:
+    - data-dd
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.sidekicks: data-dd, scpserver
+
+scpserver:
+  image: eeacms/scp-server
+  ports:
+  - 3333:22
+  environment:
+    AUTHORIZED_KEYS:
+     ## add your key here
+    DATADIR: /opt/
+    USERID: 0
+    GROUPID: 0
+  volumes_from:
+  - data-dd
+
+## DATABASE CONTAINERS
+mysql:
+  image: mysql:5.5
+  ports:
+    - "53506:3306"
+  command:
+    - mysqld
+    - --max_allowed_packet=16M
+  environment: 
+    MYSQL_ROOT_PASSWORD: dbpassword
+  volumes_from:
+    - data-mysql
+  labels:
+    io.rancher.sidekicks: data-mysql
+
+## DATA CONTAINERS
+data-mysql:
+  image: tianon/true
+  labels:
+    io.rancher.container.start_once: "true"
+  volumes:
+    - /opt/datadict/mysql:/var/lib/mysql
+
+data-dd:
+  image: tianon/true
+  labels:
+    io.rancher.container.start_once: "true"
+  volumes:
+    - /opt/datadict:/opt/datadict
+

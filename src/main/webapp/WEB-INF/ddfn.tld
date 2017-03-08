@@ -126,10 +126,23 @@
     </function>
 
     <function>
+        <name>getEnumValues</name>
+        <function-class>eionet.web.util.JstlFunctions</function-class>
+        <function-signature>[java.lang.Object getEnumValues(java.lang.String)</function-signature>
+    </function>
+
+    <function>
         <description>Return the DatasetRegStatus enum from the given string.</description>
         <name>getDatasetRegStatusFromString</name>
         <function-class>eionet.meta.dao.domain.DatasetRegStatus</function-class>
         <function-signature>eionet.meta.dao.domain.DatasetRegStatus fromString(java.lang.String)</function-signature>
+    </function>
+    
+    <function>
+        <description>Return the value of the given property.</description>
+        <name>getProperty</name>
+        <function-class>eionet.web.util.JstlFunctions</function-class>
+        <function-signature>java.lang.String getProperty(java.lang.String)</function-signature>
     </function>
 
 </taglib>

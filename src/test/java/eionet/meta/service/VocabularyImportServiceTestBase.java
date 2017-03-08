@@ -42,7 +42,7 @@ import java.util.List;
  *
  * @author enver
  */
-@SpringApplicationContext("spring-context.xml")
+@SpringApplicationContext("mock-spring-context.xml")
 public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
 
     /**
@@ -84,18 +84,6 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
     protected abstract Reader getReaderFromResource(String resourceLoc) throws Exception;
 
     /**
-     * Utility code to make test code more readable. Returns vocabulary concepts with attributes by delegating call to
-     * vocabularyService
-     *
-     * @param vf VocabularyFolder which holds concepts
-     * @return List of vocabulary concepts of given folder
-     * @throws Exception if an error occurs
-     */
-    protected List<VocabularyConcept> getValidVocabularyConceptsWithAttributes(VocabularyFolder vf) throws Exception {
-        return vocabularyService.getAcceptedConceptsWithAttributes(vf.getId());
-    }// end of method getVocabularyConceptsWithAttributes
-
-    /**
      * Utility code to make test code more readable. Returns all vocabulary concepts with attributes by delegating call to
      * vocabularyService
      *
@@ -104,8 +92,8 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
      * @throws Exception if an error occurs
      */
     protected List<VocabularyConcept> getAllVocabularyConceptsWithAttributes(VocabularyFolder vf) throws Exception {
-        return vocabularyService.getConceptsWithAttributes(vf.getId(), null, null, false);
-    }// end of method getVocabularyConceptsWithAttributes
+        return vocabularyService.getAllConceptsWithAttributes(vf.getId());
+    }
 
     /**
      * Utility code to make test code more readable. Finds DataElement with given name in a list
@@ -116,7 +104,7 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
      */
     public static DataElement findDataElemByAttrValue(List<DataElement> elems, String attrValue) {
         return (DataElement) CollectionUtils.find(elems, new DataElementEvaluateOnAttributeValuePredicate(attrValue));
-    }// end of method findDataElemByAttrValue
+    }
 
     /**
      * Utility code to make test code more readable. Finds VocabularyConcept with given id in a list
@@ -127,7 +115,7 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
      */
     public static VocabularyConcept findVocabularyConceptById(List<VocabularyConcept> concepts, int id) {
         return (VocabularyConcept) CollectionUtils.find(concepts, new VocabularyConceptEvaluateOnIdPredicate(id));
-    }// end of method findVocabularyConceptById
+    }
 
     /**
      * Utility code to make test code more readable. Finds VocabularyConcept with given identifier in a list
@@ -138,7 +126,7 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
      */
     public static VocabularyConcept findVocabularyConceptByIdentifier(List<VocabularyConcept> concepts, String identifier) {
         return (VocabularyConcept) CollectionUtils.find(concepts, new VocabularyConceptEvaluateOnIdentifierPredicate(identifier));
-    }// end of method findVocabularyConceptByIdentifier
+    }
 
     /**
      * Inner class used to search for a VocabularyConcept in a Collection using it's id
@@ -155,7 +143,7 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
             VocabularyConcept vc = (VocabularyConcept) object;
             return this.id == vc.getId();
         }
-    }// end of inner class VocabularyConceptEvaluateOnIdPredicate
+    }
 
     /**
      * Inner class used to search for a VocabularyConcept in a Collection using it's id `
@@ -172,7 +160,7 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
             VocabularyConcept vc = (VocabularyConcept) object;
             return StringUtils.equals(this.identifier, vc.getIdentifier());
         }
-    }// end of inner class VocabularyConceptEvaluateOnIdentifierPredicate
+    }
 
     /**
      * Inner class used to search for a DataElement using it's attribute value in a Collection
@@ -189,5 +177,5 @@ public abstract class VocabularyImportServiceTestBase extends UnitilsJUnit4 {
             DataElement elem = (DataElement) object;
             return StringUtils.equals(value, elem.getAttributeValue());
         }
-    }// end of inner class DataElementEvaluateOnAttributeValuePredicate
-}// end of test case VocabularyImportServiceTestBase
+    }
+}

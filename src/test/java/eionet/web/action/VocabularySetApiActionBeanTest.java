@@ -63,6 +63,7 @@ public class VocabularySetApiActionBeanTest {
             actionBean.setWebApiAuthService(webApiAuthService);
             actionBean.setErrorPageService(errorPageService);
         }
+        
     }
 
     @Mock

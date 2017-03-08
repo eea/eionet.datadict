@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.LinkedHashMap;
@@ -162,7 +161,7 @@ public class DstXls extends TblXls {
      * @param conn
      * @throws SQLException
      */
-    protected static int storeCacheEntry(String id, String fn, Connection conn) throws SQLException {
+    protected int storeCacheEntry(String id, String fn, Connection conn) throws SQLException {
         if (id == null || fn == null || conn == null) {
             return -1;
         }
@@ -199,50 +198,4 @@ public class DstXls extends TblXls {
         }
     }
 
-    /**
-     * 
-     * @param id
-     * @param conn
-     * @return
-     * @throws SQLException
-     */
-    protected static String deleteCacheEntry(String id, Connection conn) throws SQLException {
-        if (id == null || conn == null) {
-            return null;
-        }
-
-        INParameters inParams = new INParameters();
-        StringBuffer buf =
-                new StringBuffer("select FILENAME from CACHE where ").append("OBJ_TYPE='dst' and ARTICLE='xls' and OBJ_ID=")
-                        .append(inParams.add(id, Types.INTEGER));
-
-        String fn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                fn = rs.getString(1);
-                inParams = new INParameters();
-                buf =
-                        new StringBuffer("delete from CACHE where ").append("OBJ_TYPE='dst' and ARTICLE='xls' and OBJ_ID=")
-                                .append(inParams.add(id, Types.INTEGER));
-                stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-                stmt.executeUpdate();
-            }
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-            }
-        }
-
-        return fn;
-    }
 }

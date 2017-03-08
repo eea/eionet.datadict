@@ -2,10 +2,9 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Tables" currentSection="tables">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Tables" helpScreen="tables" currentSection="tables">
 
     <stripes:layout-component name="head">
-        <script type="text/javascript" src="${pageContext.request.contextPath}/helpPopup.js"></script>
         <script type="text/javascript">
             // <![CDATA[
             (function($) {

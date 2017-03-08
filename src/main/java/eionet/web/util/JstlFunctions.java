@@ -20,17 +20,18 @@
  */
 package eionet.web.util;
 
+import eionet.util.Props;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang.StringUtils;
 
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * JSTL functions to be used in JSP.
@@ -233,4 +234,20 @@ public final class JstlFunctions {
     public static char checkmark(boolean value) {
         return value ? '\u2713' : '\u2717';
     }
+    
+    /**
+     * Returns the value of the defined property
+     * 
+     * @param property
+     * @return  value
+     */
+    public static java.lang.String getProperty(java.lang.String property) {
+        return Props.getProperty(property);
+    }
+    
+    public static Object[] getEnumValues(String enumName) 
+            throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+        return (Object[]) Class.forName(enumName).getMethod("values").invoke(null);
+    }
+    
 }

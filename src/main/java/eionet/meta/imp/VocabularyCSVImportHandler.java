@@ -110,7 +110,6 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
     public void generateUpdatedBeans() throws ServiceException {
         // content.
         CSVReader reader = new CSVReader(this.content);
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
             String[] header = reader.readNext();

@@ -5,6 +5,7 @@
  */
 package eionet.meta.exports.rdf;
 
+import eionet.meta.ActionBeanUtils;
 import eionet.meta.service.DBUnitHelper;
 import eionet.meta.service.ISchemaService;
 import java.io.ByteArrayOutputStream;
@@ -21,7 +22,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
  *
  * @author Nikolaos Nakas
  */
-@SpringApplicationContext("spring-context.xml")
+@SpringApplicationContext("mock-spring-context.xml")
 public class SchemasManifestXmlWriterTest extends UnitilsJUnit4 {
     
     private static enum XmlWriterType {
@@ -38,6 +39,7 @@ public class SchemasManifestXmlWriterTest extends UnitilsJUnit4 {
     
     @BeforeClass
     public static void setUpClass() throws Exception {
+        ActionBeanUtils.getServletContext();
         DBUnitHelper.loadData(SEED_FILE_ATTRIBUTE);
         DBUnitHelper.loadData(SEED_FILE_SCHEMA_SETS);
         DBUnitHelper.loadData(SEED_FILE_SCHEMAS);

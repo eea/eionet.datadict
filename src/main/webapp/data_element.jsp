@@ -1,9 +1,14 @@
+<%@page import="eionet.meta.dao.domain.VocabularyConcept"%>
+<%@page import="eionet.datadict.model.DataDictEntity"%>
+<%@page import="eionet.acl.AccessControlListIF"%>
+<%@page import="eionet.acl.AccessController"%>
 <%@page import="eionet.meta.dao.mysql.DataElementDAOImpl"%>
 <%@page import="eionet.meta.dao.domain.InferenceRule"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.dao.domain.VocabularyFolder,eionet.util.*,eionet.util.sql.ConnectionUtil,java.io.*,javax.servlet.http.HttpUtils"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%>
+<%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final int MAX_CELL_LEN = 40;%>
@@ -16,6 +21,8 @@
     /**
      *
      */
+    
+
     private DElemAttribute getAttributeByName(String name, Vector mAttributes) {
 
         for (int i = 0; mAttributes != null && i < mAttributes.size(); i++) {
@@ -185,6 +192,8 @@
     Vector fixedValues = null;
     String feedbackValue = null;
     ArrayList<InferenceRule> dataElementRules = null;
+    String successorId = null;
+    DataElement successorElement = null;
 
     ServletContext ctx = getServletContext();
     DDUser user = SecurityUtil.getUser(request);
@@ -237,7 +246,7 @@
         String copy_elem_id = request.getParameter("copy_elem_id");
         String dsID = request.getParameter("ds_id");
         String tableID = request.getParameter("table_id");
-
+        
         // indicates whether element is fixed values or quantitative
         String type = request.getParameter("type");
         if (type != null && type.length() == 0) {
@@ -434,7 +443,7 @@
         boolean canNewVersion = false;
         boolean isMyWorkingCopy = false;
         boolean isLatestElm = false;
-
+        
         Connection conn = null;
 
         // the whole page's try block
@@ -523,7 +532,11 @@
                     elmWorkingUser = dataElement.getWorkingUser();
                     elmRegStatus = dataElement.getStatus();
                     refTables = searchEngine.getReferringTables(delem_id);
-
+                    if (elmRegStatus.equalsIgnoreCase("superseded")) {
+                        //get successorId from request
+                        successorId = dataElement.getSuccessorId();
+                        successorElement = successorId != null? searchEngine.getDataElement(successorId) : null;
+                    }
                     Vector v = new Vector();
                     if (user == null) {
                         v.add("Recorded");
@@ -539,14 +552,15 @@
                     editReleasedPrm = user != null
                             && SecurityUtil.hasPerm(user.getUserName(),
                                     "/elements/" + delemIdf, "er");
-
                     canNewVersion = !dataElement.isWorkingCopy()
                             && elmWorkingUser == null
                             && elmRegStatus != null && user != null
                             && isLatestElm;
                     if (canNewVersion) {
                         canNewVersion = elmRegStatus.equals("Released")
-                                || elmRegStatus.equals("Recorded");
+                                || elmRegStatus.equals("Recorded") 
+                                || elmRegStatus.equals("Superseded")
+                                || elmRegStatus.equals("Retired");
                         if (canNewVersion)
                             canNewVersion = editPrm || editReleasedPrm;
                     }
@@ -556,13 +570,13 @@
                             && elmRegStatus != null && user != null
                             && isLatestElm;
                     if (canCheckout) {
-                        if (elmRegStatus.equals("Released"))
+                        if (elmRegStatus.equals("Released") || elmRegStatus.equals("Retired") || elmRegStatus.equals("Superseded"))
                             // || elmRegStatus.equals("Recorded")
                             canCheckout = editReleasedPrm;
                         else
                             canCheckout = editPrm || editReleasedPrm;
                     }
-
+                        
                     isMyWorkingCopy = elmCommon
                             && dataElement.isWorkingCopy()
                             && elmWorkingUser != null && user != null
@@ -768,6 +782,28 @@
     <script type="text/javascript">
         // <![CDATA[
 
+        <% if (elmCommon) {
+        %>
+            function linkElem(checkedoutCopyId){
+                pickMode="link";
+                var url="search.jsp?ctx=popup&common=&link=&exclude="+checkedoutCopyId;
+                wLink = window.open('<%=request.getContextPath()%>'+'/'+url,"Search","height=800,width=1200,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
+                if (window.focus){
+                    wLink.focus();
+                }
+            }
+        <%}%>
+        
+        var pickMode="";
+        function statusSelectionChanged(changedForm) {
+            if (document.getElementById("reg_status_select").value.toLowerCase() == 'superseded') {
+                document.getElementById("successor").style.display = 'inline';
+            } else {
+                document.getElementById("successor").style.display = 'none';
+            }
+            form_changed(changedForm);
+        }
+        
         function forceAttrMaxLen(){
             var i = 0;
             var elms = document.forms["form1"].elements;
@@ -798,6 +834,12 @@
                                 "If you want to continue, click OK. Otherwise click Cancel.");
                 if (b==false) return;
                 <%}%>
+                <%if (elmRegStatus != null && (elmRegStatus.equals("Retired") || elmRegStatus.equals("Superseded"))){%>
+                    var b = confirm("You are checking in with <%=elmRegStatus%> status! This is a status for deprecated data elements. "+
+                            "If you want to continue, click OK. Otherwise click Cancel.");
+                    if (b==false) return;
+                <%}
+             %>
             document.forms["form1"].elements["check_in"].value = "true";
             document.forms["form1"].elements["mode"].value = "edit";
             document.forms["form1"].submit();
@@ -892,10 +934,10 @@
 
             // if not delete mode, do validation of inputs
             if (mode != "delete"){
-                var isCommon = '<%=elmCommon%>';
+                var isCommon = <%=elmCommon%>;
                 var strVocabularyId = '<%=vocabularyId%>';
                 var strType = '<%=type%>';
-
+                
                 forceAttrMaxLen();
                 if (!checkObligations()){
                     alert("You have not specified one of the mandatory attributes!");
@@ -906,6 +948,14 @@
                     if (strType == 'CH3' && strVocabularyId == 'null') {
                       alert("Vocabulary is not selected.");
                       return false;
+                    }
+                    if (isCommon) {
+                        var regStatus = document.getElementById("reg_status_select").value;
+                        var successorId = document.forms["form1"].elements["successor_id"].value;
+                        if (regStatus.toLowerCase() === 'superseded' && successorId === "null") {
+                            alert("A superseded element must be linked to its successor. You must specify the link.");
+                            return false;
+                        }
                     }
                 }
 
@@ -1159,13 +1209,13 @@
         }
 
         function copyElem(){
-            var isCommon = '<%=elmCommon%>';
+            var isCommon = <%=elmCommon%>;
             if (hasWhiteSpace("idfier")){
                 alert("Identifier cannot contain any white space!");
                 return;
             }
 
-            if (!validForXMLTag(document.forms["form1"].elements["idfier"].value, isCommon)){
+            if (!validForXMLTag(document.forms["form1"].elements["idfier"].value, isCommon)) {
                 alert("Identifier not valid for usage as an XML tag! " +
                           "In the first character only underscore or latin characters are allowed! " +
                           "In the rest of characters only underscore or hyphen or dot or 0-9 or latin characters are allowed!");
@@ -1192,14 +1242,24 @@
             }
         }
 
-        function pickElem(id){
-
-            document.forms["form1"].elements["copy_elem_id"].value=id;
-            document.forms["form1"].elements["mode"].value = "copy";
-            document.forms["form1"].submit();
-            return true;
+        
+        function pickElemForLink(id, name){
+            if (pickMode=="link") {
+                document.forms["form1"].elements["successor_id"].value = id;
+                document.getElementById("successorName").href = "<%=request.getContextPath()%>/dataelements/"+id;
+                document.getElementById("successorName").innerHTML = name;
+                document.getElementById("successorName").onclick = "return true";
+                return true;
+            }
         }
-
+        
+        function pickElem(id) {
+                document.forms["form1"].elements["copy_elem_id"].value=id;
+                document.forms["form1"].elements["mode"].value = "copy";
+                document.forms["form1"].submit();
+                return true;
+        }
+        
         function validForXMLTag(str, isCommon){
             var colonCount = 0;
             // if empty string not allowed for XML tag
@@ -1266,7 +1326,7 @@
     <div id="pagehead">
         <a href="/"><img src="<%=request.getContextPath()%>/images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
         <div id="networktitle">Eionet</div>
-        <div id="sitetitle"><%=application.getInitParameter("appDispName")%></div>
+        <div id="sitetitle">${ddfn:getProperty("app.displayName")}</div>
         <div id="sitetagline">This service is part of Reportnet</div>
     </div> <!-- pagehead -->
     <div id="workarea"><%
@@ -1364,7 +1424,7 @@
                                     <li class="checkout"><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/checkout">Check out</a></li>
                                 <%
                                     }
-                                    if ((elmCommon && canCheckout)
+                                    if ((elmCommon && (canCheckout || elmRegStatus.equals("Retired") || elmRegStatus.equals("Superseded")))
                                                     || (!elmCommon && editDstPrm)) {
                                 %>
                                     <li class="delete"><a href="javascript:submitForm('delete')">Delete</a></li>
@@ -1662,6 +1722,10 @@
                                             <!-- RegistrationStatus, relevant for common elements only -->
                                             <%
                                                 if (elmCommon) {
+                                                    String checkedoutCopyID = null;
+                                                    if (dataElement!=null) {
+                                                        checkedoutCopyID = dataElement.getCheckedoutCopyID();
+                                                    }
                                             %>
                                                 <tr class="<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
@@ -1681,6 +1745,13 @@
                                                         if (mode.equals("view")){ %>
                                                             <%=Util.processForDisplay(elmRegStatus)%>
                                                             <%
+                                                            if (elmRegStatus.equalsIgnoreCase("Superseded") && (successorElement!= null)) {%>
+                                                                <small> by 
+                                                                    <a  href="<%=request.getContextPath()%>/dataelements/<%=successorElement.getID()%>">
+                                                                        <i><c:out value="<%=successorElement.getShortName()%>"/></i>
+                                                                    </a>
+                                                                </small>
+                                                            <%}
                                                             long timestamp = dataElement.getDate()==null ? 0 : Long.parseLong(dataElement.getDate());
                                                             String dateString = timestamp==0 ? "" : eionet.util.Util.releasedDate(timestamp);
                                                             String dateTimeString = timestamp==0 ? "" : dateString + " " + eionet.util.Util.hoursMinutesSeconds(timestamp);
@@ -1706,21 +1777,54 @@
                                                         }
                                                         else {
                                                         %>
-                                                            <select name="reg_status" onchange="form_changed('form1')"> <%
+                                                            <c:set var="selected" value=""/>
+                                                            <select id="reg_status_select" name="reg_status" onchange="statusSelectionChanged('form1')"> <%
                                                                     Vector regStatuses = "add".equals(mode) ? verMan.getSettableRegStatuses() : verMan.getRegStatuses();
-																	for (int i = 0; i < regStatuses.size(); i++) {
-																	    String status = (String) regStatuses.get(i);
-																	    String selected = status.equals(elmRegStatus) ? "selected=\"selected\"" : "";
-																	    String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
-		                                                                String title = disabled.length() > 0 ? "title=\"This status not allowed any more when adding/saving.\"" : "";
-		                                                                String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
-																	    %>
+                                                                for (int i = 0; i < regStatuses.size(); i++) {
+                                                                        String status = (String) regStatuses.get(i);
+                                                                        String selected = status.equals(elmRegStatus) ? "selected" : "";
+                                                                        String disabled = verMan.getSettableRegStatuses().contains(status) ? "" : "disabled=\"disabled\"";
+                                                                        String title = disabled.length() > 0 ? "title=\"This status not allowed any more when adding/saving.\"" : "";
+                                                                        String style = disabled.length() > 0 ? "style=\"background-color: #F2F2F2;\"" : "";
+                                                                        if ((status.equalsIgnoreCase("retired") || status.equalsIgnoreCase("superseded"))) {
+                                                                            disabled = "";
+                                                                        }
+                                                                        if (selected.equals("selected")) {%>
+                                                                        <c:set var="selected" value="<%=status%>"/>
+                                                                        <%}
+                                                                    %>
                                                                         <option <%=style%> <%=selected%> <%=disabled%> <%=title%> value="<%=Util.processForDisplay(status)%>"><%=Util.processForDisplay(status)%></option><%
                                                                     }
                                                                 %>
-                                                            </select><%
-                                                                }
-                                                            %>
+                                                            </select>
+                                                            <c:set var="display" value="none"/>
+                                                            <c:set var="successorName" value="Not defined yet"/>
+                                                            <c:set var="enableSuccessorLink" value="false"/>
+                                                            <c:set var="successorId" value=""/>
+                                                            <c:set var="checkedoutCopyId" value="<%=checkedoutCopyID%>"/>
+                                                            <%if (successorElement != null){ %>
+                                                                <c:set var="successorName" value="<%=successorElement.getShortName()%>"/>
+                                                                <c:set var="enableSuccessorLink" value="true"/> 
+                                                                <c:set var="successorId" value="<%=successorElement.getID()%>"/>
+                                                            <%}%>
+                                                            <c:if test="${selected eq 'Superseded'}">
+                                                                <c:set var="display" value="inline"/>
+                                                            </c:if>
+                                                            <div id="successor" style="display: ${display}">
+                                                                &emsp;
+                                                                <small>Replaced by: </small>
+                                                                <a id="successorName" href="<%=request.getContextPath()%>/dataelements/${successorId}" onclick="return ${enableSuccessorLink}">
+                                                                    <i>
+                                                                        <c:out value="${successorName}"/>
+                                                                    </i>
+                                                                </a>
+                                                                &emsp;
+                                                                <a href="javascript:linkElem(${checkedoutCopyId})">
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/edit.gif" width="16" height="16" alt=""/>
+                                                                </a>
+                                                                <input type="hidden" name="successor_id" value="${successorId}"/>
+                                                            </div>
+                                                        <%}%>
                                                     </td>
 
                                                     <%
@@ -1783,6 +1887,10 @@
                                                         String dispType = attribute.getDisplayType();
                                                         if (dispType == null)
                                                             continue;
+                                                        
+                                                        if (dispType.equals("vocabulary") && mode.equals("add")) {
+                                                            continue;
+                                                        }
 
                                                         boolean dispFor = type == null ? attribute
                                                                 .displayFor("CH2") : attribute.displayFor(type);
@@ -1824,7 +1932,7 @@
                                                                 continue;
 
                                                         if (mode.equals("view")
-                                                                && (attrValue == null || attrValue.length() == 0))
+                                                                && (attrValue == null || attrValue.length() == 0)) 
                                                             continue;
 
                                                         // if image attribute, but not the case to display it, then skip
@@ -1889,8 +1997,65 @@
 
                                                     <!-- dynamic attribute value display -->
                                                     <td class="simple_attr_value"><%
+                                                                if(dispType.equals("vocabulary")) {
+                                                                    DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
+                                                                    if(mode.equals("view")){
+                                                                        List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
+                                                                        if (concepts!=null) { %>
+                                                                            <ul class="stripedmenu">
+                                                                            <%
+                                                                                VocabularyFolder vf = null;
+                                                                                for (VocabularyConcept vocabularyConcept : concepts) {
+                                                                                    if (vf == null) {
+                                                                                        vf = searchEngine.getVocabulary(vocabularyConcept.getVocabularyId());
+                                                                                    }
+                                                                            %>
+                                                                                <li>
+                                                                                    <a href="<%=request.getContextPath()%>/vocabularyconcept/<%=Util.processForDisplay(vf.getFolderName())%>/<%=Util.processForDisplay(vf.getIdentifier())%>/<%=Util.processForDisplay(vocabularyConcept.getIdentifier())%>">
+                                                                                        <%=vocabularyConcept.getLabel()%>
+                                                                                    </a>
+                                                                                </li>
+                                                                            <%}%>
+                                                                            </ul>
+                                                                    <%
+                                                                        }
+                                                                    } else if (mode.equals("edit")) {
+                                                                        if (inherit){
+                                                                            List<VocabularyConcept> inheritedValues = searchEngine.getInheritedAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity);
+                                                                            if(inheritedValues!=null && !inheritedValues.isEmpty()){
+                                                                            %>
+                                                                                <c:set var="inheritable" value="<%=attribute.getInheritable()%>" />
+                                                                                <c:choose>
+                                                                                    <c:when test="${inheritable eq '2'}">
+                                                                                        <c:out value="Overriding parent level values: "/>
+                                                                                    </c:when>
+                                                                                    <c:when test="${inheritable eq '1'}">
+                                                                                        <c:out value="Inherited from parent level: "/>
+                                                                                    </c:when>
+                                                                                </c:choose>
+                                                                                <c:forEach var="value" items="<%=inheritedValues%>" varStatus="count">
+                                                                                    <div><c:out value="${value.label}"/><c:if test="${!count.last}">, </c:if><div>
+                                                                                </c:forEach>
+                                                                                </br>
+                                                                          <%}
+                                                                        }
+                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) { %>
+                                                                          <%List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
+                                                                            if(concepts!=null){ %>
+                                                                                <ul class="stripedmenu">
+                                                                                    <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
+                                                                                        <li><c:out value="${concept.label}"/></li>
+                                                                                    </c:forEach>
+                                                                                </ul>
+                                                                            <%}%>
+                                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
+                                                                        <%} else {%>
+                                                                            [Manage links to the vocabulary]
+                                                                        <%}
+                                                                  }%>
+                                                              <%}
                                                         // handle image attribute first
-                                                                if (dispType.equals("image")) {
+                                                                else if (dispType.equals("image")) {
 
                                                                     if (!imagesQuicklinkSet) {
                                                     %>
@@ -2069,8 +2234,22 @@
                                                                     </select>
                                                                     <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>"></a>
                                                                     <%
-                                                                        } else {
-                                                                    %>
+                                                                        } else if (dispType.equals("vocabulary")) {
+                                                                                DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
+                                                                                if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
+                                                                                <%List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
+                                                                                if(concepts!=null) { %>
+                                                                                    <ul class="stripedmenu">
+                                                                                        <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
+                                                                                            <li><c:out value="${concept.label}"/></li>
+                                                                                        </c:forEach>
+                                                                                    </ul>
+                                                                              <%}%>
+                                                                              <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
+                                                                            <%} else {%>
+                                                                                [Manage links to the vocabulary]
+                                                                            <%}
+                                                                    }else {%>
                                                                     Unknown display type!<%
                                                                         }
                                                                                     }
@@ -2205,9 +2384,9 @@
                                                 <tr>
                                                     <th></th>
                                                     <td colspan="3">
-                                                        <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
-                                                        <input type="button" class="mediumbuttonb" value="Copy"
-                                                            onclick="copyElem()"
+                                                        <input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
+                                                        <input type="submit" class="mediumbuttonb" value="Copy"
+                                                            onclick="copyElem(); return false;"
                                                             title="Opens an element search window, and from the search results you can select an element to copy."/>
                                                     </td>
                                                 </tr>
@@ -2218,9 +2397,9 @@
                                                 <tr>
                                                     <th></th>
                                                     <td colspan="3">
-                                                        <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-                                                        <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
-                                                        <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=delem_id%>')"/>
+                                                        <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>
+                                                        <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>
+                                                        <input type="submit" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=delem_id%>')"/>
                                                     </td>
                                                 </tr>
                                                     <%

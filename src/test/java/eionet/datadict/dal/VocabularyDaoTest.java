@@ -13,7 +13,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
-@SpringApplicationContext("spring-context.xml")
+@SpringApplicationContext("mock-spring-context.xml")
 public class VocabularyDaoTest extends UnitilsJUnit4 {
 
     @SpringBeanByType
