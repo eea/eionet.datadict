@@ -181,6 +181,19 @@
         <servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+     <servlet>
+        <servlet-name>SpringMVCServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+         <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/servlet-context.xml</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SpringMVCServlet</servlet-name>
+        <url-pattern>/v2/*</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/dispatcher</url-pattern>
@@ -410,18 +423,11 @@
         <servlet-name>DownloadServlet</servlet-name>
         <servlet-class>eionet.meta.DownloadServlet</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>appServlet</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
+   
 
     <!-- servlet mappings -->
 
-   <servlet-mapping>
-        <servlet-name>appServlet</servlet-name>
-        <url-pattern>/v2/*</url-pattern>
-    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>rpcrouter</servlet-name>
         <url-pattern>/rpcrouter</url-pattern>
