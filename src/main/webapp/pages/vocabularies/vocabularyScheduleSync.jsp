@@ -127,7 +127,7 @@
 
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">
-                            How to handle numeric concepts
+                            How to handle missing concepts
                         </th>
                         <td class="simple_attr_help">
                             <dd:mandatoryIcon />
