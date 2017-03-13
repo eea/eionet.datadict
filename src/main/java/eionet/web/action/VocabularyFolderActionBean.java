@@ -135,12 +135,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      /**
      *Page showing the scheduled jobs queue and past job execution attempts
      */
-    private static final String SCHEDULED_JOBS_VIEW="/pages/vocabularies/scheduledJobsQueue.jsp";
+    private static final String SCHEDULED_JOBS_VIEW="/pages/scheduledJobsQueue.jsp";
     
     /**
      * Page to view the details of a scheduled task
      */
-    private static final String SCHEDULED_TASK_DETAILS="/pages/vocabularies/scheduledTaskDetails.jsp";
+    private static final String SCHEDULED_TASK_DETAILS="/pages/scheduledTaskDetails.jsp";
     
     
     /**
