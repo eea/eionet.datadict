@@ -77,8 +77,8 @@
                             <dd:mandatoryIcon />
                         </td>
                         <td class="simple_attr_value">
-                            <stripes:text id="interval" name="scheduleSyncIntervalMinutes" size="10" value="6" class="numbersOnly" />
-                            <stripes:select name="scheduleInterval" value="10080">
+                            <stripes:text id="interval" name="scheduleSyncIntervalMinutes" size="10" value="7" class="numbersOnly" />
+                            <stripes:select name="scheduleInterval" value="1440">
                                 <c:forEach items="${actionBean.scheduleIntervals}" var="scheduleInterval">
                                     <stripes:option value="${scheduleInterval.key}" label="${scheduleInterval.value}"/>
                                 </c:forEach>

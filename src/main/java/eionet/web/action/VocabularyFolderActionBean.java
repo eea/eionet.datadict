@@ -200,9 +200,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         RESERVED_VOCABULARY_EVENTS.add("createSyncSchedule");
         
         Map<Integer,String> map = new LinkedHashMap<Integer, String>();
+        map.put(new Integer(1440), "days");
         map.put(new Integer(1), "minutes");
         map.put(new Integer(60), "hours");
-        map.put(new Integer(1440), "days");
         map.put(new Integer(10080), "weeks");
         scheduleIntervals= Collections.unmodifiableMap(map);
     }
