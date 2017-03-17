@@ -52,9 +52,11 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
     public static final String PARAM_RDF_PURGE_OPTION = "rdfPurgeOption";
     public static final String PARAM_MISSING_CONCEPTS_ACTION = "missingConceptsAction";
     public static final String PARAM_NOTIFIERS_EMAILS = "emails";
+    public static final String PARAM_SCHEDULE_INTERVAL="scheduleInterval";
+    public static final String PARAM_SCHEDULE_INTERVAL_UNIT="scheduleIntervalUnit";
 
-    public static Map<String, Object> createParamsBundle(String vocabularySetIdentifier, String vocabularyIdentifier,
-            boolean workingCopy, String rdfFileURL, String emails, int rdfPurgeOption, IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
+    public static Map<String, Object> createParamsBundle(String vocabularySetIdentifier, String vocabularyIdentifier,Integer scheduleInterval,
+            String scheduleIntervalUnit,boolean workingCopy, String rdfFileURL, String emails, int rdfPurgeOption, IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(PARAM_VOCABULARY_SET_IDENTIFIER, vocabularySetIdentifier);
         parameters.put(PARAM_VOCABULARY_IDENTIFIER, vocabularyIdentifier);
@@ -63,7 +65,8 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
         parameters.put(PARAM_RDF_PURGE_OPTION, rdfPurgeOption);
         parameters.put(PARAM_NOTIFIERS_EMAILS, emails);
         parameters.put(PARAM_MISSING_CONCEPTS_ACTION, missingConceptsAction);
-
+        parameters.put(PARAM_SCHEDULE_INTERVAL_UNIT,scheduleIntervalUnit);
+        parameters.put(PARAM_SCHEDULE_INTERVAL,scheduleInterval);
         return parameters;
     }
 

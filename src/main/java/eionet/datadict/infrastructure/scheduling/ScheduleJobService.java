@@ -12,6 +12,7 @@ import java.util.Map;
 public interface ScheduleJobService {
     
         <T> String scheduleJob(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes);
+        <T> String updateJobDetails(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes,String taskId);
             List<AsyncTaskExecutionEntry> getAllScheduledTaskEntries();
             List<AsyncTaskExecutionEntryHistory> getTaskEntriesHistory();
             AsyncTaskExecutionEntry getTaskEntry(String taskId);

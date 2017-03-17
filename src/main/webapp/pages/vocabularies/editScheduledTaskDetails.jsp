@@ -55,7 +55,7 @@
                             <dd:mandatoryIcon />
                         </td>
                         <td class="simple_attr_value">
-                            <stripes:text class="smalltext" size="60" name="vocabularyRdfUrl" id="vocabularyRdfUrl"/>
+                            <stripes:text class="smalltext" size="60" name="vocabularyRdfUrl" id="vocabularyRdfUrl" value="${actionBean.vocabularyRdfUrl}"/>
                         </td>
                     </tr>
                     <tr>
@@ -66,7 +66,7 @@
                             <dd:mandatoryIcon />
                         </td>
                         <td class="simple_attr_value">
-                            <stripes:text class="smalltext" size="60" name="emails" id="emails"/>
+                            <stripes:text class="smalltext" size="60" name="emails" id="emails" value="${actionBean.emails}"/>
                         </td>
                     </tr>
                     <tr>
@@ -77,8 +77,8 @@
                             <dd:mandatoryIcon />
                         </td>
                         <td class="simple_attr_value">
-                            <stripes:text id="interval" name="scheduleInterval" size="10" value="7" class="numbersOnly" />
-                            <stripes:select name="scheduleIntervalUnit" value="1440">
+                            <stripes:text id="interval" name="scheduleInterval" size="10" value="${actionBean.scheduleInterval}" class="numbersOnly" />
+                            <stripes:select name="scheduleIntervalUnit" value="${actionBean.scheduleIntervals}">
                                 <c:forEach items="${actionBean.scheduleIntervals}" var="scheduleIntervalUnit">
                                     <stripes:option value="${scheduleIntervalUnit.key}" label="${scheduleIntervalUnit.value}"/>
                                 </c:forEach>
@@ -165,7 +165,7 @@
                     <tr>
                         <th>&nbsp;</th>
                         <td colspan="2">
-                            <stripes:submit name="createScheduledJob" value="Save" class="mediumbuttonb"/>
+                            <stripes:submit name="createSyncSchedule" value="Save" class="mediumbuttonb"/>
                             <stripes:submit name="cancelSave" value="Cancel" class="mediumbuttonb"/>
                         </td>
                     </tr>

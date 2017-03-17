@@ -147,4 +147,15 @@ public class ScheduleJobServiceImpl implements ScheduleJobService {
     public AsyncTaskExecutionEntryHistory getTaskEntryHistory(String taskId) {
         return this.asyncTaskHistoryDao.retrieveTaskByTaskHistoryId(taskId);
     }
+
+    @Override
+    public <T> String updateJobDetails(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes, String taskId) {
+       
+       //First update job Details
+      // this.asyncTaskDao.updateTaskParameters(entry);
+        
+        JobKey key = this.asyncJobKeyBuilder.create(taskId);
+
+      return null;
+    }
 }
