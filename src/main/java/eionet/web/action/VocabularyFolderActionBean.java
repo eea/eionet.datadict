@@ -952,7 +952,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
     
     /**
-     *Edit a Scheduled Job 
+     * View the page to edit a Scheduled Job 
      **/
     public Resolution editScheduledJob() throws ServiceException {
         AsyncTaskExecutionEntry entry = scheduleJobService.getTaskEntry(scheduledTaskId);
@@ -1039,9 +1039,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             error.setErrorMessage(e.getMessage());
             return error;
         }
-        this.scheduleJobService.scheduleJob(VocabularyRdfImportFromUrlTask.class,
+        this.scheduleJobService.updateScheduledJob(VocabularyRdfImportFromUrlTask.class,
                         VocabularyRdfImportFromUrlTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),scheduleInterval,
-                                (String)scheduleIntervals.get(scheduleIntervalUnit), vocabularyFolder.isWorkingCopy(), vocabularyRdfUrl,emails, rdfPurgeOption, missingConceptsAction),scheduleIntervalUnit*scheduleInterval);
+                                (String)scheduleIntervals.get(scheduleIntervalUnit), vocabularyFolder.isWorkingCopy(), 
+                                vocabularyRdfUrl,emails, rdfPurgeOption, missingConceptsAction),scheduleIntervalUnit*scheduleInterval,scheduledTaskId);
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "ScheduledJobsQueue");
         return resolution;
     }

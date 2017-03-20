@@ -129,7 +129,7 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
                 = "update ASYNC_TASK_ENTRY set  SERIALIZED_PARAMETERS = :serializedParameters where TASK_ID = :taskId";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("taskId", entry.getTaskId());
-        params.put("serializedParameters", entry.getSerializedResult());
+        params.put("serializedParameters", entry.getSerializedParameters());
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
 

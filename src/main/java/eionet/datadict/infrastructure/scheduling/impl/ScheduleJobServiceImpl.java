@@ -29,6 +29,7 @@ import org.quartz.JobListener;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
 import static org.quartz.TriggerBuilder.newTrigger;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -149,13 +150,37 @@ public class ScheduleJobServiceImpl implements ScheduleJobService {
     }
 
     @Override
-    public <T> String updateJobDetails(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes, String taskId) {
-       
-       //First update job Details
-      // this.asyncTaskDao.updateTaskParameters(entry);
-        
-        JobKey key = this.asyncJobKeyBuilder.create(taskId);
+    public <T> String updateScheduledJob(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes, String taskId) {
 
-      return null;
+        if (taskType == null) {
+            throw new IllegalArgumentException("Task type cannot be null.");
+        }
+        AsyncJobDataMapAdapter dataMapAdapter = new AsyncJobDataMapAdapter(new JobDataMap());
+        dataMapAdapter.setTaskType(taskType);
+        if (parameters != null) {
+            dataMapAdapter.putParameters(parameters);
+        }
+
+        JobKey jobKey = this.asyncJobKeyBuilder.create(taskId);
+        JobDetail jobDetail = JobBuilder.newJob(AsyncJob.class)
+                .withIdentity(jobKey)
+                .setJobData(dataMapAdapter.getDataMap())
+                .build();
+
+        SimpleTrigger trigger = newTrigger()
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMinutes(intervalMinutes).repeatForever()
+                        .withMisfireHandlingInstructionIgnoreMisfires())
+                .forJob(jobDetail.getKey())
+                .build();
+        try {
+      List<Trigger> triggers =(List<Trigger>) this.scheduler.getTriggersOfJob(jobKey);
+            this.scheduler.rescheduleJob(triggers.get(0).getKey(), trigger);
+        } catch (SchedulerException ex) {
+            throw new AsyncTaskManagementException(ex);
+        }
+        AsyncTaskExecutionEntry existingEntry = this.asyncTaskDao.getFullEntry(taskId);
+        existingEntry.setSerializedParameters(this.asyncTaskDataSerializer.serializeParameters(parameters));
+        this.asyncTaskDao.updateTaskParameters(existingEntry);
+        return this.asyncJobKeyBuilder.getTaskId(jobKey);
     }
 }
