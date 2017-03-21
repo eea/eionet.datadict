@@ -934,7 +934,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         scheduledTaskView.setDetails(entry);
         scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
         scheduledTaskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters()));
-        scheduledTaskView.setTaskResult(asyncTaskDataSerializer.deserializeResult(entry.getSerializedResult()));
+        String result = entry.getSerializedResult();
+        System.out.println(result);
+        
+        scheduledTaskView.setTaskResult(entry.getSerializedResult());
+        
         return new ForwardResolution(SCHEDULED_TASK_DETAILS);
     }
      

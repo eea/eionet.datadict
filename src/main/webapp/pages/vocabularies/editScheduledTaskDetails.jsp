@@ -34,7 +34,7 @@
         <script>jQuery.noConflict();</script>
     </stripes:layout-component>
     <stripes:layout-component name="contents">
-        <h1>Schedule Synchronization of  Vocabulary</h1>
+        <h1> Edit Scheduled Synchronization of  Vocabulary: ${actionBean.vocabularyFolder.identifier}</h1>
         <stripes:form id="scheduleVocabularySync" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
             <div id="outerframe">
                 <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />

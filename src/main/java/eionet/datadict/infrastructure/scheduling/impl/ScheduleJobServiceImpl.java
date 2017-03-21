@@ -164,7 +164,7 @@ public class ScheduleJobServiceImpl implements ScheduleJobService {
         JobKey jobKey = this.asyncJobKeyBuilder.create(taskId);
         JobDetail jobDetail = JobBuilder.newJob(AsyncJob.class)
                 .withIdentity(jobKey)
-                .setJobData(dataMapAdapter.getDataMap())
+                .setJobData(dataMapAdapter.getDataMap()).storeDurably()
                 .build();
 
         SimpleTrigger trigger = newTrigger()
@@ -174,6 +174,7 @@ public class ScheduleJobServiceImpl implements ScheduleJobService {
                 .build();
         try {
       List<Trigger> triggers =(List<Trigger>) this.scheduler.getTriggersOfJob(jobKey);
+            this.scheduler.addJob(jobDetail, true);
             this.scheduler.rescheduleJob(triggers.get(0).getKey(), trigger);
         } catch (SchedulerException ex) {
             throw new AsyncTaskManagementException(ex);
