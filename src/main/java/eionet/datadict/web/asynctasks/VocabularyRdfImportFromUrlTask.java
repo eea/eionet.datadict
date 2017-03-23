@@ -14,7 +14,6 @@ import eionet.meta.service.IVocabularyService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -115,7 +114,9 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
         try{
         this.notifyEmailusers(this.getNotifiersEmails(), systemMessages);
         }catch(Exception e){
-        throw new Exception("Error sending Email to users",e);
+        //We are catching this exception and only logging it, because otherwise it would result to a Job Execution Exception which would ultimately 
+        // mark the executing job As Failed due to inability notifying users throuh email.
+        LOGGER.error("Error sending Email to users",e);
         }
         return systemMessages;
     }
