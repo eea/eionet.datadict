@@ -84,7 +84,7 @@
                 <display:column title="Task Type" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${pastScheduledTask.type}"/>
                 </display:column>
-                <display:column title="Additional Task Details" escapeXml="false" style="width: 15%">
+                <display:column title="Additional Task Details" escapeXml="false" style="width: 15% !important">
                     <c:out value="${pastScheduledTask.additionalDetails}" />
                 </display:column>
                 <display:column title="Execution Status" escapeXml="false" style="width: 15%">

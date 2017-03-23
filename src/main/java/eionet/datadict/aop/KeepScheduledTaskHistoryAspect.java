@@ -32,7 +32,6 @@ public class KeepScheduledTaskHistoryAspect {
             pointcut = "execution(* eionet.datadict.dal.AsyncTaskDao.updateEndStatus(..))",
             returning = "result")
     public void updateAsyncTaskEntryHistoryResult(JoinPoint joinPoint, Object result) {
-       
         LOGGER.info("Invocation of Aspect to Update AsyncTaskEntry History upon updating the End Status and Serialized Result of an Async Task Entry");
         getAsyncTaskHistoryDao().updateExecutionStatusAndSerializedResult((AsyncTaskExecutionEntry) result);
     }

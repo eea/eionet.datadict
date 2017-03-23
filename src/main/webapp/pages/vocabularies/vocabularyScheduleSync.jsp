@@ -71,7 +71,7 @@
                     </tr>
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">
-                            Schedule interval
+                            Harvest interval
                         </th>
                         <td class="simple_attr_help">
                             <dd:mandatoryIcon />
@@ -166,7 +166,7 @@
                         <th>&nbsp;</th>
                         <td colspan="2">
                             <stripes:submit name="createScheduledJob" value="Save" class="mediumbuttonb"/>
-                            <stripes:submit name="cancelSave" value="Cancel" class="mediumbuttonb"/>
+                            <stripes:submit name="viewWorkingCopy" value="Cancel" class="mediumbuttonb"/>
                         </td>
                     </tr>
                 </table>

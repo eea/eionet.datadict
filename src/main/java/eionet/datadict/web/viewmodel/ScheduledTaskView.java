@@ -64,5 +64,4 @@ public class ScheduledTaskView {
         this.asyncTaskExecutionEntryHistoryId = asyncTaskExecutionEntryHistoryId;
     }
 
-    
 }

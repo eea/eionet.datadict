@@ -21,8 +21,11 @@
 
 package eionet.web.action;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import eionet.datadict.errors.BadFormatException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskExecutionError;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.infrastructure.scheduling.ScheduleJobService;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
@@ -43,7 +46,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -95,6 +97,7 @@ import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -926,32 +929,38 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
        
     /**
-     *View A specific Scheduled Task's Details
-     **/  
+     * View A specific Scheduled Task's Details
+     *
+     */
     public Resolution viewScheduledTaskDetails() {
         AsyncTaskExecutionEntry entry = scheduleJobService.getTaskEntry(scheduledTaskId);
         scheduledTaskView = new ScheduledTaskView();
         scheduledTaskView.setDetails(entry);
         scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
         scheduledTaskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters()));
-        String result = entry.getSerializedResult();
-        System.out.println(result);
-        
-        scheduledTaskView.setTaskResult(entry.getSerializedResult());
-        
+        if (this.extractExceptionMessageFromErrorResult(entry.getSerializedResult()) != null) {
+            scheduledTaskView.setTaskResult("Error:" +this.extractExceptionMessageFromErrorResult(entry.getSerializedResult()));
+        } else {
+            scheduledTaskView.setTaskResult(asyncTaskDataSerializer.deserializeResult(entry.getSerializedResult()));
+        }
         return new ForwardResolution(SCHEDULED_TASK_DETAILS);
     }
-     
+
     /**
-     *View A specific Scheduled Task's History  Details
-     **/
+     * View A specific Scheduled Task's History Details
+     *
+     */
     public Resolution viewScheduledTaskHistoryDetails() {
         AsyncTaskExecutionEntryHistory entryHistory = scheduleJobService.getTaskEntryHistory(scheduledTaskHistoryId);
         scheduledTaskView = new ScheduledTaskView();
         scheduledTaskView.setDetails(entryHistory);
         scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entryHistory.getTaskClassName()));
         scheduledTaskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entryHistory.getSerializedParameters()));
-        scheduledTaskView.setTaskResult(asyncTaskDataSerializer.deserializeResult(entryHistory.getSerializedResult()));
+        if (this.extractExceptionMessageFromErrorResult(entryHistory.getSerializedResult()) != null) {
+            scheduledTaskView.setTaskResult("Error: "+this.extractExceptionMessageFromErrorResult(entryHistory.getSerializedResult()));
+        } else {
+            scheduledTaskView.setTaskResult(asyncTaskDataSerializer.deserializeResult(entryHistory.getSerializedResult()));
+        }
         return new ForwardResolution(SCHEDULED_TASK_DETAILS);
     }
     
@@ -2342,5 +2351,22 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     public void setScheduledTaskHistoryId(String scheduledTaskHistoryId) {
         this.scheduledTaskHistoryId = scheduledTaskHistoryId;
+    }
+
+    /**
+     *@param taskResult the desirialised Async Task Result
+     *@return the Exception error message, or null if no exception or error message found in the Task Result.
+     **/
+    public String extractExceptionMessageFromErrorResult(Object taskResult) {
+        Gson gson = new Gson();
+            try {
+                Map<String, String> results = gson.fromJson((String) taskResult, Map.class);
+                if (results.get("@class").equals(AsyncTaskExecutionError.class.getCanonicalName())) {
+                    return results.get(AsyncTaskExecutionError.MESSAGE);
+                }
+            } catch (JsonSyntaxException e) {
+                LOGGER.info("Async Task Result Not in Json Format");
+            }
+        return null;
     }
 }

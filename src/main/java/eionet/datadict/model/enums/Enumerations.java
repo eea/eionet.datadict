@@ -7,6 +7,24 @@ import java.util.List;
 
 public class Enumerations {
     
+    
+    
+    public enum VocabularyRdfPurgeOption {
+
+        DELETE_VOCABULARY_DATA(4),
+        PURGE_VOCABULARY_DATA(3),
+        PURGE_PREDICATE_BASIS(2);
+
+        private final int rdfPurgeOption;
+
+        private VocabularyRdfPurgeOption(int rdfPurgeOption) {
+            this.rdfPurgeOption = rdfPurgeOption;
+        }
+
+        public int getRdfPurgeOption() {
+            return rdfPurgeOption;
+        }
+    }
     /**
      * Used for the eionet.datadict.model.AttributeDefinition
      */

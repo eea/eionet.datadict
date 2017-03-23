@@ -5,6 +5,7 @@
  */
 package eionet.datadict.web.asynctasks;
 
+import eionet.datadict.errors.FetchVocabularyRDFfromUrlException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IRDFVocabularyImportService;
@@ -13,6 +14,7 @@ import eionet.meta.service.IVocabularyService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -113,7 +115,7 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
         try{
         this.notifyEmailusers(this.getNotifiersEmails(), systemMessages);
         }catch(Exception e){
-        LOGGER.error("Error sending Email to users",e);
+        throw new Exception("Error sending Email to users",e);
         }
         return systemMessages;
     }
@@ -125,33 +127,34 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
 
         try {
             rdfFileReader = new InputStreamReader(new ByteArrayInputStream(this.downloadVocabularyRdf(this.getRdfFileURL())));
-            // TODO use enum instead for rdf purge option
             int rdfPurgeOption = this.getRdfPurgeOption();
             List<String> systemMessages = this.vocabularyRdfImportService.importRdfIntoVocabulary(
                     rdfFileReader, vocabulary, rdfPurgeOption == 4, rdfPurgeOption == 3, rdfPurgeOption == 2, this.getMissingConceptsAction());
-
             return systemMessages;
-
-        } finally {
+        }
+        finally {
             if (rdfFileReader != null) {
                 rdfFileReader.close();
             }
         }
     }
 
-    protected byte[] downloadVocabularyRdf(String url) {
+    protected byte[] downloadVocabularyRdf(String url) throws FetchVocabularyRDFfromUrlException {
 
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(
                 new ByteArrayHttpMessageConverter());
-
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
         HttpEntity<String> entity = new HttpEntity<String>(headers);
+        try{
         ResponseEntity<byte[]> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET, entity, byte[].class, "1");
         return response.getBody();
+        } catch(Exception e){
+            throw new FetchVocabularyRDFfromUrlException("Error fetching vocabulary RDF from URL:"+url, e.getCause());
+        }
     }
 
     protected void notifyEmailusers(String emails, final List<String> messages) {
