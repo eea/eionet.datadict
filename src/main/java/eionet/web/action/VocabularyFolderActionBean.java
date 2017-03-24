@@ -30,6 +30,7 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.infrastructure.scheduling.ScheduleJobService;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
+import eionet.datadict.model.enums.Enumerations;
 import eionet.datadict.services.stripes.FileBeanDecompressor;
 import eionet.datadict.util.ScheduledTaskResolver;
 import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
@@ -1031,7 +1032,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
         this.scheduleJobService.scheduleJob(VocabularyRdfImportFromUrlTask.class,
                         VocabularyRdfImportFromUrlTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),scheduleInterval,
-                                (String)scheduleIntervals.get(scheduleIntervalUnit), vocabularyFolder.isWorkingCopy(), vocabularyRdfUrl,emails, rdfPurgeOption, missingConceptsAction),scheduleIntervalUnit*scheduleInterval);
+                                 (String)scheduleIntervals.get(scheduleIntervalUnit), vocabularyFolder.isWorkingCopy(), vocabularyRdfUrl,emails, Enumerations.VocabularyRdfPurgeOption.translateRDFPurgeOptionNumberToEnum(rdfPurgeOption), missingConceptsAction),scheduleIntervalUnit*scheduleInterval);
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "ScheduledJobsQueue");
         return resolution;
     }
@@ -1055,7 +1056,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         this.scheduleJobService.updateScheduledJob(VocabularyRdfImportFromUrlTask.class,
                         VocabularyRdfImportFromUrlTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),scheduleInterval,
                                 (String)scheduleIntervals.get(scheduleIntervalUnit), vocabularyFolder.isWorkingCopy(), 
-                                vocabularyRdfUrl,emails, rdfPurgeOption, missingConceptsAction),scheduleIntervalUnit*scheduleInterval,scheduledTaskId);
+                                vocabularyRdfUrl,emails, Enumerations.VocabularyRdfPurgeOption.translateRDFPurgeOptionNumberToEnum(rdfPurgeOption), missingConceptsAction),scheduleIntervalUnit*scheduleInterval,scheduledTaskId);
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "ScheduledJobsQueue");
         return resolution;
     }

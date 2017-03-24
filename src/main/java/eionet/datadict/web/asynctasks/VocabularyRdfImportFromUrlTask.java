@@ -7,6 +7,8 @@ package eionet.datadict.web.asynctasks;
 
 import eionet.datadict.errors.FetchVocabularyRDFfromUrlException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
+import eionet.datadict.model.enums.Enumerations;
+import eionet.datadict.web.ViewUtils;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IRDFVocabularyImportService;
 import eionet.meta.service.IVocabularyImportService;
@@ -57,7 +59,7 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
     public static final String PARAM_SCHEDULE_INTERVAL_UNIT="scheduleIntervalUnit";
 
     public static Map<String, Object> createParamsBundle(String vocabularySetIdentifier, String vocabularyIdentifier,Integer scheduleInterval,
-            String scheduleIntervalUnit,boolean workingCopy, String rdfFileURL, String emails, int rdfPurgeOption, IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
+            String scheduleIntervalUnit,boolean workingCopy, String rdfFileURL, String emails, Enumerations.VocabularyRdfPurgeOption rdfPurgeOption, IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(PARAM_VOCABULARY_SET_IDENTIFIER, vocabularySetIdentifier);
         parameters.put(PARAM_VOCABULARY_IDENTIFIER, vocabularyIdentifier);
@@ -148,13 +150,14 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
         HttpEntity<String> entity = new HttpEntity<String>(headers);
-        try{
-        ResponseEntity<byte[]> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET, entity, byte[].class, "1");
-        return response.getBody();
-        } catch(Exception e){
-            throw new FetchVocabularyRDFfromUrlException("Error fetching vocabulary RDF from URL:"+url, e.getCause());
+        try {
+            ResponseEntity<byte[]> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET, entity, byte[].class, "1");
+            return response.getBody();
+        } catch (Exception e) {
+            throw new FetchVocabularyRDFfromUrlException("Error fetching vocabulary RDF from URL:" + url + ViewUtils.HTML_NEW_LINE + ViewUtils.SYSTEM_EXCEPTION_MESSAGE
+                    + e.getMessage(), e.getCause());
         }
     }
 
@@ -201,7 +204,7 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
     }
 
     protected int getRdfPurgeOption() {
-        return (Integer) this.parameters.get(PARAM_RDF_PURGE_OPTION);
+        return  Enumerations.VocabularyRdfPurgeOption.valueOf((String)this.parameters.get(PARAM_RDF_PURGE_OPTION)).getRdfPurgeOption();
     }
 
     protected IVocabularyImportService.MissingConceptsAction getMissingConceptsAction() {

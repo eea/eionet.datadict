@@ -13,8 +13,8 @@ public class Enumerations {
 
         DELETE_VOCABULARY_DATA(4),
         PURGE_VOCABULARY_DATA(3),
-        PURGE_PREDICATE_BASIS(2);
-
+        PURGE_PREDICATE_BASIS(2),
+        DONT_PURGE(1);
         private final int rdfPurgeOption;
 
         private VocabularyRdfPurgeOption(int rdfPurgeOption) {
@@ -23,6 +23,20 @@ public class Enumerations {
 
         public int getRdfPurgeOption() {
             return rdfPurgeOption;
+        }
+        
+        public static VocabularyRdfPurgeOption translateRDFPurgeOptionNumberToEnum(int rdfPurgeOption){
+            switch(rdfPurgeOption){
+                case 1:
+                    return DONT_PURGE;
+                case 2:
+                    return DELETE_VOCABULARY_DATA;
+                case 3: 
+                    return PURGE_VOCABULARY_DATA;
+                case 4:
+                    return PURGE_PREDICATE_BASIS;
+            }
+            throw new IllegalArgumentException("Integer:"+rdfPurgeOption+" doesn't exist as an RdfPurgeOption");
         }
     }
     /**
