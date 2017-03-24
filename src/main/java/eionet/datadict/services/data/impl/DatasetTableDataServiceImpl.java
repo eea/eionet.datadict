@@ -3,7 +3,7 @@ package eionet.datadict.services.data.impl;
 import eionet.datadict.dal.DatasetDao;
 import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.errors.ResourceNotFoundException;
-import eionet.datadict.model.Dataset;
+import eionet.datadict.model.DataSet;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.services.data.DatasetTableDataService;
 import eionet.meta.DDUser;
@@ -41,7 +41,7 @@ public class DatasetTableDataServiceImpl implements DatasetTableDataService {
         }
         
         Integer parentDatasetId = this.datasetTableDao.getParentDatasetId(table.getId());
-        Dataset parentDataset = this.datasetDao.getById(parentDatasetId);
+        DataSet parentDataset = this.datasetDao.getById(parentDatasetId);
         return (parentDataset.getWorkingCopy() && parentDataset.getWorkingUser() != null && parentDataset.getWorkingUser().equals(user.getUserName()));
     }
     

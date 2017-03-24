@@ -1,7 +1,7 @@
 package eionet.datadict.services.data;
 
 import eionet.datadict.errors.ResourceNotFoundException;
-import eionet.datadict.model.Dataset;
+import eionet.datadict.model.DataSet;
 
 
 public interface DatasetDataService {
@@ -14,5 +14,5 @@ public interface DatasetDataService {
      * 
      * @throws ResourceNotFoundException 
      */
-    public Dataset getDataset(int id) throws ResourceNotFoundException;
+    public DataSet getDataset(int id) throws ResourceNotFoundException;
 }

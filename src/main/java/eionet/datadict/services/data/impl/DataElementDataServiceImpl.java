@@ -5,7 +5,7 @@ import eionet.datadict.dal.DatasetDao;
 import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.DataElement;
-import eionet.datadict.model.Dataset;
+import eionet.datadict.model.DataSet;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.meta.DDUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public class DataElementDataServiceImpl implements DataElementDataService{
         //non-common dataelement
         Integer parentTableId = this.dataElementDao.getParentTableId(dataElement.getId());
         Integer parentDatasetId = this.datasetTableDao.getParentDatasetId(parentTableId);
-        Dataset parentDataset = this.datasetDao.getById(parentDatasetId);
+        DataSet parentDataset = this.datasetDao.getById(parentDatasetId);
         return (parentDataset.getWorkingCopy() && parentDataset.getWorkingUser() != null && parentDataset.getWorkingUser().equals(user.getUserName()));
     }
     

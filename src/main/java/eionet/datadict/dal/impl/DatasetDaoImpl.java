@@ -1,8 +1,9 @@
 package eionet.datadict.dal.impl;
 
+import eionet.datadict.dal.DataSetDao;
 import eionet.datadict.dal.DatasetDao;
 import eionet.datadict.dal.impl.converters.BooleanToMysqlEnumYesNoConverter;
-import eionet.datadict.model.Dataset;
+import eionet.datadict.model.DataSet;
 import eionet.datadict.model.Namespace;
 import eionet.meta.dao.domain.DatasetRegStatus;
 import java.sql.ResultSet;
@@ -24,7 +25,7 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
     }
     
     @Override
-    public Dataset getById(int id) {
+    public DataSet getById(int id) {
         String sql = "select "
                 + "DATASET.*, "
                 + "NAMESPACE.* "
@@ -35,17 +36,17 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);
         try {
-            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params, new DatasetRowMapper());
+            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params, new DataSetRowMapper());
         }catch (EmptyResultDataAccessException ex) {
             return null;
         }          
     }
     
-    public static class DatasetRowMapper implements RowMapper<Dataset> {
+    public static class DataSetRowMapper implements RowMapper<DataSet> {
 
         @Override
-        public Dataset mapRow(ResultSet rs, int i) throws SQLException {
-            Dataset dataset = new Dataset();
+        public DataSet mapRow(ResultSet rs, int i) throws SQLException {
+            DataSet dataset = new DataSet();
             dataset.setId(rs.getInt("DATASET.DATASET_ID"));
             dataset.setShortName(rs.getString("DATASET.SHORT_NAME"));
             dataset.setVersion(rs.getInt("DATASET.VERSION"));
@@ -75,7 +76,7 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
             return dataset;
         }
         
-        protected void readNamespace(ResultSet rs, Dataset dataset) throws SQLException {
+        protected void readNamespace(ResultSet rs, DataSet dataset) throws SQLException {
             rs.getInt("NAMESPACE.NAMESPACE_ID");
 
             if (rs.wasNull()) {

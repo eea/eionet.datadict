@@ -9,7 +9,7 @@ import eionet.datadict.errors.UserAuthorizationException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.DataElement;
-import eionet.datadict.model.Dataset;
+import eionet.datadict.model.DataSet;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.services.AttributeService;
 import eionet.datadict.services.data.AttributeDataService;
@@ -61,7 +61,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
 
     // Only one of them points at a real object (depending on what is the type
     // of the owner of the attribute)
-    private Dataset dataset;
+    private DataSet dataSet;
     private DatasetTable datasetTable;
     private DataElement dataElement;
     
@@ -152,7 +152,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             }   
         } else if (attrOwnerType.equals("dataset")) {
             configureDataset();
-            if (!this.dataset.getWorkingCopy() || (this.dataset.getWorkingUser() != null && !this.dataset.getWorkingUser().equals(user.getUserName()))) {
+            if (!this.dataSet.getWorkingCopy() || (this.dataSet.getWorkingUser() != null && !this.dataSet.getWorkingUser().equals(user.getUserName()))) {
                 throw new UserAuthorizationException("You are not authorized to edit this dataset.");
             }
         }
@@ -213,7 +213,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             }
         } else if (attrOwnerType.equals("dataset")) {
             configureDataset();
-            if (!this.dataset.getWorkingCopy() || this.dataset.getWorkingUser() != null && !this.dataset.getWorkingUser().equals(user.getUserName())) {
+            if (!this.dataSet.getWorkingCopy() || this.dataSet.getWorkingUser() != null && !this.dataSet.getWorkingUser().equals(user.getUserName())) {
                 throw new UserAuthorizationException("You are not authorized to edit this dataset.");
             }
         }
@@ -395,7 +395,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     
     protected void configureDataset() throws ResourceNotFoundException {
         this.currentSection = "datasets";
-        this.dataset = this.datasetDataService.getDataset(this.attributeOwnerEntity.getId());
+        this.dataSet = this.datasetDataService.getDataset(this.attributeOwnerEntity.getId());
     }
     
     protected void configureDataElement() throws ResourceNotFoundException {
@@ -418,12 +418,12 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         this.attributeId = attributeId;
     }
 
-    public Dataset getDataset() {
-        return dataset;
+    public DataSet getDataSet() {
+        return dataSet;
     }
 
-    public void setDataset(Dataset dataset) {
-        this.dataset = dataset;
+    public void setDataset(DataSet dataSet) {
+        this.dataSet = dataSet;
     }
 
     public DatasetTable getDatasetTable() {

@@ -2,7 +2,7 @@ package eionet.datadict.services.data.impl;
 
 import eionet.datadict.dal.DatasetDao;
 import eionet.datadict.errors.ResourceNotFoundException;
-import eionet.datadict.model.Dataset;
+import eionet.datadict.model.DataSet;
 import eionet.datadict.services.data.DatasetDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +18,8 @@ public class DatasetDataServiceImpl implements DatasetDataService {
     }
     
     @Override
-    public Dataset getDataset(int id) throws ResourceNotFoundException {
-        Dataset dataset = datasetDao.getById(id);
+    public DataSet getDataset(int id) throws ResourceNotFoundException {
+        DataSet dataset = datasetDao.getById(id);
         if (dataset!=null){
             return dataset;
         }
