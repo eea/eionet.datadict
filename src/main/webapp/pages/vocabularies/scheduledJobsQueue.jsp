@@ -6,9 +6,9 @@
 
     <stripes:layout-component name="head">
         <script type="text/javascript">
-  //          window.setTimeout(function () {
-  //              document.location.reload(true);
-  //          }, 60000);
+            window.setTimeout(function () {
+                document.location.reload(true);
+            }, 60000);
             (function ($) {
                 $(document).ready(function () {
                     $('#scheduledTask').dataTable();

@@ -94,7 +94,6 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
     
     @Override
     public List<AsyncTaskExecutionEntry> getAllEntries() {
-
           String sql = "select * from ASYNC_TASK_ENTRY";
         Map<String, Object> params = new HashMap<String, Object>();
         List<AsyncTaskExecutionEntry> results = this.getNamedParameterJdbcTemplate().query(sql, params, 
@@ -105,7 +104,6 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
 
     @Override
     public AsyncTaskExecutionEntry updateScheduledDate(AsyncTaskExecutionEntry entry) {
-
         String sql = 
             "update ASYNC_TASK_ENTRY set SCHEDULED_DATE = :scheduledDate where TASK_ID = :taskId";
         Map<String, Object> params = new HashMap<String, Object>();
@@ -146,7 +144,6 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
             
             return result;
         }
-        
     }
     
     protected class ResultEntryRowMapper implements RowMapper<AsyncTaskExecutionEntry> {
@@ -165,7 +162,6 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
             
             return result;
         }
-        
     }
     
 }

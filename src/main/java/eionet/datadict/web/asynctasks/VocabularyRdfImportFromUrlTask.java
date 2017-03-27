@@ -116,7 +116,7 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
         try{
         this.notifyEmailusers(this.getNotifiersEmails(), systemMessages);
         }catch(Exception e){
-        //We are catching this exception and only logging it, because otherwise it would result to a Job Execution Exception which would ultimately 
+        //We are silencing this exception and only logging it, because otherwise it would result to a Job Execution Exception which would ultimately 
         // mark the executing job As Failed due to inability notifying users throuh email.
         LOGGER.error("Error sending Email to users",e);
         }

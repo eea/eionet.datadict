@@ -2,7 +2,6 @@ package eionet.datadict.util;
 
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
-import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

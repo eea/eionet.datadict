@@ -10,12 +10,18 @@ import java.util.Map;
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
 public interface ScheduleJobService {
-    
-        <T> String scheduleJob(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes);
-        <T> String updateScheduledJob(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes,String taskId);
-            List<AsyncTaskExecutionEntry> getAllScheduledTaskEntries();
-            List<AsyncTaskExecutionEntryHistory> getTaskEntriesHistory();
-            AsyncTaskExecutionEntry getTaskEntry(String taskId);
-            AsyncTaskExecutionEntryHistory getTaskEntryHistory(String taskId);
-            void deleteJob(String taskId);
+
+    <T> String scheduleJob(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes);
+
+    <T> String updateScheduledJob(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes, String taskId);
+
+    List<AsyncTaskExecutionEntry> getAllScheduledTaskEntries();
+
+    List<AsyncTaskExecutionEntryHistory> getTaskEntriesHistory();
+
+    AsyncTaskExecutionEntry getTaskEntry(String taskId);
+
+    AsyncTaskExecutionEntryHistory getTaskEntryHistory(String taskId);
+
+    void deleteJob(String taskId);
 }
