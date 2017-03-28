@@ -43,7 +43,7 @@ public class VocabularyUndoCheckOutTaskTest {
         
         String resultUrl = this.task.composeResultUrl(null, result);
         
-        assertThat(resultUrl, is(equalTo(String.format("/vocabulary/%s/%s/", vocabularySetIdentifier, vocabularyIdentifier))));
+        assertThat(resultUrl, is(equalTo(String.format("/vocabulary/%s/%s", vocabularySetIdentifier, vocabularyIdentifier))));
     }
     
     @Test

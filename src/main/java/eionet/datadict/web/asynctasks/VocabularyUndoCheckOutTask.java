@@ -54,7 +54,7 @@ public class VocabularyUndoCheckOutTask implements AsyncTask {
     @Override
     public String composeResultUrl(String taskId, Object result) {
         Map<String, Object> resultMap = (Map) result;
-        return String.format("/vocabulary/%s/%s/", 
+        return String.format("/vocabulary/%s/%s", 
                 resultMap.get(RESULT_VOCABULARY_SET_IDENTIFIER), resultMap.get(RESULT_VOCABULARY_IDENTIFIER));
     }
 
