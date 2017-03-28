@@ -45,6 +45,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -674,7 +675,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         return result;
     }
 
-    protected Map<Integer, DataElement> getVocabularyConceptAttributes(int vocabularyId) {
+    @Override
+    public Map<Integer, DataElement> getVocabularyConceptAttributes(int vocabularyId) {
         String sql = 
             "select v2e.DATAELEM_ID Id, d.IDENTIFIER Identifier, attrs.Name as AttributeName, attrs.VALUE as AttributeValue \n" +
             "from VOCABULARY2ELEM v2e \n" +
@@ -1003,6 +1005,24 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                     }
                 });
         return result;
+    }
+
+    @Override
+    public Map<Integer, Integer> getCheckedOutToOriginalMappings(Collection<Integer> conceptIds) {
+        final Map<Integer, Integer> checkedOutToOriginalMappings = new HashMap<Integer, Integer>();
+
+        String sql = "select VOCABULARY_CONCEPT_ID, ORIGINAL_CONCEPT_ID from VOCABULARY_CONCEPT where ORIGINAL_CONCEPT_ID in (:conceptIds)";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("conceptIds", conceptIds);
+
+        getNamedParameterJdbcTemplate().query(sql, params, new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                checkedOutToOriginalMappings.put(rs.getInt("VOCABULARY_CONCEPT_ID"), rs.getInt("ORIGINAL_CONCEPT_ID"));
+            }
+        });
+
+        return checkedOutToOriginalMappings;
     }
 
 }

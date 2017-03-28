@@ -43,6 +43,7 @@ import eionet.meta.dao.domain.VocabularyType;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
+import java.util.Collection;
 
 /**
  * Vocabulary folder DAO.
@@ -939,4 +940,21 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         });
         return result;
     }
+
+    @Override
+    public Collection<Integer> getVocabularyIds(Collection<Integer> vocabularyConceptIds) {
+        String sql = "select distinct VOCABULARY_ID from VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds)";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyConceptIds", vocabularyConceptIds);
+        return getNamedParameterJdbcTemplate().queryForList(sql, params, Integer.class);
+    }
+
+    @Override
+    public Collection<Integer> getWorkingCopyIds(Collection<Integer> vocabularyIds) {
+        String sql = "select VOCABULARY_ID from VOCABULARY where CHECKEDOUT_COPY_ID in (:vocabularyIds)";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyIds", vocabularyIds);
+        return getNamedParameterJdbcTemplate().queryForList(sql, params, Integer.class);
+    }
+
 }

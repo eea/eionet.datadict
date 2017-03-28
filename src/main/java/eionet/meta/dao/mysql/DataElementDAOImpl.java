@@ -41,6 +41,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
+import eionet.util.Pair;
 import eionet.util.Triple;
 import java.sql.PreparedStatement;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -347,18 +348,13 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public List<FixedValue> getFixedValues(int dataElementId) {
-        StringBuffer sql = new StringBuffer();
-        sql.append("select * ");
-        sql.append(" from FXV ");
-        sql.append(" where OWNER_ID = :ownerId ");
-        sql.append(" and OWNER_TYPE=:ownerType ");
-        sql.append(" order by FXV_ID");
+        String sql = "select * from FXV where OWNER_ID=:ownerId and OWNER_TYPE=:ownerType order by FXV_ID";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("ownerId", dataElementId);
         params.put("ownerType", "elem");
 
-        List<FixedValue> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<FixedValue>() {
+        List<FixedValue> result = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<FixedValue>() {
             @Override
             public FixedValue mapRow(ResultSet rs, int rowNum) throws SQLException {
                 FixedValue fv = new FixedValue();
@@ -694,7 +690,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setWorkingUser(rs.getString("d.WORKING_USER"));
 
                 de.setIdentifier(rs.getString("d.identifier"));
-
+                
                 de.setAttributeValue(rs.getString("v.ELEMENT_VALUE"));
                 de.setAttributeLanguage(rs.getString("v.LANGUAGE"));
                 de.setRelatedConceptId(rs.getInt("v.RELATED_CONCEPT_ID"));
@@ -1077,15 +1073,13 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     }
 
     @Override
-    public Integer getInverseElementID(int dataElementId) {
+    public int getInverseElementID(int dataElementId) {
         String sql = "select GetInverseElemId(:elemId)";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("elemId", dataElementId);
 
-        Integer result = getNamedParameterJdbcTemplate().queryForInt(sql, params);
-
-        return result;
+        return getNamedParameterJdbcTemplate().queryForInt(sql, params);
     }
 
     @Override
@@ -1379,7 +1373,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     public int[][] batchCreateInverseElements(List<Triple<Integer, Integer, Integer>> relatedReferenceElements, int batchSize) {
         String sql = "call CreateReverseLink(?, ?, ?)";
 
-        int[][] result = getJdbcTemplate().batchUpdate(sql.toString(), relatedReferenceElements, batchSize, 
+        int[][] result = getJdbcTemplate().batchUpdate(sql, relatedReferenceElements, batchSize, 
                 new ParameterizedPreparedStatementSetter<Triple<Integer, Integer, Integer>>() {
                     @Override
                     public void setValues(PreparedStatement ps, Triple<Integer, Integer, Integer> triple) throws SQLException {
@@ -1463,5 +1457,51 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         return getNamedParameterJdbcTemplate().update(sql, params);
     }
-    
+
+    @Override
+    public void deleteRelatedConcepts(int dataElementId, Collection<Integer> relatedConceptIds) {
+        if (relatedConceptIds == null || relatedConceptIds.isEmpty()) {
+            return;
+        }
+
+        String sql = "delete from VOCABULARY_CONCEPT_ELEMENT where DATAELEM_ID = :dataElementId AND RELATED_CONCEPT_ID in (:relatedConceptIds)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("dataElementId", dataElementId);
+        params.put("relatedConceptIds", relatedConceptIds);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+    @Override
+    public int[][] batchCreateVocabularyBoundElements(List<Pair<Integer, Integer>> vocabularyIdToDataElementId, int batchSize) {
+        String sql = "insert ignore into VOCABULARY2ELEM (VOCABULARY_ID, DATAELEM_ID) values (?, ?)";
+
+        int[][] result = getJdbcTemplate().batchUpdate(sql.toString(), vocabularyIdToDataElementId, batchSize, 
+                new ParameterizedPreparedStatementSetter<Pair<Integer, Integer>>() {
+                    @Override
+                    public void setValues(PreparedStatement ps, Pair<Integer, Integer> pair) throws SQLException {
+                        ps.setInt(1, pair.getLeft());
+                        ps.setInt(2, pair.getRight());
+                    }
+        });
+        return result;
+    }
+
+    @Override
+    public int[][] batchCreateInverseRelations(List<Triple<Integer, Integer, Integer>> relatedReferenceElements, int batchSize) {
+        String sql = "insert ignore into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, RELATED_CONCEPT_ID) VALUES (?, ?, ?)";
+
+        int[][] result = getJdbcTemplate().batchUpdate(sql, relatedReferenceElements, batchSize, 
+                new ParameterizedPreparedStatementSetter<Triple<Integer, Integer, Integer>>() {
+                    @Override
+                    public void setValues(PreparedStatement ps, Triple<Integer, Integer, Integer> triple) throws SQLException {
+                        ps.setInt(1, triple.getLeft());
+                        ps.setInt(2, triple.getCentral());
+                        ps.setInt(3, triple.getRight());
+                    }
+        });
+        return result;
+    }
+
 }
