@@ -85,31 +85,17 @@
 
             </table>
         </div>
-                    <table>
-                        <tbody>
-                    <tr>
-                        <th>&nbsp;</th>
-                        <td >
-                                        
+        <div class="deleteTaskButton">
         <stripes:form id="deleteScheduledJob" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
             <stripes:param name="scheduledTaskId" value="${actionBean.scheduledTaskId}" />
             <stripes:submit name="deleteScheduledJob" value="Delete" class="mediumbuttonb" id="delete"/>
         </stripes:form>
+        </div>
+      <div class="editTaskButton">
      <stripes:form id="deleteScheduledJob" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
             <stripes:param name="scheduledTaskId" value="${actionBean.scheduledTaskId}" />
             <stripes:submit name="editScheduledJob" value="Edit" class="mediumbuttonb" id="edit"/>
      </stripes:form>
-                        </td>
-                    </tr> 
-                        </tbody>
-                    </table>
-        <stripes:form id="deleteScheduledJob" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
-            <stripes:param name="scheduledTaskId" value="${actionBean.scheduledTaskId}" />
-            <stripes:submit name="deleteScheduledJob" value="Delete" class="mediumbuttonb" id="delete"/>
-        </stripes:form>
-     <stripes:form id="deleteScheduledJob" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
-            <stripes:param name="scheduledTaskId" value="${actionBean.scheduledTaskId}" />
-            <stripes:submit name="editScheduledJob" value="Edit" class="mediumbuttonb" id="edit"/>
-     </stripes:form>
+      </div>
     </stripes:layout-component>
 </stripes:layout-render>

@@ -1065,6 +1065,7 @@
 	}
 	input[type="submit"]{
 		border: 1px solid #00446A;
+                width: 100px;
 		background: #00446A;
 		color: #fff;
 		cursor: pointer;
@@ -1709,3 +1710,19 @@
         table.datatable{width:100%!important; }
 
         .dataTables_length select{margin-left:15px;}
+
+        /*Edit Scheduled Task Details*/
+
+        .deleteTaskButton{
+            float: left;
+            position: relative;
+            min-height: 1px;
+            padding-left: 5%;
+        }
+
+        .editTaskButton{
+            float: left;
+            position: relative;
+            min-height: 1px;
+            padding-left: 3%;
+        }

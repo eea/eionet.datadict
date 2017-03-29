@@ -25,6 +25,10 @@ public class ScheduledTaskResolver {
         this.asyncTaskDataSerializer = asyncTaskDataSerializer;
     }
    
+    /**
+     *@param The Task Class Name
+     *@return the Scheduled Task Name in a more readable format, or null if the Task Class Name is not found
+     **/
     public String resolveTaskTypeFromTaskClassName(String className){
     
         if(className.contains("VocabularyCheckInTask")){
@@ -48,6 +52,10 @@ public class ScheduledTaskResolver {
     return null;
     }
     
+    /**
+     *@param the Async Task Execution Entry object
+     *@return the URL to import the Vocabulary RDF from, or null if no Import URL is found
+     **/
     public String extractImportUrlFromVocabularyImportTask(AsyncTaskExecutionEntry entry){
     
         if (entry.getTaskClassName().contains("VocabularyRdfImportFromUrlTask")) {
