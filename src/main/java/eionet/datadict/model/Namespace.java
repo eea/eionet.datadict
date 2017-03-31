@@ -5,6 +5,8 @@ import javax.persistence.ManyToOne;
 
 public class Namespace {
 
+
+    public static final String URL_PREFIX="namespaces";
     @Id
     private Integer id;
     private String shortName;
