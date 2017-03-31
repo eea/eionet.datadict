@@ -25,16 +25,16 @@ public class Enumerations {
             return rdfPurgeOption;
         }
         
-        public static VocabularyRdfPurgeOption translateRDFPurgeOptionNumberToEnum(int rdfPurgeOption){
+        public static String translateRDFPurgeOptionNumberToEnum(int rdfPurgeOption){
             switch(rdfPurgeOption){
                 case 1:
-                    return DONT_PURGE;
+                    return DONT_PURGE.toString();
                 case 2:
-                    return DELETE_VOCABULARY_DATA;
+                    return DELETE_VOCABULARY_DATA.toString();
                 case 3: 
-                    return PURGE_VOCABULARY_DATA;
+                    return PURGE_VOCABULARY_DATA.toString();
                 case 4:
-                    return PURGE_PREDICATE_BASIS;
+                    return PURGE_PREDICATE_BASIS.toString();
             }
             throw new IllegalArgumentException("Integer:"+rdfPurgeOption+" doesn't exist as an RdfPurgeOption");
         }

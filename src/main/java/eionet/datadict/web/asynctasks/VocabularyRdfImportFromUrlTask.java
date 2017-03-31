@@ -59,7 +59,7 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
     public static final String PARAM_SCHEDULE_INTERVAL_UNIT="scheduleIntervalUnit";
 
     public static Map<String, Object> createParamsBundle(String vocabularySetIdentifier, String vocabularyIdentifier,Integer scheduleInterval,
-            String scheduleIntervalUnit,boolean workingCopy, String rdfFileURL, String emails, Enumerations.VocabularyRdfPurgeOption rdfPurgeOption, IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
+            String scheduleIntervalUnit,boolean workingCopy, String rdfFileURL, String emails, String rdfPurgeOption, IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(PARAM_VOCABULARY_SET_IDENTIFIER, vocabularySetIdentifier);
         parameters.put(PARAM_VOCABULARY_IDENTIFIER, vocabularyIdentifier);

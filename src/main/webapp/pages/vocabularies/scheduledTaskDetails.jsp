@@ -92,7 +92,7 @@
         </stripes:form>
         </div>
       <div class="editTaskButton">
-     <stripes:form id="deleteScheduledJob" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
+     <stripes:form id="editScheduledJob" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
             <stripes:param name="scheduledTaskId" value="${actionBean.scheduledTaskId}" />
             <stripes:submit name="editScheduledJob" value="Edit" class="mediumbuttonb" id="edit"/>
      </stripes:form>

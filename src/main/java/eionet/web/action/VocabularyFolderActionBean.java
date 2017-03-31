@@ -978,7 +978,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             Map<String, Object> parameters = asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters());
             this.vocabularyRdfUrl = (String) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_RDF_FILE_URL);
             this.emails = (String) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_NOTIFIERS_EMAILS);
-            this.rdfPurgeOption = (Integer) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_RDF_PURGE_OPTION);
+           // this.rdfPurgeOption = (Integer) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_RDF_PURGE_OPTION);
+            this.rdfPurgeOption = Enumerations.VocabularyRdfPurgeOption.valueOf((String)parameters.get(VocabularyRdfImportFromUrlTask.PARAM_RDF_PURGE_OPTION)).getRdfPurgeOption();
             this.missingConceptsAction = (IVocabularyImportService.MissingConceptsAction) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_MISSING_CONCEPTS_ACTION);
             this.scheduleInterval = (Integer) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_SCHEDULE_INTERVAL);
             this.scheduleIntervalUnit = (Integer) scheduleIntervals.getKey(parameters.get(VocabularyRdfImportFromUrlTask.PARAM_SCHEDULE_INTERVAL_UNIT));
