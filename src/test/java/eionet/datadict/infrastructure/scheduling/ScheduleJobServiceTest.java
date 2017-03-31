@@ -199,10 +199,10 @@ public class ScheduleJobServiceTest {
         entry.setTaskId(taskId);
         AsyncTaskExecutionEntryHistory hEntry = new AsyncTaskExecutionEntryHistory(entry);
         hEntry.setId(Long.parseLong("1"));
-        when(this.asyncTaskHistoryDao.retrieveTaskByTaskHistoryId("1")).thenReturn(hEntry);
+        when(this.asyncTaskHistoryDao.retrieveTaskHistoryById("1")).thenReturn(hEntry);
         AsyncTaskExecutionEntryHistory result = this.scheduleJobsService.getTaskEntryHistory("1");
         assertThat(result, is(equalTo(hEntry)));
-        verify(this.asyncTaskHistoryDao, times(1)).retrieveTaskByTaskHistoryId("1");
+        verify(this.asyncTaskHistoryDao, times(1)).retrieveTaskHistoryById("1");
     }
 
     @Test

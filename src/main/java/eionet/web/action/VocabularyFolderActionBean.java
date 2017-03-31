@@ -23,6 +23,7 @@ package eionet.web.action;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.errors.BadFormatException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskExecutionError;
@@ -145,8 +146,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Page to view the details of a scheduled task
      */
     private static final String SCHEDULED_TASK_DETAILS="/pages/vocabularies/scheduledTaskDetails.jsp";
-    
-    
+   
+    /**
+     * Page to view the details of a scheduled task History
+     */
+    private static final String  SCHEDULED_TASK_HISTORY_DETAILS="/pages/vocabularies/scheduledTaskHistoryDetails.jsp"; 
+   
     private static final String EDIT_SCHEDULED_TASK_DETAILS="/pages/vocabularies/editScheduledTaskDetails.jsp";
     /**
      *Generic Datadict error page
@@ -279,6 +284,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     @SpringBean
     private ScheduleJobService scheduleJobService;
     
+    @SpringBean
+    private AsyncTaskHistoryDao asyncTaskHistoryDao;
     @SpringBean
     private FileBeanDecompressor fileBeanDecompressor;
     
@@ -962,7 +969,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         } else {
             scheduledTaskView.setTaskResult(asyncTaskDataSerializer.deserializeResult(entryHistory.getSerializedResult()));
         }
-        return new ForwardResolution(SCHEDULED_TASK_DETAILS);
+        return new ForwardResolution(SCHEDULED_TASK_HISTORY_DETAILS);
     }
     
     /**
@@ -1067,6 +1074,16 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public Resolution deleteScheduledJob(){
       scheduleJobService.deleteJob(scheduledTaskId);
       RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "ScheduledJobsQueue");
+      return resolution;
+    }
+    
+    /**
+     *Delete a Scheduled Job History
+     **/
+    public Resolution deleteScheduledJobHistory(){
+
+        asyncTaskHistoryDao.delete(Long.parseLong(scheduledTaskHistoryId));
+        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "ScheduledJobsQueue");
       return resolution;
     }
     

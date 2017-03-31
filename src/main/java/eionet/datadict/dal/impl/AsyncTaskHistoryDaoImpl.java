@@ -36,7 +36,7 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
     }
 
     @Override
-    public AsyncTaskExecutionEntryHistory retrieveTaskByTaskHistoryId(String id) {
+    public AsyncTaskExecutionEntryHistory retrieveTaskHistoryById(String id) {
         String sql = "select * from ASYNC_TASK_ENTRY_HISTORY where ID = :id";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);
@@ -99,6 +99,14 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
         params.put("startDate", this.dateTimeToLongConverter.convert(entry.getStartDate()));
         params.put("serializedResult", entry.getSerializedResult());
         this.getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+    @Override
+    public void delete(Long id) {
+        String sql = "delete from ASYNC_TASK_ENTRY_HISTORY where ID = :id";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("id", id);
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);  
     }
 
     protected class ResultEntryRowMapper implements RowMapper<AsyncTaskExecutionEntryHistory> {

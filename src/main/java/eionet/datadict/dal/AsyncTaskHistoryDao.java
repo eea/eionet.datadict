@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface AsyncTaskHistoryDao {
 
-    AsyncTaskExecutionEntryHistory retrieveTaskByTaskHistoryId(String id);
+    AsyncTaskExecutionEntryHistory retrieveTaskHistoryById(String id);
 
     List<AsyncTaskExecutionEntryHistory> retrieveTasksByTaskId(String taskId);
 
@@ -22,4 +22,6 @@ public interface AsyncTaskHistoryDao {
     List<AsyncTaskExecutionEntryHistory> retrieveAllTasksHistory();
 
     void deleteRecordsWithScheduledDateOlderThan(Date date);
+    
+    void delete(Long id);
 }
