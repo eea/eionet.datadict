@@ -1043,6 +1043,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *@return resolution
      */
     public Resolution updateScheduledJob() throws ServiceException {
+        
+        System.out.println("Test RDF PURGE OPTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
+
+        System.out.println(rdfPurgeOption);
            try {
             vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),vocabularyFolder.isWorkingCopy());
             validateView();

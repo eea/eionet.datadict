@@ -30,11 +30,11 @@ public class Enumerations {
                 case 1:
                     return DONT_PURGE.toString();
                 case 2:
-                    return DELETE_VOCABULARY_DATA.toString();
+                    return PURGE_PREDICATE_BASIS.toString();
                 case 3: 
                     return PURGE_VOCABULARY_DATA.toString();
                 case 4:
-                    return PURGE_PREDICATE_BASIS.toString();
+                    return DELETE_VOCABULARY_DATA.toString();
             }
             throw new IllegalArgumentException("Integer:"+rdfPurgeOption+" doesn't exist as an RdfPurgeOption");
         }
