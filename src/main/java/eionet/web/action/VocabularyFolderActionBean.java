@@ -978,7 +978,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             Map<String, Object> parameters = asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters());
             this.vocabularyRdfUrl = (String) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_RDF_FILE_URL);
             this.emails = (String) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_NOTIFIERS_EMAILS);
-           // this.rdfPurgeOption = (Integer) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_RDF_PURGE_OPTION);
             this.rdfPurgeOption = Enumerations.VocabularyRdfPurgeOption.valueOf((String)parameters.get(VocabularyRdfImportFromUrlTask.PARAM_RDF_PURGE_OPTION)).getRdfPurgeOption();
             this.missingConceptsAction = (IVocabularyImportService.MissingConceptsAction) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_MISSING_CONCEPTS_ACTION);
             this.scheduleInterval = (Integer) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_SCHEDULE_INTERVAL);
@@ -1043,10 +1042,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *@return resolution
      */
     public Resolution updateScheduledJob() throws ServiceException {
-        
-        System.out.println("Test RDF PURGE OPTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
-
-        System.out.println(rdfPurgeOption);
            try {
             vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),vocabularyFolder.isWorkingCopy());
             validateView();
