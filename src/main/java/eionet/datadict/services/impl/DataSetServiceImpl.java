@@ -1,13 +1,15 @@
 package eionet.datadict.services.impl;
 
+import eionet.datadict.dal.DatasetDao;
+import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.model.DataSet;
+import eionet.datadict.model.DataTable;
+import eionet.datadict.model.DatasetTable;
 import eionet.datadict.services.DataSetService;
-import eionet.datadict.services.data.DatasetDataService;
 import eionet.datadict.services.data.NamespaceDataService;
 import eionet.meta.DDSearchEngine;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +22,8 @@ import org.w3c.dom.Document;
 import eionet.datadict.model.Namespace;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import java.util.HashSet;
+import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,13 +43,15 @@ import org.w3c.dom.Element;
 @Service
 public class DataSetServiceImpl implements DataSetService {
     
-    @Autowired
-    DatasetDataService datasetDataService;
     
-    @Autowired
-    NamespaceDataService namespaceDataService;
+    private final NamespaceDataService namespaceDataService;
+    private final DatasetDao datasetDao;
+    private final DatasetTableDao datasetTableDao;
     
-    private static final String DATASETS_NAMESPACE = "1";
+    private static final String DATASETS_NAMESPACE_ID = "1";
+    private static final String ISOATTRS_NAMESPACE_ID="2";
+    private static final String DDATTRS_NAMESPACE_ID="3";
+    private static final String TARGET_NAMESPACE="targetNamespace";
     
     protected DDSearchEngine searchEngine = null;
     StringBuilder writer = new StringBuilder();
@@ -66,6 +72,17 @@ public class DataSetServiceImpl implements DataSetService {
     protected Map<String, String> nonAnnotationAttributes = new HashMap<String, String>();
     
     private String containerNamespaceID = null;
+
+    
+    @Autowired
+    public DataSetServiceImpl(NamespaceDataService namespaceDataService, DatasetDao datasetDao, DatasetTableDao datasetTableDao) {
+        this.namespaceDataService = namespaceDataService;
+        this.datasetDao = datasetDao;
+        this.datasetTableDao = datasetTableDao;
+    }
+
+    
+   
     
     @Override
     public Document getDataSetXMLSchema(String id) throws XmlExportException {
@@ -75,32 +92,48 @@ public class DataSetServiceImpl implements DataSetService {
         
         try {
             docBuilder = docFactory.newDocumentBuilder();
-            // root elements
             Document doc = docBuilder.newDocument();
             // Create xs:schema element:
             Element schemaRoot = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, NS_PREFIX + "schema");
             schemaRoot.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance",
                     "xsi:schemaLocation", "http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd");
             schemaRoot.setAttribute("xmlns:xs", "http://www.w3.org/2001/XMLSchema");
-            //   schemaRoot.setAttribute("xmlns:dd688","http://dd.eionet.europa.eu/namespaces/688");
-            // We need this:  xmlns:datasets="http://dd.eionet.europa.eu/namespaces/1"
-            schemaRoot.setAttribute("xmlns:xs", appContext + "/" + Namespace.URL_PREFIX + "/" + DATASETS_NAMESPACE);
-            // We need this: xmlns:isoattrs="http://dd.eionet.europa.eu/namespaces/2"
-            //xmlns:ddattrs="http://dd.eionet.europa.eu/namespaces/3"   
-            schemaRoot.setAttribute(id, id);
+            schemaRoot.setAttribute("xmlns:datasets", appContext + "/" + Namespace.URL_PREFIX + "/" + DATASETS_NAMESPACE_ID);
+            schemaRoot.setAttribute("xmlns:isoattrs", appContext + "/" + Namespace.URL_PREFIX + "/" + ISOATTRS_NAMESPACE_ID);
+            schemaRoot.setAttribute("xmlns:ddattrs", appContext + "/" + Namespace.URL_PREFIX + "/" + DDATTRS_NAMESPACE_ID);
+            DataSet dataset = this.getDataset(Integer.parseInt(id));
+            schemaRoot.setAttribute(TARGET_NAMESPACE,appContext + "/" + Namespace.URL_PREFIX + "/" +dataset.getCorrespondingNS().getId());
+            schemaRoot.setAttribute("elementFormDefault","qualified");
+            schemaRoot.setAttribute("attributeFormDefault","unqualified");
+            // We need the Dataset Tables IDs
+            List<DatasetTable> dsTables = datasetTableDao.getAllByDatasetId(dataset.getId());
+            
+            for (DatasetTable dsTable : dsTables) {
+                schemaRoot.setAttribute("xmlns:dd"+dsTable.getCorrespondingNS().getId(),appContext + "/" + Namespace.URL_PREFIX + "/"+dsTable.getCorrespondingNS().getId());
+            }
             doc.appendChild(schemaRoot);
-            NameTypeElementMaker elMaker = new NameTypeElementMaker(NS_PREFIX, doc);
-            // We need this:
-            // xsi:schemaLocation="http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd"
-            // <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-
+        
             return doc;
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new XmlExportException(ex);
+        } catch (ResourceNotFoundException ex) {
+            Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        return null;
     }
+    
+        @Override
+    public DataSet getDataset(int id) throws ResourceNotFoundException {
+        DataSet dataset = datasetDao.getById(id);
+        if (dataset!=null){
+            return dataset;
+        }
+        else{
+            throw new ResourceNotFoundException("Dataset with id: "+Integer.toString(id)+ " does not exist.");
+        }
+    }
+    
     
     protected String getNamespacePrefix(Namespace ns) {
         return ns == null ? "dd" : "dd" + ns.getId();

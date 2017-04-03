@@ -6,7 +6,9 @@ import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.Namespace;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,24 @@ public class DatasetTableDaoImpl extends JdbcDaoBase implements DatasetTableDao 
         }catch (EmptyResultDataAccessException ex) {
             return null;
         }          
+    }
+
+    @Override
+    public List<DatasetTable> getAllByDatasetId(int datasetId) {
+         List<DatasetTable> dsTables = new ArrayList<DatasetTable>();
+         String sql = "SELECT TABLE_ID FROM DST2TBL "
+                + "WHERE  DATASET_ID=  :datasetId";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("datasetId", datasetId);
+        try {
+            List<Integer> dataTableIds= this.getNamedParameterJdbcTemplate().queryForList(sql, params,Integer.class);
+            for (Integer dataTableId : dataTableIds) {
+                dsTables.add(this.getById(dataTableId));
+            }
+            return dsTables;
+        }catch (EmptyResultDataAccessException ex) {
+            return null;
+        } 
     }
     
     public static class DatasetTableRowMapper implements RowMapper<DatasetTable> {
