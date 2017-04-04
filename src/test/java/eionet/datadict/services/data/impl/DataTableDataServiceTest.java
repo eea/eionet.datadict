@@ -2,7 +2,7 @@ package eionet.datadict.services.data.impl;
 
 import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DataSetDao;
-import eionet.datadict.dal.DataTableDao;
+import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.dal.FixedValuesDao;
 import eionet.datadict.dal.SimpleAttributeDao;
 import eionet.datadict.dal.VocabularyDao;
@@ -10,8 +10,8 @@ import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataElementWithFixedValues;
 import eionet.datadict.model.DataElementWithQuantitativeValues;
 import eionet.datadict.model.DataSet;
-import eionet.datadict.model.DataTable;
-import eionet.datadict.model.DataTableElement;
+import eionet.datadict.model.DatasetTable;
+import eionet.datadict.model.DatasetTableElement;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.SimpleAttribute;
 import eionet.datadict.model.SimpleAttributeFixedValues;
@@ -33,7 +33,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 public class DataTableDataServiceTest {
 
     @Mock
-    private DataTableDao dataTableDao;
+    private DatasetTableDao datasetTableDao;
     @Mock
     private DataSetDao dataSetDao;
     @Mock
@@ -49,25 +49,25 @@ public class DataTableDataServiceTest {
     
     @Test
     public void testGetFullDataTableDefinition() {
-        final DataTable dataTable = this.createDataTable(17, "some_data_table", 6, 9);
+        final DatasetTable dataTable = this.createDataTable(17, "some_data_table", 6, 9);
         final DataSet dataSet = this.createDataSet(dataTable.getDataSet().getId(), "some_dataset", 4);
         final List<SimpleAttribute> dataTableAttributes = this.createDataTableAttributes();
         final List<SimpleAttributeValues> dataTableAttributeValues = this.createDataTableAttributeValues(dataTable, dataTableAttributes);
         
-        when(dataTableDao.getDataTableById(dataTable.getId())).thenReturn(dataTable);
+        when(datasetTableDao.getById(dataTable.getId())).thenReturn(dataTable);
         when(dataSetDao.getDataSetById(dataSet.getId())).thenReturn(dataSet);
         when(simpleAttributeDao.getSimpleAttributesOfDataTable(dataTable.getId())).thenReturn(dataTableAttributes);
         when(simpleAttributeDao.getSimpleAttributesValuesOfDataTable(dataTable.getId())).thenReturn(dataTableAttributeValues);
         
     }
     
-    private DataTable createDataTable(int dataTableId, String identifier, int dataSetId, int namespaceId) {
-        DataTable dataTable = new DataTable(dataTableId);
-        dataTable.setIdentifier(identifier);
-        dataTable.setDataSet(new DataSet(dataSetId));
-        dataTable.setNamespace(new Namespace(namespaceId));
+    private DatasetTable createDataTable(int datasetTableId, String identifier, int dataSetId, int namespaceId) {
+        DatasetTable datasetTable = new DatasetTable(datasetTableId);
+        datasetTable.setIdentifier(identifier);
+        datasetTable.setDataSet(new DataSet(dataSetId));
+        datasetTable.setNamespace(new Namespace(namespaceId));
         
-        return dataTable;
+        return datasetTable;
     }
     
     private DataSet createDataSet(int dataSetId, String identifier, int namespaceId) {
@@ -96,9 +96,9 @@ public class DataTableDataServiceTest {
         return attributes;
     }
     
-    private List<SimpleAttributeValues> createDataTableAttributeValues(DataTable owner, List<SimpleAttribute> attributes) {
+    private List<SimpleAttributeValues> createDataTableAttributeValues(DatasetTable owner, List<SimpleAttribute> attributes) {
         List<SimpleAttributeValues> values = new ArrayList<SimpleAttributeValues>();
-        DataTable ownerToSet = new DataTable(owner.getId());
+        DatasetTable ownerToSet = new DatasetTable(owner.getId());
         
         for (SimpleAttribute attribute : attributes) {
             SimpleAttributeValues val = new SimpleAttributeValues();
@@ -110,9 +110,9 @@ public class DataTableDataServiceTest {
         return values;
     }
     
-    private List<DataTableElement> createDataTableElements(DataTable dataTable) {
-        List<DataTableElement> dataTableElements = new ArrayList<DataTableElement>();
-        DataTable dataTableToSet = new DataTable(dataTable.getId());
+    private List<DatasetTableElement> createDataTableElements(DatasetTable datasetTable) {
+        List<DatasetTableElement> datasetTableElements = new ArrayList<DatasetTableElement>();
+        DatasetTable dataTableToSet = new DatasetTable(datasetTable.getId());
         DataElement elm1 = new DataElementWithFixedValues(23);
         elm1.setIdentifier("elm1");
         DataElement elm2 = new DataElementWithQuantitativeValues(24);
@@ -123,13 +123,13 @@ public class DataTableDataServiceTest {
         elm4.setIdentifier("elm4");
         DataElement elm5 = new DataElementWithFixedValues(27);
         elm5.setIdentifier("elm5");
-        dataTableElements.add(new DataTableElement(dataTableToSet, elm1));
-        dataTableElements.add(new DataTableElement(dataTableToSet, elm2));
-        dataTableElements.add(new DataTableElement(dataTableToSet, elm3));
-        dataTableElements.add(new DataTableElement(dataTableToSet, elm4));
-        dataTableElements.add(new DataTableElement(dataTableToSet, elm5));
+        datasetTableElements.add(new DatasetTableElement(dataTableToSet, elm1));
+        datasetTableElements.add(new DatasetTableElement(dataTableToSet, elm2));
+        datasetTableElements.add(new DatasetTableElement(dataTableToSet, elm3));
+        datasetTableElements.add(new DatasetTableElement(dataTableToSet, elm4));
+        datasetTableElements.add(new DatasetTableElement(dataTableToSet, elm5));
         
-        return dataTableElements;
+        return datasetTableElements;
     }
     
 }

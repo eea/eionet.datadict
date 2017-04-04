@@ -1,10 +1,10 @@
 package eionet.datadict.services.data;
 
 import eionet.datadict.errors.ResourceNotFoundException;
-import eionet.datadict.model.DataTable;
+import eionet.datadict.model.DatasetTable;
 
 public interface DataTableDataService {
 
-    DataTable getFullDataTableDefinition(int tableId) throws ResourceNotFoundException;
+    DatasetTable getFullDatasetTableDefinition(int tableId) throws ResourceNotFoundException;
     
 }

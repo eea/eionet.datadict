@@ -4,7 +4,7 @@ import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.impl.converters.BooleanToMysqlEnumYesNoConverter;
 import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataElement.DataElementType;
-import eionet.datadict.model.DataTableElement;
+import eionet.datadict.model.DatasetTableElement;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.SimpleAttributeOwnerCategory;
 import eionet.datadict.model.ValueListItem;
@@ -59,7 +59,7 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
     }
 
     @Override
-    public List<DataTableElement> getDataElementsOfDataTable(int tableId) {
+    public List<DatasetTableElement> getDataElementsOfDatasetTable(int tableId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

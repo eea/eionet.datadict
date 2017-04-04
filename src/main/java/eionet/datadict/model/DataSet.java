@@ -15,7 +15,7 @@ public class DataSet implements SimpleAttributeOwner {
     @ManyToOne
     private Namespace namespace;
     @OneToMany(mappedBy = "dataSet")
-    private Set<DataTable> dataTables;
+    private Set<DatasetTable> datasetTables;
     private Set<SimpleAttribute> simpleAttributes;
     @OneToMany(mappedBy = "owner")
     private Set<SimpleAttributeValues> simpleAttributesValues;
@@ -70,12 +70,12 @@ public class DataSet implements SimpleAttributeOwner {
         this.namespace = namespace;
     }
 
-    public Set<DataTable> getDataTables() {
-        return dataTables;
+    public Set<DatasetTable> getDatasetTables() {
+        return datasetTables;
     }
 
-    public void setDataTables(Set<DataTable> dataTables) {
-        this.dataTables = dataTables;
+    public void setDatasetTables(Set<DatasetTable> datasetTables) {
+        this.datasetTables = datasetTables;
     }
     
     @Override

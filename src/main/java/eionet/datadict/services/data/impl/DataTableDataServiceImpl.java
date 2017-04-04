@@ -5,15 +5,15 @@ import eionet.datadict.commons.util.Predicate;
 import eionet.datadict.commons.util.Selector;
 import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DataSetDao;
-import eionet.datadict.dal.DataTableDao;
+import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.dal.FixedValuesDao;
 import eionet.datadict.dal.SimpleAttributeDao;
 import eionet.datadict.dal.VocabularyDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataSet;
-import eionet.datadict.model.DataTable;
-import eionet.datadict.model.DataTableElement;
+import eionet.datadict.model.DatasetTable;
+import eionet.datadict.model.DatasetTableElement;
 import eionet.datadict.model.FixedValue;
 import eionet.datadict.model.SimpleAttribute;
 import eionet.datadict.model.SimpleAttributeValues;
@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class DataTableDataServiceImpl implements DataTableDataService {
 
-    private final DataTableDao dataTableDao;
+    private final DatasetTableDao datasetTableDao;
     private final DataSetDao dataSetDao;
     private final DataElementDao dataElementDao;
     private final SimpleAttributeDao simpleAttributeDao;
@@ -38,9 +38,9 @@ public class DataTableDataServiceImpl implements DataTableDataService {
     private final VocabularyDao vocabularyDao;
     
     @Autowired
-    public DataTableDataServiceImpl(DataTableDao dataTableDao, DataSetDao dataSetDao, DataElementDao dataElementDao, 
+    public DataTableDataServiceImpl(DatasetTableDao datasetTableDao, DataSetDao dataSetDao, DataElementDao dataElementDao, 
             SimpleAttributeDao simpleAttributeDao, FixedValuesDao fixedValuesDao, VocabularyDao vocabularyDao) {
-        this.dataTableDao = dataTableDao;
+        this.datasetTableDao = datasetTableDao;
         this.dataSetDao = dataSetDao;
         this.dataElementDao = dataElementDao;
         this.simpleAttributeDao = simpleAttributeDao;
@@ -49,31 +49,31 @@ public class DataTableDataServiceImpl implements DataTableDataService {
     }
     
     @Override
-    public DataTable getFullDataTableDefinition(int tableId) throws ResourceNotFoundException {
-        DataTable dataTable = this.dataTableDao.getDataTableById(tableId);
+    public DatasetTable getFullDatasetTableDefinition(int tableId) throws ResourceNotFoundException {
+        DatasetTable datasetTable = this.datasetTableDao.getById(tableId);
         
-        if (dataTable == null) {
+        if (datasetTable == null) {
             throw new ResourceNotFoundException(String.format("Table with id %d could not be found.", tableId));
         }
         
-        DataSet dataSet = this.dataSetDao.getDataSetById(dataTable.getDataSet().getId());
+        DataSet dataSet = this.dataSetDao.getDataSetById(datasetTable.getDataSet().getId());
         
         if (dataSet == null) {
-            throw new ResourceNotFoundException(String.format("Dataset with id %d could not be found", dataTable.getDataSet().getId()));
+            throw new ResourceNotFoundException(String.format("Dataset with id %d could not be found", datasetTable.getDataSet().getId()));
         }
         
-        OrmUtils.link(dataSet, dataTable);
-        List<SimpleAttribute> dataTableAttributes = this.simpleAttributeDao.getSimpleAttributesOfDataTable(tableId);
-        dataTable.setSimpleAttributes(OrmCollectionUtils.createChildCollection(dataTableAttributes));
-        List<SimpleAttributeValues> dataTableAttributeValues = this.simpleAttributeDao.getSimpleAttributesValuesOfDataTable(tableId);
-        OrmUtils.link(dataTableAttributes, dataTableAttributeValues);
-        OrmUtils.link(dataTable, dataTableAttributeValues);
-        List<DataTableElement> dataTableElements = this.dataElementDao.getDataElementsOfDataTable(tableId);
-        OrmUtils.link(dataTable, dataTableElements);
-        List<DataElement> dataElements = IterableUtils.select(dataTableElements, new Selector<DataTableElement, DataElement>() {
+        OrmUtils.link(dataSet, datasetTable);
+        List<SimpleAttribute> datasetTableAttributes = this.simpleAttributeDao.getSimpleAttributesOfDataTable(tableId);
+        datasetTable.setSimpleAttributes(OrmCollectionUtils.createChildCollection(datasetTableAttributes));
+        List<SimpleAttributeValues> datasetTableAttributeValues = this.simpleAttributeDao.getSimpleAttributesValuesOfDataTable(tableId);
+        OrmUtils.link(datasetTableAttributes, datasetTableAttributeValues);
+        OrmUtils.link(datasetTable, datasetTableAttributeValues);
+        List<DatasetTableElement> datasetTableElements = this.dataElementDao.getDataElementsOfDatasetTable(tableId);
+        OrmUtils.link(datasetTable, datasetTableElements);
+        List<DataElement> dataElements = IterableUtils.select(datasetTableElements, new Selector<DatasetTableElement, DataElement>() {
 
             @Override
-            public DataElement select(DataTableElement obj) {
+            public DataElement select(DatasetTableElement obj) {
                 return obj.getDataElement();
             }
             
@@ -113,7 +113,7 @@ public class DataTableDataServiceImpl implements DataTableDataService {
         OrmUtils.link(dataElements, dataElementAttributeValues);
         OrmUtils.link(new ArrayList<SimpleAttribute>(dataElementAttributes), dataElementAttributeValues);
         
-        return dataTable;
+        return datasetTable;
     }
     
     private List<DataElement> filterDataElementsByType(List<DataElement> dataElements, final DataElement.ValueType valueType) {

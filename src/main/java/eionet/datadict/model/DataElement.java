@@ -35,7 +35,7 @@ public abstract class DataElement implements SimpleAttributeOwner {
     @ManyToOne
     private Namespace namespace;
     @OneToOne(mappedBy = "dataElement")
-    private DataTableElement dataTableElement;
+    private DatasetTableElement datasetTableElement;
     private Set<SimpleAttribute> simpleAttributes;
     @OneToMany(mappedBy = "owner")
     private Set<SimpleAttributeValues> simpleAttributesValues;
@@ -105,12 +105,12 @@ public abstract class DataElement implements SimpleAttributeOwner {
         this.namespace = namespace;
     }
 
-    public DataTableElement getDataTableElement() {
-        return dataTableElement;
+    public DatasetTableElement getDatasetTableElement() {
+        return datasetTableElement;
     }
 
-    public void setDataTableElement(DataTableElement dataTableElement) {
-        this.dataTableElement = dataTableElement;
+    public void setDatasetTableElement(DatasetTableElement datasetTableElement) {
+        this.datasetTableElement = datasetTableElement;
     }
 
     @Override

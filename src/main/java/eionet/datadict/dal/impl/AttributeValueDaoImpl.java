@@ -100,6 +100,22 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
 
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
     }
+
+    @Override
+    public List<AttributeValue> getByOwner(DataDictEntity owner) {
+ String sql = "SELECT "
+                + "ATTRIBUTE.* "
+                + "FROM ATTRIBUTE "
+                + "WHERE PARENT_TYPE = :parentType AND DATAELEM_ID = :ddEntityId";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("parentType", owner.getType().toString());
+        params.put("ddEntityId", owner.getId());
+        
+        try {
+            return this.getNamedParameterJdbcTemplate().query(sql, params, new AttributeValueRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }    }
     
     public static class AttributeValueRowMapper implements RowMapper {
 

@@ -3,10 +3,10 @@ package eionet.datadict.model;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
-public class DataTableElement {
+public class DatasetTableElement {
 
     @ManyToOne
-    private DataTable dataTable;
+    private DatasetTable datasetTable;
     @OneToOne
     private DataElement dataElement;
     private int position;
@@ -14,19 +14,19 @@ public class DataTableElement {
     private boolean primaryKey;
     private Character multiValueDelimiter;
 
-    public DataTableElement() { }
+    public DatasetTableElement() { }
     
-    public DataTableElement(DataTable dataTable, DataElement DataElement) {
-        this.dataTable = dataTable;
+    public DatasetTableElement(DatasetTable datasetTable, DataElement DataElement) {
+        this.datasetTable = datasetTable;
         this.dataElement = DataElement;
     }
 
-    public DataTable getDataTable() {
-        return dataTable;
+    public DatasetTable getDatasetTable() {
+        return datasetTable;
     }
 
-    public void setDataTable(DataTable dataTable) {
-        this.dataTable = dataTable;
+    public void setDatasetTable(DatasetTable datasetTable) {
+        this.datasetTable = datasetTable;
     }
 
     public DataElement getDataElement() {
@@ -75,7 +75,7 @@ public class DataTableElement {
             return true;
         }
         
-        if (!(obj instanceof DataTableElement)) {
+        if (!(obj instanceof DatasetTableElement)) {
             return false;
         }
         
@@ -83,7 +83,7 @@ public class DataTableElement {
             return false;
         }
         
-        DataTableElement other = (DataTableElement) obj;
+        DatasetTableElement other = (DatasetTableElement) obj;
         
         return this.dataElement.equals(other.dataElement);
     }

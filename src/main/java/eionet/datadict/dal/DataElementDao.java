@@ -1,12 +1,12 @@
 package eionet.datadict.dal;
 
-import eionet.datadict.model.DataTableElement;
+import eionet.datadict.model.DatasetTableElement;
 import java.util.List;
 import eionet.datadict.model.DataElement;
 
 public interface DataElementDao {
 
-    List<DataTableElement> getDataElementsOfDataTable(int tableId);
+    List<DatasetTableElement> getDataElementsOfDatasetTable(int tableId);
     
 
     /**

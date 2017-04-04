@@ -4,7 +4,7 @@ public enum SimpleAttributeOwnerCategory {
     DATA_ELEMENT_WITH_VALUE_LIST,
     DATA_ELEMENT_WITH_QUANTITATIVE_VALUES,
     DATA_SET,
-    DATA_TABLE,
+    DATA_SET_TABLE,
     SCHEMA_SET,
     SCHEMA,
     VOCABULARY
