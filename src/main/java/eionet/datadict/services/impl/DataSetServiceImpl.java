@@ -97,14 +97,11 @@ public class DataSetServiceImpl implements DataSetService {
 
     @Override
     public Document getDataSetXMLSchema(String id) throws XmlExportException {
-
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
-
         try {
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
-            // Create xs:schema element:
             Element schemaRoot = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, NS_PREFIX + "schema");
             schemaRoot.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance",
                     "xsi:schemaLocation", "http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd");
@@ -136,7 +133,7 @@ public class DataSetServiceImpl implements DataSetService {
             for (AttributeValue attributeValue : attributeValues) {
                 //each attribute Value belongs to an Attribute. We need them both
                 Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
-                Element attributeElement = doc.createElement("isoattrs:");//+attribute.getName());
+                Element attributeElement = doc.createElement( "isoattrs:".concat(attribute.getName()).replace(" ", ""));//+attribute.getName());
                 attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                 documentation.appendChild(attributeElement);
                 System.out.println(attributeValue.getAttributeId() + " ,  " + attributeValue.getValue()+" , attributeName: "+attribute.getName());
