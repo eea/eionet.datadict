@@ -4,7 +4,6 @@ import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.services.DataSetService;
-import eionet.datadict.services.data.DatasetDataService;
 import java.io.IOException;
 import java.util.HashMap;
 import javax.servlet.ServletException;
@@ -38,13 +37,11 @@ import org.w3c.dom.Document;
 @RequestMapping(value = "/datasets")
 public class DataSetController {
 
-    private final DatasetDataService datasetDataService;
     private final DataSetService dataSetService;
 
    
     @Autowired
-    public DataSetController(DatasetDataService datasetDataService, DataSetService dataSetService) {
-        this.datasetDataService = datasetDataService;
+    public DataSetController( DataSetService dataSetService) {
         this.dataSetService = dataSetService;
     }
 
