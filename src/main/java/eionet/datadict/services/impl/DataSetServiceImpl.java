@@ -63,6 +63,9 @@ public class DataSetServiceImpl implements DataSetService {
     private static final String XSD_FILE_TYPE = ".xsd";
     private static final String ELEMENT = "element";
     private static final String ANNOTATION = "annotation";
+    private static final String COMPLEX_TYPE="complexType";
+    private static final String SEQUENCE="sequence";
+    private static final String REF="ref";
     private static final String DOCUMENTATION = "documentation";
     private static final String DEFAULT_XML_LANGUAGE = "en";
 
@@ -131,12 +134,21 @@ public class DataSetServiceImpl implements DataSetService {
             annotation.appendChild(documentation);
             List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataset.getId(), DataDictEntity.Entity.DS));
             for (AttributeValue attributeValue : attributeValues) {
-                //each attribute Value belongs to an Attribute. We need them both
                 Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
-                Element attributeElement = doc.createElement( "isoattrs:".concat(attribute.getName()).replace(" ", ""));//+attribute.getName());
+                Element attributeElement = doc.createElement( attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
                 attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                 documentation.appendChild(attributeElement);
-                System.out.println(attributeValue.getAttributeId() + " ,  " + attributeValue.getValue()+" , attributeName: "+attribute.getName());
+            }
+            Element complexType = doc.createElement(NS_PREFIX +COMPLEX_TYPE);
+            element.appendChild(complexType);
+            Element sequence = doc.createElement(NS_PREFIX+SEQUENCE);
+            complexType.appendChild(sequence);
+              for (DatasetTable dsTable : dsTables) {
+               Element tableElement = doc.createElement(NS_PREFIX +ELEMENT);
+               tableElement.setAttribute(REF, "dd".concat(dsTable.getCorrespondingNS().getId().toString()).concat(":").concat(dsTable.getShortName()));
+               tableElement.setAttribute("minOccurs", "1");
+               tableElement.setAttribute("maxOccurs", "1");
+               sequence.appendChild(tableElement);
             }
             doc.appendChild(schemaRoot);
             return doc;
