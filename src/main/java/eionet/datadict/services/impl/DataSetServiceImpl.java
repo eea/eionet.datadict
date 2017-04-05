@@ -2,6 +2,7 @@ package eionet.datadict.services.impl;
 
 import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.AttributeValueDao;
+import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DatasetDao;
 import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.errors.ResourceNotFoundException;
@@ -9,8 +10,10 @@ import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
+import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataSet;
 import eionet.datadict.model.DatasetTable;
+import eionet.datadict.model.DatasetTableElement;
 import eionet.datadict.services.DataSetService;
 import eionet.datadict.services.data.NamespaceDataService;
 import eionet.meta.DDSearchEngine;
@@ -63,9 +66,9 @@ public class DataSetServiceImpl implements DataSetService {
     private static final String XSD_FILE_TYPE = ".xsd";
     private static final String ELEMENT = "element";
     private static final String ANNOTATION = "annotation";
-    private static final String COMPLEX_TYPE="complexType";
-    private static final String SEQUENCE="sequence";
-    private static final String REF="ref";
+    private static final String COMPLEX_TYPE = "complexType";
+    private static final String SEQUENCE = "sequence";
+    private static final String REF = "ref";
     private static final String DOCUMENTATION = "documentation";
     private static final String DEFAULT_XML_LANGUAGE = "en";
 
@@ -135,20 +138,20 @@ public class DataSetServiceImpl implements DataSetService {
             List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataset.getId(), DataDictEntity.Entity.DS));
             for (AttributeValue attributeValue : attributeValues) {
                 Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
-                Element attributeElement = doc.createElement( attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
+                Element attributeElement = doc.createElement(attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
                 attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                 documentation.appendChild(attributeElement);
             }
-            Element complexType = doc.createElement(NS_PREFIX +COMPLEX_TYPE);
+            Element complexType = doc.createElement(NS_PREFIX + COMPLEX_TYPE);
             element.appendChild(complexType);
-            Element sequence = doc.createElement(NS_PREFIX+SEQUENCE);
+            Element sequence = doc.createElement(NS_PREFIX + SEQUENCE);
             complexType.appendChild(sequence);
-              for (DatasetTable dsTable : dsTables) {
-               Element tableElement = doc.createElement(NS_PREFIX +ELEMENT);
-               tableElement.setAttribute(REF, "dd".concat(dsTable.getCorrespondingNS().getId().toString()).concat(":").concat(dsTable.getShortName()));
-               tableElement.setAttribute("minOccurs", "1");
-               tableElement.setAttribute("maxOccurs", "1");
-               sequence.appendChild(tableElement);
+            for (DatasetTable dsTable : dsTables) {
+                Element tableElement = doc.createElement(NS_PREFIX + ELEMENT);
+                tableElement.setAttribute(REF, "dd".concat(dsTable.getCorrespondingNS().getId().toString()).concat(":").concat(dsTable.getShortName()));
+                tableElement.setAttribute("minOccurs", "1");
+                tableElement.setAttribute("maxOccurs", "1");
+                sequence.appendChild(tableElement);
             }
             doc.appendChild(schemaRoot);
             return doc;
