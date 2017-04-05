@@ -62,8 +62,9 @@ public class DataSetController {
             throw new EmptyParameterException((" schema id"));
         }
         Document xml = this.dataSetService.getDataSetXMLSchema(id);
+        String fileName = "schema-dst-".concat(id).concat(".xsd");
         response.setContentType("application/xml");
-        response.setHeader("Content-Disposition", "attachment;filename=thisIsTheFileName.xml");
+        response.setHeader("Content-Disposition", "attachment;filename="+fileName);
         ServletOutputStream outStream = response.getOutputStream();
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
