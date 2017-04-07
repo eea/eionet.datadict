@@ -19,9 +19,11 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,7 +35,7 @@ import org.w3c.dom.Document;
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
 @Controller
-@RequestMapping(value = "/datatables")
+@RequestMapping(value = "/dataSetTables")
 public class DatasetTableController {
 
     private final DataSetTableService dataSetTableService;
@@ -43,12 +45,12 @@ public class DatasetTableController {
         this.dataSetTableService = dataSetTableService;
     }
 
-    @RequestMapping(value = "/schema", method = RequestMethod.GET)
+    @RequestMapping(value = "/schema/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
-    public void getDatasetTableSchema(@RequestParam(value = "id") int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
+    public void getDatasetTableSchema(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
 
         Document xml = this.dataSetTableService.getDataSetTableXMLSchema(id);
-        String fileName = "schema-dst-".concat(String.valueOf(id)).concat(".xsd");
+        String fileName = "schema-tbl-".concat(String.valueOf(id)).concat(".xsd");
         response.setContentType("application/xml");
         response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
         ServletOutputStream outStream = response.getOutputStream();

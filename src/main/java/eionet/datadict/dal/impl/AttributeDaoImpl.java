@@ -205,6 +205,22 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         }
     }
 
+    @Override
+    public List<Attribute> getCombinedDataSetAndDataTableAttributes(int datasetTableId, int dataSetId) {
+        String sql = "select M_ATTRIBUTE.*, NAMESPACE.*, ATTRIBUTE.VALUE, ATTRIBUTE.PARENT_TYPE from M_ATTRIBUTE left outer join NAMESPACE on M_ATTRIBUTE.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID left outer join \n" +
+"ATTRIBUTE on M_ATTRIBUTE.M_ATTRIBUTE_ID=ATTRIBUTE.M_ATTRIBUTE_ID where (ATTRIBUTE.DATAELEM_ID= :datasetTableId and \n" +
+"ATTRIBUTE.PARENT_TYPE='T') or (ATTRIBUTE.DATAELEM_ID= :dataSetId and ATTRIBUTE.PARENT_TYPE='DS' and\n" +
+"M_ATTRIBUTE.INHERIT!='0')";
+                Map<String, Object> params = this.createParameterMap();
+               params.put("datasetTableId",datasetTableId);
+               params.put("dataSetId",dataSetId);
+        try {
+            return this.getNamedParameterJdbcTemplate().queryForList(sql, params,Attribute.class);
+        } catch (IncorrectResultSizeDataAccessException ex) {
+            return null;
+        }        
+    }
+
     protected static class MapRowMapper implements RowMapper<Map<DataDictEntity.Entity, Integer>> {
 
         @Override

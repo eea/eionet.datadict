@@ -2,6 +2,7 @@ package eionet.datadict.dal;
 
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.DataDictEntity;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -94,4 +95,6 @@ public interface AttributeDao {
      * @return a {@link java.util.Map} containing {@link DataDictEntity$Entity} keys and Integer values.
      */
     public Map<DataDictEntity.Entity, Integer> getConceptsWithAttributeValues(int attributeId);
+    
+    public List<Attribute> getCombinedDataSetAndDataTableAttributes(int datasetTableId,int dataSetId);
 }
