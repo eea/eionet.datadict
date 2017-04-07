@@ -1418,8 +1418,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /***
      * Validate Schedule Synchronization of a Vocabulary 
      **/
-    @ValidationMethod(on = {"createSyncSchedule"})
-    public void ValidateCreateSyncSchedule() throws ServiceException {
+    @ValidationMethod(on = {"createScheduledJob","updateScheduledJob"})
+    public void ValidateCreateOrUpdateScheduledJob() throws ServiceException {
         if (vocabularyFolder.getId() == 0) {
             if (!isCreateRight()) {
                 addGlobalValidationError("No permission to create new vocabulary");
@@ -2372,19 +2372,26 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     *@param taskResult the desirialised Async Task Result
-     *@return the Exception error message, or null if no exception or error message found in the Task Result.
-     **/
+     * @param taskResult the desirialised Async Task Result
+     * @return the Exception error message, or null if no exception or error
+     * message found in the Task Result.
+     *
+     */
     public String extractExceptionMessageFromErrorResult(Object taskResult) {
         Gson gson = new Gson();
-            try {
-                Map<String, String> results = gson.fromJson((String) taskResult, Map.class);
-                if (results.get("@class").equals(AsyncTaskExecutionError.class.getCanonicalName())) {
-                    return results.get(AsyncTaskExecutionError.MESSAGE);
-                }
-            } catch (JsonSyntaxException e) {
-                LOGGER.info("Async Task Result Not in Json Format");
+        try {
+            Map<String, String> results = gson.fromJson((String) taskResult, Map.class);
+
+            if (results != null && results.get("@class").equals(AsyncTaskExecutionError.class.getCanonicalName())) {
+                return results.get(AsyncTaskExecutionError.MESSAGE);
+            } else {
+                return null;
             }
+        } catch (JsonSyntaxException e) {
+            LOGGER.info("Async Task Result Not in Json Format");
+        } catch (Exception e) {
+            LOGGER.info("Async Task Result Not in Json Format");
+        }
         return null;
     }
 }
