@@ -27,6 +27,9 @@
                     $('.numbersOnly').keyup(function () {
                         this.value = this.value.replace(/[^0-9\.]/g, '');
                     });
+                    /** 
+                     * Select Default Value For Vocabulary Imported Data
+                     * **/
                     $("#rdfDontPurge").prop("checked",true);
                 });
             })(jQuery);
