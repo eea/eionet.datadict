@@ -2,7 +2,10 @@ package eionet.datadict.services.impl;
 
 import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.AttributeValueDao;
+import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DatasetDao;
+import eionet.datadict.model.DataElement;
+
 import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
@@ -38,6 +41,7 @@ public class DataSetServiceImpl implements DataSetService {
     private final DatasetTableDao datasetTableDao;
     private final AttributeValueDao attributeValueDao;
     private final AttributeDao attributeDao;
+    private final DataElementDao dataElementDao;
 
     private static final String DATASETS_NAMESPACE_ID = "1";
     private static final String ISOATTRS_NAMESPACE_ID = "2";
@@ -48,7 +52,8 @@ public class DataSetServiceImpl implements DataSetService {
     private static final String NAMESPACE = "namespace";
     private static final String SCHEMA_LOCATION = "schemaLocation";
     private static final String TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME = "schema-tbl-";
-    private static final String XSD_FILE_TYPE = ".xsd";
+    private static final String DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME = "schema-dst-";
+    private static final String XSD_FILE_EXTENSION = ".xsd";
     private static final String ELEMENT = "element";
     private static final String ANNOTATION = "annotation";
     private static final String COMPLEX_TYPE = "complexType";
@@ -61,15 +66,16 @@ public class DataSetServiceImpl implements DataSetService {
     private final static String NS_PREFIX = "xs:";
 
     @Autowired
-    public DataSetServiceImpl(DatasetDao datasetDao, DatasetTableDao datasetTableDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao) {
+    public DataSetServiceImpl(DatasetDao datasetDao, DatasetTableDao datasetTableDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DataElementDao dataElementDao) {
         this.datasetDao = datasetDao;
         this.datasetTableDao = datasetTableDao;
         this.attributeValueDao = attributeValueDao;
         this.attributeDao = attributeDao;
+        this.dataElementDao = dataElementDao;
     }
 
     @Override
-    public Document getDataSetXMLSchema(String id) throws XmlExportException {
+    public Document getDataSetXMLSchema(int id) throws XmlExportException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
         try {
@@ -82,7 +88,7 @@ public class DataSetServiceImpl implements DataSetService {
             schemaRoot.setAttribute("xmlns:datasets", appContext + "/" + Namespace.URL_PREFIX + "/" + DATASETS_NAMESPACE_ID);
             schemaRoot.setAttribute("xmlns:isoattrs", appContext + "/" + Namespace.URL_PREFIX + "/" + ISOATTRS_NAMESPACE_ID);
             schemaRoot.setAttribute("xmlns:ddattrs", appContext + "/" + Namespace.URL_PREFIX + "/" + DDATTRS_NAMESPACE_ID);
-            DataSet dataset = this.getDataset(Integer.parseInt(id));
+            DataSet dataset = this.getDataset(id);
             schemaRoot.setAttribute(TARGET_NAMESPACE, appContext + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
             schemaRoot.setAttribute("elementFormDefault", "qualified");
             schemaRoot.setAttribute("attributeFormDefault", "unqualified");
@@ -91,7 +97,7 @@ public class DataSetServiceImpl implements DataSetService {
                 schemaRoot.setAttribute("xmlns:dd" + dsTable.getCorrespondingNS().getId(), appContext + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId());
                 Element importElement = doc.createElement(NS_PREFIX + "import");
                 importElement.setAttribute(NAMESPACE, appContext + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId());
-                importElement.setAttribute(SCHEMA_LOCATION, TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dsTable.getId() + XSD_FILE_TYPE);
+                importElement.setAttribute(SCHEMA_LOCATION, TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dsTable.getId() + XSD_FILE_EXTENSION);
                 schemaRoot.appendChild(importElement);
             }
             Element element = doc.createElement(NS_PREFIX + ELEMENT);
@@ -143,5 +149,49 @@ public class DataSetServiceImpl implements DataSetService {
 
     protected String getNamespacePrefix(Namespace ns) {
         return ns == null ? "dd" : "dd" + ns.getId();
+    }
+
+    @Override
+    public Document getDataSetXMLInstance(int id) throws XmlExportException {
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = null;
+        try {
+            DataSet dataset = this.getDataset(id);
+            List<DatasetTable> dsTables = datasetTableDao.getAllByDatasetId(dataset.getId());
+            docFactory.setNamespaceAware(true);
+            docBuilder = docFactory.newDocumentBuilder();
+            Document doc = docBuilder.newDocument();
+            Element schemaRoot = doc.createElement(dataset.getShortName());
+            schemaRoot.setAttribute("xmlns", appContext + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
+            schemaRoot.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+            schemaRoot.setAttribute("xsi:schemaLocation", appContext + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId() + "  " + DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataset.getId() + XSD_FILE_EXTENSION);
+
+            for (DatasetTable dsTable : dsTables) {
+                String tableNS = appContext + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId();
+                Element tableElement = doc.createElementNS(tableNS, dsTable.getShortName());
+                Element row = doc.createElementNS(tableNS, "Row");
+                row.removeAttribute("xmlns");
+                tableElement.appendChild(row);
+                schemaRoot.appendChild(tableElement);
+                List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dsTable.getId());
+                for (DataElement dataElement : dataElements) {
+                    Element xmlDataElement = doc.createElementNS(tableNS, dataElement.getShortName());
+                    xmlDataElement.appendChild(doc.createTextNode(""));
+                    row.appendChild(xmlDataElement);
+                }
+            }
+            doc.appendChild(schemaRoot);
+            return doc;
+        } catch (ResourceNotFoundException ex) {
+            Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    @Override
+    public Document getDataSetXMLInstanceWithNS(int id) throws XmlExportException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -11,9 +11,12 @@ import org.w3c.dom.Document;
  */
 public interface DataSetService {
 
-   Document getDataSetXMLSchema(String id) throws  XmlExportException;    
+    
+   Document getDataSetXMLSchema(int id) throws  XmlExportException;    
    
+   Document getDataSetXMLInstance(int id) throws XmlExportException;
    
+   Document getDataSetXMLInstanceWithNS(int id) throws XmlExportException;
      /**
      * Fetches the dataset with the given id.
      * 

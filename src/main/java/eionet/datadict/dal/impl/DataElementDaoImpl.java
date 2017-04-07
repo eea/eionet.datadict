@@ -11,6 +11,7 @@ import eionet.datadict.model.ValueListItem;
 import eionet.meta.dao.domain.DatasetRegStatus;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,27 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
     }
 
     @Override
-    public List<DatasetTableElement> getDataElementsOfDatasetTable(int tableId) {
+    public List<DataElement> getDataElementsOfDatasetTable(int tableId) {
+   
+        List<DataElement> tableElements = new ArrayList<DataElement>();
+        String sql ="SELECT DATAELEM_ID"
+                + "  FROM TBL2ELEM"
+                + "  WHERE TABLE_ID= :tableId";
+        Map<String,Object> params = new HashMap<String,Object>();
+        params.put("tableId",tableId);
+        try {
+            List<Integer> dataElementIds=this.getNamedParameterJdbcTemplate().queryForList(sql, params,Integer.class);
+            for(Integer dataElementId : dataElementIds){
+                tableElements.add(this.getById(dataElementId));
+            }
+            return tableElements;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<DatasetTableElement> getDatasetTableElementsOfDatasetTable(int tableId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

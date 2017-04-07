@@ -53,13 +53,10 @@ public class DataSetController {
 
     @RequestMapping(value = "/schema/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
-    public void getDataSetSchema(@PathVariable String id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
+    public void getDataSetSchema(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
 
-        if (id == null) {
-            throw new EmptyParameterException((" schema id"));
-        }
         Document xml = this.dataSetService.getDataSetXMLSchema(id);
-        String fileName = "schema-dst-".concat(id).concat(".xsd");
+        String fileName = "schema-dst-".concat(String.valueOf(id)).concat(".xsd");
         response.setContentType("application/xml");
         response.setHeader("Content-Disposition", "attachment;filename="+fileName);
         ServletOutputStream outStream = response.getOutputStream();
@@ -77,6 +74,28 @@ public class DataSetController {
         outStream.close();
     }
     
+    @RequestMapping(value = "/instance/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    @ResponseBody
+    public void getDataSetInstance(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
+
+        Document xml = this.dataSetService.getDataSetXMLInstance(id);
+        String fileName = "dataset-instance.xml";
+        response.setContentType("application/xml");
+        response.setHeader("Content-Disposition", "attachment;filename="+fileName);
+        ServletOutputStream outStream = response.getOutputStream();
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+        DOMSource source = new DOMSource(xml);
+        StreamResult result = new StreamResult(outStream);
+        transformer.transform(source, result);
+        outStream.flush();
+        outStream.close();
+    }
     
       @ExceptionHandler(EmptyParameterException.class)
     public ResponseEntity<HashMap<String,String>> HandleEmptyParameterException(Exception exception) {

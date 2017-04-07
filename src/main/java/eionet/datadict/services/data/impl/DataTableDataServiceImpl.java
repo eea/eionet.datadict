@@ -68,7 +68,7 @@ public class DataTableDataServiceImpl implements DataTableDataService {
         List<SimpleAttributeValues> datasetTableAttributeValues = this.simpleAttributeDao.getSimpleAttributesValuesOfDataTable(tableId);
         OrmUtils.link(datasetTableAttributes, datasetTableAttributeValues);
         OrmUtils.link(datasetTable, datasetTableAttributeValues);
-        List<DatasetTableElement> datasetTableElements = this.dataElementDao.getDataElementsOfDatasetTable(tableId);
+        List<DatasetTableElement> datasetTableElements = this.dataElementDao.getDatasetTableElementsOfDatasetTable(tableId);
         OrmUtils.link(datasetTable, datasetTableElements);
         List<DataElement> dataElements = IterableUtils.select(datasetTableElements, new Selector<DatasetTableElement, DataElement>() {
 

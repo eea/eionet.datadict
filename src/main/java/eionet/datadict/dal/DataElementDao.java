@@ -6,8 +6,15 @@ import eionet.datadict.model.DataElement;
 
 public interface DataElementDao {
 
-    List<DatasetTableElement> getDataElementsOfDatasetTable(int tableId);
     
+    /**
+     *Fetches all Data Elements which belong to the Dataset Table specified by the given id.
+     * @param id the id of the dataset table whose data elements are to be fetched.
+     * @return the {@list DataElement} for those data elements which belong to the Data table with the given id.
+     **/
+    List<DataElement> getDataElementsOfDatasetTable(int tableId);
+    
+    List<DatasetTableElement> getDatasetTableElementsOfDatasetTable(int tableId);
 
     /**
      * Fetches the data element with the given id.
@@ -16,6 +23,7 @@ public interface DataElementDao {
      * @return the {@link DataElement} with the specified id.
      */
     public DataElement getById(int id);
+    
     
     /**
      * Fetches the id of the parent table of the data element with the given id.
