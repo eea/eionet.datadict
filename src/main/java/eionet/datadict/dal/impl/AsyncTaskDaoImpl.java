@@ -133,7 +133,7 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
     }
 
     @Override
-    public AsyncTaskExecutionEntry getVocabularyRdfImportTaskTypeAndVocabularyName(String vocabularyIdentifier) {
+    public AsyncTaskExecutionEntry getVocabularyRdfImportTaskEntryByVocabularyName(String vocabularyIdentifier) {
         String sql
                 = "select * from   ASYNC_TASK_ENTRY where TASK_CLASS_NAME = :taskClassName AND SERIALIZED_PARAMETERS like  :likeQuery";
         String vocabularyIdentifierLikeQuery = "%\"" + VocabularyRdfImportFromUrlTask.PARAM_VOCABULARY_IDENTIFIER + "\":\"" + vocabularyIdentifier + "\"%";

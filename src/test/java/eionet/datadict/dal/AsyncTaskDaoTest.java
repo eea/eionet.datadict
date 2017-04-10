@@ -142,7 +142,7 @@ public class AsyncTaskDaoTest extends UnitilsJUnit4 {
         entry1.setStartDate(new Date(entry1.getScheduledDate().getTime() + 200));
         entry1.setEndDate(new Date(entry1.getStartDate().getTime() + 2000));
         this.asyncTaskDao.create(entry1);
-        AsyncTaskExecutionEntry resultEntry = this.asyncTaskDao.getVocabularyRdfImportTaskTypeAndVocabularyName("testIdentifier");
+        AsyncTaskExecutionEntry resultEntry = this.asyncTaskDao.getVocabularyRdfImportTaskEntryByVocabularyName("testIdentifier");
         assertThat(resultEntry.getTaskId(), is(equalTo(entry1.getTaskId())));
         assertThat(resultEntry.getTaskClassName(), is(equalTo(entry1.getTaskClassName())));
         assertThat(resultEntry.getExecutionStatus(), is(equalTo(entry1.getExecutionStatus())));

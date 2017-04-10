@@ -938,7 +938,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public Resolution ScheduleSynchronizationView() throws ServiceException {
         vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
-        AsyncTaskExecutionEntry existingTaskEntry = asyncTaskDao.getVocabularyRdfImportTaskTypeAndVocabularyName(vocabularyFolder.getIdentifier());
+        AsyncTaskExecutionEntry existingTaskEntry = asyncTaskDao.getVocabularyRdfImportTaskEntryByVocabularyName(vocabularyFolder.getIdentifier());
         if (existingTaskEntry != null) {
             this.scheduledTaskId = existingTaskEntry.getTaskId();
             return this.editScheduledJob();
