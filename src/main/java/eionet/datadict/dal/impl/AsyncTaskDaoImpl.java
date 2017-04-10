@@ -6,6 +6,7 @@ import eionet.datadict.dal.impl.converters.ExecutionStatusToByteConverter;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.commons.util.IterableUtils;
 import eionet.datadict.commons.sql.ResultSetUtils;
+import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -129,6 +130,20 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
         params.put("taskId", entry.getTaskId());
         params.put("serializedParameters", entry.getSerializedParameters());
         this.getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+    @Override
+    public AsyncTaskExecutionEntry getVocabularyRdfImportTaskTypeAndVocabularyName(String vocabularyIdentifier) {
+        String sql
+                = "select * from   ASYNC_TASK_ENTRY where TASK_CLASS_NAME = :taskClassName AND SERIALIZED_PARAMETERS like  :likeQuery";
+        String vocabularyIdentifierLikeQuery = "%\"" + VocabularyRdfImportFromUrlTask.PARAM_VOCABULARY_IDENTIFIER + "\":\"" + vocabularyIdentifier + "\"%";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("taskClassName", VocabularyRdfImportFromUrlTask.class.getCanonicalName());
+        params.put("likeQuery", vocabularyIdentifierLikeQuery);
+        List<AsyncTaskExecutionEntry> results = this.getNamedParameterJdbcTemplate().query(sql, params,
+                new ResultEntryRowMapper());
+
+        return IterableUtils.firstOrDefault(results);
     }
 
     protected class StatusEntryRowMapper implements RowMapper<AsyncTaskExecutionEntry> {

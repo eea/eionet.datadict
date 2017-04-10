@@ -23,6 +23,7 @@ package eionet.web.action;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import eionet.datadict.dal.AsyncTaskDao;
 import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.errors.BadFormatException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
@@ -284,6 +285,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     @SpringBean
     private ScheduleJobService scheduleJobService;
     
+    @SpringBean
+    private AsyncTaskDao asyncTaskDao;
     @SpringBean
     private AsyncTaskHistoryDao asyncTaskHistoryDao;
     @SpringBean
@@ -928,11 +931,18 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-\     * Display page to schedule Synchronization of Vocabularies
+     * 
+     * Display page to schedule a new Synchronization of Vocabulary or redirect to Edit page if a scheduled Job for this vocabulary already exists.
+     *
      * @return resolution
      */
     public Resolution ScheduleSynchronizationView() throws ServiceException {
-        vocabularyFolder= vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),vocabularyFolder.isWorkingCopy());
+        vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+        AsyncTaskExecutionEntry existingTaskEntry = asyncTaskDao.getVocabularyRdfImportTaskTypeAndVocabularyName(vocabularyFolder.getIdentifier());
+        if (existingTaskEntry != null) {
+            this.scheduledTaskId = existingTaskEntry.getTaskId();
+            return this.editScheduledJob();
+        }
         return new ForwardResolution(SCHEDULE_VOCABULARY_SYNC);
     }
        
@@ -997,6 +1007,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         return new ForwardResolution(EDIT_SCHEDULED_TASK_DETAILS);
     }
     
+    
+    
     /**
      *View the Scheduled Jobs queue page 
      **/
@@ -1037,6 +1049,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             error.setErrorMessage(e.getMessage());
             return error;
         }
+        
+           
+           
         this.scheduleJobService.scheduleJob(VocabularyRdfImportFromUrlTask.class,
                         VocabularyRdfImportFromUrlTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),scheduleInterval,
                                  (String)scheduleIntervals.get(scheduleIntervalUnit), vocabularyFolder.isWorkingCopy(), vocabularyRdfUrl,emails, Enumerations.VocabularyRdfPurgeOption.translateRDFPurgeOptionNumberToEnum(rdfPurgeOption), missingConceptsAction),scheduleIntervalUnit*scheduleInterval);

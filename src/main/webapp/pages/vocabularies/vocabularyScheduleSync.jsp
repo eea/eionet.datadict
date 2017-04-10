@@ -99,7 +99,7 @@
                         </td>
                         <td class="simple_attr_value">
                             <div>
-                                <stripes:radio id="rdfDontPurge" name="rdfPurgeOption" value="1"  />
+                                <stripes:radio id="rdfDontPurge" name="rdfPurgeOption" value="1" />
                                 <label for="rdfDontPurge" class="question">Don't purge vocabulary data</label>
                                 <div class="elaboration">
                                     In this case, existing vocabulary information will be updated with information from imported concepts.

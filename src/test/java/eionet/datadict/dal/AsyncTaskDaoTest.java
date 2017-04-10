@@ -3,6 +3,7 @@ package eionet.datadict.dal;
 import eionet.datadict.dal.impl.JdbcDaoBase;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
+import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -130,6 +131,26 @@ public class AsyncTaskDaoTest extends UnitilsJUnit4 {
         assertNull(entry1Full);
     }
     
+    @Test
+    public void testgetVocabularyRdfImportTaskTypeAndVocabularyName() {
+        AsyncTaskExecutionEntry entry1 = new AsyncTaskExecutionEntry();
+        entry1.setTaskId(UUID.randomUUID().toString());
+        entry1.setScheduledDate(new Date());
+        entry1.setTaskClassName(VocabularyRdfImportFromUrlTask.class.getCanonicalName());
+        entry1.setSerializedParameters("{\"@class\":\"java.util.HashMap\",\"scheduleInterval\":7,\"rdfPurgeOption\":\"DONT_PURGE\",\"vocabularyIdentifier\":\"testIdentifier\",\"scheduleIntervalUnit\":\"days\"}");
+        entry1.setExecutionStatus(AsyncTaskExecutionStatus.SCHEDULED);
+        entry1.setStartDate(new Date(entry1.getScheduledDate().getTime() + 200));
+        entry1.setEndDate(new Date(entry1.getStartDate().getTime() + 2000));
+        this.asyncTaskDao.create(entry1);
+        AsyncTaskExecutionEntry resultEntry = this.asyncTaskDao.getVocabularyRdfImportTaskTypeAndVocabularyName("testIdentifier");
+        assertThat(resultEntry.getTaskId(), is(equalTo(entry1.getTaskId())));
+        assertThat(resultEntry.getTaskClassName(), is(equalTo(entry1.getTaskClassName())));
+        assertThat(resultEntry.getExecutionStatus(), is(equalTo(entry1.getExecutionStatus())));
+        assertThat(resultEntry.getScheduledDate(), is(equalTo(entry1.getScheduledDate())));
+        assertThat(resultEntry.getSerializedParameters(), is(equalTo(entry1.getSerializedParameters())));
+        this.testAssistanceDao.deleteEntry(entry1.getTaskId());
+    }
+
     private AsyncTaskExecutionEntry createBaseEntry() {
         AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
         entry.setTaskId(UUID.randomUUID().toString());
