@@ -4,12 +4,12 @@
     <stripes:layout-component name="contents">
         <div id="drop-operations">
             <ul>
-
                 <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
                     <li class="maintain">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="ScheduledJobsQueue"> 
-                            Back To Scheduled Vocabulary Jobs Queue</stripes:link>
-                        </li>
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="viewScheduledJobs"> 
+                            Back to scheduled jobs
+                        </stripes:link>
+                    </li>
                 </c:if>
             </ul>
         </div>

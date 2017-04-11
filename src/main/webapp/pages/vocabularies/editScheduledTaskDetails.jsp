@@ -1,6 +1,7 @@
 <%@page contentType="text/html;charset=UTF-8"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schedule vocabulary synchronisation" currentSection="vocabularies">
+
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit scheduled synchronisation of vocabulary" currentSection="vocabularies">
     <stripes:layout-component name="head">
         <script type="text/javascript">
             (function ($) {
@@ -34,7 +35,19 @@
         <script>jQuery.noConflict();</script>
     </stripes:layout-component>
     <stripes:layout-component name="contents">
-        <h1> Edit Scheduled Synchronization of  Vocabulary: ${actionBean.vocabularyFolder.identifier}</h1>
+        <h1>Edit scheduled synchronisation of vocabulary ${actionBean.vocabularyFolder.identifier}</h1>
+        <div id="drop-operations">
+            <ul>
+                <li class="back">
+                    <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="view">
+                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                        Back to vocabulary
+                    </stripes:link>
+                </li>
+            </ul>
+        </div>
+
         <stripes:form id="scheduleVocabularySync" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
             <div id="outerframe">
                 <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />

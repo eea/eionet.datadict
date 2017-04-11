@@ -2,7 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schedule Vocabulary Synchronization" currentSection="vocabularies">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="View scheduled jobs" currentSection="vocabularies">
 
     <stripes:layout-component name="head">
         <script type="text/javascript">
@@ -35,7 +35,7 @@
         </script>
     </stripes:layout-component>
     <stripes:layout-component name="contents">
-        <h1>Scheduled Jobs Queue</h1>
+        <h1>View scheduled jobs</h1>
         <div id="drop-operations">
             <ul>
                 <li class="scheduleJobsTab search">

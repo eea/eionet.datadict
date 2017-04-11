@@ -85,10 +85,9 @@ public class AsyncJobListener implements JobListener {
         this.asyncTaskDao.updateScheduledDate(entry);
         if (jee == null) {
             LOGGER.info(String.format("Async task %s execution complete.", entry.getTaskId()));
-        }
-        else {
+        } else {
             LOGGER.info(String.format("Async task %s execution failed.", entry.getTaskId()), jee);
         }
     }
-    
+
 }
