@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,7 @@ public class AsyncTaskManagerIntegrationTest {
     }
     
     @Test
+    @Ignore
     public void testTaskFailure() throws InterruptedException, ResourceNotFoundException {
         final Date testStartDate = new Date();
         final Class taskClass = AsyncJobTestTask.class;
