@@ -1,6 +1,6 @@
 <%@page contentType="text/html;charset=UTF-8"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schedule Vocabulary Synchronization" currentSection="vocabularies">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schedule vocabulary synchronisation" currentSection="vocabularies">
     <stripes:layout-component name="head">
         <script type="text/javascript">
             (function ($) {
@@ -78,10 +78,8 @@
                         </td>
                         <td class="simple_attr_value">
                             <stripes:text id="interval" name="scheduleInterval" size="10" value="${actionBean.scheduleInterval}" class="numbersOnly" />
-                            <stripes:select name="scheduleIntervalUnit" value="${actionBean.scheduleIntervals}">
-                                <c:forEach items="${actionBean.scheduleIntervals}" var="scheduleIntervalUnit">
-                                    <stripes:option value="${scheduleIntervalUnit.key}" label="${scheduleIntervalUnit.value}"/>
-                                </c:forEach>
+                            <stripes:select name="schedulingIntervalUnit">
+                                <stripes:options-enumeration enum="eionet.datadict.model.enums.Enumerations$SchedulingIntervalUnit" label="label" />
                             </stripes:select>
                         </td>
                     </tr>

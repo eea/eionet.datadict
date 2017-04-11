@@ -1,25 +1,26 @@
 <%@page contentType="text/html;charset=UTF-8"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
+
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Scheduled Task Details" >
     <stripes:layout-component name="contents">
         <script type="text/javascript">
-            (function ($) {
+            (function($) {
                 $(document).ready(function () {
                     $("#delete").click(function () {
-                        alert("This Job Will be Deleted.  The Job Execution History Though Will Remain For a month in the system.");
+                        alert("This Job Will be Deleted. The Job Execution History Though Will Remain For a month in the system.");
                     });
                 });
             })(jQuery);
-
         </script>
+
+        <h1>Task details</h1>
         <div id="drop-operations">
             <ul>
-
                 <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
-                    <li class="maintain">
+                    <li class="back">
                         <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="ScheduledJobsQueue"> 
                             Back To Scheduled Vocabulary Jobs Queue</stripes:link>
-                        </li>
+                    </li>
                 </c:if>
             </ul>
         </div>

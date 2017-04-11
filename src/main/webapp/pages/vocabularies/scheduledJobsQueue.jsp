@@ -9,7 +9,7 @@
             window.setTimeout(function () {
                 document.location.reload(true);
             }, 60000);
-            (function ($) {
+            (function($) {
                 $(document).ready(function () {
                     $('#scheduledTask').dataTable();
                     $('#pastScheduledTask').dataTable();
@@ -37,10 +37,13 @@
     <stripes:layout-component name="contents">
         <h1>Scheduled Jobs Queue</h1>
         <div id="drop-operations">
-            <ul >
-                <li class="scheduleJobsTab search " ><a href="javascript:void(0)" class="tablinks " onclick="openDataView(event, 'scheduledSynchronizationJobs')" id="defaultOpen">Current Scheduled Jobs</a></li>
-                <li class="scheduleJobsHistoryTab search "><a  href="javascript:void(0)" class="tablinks " onclick="openDataView(event, 'ScheduledJobsHistory')"> Scheduled Jobs History</a></li>
-
+            <ul>
+                <li class="scheduleJobsTab search">
+                    <a href="javascript:void(0)" class="tablinks " onclick="openDataView(event, 'scheduledSynchronizationJobs')" id="defaultOpen">Current Scheduled Jobs</a>
+                </li>
+                <li class="scheduleJobsHistoryTab search">
+                    <a href="javascript:void(0)" class="tablinks " onclick="openDataView(event, 'ScheduledJobsHistory')">Scheduled Jobs History</a>
+                </li>
             </ul>
         </div>
         <div id="scheduledSynchronizationJobs" class="tabcontent">
