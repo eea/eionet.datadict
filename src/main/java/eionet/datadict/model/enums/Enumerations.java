@@ -6,9 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Enumerations {
-    
-    
-    
+
     public enum VocabularyRdfPurgeOption {
 
         DELETE_VOCABULARY_DATA(4),
@@ -24,7 +22,7 @@ public class Enumerations {
         public int getRdfPurgeOption() {
             return rdfPurgeOption;
         }
-        
+
         public static String translateRDFPurgeOptionNumberToEnum(int rdfPurgeOption){
             switch(rdfPurgeOption){
                 case 1:
@@ -39,6 +37,7 @@ public class Enumerations {
             throw new IllegalArgumentException("Integer:"+rdfPurgeOption+" doesn't exist as an RdfPurgeOption");
         }
     }
+
     /**
      * Used for the eionet.datadict.model.AttributeDefinition
      */
@@ -238,5 +237,29 @@ public class Enumerations {
         }
         
     }
-    
+
+    public enum SchedulingIntervalUnit {
+        MINUTE(1, "minute(s)"), 
+        HOUR(60, "hour(s)"), 
+        DAY(24 * 60, "day(s)"),
+        WEEK(7 * 24 * 60, "week(s)");
+
+        private final int minutes;
+        private final String label;
+
+        SchedulingIntervalUnit(int minutes, String label) {
+            this.minutes = minutes;
+            this.label = label;
+        }
+
+        public int getMinutes() {
+            return minutes;
+        }
+
+        public String getLabel() {
+            return this.label;
+        }
+
+    }
+
 }

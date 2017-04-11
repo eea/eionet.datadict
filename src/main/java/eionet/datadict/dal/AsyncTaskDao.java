@@ -25,5 +25,5 @@ public interface AsyncTaskDao {
     void delete(AsyncTaskExecutionEntry entry);
     
     AsyncTaskExecutionEntry getVocabularyRdfImportTaskEntryByVocabularyName(String vocabularyIdentifier);
-    
+
 }

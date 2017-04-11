@@ -1,30 +1,32 @@
 <%@page contentType="text/html;charset=UTF-8"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Scheduled Task Details" >
+
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Task details" >
     <stripes:layout-component name="contents">
         <script type="text/javascript">
-            (function ($) {
+            (function($) {
                 $(document).ready(function () {
                     $("#delete").click(function () {
-                        alert("This Job Will be Deleted.  The Job Execution History Though Will Remain For a month in the system.");
+                        alert("This job will be deleted. The job execution history will remain for a month in the system.");
                     });
                 });
             })(jQuery);
-
         </script>
+
+        <h1>Task details</h1>
         <div id="drop-operations">
             <ul>
-
                 <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
-                    <li class="maintain">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="ScheduledJobsQueue"> 
-                            Back To Scheduled Vocabulary Jobs Queue</stripes:link>
-                        </li>
+                    <li class="back">
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="viewScheduledJobs"> 
+                            Back to scheduled jobs
+                        </stripes:link>
+                    </li>
                 </c:if>
             </ul>
         </div>
-        <h2>Task Parameters</h2>
 
+        <h2>Task parameters</h2>
         <div id="outerframe">
             <table class="datatable results">
                 <tr>
@@ -44,7 +46,7 @@
             </table>
         </div>
 
-        <h2> Task Execution Result</h2>
+        <h2> Task execution result</h2>
         <div id="outerframe">
             <table class="datatable results">
                 <tr>
@@ -54,7 +56,8 @@
                 </tr>
             </table>
         </div>
-        <h2>Task Execution Details</h2>
+
+        <h2>Task execution details</h2>
         <div id="outerframe">
             <table class="datatable results">
                 <c:set var="details" value="${actionBean.scheduledTaskView.details}"/>
@@ -86,16 +89,18 @@
             </table>
         </div>
         <div class="deleteTaskButton">
-        <stripes:form id="deleteScheduledJob" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
-            <stripes:param name="scheduledTaskId" value="${actionBean.scheduledTaskId}" />
-            <stripes:submit name="deleteScheduledJob" value="Delete" class="mediumbuttonb" id="delete"/>
-        </stripes:form>
+            <stripes:form id="deleteScheduledJob" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
+                <stripes:param name="scheduledTaskId" value="${actionBean.scheduledTaskId}" />
+                <stripes:submit name="deleteScheduledJob" value="Delete" class="mediumbuttonb" id="delete"/>
+            </stripes:form>
         </div>
-      <div class="editTaskButton">
-     <stripes:form id="editScheduledJob" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
-            <stripes:param name="scheduledTaskId" value="${actionBean.scheduledTaskId}" />
-            <stripes:submit name="editScheduledJob" value="Edit" class="mediumbuttonb" id="edit"/>
-     </stripes:form>
-      </div>
+
+        <div class="editTaskButton">
+            <stripes:form id="editScheduledJob" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
+                <stripes:param name="scheduledTaskId" value="${actionBean.scheduledTaskId}" />
+                <stripes:submit name="editScheduledJob" value="Edit" class="mediumbuttonb" id="edit"/>
+            </stripes:form>
+        </div>
+
     </stripes:layout-component>
 </stripes:layout-render>

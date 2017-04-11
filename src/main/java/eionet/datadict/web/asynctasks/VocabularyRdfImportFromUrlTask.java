@@ -8,6 +8,7 @@ package eionet.datadict.web.asynctasks;
 import eionet.datadict.errors.FetchVocabularyRDFfromUrlException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
 import eionet.datadict.model.enums.Enumerations;
+import eionet.datadict.model.enums.Enumerations.SchedulingIntervalUnit;
 import eionet.datadict.web.ViewUtils;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IRDFVocabularyImportService;
@@ -50,7 +51,6 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
 
     public static final String PARAM_VOCABULARY_SET_IDENTIFIER = "vocabularySetIdentifier";
     public static final String PARAM_VOCABULARY_IDENTIFIER = "vocabularyIdentifier";
-    public static final String PARAM_WORKING_COPY = "workingCopy";
     public static final String PARAM_RDF_FILE_URL = "rdfFileURL";
     public static final String PARAM_RDF_PURGE_OPTION = "rdfPurgeOption";
     public static final String PARAM_MISSING_CONCEPTS_ACTION = "missingConceptsAction";
@@ -58,17 +58,17 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
     public static final String PARAM_SCHEDULE_INTERVAL="scheduleInterval";
     public static final String PARAM_SCHEDULE_INTERVAL_UNIT="scheduleIntervalUnit";
 
-    public static Map<String, Object> createParamsBundle(String vocabularySetIdentifier, String vocabularyIdentifier,Integer scheduleInterval,
-            String scheduleIntervalUnit,boolean workingCopy, String rdfFileURL, String emails, String rdfPurgeOption, IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
+    public static Map<String, Object> createParamsBundle(String vocabularySetIdentifier, String vocabularyIdentifier, Integer scheduleInterval,
+            SchedulingIntervalUnit schedulingIntervalUnit, String rdfFileURL, String emails, String rdfPurgeOption, IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
+        
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(PARAM_VOCABULARY_SET_IDENTIFIER, vocabularySetIdentifier);
         parameters.put(PARAM_VOCABULARY_IDENTIFIER, vocabularyIdentifier);
-        parameters.put(PARAM_WORKING_COPY, workingCopy);
         parameters.put(PARAM_RDF_FILE_URL, rdfFileURL);
         parameters.put(PARAM_RDF_PURGE_OPTION, rdfPurgeOption);
         parameters.put(PARAM_NOTIFIERS_EMAILS, emails);
         parameters.put(PARAM_MISSING_CONCEPTS_ACTION, missingConceptsAction);
-        parameters.put(PARAM_SCHEDULE_INTERVAL_UNIT,scheduleIntervalUnit);
+        parameters.put(PARAM_SCHEDULE_INTERVAL_UNIT, schedulingIntervalUnit);
         parameters.put(PARAM_SCHEDULE_INTERVAL,scheduleInterval);
         return parameters;
     }
@@ -114,18 +114,17 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
         LOGGER.debug("RDF import completed");
         LOGGER.info("Email Sending Mechanism invocation");
         try{
-        this.notifyEmailusers(this.getNotifiersEmails(), systemMessages);
-        }catch(Exception e){
-        //We are silencing this exception and only logging it, because otherwise it would result to a Job Execution Exception which would ultimately 
-        // mark the executing job As Failed due to inability notifying users throuh email.
-        LOGGER.error("Error sending Email to users",e);
+            this.notifyEmailusers(this.getNotifiersEmails(), systemMessages);
+        } catch(Exception e) {
+            // We are silencing this exception and only logging it, because otherwise it would result to a Job Execution Exception which would ultimately 
+            // mark the executing job As Failed due to inability notifying users throuh email.
+            LOGGER.error("Error sending Email to users",e);
         }
         return systemMessages;
     }
 
     protected List<String> importRdf() throws Exception {
-        VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(this.getVocabularySetIdentifier(),
-                this.getVocabularyIdentifier(), this.isWorkingCopy());
+        VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(this.getVocabularySetIdentifier(), this.getVocabularyIdentifier(), false);
         Reader rdfFileReader = null;
 
         try {
@@ -134,8 +133,7 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
             List<String> systemMessages = this.vocabularyRdfImportService.importRdfIntoVocabulary(
                     rdfFileReader, vocabulary, rdfPurgeOption == 4, rdfPurgeOption == 3, rdfPurgeOption == 2, this.getMissingConceptsAction());
             return systemMessages;
-        }
-        finally {
+        } finally {
             if (rdfFileReader != null) {
                 rdfFileReader.close();
             }
@@ -197,10 +195,6 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
 
     protected String getVocabularyIdentifier() {
         return (String) this.parameters.get(PARAM_VOCABULARY_IDENTIFIER);
-    }
-
-    protected boolean isWorkingCopy() {
-        return (Boolean) this.parameters.get(PARAM_WORKING_COPY);
     }
 
     protected int getRdfPurgeOption() {
