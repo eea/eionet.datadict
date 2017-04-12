@@ -11,7 +11,8 @@
             }, 60000);
             (function($) {
                 $(document).ready(function () {
-                    $('#scheduledTask').dataTable();
+                    $('#ongoingScheduledTask').dataTable();
+                    $('#featureScheduledTask').dataTable();
                     $('#pastScheduledTask').dataTable();
                     document.getElementById("defaultOpen").click();
                 });
@@ -39,7 +40,7 @@
         <div id="drop-operations">
             <ul>
                  <li class="ongoingScheduleJobsTab search">
-                    <a href="javascript:void(0)" class="tablinks " onclick="openDataView(event, 'ongoingScheduledSynchronizationJobs')" id="defaultOpen">Ongoing Scheduled Jobs</a>
+                    <a href="javascript:void(0)" class="tablinks " onclick="openDataView(event, 'ongoingScheduledSynchronizationJobs')" >Ongoing Scheduled Jobs</a>
                 </li>
                 <li class="futureScheduleJobsTab search">
                     <a href="javascript:void(0)" class="tablinks " onclick="openDataView(event, 'futureScheduledSynchronizationJobs')" id="defaultOpen">Future Scheduled Jobs</a>
@@ -50,51 +51,51 @@
             </ul>
         </div>
         <div id="ongoingScheduledSynchronizationJobs" class="tabcontent">
-            <display:table name="actionBean.ongoingScheduledTaskViews" class="datatable results" id="scheduledTask"
+            <display:table name="actionBean.ongoingScheduledTaskViews" class="datatable results" id="ongoingScheduledTask"
                             requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view#ongoingScheduledSynchronizationJobs">
                 <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No scheduled Jobs found.</p>" />
-                <display:setProperty name="paging.banner.item_name" value="scheduledTask" />
-                <display:setProperty name="paging.banner.items_name" value="scheduledTasks" />
+                <display:setProperty name="paging.banner.item_name" value="ongoingScheduledTask" />
+                <display:setProperty name="paging.banner.items_name" value="ongoingScheduledTasks" />
                 <display:column title="Task Id"  escapeXml="false" style="width: 15%">
-                   <stripes:link  href="${pageContext.request.contextPath}/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${scheduledTask.details.taskId}">${scheduledTask.details.taskId}</stripes:link>
+                   <stripes:link  href="${pageContext.request.contextPath}/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${ongoingScheduledTask.details.taskId}">${ongoingScheduledTask.details.taskId}</stripes:link>
                 </display:column>
                 <display:column title="Task Type" escapeXml="false" style="width: 15%">
-                    <dd:attributeValue attrValue="${scheduledTask.type}"/>
+                    <dd:attributeValue attrValue="${ongoingScheduledTask.type}"/>
                 </display:column>
                 <display:column title="Additional Task Details" escapeXml="false" style="width: 15%">
                     <c:out value="${scheduledTask.additionalDetails}" />
                 </display:column>
                 <display:column title="Execution Status" escapeXml="false"  style="width: 15%">
-                    <dd:attributeValue  attrValue="${scheduledTask.details.executionStatus}" />
+                    <dd:attributeValue  attrValue="${ongoingScheduledTask.details.executionStatus}" />
                 </display:column>
                 <display:column title="Execution Start Date" escapeXml="false" style="width: 15%">
-                    <fmt:formatDate value="${scheduledTask.details.startDate}" pattern="dd.MM.yyyy hh:mm"/>
+                    <fmt:formatDate value="${ongoingScheduledTask.details.startDate}" pattern="dd.MM.yyyy hh:mm"/>
                 </display:column> 
                 <display:column title="Execution End Date" escapeXml="false" style="width: 15%">
-                    <fmt:formatDate value="${scheduledTask.details.endDate}" pattern="dd.MM.yyyy hh:mm"/>
+                    <fmt:formatDate value="${ongoingScheduledTask.details.endDate}" pattern="dd.MM.yyyy hh:mm"/>
                 </display:column>  
                 <display:column title="Next Scheduled Date" escapeXml="false" style="width: 15%">
-                    <fmt:formatDate value="${scheduledTask.details.scheduledDate}" pattern="dd.MM.yyyy hh:mm"/>
+                    <fmt:formatDate value="${ongoingScheduledTask.details.scheduledDate}" pattern="dd.MM.yyyy hh:mm"/>
                 </display:column>
             </display:table>
         </div>
         <div id="futureScheduledSynchronizationJobs" class="tabcontent">
-            <display:table name="actionBean.futureScheduledTaskViews" class="datatable results" id="scheduledTask"
+            <display:table name="actionBean.futureScheduledTaskViews" class="datatable results" id="featureScheduledTask"
                             requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view#futureScheduledSynchronizationJobs">
                 <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No scheduled Jobs found.</p>" />
-                <display:setProperty name="paging.banner.item_name" value="scheduledTask" />
-                <display:setProperty name="paging.banner.items_name" value="scheduledTasks" />
+                <display:setProperty name="paging.banner.item_name" value="featureScheduledTask" />
+                <display:setProperty name="paging.banner.items_name" value="featureScheduledTasks" />
                 <display:column title="Task Id"  escapeXml="false" style="width: 15%">
-                   <stripes:link  href="${pageContext.request.contextPath}/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${scheduledTask.details.taskId}">${scheduledTask.details.taskId}</stripes:link>
+                   <stripes:link  href="${pageContext.request.contextPath}/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${featureScheduledTask.details.taskId}">${featureScheduledTask.details.taskId}</stripes:link>
                 </display:column>
                 <display:column title="Task Type" escapeXml="false" style="width: 15%">
-                    <dd:attributeValue attrValue="${scheduledTask.type}"/>
+                    <dd:attributeValue attrValue="${featureScheduledTask.type}"/>
                 </display:column>
                 <display:column title="Additional Task Details" escapeXml="false" style="width: 15%">
-                    <c:out value="${scheduledTask.additionalDetails}" />
+                    <c:out value="${featureScheduledTask.additionalDetails}" />
                 </display:column>
                 <display:column title="Next Scheduled Date" escapeXml="false" style="width: 15%">
-                    <fmt:formatDate value="${scheduledTask.details.scheduledDate}" pattern="dd.MM.yyyy hh:mm"/>
+                    <fmt:formatDate value="${featureScheduledTask.details.scheduledDate}" pattern="dd.MM.yyyy hh:mm"/>
                 </display:column>
             </display:table>
         </div>
