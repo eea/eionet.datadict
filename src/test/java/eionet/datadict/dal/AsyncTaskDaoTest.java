@@ -156,8 +156,8 @@ public class AsyncTaskDaoTest extends UnitilsJUnit4 {
     }
     
     @Test
-    public void testGetAllEntriesByTaskClassNames(){
-          AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
+    public void testGetAllEntriesByTaskClassNames() {
+        AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
         entry.setTaskId(UUID.randomUUID().toString());
         entry.setScheduledDate(new Date());
         entry.setTaskClassName("some.other.class.Name");
@@ -171,8 +171,8 @@ public class AsyncTaskDaoTest extends UnitilsJUnit4 {
         taskClassNames.add(this.baseEntry.getTaskClassName());
         List<AsyncTaskExecutionEntry> results = this.asyncTaskDao.getAllEntriesByTaskClassNames(taskClassNames);
         assertThat(results.size(), is(1));
-       AsyncTaskExecutionEntry resultEntry = results.get(0);
-       assertThat(resultEntry.getTaskId(), is(equalTo(this.baseEntry.getTaskId())));
+        AsyncTaskExecutionEntry resultEntry = results.get(0);
+        assertThat(resultEntry.getTaskId(), is(equalTo(this.baseEntry.getTaskId())));
         assertThat(resultEntry.getTaskClassName(), is(equalTo(this.baseEntry.getTaskClassName())));
         assertThat(resultEntry.getExecutionStatus(), is(equalTo(this.baseEntry.getExecutionStatus())));
         assertThat(resultEntry.getScheduledDate(), is(equalTo(this.baseEntry.getScheduledDate())));
