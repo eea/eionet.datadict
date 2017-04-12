@@ -1205,8 +1205,8 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
     
     @Test
     public void testIsVocabularyWorkingCopy() throws Exception{
-     boolean vocabularyIsNotWorkingCopy = this.vocabularyService.isVocabularyWorkingCopy("common", "test_vocabulary1");
-     boolean vocabularyIsWorkingCopy = this.vocabularyService.isVocabularyWorkingCopy("common", "test_vocabulary2");
+     boolean vocabularyIsNotWorkingCopy = this.vocabularyService.hasVocabularyWorkingCopy("common", "test_vocabulary1");
+     boolean vocabularyIsWorkingCopy = this.vocabularyService.hasVocabularyWorkingCopy("common", "test_vocabulary2");
        assertEquals(false, vocabularyIsNotWorkingCopy);
        assertEquals(true, vocabularyIsWorkingCopy);
     }

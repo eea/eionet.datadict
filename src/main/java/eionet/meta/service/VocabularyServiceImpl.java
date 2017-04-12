@@ -1526,7 +1526,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     @Override
-    public boolean isVocabularyWorkingCopy(String folderName, String identifier) {
+    public boolean hasVocabularyWorkingCopy(String folderName, String identifier) {
         VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, true);
         return (vocabulary != null) ? true : false;
     }

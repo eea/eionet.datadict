@@ -692,5 +692,5 @@ public interface IVocabularyService {
     /**
     *Check if a Vocabulary is in working Copy Status. 
     **/
-    boolean isVocabularyWorkingCopy(String folderName, String identifier);
+    boolean hasVocabularyWorkingCopy(String folderName, String identifier);
 }
