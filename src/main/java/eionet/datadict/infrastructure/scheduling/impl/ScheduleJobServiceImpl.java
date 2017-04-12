@@ -17,8 +17,11 @@ import eionet.datadict.infrastructure.scheduling.ScheduleJobServiceException;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
+import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 import org.quartz.JobBuilder;
@@ -118,7 +121,10 @@ public class ScheduleJobServiceImpl implements ScheduleJobService {
 
     @Override
     public List<AsyncTaskExecutionEntry> getAllScheduledTaskEntries() {
-        return this.asyncTaskDao.getAllEntries();
+        Set<String> scheduledTasksClassNames = new HashSet<String>();
+        scheduledTasksClassNames.add(VocabularyRdfImportFromUrlTask.class.getCanonicalName());
+        List<AsyncTaskExecutionEntry> asyncTaskEntries =  this.asyncTaskDao.getAllEntriesByTaskClassNames(scheduledTasksClassNames);
+        return asyncTaskEntries;
     }
 
     @Override

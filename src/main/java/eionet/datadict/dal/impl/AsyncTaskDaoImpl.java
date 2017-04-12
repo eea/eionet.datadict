@@ -12,9 +12,11 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository("asyncTaskDao")
@@ -141,6 +143,15 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
         params.put("likeQuery", vocabularyIdentifierLikeQuery);
         List<AsyncTaskExecutionEntry> results = this.getNamedParameterJdbcTemplate().query(sql, params, new ResultEntryRowMapper());
         return IterableUtils.firstOrDefault(results);
+    }
+
+    @Override
+    public List<AsyncTaskExecutionEntry> getAllEntriesByTaskClassNames(Set<String> taskClassNames) {
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("taskClassNames", taskClassNames);
+        List<AsyncTaskExecutionEntry> results = this.getNamedParameterJdbcTemplate().query("SELECT * FROM ASYNC_TASK_ENTRY WHERE a IN (:taskClassNames)",
+                parameters, new ResultEntryRowMapper());
+        return results;
     }
 
     protected class StatusEntryRowMapper implements RowMapper<AsyncTaskExecutionEntry> {

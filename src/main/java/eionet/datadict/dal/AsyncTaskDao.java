@@ -1,14 +1,16 @@
 package eionet.datadict.dal;
 
 import eionet.datadict.model.AsyncTaskExecutionEntry;
-import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface AsyncTaskDao {
     
     AsyncTaskExecutionEntry getStatusEntry(String taskId);
     
     List<AsyncTaskExecutionEntry> getAllEntries();
+    
+    List<AsyncTaskExecutionEntry> getAllEntriesByTaskClassNames(Set<String> taskClassNames);
     
     AsyncTaskExecutionEntry getFullEntry(String taskId);
     
