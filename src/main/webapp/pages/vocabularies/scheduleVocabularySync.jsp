@@ -4,7 +4,7 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schedule vocabulary synchronisation" currentSection="vocabularies">
     <stripes:layout-component name="head">
         <script type="text/javascript">
-            (function($) {
+            (function ($) {
                 function isValidEmail(email) {
                     var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
                     return regex.test(email);
@@ -13,9 +13,9 @@
                 $(document).ready(function () {
                     $('#emails').tagsInput({
                         'defaultText': 'Add emails',
-                        'onAddTag': function(tag) {
+                        'onAddTag': function (tag) {
                             if (!isValidEmail(tag)) {
-                                $('.email').each(function() {
+                                $('.email').each(function () {
                                     if ($(this).text().trim() === tag) {
                                         $(this).parent().css('background', '#FBD8DB').css('color', '#90111A').css('border-color', '#FBD8DB');
                                     }
@@ -23,7 +23,7 @@
                             }
                         }
                     });
-                    $('.numbersOnly').keyup(function() {
+                    $('.numbersOnly').keyup(function () {
                         this.value = this.value.replace(/[^0-9\.]/g, '');
                     });
                 });
@@ -34,7 +34,11 @@
 
     <stripes:layout-component name="contents">
         <h1>Schedule vocabulary synchronisation</h1>
-
+        <div class="system-msg">
+            <strong>Note</strong>
+            <p>The Synchronization of Vocabularies will run only for Checked in (not in working copy status) Vocabularies.
+            </p>
+        </div>
         <stripes:form id="scheduleVocabularySync" method="post" beanclass="${actionBean['class'].name}">
             <div id="outerframe">
                 <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
