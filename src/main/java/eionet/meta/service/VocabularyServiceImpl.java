@@ -1525,4 +1525,14 @@ public class VocabularyServiceImpl implements IVocabularyService {
         dataElementDAO.batchCreateInverseElements(relatedReferenceElements, batchSize);
     }
 
+    @Override
+    public boolean isVocabularyWorkingCopy(String folderName, String identifier) {
+        try{
+        VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, true);
+        return (vocabulary != null) ? true : false;
+        }catch(IncorrectResultSizeDataAccessException ex){
+            return false;
+        }
+    }
+
 }

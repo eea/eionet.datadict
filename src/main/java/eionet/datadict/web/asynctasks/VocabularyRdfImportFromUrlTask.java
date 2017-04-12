@@ -124,6 +124,9 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
     }
 
     protected List<String> importRdf() throws Exception {
+        if (vocabularyService.isVocabularyWorkingCopy(this.getVocabularySetIdentifier(), this.getVocabularyIdentifier())) {
+            throw new Exception("Vocabulary With Folder Name: " + this.getVocabularySetIdentifier() + " and Identifier: " + this.getVocabularyIdentifier() + " is in working Copy Status");
+        }
         VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(this.getVocabularySetIdentifier(), this.getVocabularyIdentifier(), false);
         Reader rdfFileReader = null;
 
