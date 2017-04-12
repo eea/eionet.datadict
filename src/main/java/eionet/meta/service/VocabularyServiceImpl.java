@@ -1527,14 +1527,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
     @Override
     public boolean isVocabularyWorkingCopy(String folderName, String identifier) {
-        try{
         VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, true);
         return (vocabulary != null) ? true : false;
-        }catch(IncorrectResultSizeDataAccessException ex){
-            // We are not logging this exception because it is thrown even when no vocabulary 
-            //in working copy status is found, which is not an error condition but a common case.
-            return false;
-        }
     }
-
 }

@@ -56,11 +56,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import static org.hamcrest.CoreMatchers.any;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * JUnit integration test with Unitils for vocabulary service.
@@ -1211,6 +1208,6 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
      boolean vocabularyIsNotWorkingCopy = this.vocabularyService.isVocabularyWorkingCopy("common", "test_vocabulary1");
      boolean vocabularyIsWorkingCopy = this.vocabularyService.isVocabularyWorkingCopy("common", "test_vocabulary2");
        assertEquals(false, vocabularyIsNotWorkingCopy);
-        assertEquals(true, vocabularyIsWorkingCopy);
+       assertEquals(true, vocabularyIsWorkingCopy);
     }
 }

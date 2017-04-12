@@ -43,6 +43,7 @@ import eionet.meta.dao.domain.VocabularyType;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  * Vocabulary folder DAO.
@@ -354,33 +355,36 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         sql.append("left join VOCABULARY_SET f on f.ID=v.FOLDER_ID ");
         sql.append("where v.IDENTIFIER=:identifier and v.WORKING_COPY=:workingCopy and f.IDENTIFIER=:folderIdentifier");
 
-        VocabularyFolder result =
-                getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyFolder>() {
-            @Override
-            public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
-                VocabularyFolder vf = new VocabularyFolder();
-                vf.setId(rs.getInt("v.VOCABULARY_ID"));
-                vf.setIdentifier(rs.getString("v.IDENTIFIER"));
-                vf.setLabel(rs.getString("v.LABEL"));
-                vf.setRegStatus(RegStatus.fromString(rs.getString("v.REG_STATUS")));
-                vf.setType(VocabularyType.valueOf(rs.getString("v.VOCABULARY_TYPE")));
-                vf.setWorkingCopy(rs.getBoolean("v.WORKING_COPY"));
-                vf.setWorkingUser(rs.getString("v.WORKING_USER"));
-                vf.setDateModified(rs.getTimestamp("v.DATE_MODIFIED"));
-                vf.setUserModified(rs.getString("v.USER_MODIFIED"));
-                vf.setCheckedOutCopyId(rs.getInt("v.CHECKEDOUT_COPY_ID"));
-                vf.setContinuityId(rs.getString("v.CONTINUITY_ID"));
-                vf.setNumericConceptIdentifiers(rs.getBoolean("v.CONCEPT_IDENTIFIER_NUMERIC"));
-                vf.setNotationsEqualIdentifiers(rs.getBoolean("NOTATIONS_EQUAL_IDENTIFIERS"));
-                vf.setBaseUri(rs.getString("v.BASE_URI"));
-                vf.setFolderId(rs.getShort("f.ID"));
-                vf.setFolderName(rs.getString("f.IDENTIFIER"));
-                vf.setFolderLabel(rs.getString("f.LABEL"));
-                return vf;
-            }
-        });
-
-        return result;
+        try {
+            VocabularyFolder result
+                    = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyFolder>() {
+                        @Override
+                        public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
+                            VocabularyFolder vf = new VocabularyFolder();
+                            vf.setId(rs.getInt("v.VOCABULARY_ID"));
+                            vf.setIdentifier(rs.getString("v.IDENTIFIER"));
+                            vf.setLabel(rs.getString("v.LABEL"));
+                            vf.setRegStatus(RegStatus.fromString(rs.getString("v.REG_STATUS")));
+                            vf.setType(VocabularyType.valueOf(rs.getString("v.VOCABULARY_TYPE")));
+                            vf.setWorkingCopy(rs.getBoolean("v.WORKING_COPY"));
+                            vf.setWorkingUser(rs.getString("v.WORKING_USER"));
+                            vf.setDateModified(rs.getTimestamp("v.DATE_MODIFIED"));
+                            vf.setUserModified(rs.getString("v.USER_MODIFIED"));
+                            vf.setCheckedOutCopyId(rs.getInt("v.CHECKEDOUT_COPY_ID"));
+                            vf.setContinuityId(rs.getString("v.CONTINUITY_ID"));
+                            vf.setNumericConceptIdentifiers(rs.getBoolean("v.CONCEPT_IDENTIFIER_NUMERIC"));
+                            vf.setNotationsEqualIdentifiers(rs.getBoolean("NOTATIONS_EQUAL_IDENTIFIERS"));
+                            vf.setBaseUri(rs.getString("v.BASE_URI"));
+                            vf.setFolderId(rs.getShort("f.ID"));
+                            vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                            vf.setFolderLabel(rs.getString("f.LABEL"));
+                            return vf;
+                        }
+                    });
+            return result;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     /**
