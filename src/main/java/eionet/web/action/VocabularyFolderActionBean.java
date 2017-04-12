@@ -32,6 +32,7 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.infrastructure.scheduling.ScheduleJobService;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
+import eionet.datadict.model.AsyncTaskExecutionStatus;
 import eionet.datadict.model.enums.Enumerations;
 import eionet.datadict.model.enums.Enumerations.SchedulingIntervalUnit;
 import eionet.datadict.model.enums.Enumerations.VocabularyRdfPurgeOption;
@@ -456,7 +457,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     private List<AsyncTaskExecutionEntryHistory> asyncTaskEntriesHistory;
     
-    private List<ScheduledTaskView> scheduledTaskViews = new ArrayList<ScheduledTaskView>();
+    private List<ScheduledTaskView> ongoingScheduledTaskViews = new ArrayList<ScheduledTaskView>();
+    private List<ScheduledTaskView> futureScheduledTaskViews = new ArrayList<ScheduledTaskView>();
     
     private List<ScheduledTaskView> scheduledTaskHistoryViews = new ArrayList<ScheduledTaskView>();
     
@@ -1002,7 +1004,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
             taskView.setDetails(entry);
             taskView.setAdditionalDetails(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(entry));
-            scheduledTaskViews.add(taskView);
+            if (entry.getExecutionStatus() == AsyncTaskExecutionStatus.ONGOING) {
+                ongoingScheduledTaskViews.add(taskView);
+            } else {
+                futureScheduledTaskViews.add(taskView);
+            }
         }
         asyncTaskEntriesHistory = scheduleJobService.getTaskEntriesHistory();
         for (AsyncTaskExecutionEntryHistory historyEntry : asyncTaskEntriesHistory) {
@@ -2302,14 +2308,22 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         this.asyncTaskEntriesHistory = asyncTaskEntriesHistory;
     }
 
-
-    public List<ScheduledTaskView> getScheduledTaskViews() {
-        return scheduledTaskViews;
+    public List<ScheduledTaskView> getOngoingScheduledTaskViews() {
+        return ongoingScheduledTaskViews;
     }
 
-    public void setScheduledTaskViews(List<ScheduledTaskView> scheduledTaskViews) {
-        this.scheduledTaskViews = scheduledTaskViews;
+    public void setOngoingScheduledTaskViews(List<ScheduledTaskView> ongoingScheduledTaskViews) {
+        this.ongoingScheduledTaskViews = ongoingScheduledTaskViews;
     }
+
+    public List<ScheduledTaskView> getFutureScheduledTaskViews() {
+        return futureScheduledTaskViews;
+    }
+
+    public void setFutureScheduledTaskViews(List<ScheduledTaskView> futureScheduledTaskViews) {
+        this.futureScheduledTaskViews = futureScheduledTaskViews;
+    }
+
 
     public List<ScheduledTaskView> getScheduledTaskHistoryViews() {
         return scheduledTaskHistoryViews;

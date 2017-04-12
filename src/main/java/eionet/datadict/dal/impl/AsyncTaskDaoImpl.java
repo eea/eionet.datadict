@@ -149,7 +149,7 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
     public List<AsyncTaskExecutionEntry> getAllEntriesByTaskClassNames(Set<String> taskClassNames) {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("taskClassNames", taskClassNames);
-        List<AsyncTaskExecutionEntry> results = this.getNamedParameterJdbcTemplate().query("SELECT * FROM ASYNC_TASK_ENTRY WHERE a IN (:taskClassNames)",
+        List<AsyncTaskExecutionEntry> results = this.getNamedParameterJdbcTemplate().query("SELECT * FROM ASYNC_TASK_ENTRY WHERE TASK_CLASS_NAME IN (:taskClassNames)",
                 parameters, new ResultEntryRowMapper());
         return results;
     }
