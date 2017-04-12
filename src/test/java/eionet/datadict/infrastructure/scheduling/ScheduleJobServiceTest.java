@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -158,9 +159,9 @@ public class ScheduleJobServiceTest {
         List<AsyncTaskExecutionEntry> taskEntries = new LinkedList<AsyncTaskExecutionEntry>();
         taskEntries.add(entry1);
         taskEntries.add(entry2);
-        when(this.asyncTaskDao.getAllEntries()).thenReturn(taskEntries);
+        when(this.asyncTaskDao.getAllEntriesByTaskClassNames(any(Set.class))).thenReturn(taskEntries);
         List<AsyncTaskExecutionEntry> allEntries = this.scheduleJobsService.getAllScheduledTaskEntries();
-        verify(this.asyncTaskDao, times(1)).getAllEntries();
+        verify(this.asyncTaskDao, times(1)).getAllEntriesByTaskClassNames(any(Set.class));
         Assert.assertEquals(taskEntries, allEntries);
     }
 
