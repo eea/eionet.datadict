@@ -93,16 +93,6 @@
                 <display:column title="Additional Task Details" escapeXml="false" style="width: 15%">
                     <c:out value="${scheduledTask.additionalDetails}" />
                 </display:column>
-             <%--   <display:column title="Execution Status" escapeXml="false"  style="width: 15%">
-                    <dd:attributeValue  attrValue="${scheduledTask.details.executionStatus}" />
-                </display:column>
-                <display:column title="Execution Start Date" escapeXml="false" style="width: 15%">
-                    <fmt:formatDate value="${scheduledTask.details.startDate}" pattern="dd.MM.yyyy hh:mm"/>
-                </display:column> 
-                <display:column title="Execution End Date" escapeXml="false" style="width: 15%">
-                    <fmt:formatDate value="${scheduledTask.details.endDate}" pattern="dd.MM.yyyy hh:mm"/>
-                </display:column>  
-             --%>
                 <display:column title="Next Scheduled Date" escapeXml="false" style="width: 15%">
                     <fmt:formatDate value="${scheduledTask.details.scheduledDate}" pattern="dd.MM.yyyy hh:mm"/>
                 </display:column>
