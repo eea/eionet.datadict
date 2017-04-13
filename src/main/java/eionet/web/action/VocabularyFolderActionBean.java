@@ -992,7 +992,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             this.schedulingIntervalUnit = (SchedulingIntervalUnit) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_SCHEDULE_INTERVAL_UNIT);
             scheduledTaskView.setTaskResult(asyncTaskDataSerializer.deserializeResult(entry.getSerializedResult()));
             vocabularyFolder = vocabularyService.getVocabularyFolder((String) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_VOCABULARY_SET_IDENTIFIER),
-                    (String) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_VOCABULARY_IDENTIFIER), true);
+                    (String) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_VOCABULARY_IDENTIFIER), false);
         }
         return new ForwardResolution(EDIT_SCHEDULED_TASK_DETAILS);
     }
