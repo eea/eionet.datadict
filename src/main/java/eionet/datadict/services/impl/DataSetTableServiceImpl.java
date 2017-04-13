@@ -16,9 +16,7 @@ import eionet.datadict.model.Namespace;
 import eionet.datadict.services.DataSetTableService;
 import eionet.util.Props;
 import eionet.util.PropsIF;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.XMLConstants;
@@ -86,6 +84,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         try {
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
+            NameTypeElementMaker elMaker = new NameTypeElementMaker(NS_PREFIX, doc);
             Element schemaRoot = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, NS_PREFIX + "schema");
             schemaRoot.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance",
                     "xsi:schemaLocation", "http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd");
@@ -100,28 +99,44 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             int datasetId = datasetTableDao.getParentDatasetId(dataSetTable.getId());
             DataSet dataSet = datasetDao.getById(datasetId);
                      // First the DataSet Element:
-                    Element tableRootElement = doc.createElement(NS_PREFIX + ELEMENT);
-            tableRootElement.setAttribute("name", dataSetTable.getShortName());
-            schemaRoot.appendChild(tableRootElement);
-            Element dsAnnotation = doc.createElement(NS_PREFIX + ANNOTATION);
+                    Element tableRootElement = elMaker.createElement("element",dataSetTable.getShortName());
+
+           schemaRoot.appendChild(tableRootElement);
+             Element dsAnnotation = elMaker.createElement(ANNOTATION);
             tableRootElement.appendChild(dsAnnotation);
-            Element dsDocumentation = doc.createElement(NS_PREFIX + DOCUMENTATION);
+            Element dsDocumentation = elMaker.createElement(DOCUMENTATION);
             dsDocumentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
             dsAnnotation.appendChild(dsDocumentation);
-
+            List<AttributeValue> attrValues = attributeValueDao.getByOwner(new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T));
             List<Attribute> attributes = attributeDao.getCombinedDataSetAndDataTableAttributes(dataSetTable.getId(), dataSet.getId());
-            for (Attribute attr : attributes) {
+            
+            for (AttributeValue attrValue : attrValues) {
+                for (Attribute attr : attributes) {
+                    if (attr.getId() == attrValue.getAttributeId()) {
+                        Element attributeElement = elMaker.createElement(attr.getNamespace().getShortName().replace("_", ""), attr.getShortName().replace(" ", ""));
+                        attributeElement.appendChild(doc.createTextNode(attrValue.getValue()));
+                        dsDocumentation.appendChild(attributeElement);
+                    }
+                }
+
+            }
+        
+         //   List<Attribute> attributes = attributeDao.getCombinedDataSetAndDataTableAttributes(dataSetTable.getId(), dataSet.getId());
+      /**      for (Attribute attr : attributes) {
               //  Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
-                Element attributeElement = doc.createElement(attr.getNamespace().getShortName().concat(":").replace("_", "").concat(attr.getShortName()).replace(" ", ""));
-            //    attributeElement.appendChild(doc.createTextNode(attr.getValue()));
+                Element attributeElement = elMaker.createElement(attr.getNamespace().getShortName().replace("_", ""),attr.getShortName().replace(" ", ""));
+                attributeElement.appendChild(doc.createTextNode(attr.getDefinition()));
                 dsDocumentation.appendChild(attributeElement);
             }
-
+          **/  
+           
+  
+         /**
             for (DataElement dataElement : dataElements) {
-                Element xmlElement = doc.createElement(NS_PREFIX + ELEMENT);
+                Element xmlElement = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI,NS_PREFIX + ELEMENT);
                 xmlElement.setAttribute(NAME, dataElement.getShortName());
                 schemaRoot.appendChild(xmlElement);
-                Element annotation = doc.createElement(NS_PREFIX + ANNOTATION);
+                Element annotation = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI,NS_PREFIX + ANNOTATION);
                 xmlElement.appendChild(annotation);
                 Element documentation = doc.createElement(NS_PREFIX + DOCUMENTATION);
                 documentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
@@ -143,7 +158,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 xmlNestedElement.setAttribute("maxOccurs", "1");
                 sequence.appendChild(xmlNestedElement);
             }
-
+       **/
             doc.appendChild(schemaRoot);
             return doc;
         } catch (ParserConfigurationException ex) {
@@ -152,4 +167,35 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         }
     }
 
+    
+    
+     private static class NameTypeElementMaker {
+        private String nsPrefix;
+        private Document doc;
+
+        public NameTypeElementMaker(String nsPrefix, Document doc) {
+            this.nsPrefix = nsPrefix;
+            this.doc = doc;
+        }
+
+        public Element createElement(String elementName, String nameAttrVal, String typeAttrVal) {
+            Element element = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, nsPrefix+elementName);
+            if(nameAttrVal != null)
+                element.setAttribute("name", nameAttrVal);
+            if(typeAttrVal != null)
+                element.setAttribute("type", typeAttrVal);
+            return element;
+        }
+
+        public Element createElement(String elementName, String nameAttrVal) {
+            return createElement(elementName, nameAttrVal, null);
+        }
+
+        public Element createElement(String elementName) {
+            return createElement(elementName, null, null);
+        }
+    }
+    
+    
+    
 }

@@ -215,7 +215,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
                params.put("datasetTableId",datasetTableId);
                params.put("dataSetId",dataSetId);
         try {
-            return this.getNamedParameterJdbcTemplate().queryForList(sql, params,Attribute.class);
+            return this.getNamedParameterJdbcTemplate().query(sql, params,new CombinedAttributeRowMapper());
         } catch (IncorrectResultSizeDataAccessException ex) {
             return null;
         }        
@@ -308,6 +308,77 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
 
     }
 
+    
+     protected static class CombinedAttributeRowMapper implements RowMapper<Attribute> {
+
+        @Override
+        public Attribute mapRow(ResultSet rs, int i) throws SQLException {
+            Attribute attribute = new Attribute();
+            attribute.setId(rs.getInt("M_ATTRIBUTE.M_ATTRIBUTE_ID"));
+            attribute.setDisplayOrder(rs.getInt("M_ATTRIBUTE.DISP_ORDER") == 999 ? null : rs.getInt("M_ATTRIBUTE.DISP_ORDER"));
+            attribute.setTargetEntities(new TargetEntityConverter().convertBack(rs.getInt("M_ATTRIBUTE.DISP_WHEN")));
+            attribute.setDisplayWidth(rs.getInt("M_ATTRIBUTE.DISP_WIDTH"));
+            attribute.setDisplayHeight(rs.getInt("M_ATTRIBUTE.DISP_HEIGHT"));
+            attribute.setLanguageUsed(rs.getBoolean("M_ATTRIBUTE.LANGUAGE_USED"));
+            attribute.setName(rs.getString("M_ATTRIBUTE.NAME"));
+            attribute.setDefinition(rs.getString("M_ATTRIBUTE.DEFINITION"));
+            attribute.setShortName(rs.getString("M_ATTRIBUTE.SHORT_NAME"));
+            attribute.setDisplayMultiple(rs.getBoolean("M_ATTRIBUTE.DISP_MULTIPLE"));
+            attribute.setRdfPropertyName(rs.getString("M_ATTRIBUTE.RDF_PROPERTY_NAME"));
+            attribute.setObligationType(new ObligationTypeConverter().convertBack(rs.getString("M_ATTRIBUTE.OBLIGATION")));
+            attribute.setDisplayType(new DisplayTypeConverter().convertBack(rs.getString("M_ATTRIBUTE.DISP_TYPE")));
+            attribute.setValueInheritanceMode(new ValueInheritanceConverter().convertBack(rs.getString("M_ATTRIBUTE.INHERIT")));
+            attribute.setDataType(AttributeDataType.getEnum(rs.getString("M_ATTRIBUTE.DATA_TYPE")));
+
+            int namespaceId = rs.getInt("M_ATTRIBUTE.NAMESPACE_ID");
+
+            if (!rs.wasNull()) {
+                Namespace ns = new Namespace();
+                ns.setId(namespaceId);
+                attribute.setNamespace(ns);
+                this.readNamespace(rs, attribute);
+            }
+
+            int rdfNamespaceId = rs.getInt("M_ATTRIBUTE.RDF_PROPERTY_NAMESPACE_ID");
+
+            if (!rs.wasNull()) {
+                RdfNamespace rdfNamespace = new RdfNamespace();
+                rdfNamespace.setId(rdfNamespaceId);
+                attribute.setRdfNamespace(rdfNamespace);
+                this.readRdfNamespace(rs, attribute);
+            }
+
+            
+
+            return attribute;
+        }
+
+        protected void readNamespace(ResultSet rs, Attribute attribute) throws SQLException {
+            rs.getInt("NAMESPACE.NAMESPACE_ID");
+
+            if (rs.wasNull()) {
+                return;
+            }
+
+            attribute.getNamespace().setShortName(rs.getString("NAMESPACE.SHORT_NAME"));
+            attribute.getNamespace().setFullName(rs.getString("NAMESPACE.FULL_NAME"));
+            attribute.getNamespace().setDefinition(rs.getString("NAMESPACE.DEFINITION"));
+            attribute.getNamespace().setWorkingUser(rs.getString("NAMESPACE.WORKING_USER"));
+        }
+
+        protected void readRdfNamespace(ResultSet rs, Attribute attribute) throws SQLException {
+            rs.getInt("RDF_ID");
+
+            if (rs.wasNull()) {
+                return;
+            }
+
+            attribute.getRdfNamespace().setPrefix(rs.getString("RDF_PREFIX"));
+            attribute.getRdfNamespace().setUri(rs.getString("RDF_URI"));
+        }
+
+    }
+    
     protected static class DataDictEntityConverter implements DataConverter<DataDictEntity.Entity, String> {
 
         @Override
