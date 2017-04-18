@@ -1,7 +1,7 @@
 <%@page contentType="text/html;charset=UTF-8"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schedule vocabulary synchronisation" currentSection="vocabularies">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schedule vocabulary synchronization" currentSection="vocabularies">
     <stripes:layout-component name="head">
         <script type="text/javascript">
             (function ($) {
@@ -33,7 +33,7 @@
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">
-        <h1>Schedule vocabulary synchronisation</h1>
+        <h1>Schedule vocabulary synchronization</h1>
         <div class="system-msg">
             <strong>Note</strong>
             <p>The Synchronization of Vocabularies will run only for Checked in (not in working copy status) Vocabularies.

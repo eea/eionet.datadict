@@ -1,7 +1,7 @@
 <%@page contentType="text/html;charset=UTF-8"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit scheduled synchronisation of vocabulary" currentSection="vocabularies">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit scheduled synchronization of vocabulary" currentSection="vocabularies">
     <stripes:layout-component name="head">
         <script type="text/javascript">
             (function ($) {
@@ -35,7 +35,7 @@
         <script>jQuery.noConflict();</script>
     </stripes:layout-component>
     <stripes:layout-component name="contents">
-        <h1>Edit scheduled synchronisation of vocabulary ${actionBean.vocabularyFolder.identifier}</h1>
+        <h1>Edit scheduled synchronization of vocabulary ${actionBean.vocabularyFolder.identifier}</h1>
         <div id="drop-operations">
             <ul>
                 <li class="back">

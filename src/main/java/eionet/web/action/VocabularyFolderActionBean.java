@@ -920,11 +920,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /**
      * 
-     * Display page to schedule a new synchronisation of vocabulary or redirect to edit page if a scheduled job for this vocabulary already exists.
+     * Display page to schedule a new synchronization of vocabulary or redirect to edit page if a scheduled job for this vocabulary already exists.
      *
      * @return resolution
      */
-    public Resolution scheduleSynchronisation() throws ServiceException {
+    public Resolution scheduleSynchronization() throws ServiceException {
         vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
 
         AsyncTaskExecutionEntry existingTaskEntry = asyncTaskDao.getVocabularyRdfImportTaskEntryByVocabularyName(vocabularyFolder.getIdentifier());

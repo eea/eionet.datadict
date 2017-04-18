@@ -81,7 +81,7 @@
                     </c:if>
                     <c:if test="${not actionBean.vocabularyFolder.workingCopy}">
                         <li class="maintain">
-                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="scheduleSynchronisation"> 
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="scheduleSynchronization"> 
                                 <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                                 <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                                 Schedule vocabulary synchronization
