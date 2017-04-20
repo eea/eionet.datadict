@@ -16,7 +16,7 @@ public interface ScheduleJobService {
     <T> String updateScheduledJob(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes, String taskId);
 
     /**
-    *Responsible for returning all AsyncTaskEntries that are scheduled to run repeatedly based on a specific interval.
+    * Responsible for returning all AsyncTaskEntries that are scheduled to run repeatedly based on a specific interval.
     * It will not return any Asynchronous Tasks.
     **/
     List<AsyncTaskExecutionEntry> getAllScheduledTaskEntries();

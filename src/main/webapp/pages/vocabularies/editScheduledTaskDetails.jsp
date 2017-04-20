@@ -176,7 +176,7 @@
                     <tr>
                         <th>&nbsp;</th>
                         <td colspan="2">
-                           <stripes:param name="scheduledTaskId" value="${actionBean.scheduledTaskId}" />
+                            <stripes:param name="scheduledTaskId" value="${actionBean.scheduledTaskId}" />
                             <stripes:submit name="updateScheduledJob" value="Update" class="mediumbuttonb"/>
                             <stripes:submit name="cancelSave" value="Cancel" class="mediumbuttonb"/>
                         </td>

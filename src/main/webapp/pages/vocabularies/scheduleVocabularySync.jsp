@@ -36,8 +36,7 @@
         <h1>Schedule vocabulary synchronization</h1>
         <div class="system-msg">
             <strong>Note</strong>
-            <p>The Synchronization of Vocabularies will run only for Checked in (not in working copy status) Vocabularies.
-            </p>
+            <p>Synchronization of vocabularies will run only for checked in (not in working copy status) vocabularies.</p>
         </div>
         <stripes:form id="scheduleVocabularySync" method="post" beanclass="${actionBean['class'].name}">
             <div id="outerframe">

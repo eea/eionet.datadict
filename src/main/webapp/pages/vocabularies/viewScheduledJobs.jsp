@@ -86,7 +86,7 @@
                 <display:setProperty name="paging.banner.item_name" value="featureScheduledTask" />
                 <display:setProperty name="paging.banner.items_name" value="featureScheduledTasks" />
                 <display:column title="Task Id"  escapeXml="false" style="width: 15%">
-                   <stripes:link  href="${pageContext.request.contextPath}/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${featureScheduledTask.details.taskId}">${featureScheduledTask.details.taskId}</stripes:link>
+                    <stripes:link  href="${pageContext.request.contextPath}/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${featureScheduledTask.details.taskId}">${featureScheduledTask.details.taskId}</stripes:link>
                 </display:column>
                 <display:column title="Task Type" escapeXml="false" style="width: 15%">
                     <dd:attributeValue attrValue="${featureScheduledTask.type}"/>
