@@ -32,14 +32,14 @@
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">Task Type</th>
                     <td class="simple_attr_value">
-                        ${actionBean.scheduledTaskView.type}
+                        ${fn:escapeXml(actionBean.scheduledTaskView.type)}
                     </td>
                 </tr>
                 <c:forEach var="parameter" items="${actionBean.scheduledTaskView.taskParameters}">
                     <tr>
-                        <th scope="row" class="scope-row simple_attr_title">${parameter.key}</th>
+                        <th scope="row" class="scope-row simple_attr_title">${fn:escapeXml(parameter.key)}</th>
                         <td class="simple_attr_value">
-                            ${parameter.value}
+                            ${fn:escapeXml(parameter.value)}
                         </td>
                     </tr>
                 </c:forEach>
@@ -51,7 +51,7 @@
             <table class="datatable results">
                 <tr>
                     <td class="simple_attr_value">
-                        ${actionBean.scheduledTaskView.taskResult}
+                        ${fn:escapeXml(actionBean.scheduledTaskView.taskResult)}
                     </td>
                 </tr>
             </table>
@@ -64,25 +64,25 @@
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">Execution Status</th>
                     <td class="simple_attr_value">
-                        ${details.executionStatus}
+                        ${fn:escapeXml(details.executionStatus)}
                     </td>
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">Start Date</th>
                     <td class="simple_attr_value">
-                        ${details.startDate}
+                        ${fn:escapeXml(details.startDate)}
                     </td>
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">End Date </th>
                     <td class="simple_attr_value">
-                        ${details.endDate}
+                        ${fn:escapeXml(details.endDate)}
                     </td>
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">Next Scheduled Date</th>
                     <td class="simple_attr_value">
-                        ${details.scheduledDate}
+                        ${fn:escapeXml(details.scheduledDate)}
                     </td>
                 </tr>
 
