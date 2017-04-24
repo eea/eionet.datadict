@@ -26,10 +26,10 @@ import com.google.gson.JsonSyntaxException;
 import eionet.datadict.dal.AsyncTaskDao;
 import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.errors.BadFormatException;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskExecutionError;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
-import eionet.datadict.infrastructure.scheduling.ScheduleJobService;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
@@ -264,8 +264,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     @SpringBean
     private AsyncTaskManager asyncTaskManager;
     
-    @SpringBean
-    private ScheduleJobService scheduleJobService;
+    
     
     @SpringBean
     private AsyncTaskDao asyncTaskDao;
@@ -924,7 +923,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *
      * @return resolution
      */
-    public Resolution scheduleSynchronization() throws ServiceException {
+    public Resolution scheduleSynchronization() throws ServiceException, ResourceNotFoundException {
         vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
 
         AsyncTaskExecutionEntry existingTaskEntry = asyncTaskDao.getVocabularyRdfImportTaskEntryByVocabularyName(vocabularyFolder.getIdentifier());
@@ -941,8 +940,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * View A specific Scheduled Task's Details
      */
-    public Resolution viewScheduledTaskDetails() {
-        AsyncTaskExecutionEntry entry = scheduleJobService.getTaskEntry(scheduledTaskId);
+    public Resolution viewScheduledTaskDetails() throws ResourceNotFoundException {
+        AsyncTaskExecutionEntry entry = asyncTaskManager.getTaskEntry(scheduledTaskId);
         scheduledTaskView = new ScheduledTaskView();
         scheduledTaskView.setDetails(entry);
         scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
@@ -960,7 +959,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *
      */
     public Resolution viewScheduledTaskHistoryDetails() {
-        AsyncTaskExecutionEntryHistory entryHistory = scheduleJobService.getTaskEntryHistory(scheduledTaskHistoryId);
+        AsyncTaskExecutionEntryHistory entryHistory = asyncTaskManager.getTaskEntryHistory(scheduledTaskHistoryId);
         scheduledTaskView = new ScheduledTaskView();
         scheduledTaskView.setDetails(entryHistory);
         scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entryHistory.getTaskClassName()));
@@ -976,8 +975,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * View the page to edit a Scheduled Job 
      **/
-    public Resolution editScheduledJob() throws ServiceException {
-        AsyncTaskExecutionEntry entry = scheduleJobService.getTaskEntry(scheduledTaskId);
+    public Resolution editScheduledJob() throws ServiceException, ResourceNotFoundException {
+        AsyncTaskExecutionEntry entry = asyncTaskManager.getTaskEntry(scheduledTaskId);
         if (entry.getTaskClassName().equals(VOCABULARY_RDF_IMPORT_FROM_URL_TASK_CLASS_NAME)) {
             scheduledTaskView = new ScheduledTaskView();
             scheduledTaskView.setDetails(entry);
@@ -998,7 +997,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     public Resolution viewScheduledJobs() throws ServiceException {
-        asyncTaskEntries = scheduleJobService.getAllScheduledTaskEntries();
+        asyncTaskEntries = asyncTaskManager.getAllScheduledTaskEntries();
         for (AsyncTaskExecutionEntry entry : asyncTaskEntries) {
             ScheduledTaskView taskView = new ScheduledTaskView();
             taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
@@ -1010,7 +1009,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 futureScheduledTaskViews.add(taskView);
             }
         }
-        asyncTaskEntriesHistory = scheduleJobService.getTaskEntriesHistory();
+        asyncTaskEntriesHistory = asyncTaskManager.getTaskEntriesHistory();
         for (AsyncTaskExecutionEntryHistory historyEntry : asyncTaskEntriesHistory) {
             ScheduledTaskView taskView = new ScheduledTaskView();
             taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(historyEntry.getTaskClassName()));
@@ -1042,7 +1041,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), scheduleInterval, schedulingIntervalUnit, 
                 vocabularyRdfUrl, emails, VocabularyRdfPurgeOption.translateRDFPurgeOptionNumberToEnum(rdfPurgeOption), missingConceptsAction);
 
-        this.scheduleJobService.scheduleJob(VocabularyRdfImportFromUrlTask.class, paramsBundle, schedulingIntervalUnit.getMinutes() * scheduleInterval);
+        this.asyncTaskManager.scheduleTask(VocabularyRdfImportFromUrlTask.class, paramsBundle, schedulingIntervalUnit.getMinutes() * scheduleInterval);
         return new RedirectResolution(VocabularyFolderActionBean.class, "viewScheduledJobs");
     }
 
@@ -1066,7 +1065,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), scheduleInterval, schedulingIntervalUnit, 
                 vocabularyRdfUrl, emails, VocabularyRdfPurgeOption.translateRDFPurgeOptionNumberToEnum(rdfPurgeOption), missingConceptsAction);
 
-        this.scheduleJobService.updateScheduledJob(VocabularyRdfImportFromUrlTask.class, paramsBundle, schedulingIntervalUnit.getMinutes() * scheduleInterval, scheduledTaskId);
+        this.asyncTaskManager.updateScheduledTask(VocabularyRdfImportFromUrlTask.class, paramsBundle, schedulingIntervalUnit.getMinutes() * scheduleInterval, scheduledTaskId);
         return new RedirectResolution(VocabularyFolderActionBean.class, "viewScheduledJobs");
     }
 
@@ -1074,7 +1073,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Delete a Scheduled Job 
      **/
     public Resolution deleteScheduledJob(){
-        scheduleJobService.deleteJob(scheduledTaskId);
+        asyncTaskManager.deleteTask(scheduledTaskId);
         return new RedirectResolution(VocabularyFolderActionBean.class, "viewScheduledJobs");
     }
 
