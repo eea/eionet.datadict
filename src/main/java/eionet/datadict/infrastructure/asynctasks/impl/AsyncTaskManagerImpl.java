@@ -8,7 +8,6 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTask;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManagementException;
-import eionet.datadict.infrastructure.scheduling.ScheduleJobServiceException;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
@@ -229,7 +228,7 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
             AsyncTaskExecutionEntry entry = this.asyncTaskDao.getFullEntry(taskId);
             this.asyncTaskDao.delete(entry);
         } catch (SchedulerException ex) {
-            throw new ScheduleJobServiceException(ex);
+            throw new AsyncTaskManagementException(ex);
         }
     }
 
