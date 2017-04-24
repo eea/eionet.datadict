@@ -1077,13 +1077,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         return new RedirectResolution(VocabularyFolderActionBean.class, "viewScheduledJobs");
     }
 
-    /**
-     * Delete a Scheduled Job History
-     **/
-    public Resolution deleteScheduledJobHistory(){
-        asyncTaskHistoryDao.delete(Long.parseLong(scheduledTaskHistoryId));
-        return new RedirectResolution(VocabularyFolderActionBean.class, "viewScheduledJobs");
-    }
+  
 
     /**
      * Validates check out.
