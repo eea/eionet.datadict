@@ -17,6 +17,7 @@ import eionet.meta.service.IVocabularyService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailPreparationException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
@@ -55,12 +59,12 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
     public static final String PARAM_RDF_PURGE_OPTION = "rdfPurgeOption";
     public static final String PARAM_MISSING_CONCEPTS_ACTION = "missingConceptsAction";
     public static final String PARAM_NOTIFIERS_EMAILS = "emails";
-    public static final String PARAM_SCHEDULE_INTERVAL="scheduleInterval";
-    public static final String PARAM_SCHEDULE_INTERVAL_UNIT="scheduleIntervalUnit";
+    public static final String PARAM_SCHEDULE_INTERVAL = "scheduleInterval";
+    public static final String PARAM_SCHEDULE_INTERVAL_UNIT = "scheduleIntervalUnit";
 
     public static Map<String, Object> createParamsBundle(String vocabularySetIdentifier, String vocabularyIdentifier, Integer scheduleInterval,
             SchedulingIntervalUnit schedulingIntervalUnit, String rdfFileURL, String emails, String rdfPurgeOption, IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
-        
+
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(PARAM_VOCABULARY_SET_IDENTIFIER, vocabularySetIdentifier);
         parameters.put(PARAM_VOCABULARY_IDENTIFIER, vocabularyIdentifier);
@@ -69,7 +73,7 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
         parameters.put(PARAM_NOTIFIERS_EMAILS, emails);
         parameters.put(PARAM_MISSING_CONCEPTS_ACTION, missingConceptsAction);
         parameters.put(PARAM_SCHEDULE_INTERVAL_UNIT, schedulingIntervalUnit);
-        parameters.put(PARAM_SCHEDULE_INTERVAL,scheduleInterval);
+        parameters.put(PARAM_SCHEDULE_INTERVAL, scheduleInterval);
         return parameters;
     }
 
@@ -110,15 +114,15 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
     @Override
     public Object call() throws Exception {
         LOGGER.debug("Starting RDF import operation");
-        List<String> systemMessages = this.importRdf();
-        LOGGER.debug("RDF import completed");
-        LOGGER.info("Email Sending Mechanism invocation");
-        try{
-            this.notifyEmailusers(this.getNotifiersEmails(), systemMessages);
-        } catch(Exception e) {
-            // We are silencing this exception and only logging it, because otherwise it would result to a Job Execution Exception which would ultimately 
-            // mark the executing job As Failed due to inability notifying users throuh email.
-            LOGGER.error("Error sending Email to users",e);
+        List<String> systemMessages = new ArrayList<String>();
+        try {
+            systemMessages = this.importRdf();
+            LOGGER.debug("RDF import completed");
+            LOGGER.info("Email Sending Mechanism invocation");
+
+        } catch (Exception e) {
+            this.notifyEmailusers(this.getNotifiersEmails(), Arrays.asList(e.getMessage()));
+            throw new Exception("Error Importing RDF into Vocabulary:" + e.getMessage());
         }
         return systemMessages;
     }
@@ -163,7 +167,13 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
     }
 
     protected void notifyEmailusers(String emails, final List<String> messages) {
-      final  StringBuilder sb = new StringBuilder();
+        if (emails == null) {
+            throw new MailSendException("No emails to send to");
+        }
+        if (messages == null) {
+            throw new MailPreparationException("No messages to send");
+        }
+        final StringBuilder sb = new StringBuilder();
         for (String message : messages) {
             sb.append(message);
             sb.append("\t");
@@ -180,7 +190,13 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
                     message.setTo(email);
                 }
             };
-            mailSender.send(mimeMessagePreparator);
+            try {
+                mailSender.send(mimeMessagePreparator);
+            } catch (Exception e) {
+                // We silence this exception and only log it, in order to prevent escalating the Exception to higher levels, which will cause the Scheduler to catch it and mark the Task
+                // as failed.
+                LOGGER.error("Error sending email to users: " + e.getMessage(), e.getCause());
+            }
         }
     }
 
@@ -201,7 +217,7 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
     }
 
     protected int getRdfPurgeOption() {
-        return  Enumerations.VocabularyRdfPurgeOption.valueOf((String)this.parameters.get(PARAM_RDF_PURGE_OPTION)).getRdfPurgeOption();
+        return Enumerations.VocabularyRdfPurgeOption.valueOf((String) this.parameters.get(PARAM_RDF_PURGE_OPTION)).getRdfPurgeOption();
     }
 
     protected IVocabularyImportService.MissingConceptsAction getMissingConceptsAction() {

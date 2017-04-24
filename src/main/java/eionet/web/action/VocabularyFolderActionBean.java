@@ -1077,7 +1077,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         return new RedirectResolution(VocabularyFolderActionBean.class, "viewScheduledJobs");
     }
 
-  
 
     /**
      * Validates check out.
