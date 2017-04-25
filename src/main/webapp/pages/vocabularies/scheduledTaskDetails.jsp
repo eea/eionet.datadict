@@ -6,9 +6,7 @@
         <script type="text/javascript">
             (function($) {
                 $(document).ready(function () {
-                    $("#delete").click(function () {
-                        alert("This job will be deleted. The job execution history will remain for a month in the system.");
-                    });
+                    jav
                 });
             })(jQuery);
         </script>

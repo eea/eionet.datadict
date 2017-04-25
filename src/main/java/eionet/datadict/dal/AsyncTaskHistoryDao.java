@@ -13,14 +13,14 @@ public interface AsyncTaskHistoryDao {
 
     AsyncTaskExecutionEntryHistory retrieveTaskHistoryById(String id);
 
-    List<AsyncTaskExecutionEntryHistory> retrieveTasksByTaskId(String taskId);
+    List<AsyncTaskExecutionEntryHistory> retrieveTaskHistoryByTaskId(String taskId);
 
     void storeAsyncTaskEntry(AsyncTaskExecutionEntry entry);
 
     void updateExecutionStatusAndSerializedResult(AsyncTaskExecutionEntry entry);
 
     List<AsyncTaskExecutionEntryHistory> retrieveAllTasksHistory();
-
+    
     void deleteRecordsWithScheduledDateOlderThan(Date date);
     
     void delete(Long id);

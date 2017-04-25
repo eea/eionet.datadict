@@ -233,8 +233,8 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     }
 
     @Override
-    public AsyncTaskExecutionEntryHistory getTaskEntryHistory(String taskId) {
-        return this.asyncTaskHistoryDao.retrieveTaskHistoryById(taskId);
+    public AsyncTaskExecutionEntryHistory getTaskEntryHistory(String id) {
+        return this.asyncTaskHistoryDao.retrieveTaskHistoryById(id);
     }
 
     @Override
@@ -272,4 +272,9 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
         this.asyncTaskDao.updateTaskParameters(existingEntry);
         return this.asyncJobKeyBuilder.getTaskId(jobKey);
     }
+
+    @Override
+    public List<AsyncTaskExecutionEntryHistory> getTaskEntryHistoryByTaskId(String taskId) {
+           return asyncTaskHistoryDao.retrieveTaskHistoryByTaskId(taskId);
+    } 
 }

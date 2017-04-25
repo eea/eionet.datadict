@@ -143,6 +143,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *Page showing the scheduled jobs queue and past job execution attempts
      */
     private static final String SCHEDULED_JOBS_VIEW = "/pages/vocabularies/viewScheduledJobs.jsp";
+
+     /**
+     *Page showing the scheduled Task past execution attempts 
+     */
+    private static final String SCHEDULED_TASK_HISTORY_VIEW = "/pages/vocabularies/viewScheduledTaskHistory.jsp";
+
     
     /**
      * Page to view the details of a scheduled task
@@ -1003,6 +1009,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
             taskView.setDetails(entry);
             taskView.setAdditionalDetails(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(entry));
+            taskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters()));
             if (entry.getExecutionStatus() == AsyncTaskExecutionStatus.ONGOING) {
                 ongoingScheduledTaskViews.add(taskView);
             } else {
@@ -1020,7 +1027,25 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
         return new ForwardResolution(SCHEDULED_JOBS_VIEW);
     }
+    
+    
+    public Resolution viewScheduledJobHistory() throws ServiceException {
+        
+        asyncTaskEntriesHistory = asyncTaskManager.getTaskEntryHistoryByTaskId(scheduledTaskId);
+        for (AsyncTaskExecutionEntryHistory historyEntry : asyncTaskEntriesHistory) {
+            ScheduledTaskView taskView = new ScheduledTaskView();
+            taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(historyEntry.getTaskClassName()));
+            taskView.setDetails(historyEntry);
+            taskView.setAdditionalDetails(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(historyEntry));
+            taskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(historyEntry.getSerializedParameters()));
+            taskView.setAsyncTaskExecutionEntryHistoryId(historyEntry.getId());
+            scheduledTaskHistoryViews.add(taskView);
+        }
+        return new ForwardResolution(SCHEDULED_TASK_HISTORY_VIEW);
+    }
 
+    
+    
     /**
      * Schedule Synchronization of Vocabularies
      * @return resolution

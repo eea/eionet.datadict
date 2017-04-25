@@ -75,11 +75,5 @@
 
             </table>
         </div>
-        <div class="deleteTaskButton">
-            <stripes:form id="deleteScheduledJobHistory" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
-                <stripes:param name="scheduledTaskHistoryId" value="${actionBean.scheduledTaskHistoryId}" />
-                <stripes:submit name="deleteScheduledJobHistory" value="Delete" class="mediumbuttonb" id="delete"/>
-            </stripes:form>
-        </div>
     </stripes:layout-component>
 </stripes:layout-render>

@@ -26,13 +26,23 @@ public interface AsyncTaskManager {
      * Responsible for returning all AsyncTaskEntries that are scheduled to run
      * repeatedly based on a specific interval. It will not return any
      * Asynchronous Tasks.
-    *
+     *
      */
     List<AsyncTaskExecutionEntry> getAllScheduledTaskEntries();
 
+    /**
+     * Returns all Task Entries in the Task Entry History table
+     *
+     */
     List<AsyncTaskExecutionEntryHistory> getTaskEntriesHistory();
 
-    AsyncTaskExecutionEntryHistory getTaskEntryHistory(String taskId);
+    /**
+     * Returns the History for a task Entry
+     *
+     */
+    List<AsyncTaskExecutionEntryHistory> getTaskEntryHistoryByTaskId(String taskId);
+
+    AsyncTaskExecutionEntryHistory getTaskEntryHistory(String id);
 
     void deleteTask(String taskId);
 
