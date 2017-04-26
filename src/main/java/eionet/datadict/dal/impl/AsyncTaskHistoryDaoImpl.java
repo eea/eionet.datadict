@@ -119,6 +119,24 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);  
     }
 
+    @Override
+    public void deleteOlderTaskHistoryThanLastN(String taskId, int lastRecordsCount) {
+        String sql = "DELETE FROM ASYNC_TASK_ENTRY_HISTORY WHERE id NOT IN (\n"
+                + "SELECT id\n"
+                + "  FROM (\n"
+                + "    SELECT id\n"
+                + "    FROM ASYNC_TASK_ENTRY_HISTORY\n"
+                + "    WHERE TASK_ID = :taskId \n"
+                + "    ORDER BY id DESC\n"
+                + "    LIMIT :lastRecordsCount \n"
+                + "  ) lastRecords\n"
+                + ")";
+       Map<String, Object> params = new HashMap<String, Object>();
+        params.put("taskId",taskId);
+        params.put("lastRecordsCount",lastRecordsCount);
+        this.getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
     protected class ResultEntryRowMapper implements RowMapper<AsyncTaskExecutionEntryHistory> {
 
         @Override

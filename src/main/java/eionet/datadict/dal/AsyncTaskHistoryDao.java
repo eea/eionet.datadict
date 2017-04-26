@@ -25,5 +25,11 @@ public interface AsyncTaskHistoryDao {
 
     void deleteRecordsWithScheduledDateOlderThan(Date date);
 
+    /**
+     *@param taskId the taskId of the Async Task whose history Records will be purged
+     * @param LastRecordsCount the Number of the last Records to keep and delete the older ones.
+     * The last Records are Determined by ordering the Data with ID descending
+     **/
+    void deleteOlderTaskHistoryThanLastN(String taskId,int lastRecordsCount);
     void delete(Long id);
 }
