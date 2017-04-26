@@ -193,6 +193,16 @@ public class AsyncTaskHistoryDaoTest extends UnitilsJUnit4 {
        AsyncTaskExecutionEntryHistory oldHEntry =  asyncTaskHistoryDao.retrieveTaskHistoryById(String.valueOf(hEntry.getId()));
         assertNull(oldHEntry);
     }
+    
+    @Test
+    public void testRetrieveLimitedTaskHistoryByTaskId() {
+        String taskId = "10";
+        for (int i = 0; i < 15; i++) {
+            this.asyncTaskHistoryDao.storeAsyncTaskEntry(this.createBaseHistoryEntry(taskId));
+        }
+        List<AsyncTaskExecutionEntryHistory> expectedHistoryEntries = this.asyncTaskHistoryDao.retrieveLimitedTaskHistoryByTaskId(taskId, 10);
+        assertEquals(expectedHistoryEntries.size(), 10);
+    }
 
     private AsyncTaskExecutionEntryHistory createBaseHistoryEntry() {
         AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();

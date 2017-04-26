@@ -73,7 +73,7 @@ public class AsyncTaskHistoryDaoImpl extends JdbcDaoBase implements AsyncTaskHis
     }
     @Override
     public List<AsyncTaskExecutionEntryHistory> retrieveLimitedTaskHistoryByTaskId(String taskId,int limit) {
-        String sql = "select * from ASYNC_TASK_ENTRY_HISTORY where TASK_ID = :taskId order by ID limit :limit";
+        String sql = "select * from ASYNC_TASK_ENTRY_HISTORY where TASK_ID = :taskId order by ID  desc limit :limit";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("taskId", taskId);
         params.put("limit",limit);
