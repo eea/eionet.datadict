@@ -5,10 +5,6 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="View scheduled jobs" currentSection="vocabularies">
     <stripes:layout-component name="head">
         <script type="text/javascript">
-            /**   window.setTimeout(function () {
-             document.location.reload(true);
-             }, 60000);
-             **/
             (function ($) {
                 $(document).ready(function () {
                     $('#featureScheduledTask').dataTable();
@@ -26,7 +22,7 @@
             <display:setProperty name="paging.banner.item_name" value="featureScheduledTask" />
             <display:setProperty name="paging.banner.items_name" value="featureScheduledTasks" />
             <display:column title="Task Id"  escapeXml="false" style="width: 15%">
-                <stripes:link  href="${pageContext.request.contextPath}/vocabulary/viewScheduledTaskDetails?scheduledTaskId=${featureScheduledTask.details.taskId}">${featureScheduledTask.details.taskId}</stripes:link>
+                <dd:attributeValue attrValue="${featureScheduledTask.details.taskId}"/>
             </display:column>
             <display:column title="Task Type" escapeXml="false" style="width: 10%">
                 <dd:attributeValue attrValue="${featureScheduledTask.type}"/>
