@@ -462,7 +462,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     private List<AsyncTaskExecutionEntryHistory> asyncTaskEntriesHistory;
     
-    private List<ScheduledTaskView> ongoingScheduledTaskViews = new ArrayList<ScheduledTaskView>();
     private List<ScheduledTaskView> futureScheduledTaskViews = new ArrayList<ScheduledTaskView>();
     
     private List<ScheduledTaskView> scheduledTaskHistoryViews = new ArrayList<ScheduledTaskView>();
@@ -1010,20 +1009,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             taskView.setDetails(entry);
             taskView.setAdditionalDetails(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(entry));
             taskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters()));
-            if (entry.getExecutionStatus() == AsyncTaskExecutionStatus.ONGOING) {
-                ongoingScheduledTaskViews.add(taskView);
-            } else {
-                futureScheduledTaskViews.add(taskView);
-            }
-        }
-        asyncTaskEntriesHistory = asyncTaskManager.getTaskEntriesHistory();
-        for (AsyncTaskExecutionEntryHistory historyEntry : asyncTaskEntriesHistory) {
-            ScheduledTaskView taskView = new ScheduledTaskView();
-            taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(historyEntry.getTaskClassName()));
-            taskView.setDetails(historyEntry);
-            taskView.setAdditionalDetails(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(historyEntry));
-            taskView.setAsyncTaskExecutionEntryHistoryId(historyEntry.getId());
-            scheduledTaskHistoryViews.add(taskView);
+            futureScheduledTaskViews.add(taskView);
         }
         return new ForwardResolution(SCHEDULED_JOBS_VIEW);
     }
@@ -2325,13 +2311,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         this.asyncTaskEntriesHistory = asyncTaskEntriesHistory;
     }
 
-    public List<ScheduledTaskView> getOngoingScheduledTaskViews() {
-        return ongoingScheduledTaskViews;
-    }
-
-    public void setOngoingScheduledTaskViews(List<ScheduledTaskView> ongoingScheduledTaskViews) {
-        this.ongoingScheduledTaskViews = ongoingScheduledTaskViews;
-    }
 
     public List<ScheduledTaskView> getFutureScheduledTaskViews() {
         return futureScheduledTaskViews;
