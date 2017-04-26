@@ -1018,7 +1018,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *View all previous execution attempts of a scheduled job
      **/
     public Resolution viewScheduledJobHistory() throws ServiceException {
-        asyncTaskEntriesHistory = asyncTaskManager.getTaskEntryHistoryByTaskId(scheduledTaskId);
+        asyncTaskEntriesHistory = asyncTaskManager.retrieveLimitedTaskHistoryByTaskId(scheduledTaskId, 10);
         for (AsyncTaskExecutionEntryHistory historyEntry : asyncTaskEntriesHistory) {
             ScheduledTaskView taskView = new ScheduledTaskView();
             taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(historyEntry.getTaskClassName()));

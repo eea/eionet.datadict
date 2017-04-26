@@ -27,9 +27,6 @@
             <display:column title="Task Type" escapeXml="false" style="width: 10%">
                 <dd:attributeValue attrValue="${featureScheduledTask.type}"/>
             </display:column>
-            <display:column title="Last Execution Start Date" escapeXml="false" style="width: 10%">
-                <fmt:formatDate value="${featureScheduledTask.details.startDate}" pattern="dd.MM.yyyy hh:mm"/>
-            </display:column>
             <display:column title="Last Execution End Date" escapeXml="false" style="width: 10%">
                 <fmt:formatDate value="${featureScheduledTask.details.endDate}" pattern="dd.MM.yyyy hh:mm"/>
             </display:column>

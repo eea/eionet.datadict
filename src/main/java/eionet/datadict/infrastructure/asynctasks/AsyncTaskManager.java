@@ -42,6 +42,8 @@ public interface AsyncTaskManager {
      */
     List<AsyncTaskExecutionEntryHistory> getTaskEntryHistoryByTaskId(String taskId);
 
+    List<AsyncTaskExecutionEntryHistory> retrieveLimitedTaskHistoryByTaskId(String taskId, int limit);
+
     AsyncTaskExecutionEntryHistory getTaskEntryHistory(String id);
 
     void deleteTask(String taskId);
