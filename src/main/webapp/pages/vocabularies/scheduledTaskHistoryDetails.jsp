@@ -6,8 +6,8 @@
             <ul>
                 <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
                     <li class="maintain">
-                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="viewScheduledJobs"> 
-                            Back to scheduled jobs
+                        <stripes:link  href="${pageContext.request.contextPath}/vocabulary/viewScheduledJobHistory?scheduledTaskId=${fn:escapeXml(actionBean.scheduledTaskId)}">
+                            Back to scheduled Task History
                         </stripes:link>
                     </li>
                 </c:if>

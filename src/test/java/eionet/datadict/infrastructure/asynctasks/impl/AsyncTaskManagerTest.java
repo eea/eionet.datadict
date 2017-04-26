@@ -10,7 +10,6 @@ import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
 import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -27,6 +26,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import org.junit.Assert;
 import static org.junit.Assert.fail;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -465,5 +465,21 @@ public class AsyncTaskManagerTest {
         verify(this.asyncTaskDao, times(1)).getFullEntry(taskId);
         verify(this.asyncTaskDao, times(1)).updateTaskParameters(entry);
         verify(this.asyncJobKeyBuilder, times(1)).getTaskId(capturedJobDetail.getKey());
+    }
+    
+    @Test
+    public void testGetTaskEntryHistoryByTaskId() {
+        AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
+        String taskId = "22";
+        entry.setTaskId(taskId);
+        AsyncTaskExecutionEntryHistory hEntry = new AsyncTaskExecutionEntryHistory(entry);
+        hEntry.setId(Long.parseLong("1"));
+        AsyncTaskExecutionEntryHistory hEntry2 = new AsyncTaskExecutionEntryHistory(entry);
+        hEntry2.setId(Long.parseLong("2"));
+        List<AsyncTaskExecutionEntryHistory> expectedTaskEntryHistory = new ArrayList<AsyncTaskExecutionEntryHistory>();
+        when(this.asyncTaskHistoryDao.retrieveTaskHistoryByTaskId(taskId)).thenReturn(expectedTaskEntryHistory);
+        List<AsyncTaskExecutionEntryHistory> actualTaskEntryHistory = this.asyncTaskManager.getTaskEntryHistoryByTaskId(taskId);
+        verify(this.asyncTaskManager,times(1)).getTaskEntryHistoryByTaskId(taskId);
+        Assert.assertEquals(expectedTaskEntryHistory, actualTaskEntryHistory);
     }
 }

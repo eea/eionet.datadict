@@ -1014,9 +1014,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         return new ForwardResolution(SCHEDULED_JOBS_VIEW);
     }
     
-    
+    /**
+     *View all previous execution attempts of a scheduled job
+     **/
     public Resolution viewScheduledJobHistory() throws ServiceException {
-        
         asyncTaskEntriesHistory = asyncTaskManager.getTaskEntryHistoryByTaskId(scheduledTaskId);
         for (AsyncTaskExecutionEntryHistory historyEntry : asyncTaskEntriesHistory) {
             ScheduledTaskView taskView = new ScheduledTaskView();
@@ -1030,7 +1031,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         return new ForwardResolution(SCHEDULED_TASK_HISTORY_VIEW);
     }
 
-    
     
     /**
      * Schedule Synchronization of Vocabularies

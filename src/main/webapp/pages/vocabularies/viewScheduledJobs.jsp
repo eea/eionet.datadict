@@ -40,7 +40,7 @@
                 <dd:attributeValue attrValue="${featureScheduledTask.taskParameters['scheduleIntervalUnit']}"/>
             </display:column>
             <display:column title="Actions" escapeXml="false" style="width: 10%">
-                <stripes:form id="scheduleVocabularySync" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
+                <stripes:form id="scheduleVocabularySync" method="post" beanclass="${actionBean['class'].name}" >
                     <stripes:param name="scheduledTaskId" value="${featureScheduledTask.details.taskId}" />
                     <stripes:submit value="Details" name="viewScheduledTaskDetails" class="mediumbuttonb"/>
                     <stripes:submit value="Edit" name="editScheduledJob"  class="mediumbuttonb"/>

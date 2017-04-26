@@ -6,6 +6,7 @@
             (function($) {
                 $(document).ready(function () {
                     $('#pastScheduledTask').dataTable();
+                     });
             })(jQuery);
         </script>
         <script>jQuery.noConflict();</script>
@@ -33,8 +34,10 @@
                     <dd:attributeValue attrValue="${pastScheduledTask.taskParameters['scheduleIntervalUnit']}"/>
                 </display:column>
                 <display:column title="Actions" escapeXml="false" style="width: 10%">
-                         <stripes:form id="scheduleVocabularySync" method="post" beanclass="${actionBean['class'].name}" style="padding-top:20px">
+                         <stripes:form id="scheduleVocabularySync" method="post" beanclass="${actionBean['class'].name}">
                 <stripes:param name="scheduledTaskHistoryId" value="${pastScheduledTask.asyncTaskExecutionEntryHistoryId}" />
+                <stripes:param name="scheduledTaskId" value="${pastScheduledTask.details.taskId}" />
+                    
                     <stripes:submit value="Details" name="viewScheduledTaskHistoryDetails" class="mediumbuttonb"/>
                     </stripes:form>
                 </display:column>
