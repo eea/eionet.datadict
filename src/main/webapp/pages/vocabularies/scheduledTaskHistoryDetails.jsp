@@ -2,6 +2,7 @@
 <%@ include file="/pages/common/taglibs.jsp"%>
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Scheduled Task Details" >
     <stripes:layout-component name="contents">
+      <h1>Task History details</h1>
         <div id="drop-operations">
             <ul>
                 <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
