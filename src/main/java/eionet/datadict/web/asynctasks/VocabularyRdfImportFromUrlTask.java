@@ -17,6 +17,7 @@ import eionet.meta.service.IVocabularyService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,7 +34,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
-import org.springframework.mail.MailException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -157,8 +157,8 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
         HttpEntity<String> entity = new HttpEntity<String>(headers);
         try {
             ResponseEntity<byte[]> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET, entity, byte[].class, "1");
+                    URI.create(url),
+                    HttpMethod.GET, entity, byte[].class);
             return response.getBody();
         } catch (Exception e) {
             throw new FetchVocabularyRDFfromUrlException("Error fetching vocabulary RDF from URL:" + url + ViewUtils.HTML_NEW_LINE + ViewUtils.SYSTEM_EXCEPTION_MESSAGE
