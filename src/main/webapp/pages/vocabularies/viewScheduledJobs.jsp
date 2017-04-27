@@ -7,7 +7,7 @@
         <script type="text/javascript">
             (function ($) {
                 $(document).ready(function () {
-                    $('#featureScheduledTask').dataTable();
+                 //   $('#featureScheduledTask').dataTable();
                 });
             })(jQuery);
         </script>
@@ -45,7 +45,7 @@
                     <stripes:submit value="Details" name="viewScheduledTaskDetails" class="mediumbuttonb"/>
                     <stripes:submit value="Edit" name="editScheduledJob"  class="mediumbuttonb"/>
                     <stripes:submit value="History" name="viewScheduledJobHistory" class="mediumbuttonb"/>
-                    <stripes:submit value="Delete" name="deleteScheduledJob" id="delete" class="mediumbuttonb"/>
+                    <stripes:submit value="Delete" name="deleteScheduledJob" onclick="return confirm('Scheduled Job will be Deleted')" id="delete" class="mediumbuttonb"/>
                 </stripes:form>
             </display:column>
         </display:table>
