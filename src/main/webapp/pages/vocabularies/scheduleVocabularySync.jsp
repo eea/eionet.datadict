@@ -29,7 +29,6 @@
                 });
             })(jQuery);
         </script>
-        <script>jQuery.noConflict();</script>
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">

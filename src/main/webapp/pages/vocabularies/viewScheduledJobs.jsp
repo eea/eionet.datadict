@@ -4,14 +4,6 @@
 
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="View scheduled jobs" currentSection="vocabularies">
     <stripes:layout-component name="head">
-        <script type="text/javascript">
-            (function ($) {
-                $(document).ready(function () {
-                 //   $('#featureScheduledTask').dataTable();
-                });
-            })(jQuery);
-        </script>
-        <script>jQuery.noConflict();</script>
     </stripes:layout-component>
     <stripes:layout-component name="contents">
         <h1>View scheduled jobs</h1>

@@ -3,6 +3,17 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="View scheduled jobs" currentSection="vocabularies">
     <stripes:layout-component name="contents">
         <h1>View scheduled Task History </h1>
+          <div id="drop-operations">
+            <ul>
+                <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
+                    <li class="back">
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="viewScheduledJobs"> 
+                            Back to scheduled jobs
+                        </stripes:link>
+                    </li>
+                </c:if>
+            </ul>
+        </div>
         <display:table name="actionBean.scheduledTaskHistoryViews" class="datatable results" id="pastScheduledTask"
                        style="width:100% !important" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view#ScheduledJobsHistory">
             <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No historical data for this Entry exist.</p>" />

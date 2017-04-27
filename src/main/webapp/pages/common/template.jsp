@@ -27,7 +27,7 @@
             <link type="text/css" media="all" title="jquery Datatables" href="<c:url value="/css/jquery.dataTables.min.css" />" rel="stylesheet" />
 
 
-            <script type="text/javascript" src="<c:url value="/scripts/jquery-1.7.2.min.js" />"></script>
+            <script type="text/javascript" src="<c:url value="/scripts/jquery-1.6.2.min.js" />"></script>
             <script type="text/javascript" src="<c:url value="/scripts/jquery-ui-1.8.16.custom.min.js" />"></script>
             <script type="text/javascript" src="<c:url value="/scripts/jquery-timers.js" />"></script>
             <script type="text/javascript" src="<c:url value="/scripts/jquery.autocomplete.js" />"></script>
