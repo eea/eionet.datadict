@@ -9,7 +9,7 @@
             <display:setProperty name="paging.banner.item_name" value="pastScheduledTask" />
             <display:setProperty name="paging.banner.items_name" value="pastScheduledTasks" />
             <display:column title="Task Type" escapeXml="false" style="width: 10%">
-                <dd:attributeValue attrValue="${pastScheduledTask.type} ${pastScheduledTask.additionalDetails}"/>
+                <dd:attributeValue attrValue="${pastScheduledTask.type}"/>
             </display:column>
             <display:column title="Last Execution Status" escapeXml="false" style="width: 15%">
                 <dd:attributeValue attrValue="${pastScheduledTask.details.executionStatus}"/>
