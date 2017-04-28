@@ -64,8 +64,6 @@ public class AsyncTaskManagerIntegrationTest {
         assertThat(finalEntry.getTaskId(), is(equalTo(taskId)));
         assertThat(finalEntry.getTaskClassName(), is(equalTo(taskClass.getName())));
         assertThat(finalEntry.getExecutionStatus(), is(equalTo(AsyncTaskExecutionStatus.COMPLETED)));
-        assertThat(finalEntry.getScheduledDate(), is(greaterThanOrEqualTo(testStartDate)));
-        assertThat(finalEntry.getStartDate(), is(greaterThanOrEqualTo(finalEntry.getScheduledDate())));
         assertThat(finalEntry.getEndDate(), is(greaterThan(finalEntry.getStartDate())));
         Map<String, Object> deserializedParameters = this.asyncTaskDataSerializer.deserializeParameters(finalEntry.getSerializedParameters());
         assertThat(deserializedParameters, is(equalTo(parameters)));
@@ -74,7 +72,6 @@ public class AsyncTaskManagerIntegrationTest {
     }
     
     @Test
-    @Ignore
     public void testTaskFailure() throws InterruptedException, ResourceNotFoundException {
         final Date testStartDate = new Date();
         final Class taskClass = AsyncJobTestTask.class;
@@ -91,8 +88,6 @@ public class AsyncTaskManagerIntegrationTest {
         assertThat(finalEntry.getTaskId(), is(equalTo(taskId)));
         assertThat(finalEntry.getTaskClassName(), is(equalTo(taskClass.getName())));
         assertThat(finalEntry.getExecutionStatus(), is(equalTo(AsyncTaskExecutionStatus.FAILED)));
-        assertThat(finalEntry.getScheduledDate(), is(greaterThanOrEqualTo(testStartDate)));
-        assertThat(finalEntry.getStartDate(), is(greaterThanOrEqualTo(finalEntry.getScheduledDate())));
         assertThat(finalEntry.getEndDate(), is(greaterThan(finalEntry.getStartDate())));
         Map<String, Object> deserializedParameters = this.asyncTaskDataSerializer.deserializeParameters(finalEntry.getSerializedParameters());
         assertThat(deserializedParameters, is(equalTo(parameters)));
