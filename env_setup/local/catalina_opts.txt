@@ -20,3 +20,4 @@ CATALINA_OPTS=
 -Denv.siteCode.allocate.maxAmountForEtcEeaUsers=1000
 -Denv.siteCode.reserve.maxAmount=10000
 -Denv.cr.reharvest.request.url=http://cr.eionet.europa.eu/ping?uri=%s
+-Denv.notification.email.from=no-reply@eea.europa.eu

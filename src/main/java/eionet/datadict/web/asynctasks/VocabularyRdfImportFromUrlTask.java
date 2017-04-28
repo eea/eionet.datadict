@@ -14,6 +14,8 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IRDFVocabularyImportService;
 import eionet.meta.service.IVocabularyImportService;
 import eionet.meta.service.IVocabularyService;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -185,7 +187,7 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
                 public void prepare(MimeMessage mimeMessage) throws Exception {
                     MimeMessageHelper message = new MimeMessageHelper(mimeMessage, false);
                     message.setText(sb.toString(), false);
-                    message.setFrom(new InternetAddress("no-reply@eea.europa.eu"));
+                    message.setFrom(new InternetAddress(Props.getRequiredProperty(PropsIF.NOTIFICATION_EMAIL_FROM)));
                     message.setSubject("Scheduled RDF Import into Vocabulary Completed");
                     message.setTo(email);
                 }
