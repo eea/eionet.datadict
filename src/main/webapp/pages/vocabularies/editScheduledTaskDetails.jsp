@@ -99,7 +99,7 @@
 
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">
-                            How to handle imported data
+                            How to handle existing concepts
                         </th>
                         <td class="simple_attr_help">
                             <dd:mandatoryIcon />
@@ -131,7 +131,7 @@
 
                     <tr>
                         <th scope="row" class="scope-row simple_attr_title">
-                            How to handle missing concepts
+                            How to handle concepts missing from import
                         </th>
                         <td class="simple_attr_help">
                             <dd:mandatoryIcon />
