@@ -84,7 +84,7 @@
                             <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="scheduleSynchronization"> 
                                 <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                                 <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                                Schedule vocabulary synchronization
+                                Schedule  synchronization
                             </stripes:link>
                         </li>
                         <li class="checkout">
