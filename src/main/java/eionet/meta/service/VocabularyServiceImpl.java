@@ -274,26 +274,19 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     public VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy) throws ServiceException {
-        try {
             VocabularyFolder result = vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, workingCopy);
-
+            if (result==null){
+             ServiceException se =
+                    new ServiceException("Vocabulary set \"" + folderName + "\" or vocabulary identifier \"" + identifier
+                            + "\" not found!");
+            se.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.NOT_FOUND_404);
+            throw se;
+            }
             // Load attributes
             List<List<SimpleAttribute>> attributes = attributeDAO.getVocabularyFolderAttributes(result.getId(), true);
             result.setAttributes(attributes);
 
             return result;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            ServiceException se =
-                    new ServiceException("Vocabulary set \"" + folderName + "\" or vocabulary identifier \"" + identifier
-                            + "\" not found!", e);
-            se.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.NOT_FOUND_404);
-            throw se;
-        } catch (Exception e) {
-            String parameters =
-                    "folderName=" + String.valueOf(folderName) + "; identifier=" + String.valueOf(identifier) + "; workingCopy="
-                            + workingCopy;
-            throw new ServiceException("Failed to get vocabulary folder (" + parameters + "):" + e.getMessage(), e);
-        }
     }
 
     /**
