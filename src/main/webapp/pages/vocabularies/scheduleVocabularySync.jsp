@@ -160,7 +160,7 @@
                         <th>&nbsp;</th>
                         <td colspan="2">
                             <stripes:submit name="createScheduledJob" value="Save" class="mediumbuttonb"/>
-                            <stripes:submit name="viewWorkingCopy" value="Cancel" class="mediumbuttonb"/>
+                            <stripes:submit name="view" value="Cancel" class="mediumbuttonb"/>
                         </td>
                     </tr>
                 </table>
