@@ -126,13 +126,6 @@
                                     In this case, all existing concepts will be removed and the imported concepts will be added.
                                 </div>
                             </div>
-                            <div>
-                                <stripes:radio id="rdfDeleteVocabularyData" name="rdfPurgeOption" value="4"/>
-                                <label for="rdfDeleteVocabularyData" class="question">Delete Vocabulary Data</label>
-                                <div class="elaboration">
-                                    In this case, all imported concepts will be removed from the vocabulary.
-                                </div>
-                            </div>
                         </td>
                     </tr>
 
