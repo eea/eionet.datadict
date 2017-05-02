@@ -21,3 +21,4 @@ CATALINA_OPTS=
 -Denv.siteCode.reserve.maxAmount=10000
 -Denv.siteCode.parent.roles=eionet-nfp-cc, eionet-nfp-mc, eionet-nrc-biodivdata-cc, eionet-nrc-biodivdata-mc, reportnet-awp-cdda-reporter
 -Denv.cr.reharvest.request.url=http://cr.eionet.europa.eu/ping?uri=%s
+-Denv.notification.email.from=no-reply@eea.europa.eu

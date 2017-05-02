@@ -6,6 +6,7 @@ public class AsyncTaskExecutionError {
 
     private String message;
     private String technicalDetails;
+    public static final String MESSAGE="message";
 
     public AsyncTaskExecutionError() { }
     

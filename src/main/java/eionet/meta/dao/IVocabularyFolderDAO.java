@@ -115,7 +115,7 @@ public interface IVocabularyFolderDAO {
      *            vocabulary identifier
      * @param workingCopy
      *            if to return working copy
-     * @return Vocabulary folder
+     * @return Vocabulary folder or null Object if No VocabularyFolder Is Found
      */
     VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy);
 

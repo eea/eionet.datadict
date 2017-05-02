@@ -43,6 +43,7 @@
         </init-param>
     </filter>
 
+
     <filter>
         <description>
             Provides essential configuration and request
@@ -113,6 +114,8 @@
         <url-pattern>*.jsp</url-pattern>
         <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
+
+ 
 
     <filter-mapping>
         <filter-name>ContentNegotiationFilter</filter-name>

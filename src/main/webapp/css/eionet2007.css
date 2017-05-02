@@ -659,6 +659,8 @@
 		border-bottom: 1px solid #CFE3E4;
 		padding: 7px;	
 		vertical-align: top;
+                max-width:130px;
+                word-wrap:break-word;
 	}
 
 	table.results tr.even {
@@ -1066,7 +1068,8 @@
 		background: #fff;
 	}
 	input[type="submit"]{
-		border: 1px solid #00446A;
+	/*	border: 1px solid #00446A; */
+                width: 100px;
 		background: #00446A;
 		color: #fff;
 		cursor: pointer;
@@ -1668,4 +1671,62 @@
         
         #uploadRDFDialog .more-options .strategies div label{
             font-weight: normal;
+        }
+
+/*Scheduled Jobs Queue*/
+        ul.tab {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+        ul.tab li {float: left;}
+
+        ul.tab li a {
+            display: inline-block;
+            color: black;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+
+        ul.tab li a:hover {
+            background-color: #ddd;
+        }
+
+        ul.tab li a:focus, .active {
+            background-color: #ccc;
+        }
+
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+        }
+
+        .dataTables_filter {margin-bottom :20px;}
+
+        table.datatable{width:100%!important; }
+
+        .dataTables_length select{margin-left:15px;}
+
+        /*Edit Scheduled Task Details*/
+
+        .deleteTaskButton{
+            float: left;
+            position: relative;
+            min-height: 1px;
+            padding-left: 5%;
+        }
+
+        .editTaskButton{
+            float: left;
+            position: relative;
+            min-height: 1px;
+            padding-left: 3%;
         }

@@ -22,6 +22,7 @@
 package eionet.meta.service;
 
 import eionet.meta.ActionBeanUtils;
+import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
@@ -634,7 +635,7 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         VocabularyFolder vocabularyFolder = new VocabularyFolder();
         vocabularyFolder.setType(VocabularyType.COMMON);
         vocabularyFolder.setFolderId(1);
-        vocabularyFolder.setLabel("copy");
+        vocabularyFolder.setLabel("cop              y");
         vocabularyFolder.setIdentifier("copy");
         vocabularyFolder.setRegStatus(null);
         int idToCopy = 1;
@@ -1201,4 +1202,12 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
         assertTrue(4 == result.getFullListSize());
     }
 
+    
+    @Test
+    public void testIsVocabularyWorkingCopy() throws Exception{
+     boolean vocabularyIsNotWorkingCopy = this.vocabularyService.hasVocabularyWorkingCopy("common", "test_vocabulary1");
+     boolean vocabularyIsWorkingCopy = this.vocabularyService.hasVocabularyWorkingCopy("common", "test_vocabulary2");
+       assertEquals(false, vocabularyIsNotWorkingCopy);
+       assertEquals(true, vocabularyIsWorkingCopy);
+    }
 }

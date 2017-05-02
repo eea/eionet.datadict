@@ -80,6 +80,13 @@
                         </li>
                     </c:if>
                     <c:if test="${not actionBean.vocabularyFolder.workingCopy}">
+                        <li class="maintain">
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="scheduleSynchronization"> 
+                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                                Schedule  synchronization
+                            </stripes:link>
+                        </li>
                         <li class="checkout">
                             <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkOut">
                                 <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />

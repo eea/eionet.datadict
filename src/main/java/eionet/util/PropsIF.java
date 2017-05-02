@@ -238,4 +238,5 @@ public interface PropsIF {
     /** Name of DD's own status vocabulary (that lives inside {@link PropsIF#DD_OWN_VOCABULARIES_FOLDER_NAME}). */
     String DD_OWN_STATUS_VOCABULARY_IDENTIFIER = "dd.ownStatusVocabularyIdentifier";
 
+    String NOTIFICATION_EMAIL_FROM="notification.email.from";
 }
