@@ -41,7 +41,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     private final AttributeDao attributeDao;
     private final DatasetDao datasetDao;
 
-    
     private static final String DATASETS_NAMESPACE_ID = "1";
     private static final String ISOATTRS_NAMESPACE_ID = "2";
     private static final String DDATTRS_NAMESPACE_ID = "3";
@@ -73,8 +72,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         this.datasetDao = datasetDao;
     }
 
-    
-    
     @Override
     public Document getDataSetTableXMLSchema(int id) throws XmlExportException {
 
@@ -98,18 +95,18 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dataSetTable.getId());
             int datasetId = datasetTableDao.getParentDatasetId(dataSetTable.getId());
             DataSet dataSet = datasetDao.getById(datasetId);
-                     // First the DataSet Element:
-                    Element tableRootElement = elMaker.createElement("element",dataSetTable.getShortName());
+            // First the DataSet Element:
+            Element tableRootElement = elMaker.createElement("element", dataSetTable.getShortName());
 
-           schemaRoot.appendChild(tableRootElement);
-             Element dsAnnotation = elMaker.createElement(ANNOTATION);
+            schemaRoot.appendChild(tableRootElement);
+            Element dsAnnotation = elMaker.createElement(ANNOTATION);
             tableRootElement.appendChild(dsAnnotation);
             Element dsDocumentation = elMaker.createElement(DOCUMENTATION);
             dsDocumentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
             dsAnnotation.appendChild(dsDocumentation);
             List<AttributeValue> attrValues = attributeValueDao.getByOwner(new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T));
             List<Attribute> attributes = attributeDao.getCombinedDataSetAndDataTableAttributes(dataSetTable.getId(), dataSet.getId());
-            
+
             for (AttributeValue attrValue : attrValues) {
                 for (Attribute attr : attributes) {
                     if (attr.getId() == attrValue.getAttributeId()) {
@@ -120,45 +117,34 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
 
             }
-        
-         //   List<Attribute> attributes = attributeDao.getCombinedDataSetAndDataTableAttributes(dataSetTable.getId(), dataSet.getId());
-      /**      for (Attribute attr : attributes) {
-              //  Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
-                Element attributeElement = elMaker.createElement(attr.getNamespace().getShortName().replace("_", ""),attr.getShortName().replace(" ", ""));
-                attributeElement.appendChild(doc.createTextNode(attr.getDefinition()));
-                dsDocumentation.appendChild(attributeElement);
-            }
-          **/  
-           
-  
-         /**
+
             for (DataElement dataElement : dataElements) {
-                Element xmlElement = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI,NS_PREFIX + ELEMENT);
-                xmlElement.setAttribute(NAME, dataElement.getShortName());
+                Element xmlElement = elMaker.createElement("element", dataElement.getShortName());
+
                 schemaRoot.appendChild(xmlElement);
-                Element annotation = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI,NS_PREFIX + ANNOTATION);
-                xmlElement.appendChild(annotation);
-                Element documentation = doc.createElement(NS_PREFIX + DOCUMENTATION);
-                documentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
-                annotation.appendChild(documentation);
+                Element elemAnnotation = elMaker.createElement(ANNOTATION);
+                xmlElement.appendChild(elemAnnotation);
+                Element elemDocumentation = elMaker.createElement(DOCUMENTATION);
+                elemDocumentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
+                elemAnnotation.appendChild(elemDocumentation);
                 List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T));
                 for (AttributeValue attributeValue : attributeValues) {
                     Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
-                    Element attributeElement = doc.createElement(attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
+                    Element attributeElement = elMaker.createElement(attribute.getNamespace().getShortName().replace("_", ""), attribute.getShortName().replace(" ", ""));
                     attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
-                    documentation.appendChild(attributeElement);
+                    elemDocumentation.appendChild(attributeElement);
                 }
-                Element complexType = doc.createElement(NS_PREFIX + COMPLEX_TYPE);
+                Element complexType = elMaker.createElement(COMPLEX_TYPE);
                 xmlElement.appendChild(complexType);
-                Element sequence = doc.createElement(NS_PREFIX + SEQUENCE);
+                Element sequence = elMaker.createElement(SEQUENCE);
                 complexType.appendChild(sequence);
-                Element xmlNestedElement = doc.createElement(NS_PREFIX + ELEMENT);
+                Element xmlNestedElement = elMaker.createElement(ELEMENT);
                 xmlNestedElement.setAttribute(REF, dataElement.getShortName());
                 xmlNestedElement.setAttribute("minOccurs", "1");
                 xmlNestedElement.setAttribute("maxOccurs", "1");
                 sequence.appendChild(xmlNestedElement);
             }
-       **/
+
             doc.appendChild(schemaRoot);
             return doc;
         } catch (ParserConfigurationException ex) {
@@ -167,9 +153,8 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         }
     }
 
-    
-    
-     private static class NameTypeElementMaker {
+    private static class NameTypeElementMaker {
+
         private String nsPrefix;
         private Document doc;
 
@@ -179,11 +164,13 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         }
 
         public Element createElement(String elementName, String nameAttrVal, String typeAttrVal) {
-            Element element = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, nsPrefix+elementName);
-            if(nameAttrVal != null)
+            Element element = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, nsPrefix + elementName);
+            if (nameAttrVal != null) {
                 element.setAttribute("name", nameAttrVal);
-            if(typeAttrVal != null)
+            }
+            if (typeAttrVal != null) {
                 element.setAttribute("type", typeAttrVal);
+            }
             return element;
         }
 
@@ -195,7 +182,5 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             return createElement(elementName, null, null);
         }
     }
-    
-    
-    
+
 }
