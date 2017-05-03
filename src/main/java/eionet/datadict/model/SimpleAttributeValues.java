@@ -8,16 +8,16 @@ import javax.persistence.OneToOne;
 public class SimpleAttributeValues {
     
     @OneToOne
-    private SimpleAttributeOwner owner;
+    private AttributeOwner owner;
     @ManyToOne
     private SimpleAttribute attribute;
     private List<String> values;
 
-    public SimpleAttributeOwner getOwner() {
+    public AttributeOwner getOwner() {
         return owner;
     }
 
-    public void setOwner(SimpleAttributeOwner owner) {
+    public void setOwner(AttributeOwner owner) {
         this.owner = owner;
     }
 

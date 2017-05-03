@@ -5,6 +5,7 @@ import eionet.datadict.dal.AttributeValueDao;
 import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DatasetDao;
 import eionet.datadict.dal.DatasetTableDao;
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.AttributeValue;
@@ -14,6 +15,8 @@ import eionet.datadict.model.DataSet;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.services.DataSetTableService;
+import eionet.datadict.services.data.DataTableDataService;
+import eionet.datadict.services.data.DatasetTableDataService;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import java.util.List;
@@ -40,6 +43,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     private final AttributeValueDao attributeValueDao;
     private final AttributeDao attributeDao;
     private final DatasetDao datasetDao;
+    private final DataTableDataService dataTableDataService;
 
     private static final String DATASETS_NAMESPACE_ID = "1";
     private static final String ISOATTRS_NAMESPACE_ID = "2";
@@ -63,15 +67,21 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     protected String appContext = Props.getRequiredProperty(PropsIF.DD_URL);
     private final static String NS_PREFIX = "xs:";
 
+    
+    
     @Autowired
-    public DataSetTableServiceImpl(DatasetTableDao datasetTableDao, DataElementDao dataElementDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DatasetDao datasetDao) {
+    public DataSetTableServiceImpl(DatasetTableDao datasetTableDao, DataElementDao dataElementDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DatasetDao datasetDao, DataTableDataService dataTableDataService) {
         this.datasetTableDao = datasetTableDao;
         this.dataElementDao = dataElementDao;
         this.attributeValueDao = attributeValueDao;
         this.attributeDao = attributeDao;
         this.datasetDao = datasetDao;
+        this.dataTableDataService = dataTableDataService;
     }
 
+    
+    
+    
     @Override
     public Document getDataSetTableXMLSchema(int id) throws XmlExportException {
 
@@ -95,16 +105,24 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dataSetTable.getId());
             int datasetId = datasetTableDao.getParentDatasetId(dataSetTable.getId());
             DataSet dataSet = datasetDao.getById(datasetId);
-            // First the DataSet Element:
             Element tableRootElement = elMaker.createElement("element", dataSetTable.getShortName());
 
-            schemaRoot.appendChild(tableRootElement);
+                 
+            
+            try {
+                DatasetTable dsTableFull = this.dataTableDataService.getFullDatasetTableDefinition(id);
+            } catch (ResourceNotFoundException ex) {
+                Logger.getLogger(DataSetTableServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+             schemaRoot.appendChild(tableRootElement);
             Element dsAnnotation = elMaker.createElement(ANNOTATION);
+            dsAnnotation.setAttribute("xmlns", "");
             tableRootElement.appendChild(dsAnnotation);
             Element dsDocumentation = elMaker.createElement(DOCUMENTATION);
             dsDocumentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
             dsAnnotation.appendChild(dsDocumentation);
             List<AttributeValue> attrValues = attributeValueDao.getByOwner(new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T));
+            attrValues.addAll(attributeValueDao.getByOwner(new DataDictEntity(datasetId, DataDictEntity.Entity.DS)));
             List<Attribute> attributes = attributeDao.getCombinedDataSetAndDataTableAttributes(dataSetTable.getId(), dataSet.getId());
 
             for (AttributeValue attrValue : attrValues) {
@@ -125,6 +143,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 Element elemAnnotation = elMaker.createElement(ANNOTATION);
                 xmlElement.appendChild(elemAnnotation);
                 Element elemDocumentation = elMaker.createElement(DOCUMENTATION);
+                elemDocumentation.setAttribute("xmlns", "");
                 elemDocumentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
                 elemAnnotation.appendChild(elemDocumentation);
                 List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T));
@@ -135,6 +154,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     elemDocumentation.appendChild(attributeElement);
                 }
                 Element complexType = elMaker.createElement(COMPLEX_TYPE);
+                complexType.setAttribute("xmlns", "");
                 xmlElement.appendChild(complexType);
                 Element sequence = elMaker.createElement(SEQUENCE);
                 complexType.appendChild(sequence);

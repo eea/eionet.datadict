@@ -12,9 +12,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.impl.converters.BooleanToMySqlEnumConverter;
+import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
+import eionet.datadict.model.SimpleAttributeValues;
 import eionet.datadict.util.data.DataConverter;
 import eionet.meta.dao.domain.VocabularyFolder;
 import java.util.HashSet;
@@ -220,6 +222,28 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
             return null;
         }        
     }
+
+    @Override
+    public List<Attribute> getAttributesOfDataTable(int tableId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<AttributeValue> getAttributesValuesOfDataTable(int tableId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Map<Integer, Set<Attribute>> getAttributesOfDataElementsInTable(int tableId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<SimpleAttributeValues> getSimpleAttributesValuesOfDataElementsInTable(int tableId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    
 
     protected static class MapRowMapper implements RowMapper<Map<DataDictEntity.Entity, Integer>> {
 

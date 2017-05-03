@@ -2,11 +2,12 @@ package eionet.datadict.dal.impl;
 
 import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.impl.converters.BooleanToMysqlEnumYesNoConverter;
+import eionet.datadict.model.Attribute;
 import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataElement.DataElementType;
 import eionet.datadict.model.DatasetTableElement;
 import eionet.datadict.model.Namespace;
-import eionet.datadict.model.SimpleAttributeOwnerCategory;
+import eionet.datadict.model.AttributeOwnerCategory;
 import eionet.datadict.model.ValueListItem;
 import eionet.meta.dao.domain.DatasetRegStatus;
 import java.sql.ResultSet;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -104,8 +106,19 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
                     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
 
+
                 @Override
-                public SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory() {
+                public AttributeOwnerCategory getAttributeOwnerCategory() {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public Set<Attribute> getAttributes() {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public void setAttributes(Set<Attribute> attributes) {
                     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
             };

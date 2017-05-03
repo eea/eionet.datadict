@@ -17,8 +17,8 @@ public class DataElementWithFixedValues extends DataElement implements FixedValu
     }
     
     @Override
-    public SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory() {
-        return SimpleAttributeOwnerCategory.DATA_ELEMENT_WITH_VALUE_LIST;
+    public AttributeOwnerCategory getAttributeOwnerCategory() {
+        return AttributeOwnerCategory.DATA_ELEMENT_WITH_VALUE_LIST;
     }
     
     @Override
@@ -44,6 +44,16 @@ public class DataElementWithFixedValues extends DataElement implements FixedValu
     @Override
     public void setFixedValues(Set<FixedValue> fixedValues) {
         this.fixedValues = fixedValues;
+    }
+
+    @Override
+    public Set<Attribute> getAttributes() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setAttributes(Set<Attribute> attributes) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

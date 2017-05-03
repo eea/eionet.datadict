@@ -2,15 +2,15 @@ package eionet.datadict.model;
 
 import java.util.Set;
 
-public interface SimpleAttributeOwner {
+public interface AttributeOwner {
 
-    SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory();
+    AttributeOwnerCategory getAttributeOwnerCategory();
     
     Comparable getId();
     
-    Set<SimpleAttribute> getSimpleAttributes();
+    Set<Attribute> getAttributes();
     
-    void setSimpleAttributes(Set<SimpleAttribute> simpleAttributes);
+    void setAttributes(Set<Attribute> attributes);
     
     Set<SimpleAttributeValues> getSimpleAttributesValues();
     

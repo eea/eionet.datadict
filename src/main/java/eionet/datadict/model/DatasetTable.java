@@ -5,7 +5,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-public class DatasetTable implements SimpleAttributeOwner {
+public class DatasetTable implements AttributeOwner {
 
     @Id
     private Integer id;
@@ -25,7 +25,7 @@ public class DatasetTable implements SimpleAttributeOwner {
     private Namespace namespace;
     @OneToMany(mappedBy = "dataTable")
     private Set<DatasetTableElement> datasetTableElements;
-    private Set<SimpleAttribute> simpleAttributes;
+    private Set<Attribute> attributes;
     @OneToMany(mappedBy = "owner")
     private Set<SimpleAttributeValues> simpleAttributesValues;
 
@@ -40,8 +40,8 @@ public class DatasetTable implements SimpleAttributeOwner {
     
 
     @Override
-    public SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory() {
-        return SimpleAttributeOwnerCategory.DATA_SET_TABLE;
+    public AttributeOwnerCategory getAttributeOwnerCategory() {
+        return AttributeOwnerCategory.DATA_SET_TABLE;
     }
 
     public Integer getId() {
@@ -156,15 +156,14 @@ public class DatasetTable implements SimpleAttributeOwner {
         this.datasetTableElements = datasetTableElements;
     }
 
-    @Override
-    public Set<SimpleAttribute> getSimpleAttributes() {
-        return simpleAttributes;
+    public Set<Attribute> getAttributes() {
+        return attributes;
     }
 
-    @Override
-    public void setSimpleAttributes(Set<SimpleAttribute> simpleAttributes) {
-        this.simpleAttributes = simpleAttributes;
+    public void setAttributes(Set<Attribute> attributes) {
+        this.attributes = attributes;
     }
+
 
     @Override
     public Set<SimpleAttributeValues> getSimpleAttributesValues() {

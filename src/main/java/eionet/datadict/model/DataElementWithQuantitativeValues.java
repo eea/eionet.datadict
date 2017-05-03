@@ -17,8 +17,8 @@ public class DataElementWithQuantitativeValues extends DataElement implements Fi
     }
     
     @Override
-    public SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory() {
-        return SimpleAttributeOwnerCategory.DATA_ELEMENT_WITH_QUANTITATIVE_VALUES;
+    public AttributeOwnerCategory getAttributeOwnerCategory() {
+        return AttributeOwnerCategory.DATA_ELEMENT_WITH_QUANTITATIVE_VALUES;
     }
     
     @Override
@@ -44,6 +44,16 @@ public class DataElementWithQuantitativeValues extends DataElement implements Fi
     @Override
     public void setFixedValues(Set<FixedValue> fixedValues) {
         this.fixedValues = fixedValues;
+    }
+
+    @Override
+    public Set<Attribute> getAttributes() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setAttributes(Set<Attribute> attributes) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

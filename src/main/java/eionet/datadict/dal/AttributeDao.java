@@ -1,9 +1,12 @@
 package eionet.datadict.dal;
 
 import eionet.datadict.model.Attribute;
+import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
+import eionet.datadict.model.SimpleAttributeValues;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -97,4 +100,13 @@ public interface AttributeDao {
     public Map<DataDictEntity.Entity, Integer> getConceptsWithAttributeValues(int attributeId);
     
     public List<Attribute> getCombinedDataSetAndDataTableAttributes(int datasetTableId,int dataSetId);
+    
+    
+    List<Attribute> getAttributesOfDataTable(int tableId);
+    
+    List<AttributeValue> getAttributesValuesOfDataTable(int tableId);
+    
+    Map<Integer, Set<Attribute>> getAttributesOfDataElementsInTable(int tableId);
+    
+    List<SimpleAttributeValues> getSimpleAttributesValuesOfDataElementsInTable(int tableId);
 }

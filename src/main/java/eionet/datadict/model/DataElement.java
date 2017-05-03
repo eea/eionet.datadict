@@ -8,7 +8,7 @@ import javax.persistence.OneToOne;
 import eionet.meta.dao.domain.DatasetRegStatus;
 
 
-public abstract class DataElement implements SimpleAttributeOwner {
+public abstract class DataElement implements AttributeOwner {
  
     public static enum ValueType {
         FIXED,
@@ -113,15 +113,7 @@ public abstract class DataElement implements SimpleAttributeOwner {
         this.datasetTableElement = datasetTableElement;
     }
 
-    @Override
-    public Set<SimpleAttribute> getSimpleAttributes() {
-        return simpleAttributes;
-    }
-
-    @Override
-    public void setSimpleAttributes(Set<SimpleAttribute> simpleAttributes) {
-        this.simpleAttributes = simpleAttributes;
-    }
+   
 
     @Override
     public Set<SimpleAttributeValues> getSimpleAttributesValues() {

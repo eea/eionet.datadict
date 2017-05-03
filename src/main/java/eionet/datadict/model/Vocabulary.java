@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-public class Vocabulary implements Iterable<Concept>, SimpleAttributeOwner {
+public class Vocabulary implements Iterable<Concept>, AttributeOwner {
 
     @Id
     private Integer id;
@@ -16,13 +16,13 @@ public class Vocabulary implements Iterable<Concept>, SimpleAttributeOwner {
     private VocabularySet vocabularySet;
     @OneToMany(mappedBy = "vocabulary")
     private Set<Concept> concepts;
-    private Set<SimpleAttribute> simpleAttributes;
+    private Set<Attribute> attributes;
     @OneToMany(mappedBy = "owner")
     private Set<SimpleAttributeValues> simpleAttributesValues;
 
     @Override
-    public SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory() {
-        return SimpleAttributeOwnerCategory.VOCABULARY;
+    public AttributeOwnerCategory getAttributeOwnerCategory() {
+        return AttributeOwnerCategory.VOCABULARY;
     }
     
     @Override
@@ -64,13 +64,13 @@ public class Vocabulary implements Iterable<Concept>, SimpleAttributeOwner {
     }
     
     @Override
-    public Set<SimpleAttribute> getSimpleAttributes() {
-        return simpleAttributes;
+    public Set<Attribute> getAttributes() {
+        return attributes;
     }
 
     @Override
-    public void setSimpleAttributes(Set<SimpleAttribute> simpleAttributes) {
-        this.simpleAttributes = simpleAttributes;
+    public void setAttributes(Set<Attribute> attributes) {
+        this.attributes = attributes;
     }
 
     @Override

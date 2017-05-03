@@ -6,17 +6,17 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-public class DataSet implements SimpleAttributeOwner {
+public class DataSet implements AttributeOwner {
 
     @Id
     private Integer id;
     private String identifier;
-    
+
     @ManyToOne
     private Namespace namespace;
     @OneToMany(mappedBy = "dataSet")
     private Set<DatasetTable> datasetTables;
-    private Set<SimpleAttribute> simpleAttributes;
+    private Set<Attribute> attributes;
     @OneToMany(mappedBy = "owner")
     private Set<SimpleAttributeValues> simpleAttributesValues;
     private String shortName;
@@ -30,21 +30,22 @@ public class DataSet implements SimpleAttributeOwner {
     private String user;
     private Namespace correspondingNS;
     private String deleted;
-     private Integer dispCreateLinks;
+    private Integer dispCreateLinks;
     private Integer checkedOutCopyId;
+
     public DataSet() {
         super();
     }
-    
+
     public DataSet(Integer id) {
         this.id = id;
     }
-    
+
     @Override
-    public SimpleAttributeOwnerCategory getSimpleAttributeOwnerCategory() {
-        return SimpleAttributeOwnerCategory.DATA_SET;
+    public AttributeOwnerCategory getAttributeOwnerCategory() {
+        return AttributeOwnerCategory.DATA_SET;
     }
-    
+
     @Override
     public Integer getId() {
         return id;
@@ -76,16 +77,6 @@ public class DataSet implements SimpleAttributeOwner {
 
     public void setDatasetTables(Set<DatasetTable> datasetTables) {
         this.datasetTables = datasetTables;
-    }
-    
-    @Override
-    public Set<SimpleAttribute> getSimpleAttributes() {
-        return simpleAttributes;
-    }
-
-    @Override
-    public void setSimpleAttributes(Set<SimpleAttribute> simpleAttributes) {
-        this.simpleAttributes = simpleAttributes;
     }
 
     @Override
@@ -201,31 +192,39 @@ public class DataSet implements SimpleAttributeOwner {
     public void setCheckedOutCopyId(Integer checkedOutCopyId) {
         this.checkedOutCopyId = checkedOutCopyId;
     }
-    
-    
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
-        
+
         if (!(obj instanceof DataSet)) {
             return false;
         }
-        
+
         if (this.id == null) {
             return false;
         }
-        
+
         DataSet other = (DataSet) obj;
-        
+
         return this.id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
-        return this.id == null ?  super.hashCode() : this.id.hashCode();
+        return this.id == null ? super.hashCode() : this.id.hashCode();
     }
-    
+
+    @Override
+    public Set<Attribute> getAttributes() {
+        return this.attributes;
+    }
+
+    @Override
+    public void setAttributes(Set<Attribute> attributes) {
+        this.attributes = attributes;
+    }
+
 }
