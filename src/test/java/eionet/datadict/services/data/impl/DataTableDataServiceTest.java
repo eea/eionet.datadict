@@ -4,8 +4,9 @@ import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DataSetDao;
 import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.dal.FixedValuesDao;
-import eionet.datadict.dal.SimpleAttributeDao;
+import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.VocabularyDao;
+import eionet.datadict.model.Attribute;
 import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataElementWithFixedValues;
 import eionet.datadict.model.DataElementWithQuantitativeValues;
@@ -29,6 +30,8 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.runners.MockitoJUnitRunner;
 
+/**
+
 @RunWith(MockitoJUnitRunner.class)
 public class DataTableDataServiceTest {
 
@@ -39,7 +42,7 @@ public class DataTableDataServiceTest {
     @Mock
     private DataElementDao dataElementDao;
     @Mock
-    private SimpleAttributeDao simpleAttributeDao;
+    private AttributeDao attributeDao;
     @Mock
     private FixedValuesDao fixedValuesDao;
     @Mock
@@ -51,13 +54,13 @@ public class DataTableDataServiceTest {
     public void testGetFullDataTableDefinition() {
         final DatasetTable dataTable = this.createDataTable(17, "some_data_table", 6, 9);
         final DataSet dataSet = this.createDataSet(dataTable.getDataSet().getId(), "some_dataset", 4);
-        final List<SimpleAttribute> dataTableAttributes = this.createDataTableAttributes();
+        final List<Attribute> dataTableAttributes = this.createDataTableAttributes();
         final List<SimpleAttributeValues> dataTableAttributeValues = this.createDataTableAttributeValues(dataTable, dataTableAttributes);
         
         when(datasetTableDao.getById(dataTable.getId())).thenReturn(dataTable);
         when(dataSetDao.getDataSetById(dataSet.getId())).thenReturn(dataSet);
-        when(simpleAttributeDao.getSimpleAttributesOfDataTable(dataTable.getId())).thenReturn(dataTableAttributes);
-        when(simpleAttributeDao.getSimpleAttributesValuesOfDataTable(dataTable.getId())).thenReturn(dataTableAttributeValues);
+        when(attributeDao.getAttributesOfDataTable(dataTable.getId())).thenReturn(dataTableAttributes);
+        when(attributeDao.getAttributesValuesOfDataTable(dataTable.getId())).thenReturn(dataTableAttributeValues);
         
     }
     
@@ -78,11 +81,11 @@ public class DataTableDataServiceTest {
         return dataSet;
     }
     
-    private List<SimpleAttribute> createDataTableAttributes() {
-        List<SimpleAttribute> attributes = new ArrayList<SimpleAttribute>();
-        SimpleAttribute attr1 = new SimpleAttributeTextBox(35);
+    private List<Attribute> createDataTableAttributes() {
+        List<Attribute> attributes = new ArrayList<Attribute>();
+        Attribute attr1 = new AttributeTextBox(35);
         attr1.setShortName("attr1");
-        SimpleAttribute attr2 = new SimpleAttributeTextArea(36);
+        Attribute attr2 = new AttributeTextArea(36);
         attr1.setShortName("attr2");
         SimpleAttribute attr3 = new SimpleAttributeFixedValues(37);
         attr1.setShortName("attr3");
@@ -133,3 +136,5 @@ public class DataTableDataServiceTest {
     }
     
 }
+
+**/

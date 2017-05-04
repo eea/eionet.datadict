@@ -44,5 +44,10 @@ public class DatasetTableDataServiceImpl implements DatasetTableDataService {
         DataSet parentDataset = this.datasetDao.getById(parentDatasetId);
         return (parentDataset.getWorkingCopy() && parentDataset.getWorkingUser() != null && parentDataset.getWorkingUser().equals(user.getUserName()));
     }
+
+    @Override
+    public DatasetTable getFullDatasetTableDefinition(int tableId) throws ResourceNotFoundException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

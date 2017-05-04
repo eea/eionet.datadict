@@ -19,4 +19,7 @@ public interface DatasetTableDataService {
     public DatasetTable getDatasetTable(int id) throws ResourceNotFoundException;
     
     public boolean isWorkingCopy(DatasetTable table, DDUser user);
+    
+   DatasetTable getFullDatasetTableDefinition(int tableId) throws ResourceNotFoundException;
+
 }
