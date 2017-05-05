@@ -1,6 +1,5 @@
 package eionet.datadict.security;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,49 +20,39 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private EntryPointUnauthorizedHandler unauthorizedHandler;
 
+    @Autowired
+    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder.parentAuthenticationManager(authenticationManagerBean());
+    }
 
-@Autowired
-  private EntryPointUnauthorizedHandler unauthorizedHandler;
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
+    @Bean
+    public AuthenticationRequestFilter authenticationRequestFilterBean( ) throws Exception {
+        AuthenticationRequestFilter authenticationReqFilter = new AuthenticationRequestFilter();
+        authenticationReqFilter.setAuthenticationManager(authenticationManagerBean());
+        return authenticationReqFilter;
+    }
 
-  @Autowired
-  public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-    authenticationManagerBuilder.parentAuthenticationManager(authenticationManagerBean());
-  }
-     
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+            .csrf().disable()
+            .exceptionHandling().authenticationEntryPoint(this.unauthorizedHandler)
+            .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+            .and()
+            .authorizeRequests().antMatchers("/*").permitAll();
 
- @Bean
-  @Override
-  public AuthenticationManager authenticationManagerBean() throws Exception {
-    return super.authenticationManagerBean();
-  }
-
-  @Bean
-  public AuthenticationRequestFilter authenticationRequestFilterBean( ) throws Exception {
-    AuthenticationRequestFilter authenticationReqFilter = new AuthenticationRequestFilter();
-    authenticationReqFilter.setAuthenticationManager(authenticationManagerBean());
-    return authenticationReqFilter;
-  }
-
-
-  @Override
-  protected void configure(HttpSecurity httpSecurity) throws Exception {
-    httpSecurity
-      .csrf()
-        .disable()
-      .exceptionHandling()
-        .authenticationEntryPoint(this.unauthorizedHandler)
-        .and()
-      .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.NEVER)
-        .and()
-                  .authorizeRequests()
-        .antMatchers("/*").permitAll();
-
-    // Custom JWT based authentication
-    httpSecurity
-      .addFilter((authenticationRequestFilterBean()));
-  }
+        // Custom JWT based authentication
+        httpSecurity.addFilter((authenticationRequestFilterBean()));
+    }
 
 }

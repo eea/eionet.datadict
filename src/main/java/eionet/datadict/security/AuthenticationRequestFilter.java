@@ -74,4 +74,5 @@ public class AuthenticationRequestFilter extends UsernamePasswordAuthenticationF
             return requestURL.append('?').append(queryString).toString();
         }
     }
+
 }

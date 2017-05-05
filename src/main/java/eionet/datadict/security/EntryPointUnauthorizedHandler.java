@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eionet.datadict.security;
 
 import java.io.IOException;
@@ -20,8 +15,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
-    
-    @Component
+@Component
 public class EntryPointUnauthorizedHandler implements AuthenticationEntryPoint {
 
     @Override
@@ -30,8 +24,6 @@ public class EntryPointUnauthorizedHandler implements AuthenticationEntryPoint {
         LinkedHashMap<String, String> results = new LinkedHashMap<String, String>();
         results.put("httpStatusCode", HttpStatus.UNAUTHORIZED.toString());
         results.put("errorMessage", "Access Denied");
-        
     }
+
 }
-
-
