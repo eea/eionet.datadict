@@ -313,7 +313,7 @@
         }
         if (popup){
         %>
-                <div id="drop-operations" style="width:100%">
+                <div id="drop-operations">
                     <ul>
                         <li class="close"><a href="javascript:window.close();">Close</a></li>
                         <li class="help"><a class="helpButton" href="help.jsp?screen=elements&amp;area=pagehelp">Page help</a></li>

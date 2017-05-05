@@ -380,7 +380,7 @@ if (isDisplayOperations){
                         </td>
                     </tr>
 
-                    <tt>
+                    <tr>
                         <td class="label">
                             <label for="txtIdentifier">Identifier</label>
                             <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier"></a>
@@ -528,7 +528,7 @@ if (isDisplayOperations){
                             %>
                             <tr>
                                 <td class="label">
-                                    <label for="txtFilterAttr_<%=attrID%>"><%=Util.processForDisplay(attrName)%></label>
+                                    <label for="txtAddedAttr_<%=attrID%>"><%=Util.processForDisplay(attrName)%></label>
                                     <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                 </td>
                                 <td class="input">
@@ -549,7 +549,7 @@ if (isDisplayOperations){
                             %>
                             <tr>
                                 <td class="label">
-                                    <label for="txtFilterAttr_<%=attrID%>"><%=Util.processForDisplay(attrName)%></label>
+                                    <label for="txtAddedAttr_<%=attrID%>"><%=Util.processForDisplay(attrName)%></label>
                                     <a class="helpButton" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE"></a>
                                 </td>
                                 <td class="input">
@@ -604,8 +604,8 @@ if (isDisplayOperations){
                     <tr>
                         <td class="label">Search method</td>
                         <td class="input bordered">
-                            <input type="radio" name="search_precision" id="ssubstr" value="substr" checked="checked"/><label for="ssubstr">Substring search</label>
-                            <input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>
+                            <input type="radio" name="search_precision" id="ssubstr" value="substr" checked="checked" /><label for="ssubstr">Substring search</label>
+                            <input type="radio" name="search_precision" id="sexact" value="exact" /><label for="sexact">Exact search</label>
                         </td>
                     </tr>
 
@@ -648,7 +648,7 @@ if (isDisplayOperations){
                     %>
                 </table>
                 <p class="actions">
-                    <input class="mediumbuttonb searchButton" type="button" value="Search" onclick="submitForm('search_results.jsp')" />
+                    <input class="mediumbuttonb searchButton" type="submit" value="Search" onclick="submitForm('search_results.jsp')" />
                     <input class="mediumbuttonb" type="reset" value="Reset" />
                 </p>
 
@@ -702,8 +702,9 @@ if (isDisplayOperations){
                         }
                         %>
                     </div>
-                </form>
-            </div> <!-- workarea -->
+                </div>
+            </form>
+        </div> <!-- workarea -->
     <%
     if (!isPopup){
         %>
