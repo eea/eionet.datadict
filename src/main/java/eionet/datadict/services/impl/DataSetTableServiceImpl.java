@@ -110,6 +110,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             
             try {
                 DatasetTable dsTableFull = this.datasetTableDataService.getFullDatasetTableDefinition(id);
+                System.out.println(dsTableFull);
             } catch (ResourceNotFoundException ex) {
                 Logger.getLogger(DataSetTableServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }

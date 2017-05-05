@@ -23,7 +23,7 @@ public class DatasetTable implements AttributeOwner {
     private DataSet dataSet;
     @ManyToOne
     private Namespace namespace;
-    @OneToMany(mappedBy = "dataTable")
+    @OneToMany(mappedBy = "datasetTable")
     private Set<DatasetTableElement> datasetTableElements;
     private Set<Attribute> attributes;
     @OneToMany(mappedBy = "owner")

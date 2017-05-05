@@ -80,6 +80,7 @@ class OrmReflectionUtils {
     public static Object readField(Field field, Object target) {
         try {
             return FieldUtils.readField(field, target, true);
+           
         } 
         catch (IllegalAccessException ex) {
             throw new InaccessiblePropertyException(ex);

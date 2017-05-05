@@ -225,7 +225,16 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
 
     @Override
     public List<Attribute> getAttributesOfDataTable(int tableId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String sql = "select M_ATTRIBUTE.*, NAMESPACE.*, ATTRIBUTE.VALUE, ATTRIBUTE.PARENT_TYPE from M_ATTRIBUTE left outer join NAMESPACE on M_ATTRIBUTE.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID left outer join \n" +
+"ATTRIBUTE on M_ATTRIBUTE.M_ATTRIBUTE_ID=ATTRIBUTE.M_ATTRIBUTE_ID where (ATTRIBUTE.DATAELEM_ID= :datasetTableId and \n" +
+"ATTRIBUTE.PARENT_TYPE='T')";
+                Map<String, Object> params = this.createParameterMap();
+               params.put("datasetTableId",tableId);
+        try {
+            return this.getNamedParameterJdbcTemplate().query(sql, params,new CombinedAttributeRowMapper());
+        } catch (IncorrectResultSizeDataAccessException ex) {
+            return null;
+        }        
     }
 
     @Override

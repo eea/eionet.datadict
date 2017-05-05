@@ -53,8 +53,12 @@ public class OrmUtils {
         Class<?> childType = childEntities.get(0).getClass();
         RelationInfo relationInfo = relationRetrievalStrategy.retrieveRelationInfo(parentType, childType);
         Field[] parentIdFields = OrmReflectionUtils.getIdDrilldownFields(parentType);
-        Field[] childDrillDownFields = ArrayUtils.addAll(new Field[] { relationInfo.getChildEndpoint() }, parentIdFields);
+              Field[] childIdFields = OrmReflectionUtils.getIdDrilldownFields(childType);
+              
+        Field[] childDrillDownFields = ArrayUtils.addAll(new Field[] { relationInfo.getChildEndpoint() }, childIdFields);
         
+        
+       //    Field[] childDrillDownFields = ArrayUtils.addAll(new Field[] { relationInfo.getChildEndpoint() }); 
         Collections.sort(parentEntities, new ReflectiveDrillDownComparator<T>(parentIdFields));
         Collections.sort(childEntities, new ReflectiveDrillDownComparator<S>(childDrillDownFields));
         
