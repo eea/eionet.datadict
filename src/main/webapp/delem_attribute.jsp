@@ -332,10 +332,9 @@
         }
 
         function goToEdit(){
-            if (<%=type%>=='SIMPLE'){
+            if ('<%=type%>' === 'SIMPLE') {
                  document.location.assign("attribute/edit/<%=attr_id%>");
-            }
-            else {
+            } else {
                 document.location.assign("delem_attribute.jsp?attr_id=<%=attr_id%>&type=<%=type%>&mode=edit");
             }
         }
