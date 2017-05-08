@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>eionet.datadict</groupId>
-    <artifactId>datadict</artifactId>
+    <artifactId>datadict-75318</artifactId>
     <packaging>war</packaging>
 
     <properties>
@@ -18,7 +18,7 @@
     </properties>
 
     <version>1.0-SNAPSHOT</version>
-    <name>datadict</name>
+    <name>datadict-75318</name>
     <url>http://maven.apache.org</url>
 
     <!-- configuration of Maven repositories to be used -->
@@ -370,6 +370,11 @@
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
         </dependency>
@@ -442,6 +447,11 @@
             <version>1.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
+            <version>1.0.1.Final</version>
+       </dependency>
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
@@ -678,6 +688,11 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+            <version>${jackson-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
             <version>${jackson-version}</version>
         </dependency>
         <!-- JWT Lib -->
