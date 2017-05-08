@@ -1,6 +1,5 @@
 package eionet.datadict.dal.impl;
 
-import eionet.datadict.dal.DataSetDao;
 import eionet.datadict.dal.DatasetDao;
 import eionet.datadict.dal.impl.converters.BooleanToMysqlEnumYesNoConverter;
 import eionet.datadict.model.DataSet;
