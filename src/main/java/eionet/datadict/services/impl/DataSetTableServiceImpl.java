@@ -116,7 +116,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             }
              schemaRoot.appendChild(tableRootElement);
             Element dsAnnotation = elMaker.createElement(ANNOTATION);
-            dsAnnotation.setAttribute("xmlns", "");
+           // dsAnnotation.setAttribute("xmlns", "");
             tableRootElement.appendChild(dsAnnotation);
             Element dsDocumentation = elMaker.createElement(DOCUMENTATION);
             dsDocumentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
@@ -141,7 +141,29 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                         dsDocumentation.appendChild(attributeElement);
             }
          
-
+         Element complexType = elMaker.createElement(COMPLEX_TYPE);
+        
+         tableRootElement.appendChild(complexType);
+        
+         Element sequence = elMaker.createElement(SEQUENCE);
+            complexType.appendChild(sequence);
+                Element rowElement = elMaker.createElement(ELEMENT);
+                rowElement.setAttribute(NAME, "Row");
+                rowElement.setAttribute("minOccurs", "1");
+                rowElement.setAttribute("maxOccurs", "unbounded");
+                sequence.appendChild(rowElement);
+          Element rowComplexType = elMaker.createElement(COMPLEX_TYPE);
+             rowElement.appendChild(rowComplexType);
+              Element rowSequence = elMaker.createElement(SEQUENCE);
+              rowComplexType.appendChild(rowSequence);
+              
+            for (DataElement dataElement : dataElements) {
+                Element tableElement = elMaker.createElement( ELEMENT);
+                tableElement.setAttribute(REF, dataElement.getShortName());
+                tableElement.setAttribute("minOccurs", "1");
+                tableElement.setAttribute("maxOccurs", "1");
+                rowSequence.appendChild(tableElement);
+            }
             
 
             for (DataElement dataElement : dataElements) {
@@ -151,7 +173,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 Element elemAnnotation = elMaker.createElement(ANNOTATION);
                 xmlElement.appendChild(elemAnnotation);
                 Element elemDocumentation = elMaker.createElement(DOCUMENTATION);
-                elemDocumentation.setAttribute("xmlns", "");
+           //     elemDocumentation.setAttribute("xmlns", "");
                 elemDocumentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
                 elemAnnotation.appendChild(elemDocumentation);
                 List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T));
@@ -161,16 +183,16 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                     elemDocumentation.appendChild(attributeElement);
                 }
-                Element complexType = elMaker.createElement(COMPLEX_TYPE);
-                complexType.setAttribute("xmlns", "");
-                xmlElement.appendChild(complexType);
-                Element sequence = elMaker.createElement(SEQUENCE);
-                complexType.appendChild(sequence);
+                Element dataElementComplexType = elMaker.createElement(COMPLEX_TYPE);
+              //  dataElementComplexType.setAttribute("xmlns", "");
+                xmlElement.appendChild(dataElementComplexType);
+                Element dataElementEequence = elMaker.createElement(SEQUENCE);
+                dataElementComplexType.appendChild(dataElementEequence);
                 Element xmlNestedElement = elMaker.createElement(ELEMENT);
                 xmlNestedElement.setAttribute(REF, dataElement.getShortName());
                 xmlNestedElement.setAttribute("minOccurs", "1");
                 xmlNestedElement.setAttribute("maxOccurs", "1");
-                sequence.appendChild(xmlNestedElement);
+                dataElementEequence.appendChild(xmlNestedElement);
             }
 
             doc.appendChild(schemaRoot);
