@@ -252,6 +252,31 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public List<Attribute> getByDataDictEntity(DataDictEntity ownerEntity) {
+                String dataSetTableEntitySql = "select M_ATTRIBUTE.*, NAMESPACE.*, ATTRIBUTE.VALUE, ATTRIBUTE.PARENT_TYPE from M_ATTRIBUTE left outer join NAMESPACE on M_ATTRIBUTE.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID left outer join \n" +
+"ATTRIBUTE on M_ATTRIBUTE.M_ATTRIBUTE_ID=ATTRIBUTE.M_ATTRIBUTE_ID where (ATTRIBUTE.DATAELEM_ID= :entityId and \n" +
+"ATTRIBUTE.PARENT_TYPE= 'T') ";
+                String dataSetEntitySql = "select M_ATTRIBUTE.*, NAMESPACE.*, ATTRIBUTE.VALUE, ATTRIBUTE.PARENT_TYPE from M_ATTRIBUTE left outer join NAMESPACE on M_ATTRIBUTE.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID left outer join \n" +
+"ATTRIBUTE on M_ATTRIBUTE.M_ATTRIBUTE_ID=ATTRIBUTE.M_ATTRIBUTE_ID where (ATTRIBUTE.DATAELEM_ID= :entityId and \n" +
+"ATTRIBUTE.PARENT_TYPE= 'DS' and M_ATTRIBUTE.INHERIT!='0') ";
+                Map<String, Object> params = this.createParameterMap();
+               params.put("entityId",ownerEntity.getId().toString());
+        try {
+            if(ownerEntity.getType().equals(DataDictEntity.Entity.T)){
+            return this.getNamedParameterJdbcTemplate().query(dataSetTableEntitySql, params,new CombinedAttributeRowMapper());
+            }
+            if(ownerEntity.getType().equals(DataDictEntity.Entity.DS)){
+            return this.getNamedParameterJdbcTemplate().query(dataSetEntitySql, params,new CombinedAttributeRowMapper());
+            }
+            else{
+            return null;
+            }
+        } catch (IncorrectResultSizeDataAccessException ex) {
+            return null;
+        }        
+    }
+    
     
 
     protected static class MapRowMapper implements RowMapper<Map<DataDictEntity.Entity, Integer>> {

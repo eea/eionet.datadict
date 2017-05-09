@@ -101,6 +101,7 @@ public interface AttributeDao {
     
     public List<Attribute> getCombinedDataSetAndDataTableAttributes(int datasetTableId,int dataSetId);
     
+    public List<Attribute> getByDataDictEntity(DataDictEntity ownerEntity);
     
     List<Attribute> getAttributesOfDataTable(int tableId);
     

@@ -111,7 +111,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             
             try {
                 DatasetTable dsTableFull = this.datasetTableDataService.getFullDatasetTableDefinition(id);
-                System.out.println(dsTableFull);
             } catch (ResourceNotFoundException ex) {
                 Logger.getLogger(DataSetTableServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -121,21 +120,29 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             tableRootElement.appendChild(dsAnnotation);
             Element dsDocumentation = elMaker.createElement(DOCUMENTATION);
             dsDocumentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
-            dsAnnotation.appendChild(dsDocumentation);
-            List<AttributeValue> attrValues = attributeValueDao.getByOwner(new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T));
-            attrValues.addAll(attributeValueDao.getByOwner(new DataDictEntity(datasetId, DataDictEntity.Entity.DS)));
-            List<Attribute> attributes = attributeDao.getCombinedDataSetAndDataTableAttributes(dataSetTable.getId(), dataSet.getId());
+            dsAnnotation.appendChild(dsDocumentation); 
 
-            for (AttributeValue attrValue : attrValues) {
-                for (Attribute attr : attributes) {
-                    if (attr.getId() == attrValue.getAttributeId()) {
-                        Element attributeElement = elMaker.createElement(attr.getNamespace().getShortName().replace("_", ""), attr.getShortName().replace(" ", ""));
-                        attributeElement.appendChild(doc.createTextNode(attrValue.getValue()));
+            List<Attribute> dataSetTableAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T));
+            for (Attribute dataSetTableAttribute : dataSetTableAttributes) {
+                AttributeValue attributeValue = attributeValueDao.getByAttributeAndEntityId(dataSetTableAttribute.getId(), dataSetTable.getId());
+                        Element attributeElement = elMaker.createElement(dataSetTableAttribute.getNamespace().getShortName().replace("_", ""), dataSetTableAttribute.getShortName().replace(" ", ""));
+                        if(attributeValue!=null){
+                        attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
+                        }
                         dsDocumentation.appendChild(attributeElement);
-                    }
-                }
-
             }
+            List<Attribute> dataSetAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
+             for (Attribute dataSetAttribute : dataSetAttributes) {
+                AttributeValue attributeValue = attributeValueDao.getByAttributeAndEntityId(dataSetAttribute.getId(), datasetId);
+                        Element attributeElement = elMaker.createElement(dataSetAttribute.getNamespace().getShortName().replace("_", ""), dataSetAttribute.getShortName().replace(" ", ""));
+                        if(attributeValue!=null){
+                        attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
+                        }
+                        dsDocumentation.appendChild(attributeElement);
+            }
+         
+
+            
 
             for (DataElement dataElement : dataElements) {
                 Element xmlElement = elMaker.createElement("element", dataElement.getShortName());

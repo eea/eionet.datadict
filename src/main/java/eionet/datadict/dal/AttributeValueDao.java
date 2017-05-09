@@ -18,6 +18,12 @@ public interface AttributeValueDao {
     public List<AttributeValue> getByAttributeAndOwner(int attributeId, DataDictEntity owner);
 
     /**
+     * Fetches The attribute Value of the attribute with the given attribute Id and DataDict Entity Id
+     * @param attributeId
+     * @param dataDictEntityId the {@link DataDictEntity} Id which owns the attribute 
+    **/
+    public AttributeValue getByAttributeAndEntityId(int attributeId,int dataDictEntityId);
+    /**
      * Fetches the AttributeValues by a given dataset , table or element
      *
      * @param owner the {@link DataDictEntity} which owns the attribute whose

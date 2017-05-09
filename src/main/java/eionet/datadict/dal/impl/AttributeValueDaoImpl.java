@@ -1,6 +1,6 @@
 package eionet.datadict.dal.impl;
 
-
+import eionet.datadict.commons.util.IterableUtils;
 import eionet.datadict.dal.AttributeValueDao;
 import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
@@ -16,13 +16,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValueDao{
+public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValueDao {
 
     @Autowired
     public AttributeValueDaoImpl(DataSource dataSource) {
         super(dataSource);
     }
-    
+
     @Override
     public List<AttributeValue> getByAttributeAndOwner(int attributeId, DataDictEntity ddEntity) {
         String sql = "SELECT "
@@ -33,7 +33,7 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
         params.put("attributeId", attributeId);
         params.put("parentType", ddEntity.getType().toString());
         params.put("ddEntityId", ddEntity.getId());
-        
+
         try {
             return this.getNamedParameterJdbcTemplate().query(sql, params, new AttributeValueRowMapper());
         } catch (EmptyResultDataAccessException ex) {
@@ -53,22 +53,22 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
         params.put("parentType", ddEntity.getType().toString());
         params.put("ddEntityId", ddEntity.getId());
         params.put("value", value);
-        
+
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
-    
+
     @Override
     public void deleteAllAttributeValues(int attributeId, DataDictEntity ddEntity) {
         String sql = "DELETE FROM ATTRIBUTE WHERE "
                 + "M_ATTRIBUTE_ID = :attributeId "
                 + "AND PARENT_TYPE = :parentType "
                 + "AND DATAELEM_ID = :ddEntityId";
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("attributeId", attributeId);
         params.put("parentType", ddEntity.getType().toString());
         params.put("ddEntityId", ddEntity.getId());
-        
+
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
 
@@ -76,13 +76,13 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
     public void deleteAllAttributeValues(int attributeId) {
         String sql = "DELETE FROM ATTRIBUTE WHERE "
                 + "M_ATTRIBUTE_ID = :attributeId ";
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("attributeId", attributeId);
-        
+
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
-    
+
     @Override
     public void addAttributeValues(int attributeId, DataDictEntity ownerEntity, List<String> values) {
         String sql = "INSERT INTO ATTRIBUTE VALUES(:attributeId, :ownerId, :value, :ownerType)";
@@ -103,20 +103,39 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
 
     @Override
     public List<AttributeValue> getByOwner(DataDictEntity owner) {
- String sql = "SELECT "
+        String sql = "SELECT "
                 + "ATTRIBUTE.* "
                 + "FROM ATTRIBUTE "
                 + "WHERE PARENT_TYPE = :parentType AND DATAELEM_ID = :ddEntityId";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("parentType", owner.getType().toString());
         params.put("ddEntityId", owner.getId());
-        
+
         try {
             return this.getNamedParameterJdbcTemplate().query(sql, params, new AttributeValueRowMapper());
         } catch (EmptyResultDataAccessException ex) {
             return null;
-        }    }
-    
+        }
+    }
+
+    @Override
+    public AttributeValue getByAttributeAndEntityId(int attributeId, int dataDictEntityId) {
+        String sql = "SELECT "
+                + "ATTRIBUTE.* "
+                + "FROM ATTRIBUTE "
+                + "WHERE M_ATTRIBUTE_ID = :attributeId AND DATAELEM_ID = :ddEntityId";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("attributeId", attributeId);
+        params.put("ddEntityId", dataDictEntityId);
+
+        try {
+            List<AttributeValue> attrValues = getNamedParameterJdbcTemplate().query(sql, params, new AttributeValueRowMapper());
+            return IterableUtils.firstOrDefault(attrValues);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
+
     public static class AttributeValueRowMapper implements RowMapper {
 
         @Override
@@ -130,7 +149,7 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
             attrValue.setValue(rs.getString("VALUE"));
             return attrValue;
         }
-        
+
     }
-    
+
 }
