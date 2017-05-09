@@ -59,6 +59,9 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     private static final String ELEMENT = "element";
     private static final String ANNOTATION = "annotation";
     private static final String COMPLEX_TYPE = "complexType";
+    private static final String SIMPLE_TYPE ="simpleType";
+        private static final String RESTRICTION ="restriction";
+
     private static final String SEQUENCE = "sequence";
     private static final String REF = "ref";
     private static final String DOCUMENTATION = "documentation";
@@ -66,7 +69,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     private static final String NAME = "name";
     protected String appContext = Props.getRequiredProperty(PropsIF.DD_URL);
     private final static String NS_PREFIX = "xs:";
-
+   private static final String BASE="base";
     
     
     @Autowired
@@ -116,7 +119,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             }
              schemaRoot.appendChild(tableRootElement);
             Element dsAnnotation = elMaker.createElement(ANNOTATION);
-           // dsAnnotation.setAttribute("xmlns", "");
             tableRootElement.appendChild(dsAnnotation);
             Element dsDocumentation = elMaker.createElement(DOCUMENTATION);
             dsDocumentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
@@ -132,8 +134,10 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                         dsDocumentation.appendChild(attributeElement);
             }
             List<Attribute> dataSetAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
+            List<AttributeValue> dataSetAttributesValues = new ArrayList<AttributeValue>();
              for (Attribute dataSetAttribute : dataSetAttributes) {
                 AttributeValue attributeValue = attributeValueDao.getByAttributeAndEntityId(dataSetAttribute.getId(), datasetId);
+                dataSetAttributesValues.add(attributeValue);
                         Element attributeElement = elMaker.createElement(dataSetAttribute.getNamespace().getShortName().replace("_", ""), dataSetAttribute.getShortName().replace(" ", ""));
                         if(attributeValue!=null){
                         attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
@@ -168,31 +172,82 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
             for (DataElement dataElement : dataElements) {
                 Element xmlElement = elMaker.createElement("element", dataElement.getShortName());
+                String MinSize="";
+                String MaxSize="";
+                String Datatype ="";
+                String totalDigits="";
+                String MinInclusiveValue="";
+                String MaxInclusiveValue="";
 
                 schemaRoot.appendChild(xmlElement);
                 Element elemAnnotation = elMaker.createElement(ANNOTATION);
                 xmlElement.appendChild(elemAnnotation);
                 Element elemDocumentation = elMaker.createElement(DOCUMENTATION);
-           //     elemDocumentation.setAttribute("xmlns", "");
                 elemDocumentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
                 elemAnnotation.appendChild(elemDocumentation);
-                List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T));
+                List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataElement.getId(), DataDictEntity.Entity.E));
+                attributeValues.addAll(dataSetAttributesValues);
                 for (AttributeValue attributeValue : attributeValues) {
                     Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
+                   if(attribute.getShortName().equals("MinSize")){
+                    MinSize=attribute.getShortName();
+                    continue;
+                   }
+                   if(attribute.getShortName().equals("MaxSize")){
+                    MaxSize=attribute.getShortName();
+                    continue;
+                   }
+                   if(attribute.getShortName().equals("Datatype")){
+                    Datatype=attribute.getShortName();
+                    continue;
+                   }
+                  if(attribute.getShortName().equals("totalDigits")){
+                    totalDigits =attribute.getShortName();
+                    continue;
+                   }
+                  if(attribute.getShortName().equals("MinInclusiveValue")){
+                    MinInclusiveValue =attribute.getShortName();
+                    continue;
+                   }
+                  if(attribute.getShortName().equals("MaxInclusiveValue")){
+                    MaxInclusiveValue =attribute.getShortName();
+                    continue;
+                   }
                     Element attributeElement = elMaker.createElement(attribute.getNamespace().getShortName().replace("_", ""), attribute.getShortName().replace(" ", ""));
                     attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                     elemDocumentation.appendChild(attributeElement);
                 }
-                Element dataElementComplexType = elMaker.createElement(COMPLEX_TYPE);
-              //  dataElementComplexType.setAttribute("xmlns", "");
-                xmlElement.appendChild(dataElementComplexType);
-                Element dataElementEequence = elMaker.createElement(SEQUENCE);
-                dataElementComplexType.appendChild(dataElementEequence);
-                Element xmlNestedElement = elMaker.createElement(ELEMENT);
-                xmlNestedElement.setAttribute(REF, dataElement.getShortName());
-                xmlNestedElement.setAttribute("minOccurs", "1");
-                xmlNestedElement.setAttribute("maxOccurs", "1");
-                dataElementEequence.appendChild(xmlNestedElement);
+                Element dataElementSimpleType = elMaker.createElement(SIMPLE_TYPE);
+                xmlElement.appendChild(dataElementSimpleType);
+                Element dataElementRestriction = elMaker.createElement(RESTRICTION);
+                dataElementRestriction.setAttribute(BASE, NS_PREFIX+Datatype);
+                dataElementSimpleType.appendChild(dataElementRestriction);
+                if(Datatype.equals("decimal")){
+                  Element totalDigitsElement = elMaker.createElement("totalDigits");
+                  totalDigitsElement.setAttribute("value", totalDigits);
+                  dataElementRestriction.appendChild(totalDigitsElement);
+                  Element minInclusiveElement = elMaker.createElement("minInclusive");
+                  minInclusiveElement.setAttribute("value", MinInclusiveValue);
+                                    dataElementRestriction.appendChild(minInclusiveElement);
+
+                  
+                  Element maxInclusiveElement = elMaker.createElement("maxInclusive");
+                  maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
+                                    dataElementRestriction.appendChild(maxInclusiveElement);
+
+                }
+                if(Datatype.equals("string")){
+                  Element minLengthElement = elMaker.createElement("minLength");
+                  minLengthElement.setAttribute("value", MinSize);
+                                                      dataElementRestriction.appendChild(minLengthElement);
+
+                  Element maxLengthElement = elMaker.createElement("maxLength");
+                  maxLengthElement.setAttribute("value", MaxSize);
+                
+                                                      dataElementRestriction.appendChild(maxLengthElement);
+
+                }
+             
             }
 
             doc.appendChild(schemaRoot);
