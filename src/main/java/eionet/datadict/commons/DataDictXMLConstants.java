@@ -1,0 +1,38 @@
+package eionet.datadict.commons;
+
+import eionet.datadict.model.Namespace;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+
+/**
+ *
+ * @author Vasilis Skiadas<vs@eworx.gr>
+ */
+public class DataDictXMLConstants {
+
+    public static final String DATASETS_NAMESPACE_ID = "1";
+    public static final String ISOATTRS_NAMESPACE_ID = "2";
+    public static final String DDATTRS_NAMESPACE_ID = "3";
+    public static final String TARGET_NAMESPACE = "targetNamespace";
+    public static final String ELEMENT = "element";
+    public static final String ANNOTATION = "annotation";
+    public static final String COMPLEX_TYPE = "complexType";
+    public static final String SIMPLE_TYPE = "simpleType";
+    public static final String RESTRICTION = "restriction";
+    public static final String ATTRIBUTE = "attribute";
+    public static final String DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME = "schema-dst-";
+    public static final String TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME = "schema-tbl-";
+    public static final String XSD_FILE_EXTENSION = ".xsd";
+    public static final String SEQUENCE = "sequence";
+    public static final String REF = "ref";
+    public static final String DOCUMENTATION = "documentation";
+    public static final String DEFAULT_XML_LANGUAGE = "en";
+    public static final String NAME = "name";
+    public static final String APP_CONTEXT = Props.getRequiredProperty(PropsIF.DD_URL);
+    public final static String NS_PREFIX = "xs:";
+    public static final String BASE = "base";
+    public static final String ISOATTRS_NAMESPACE = APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + ISOATTRS_NAMESPACE_ID;
+    public static final String DDATTRS_NAMESPACE = APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + DDATTRS_NAMESPACE_ID;
+    public static final String NAMESPACE = "namespace";
+    public static final String SCHEMA_LOCATION = "schemaLocation";
+}

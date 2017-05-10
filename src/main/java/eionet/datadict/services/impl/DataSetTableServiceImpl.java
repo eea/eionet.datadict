@@ -1,5 +1,6 @@
 package eionet.datadict.services.impl;
 
+import eionet.datadict.commons.DataDictXMLConstants;
 import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.AttributeValueDao;
 import eionet.datadict.dal.DataElementDao;
@@ -16,8 +17,6 @@ import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.services.DataSetTableService;
 import eionet.datadict.services.data.DatasetTableDataService;
-import eionet.util.Props;
-import eionet.util.PropsIF;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -45,29 +44,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     private final DatasetDao datasetDao;
     private final DatasetTableDataService datasetTableDataService;
 
-    private static final String ISOATTRS_NAMESPACE_ID = "2";
-    private static final String DDATTRS_NAMESPACE_ID = "3";
-
-    // BELOW Static variables should be moved to an utility class  , because they are common variables for many cases
-    private static final String TARGET_NAMESPACE = "targetNamespace";
-    private static final String ELEMENT = "element";
-    private static final String ANNOTATION = "annotation";
-    private static final String COMPLEX_TYPE = "complexType";
-    private static final String SIMPLE_TYPE = "simpleType";
-    private static final String RESTRICTION = "restriction";
-    private static final String ATTRIBUTE = "attribute";
-    private static final String TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME = "schema-tbl-";
-    private static final String XSD_FILE_EXTENSION = ".xsd";
-    private static final String SEQUENCE = "sequence";
-    private static final String REF = "ref";
-    private static final String DOCUMENTATION = "documentation";
-    private static final String DEFAULT_XML_LANGUAGE = "en";
-    private static final String NAME = "name";
-    protected static String appContext = Props.getRequiredProperty(PropsIF.DD_URL);
-    private final static String NS_PREFIX = "xs:";
-    private static final String BASE = "base";
-    private static final String ISOATTRS_NAMESPACE = appContext + "/" + Namespace.URL_PREFIX + "/" + ISOATTRS_NAMESPACE_ID;
-    private static final String DDATTRS_NAMESPACE = appContext + "/" + Namespace.URL_PREFIX + "/" + DDATTRS_NAMESPACE_ID;
 
     @Autowired
     public DataSetTableServiceImpl(DatasetTableDao datasetTableDao, DataElementDao dataElementDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DatasetDao datasetDao, DatasetTableDataService datasetTableDataService) {
@@ -89,15 +65,15 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         try {
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
-            NameTypeElementMaker elMaker = new NameTypeElementMaker(NS_PREFIX, doc);
-            Element schemaRoot = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, NS_PREFIX + "schema");
+            NameTypeElementMaker elMaker = new NameTypeElementMaker(DataDictXMLConstants.NS_PREFIX, doc);
+            Element schemaRoot = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI,DataDictXMLConstants.NS_PREFIX + "schema");
             schemaRoot.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance",
                     "xsi:schemaLocation", "http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd");
             schemaRoot.setAttribute("xmlns:xs", "http://www.w3.org/2001/XMLSchema");
-            schemaRoot.setAttribute("xmlns", appContext + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
-            schemaRoot.setAttribute("xmlns:isoattrs", ISOATTRS_NAMESPACE);
-            schemaRoot.setAttribute("xmlns:ddattrs", DDATTRS_NAMESPACE);
-            schemaRoot.setAttribute(TARGET_NAMESPACE, appContext + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
+            schemaRoot.setAttribute("xmlns", DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
+            schemaRoot.setAttribute("xmlns:isoattrs",DataDictXMLConstants.ISOATTRS_NAMESPACE);
+            schemaRoot.setAttribute("xmlns:ddattrs", DataDictXMLConstants.DDATTRS_NAMESPACE);
+            schemaRoot.setAttribute(DataDictXMLConstants.TARGET_NAMESPACE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
             schemaRoot.setAttribute("elementFormDefault", "qualified");
             schemaRoot.setAttribute("attributeFormDefault", "unqualified");
             List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dataSetTable.getId());
@@ -111,10 +87,10 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 Logger.getLogger(DataSetTableServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
             schemaRoot.appendChild(tableRootElement);
-            Element dsAnnotation = elMaker.createElement(ANNOTATION);
+            Element dsAnnotation = elMaker.createElement(DataDictXMLConstants.ANNOTATION);
             tableRootElement.appendChild(dsAnnotation);
-            Element dsDocumentation = elMaker.createElement(DOCUMENTATION);
-            dsDocumentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
+            Element dsDocumentation = elMaker.createElement(DataDictXMLConstants.DOCUMENTATION);
+            dsDocumentation.setAttribute("xml:lang", DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
             dsAnnotation.appendChild(dsDocumentation);
 
             List<Attribute> dataSetTableAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T));
@@ -139,29 +115,24 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 dsDocumentation.appendChild(attributeElement);
             }
 
-            Element complexType = elMaker.createElement(COMPLEX_TYPE);
+            Element complexType = elMaker.createElement(DataDictXMLConstants.COMPLEX_TYPE);
 
             tableRootElement.appendChild(complexType);
 
-            Element sequence = elMaker.createElement(SEQUENCE);
+            Element sequence = elMaker.createElement(DataDictXMLConstants.SEQUENCE);
             complexType.appendChild(sequence);
-            Element rowElement = elMaker.createElement(ELEMENT);
-            rowElement.setAttribute(NAME, "Row");
+            Element rowElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
+            rowElement.setAttribute(DataDictXMLConstants.NAME, "Row");
             rowElement.setAttribute("minOccurs", "1");
             rowElement.setAttribute("maxOccurs", "unbounded");
             sequence.appendChild(rowElement);
-            Element rowComplexType = elMaker.createElement(COMPLEX_TYPE);
+            Element rowComplexType = elMaker.createElement(DataDictXMLConstants.COMPLEX_TYPE);
             rowElement.appendChild(rowComplexType);
-            Element rowSequence = elMaker.createElement(SEQUENCE);
+            Element rowSequence = elMaker.createElement(DataDictXMLConstants.SEQUENCE);
             rowComplexType.appendChild(rowSequence);
-            Element rowStatusAttribute = elMaker.createElement(ATTRIBUTE);
-            rowStatusAttribute.setAttribute(NAME, "status");
-            rowStatusAttribute.setAttribute("type", "xs:string");
-            rowStatusAttribute.setAttribute("use", "optional");
-            rowComplexType.appendChild(rowStatusAttribute);
             for (DataElement dataElement : dataElements) {
-                Element tableElement = elMaker.createElement(ELEMENT);
-                tableElement.setAttribute(REF, dataElement.getShortName());
+                Element tableElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
+                tableElement.setAttribute(DataDictXMLConstants.REF, dataElement.getShortName());
                 tableElement.setAttribute("minOccurs", "1");
                 tableElement.setAttribute("maxOccurs", "1");
                 rowSequence.appendChild(tableElement);
@@ -176,10 +147,10 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 String MaxInclusiveValue = "";
 
                 schemaRoot.appendChild(xmlElement);
-                Element elemAnnotation = elMaker.createElement(ANNOTATION);
+                Element elemAnnotation = elMaker.createElement(DataDictXMLConstants.ANNOTATION);
                 xmlElement.appendChild(elemAnnotation);
-                Element elemDocumentation = elMaker.createElement(DOCUMENTATION);
-                elemDocumentation.setAttribute("xml:lang", DEFAULT_XML_LANGUAGE);
+                Element elemDocumentation = elMaker.createElement(DataDictXMLConstants.DOCUMENTATION);
+                elemDocumentation.setAttribute("xml:lang", DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
                 elemAnnotation.appendChild(elemDocumentation);
                 List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataElement.getId(), DataDictEntity.Entity.E));
                 attributeValues.addAll(dataSetAttributesValues);
@@ -209,10 +180,10 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                     elemDocumentation.appendChild(attributeElement);
                 }
-                Element dataElementSimpleType = elMaker.createElement(SIMPLE_TYPE);
+                Element dataElementSimpleType = elMaker.createElement(DataDictXMLConstants.SIMPLE_TYPE);
                 xmlElement.appendChild(dataElementSimpleType);
-                Element dataElementRestriction = elMaker.createElement(RESTRICTION);
-                dataElementRestriction.setAttribute(BASE, NS_PREFIX + Datatype);
+                Element dataElementRestriction = elMaker.createElement(DataDictXMLConstants.RESTRICTION);
+                dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.NS_PREFIX + Datatype);
                 dataElementSimpleType.appendChild(dataElementRestriction);
                 if (Datatype.equals("decimal")) {
                     Element totalDigitsElement = elMaker.createElement("totalDigits");
@@ -258,21 +229,19 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         try {
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
-            NameTypeElementMaker elMaker = new NameTypeElementMaker(NS_PREFIX, doc);
-            Element schemaRoot = doc.createElement( dataSetTable.getShortName());
-            schemaRoot.setAttribute("xmlns", appContext + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
+            NameTypeElementMaker elMaker = new NameTypeElementMaker(DataDictXMLConstants.NS_PREFIX, doc);
+            Element schemaRoot = doc.createElement(dataSetTable.getShortName());
+            schemaRoot.setAttribute("xmlns", DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
             schemaRoot.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-            schemaRoot.setAttribute("xsi:schemaLocation", appContext + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId() + "  " + TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataSetTable.getId() + XSD_FILE_EXTENSION);
+            schemaRoot.setAttribute("xsi:schemaLocation", DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataSetTable.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
             List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dataSetTable.getId());
-           String tableNS = appContext + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId();
-               // Element tableElement = doc.createElementNS(tableNS, dataSetTable.getShortName());
-                Element row = doc.createElementNS(tableNS,"Row");
-            //    tableElement.appendChild(row);
-                schemaRoot.appendChild(row);
+            String tableNS = DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId();
+            Element row = doc.createElementNS(tableNS, "Row");
+            schemaRoot.appendChild(row);
             for (DataElement dataElement : dataElements) {
-                 Element xmlDataElement = doc.createElementNS(tableNS, dataElement.getShortName());
-                    xmlDataElement.appendChild(doc.createTextNode(""));
-                    row.appendChild(xmlDataElement);
+                Element xmlDataElement = doc.createElementNS(tableNS, dataElement.getShortName());
+                xmlDataElement.appendChild(doc.createTextNode(""));
+                row.appendChild(xmlDataElement);
             }
             doc.appendChild(schemaRoot);
             return doc;
@@ -297,9 +266,9 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         public Element createElement(String elementName, String nameAttrVal, String typeAttrVal, String nameSpacePrefix) {
             Element element;
             if (nameSpacePrefix != null && nameSpacePrefix.equals("isoattrs")) {
-                element = doc.createElementNS(ISOATTRS_NAMESPACE, nameSpacePrefix + ":" + elementName);
+                element = doc.createElementNS(DataDictXMLConstants.ISOATTRS_NAMESPACE, nameSpacePrefix + ":" + elementName);
             } else if (nameSpacePrefix != null && nameSpacePrefix.equals("ddattrs")) {
-                element = doc.createElementNS(DDATTRS_NAMESPACE, nameSpacePrefix + ":" + elementName);
+                element = doc.createElementNS(DataDictXMLConstants.DDATTRS_NAMESPACE, nameSpacePrefix + ":" + elementName);
             } else {
                 element = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, nsPrefix + elementName);
 
