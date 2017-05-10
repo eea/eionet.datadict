@@ -65,8 +65,8 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         try {
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
-            NameTypeElementMaker elMaker = new NameTypeElementMaker(DataDictXMLConstants.NS_PREFIX, doc);
-            Element schemaRoot = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI,DataDictXMLConstants.NS_PREFIX + "schema");
+            NameTypeElementMaker elMaker = new NameTypeElementMaker(DataDictXMLConstants.XS_PREFIX, doc);
+            Element schemaRoot = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI,DataDictXMLConstants.XS_PREFIX + "schema");
             schemaRoot.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance",
                     "xsi:schemaLocation", "http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd");
             schemaRoot.setAttribute("xmlns:xs", "http://www.w3.org/2001/XMLSchema");
@@ -183,7 +183,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 Element dataElementSimpleType = elMaker.createElement(DataDictXMLConstants.SIMPLE_TYPE);
                 xmlElement.appendChild(dataElementSimpleType);
                 Element dataElementRestriction = elMaker.createElement(DataDictXMLConstants.RESTRICTION);
-                dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.NS_PREFIX + Datatype);
+                dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + Datatype);
                 dataElementSimpleType.appendChild(dataElementRestriction);
                 if (Datatype.equals("decimal")) {
                     Element totalDigitsElement = elMaker.createElement("totalDigits");
@@ -229,7 +229,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         try {
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
-            NameTypeElementMaker elMaker = new NameTypeElementMaker(DataDictXMLConstants.NS_PREFIX, doc);
+            NameTypeElementMaker elMaker = new NameTypeElementMaker(DataDictXMLConstants.XS_PREFIX, doc);
             Element schemaRoot = doc.createElement(dataSetTable.getShortName());
             schemaRoot.setAttribute("xmlns", DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
             schemaRoot.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");

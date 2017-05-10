@@ -29,10 +29,14 @@ public class DataDictXMLConstants {
     public static final String DEFAULT_XML_LANGUAGE = "en";
     public static final String NAME = "name";
     public static final String APP_CONTEXT = Props.getRequiredProperty(PropsIF.DD_URL);
-    public final static String NS_PREFIX = "xs:";
+    public static final String XS_PREFIX = "xs:";
+    public static final String XSI_PREFIX= "xsi:";
     public static final String BASE = "base";
     public static final String ISOATTRS_NAMESPACE = APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + ISOATTRS_NAMESPACE_ID;
     public static final String DDATTRS_NAMESPACE = APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + DDATTRS_NAMESPACE_ID;
     public static final String NAMESPACE = "namespace";
     public static final String SCHEMA_LOCATION = "schemaLocation";
+    public static final String IMPORT ="import";
+    public static final String SCHEMA="schema";
+    public static final String ROW="row";
 }
