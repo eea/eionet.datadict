@@ -55,6 +55,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     private static final String COMPLEX_TYPE = "complexType";
     private static final String SIMPLE_TYPE = "simpleType";
     private static final String RESTRICTION = "restriction";
+    private static final String ATTRIBUTE ="attribute";
 
     private static final String SEQUENCE = "sequence";
     private static final String REF = "ref";
@@ -152,7 +153,11 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             rowElement.appendChild(rowComplexType);
             Element rowSequence = elMaker.createElement(SEQUENCE);
             rowComplexType.appendChild(rowSequence);
-
+            Element rowStatusAttribute = elMaker.createElement(ATTRIBUTE);
+            rowStatusAttribute.setAttribute(NAME, "status");
+            rowStatusAttribute.setAttribute("type", "xs:string");
+            rowStatusAttribute.setAttribute("use", "optional");
+            rowComplexType.appendChild(rowStatusAttribute);
             for (DataElement dataElement : dataElements) {
                 Element tableElement = elMaker.createElement(ELEMENT);
                 tableElement.setAttribute(REF, dataElement.getShortName());
