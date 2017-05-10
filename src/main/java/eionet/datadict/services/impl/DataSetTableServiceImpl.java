@@ -45,17 +45,11 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     private final DatasetDao datasetDao;
     private final DatasetTableDataService datasetTableDataService;
 
-    private static final String DATASETS_NAMESPACE_ID = "1";
     private static final String ISOATTRS_NAMESPACE_ID = "2";
     private static final String DDATTRS_NAMESPACE_ID = "3";
 
     // BELOW Static variables should be moved to an utility class  , because they are common variables for many cases
     private static final String TARGET_NAMESPACE = "targetNamespace";
-    private static final String NAMESPACE = "namespace";
-    private static final String SCHEMA_LOCATION = "schemaLocation";
-    private static final String TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME = "schema-tbl-";
-    private static final String DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME = "schema-dst-";
-    private static final String XSD_FILE_EXTENSION = ".xsd";
     private static final String ELEMENT = "element";
     private static final String ANNOTATION = "annotation";
     private static final String COMPLEX_TYPE = "complexType";
@@ -70,8 +64,9 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     protected static String appContext = Props.getRequiredProperty(PropsIF.DD_URL);
     private final static String NS_PREFIX = "xs:";
     private static final String BASE = "base";
-    private static final String ISOATTRS_NAMESPACE=appContext + "/" + Namespace.URL_PREFIX + "/" + ISOATTRS_NAMESPACE_ID;
-    private static final String DDATTRS_NAMESPACE=appContext + "/" + Namespace.URL_PREFIX + "/" + DDATTRS_NAMESPACE_ID;
+    private static final String ISOATTRS_NAMESPACE = appContext + "/" + Namespace.URL_PREFIX + "/" + ISOATTRS_NAMESPACE_ID;
+    private static final String DDATTRS_NAMESPACE = appContext + "/" + Namespace.URL_PREFIX + "/" + DDATTRS_NAMESPACE_ID;
+
     @Autowired
     public DataSetTableServiceImpl(DatasetTableDao datasetTableDao, DataElementDao dataElementDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DatasetDao datasetDao, DatasetTableDataService datasetTableDataService) {
         this.datasetTableDao = datasetTableDao;
@@ -88,7 +83,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
         DatasetTable dataSetTable = this.datasetTableDao.getById(id);
-        
+
         try {
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
@@ -98,7 +93,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     "xsi:schemaLocation", "http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd");
             schemaRoot.setAttribute("xmlns:xs", "http://www.w3.org/2001/XMLSchema");
             schemaRoot.setAttribute("xmlns", appContext + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
-            schemaRoot.setAttribute("xmlns:isoattrs",ISOATTRS_NAMESPACE);
+            schemaRoot.setAttribute("xmlns:isoattrs", ISOATTRS_NAMESPACE);
             schemaRoot.setAttribute("xmlns:ddattrs", DDATTRS_NAMESPACE);
             schemaRoot.setAttribute(TARGET_NAMESPACE, appContext + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
             schemaRoot.setAttribute("elementFormDefault", "qualified");
@@ -123,8 +118,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             List<Attribute> dataSetTableAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T));
             for (Attribute dataSetTableAttribute : dataSetTableAttributes) {
                 AttributeValue attributeValue = attributeValueDao.getByAttributeAndEntityId(dataSetTableAttribute.getId(), dataSetTable.getId());
-              //  Element attributeElement = elMaker.createElement(dataSetTableAttribute.getNamespace().getShortName().replace("_", ""),null, dataSetTableAttribute.getShortName().replace(" ", ""));
-                            Element attributeElement = elMaker.createElement(dataSetTableAttribute.getShortName().replace(" ", ""),null,dataSetTableAttribute.getNamespace().getShortName().replace("_", "") );
+                Element attributeElement = elMaker.createElement(dataSetTableAttribute.getShortName().replace(" ", ""), null, dataSetTableAttribute.getNamespace().getShortName().replace("_", ""));
 
                 if (attributeValue != null) {
                     attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
@@ -136,7 +130,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             for (Attribute dataSetAttribute : dataSetAttributes) {
                 AttributeValue attributeValue = attributeValueDao.getByAttributeAndEntityId(dataSetAttribute.getId(), datasetId);
                 dataSetAttributesValues.add(attributeValue);
-                Element attributeElement = elMaker.createElement(dataSetAttribute.getShortName().replace(" ", ""),null,dataSetAttribute.getNamespace().getShortName().replace("_", "") );
+                Element attributeElement = elMaker.createElement(dataSetAttribute.getShortName().replace(" ", ""), null, dataSetAttribute.getNamespace().getShortName().replace("_", ""));
                 if (attributeValue != null) {
                     attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                 }
@@ -205,7 +199,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                         MaxInclusiveValue = attributeValue.getValue();
                         continue;
                     }
-                    Element attributeElement = elMaker.createElement(attribute.getShortName().replace(" ", ""),null, attribute.getNamespace().getShortName().replace("_", ""));
+                    Element attributeElement = elMaker.createElement(attribute.getShortName().replace(" ", ""), null, attribute.getNamespace().getShortName().replace("_", ""));
                     attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                     elemDocumentation.appendChild(attributeElement);
                 }
@@ -262,12 +256,11 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
         public Element createElement(String elementName, String nameAttrVal, String typeAttrVal, String nameSpacePrefix) {
             Element element;
-            if(nameSpacePrefix!=null &&nameSpacePrefix.equals("isoattrs")) {
-                element = doc.createElementNS( ISOATTRS_NAMESPACE, nameSpacePrefix +":"+ elementName);
-            }else if(nameSpacePrefix!=null &&nameSpacePrefix.equals("ddattrs")) {
-                element = doc.createElementNS(DDATTRS_NAMESPACE, nameSpacePrefix +":"+ elementName);
-            }
-            else  {
+            if (nameSpacePrefix != null && nameSpacePrefix.equals("isoattrs")) {
+                element = doc.createElementNS(ISOATTRS_NAMESPACE, nameSpacePrefix + ":" + elementName);
+            } else if (nameSpacePrefix != null && nameSpacePrefix.equals("ddattrs")) {
+                element = doc.createElementNS(DDATTRS_NAMESPACE, nameSpacePrefix + ":" + elementName);
+            } else {
                 element = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, nsPrefix + elementName);
 
             }
