@@ -175,7 +175,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 String MinSize="";
                 String MaxSize="";
                 String Datatype ="";
-                String totalDigits="";
                 String MinInclusiveValue="";
                 String MaxInclusiveValue="";
 
@@ -190,27 +189,23 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 for (AttributeValue attributeValue : attributeValues) {
                     Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
                    if(attribute.getShortName().equals("MinSize")){
-                    MinSize=attribute.getShortName();
+                    MinSize=attributeValue.getValue();
                     continue;
                    }
                    if(attribute.getShortName().equals("MaxSize")){
-                    MaxSize=attribute.getShortName();
+                    MaxSize=attributeValue.getValue();
                     continue;
                    }
                    if(attribute.getShortName().equals("Datatype")){
-                    Datatype=attribute.getShortName();
-                    continue;
-                   }
-                  if(attribute.getShortName().equals("totalDigits")){
-                    totalDigits =attribute.getShortName();
+                    Datatype=attributeValue.getValue();
                     continue;
                    }
                   if(attribute.getShortName().equals("MinInclusiveValue")){
-                    MinInclusiveValue =attribute.getShortName();
+                    MinInclusiveValue =attributeValue.getValue();
                     continue;
                    }
                   if(attribute.getShortName().equals("MaxInclusiveValue")){
-                    MaxInclusiveValue =attribute.getShortName();
+                    MaxInclusiveValue =attributeValue.getValue();
                     continue;
                    }
                     Element attributeElement = elMaker.createElement(attribute.getNamespace().getShortName().replace("_", ""), attribute.getShortName().replace(" ", ""));
@@ -224,7 +219,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 dataElementSimpleType.appendChild(dataElementRestriction);
                 if(Datatype.equals("decimal")){
                   Element totalDigitsElement = elMaker.createElement("totalDigits");
-                  totalDigitsElement.setAttribute("value", totalDigits);
+                  totalDigitsElement.setAttribute("value", MaxSize);
                   dataElementRestriction.appendChild(totalDigitsElement);
                   Element minInclusiveElement = elMaker.createElement("minInclusive");
                   minInclusiveElement.setAttribute("value", MinInclusiveValue);
@@ -235,6 +230,11 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                   maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
                                     dataElementRestriction.appendChild(maxInclusiveElement);
 
+                }
+                if(Datatype.equals("integer")){
+                  Element totalDigitsElement = elMaker.createElement("totalDigits");
+                  totalDigitsElement.setAttribute("value", MaxSize);
+                  dataElementRestriction.appendChild(totalDigitsElement);
                 }
                 if(Datatype.equals("string")){
                   Element minLengthElement = elMaker.createElement("minLength");
