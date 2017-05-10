@@ -70,6 +70,8 @@ public class DataSetServiceImpl implements DataSetService {
             schemaRoot.setAttribute(DataDictXMLConstants.TARGET_NAMESPACE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
             schemaRoot.setAttribute("elementFormDefault", "qualified");
             schemaRoot.setAttribute("attributeFormDefault", "unqualified");
+            schemaRoot.setAttribute("xmlns:dd" + dataset.getCorrespondingNS().getId(), DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
+
             List<DatasetTable> dsTables = datasetTableDao.getAllByDatasetId(dataset.getId());
             for (DatasetTable dsTable : dsTables) {
                 schemaRoot.setAttribute("xmlns:dd" + dsTable.getCorrespondingNS().getId(), DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId());
