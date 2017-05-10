@@ -55,8 +55,9 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     private static final String COMPLEX_TYPE = "complexType";
     private static final String SIMPLE_TYPE = "simpleType";
     private static final String RESTRICTION = "restriction";
-    private static final String ATTRIBUTE ="attribute";
-
+    private static final String ATTRIBUTE = "attribute";
+    private static final String TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME = "schema-tbl-";
+    private static final String XSD_FILE_EXTENSION = ".xsd";
     private static final String SEQUENCE = "sequence";
     private static final String REF = "ref";
     private static final String DOCUMENTATION = "documentation";
@@ -247,6 +248,40 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new XmlExportException(ex);
         }
+    }
+
+    @Override
+    public Document getDataSetTableXMLInstance(int id) throws XmlExportException {
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = null;
+        DatasetTable dataSetTable = this.datasetTableDao.getById(id);
+        try {
+            docBuilder = docFactory.newDocumentBuilder();
+            Document doc = docBuilder.newDocument();
+            NameTypeElementMaker elMaker = new NameTypeElementMaker(NS_PREFIX, doc);
+            Element schemaRoot = doc.createElement( dataSetTable.getShortName());
+            schemaRoot.setAttribute("xmlns", appContext + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
+            schemaRoot.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+            schemaRoot.setAttribute("xsi:schemaLocation", appContext + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId() + "  " + TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataSetTable.getId() + XSD_FILE_EXTENSION);
+            List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dataSetTable.getId());
+           String tableNS = appContext + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId();
+               // Element tableElement = doc.createElementNS(tableNS, dataSetTable.getShortName());
+                Element row = doc.createElementNS(tableNS,"Row");
+            //    tableElement.appendChild(row);
+                schemaRoot.appendChild(row);
+            for (DataElement dataElement : dataElements) {
+                 Element xmlDataElement = doc.createElementNS(tableNS, dataElement.getShortName());
+                    xmlDataElement.appendChild(doc.createTextNode(""));
+                    row.appendChild(xmlDataElement);
+            }
+            doc.appendChild(schemaRoot);
+            return doc;
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(DataSetTableServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new XmlExportException(ex);
+
+        }
+
     }
 
     private static class NameTypeElementMaker {

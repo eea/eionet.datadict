@@ -68,6 +68,28 @@ public class DatasetTableController {
         outStream.close();
 
     }
+       @RequestMapping(value = "/instance/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    @ResponseBody
+    public void getDataSetTableInstance(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
+
+        Document xml = this.dataSetTableService.getDataSetTableXMLInstance(id);
+        String fileName = "table"+id+"-instance.xml";
+        response.setContentType("application/xml");
+        response.setHeader("Content-Disposition", "attachment;filename="+fileName);
+        ServletOutputStream outStream = response.getOutputStream();
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+        DOMSource source = new DOMSource(xml);
+        StreamResult result = new StreamResult(outStream);
+        transformer.transform(source, result);
+        outStream.flush();
+        outStream.close();
+    }
 
     @ExceptionHandler(EmptyParameterException.class)
     public ResponseEntity<HashMap<String, String>> HandleEmptyParameterException(Exception exception) {

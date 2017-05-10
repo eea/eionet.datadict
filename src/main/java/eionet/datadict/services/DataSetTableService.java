@@ -10,4 +10,6 @@ import org.w3c.dom.Document;
 public interface DataSetTableService {
 
     Document getDataSetTableXMLSchema(int id) throws XmlExportException;
+    
+    Document getDataSetTableXMLInstance(int id) throws XmlExportException;
 }
