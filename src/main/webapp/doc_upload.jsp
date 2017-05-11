@@ -29,7 +29,7 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
             }
             
             qryStr = "ds_id=<%=dstID%>&idf=<%=idf%>&title=" + document.forms["form1"].elements["title"].value + "&file=" + f;
-            document.forms["form1"].action = document.forms["form1"].action + "?" + qryStr;
+            document.forms["form1"].action = document.forms["form1"].action + "?" + encodeURI(qryStr);
             document.forms["form1"].submit();
         }
     // ]]>
