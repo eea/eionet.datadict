@@ -12,7 +12,7 @@ import org.w3c.dom.Document;
 public interface DataSetService {
 
     
-   Document getDataSetXMLSchema(int id) throws  XmlExportException;    
+   Document getDataSetXMLSchema(int id) throws  XmlExportException , ResourceNotFoundException;    
    
    Document getDataSetXMLInstance(int id) throws XmlExportException;
    

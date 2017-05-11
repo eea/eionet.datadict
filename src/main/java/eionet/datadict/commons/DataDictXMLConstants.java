@@ -31,6 +31,7 @@ public class DataDictXMLConstants {
     public static final String DOCUMENTATION = "documentation";
     public static final String DEFAULT_XML_LANGUAGE = "en";
     public static final String NAME = "name";
+    public static final String TYPE= "type";
     public static final String APP_CONTEXT = Props.getRequiredProperty(PropsIF.DD_URL);
     public static final String XS_PREFIX = "xs";
     public static final String DD_PREFIX = "dd";

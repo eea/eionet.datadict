@@ -42,7 +42,6 @@ public class DataSetServiceImpl implements DataSetService {
     private final AttributeDao attributeDao;
     private final DataElementDao dataElementDao;
 
-
     @Autowired
     public DataSetServiceImpl(DatasetDao datasetDao, DatasetTableDao datasetTableDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DataElementDao dataElementDao) {
         this.datasetDao = datasetDao;
@@ -53,54 +52,55 @@ public class DataSetServiceImpl implements DataSetService {
     }
 
     @Override
-    public Document getDataSetXMLSchema(int id) throws XmlExportException {
+    public Document getDataSetXMLSchema(int id) throws XmlExportException, ResourceNotFoundException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
+        DataSet dataset = this.getDataset(id);
+        List<DatasetTable> dsTables = datasetTableDao.getAllByDatasetId(dataset.getId());
+        List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataset.getId(), DataDictEntity.Entity.DS));
+
         try {
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
-            Element schemaRoot = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, DataDictXMLConstants.XS_PREFIX +":"+ DataDictXMLConstants.SCHEMA);
+            Element schemaRoot = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.SCHEMA);
             schemaRoot.setAttributeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
-                    DataDictXMLConstants.XSI_PREFIX+":"+DataDictXMLConstants.SCHEMA_LOCATION, XMLConstants.W3C_XML_SCHEMA_NS_URI+" http://www.w3.org/2001/XMLSchema.xsd");
-            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE+ ":"+DataDictXMLConstants.XS_PREFIX, "http://www.w3.org/2001/XMLSchema");
-            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE+":"+DataDictXMLConstants.DATASETS , DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + DataDictXMLConstants.DATASETS_NAMESPACE_ID);
-            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE+":"+DataDictXMLConstants.ISO_ATTRS, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + DataDictXMLConstants.ISOATTRS_NAMESPACE_ID);
-            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE+":"+DataDictXMLConstants.DD_ATTRS, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + DataDictXMLConstants.DDATTRS_NAMESPACE_ID);
-            DataSet dataset = this.getDataset(id);
+                    DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, XMLConstants.W3C_XML_SCHEMA_NS_URI + XMLConstants.W3C_XML_SCHEMA_NS_URI+".xsd");
+            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.XS_PREFIX, XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.DATASETS, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + DataDictXMLConstants.DATASETS_NAMESPACE_ID);
+            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.ISO_ATTRS, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + DataDictXMLConstants.ISOATTRS_NAMESPACE_ID);
+            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.DD_ATTRS, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + DataDictXMLConstants.DDATTRS_NAMESPACE_ID);
             schemaRoot.setAttribute(DataDictXMLConstants.TARGET_NAMESPACE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
             schemaRoot.setAttribute("elementFormDefault", "qualified");
             schemaRoot.setAttribute("attributeFormDefault", "unqualified");
-            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE+ ":"+DataDictXMLConstants.DD_PREFIX + dataset.getCorrespondingNS().getId(), DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
+            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.DD_PREFIX + dataset.getCorrespondingNS().getId(), DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
 
-            List<DatasetTable> dsTables = datasetTableDao.getAllByDatasetId(dataset.getId());
             for (DatasetTable dsTable : dsTables) {
-                schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE+ ":"+DataDictXMLConstants.DD_PREFIX + dsTable.getCorrespondingNS().getId(), DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId());
-                Element importElement = doc.createElement(DataDictXMLConstants.XS_PREFIX +":"+ DataDictXMLConstants.IMPORT);
+                schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.DD_PREFIX + dsTable.getCorrespondingNS().getId(), DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId());
+                Element importElement = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.IMPORT);
                 importElement.setAttribute(DataDictXMLConstants.NAMESPACE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId());
                 importElement.setAttribute(DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dsTable.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
                 schemaRoot.appendChild(importElement);
             }
-            Element element = doc.createElement(DataDictXMLConstants.XS_PREFIX +":"+ DataDictXMLConstants.ELEMENT);
+            Element element = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.ELEMENT);
             element.setAttribute(DataDictXMLConstants.NAME, dataset.getIdentifier());
             schemaRoot.appendChild(element);
-            Element annotation = doc.createElement(DataDictXMLConstants.XS_PREFIX +":"+ DataDictXMLConstants.ANNOTATION);
+            Element annotation = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.ANNOTATION);
             element.appendChild(annotation);
-            Element documentation = doc.createElement(DataDictXMLConstants.XS_PREFIX+":" + DataDictXMLConstants.DOCUMENTATION);
-            documentation.setAttribute(XMLConstants.XML_NS_PREFIX+":"+DataDictXMLConstants.LANGUAGE_PREFIX , DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
+            Element documentation = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.DOCUMENTATION);
+            documentation.setAttribute(XMLConstants.XML_NS_PREFIX + ":" + DataDictXMLConstants.LANGUAGE_PREFIX, DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
             annotation.appendChild(documentation);
-            List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataset.getId(), DataDictEntity.Entity.DS));
             for (AttributeValue attributeValue : attributeValues) {
                 Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
                 Element attributeElement = doc.createElement(attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
                 attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                 documentation.appendChild(attributeElement);
             }
-            Element complexType = doc.createElement(DataDictXMLConstants.XS_PREFIX+":" + DataDictXMLConstants.COMPLEX_TYPE);
+            Element complexType = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.COMPLEX_TYPE);
             element.appendChild(complexType);
-            Element sequence = doc.createElement(DataDictXMLConstants.XS_PREFIX +":"+ DataDictXMLConstants.SEQUENCE);
+            Element sequence = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.SEQUENCE);
             complexType.appendChild(sequence);
             for (DatasetTable dsTable : dsTables) {
-                Element tableElement = doc.createElement(DataDictXMLConstants.XS_PREFIX +":"+ DataDictXMLConstants.ELEMENT);
+                Element tableElement = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.ELEMENT);
                 tableElement.setAttribute(DataDictXMLConstants.REF, DataDictXMLConstants.DD_PREFIX.concat(dsTable.getCorrespondingNS().getId().toString()).concat(":").concat(dsTable.getShortName()));
                 tableElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, "1");
                 tableElement.setAttribute(DataDictXMLConstants.MAX_OCCURS, "1");
@@ -111,10 +111,7 @@ public class DataSetServiceImpl implements DataSetService {
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new XmlExportException(ex);
-        } catch (ResourceNotFoundException ex) {
-            Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
     }
 
     @Override
@@ -143,8 +140,8 @@ public class DataSetServiceImpl implements DataSetService {
             Document doc = docBuilder.newDocument();
             Element schemaRoot = doc.createElement(dataset.getShortName());
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
-            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE+DataDictXMLConstants.SCHEMA_LOCATION, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-            schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX+DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataset.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
+            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + DataDictXMLConstants.SCHEMA_LOCATION, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+            schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataset.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
 
             for (DatasetTable dsTable : dsTables) {
                 String tableNS = DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId();
@@ -172,6 +169,6 @@ public class DataSetServiceImpl implements DataSetService {
 
     @Override
     public Document getDataSetXMLInstanceWithNS(int id) throws XmlExportException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); 
     }
 }

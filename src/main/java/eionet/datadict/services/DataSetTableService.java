@@ -1,5 +1,6 @@
 package eionet.datadict.services;
 
+import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import org.w3c.dom.Document;
 
@@ -9,7 +10,7 @@ import org.w3c.dom.Document;
  */
 public interface DataSetTableService {
 
-    Document getDataSetTableXMLSchema(int id) throws XmlExportException;
+    Document getDataSetTableXMLSchema(int id) throws XmlExportException , ResourceNotFoundException;
     
     Document getDataSetTableXMLInstance(int id) throws XmlExportException;
 }
