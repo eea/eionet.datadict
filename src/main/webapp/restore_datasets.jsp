@@ -120,7 +120,7 @@
         <div id="drop-operations">
             <ul>
                 <li class="back"><a href="${pageContext.request.contextPath}/datasets.jsp">Back to datasets</a></li></li>
-                <% if (user != null) { %>
+                <% if (user != null && !datasets.isEmpty()) { %>
                     <li class="restore"><a href="javascript:restoreDataset()">Restore selected</a></li>
                     <li class="delete"><a href="javascript:deleteDataset()">Delete selected</a></li>
                 <%}%>
