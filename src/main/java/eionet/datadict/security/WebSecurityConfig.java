@@ -1,15 +1,12 @@
 package eionet.datadict.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  *
@@ -20,39 +17,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private EntryPointUnauthorizedHandler unauthorizedHandler;
-
-    @Autowired
-    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.parentAuthenticationManager(authenticationManagerBean());
-    }
-
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
-    @Bean
-    public AuthenticationRequestFilter authenticationRequestFilterBean( ) throws Exception {
-        AuthenticationRequestFilter authenticationReqFilter = new AuthenticationRequestFilter();
-        authenticationReqFilter.setAuthenticationManager(authenticationManagerBean());
-        return authenticationReqFilter;
-    }
-
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+            .addFilterAfter(new AuthenticationRequestFilter(), UsernamePasswordAuthenticationFilter.class)
             .csrf().disable()
-            .exceptionHandling().authenticationEntryPoint(this.unauthorizedHandler)
-            .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
             .and()
-            .authorizeRequests().antMatchers("/*").permitAll();
-
-        // Custom JWT based authentication
-        httpSecurity.addFilter((authenticationRequestFilterBean()));
+            .authorizeRequests().antMatchers("/**").permitAll();
     }
 
 }
