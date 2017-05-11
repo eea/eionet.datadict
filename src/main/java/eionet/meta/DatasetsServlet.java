@@ -63,7 +63,7 @@ public class DatasetsServlet extends HttpServlet {
             // a request specific to a particular dataset (i.e. by its auto-generated identifier)
             handleRequestForParticular(request, response, pathInfoSegments);
         } else {
-            throw new DDRuntimeException("Request not supported: " + request.getRequestURL());
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
