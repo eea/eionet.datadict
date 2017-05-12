@@ -1,6 +1,8 @@
 package eionet.datadict.security;
 
 import eionet.meta.DDUser;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,12 +23,29 @@ import org.springframework.web.filter.GenericFilterBean;
 public class AuthenticationRequestFilter extends GenericFilterBean {
 
     private static final List<String> INTERCEPTED_URL_PATTERNS;
+    private static final String BASE_URL = Props.getRequiredProperty(PropsIF.DD_URL);
 
     static {
         List<String> interceptedUrlPatterns = new ArrayList<String>();
-        interceptedUrlPatterns.add("delem_attribute.jsp?mode=add");
-        interceptedUrlPatterns.add("attribute/edit/");
-        interceptedUrlPatterns.add("vocabulary?add=");
+        interceptedUrlPatterns.add("/datasets/add");
+        interceptedUrlPatterns.add("/restore_datasets.jsp");
+        interceptedUrlPatterns.add("/doc_upload.jsp.jsp");
+        interceptedUrlPatterns.add("/dstrod_links.jsp");
+        interceptedUrlPatterns.add("/complex_attrs.jsp");
+        interceptedUrlPatterns.add("/cache");
+        interceptedUrlPatterns.add("/delem_attribute.jsp?mode=add");
+        interceptedUrlPatterns.add("/dataelements/add/?common=true");
+        interceptedUrlPatterns.add("/checkouts");
+        interceptedUrlPatterns.add("/attributes.jsp");
+        interceptedUrlPatterns.add("/attribute");
+        interceptedUrlPatterns.add("/import.jsp");
+        interceptedUrlPatterns.add("/cleanup");
+        interceptedUrlPatterns.add("/subscribe.jsp");
+        interceptedUrlPatterns.add("/schemaset?add=");
+        interceptedUrlPatterns.add("/schemasets/browse/workingCopies");
+        interceptedUrlPatterns.add("/schema/root?add=");
+        interceptedUrlPatterns.add("/vocabulary?add=");
+        interceptedUrlPatterns.add("/vocabularies/maintain");
         INTERCEPTED_URL_PATTERNS = Collections.unmodifiableList(interceptedUrlPatterns);
     }
 
@@ -42,8 +61,8 @@ public class AuthenticationRequestFilter extends GenericFilterBean {
     }
 
     private boolean isAuthenticationRequired(String url) {
-        for (String pattern : INTERCEPTED_URL_PATTERNS) {
-            if (url.contains(pattern)) {
+        for (String interceptedUrlPattern : INTERCEPTED_URL_PATTERNS) {
+            if (url.startsWith(BASE_URL + interceptedUrlPattern)) {
                 return true;
             }
         }
