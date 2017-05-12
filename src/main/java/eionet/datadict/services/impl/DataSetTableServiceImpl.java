@@ -58,7 +58,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         DatasetTable dataSetTable = this.datasetTableDataService.getFullDatasetTableDefinition(id);
         List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dataSetTable.getId());
         List<Attribute> dataSetTableAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T));
-        int datasetId = datasetTableDao.getParentDatasetId(dataSetTable.getId());
+        int datasetId = dataSetTable.getDataSet().getId();
 
         try {
             docBuilder = docFactory.newDocumentBuilder();
@@ -261,7 +261,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 element = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, nsPrefix + elementName);
 
             }
-
             if (nameAttrVal != null) {
                 element.setAttribute(DataDictXMLConstants.NAME, nameAttrVal);
             }

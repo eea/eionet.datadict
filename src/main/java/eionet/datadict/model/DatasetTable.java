@@ -1,10 +1,19 @@
 package eionet.datadict.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+
+
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIgnoreProperties(ignoreUnknown=true)
 public class DatasetTable implements AttributeOwner {
 
     @Id
@@ -23,8 +32,11 @@ public class DatasetTable implements AttributeOwner {
     private DataSet dataSet;
     @ManyToOne
     private Namespace namespace;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "datasetTable")
-    private Set<DatasetTableElement> datasetTableElements;
+    private Set<DataElement> dataElements ;
+    @JsonIgnore
     private Set<Attribute> attributes;
     @OneToMany(mappedBy = "owner")
     private Set<SimpleAttributeValues> simpleAttributesValues;
@@ -148,13 +160,14 @@ public class DatasetTable implements AttributeOwner {
         this.namespace = namespace;
     }
 
-    public Set<DatasetTableElement> getDataTableElements() {
-        return datasetTableElements;
+    public Set<DataElement> getDataElements() {
+        return dataElements;
     }
 
-    public void setDatasetTableElements(Set<DatasetTableElement> datasetTableElements) {
-        this.datasetTableElements = datasetTableElements;
+    public void setDataElements(Set<DataElement> dataElements) {
+        this.dataElements = dataElements;
     }
+
 
     public Set<Attribute> getAttributes() {
         return attributes;

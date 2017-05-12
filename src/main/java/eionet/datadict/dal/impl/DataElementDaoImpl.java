@@ -8,6 +8,7 @@ import eionet.datadict.model.DataElement.DataElementType;
 import eionet.datadict.model.DatasetTableElement;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.AttributeOwnerCategory;
+import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.ValueListItem;
 import eionet.meta.dao.domain.DatasetRegStatus;
 import java.sql.ResultSet;
@@ -63,7 +64,7 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
 
     @Override
     public List<DataElement> getDataElementsOfDatasetTable(int tableId) {
-   
+         
         List<DataElement> tableElements = new ArrayList<DataElement>();
         String sql ="SELECT DATAELEM_ID"
                 + "  FROM TBL2ELEM"
@@ -73,7 +74,9 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
         try {
             List<Integer> dataElementIds=this.getNamedParameterJdbcTemplate().queryForList(sql, params,Integer.class);
             for(Integer dataElementId : dataElementIds){
-                tableElements.add(this.getById(dataElementId));
+                DataElement element = this.getById(dataElementId);
+                element.setDatasetTable(new DatasetTable(tableId));
+                tableElements.add(element);
             }
             return tableElements;
         } catch (EmptyResultDataAccessException e) {

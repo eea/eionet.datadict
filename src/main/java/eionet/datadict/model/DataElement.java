@@ -7,15 +7,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import eionet.meta.dao.domain.DatasetRegStatus;
 
-
 public abstract class DataElement implements AttributeOwner {
- 
+
     public static enum ValueType {
         FIXED,
         QUANTITATIVE,
         VOCABULARY
     }
-    
+
     public static enum Status {
         INCOMPLETE,
         CANDIDATE,
@@ -23,7 +22,7 @@ public abstract class DataElement implements AttributeOwner {
         QUALIFIED,
         RELEASED
     }
-    
+
     @Id
     private Integer id;
     private String identifier;
@@ -31,7 +30,9 @@ public abstract class DataElement implements AttributeOwner {
     private Status status;
     private String workingUser;
     private boolean workingCopy;
-    
+
+    @ManyToOne
+    private DatasetTable datasetTable;
     @ManyToOne
     private Namespace namespace;
     @OneToOne(mappedBy = "dataElement")
@@ -43,11 +44,11 @@ public abstract class DataElement implements AttributeOwner {
     public DataElement() {
         super();
     }
-    
+
     public DataElement(Integer id) {
         this.id = id;
     }
-    
+
     @Override
     public Integer getId() {
         return id;
@@ -113,8 +114,6 @@ public abstract class DataElement implements AttributeOwner {
         this.datasetTableElement = datasetTableElement;
     }
 
-   
-
     @Override
     public Set<SimpleAttributeValues> getSimpleAttributesValues() {
         return simpleAttributesValues;
@@ -124,74 +123,71 @@ public abstract class DataElement implements AttributeOwner {
     public void setSimpleAttributesValues(Set<SimpleAttributeValues> simpleAttributeValues) {
         this.simpleAttributesValues = simpleAttributeValues;
     }
-    
+
     public abstract ValueType getValueType();
-    
+
     public abstract boolean supportsValueList();
-    
+
     public abstract Iterable<? extends ValueListItem> getValueList();
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
-        
+
         if (!(obj instanceof DataElement)) {
             return false;
         }
-        
+
         if (this.id == null) {
             return false;
         }
-        
+
         DataElement other = (DataElement) obj;
-        
+
         return this.id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
-        return this.id == null ?  super.hashCode() : this.id.hashCode();
+        return this.id == null ? super.hashCode() : this.id.hashCode();
     }
-    
 
-
-    
     public static enum DataElementType {
-        
+
         CH1(2, "Data elements with fixed values (code list and elements from a vocabulary)"), // Data elements with fixed values (code list and elements from a vocabulary)
         CH2(1, "Data elements with quantitative values"), // Data elements with quantitative values
         CH3(2, "Data elements with fixed values (code list and elements from a vocabulary)"), // Data elements with fixed values (code list and elements from a vocabulary)
         ;
-        
+
         private final int value;
         private final String label;
-        
+
         private DataElementType(int value, String label) {
             this.value = value;
             this.label = label;
         }
-        
-        public static DataElementType getFromString(String string){
-            for (DataElementType type : DataElementType.values()){
-                if (type.getLabel().equals(string)){
+
+        public static DataElementType getFromString(String string) {
+            for (DataElementType type : DataElementType.values()) {
+                if (type.getLabel().equals(string)) {
                     return type;
                 }
             }
             return null;
         }
-        
+
         public int getValue() {
             return this.value;
         }
-        
+
         public String getLabel() {
             return this.label;
         }
-        
+
     }
-    
+
     private DataElementType type;
     private DatasetRegStatus regStatus;
     private Integer version;
@@ -202,7 +198,6 @@ public abstract class DataElement implements AttributeOwner {
     private Integer checkedOutCopyId;
     private Integer vocabularyId;
     private Boolean allConceptsLegal;
-  
 
     public DataElementType getType() {
         return type;
@@ -211,8 +206,6 @@ public abstract class DataElement implements AttributeOwner {
     public void setType(DataElementType type) {
         this.type = type;
     }
-
-   
 
     public Boolean getWorkingCopy() {
         return workingCopy;
@@ -253,7 +246,7 @@ public abstract class DataElement implements AttributeOwner {
     public void setDate(Integer date) {
         this.date = date;
     }
-    
+
     public Namespace getParentNS() {
         return parentNS;
     }
@@ -269,8 +262,6 @@ public abstract class DataElement implements AttributeOwner {
     public void setTopNS(Namespace topNS) {
         this.topNS = topNS;
     }
-
-
 
     public Integer getCheckedOutCopyId() {
         return checkedOutCopyId;
@@ -294,6 +285,14 @@ public abstract class DataElement implements AttributeOwner {
 
     public void setAllConceptsLegal(Boolean allConceptsLegal) {
         this.allConceptsLegal = allConceptsLegal;
+    }
+
+    public DatasetTable getDatasetTable() {
+        return datasetTable;
+    }
+
+    public void setDatasetTable(DatasetTable datasetTable) {
+        this.datasetTable = datasetTable;
     }
 
 }

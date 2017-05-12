@@ -3,7 +3,9 @@ package eionet.datadict.web;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
+import eionet.datadict.model.DatasetTable;
 import eionet.datadict.services.DataSetTableService;
+import eionet.datadict.services.data.DatasetTableDataService;
 import java.io.IOException;
 import java.util.HashMap;
 import javax.servlet.ServletException;
@@ -34,16 +36,19 @@ import org.w3c.dom.Document;
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
 @Controller
-@RequestMapping(value = "/dataSetTables")
+@RequestMapping(value = "/datasetTable")
 public class DatasetTableController {
 
     private final DataSetTableService dataSetTableService;
+    private final DatasetTableDataService datasetTableDataService;
 
     @Autowired
-    public DatasetTableController(DataSetTableService dataSetTableService) {
+    public DatasetTableController(DataSetTableService dataSetTableService, DatasetTableDataService datasetTableDataService) {
         this.dataSetTableService = dataSetTableService;
+        this.datasetTableDataService = datasetTableDataService;
     }
-
+ 
+    
     @RequestMapping(value = "/schema/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public void getDatasetTableSchema(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
@@ -67,14 +72,15 @@ public class DatasetTableController {
         outStream.close();
 
     }
-       @RequestMapping(value = "/instance/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+
+    @RequestMapping(value = "/schemaInstance/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public void getDataSetTableInstance(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
 
         Document xml = this.dataSetTableService.getDataSetTableXMLInstance(id);
-        String fileName = "table"+id+"-instance.xml";
+        String fileName = "table" + id + "-instance.xml";
         response.setContentType("application/xml");
-        response.setHeader("Content-Disposition", "attachment;filename="+fileName);
+        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
         ServletOutputStream outStream = response.getOutputStream();
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
@@ -88,6 +94,12 @@ public class DatasetTableController {
         transformer.transform(source, result);
         outStream.flush();
         outStream.close();
+    }
+    @RequestMapping(value = "/json/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public DatasetTable getDataSetTable(@PathVariable int id) throws ResourceNotFoundException {
+
+        return this.datasetTableDataService.getFullDatasetTableDefinition(id);
     }
 
     @ExceptionHandler(EmptyParameterException.class)

@@ -1,45 +1,41 @@
 package eionet.datadict.services.data.impl;
 
-import eionet.datadict.commons.util.IterableUtils;
-import eionet.datadict.commons.util.Predicate;
-import eionet.datadict.commons.util.Selector;
 import eionet.datadict.dal.AttributeDao;
+import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DatasetDao;
 import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.Attribute;
+import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataSet;
 import eionet.datadict.model.DatasetTable;
-import eionet.datadict.model.DatasetTableElement;
-import eionet.datadict.model.SimpleAttributeValues;
-import eionet.datadict.model.Vocabulary;
 import eionet.datadict.orm.OrmCollectionUtils;
 import eionet.datadict.orm.OrmUtils;
 import eionet.datadict.services.data.DatasetTableDataService;
 import eionet.meta.DDUser;
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.FixedValue;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DatasetTableDataServiceImpl implements DatasetTableDataService {
 
-    public final DatasetTableDao datasetTableDao;
-    public final DatasetDao datasetDao;
-    public final AttributeDao attributeDao;
+    private final DatasetTableDao datasetTableDao;
+    private final DatasetDao datasetDao;
+    private final AttributeDao attributeDao;
+    private final DataElementDao dataElementDao;
 
+    
     @Autowired
-    public DatasetTableDataServiceImpl(DatasetTableDao datasetTableDao, DatasetDao datasetDao, AttributeDao attributeDao) {
+    public DatasetTableDataServiceImpl(DatasetTableDao datasetTableDao, DatasetDao datasetDao, AttributeDao attributeDao, DataElementDao dataElementDao) {
         this.datasetTableDao = datasetTableDao;
         this.datasetDao = datasetDao;
         this.attributeDao = attributeDao;
+        this.dataElementDao = dataElementDao;
     }
+
+
+    
 
     @Override
     public DatasetTable getDatasetTable(int id) throws ResourceNotFoundException {
@@ -82,9 +78,14 @@ public class DatasetTableDataServiceImpl implements DatasetTableDataService {
             throw new ResourceNotFoundException(String.format("Dataset with id %d could not be found", datasetTable.getDataSet().getId()));
         }
 
-        OrmUtils.link(dataSet, datasetTable);
+    //    OrmUtils.link(dataSet, datasetTable);
+        
+                List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(datasetTable.getId());
+
+        datasetTable.setDataElements(OrmCollectionUtils.createChildCollection(dataElements));
         List<Attribute> datasetTableAttributes = this.attributeDao.getAttributesOfDataTable(tableId);
         datasetTable.setAttributes(OrmCollectionUtils.createChildCollection(datasetTableAttributes));
+       // OrmUtils.link(datasetTable, dataElements);
       //  List<SimpleAttributeValues> datasetTableAttributeValues = this.attributeDao.getSimpleAttributesValuesOfDataElementsInTable(tableId);
       //  OrmUtils.link(datasetTableAttributes, datasetTableAttributeValues);
      //   OrmUtils.link(datasetTable, datasetTableAttributeValues);
