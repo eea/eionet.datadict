@@ -44,7 +44,7 @@ public class NamespaceDAOImpl extends GeneralDAOImpl implements INamespaceDAO {
                 });
 
         String totalSql = "SELECT FOUND_ROWS()";
-        int totalItems = getJdbcTemplate().queryForInt(totalSql);
+        int totalItems = getJdbcTemplate().queryForObject(totalSql,Integer.class);
 
         NamespaceResult result = new NamespaceResult(resultList, totalItems, filter);
         return result;

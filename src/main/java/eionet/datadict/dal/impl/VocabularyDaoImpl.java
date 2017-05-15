@@ -113,7 +113,7 @@ public class VocabularyDaoImpl extends JdbcDaoBase implements VocabularyDao {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularySetId", vocabularySetId);
         params.put("vocabularyIdentifier", vocabularyIdentifier);
-        int count = this.getNamedParameterJdbcTemplate().queryForInt(sql, params);
+        int count = this.getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
         
         return count > 0;
     }
@@ -124,7 +124,7 @@ public class VocabularyDaoImpl extends JdbcDaoBase implements VocabularyDao {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularySetIdentifier", vocabularySetIdentifier);
         params.put("vocabularyIdentifier", vocabularyIdentifier);
-        int count = this.getNamedParameterJdbcTemplate().queryForInt(sql, params);
+        int count = this.getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
         
         return count > 0;
     }

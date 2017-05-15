@@ -23,7 +23,7 @@ public class QuartzSchedulerDaoImpl extends JdbcDaoBase implements QuartzSchedul
         parameters.put("schedulerName", schedulerName);
         parameters.put("jobName", jobKey.getName());
         parameters.put("jobGroup", jobKey.getGroup());
-        int triggerCount = this.getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+        int triggerCount = this.getNamedParameterJdbcTemplate().queryForObject(sql, parameters,Integer.class);
         
         return triggerCount > 0;
     }

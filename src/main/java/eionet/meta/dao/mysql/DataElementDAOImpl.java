@@ -18,7 +18,6 @@
  * Contributor(s):
  *        Juhan Voolaid
  */
-
 package eionet.meta.dao.mysql;
 
 import eionet.meta.DDSearchEngine;
@@ -84,8 +83,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * finds Common elements.
      *
-     * @param filter
-     *            search filter
+     * @param filter search filter
      * @return list of data elements
      */
     private List<DataElement> executeCommonElementQuery(final DataElementsFilter filter) {
@@ -148,7 +146,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         sql.append("order by de.IDENTIFIER asc, de.DATAELEM_ID desc");
 
         // LOGGER.debug("SQL: " + sql.toString());
-
         final List<DataElement> dataElements = new ArrayList<DataElement>();
 
         getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
@@ -193,8 +190,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * finds non-Common elements.
      *
-     * @param filter
-     *            search filter
+     * @param filter search filter
      * @return list of data elements
      */
     private List<DataElement> executeNonCommonElementQuery(final DataElementsFilter filter) {
@@ -255,7 +251,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 .append("de.DATAELEM_ID desc");
 
         // LOGGER.debug("SQL: " + sql.toString());
-
         final List<DataElement> dataElements = new ArrayList<DataElement>();
 
         getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
@@ -402,15 +397,15 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         });
         return result;
     }
-    
-    @Override 
-    public boolean dataElementExists(int id){
+
+    @Override
+    public boolean dataElementExists(int id) {
         String sql = "select count(*) from DATAELEM where DATAELEM_ID = :id";
-        
+
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", id);
-        
-        int count = getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+
+        int count = getNamedParameterJdbcTemplate().queryForObject(sql, parameters, Integer.class);
         return (count > 0);
     }
 
@@ -427,14 +422,14 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public int getCommonDataElementId(String identifier) {
-        String sql =
-                "select max(de.DATAELEM_ID) from DATAELEM de where de.IDENTIFIER = :identifier and de.REG_STATUS = :regStatus "
-                        + "and PARENT_NS IS NULL ";
+        String sql
+                = "select max(de.DATAELEM_ID) from DATAELEM de where de.IDENTIFIER = :identifier and de.REG_STATUS = :regStatus "
+                + "and PARENT_NS IS NULL ";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("identifier", identifier);
         parameters.put("regStatus", RegStatus.RELEASED.toString());
 
-        return getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+        return getNamedParameterJdbcTemplate().queryForObject(sql, parameters, Integer.class);
     }
 
     /**
@@ -442,17 +437,17 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public DataSet getParentDataSet(int dataElementId) {
-        String sql = 
-                "select ds.*\n" +
-                "from (\n" +
-                "	select DATAELEM_ID from DATAELEM where DATAELEM_ID = :dataElementId and PARENT_NS is not null\n" +
-                ") de \n" +
-                "	inner join TBL2ELEM dt2de on dt2de.DATAELEM_ID = de.DATAELEM_ID\n" +
-                "	inner join DST2TBL ds2dt on ds2dt.TABLE_ID = dt2de.TABLE_ID\n" +
-                "	inner join DATASET ds on ds.DATASET_ID = ds2dt.DATASET_ID;";
+        String sql
+                = "select ds.*\n"
+                + "from (\n"
+                + "	select DATAELEM_ID from DATAELEM where DATAELEM_ID = :dataElementId and PARENT_NS is not null\n"
+                + ") de \n"
+                + "	inner join TBL2ELEM dt2de on dt2de.DATAELEM_ID = de.DATAELEM_ID\n"
+                + "	inner join DST2TBL ds2dt on ds2dt.TABLE_ID = dt2de.TABLE_ID\n"
+                + "	inner join DATASET ds on ds.DATASET_ID = ds2dt.DATASET_ID;";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("dataElementId", dataElementId);
-        
+
         List<DataSet> result = this.getNamedParameterJdbcTemplate().query(sql, parameters, new RowMapper<DataSet>() {
 
             @Override
@@ -464,11 +459,11 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 ds.setShortName(rs.getString("ds.SHORT_NAME"));
                 ds.setWorkingCopy(new BooleanToYesNoConverter().convertBack(rs.getString("ds.WORKING_COPY")));
                 ds.setWorkingUser(rs.getString("ds.WORKING_USER"));
-                
+
                 return ds;
             }
         });
-        
+
         return result.isEmpty() ? null : result.get(0);
     }
 
@@ -523,7 +518,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         getNamedParameterJdbcTemplate().update(sql, params);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -593,9 +588,9 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      */
     @Override
     public void moveVocabularyDataElements(int sourceVocabularyFolderId, int targetVocabularyFolderId) {
-        String sql =
-                "update VOCABULARY2ELEM set VOCABULARY_ID = :targetVocabularyFolderId "
-                        + "where VOCABULARY_ID = :sourceVocabularyFolderId";
+        String sql
+                = "update VOCABULARY2ELEM set VOCABULARY_ID = :targetVocabularyFolderId "
+                + "where VOCABULARY_ID = :sourceVocabularyFolderId";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("sourceVocabularyFolderId", sourceVocabularyFolderId);
@@ -690,7 +685,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setWorkingUser(rs.getString("d.WORKING_USER"));
 
                 de.setIdentifier(rs.getString("d.identifier"));
-                
+
                 de.setAttributeValue(rs.getString("v.ELEMENT_VALUE"));
                 de.setAttributeLanguage(rs.getString("v.LANGUAGE"));
                 de.setRelatedConceptId(rs.getInt("v.RELATED_CONCEPT_ID"));
@@ -805,10 +800,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * After copying localref type element IDs have to be changed.
      *
-     * @param oldVocabularyId
-     *            old vocabulary ID
-     * @param newVocabularyId
-     *            new vocabulary ID
+     * @param oldVocabularyId old vocabulary ID
+     * @param newVocabularyId new vocabulary ID
      */
     private void updateCopiedRelatedConceptIds(int oldVocabularyId, int newVocabularyId) {
         StringBuilder sql = new StringBuilder();
@@ -844,7 +837,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         sql.append("select count(VOCABULARY_ID) from VOCABULARY2ELEM ");
         sql.append("where DATAELEM_ID = :elementId and VOCABULARY_ID = :vocabularyId ");
 
-        int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
+        int result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), parameters, Integer.class);
 
         return result > 0;
     }
@@ -852,8 +845,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * updates localref IDs to the new concept ones.
      *
-     * @param newVocabularyId
-     *            new vocabulary ID
+     * @param newVocabularyId new vocabulary ID
      */
     private void updateCheckedoutRelatedConceptIds(int newVocabularyId) {
         StringBuilder sql = new StringBuilder();
@@ -886,10 +878,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
     @Override
     public Map<String, List<String>> getDataElementAttributeValues(int elementId) {
-        String sql =
-                "select SHORT_NAME, VALUE from ATTRIBUTE, M_ATTRIBUTE"
-                        + " where DATAELEM_ID=:parentId and PARENT_TYPE='E' and ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID"
-                        + " order by SHORT_NAME, VALUE";
+        String sql
+                = "select SHORT_NAME, VALUE from ATTRIBUTE, M_ATTRIBUTE"
+                + " where DATAELEM_ID=:parentId and PARENT_TYPE='E' and ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID"
+                + " order by SHORT_NAME, VALUE";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("parentId", elementId);
@@ -1041,9 +1033,9 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             return;
         }
 
-        String sql =
-                "delete from ATTRIBUTE where DATAELEM_ID = :elemId and PARENT_TYPE='E' and M_ATTRIBUTE_ID in ("
-                        + "select distinct M_ATTRIBUTE_ID from M_ATTRIBUTE where SHORT_NAME in (:names))";
+        String sql
+                = "delete from ATTRIBUTE where DATAELEM_ID = :elemId and PARENT_TYPE='E' and M_ATTRIBUTE_ID in ("
+                + "select distinct M_ATTRIBUTE_ID from M_ATTRIBUTE where SHORT_NAME in (:names))";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("elemId", elemId);
@@ -1073,16 +1065,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     }
 
     @Override
-    public int getInverseElementID(int dataElementId) {
-        String sql = "select GetInverseElemId(:elemId)";
-
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("elemId", dataElementId);
-
-        return getNamedParameterJdbcTemplate().queryForInt(sql, params);
-    }
-
-    @Override
     public List<DataElement> getPotentialReferringVocabularyConceptsElements() {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT v.*, bu.base_uri, bu.vocabulary_id, bu.identifier FROM VOCABULARY_CONCEPT_ELEMENT AS v, ");
@@ -1097,8 +1079,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         sql.append("HAVING COUNT(v.id) = 1 ");
         sql.append("ORDER BY v.id, v.dataelem_id ");
 
-        List<DataElement> result =
-                getNamedParameterJdbcTemplate().query(sql.toString(), new HashMap<String, Object>(), new RowMapper<DataElement>() {
+        List<DataElement> result
+                = getNamedParameterJdbcTemplate().query(sql.toString(), new HashMap<String, Object>(), new RowMapper<DataElement>() {
                     @Override
                     public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException {
                         DataElement de = new DataElement();
@@ -1120,26 +1102,26 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     @Override
     public void deleteReferringReferenceElems(int vocabularyId) {
 
-        String sql =
-                "delete vce.* FROM datadict.vocabulary_concept_element vce, VOCABULARY_CONCEPT vsource, VOCABULARY_CONCEPT, "
-                        + "VOCABULARY v " + "vtarget where vce.RELATED_CONCEPT_ID = :conceptId "
-                        + "AND vce.VOCABULARY_CONCEPT_ID = vsource.VOCABULARY_CONCEPT_ID  "
-                        + "AND vtarget.VOCABULARY_CONCEPT_ID = vce.RELATED_CONCEPT_ID  "
-                        + "AND vsource.VOCABULARY_ID <> vtarget.VOCABULARY_ID";
+        String sql
+                = "delete vce.* FROM datadict.vocabulary_concept_element vce, VOCABULARY_CONCEPT vsource, VOCABULARY_CONCEPT, "
+                + "VOCABULARY v " + "vtarget where vce.RELATED_CONCEPT_ID = :conceptId "
+                + "AND vce.VOCABULARY_CONCEPT_ID = vsource.VOCABULARY_CONCEPT_ID  "
+                + "AND vtarget.VOCABULARY_CONCEPT_ID = vce.RELATED_CONCEPT_ID  "
+                + "AND vsource.VOCABULARY_ID <> vtarget.VOCABULARY_ID";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyId", vocabularyId);
         getNamedParameterJdbcTemplate().update(sql, params);
     }
-    
+
     @Override
     public Collection<InferenceRule> getInferenceRules(DataElement parentElem) {
         StringBuilder sql = new StringBuilder("select * from INFERENCE_RULE where DATAELEM_ID = :dataelem_id");
         final DataElement source = getDataElement(parentElem.getId());
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("dataelem_id", parentElem.getId());
-        
+
         List<InferenceRule> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<InferenceRule>() {
 
             @Override
@@ -1148,7 +1130,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 InferenceRule rule = new InferenceRule(source, RuleType.fromName(rs.getString("RULE")), target);
                 return rule;
             }
-            
+
         });
 
         // add inverted rules for owl:inverseOf rule type as owl:inverseOf rule is bi-directional but is stored as a single row in the database
@@ -1172,12 +1154,12 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     }
 
     @Override
-    public Collection<InferenceRule> listInferenceRules(DataElement parentElem){
+    public Collection<InferenceRule> listInferenceRules(DataElement parentElem) {
         StringBuilder sql = new StringBuilder("select * from INFERENCE_RULE where DATAELEM_ID = :dataelem_id");
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("dataelem_id", parentElem.getId());
-        
+
         List<InferenceRule> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<InferenceRule>() {
 
             @Override
@@ -1192,68 +1174,68 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             }
         });
         return result;
-        
+
     }
-    
+
     @Override
     public void createInferenceRule(InferenceRule rule) {
         StringBuilder sql = new StringBuilder("insert into INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) values (:sourceElementId, :ruleName, :targetElementId)");
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("sourceElementId", rule.getSourceDElement().getId());
         params.put("ruleName", rule.getTypeName());
         params.put("targetElementId", rule.getTargetDElement().getId());
-        
-        getNamedParameterJdbcTemplate().update(sql.toString(), params);
-    }
-    
-    @Override
-    public void deleteInferenceRule(InferenceRule rule) {
-        StringBuilder sql = new StringBuilder("delete from INFERENCE_RULE where DATAELEM_ID = :sourceElementId AND RULE = :ruleName AND TARGET_ELEM_ID = :targetElementId");
-        
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("sourceElementId", rule.getSourceDElement().getId());
-        params.put("ruleName", rule.getTypeName());
-        params.put("targetElementId", rule.getTargetDElement().getId());
-        
+
         getNamedParameterJdbcTemplate().update(sql.toString(), params);
     }
 
     @Override
-    public boolean inferenceRuleExists(InferenceRule rule){
-        StringBuilder sql = new StringBuilder("select count(*) from INFERENCE_RULE where DATAELEM_ID = :sourceElementId AND RULE = :ruleName AND TARGET_ELEM_ID = :targetElementId");
-        
+    public void deleteInferenceRule(InferenceRule rule) {
+        StringBuilder sql = new StringBuilder("delete from INFERENCE_RULE where DATAELEM_ID = :sourceElementId AND RULE = :ruleName AND TARGET_ELEM_ID = :targetElementId");
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("sourceElementId", rule.getSourceDElement().getId());
         params.put("ruleName", rule.getTypeName());
         params.put("targetElementId", rule.getTargetDElement().getId());
-        
-        int count = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), params);
+    }
+
+    @Override
+    public boolean inferenceRuleExists(InferenceRule rule) {
+        StringBuilder sql = new StringBuilder("select count(*) from INFERENCE_RULE where DATAELEM_ID = :sourceElementId AND RULE = :ruleName AND TARGET_ELEM_ID = :targetElementId");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("sourceElementId", rule.getSourceDElement().getId());
+        params.put("ruleName", rule.getTypeName());
+        params.put("targetElementId", rule.getTargetDElement().getId());
+
+        int count = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, Integer.class);
         return (count > 0);
     }
-    
+
     @Override
-    public void updateInferenceRule(InferenceRule rule, InferenceRule newRule){
+    public void updateInferenceRule(InferenceRule rule, InferenceRule newRule) {
         StringBuilder sql = new StringBuilder("update INFERENCE_RULE set RULE = :newRuleName, TARGET_ELEM_ID = :newTargetElementId where DATAELEM_ID = :sourceElementId AND RULE = :ruleName AND TARGET_ELEM_ID = :targetElementId");
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("sourceElementId", rule.getSourceDElement().getId());
         params.put("ruleName", rule.getTypeName());
         params.put("targetElementId", rule.getTargetDElement().getId());
         params.put("newRuleName", newRule.getTypeName());
         params.put("newTargetElementId", newRule.getTargetDElement().getId());
-        
+
         getNamedParameterJdbcTemplate().update(sql.toString(), params);
     }
-    
+
     @Override
-    public Collection<DataElement> grepDataElement(String pattern){
+    public Collection<DataElement> grepDataElement(String pattern) {
         String sql = "select DATAELEM_ID, SHORT_NAME from DATAELEM where SHORT_NAME like :pattern";
-        
+
         MapSqlParameterSource params = new MapSqlParameterSource();
         String fullPattern = "%" + pattern + "%";
         params.addValue("pattern", fullPattern);
-        
+
         List<DataElement> elements = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<DataElement>() {
             @Override
             public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -1265,14 +1247,13 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         });
         return elements;
     }
-    
+
     private void setParentNamespace(DataElement de, ResultSet rs, String columnName) throws SQLException {
         int parentNamespace = rs.getInt(columnName);
-        
+
         if (rs.wasNull()) {
             de.setParentNamespace(null);
-        }
-        else {
+        } else {
             de.setParentNamespace(parentNamespace);
         }
     }
@@ -1354,16 +1335,16 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             }
         }
 
-        int[][] result = getJdbcTemplate().batchUpdate(sql.toString(), allDataElements, batchSize, 
+        int[][] result = getJdbcTemplate().batchUpdate(sql.toString(), allDataElements, batchSize,
                 new ParameterizedPreparedStatementSetter<DataElement>() {
-                    @Override
-                    public void setValues(PreparedStatement ps, DataElement element) throws SQLException {
-                        ps.setInt(1, element.getVocabularyConceptId());
-                        ps.setInt(2, element.getId());
-                        ps.setString(3, element.getAttributeValue());
-                        ps.setString(4, element.getAttributeLanguage());
-                        ps.setObject(5, element.getRelatedConceptId());
-                    }
+            @Override
+            public void setValues(PreparedStatement ps, DataElement element) throws SQLException {
+                ps.setInt(1, element.getVocabularyConceptId());
+                ps.setInt(2, element.getId());
+                ps.setString(3, element.getAttributeValue());
+                ps.setString(4, element.getAttributeLanguage());
+                ps.setObject(5, element.getRelatedConceptId());
+            }
         });
 
         return result;
@@ -1373,14 +1354,14 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     public int[][] batchCreateInverseElements(List<Triple<Integer, Integer, Integer>> relatedReferenceElements, int batchSize) {
         String sql = "call CreateReverseLink(?, ?, ?)";
 
-        int[][] result = getJdbcTemplate().batchUpdate(sql, relatedReferenceElements, batchSize, 
+        int[][] result = getJdbcTemplate().batchUpdate(sql, relatedReferenceElements, batchSize,
                 new ParameterizedPreparedStatementSetter<Triple<Integer, Integer, Integer>>() {
-                    @Override
-                    public void setValues(PreparedStatement ps, Triple<Integer, Integer, Integer> triple) throws SQLException {
-                        ps.setInt(1, triple.getLeft());
-                        ps.setInt(2, triple.getCentral());
-                        ps.setInt(3, triple.getRight());
-                    }
+            @Override
+            public void setValues(PreparedStatement ps, Triple<Integer, Integer, Integer> triple) throws SQLException {
+                ps.setInt(1, triple.getLeft());
+                ps.setInt(2, triple.getCentral());
+                ps.setInt(3, triple.getRight());
+            }
         });
 
         return result;
@@ -1411,8 +1392,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
     @Override
     public List<DataElement> getCommonDataElementsWorkingCopiesOf(String userName) {
-        String sql = "select * from DATAELEM de where de.PARENT_NS is null and de.WORKING_COPY = 'Y' and de.WORKING_USER = :userName " +
-                "order by de.IDENTIFIER asc, de.DATAELEM_ID desc";
+        String sql = "select * from DATAELEM de where de.PARENT_NS is null and de.WORKING_COPY = 'Y' and de.WORKING_USER = :userName "
+                + "order by de.IDENTIFIER asc, de.DATAELEM_ID desc";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("userName", userName);
 
@@ -1441,10 +1422,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
     @Override
     public List<Integer> getOrphanNonCommonDataElementIds() {
-        String sql = 
-                "select distinct DATAELEM.DATAELEM_ID from DATAELEM left join TBL2ELEM on DATAELEM.DATAELEM_ID = TBL2ELEM.DATAELEM_ID " +
-                "where DATAELEM.PARENT_NS is not null and TBL2ELEM.DATAELEM_ID is null";
-        
+        String sql
+                = "select distinct DATAELEM.DATAELEM_ID from DATAELEM left join TBL2ELEM on DATAELEM.DATAELEM_ID = TBL2ELEM.DATAELEM_ID "
+                + "where DATAELEM.PARENT_NS is not null and TBL2ELEM.DATAELEM_ID is null";
+
         return getJdbcTemplate().queryForList(sql, Integer.class);
     }
 
@@ -1477,13 +1458,13 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     public int[][] batchCreateVocabularyBoundElements(List<Pair<Integer, Integer>> vocabularyIdToDataElementId, int batchSize) {
         String sql = "insert ignore into VOCABULARY2ELEM (VOCABULARY_ID, DATAELEM_ID) values (?, ?)";
 
-        int[][] result = getJdbcTemplate().batchUpdate(sql.toString(), vocabularyIdToDataElementId, batchSize, 
+        int[][] result = getJdbcTemplate().batchUpdate(sql.toString(), vocabularyIdToDataElementId, batchSize,
                 new ParameterizedPreparedStatementSetter<Pair<Integer, Integer>>() {
-                    @Override
-                    public void setValues(PreparedStatement ps, Pair<Integer, Integer> pair) throws SQLException {
-                        ps.setInt(1, pair.getLeft());
-                        ps.setInt(2, pair.getRight());
-                    }
+            @Override
+            public void setValues(PreparedStatement ps, Pair<Integer, Integer> pair) throws SQLException {
+                ps.setInt(1, pair.getLeft());
+                ps.setInt(2, pair.getRight());
+            }
         });
         return result;
     }
@@ -1492,16 +1473,27 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     public int[][] batchCreateInverseRelations(List<Triple<Integer, Integer, Integer>> relatedReferenceElements, int batchSize) {
         String sql = "insert ignore into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, RELATED_CONCEPT_ID) VALUES (?, ?, ?)";
 
-        int[][] result = getJdbcTemplate().batchUpdate(sql, relatedReferenceElements, batchSize, 
+        int[][] result = getJdbcTemplate().batchUpdate(sql, relatedReferenceElements, batchSize,
                 new ParameterizedPreparedStatementSetter<Triple<Integer, Integer, Integer>>() {
-                    @Override
-                    public void setValues(PreparedStatement ps, Triple<Integer, Integer, Integer> triple) throws SQLException {
-                        ps.setInt(1, triple.getLeft());
-                        ps.setInt(2, triple.getCentral());
-                        ps.setInt(3, triple.getRight());
-                    }
+            @Override
+            public void setValues(PreparedStatement ps, Triple<Integer, Integer, Integer> triple) throws SQLException {
+                ps.setInt(1, triple.getLeft());
+                ps.setInt(2, triple.getCentral());
+                ps.setInt(3, triple.getRight());
+            }
         });
         return result;
+    }
+
+    @Override
+    public int getInverseElementID(int dataElementId) {
+
+        String sql = "select GetInverseElemId(:elemId)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("elemId", dataElementId);
+        return getNamedParameterJdbcTemplate().queryForObject(sql, params, Integer.class);
+        
     }
 
 }

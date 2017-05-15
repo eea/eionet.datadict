@@ -63,7 +63,7 @@ public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implem
      * @return
      */
     protected int getLastInsertId() {
-        return getJdbcTemplate().queryForInt("select last_insert_id()");
+        return getJdbcTemplate().queryForObject("select last_insert_id()",Integer.class);
     }
 
     /**
@@ -72,7 +72,7 @@ public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implem
      * @return
      */
     protected int getNameAttributeId() {
-        return getJdbcTemplate().queryForInt("select M_ATTRIBUTE_ID from M_ATTRIBUTE where SHORT_NAME='Name'");
+        return getJdbcTemplate().queryForObject("select M_ATTRIBUTE_ID from M_ATTRIBUTE where SHORT_NAME='Name'", Integer.class);
     }
 
     /**

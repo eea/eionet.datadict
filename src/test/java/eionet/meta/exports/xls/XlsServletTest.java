@@ -13,6 +13,7 @@ import org.easymock.EasyMock;
 import org.junit.Assert;
 
 import eionet.DDDatabaseTestCase;
+import javax.servlet.WriteListener;
 
 /**
  * 
@@ -503,6 +504,16 @@ public class XlsServletTest extends DDDatabaseTestCase {
         @Override
         public void write(int b) throws IOException {
             this.somethingWritten = true;
+        }
+
+        @Override
+        public boolean isReady() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }// end of inner class EnvServletOutputStream
 
