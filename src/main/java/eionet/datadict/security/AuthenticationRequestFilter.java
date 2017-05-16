@@ -14,6 +14,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
 /**
@@ -46,6 +47,7 @@ public class AuthenticationRequestFilter extends GenericFilterBean {
         interceptedUrlPatterns.add("/schema/root?add=");
         interceptedUrlPatterns.add("/vocabulary?add=");
         interceptedUrlPatterns.add("/vocabularies/maintain");
+        interceptedUrlPatterns.add("**/datasets/*/edit");
         INTERCEPTED_URL_PATTERNS = Collections.unmodifiableList(interceptedUrlPatterns);
     }
 
@@ -61,8 +63,12 @@ public class AuthenticationRequestFilter extends GenericFilterBean {
     }
 
     private boolean isAuthenticationRequired(String url) {
+        AntPathMatcher urlMatcher = new AntPathMatcher();
         for (String interceptedUrlPattern : INTERCEPTED_URL_PATTERNS) {
             if (url.startsWith(BASE_URL + interceptedUrlPattern)) {
+                return true;
+            }
+            if(urlMatcher.match(interceptedUrlPattern, url)){
                 return true;
             }
         }
