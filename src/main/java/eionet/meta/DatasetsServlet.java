@@ -135,8 +135,11 @@ public class DatasetsServlet extends HttpServlet {
         if (event.equals("subscribe") || event.equals("checkout") || event.equals("newversion")) {
             wrappedRequest.addParameterValue("mode", "view");
             wrappedRequest.addParameterValue("action", event);
-        } else {
+        } else if (event.equals("edit")) {
             wrappedRequest.addParameterValue("mode", event);
+        } else {
+            // fall-back to view
+            wrappedRequest.addParameterValue("mode", "view");
         }
 
         RequestDispatcher requestDispatcher = wrappedRequest.getRequestDispatcher(DATASET_JSP);
