@@ -82,7 +82,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             dsDocumentation.setAttribute(XMLConstants.XML_NS_PREFIX + ":" + DataDictXMLConstants.LANGUAGE_PREFIX, DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
             dsAnnotation.appendChild(dsDocumentation);
 
-            for (Attribute dataSetTableAttribute : dataSetTableAttributes) {
+            for (Attribute dataSetTableAttribute : dataSetTable.getAttributes()) {
                 AttributeValue attributeValue = attributeValueDao.getByAttributeAndEntityId(dataSetTableAttribute.getId(), dataSetTable.getId());
                 Element attributeElement = elMaker.createElement(dataSetTableAttribute.getShortName().replace(" ", ""), null, dataSetTableAttribute.getNamespace().getShortName().replace("_", ""));
 
@@ -126,7 +126,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 rowSequence.appendChild(tableElement);
             }
 
-            for (DataElement dataElement : dataElements) {
+            for (DataElement dataElement : dataSetTable.getDataElements()) {
                 Element xmlElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataElement.getShortName());
                 String MinSize = "";
                 String MaxSize = "";
@@ -217,10 +217,9 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         try {
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
-            NameTypeElementMaker elMaker = new NameTypeElementMaker(DataDictXMLConstants.XS_PREFIX, doc);
             Element schemaRoot = doc.createElement(dataSetTable.getShortName());
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
-            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.XS_PREFIX + ":", XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE +":"+ DataDictXMLConstants.XSI_PREFIX, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataSetTable.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
             List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dataSetTable.getId());
             String tableNS = DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId();

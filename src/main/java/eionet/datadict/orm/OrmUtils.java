@@ -67,6 +67,12 @@ public class OrmUtils {
         while (parentObject != null && childObject != null) {
             Comparable parentObjectKey = (Comparable) OrmReflectionUtils.readFieldDrillDown(parentIdFields, parentObject);
             Comparable childObjectKey = (Comparable) OrmReflectionUtils.readFieldDrillDown(childDrillDownFields, childObject);
+            if(parentObjectKey==null ){
+              throw new OrmReflectionException("could not extract object key from parent:"+parentObject.toString());
+            }
+            if(childObjectKey==null){
+            throw new OrmReflectionException("could not extract object key from child:"+childObject.toString());
+            }
             int cmpResult = parentObjectKey.compareTo(childObjectKey);
             
             if (cmpResult == 0) {
