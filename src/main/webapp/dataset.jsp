@@ -1230,7 +1230,7 @@ else if (mode.equals("add"))
                                                 if (mode.equals("view") && (attrValue == null || attrValue.length() == 0))
                                                     continue;
 
-                                                if (dispType.equals("voocabulary") && mode.equals("add")){
+                                                if (dispType.equals("vocabulary") && mode.equals("add")){
                                                     continue;
                                                 }
                                                 //displayed++; - done below
