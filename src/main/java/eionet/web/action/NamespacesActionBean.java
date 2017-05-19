@@ -88,9 +88,10 @@ public class NamespacesActionBean extends AbstractActionBean {
         NamespaceFilter filter = new NamespaceFilter();
         filter.setPageNumber(this.page);
         filter.setPageSize(NAMESPACE_PAGE_SIZE);
+        filter.setSortProperty("NAMESPACE_ID");
         this.namespaceResult = this.namespaceService.getNamespaces(filter);
         return new ForwardResolution(NamespacesActionBean.LIST_NAMESPACES_JSP);
-    } // end of method viewList
+    }
 
     public NamespaceResult getNamespaceResult() {
         return namespaceResult;
@@ -107,4 +108,5 @@ public class NamespacesActionBean extends AbstractActionBean {
     public void setPage(int page) {
         this.page = page;
     }
-} // end of class NamespacesActionBean
+
+}
