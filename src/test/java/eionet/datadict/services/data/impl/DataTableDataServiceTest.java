@@ -7,7 +7,6 @@ import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.VocabularyDao;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.DataElement;
-import eionet.datadict.model.DataElementWithFixedValues;
 import eionet.datadict.model.DataElementWithQuantitativeValues;
 import eionet.datadict.model.DataSet;
 import eionet.datadict.model.DatasetTable;

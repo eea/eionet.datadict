@@ -1,11 +1,13 @@
 package eionet.datadict.services.data.impl;
 
 import eionet.datadict.dal.AttributeDao;
+import eionet.datadict.dal.AttributeValueDao;
 import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DatasetDao;
 import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.Attribute;
+import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataSet;
@@ -25,14 +27,18 @@ public class DatasetTableDataServiceImpl implements DatasetTableDataService {
     private final DatasetDao datasetDao;
     private final AttributeDao attributeDao;
     private final DataElementDao dataElementDao;
+    private final AttributeValueDao attributeValueDao;
 
     @Autowired
-    public DatasetTableDataServiceImpl(DatasetTableDao datasetTableDao, DatasetDao datasetDao, AttributeDao attributeDao, DataElementDao dataElementDao) {
+    public DatasetTableDataServiceImpl(DatasetTableDao datasetTableDao, DatasetDao datasetDao, AttributeDao attributeDao, DataElementDao dataElementDao, AttributeValueDao attributeValueDao) {
         this.datasetTableDao = datasetTableDao;
         this.datasetDao = datasetDao;
         this.attributeDao = attributeDao;
         this.dataElementDao = dataElementDao;
+        this.attributeValueDao = attributeValueDao;
     }
+    
+    
 
     @Override
     public DatasetTable getDatasetTable(int id) throws ResourceNotFoundException {
@@ -74,18 +80,25 @@ public class DatasetTableDataServiceImpl implements DatasetTableDataService {
         if (dataSet == null) {
             throw new ResourceNotFoundException(String.format("Dataset with id %d could not be found", datasetTable.getDataSet().getId()));
         }
-
         OrmUtils.link(dataSet, datasetTable);
-
+       
+        
         List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(datasetTable.getId());
-
         datasetTable.setDataElements(OrmCollectionUtils.createChildCollection(dataElements));
-     //   List<Attribute> datasetTableAttributes = this.attributeDao.getAttributesOfDataTable(tableId);
-        List<Attribute> dataSetTableAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(datasetTable.getId(), DataDictEntity.Entity.T));
+         OrmUtils.link(datasetTable, dataElements);
+       
+         
+         List<Attribute> dataSetTableAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(datasetTable.getId(), DataDictEntity.Entity.T));
 
         
         datasetTable.setAttributes(OrmCollectionUtils.createChildCollection(dataSetTableAttributes));
-        OrmUtils.link(datasetTable, dataElements);
+    
+        
+        List<AttributeValue> datasetTableAttributeValues = attributeValueDao.getByOwner(new DataDictEntity(datasetTable.getId(), DataDictEntity.Entity.T));
+        
+        OrmUtils.link(dataSetTableAttributes,datasetTableAttributeValues);
+        datasetTable.setAttributesValues(OrmCollectionUtils.createChildCollection(datasetTableAttributeValues));
+        OrmUtils.link(datasetTable, datasetTableAttributeValues);
         //  List<SimpleAttributeValues> datasetTableAttributeValues = this.attributeDao.getSimpleAttributesValuesOfDataElementsInTable(tableId);
         //  OrmUtils.link(datasetTableAttributes, datasetTableAttributeValues);
         //   OrmUtils.link(datasetTable, datasetTableAttributeValues);

@@ -53,5 +53,15 @@ public class DataElementWithVocabularyValues extends DataElement {
     public void setAttributes(Set<Attribute> attributes) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public Set<AttributeValue> getAttributesValues() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setAttributesValues(Set<AttributeValue> attributesValues) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

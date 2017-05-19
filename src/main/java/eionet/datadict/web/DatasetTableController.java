@@ -49,7 +49,7 @@ public class DatasetTableController {
     }
  
     
-    @RequestMapping(value = "/schema/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(value = "/{id}/schema", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public void getDatasetTableSchema(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
 
@@ -73,7 +73,7 @@ public class DatasetTableController {
 
     }
 
-    @RequestMapping(value = "/schemaInstance/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(value = "/{id}/schemaInstance", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public void getDataSetTableInstance(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
 
@@ -95,11 +95,12 @@ public class DatasetTableController {
         outStream.flush();
         outStream.close();
     }
-    @RequestMapping(value = "/json/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "{id}/json", method = RequestMethod.GET)
     @ResponseBody
     public DatasetTable getDataSetTable(@PathVariable int id) throws ResourceNotFoundException {
 
-        return this.datasetTableDataService.getFullDatasetTableDefinition(id);
+        DatasetTable dTable =  this.datasetTableDataService.getFullDatasetTableDefinition(id);
+        return dTable;
     }
 
     @ExceptionHandler(EmptyParameterException.class)

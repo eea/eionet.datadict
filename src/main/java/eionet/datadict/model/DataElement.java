@@ -37,9 +37,9 @@ public abstract class DataElement implements AttributeOwner {
     private Namespace namespace;
     @OneToOne(mappedBy = "dataElement")
     private DatasetTableElement datasetTableElement;
-    private Set<SimpleAttribute> simpleAttributes;
+    private Set<Attribute> attributes;
     @OneToMany(mappedBy = "owner")
-    private Set<SimpleAttributeValues> simpleAttributesValues;
+    private Set<AttributeValue> atributesValues;
 
     public DataElement() {
         super();
@@ -114,15 +114,23 @@ public abstract class DataElement implements AttributeOwner {
         this.datasetTableElement = datasetTableElement;
     }
 
-    @Override
-    public Set<SimpleAttributeValues> getSimpleAttributesValues() {
-        return simpleAttributesValues;
+    public Set<Attribute> getAttributes() {
+        return attributes;
     }
 
-    @Override
-    public void setSimpleAttributesValues(Set<SimpleAttributeValues> simpleAttributeValues) {
-        this.simpleAttributesValues = simpleAttributeValues;
+    public void setAttributes(Set<Attribute> attributes) {
+        this.attributes = attributes;
     }
+
+    public Set<AttributeValue> getAtributesValues() {
+        return atributesValues;
+    }
+
+    public void setAtributesValues(Set<AttributeValue> atributesValues) {
+        this.atributesValues = atributesValues;
+    }
+
+    
 
     public abstract ValueType getValueType();
 

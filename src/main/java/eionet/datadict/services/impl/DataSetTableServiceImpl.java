@@ -56,8 +56,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
         DatasetTable dataSetTable = this.datasetTableDataService.getFullDatasetTableDefinition(id);
-        List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dataSetTable.getId());
-        List<Attribute> dataSetTableAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T));
         int datasetId = dataSetTable.getDataSet().getId();
 
         try {
@@ -118,7 +116,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             rowElement.appendChild(rowComplexType);
             Element rowSequence = elMaker.createElement(DataDictXMLConstants.SEQUENCE);
             rowComplexType.appendChild(rowSequence);
-            for (DataElement dataElement : dataElements) {
+            for (DataElement dataElement : dataSetTable.getDataElements()) {
                 Element tableElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
                 tableElement.setAttribute(DataDictXMLConstants.REF, dataElement.getShortName());
                 tableElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, "1");

@@ -18,7 +18,7 @@ public class DataSet implements AttributeOwner {
     private Set<DatasetTable> datasetTables;
     private Set<Attribute> attributes;
     @OneToMany(mappedBy = "owner")
-    private Set<SimpleAttributeValues> simpleAttributesValues;
+    private Set<AttributeValue> attributesValues;
     private String shortName;
     private Integer version;
     private String visual;
@@ -79,14 +79,12 @@ public class DataSet implements AttributeOwner {
         this.datasetTables = datasetTables;
     }
 
-    @Override
-    public Set<SimpleAttributeValues> getSimpleAttributesValues() {
-        return simpleAttributesValues;
+    public Set<AttributeValue> getAttributesValues() {
+        return attributesValues;
     }
 
-    @Override
-    public void setSimpleAttributesValues(Set<SimpleAttributeValues> simpleAttributeValues) {
-        this.simpleAttributesValues = simpleAttributeValues;
+    public void setAttributesValues(Set<AttributeValue> attributesValues) {
+        this.attributesValues = attributesValues;
     }
 
     public String getShortName() {

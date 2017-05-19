@@ -3,6 +3,8 @@ package eionet.datadict.model;
 import eionet.datadict.model.enums.Enumerations.AttributeDataType;
 import eionet.meta.dao.domain.VocabularyFolder;
 import java.util.Set;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 public class Attribute {
 
@@ -89,7 +91,7 @@ public class Attribute {
         }
         
     }
-    
+    @Id
     private Integer id;
     private Integer displayOrder;
     private Integer displayWidth;
@@ -107,7 +109,9 @@ public class Attribute {
     private AttributeDataType dataType;
     private ObligationType obligationType;
     private ValueInheritanceMode valueInheritanceMode;
-
+    
+    
+    @ManyToOne
     private Namespace namespace;
     private RdfNamespace rdfNamespace;
     

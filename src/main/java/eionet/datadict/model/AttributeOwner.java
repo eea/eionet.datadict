@@ -12,8 +12,8 @@ public interface AttributeOwner {
     
     void setAttributes(Set<Attribute> attributes);
     
-    Set<SimpleAttributeValues> getSimpleAttributesValues();
+    Set<AttributeValue> getAttributesValues();
     
-    void setSimpleAttributesValues(Set<SimpleAttributeValues> simpleAttributesValues);
+    void setAttributesValues(Set<AttributeValue> attributesValues);
     
 }

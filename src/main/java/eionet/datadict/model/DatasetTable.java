@@ -12,8 +12,8 @@ import javax.persistence.OneToMany;
 
 
 
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-//@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class DatasetTable implements AttributeOwner {
 
     @Id
@@ -39,7 +39,7 @@ public class DatasetTable implements AttributeOwner {
     @JsonIgnore
     private Set<Attribute> attributes;
     @OneToMany(mappedBy = "owner")
-    private Set<SimpleAttributeValues> simpleAttributesValues;
+    private Set<AttributeValue> attributesValues;
 
     public DatasetTable() {
         super();
@@ -177,16 +177,14 @@ public class DatasetTable implements AttributeOwner {
         this.attributes = attributes;
     }
 
-
-    @Override
-    public Set<SimpleAttributeValues> getSimpleAttributesValues() {
-        return simpleAttributesValues;
+    public Set<AttributeValue> getAttributesValues() {
+        return attributesValues;
     }
 
-    @Override
-    public void setSimpleAttributesValues(Set<SimpleAttributeValues> simpleAttributeValues) {
-        this.simpleAttributesValues = simpleAttributeValues;
+    public void setAttributesValues(Set<AttributeValue> attributesValues) {
+        this.attributesValues = attributesValues;
     }
+
 
     @Override
     public boolean equals(Object obj) {

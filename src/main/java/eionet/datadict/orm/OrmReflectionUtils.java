@@ -56,9 +56,14 @@ class OrmReflectionUtils {
                 if (manyToOneAnnotation != null) {
                     return obj.getType().equals(parentType);
                 }
-                
-                OneToOne oneToOneAnnotation = obj.getAnnotation(OneToOne.class);
-                
+              Class[] infs =  parentType.getInterfaces();
+              
+                OneToOne oneToOneAnnotation = parentType.getAnnotation(OneToOne.class);
+                for (Class inf : infs) {
+                    if (obj.getType().equals(inf)&& (oneToOneAnnotation != null||(obj.getAnnotation(OneToOne.class))!=null)) {
+                        return true;
+                    }
+                }
                 return oneToOneAnnotation != null && obj.getType().equals(parentType);
             }
             

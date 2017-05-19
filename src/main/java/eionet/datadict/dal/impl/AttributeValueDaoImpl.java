@@ -2,8 +2,12 @@ package eionet.datadict.dal.impl;
 
 import eionet.datadict.commons.util.IterableUtils;
 import eionet.datadict.dal.AttributeValueDao;
+import eionet.datadict.model.Attribute;
 import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
+import eionet.datadict.model.DataElement;
+import eionet.datadict.model.DataSet;
+import eionet.datadict.model.DatasetTable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -145,8 +149,22 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
             String parentType = rs.getString("PARENT_TYPE");
             Integer parentId = rs.getInt("DATAELEM_ID");
             DataDictEntity parentEntity = new DataDictEntity(parentId, DataDictEntity.Entity.getFromString(parentType));
+            
+            switch(DataDictEntity.Entity.getFromString(parentType)) {
+            
+                case DS:  attrValue.setOwner((DataSet)new DataSet(parentId));
+                          break;
+               case T:  attrValue.setOwner((DatasetTable)new DatasetTable(parentId));
+                          break;
+            
+            }
+            
+            
             attrValue.setParentEntity(parentEntity);
             attrValue.setValue(rs.getString("VALUE"));
+            Attribute at= new Attribute();
+            at.setId(rs.getInt("M_ATTRIBUTE_ID"));
+            attrValue.setAttribute(at);
             return attrValue;
         }
 
