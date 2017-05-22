@@ -119,14 +119,16 @@
                 trailer = trailer + "&obj_id=" + document.forms["Upload"].elements["obj_id"].value;
 
                 var oType = document.forms["Upload"].elements["obj_type"];
-                if (oType != null)
+                if (oType != null) {
                     trailer = trailer + "&obj_type=" + oType.value;
+                }
 
                 var oAttrID = document.forms["Upload"].elements["attr_id"];
-                if (oAttrID != null)
+                if (oAttrID != null) {
                     trailer = trailer + "&attr_id=" + oAttrID.value;
+                }
 
-                document.forms["Upload"].action = document.forms["Upload"].action + trailer;
+                document.forms["Upload"].action = document.forms["Upload"].action + encodeURI(trailer);
                 document.forms["Upload"].submit();
             }
         }

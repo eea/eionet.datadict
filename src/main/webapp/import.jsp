@@ -79,16 +79,14 @@
         }
 
         if (ok == true){
-            
             var qryStr = "?fileORurl=" + radio + "&url_input=" + url + "&type=" + type;
             <%
-            if (mode.equals("FXV")){ %>
+            if (mode.equals("FXV")) { %>
                 qryStr = qryStr + "&delem_id=<%=delem_id%>";<%
             }
             %>
             
-            document.forms["Upload"].action = document.forms["Upload"].action + qryStr;
-            //alert(document.forms["Upload"].action);
+            document.forms["Upload"].action = document.forms["Upload"].action + encodeURI(qryStr);
             document.forms["Upload"].submit();
         }
     }

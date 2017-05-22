@@ -66,13 +66,14 @@
             var trailer = "?fileORurl=" + radio + "&url_input=" + url + "&file_input=" + file;
             trailer = trailer + "&ds_id=" + document.forms["Upload"].elements["ds_id"].value;
             var oVisual = document.forms["Upload"].elements["visual"];
-            if (oVisual != null)
+            if (oVisual != null) {
                 trailer = trailer + "&visual=" + oVisual.value;
+            }
             var oStrType = document.forms["Upload"].elements["str_type"];
-            if (oStrType != null)
+            if (oStrType != null) {
                 trailer = trailer + "&str_type=" + oStrType.value;
-            document.forms["Upload"].action = document.forms["Upload"].action + trailer;
-            //alert(document.forms["Upload"].action);
+            }
+            document.forms["Upload"].action = document.forms["Upload"].action + encodeURI(trailer);
             document.forms["Upload"].submit();
         }
     }
