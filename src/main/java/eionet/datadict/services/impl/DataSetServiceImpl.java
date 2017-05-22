@@ -140,8 +140,8 @@ public class DataSetServiceImpl implements DataSetService {
             Document doc = docBuilder.newDocument();
             Element schemaRoot = doc.createElement(dataset.getShortName());
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
-            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + DataDictXMLConstants.SCHEMA_LOCATION, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-            schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataset.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
+            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE +":"+ DataDictXMLConstants.XSI_PREFIX, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+            schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX+":" + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataset.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
 
             for (DatasetTable dsTable : dsTables) {
                 String tableNS = DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId();
@@ -153,6 +153,7 @@ public class DataSetServiceImpl implements DataSetService {
                 List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dsTable.getId());
                 for (DataElement dataElement : dataElements) {
                     Element xmlDataElement = doc.createElementNS(tableNS, dataElement.getShortName());
+                    //Value: &#x200B; Represents the empty node
                     xmlDataElement.appendChild(doc.createTextNode(""));
                     row.appendChild(xmlDataElement);
                 }

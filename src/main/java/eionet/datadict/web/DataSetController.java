@@ -51,7 +51,7 @@ public class DataSetController {
         return "it works";
     }
 
-    @RequestMapping(value = "/schema/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(value = "/{id}/schema", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public void getDataSetSchema(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
 
@@ -74,7 +74,7 @@ public class DataSetController {
         outStream.close();
     }
     
-    @RequestMapping(value = "/instance/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(value = "/{id}/instance", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public void getDataSetInstance(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
 
