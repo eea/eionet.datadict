@@ -4,6 +4,8 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
@@ -11,17 +13,24 @@
         http://www.springframework.org/schema/context/spring-context-3.0.xsd
         http://www.springframework.org/schema/tx
         http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
         http://www.springframework.org/schema/mvc
-        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-    
 
     <!-- Scans within the base package of the application for @Components
     to configure as beans -->
-    <context:component-scan base-package="eionet.meta, eionet.datadict, eionet.web, eionet.doc"/>
+    <context:annotation-config/>
+    <context:component-scan base-package="eionet.meta, eionet.datadict, eionet.web, eionet.doc,eionet.datadict.security"/>
     <context:spring-configured/>
-        <mvc:annotation-driven/>
+    <aop:aspectj-autoproxy>
+    </aop:aspectj-autoproxy>
+    <task:annotation-driven/>
+    <mvc:annotation-driven/>
+
 
     <bean id="appConfigDefinitionProvider" class="eionet.propertyplaceholderresolver.ConfigurationDefinitionProviderImpl">
         <constructor-arg index="0">
@@ -95,7 +104,7 @@
 
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-           destroy-method="close" primary="true">
+          destroy-method="close" primary="true">
         <property name="driverClassName" value="${db.drv}"/>
         <property name="url" value="${db.url}"/>
         <property name="username" value="${db.usr}"/>
@@ -134,6 +143,7 @@
 
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="${smtp.host}"/>
+        <property name="port" value="${smtp.port}"/>
         <property name="username" value="${smtp.username}"/>
         <property name="password" value="${smtp.password}"/>
         <property name="javaMailProperties">

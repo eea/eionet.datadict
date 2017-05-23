@@ -57,7 +57,7 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", elementId);
         try {    
-            return this.getNamedParameterJdbcTemplate().queryForInt(sql, params);
+            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }

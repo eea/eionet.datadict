@@ -6,7 +6,38 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Enumerations {
-    
+
+    public enum VocabularyRdfPurgeOption {
+
+        DELETE_VOCABULARY_DATA(4),
+        PURGE_VOCABULARY_DATA(3),
+        PURGE_PREDICATE_BASIS(2),
+        DONT_PURGE(1);
+        private final int rdfPurgeOption;
+
+        private VocabularyRdfPurgeOption(int rdfPurgeOption) {
+            this.rdfPurgeOption = rdfPurgeOption;
+        }
+
+        public int getRdfPurgeOption() {
+            return rdfPurgeOption;
+        }
+
+        public static String translateRDFPurgeOptionNumberToEnum(int rdfPurgeOption){
+            switch(rdfPurgeOption){
+                case 1:
+                    return DONT_PURGE.toString();
+                case 2:
+                    return PURGE_PREDICATE_BASIS.toString();
+                case 3: 
+                    return PURGE_VOCABULARY_DATA.toString();
+                case 4:
+                    return DELETE_VOCABULARY_DATA.toString();
+            }
+            throw new IllegalArgumentException("Integer:"+rdfPurgeOption+" doesn't exist as an RdfPurgeOption");
+        }
+    }
+
     /**
      * Used for the eionet.datadict.model.AttributeDefinition
      */
@@ -206,5 +237,29 @@ public class Enumerations {
         }
         
     }
-    
+
+    public enum SchedulingIntervalUnit {
+        MINUTE(1, "minute(s)"), 
+        HOUR(60, "hour(s)"), 
+        DAY(24 * 60, "day(s)"),
+        WEEK(7 * 24 * 60, "week(s)");
+
+        private final int minutes;
+        private final String label;
+
+        SchedulingIntervalUnit(int minutes, String label) {
+            this.minutes = minutes;
+            this.label = label;
+        }
+
+        public int getMinutes() {
+            return minutes;
+        }
+
+        public String getLabel() {
+            return this.label;
+        }
+
+    }
+
 }

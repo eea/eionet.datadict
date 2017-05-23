@@ -21,6 +21,7 @@ import org.junit.Assert;
 
 import eionet.DDDatabaseTestCase;
 import eionet.meta.ActionBeanUtils;
+import javax.servlet.WriteListener;
 
 /**
  *
@@ -52,8 +53,8 @@ public class OdsServletTest extends DDDatabaseTestCase {
         initializeForTests();
         /**
          * Manually Invoke InitializeRequiredStartupFiles to initialize needed
-         * files for OdsServlet class 
-        *
+         * files for OdsServlet class
+         *
          */
         ActionBeanUtils.getServletContext();
     }
@@ -507,6 +508,16 @@ public class OdsServletTest extends DDDatabaseTestCase {
             if (this.saveInput) {
                 this.baos.write(b);
             }
+        }
+
+        @Override
+        public boolean isReady() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     } // end of inner class EnvServletOutputStream
 

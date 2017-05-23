@@ -321,7 +321,7 @@ HashSet statuses = null;
             }
 
             // now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
-            openNoYes("yesno_dialog.html", "Do you want the selected datasets to be deleted permanently?\n(Note that working copies will always be permanently deleted)", delDialogReturn,100, 400);
+            openNoYes("${pageContext.request.contextPath}/yesno_dialog.html", "Do you want the selected datasets to be deleted permanently?\n(Note that working copies will always be permanently deleted)", delDialogReturn,100, 400);
         }
 
         function generateCombinedPdf() {

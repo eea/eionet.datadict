@@ -21,11 +21,6 @@
 
 package eionet.meta.service;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -65,12 +60,21 @@ import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
+import eionet.util.Pair;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Triple;
 import eionet.util.Util;
 import eionet.web.action.ErrorActionBean;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.context.annotation.DependsOn;
@@ -131,6 +135,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Autowired
     private IRdfNamespaceDAO rdfNamespaceDAO;
+
+    private static final int BATCH_SIZE = 1000;
 
     /**
      * {@inheritDoc}
@@ -274,26 +280,19 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     public VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy) throws ServiceException {
-        try {
             VocabularyFolder result = vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, workingCopy);
-
+            if (result==null){
+             ServiceException se =
+                    new ServiceException("Vocabulary set \"" + folderName + "\" or vocabulary identifier \"" + identifier
+                            + "\" not found!");
+            se.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.NOT_FOUND_404);
+            throw se;
+            }
             // Load attributes
             List<List<SimpleAttribute>> attributes = attributeDAO.getVocabularyFolderAttributes(result.getId(), true);
             result.setAttributes(attributes);
 
             return result;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            ServiceException se =
-                    new ServiceException("Vocabulary set \"" + folderName + "\" or vocabulary identifier \"" + identifier
-                            + "\" not found!", e);
-            se.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.NOT_FOUND_404);
-            throw se;
-        } catch (Exception e) {
-            String parameters =
-                    "folderName=" + String.valueOf(folderName) + "; identifier=" + String.valueOf(identifier) + "; workingCopy="
-                            + workingCopy;
-            throw new ServiceException("Failed to get vocabulary folder (" + parameters + "):" + e.getMessage(), e);
-        }
     }
 
     /**
@@ -678,58 +677,59 @@ public class VocabularyServiceImpl implements IVocabularyService {
             int originalVocabularyFolderId = vocabularyFolder.getCheckedOutCopyId();
 
             if (!vocabularyFolder.isSiteCodeType()) {
-                List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(originalVocabularyFolderId);
-                injectDataElementValuesInConcepts(concepts, originalVocabularyFolderId);
-                for (VocabularyConcept concept : concepts) {
-                    List<List<DataElement>> elems = concept.getElementAttributes();
-                    for (List<DataElement> elemMeta : elems) {
-                        if (!elemMeta.isEmpty() && elemMeta.get(0).getDatatype().equals("reference")) {
-                            dataElementDAO.deleteReferringInverseElems(concept.getId(), elemMeta);
-                        }
-                    }
-                }
+                List<VocabularyConcept> concepts = getAllConceptsWithAttributes(originalVocabularyFolderId);
+
+                Map<Integer, DataElement> conceptAttributes = vocabularyConceptDAO.getVocabularyConceptAttributes(originalVocabularyFolderId);
+
+                // delete relations for inverse attibute values
+                deleteInverseElementsRelations(conceptAttributes.values(), concepts);
 
                 // referenced attribute values in this vocabulary must get new id's
                 vocabularyConceptDAO.updateReferringReferenceConcepts(originalVocabularyFolderId);
 
-                // Remove old vocabulary concepts
+                // remove old vocabulary concepts
                 vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
 
-                // Remove old data element relations
+                // remove old data element relations
                 dataElementDAO.deleteVocabularyDataElements(originalVocabularyFolderId);
+
                 // update ch3 element reference
                 dataElementDAO.moveVocabularySources(originalVocabularyFolderId, vocabularyFolderId);
-
             }
 
-            // Update original vocabulary folder
+            // update original vocabulary folder
             vocabularyFolder.setCheckedOutCopyId(0);
             vocabularyFolder.setId(originalVocabularyFolderId);
             vocabularyFolder.setUserModified(userName);
             vocabularyFolder.setDateModified(new Date());
             vocabularyFolder.setWorkingCopy(false);
             vocabularyFolder.setWorkingUser(null);
+
             vocabularyFolderDAO.updateVocabularyFolder(vocabularyFolder);
 
             if (!vocabularyFolder.isSiteCodeType()) {
-                // Move new vocabulary concepts to folder
+                // move new vocabulary concepts to folder
                 vocabularyConceptDAO.moveVocabularyConcepts(vocabularyFolderId, originalVocabularyFolderId);
 
-                // Move bound data elements to new vocabulary
+                // move bound data elements to new vocabulary
                 dataElementDAO.moveVocabularyDataElements(vocabularyFolderId, originalVocabularyFolderId);
+                
+                List<VocabularyConcept> concepts = getAllConceptsWithAttributes(originalVocabularyFolderId);
 
-                List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(originalVocabularyFolderId);
-                injectDataElementValuesInConcepts(concepts, originalVocabularyFolderId);
-                fixRelatedReferenceElements(vocabularyFolderId, concepts);
+                Map<Integer, DataElement> conceptAttributes = vocabularyConceptDAO.getVocabularyConceptAttributes(originalVocabularyFolderId);
+
+                // create relations for inverse attibute values
+                createInverseElementsRelations(conceptAttributes.values(), concepts);
             }
 
-            // Delete old attributes first and then change the parent ID of the new ones
+            // delete old attributes first and then change the parent ID of the new ones
             attributeDAO.deleteAttributes(Collections.singletonList(originalVocabularyFolderId),
                     DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
+
             attributeDAO.replaceParentId(vocabularyFolderId, originalVocabularyFolderId,
                     DElemAttribute.ParentType.VOCABULARY_FOLDER);
 
-            // Delete checked out version
+            // delete checked out version
             vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId), false);
 
             timer.stop();
@@ -737,6 +737,141 @@ public class VocabularyServiceImpl implements IVocabularyService {
             return originalVocabularyFolderId;
         } catch (Exception e) {
             throw new ServiceException("Failed to check-in vocabulary folder: " + e.getMessage(), e);
+        }
+    }
+
+    private List<Integer> getReferenceDataElementIds(Collection<DataElement> dataElements) {
+        List<Integer> referenceDataElementIds = new ArrayList<Integer>();
+        if (!dataElements.isEmpty()) {
+            for (Iterator<DataElement> it = dataElements.iterator(); it.hasNext();) {
+                DataElement element = it.next();
+                if (element.getDatatype().equals("reference")) {
+                    referenceDataElementIds.add(element.getId());
+                }
+            }
+        }
+        return referenceDataElementIds;
+    }
+
+    private void deleteInverseElementsRelations(Collection<DataElement> dataElements, List<VocabularyConcept> concepts) {
+        List<Integer> referenceDataElementIds = getReferenceDataElementIds(dataElements);
+
+        if (!referenceDataElementIds.isEmpty()) {
+            Map<Integer, Collection<Integer>> inverseElementIdsToConceptIds = new HashMap<Integer, Collection<Integer>>();
+
+            // find inverse data elements
+            for (Iterator<Integer> it = referenceDataElementIds.iterator(); it.hasNext();) {
+                int inverseElementId = dataElementDAO.getInverseElementID(it.next());
+                if (inverseElementId > 0) {
+                    inverseElementIdsToConceptIds.put(inverseElementId, new ArrayList<Integer>());
+                }
+            }
+
+            if (!inverseElementIdsToConceptIds.isEmpty()) {
+                for (VocabularyConcept concept : concepts) {
+                    List<List<DataElement>> elementAttributes = concept.getElementAttributes();
+                    for (List<DataElement> elementAttribute : elementAttributes) {
+                        if (inverseElementIdsToConceptIds.containsKey(elementAttribute.get(0).getId())) {
+                            inverseElementIdsToConceptIds.get(elementAttribute.get(0).getId()).add(concept.getId());
+                        }
+                    }
+                }
+
+                // delete relations for inverse data elements 
+                for (Iterator<Integer> it = inverseElementIdsToConceptIds.keySet().iterator(); it.hasNext();) {
+                    Integer inverseElementId = it.next();
+                    dataElementDAO.deleteRelatedConcepts(inverseElementId, inverseElementIdsToConceptIds.get(inverseElementId));
+                }
+            }
+        }
+    }
+
+    private void createInverseElementsRelations(Collection<DataElement> dataElements, List<VocabularyConcept> concepts) {
+        List<Integer> referenceDataElementIds = getReferenceDataElementIds(dataElements);
+                
+        if (!referenceDataElementIds.isEmpty()) {
+            Map<Integer, Integer> elementIdToInverseElementId = new HashMap<Integer, Integer>();
+
+            // find inverse data elements
+            for (Iterator<Integer> it = referenceDataElementIds.iterator(); it.hasNext();) {
+                Integer elementId = it.next();
+                int inverseElementId = dataElementDAO.getInverseElementID(elementId);
+                if (inverseElementId > 0) {
+                    elementIdToInverseElementId.put(elementId, inverseElementId);
+                }
+            }
+
+            if (!elementIdToInverseElementId.isEmpty()) {
+                List<Triple<Integer, Integer, Integer>> relatedReferenceElements = new ArrayList<Triple<Integer, Integer, Integer>>();
+                Map<Integer, Set<Integer>> inverseElementIdsToRelatedConceptIds = new HashMap<Integer, Set<Integer>>();
+
+                // create concepts relations
+                for (VocabularyConcept concept : concepts) {
+                    List<List<DataElement>> elems = concept.getElementAttributes();
+                    for (List<DataElement> elemMeta : elems) {
+                        Integer elementId = elemMeta.get(0).getId();
+                        if (elementIdToInverseElementId.keySet().contains(elementId)) {
+                            Integer inverseElementId = elementIdToInverseElementId.get(elementId);
+                            for (DataElement elem : elemMeta) {
+                                if (elem.getRelatedConceptId() != null && elem.getRelatedConceptId() > 0) {
+                                    Triple<Integer, Integer, Integer> triple = new Triple<Integer, Integer, Integer>(elem.getRelatedConceptId(), inverseElementId, concept.getId());
+                                    relatedReferenceElements.add(triple);
+
+                                    if (inverseElementIdsToRelatedConceptIds.get(inverseElementId) == null) {
+                                        Set<Integer> relatedConceptIds = new HashSet<Integer>();
+                                        relatedConceptIds.add(elem.getRelatedConceptId());
+                                        inverseElementIdsToRelatedConceptIds.put(inverseElementId, relatedConceptIds);
+                                    } else {
+                                        inverseElementIdsToRelatedConceptIds.get(inverseElementId).add(elem.getRelatedConceptId());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                List<Pair<Integer, Integer>> vocabularyIdToDataElementId = new ArrayList<Pair<Integer, Integer>>();
+                List<Triple<Integer, Integer, Integer>> inverseRelatedReferenceElements = new ArrayList<Triple<Integer, Integer, Integer>>();
+
+                for (Iterator<Integer> it = inverseElementIdsToRelatedConceptIds.keySet().iterator(); it.hasNext();) {
+                    final Integer inverseElementId = it.next();
+                    Set<Integer> relatedConceptIds = inverseElementIdsToRelatedConceptIds.get(inverseElementId);
+
+                    // get the distinct vocabulary ids of the related concepts
+                    Collection<Integer> relatedConceptsVocabularyIds = vocabularyFolderDAO.getVocabularyIds(relatedConceptIds);
+                    for (Iterator<Integer> it1 = relatedConceptsVocabularyIds.iterator(); it1.hasNext();) {
+                        vocabularyIdToDataElementId.add(new Pair<Integer, Integer>(it1.next(), inverseElementId));
+                    }
+
+                    // get the checked out vocabulary ids from the related concepts vocabularies
+                    Collection<Integer> workingCopyVocabularyIds = vocabularyFolderDAO.getWorkingCopyIds(relatedConceptsVocabularyIds);
+                    if (!workingCopyVocabularyIds.isEmpty()) {
+                        for (Iterator<Integer> it1 = workingCopyVocabularyIds.iterator(); it1.hasNext();) {
+                            vocabularyIdToDataElementId.add(new Pair<Integer, Integer>(it1.next(), inverseElementId));
+                        }
+
+                        // get the checked out to original id mappings for the related concepts
+                        final Map<Integer, Integer> checkedOutToOriginalMappings = vocabularyConceptDAO.getCheckedOutToOriginalMappings(relatedConceptIds);
+
+                        for (Iterator<Integer> it1 = checkedOutToOriginalMappings.keySet().iterator(); it1.hasNext();) {
+                            final Integer checkedOutConceptId = it1.next();
+
+                            // create checked out concepts relations
+                            for (Iterator<Triple<Integer, Integer, Integer>> it2 = relatedReferenceElements.iterator(); it2.hasNext();) {
+                                Triple<Integer, Integer, Integer> triple = it2.next();
+                                if (triple.getCentral().equals(inverseElementId) && triple.getLeft().equals(checkedOutToOriginalMappings.get(checkedOutConceptId))) {
+                                    inverseRelatedReferenceElements.add(new Triple<Integer, Integer, Integer>(checkedOutConceptId, inverseElementId, triple.getRight()));
+                                }
+                            }
+                        }
+                    }
+                }
+                // add the checked out concepts relations to the original concepts list
+                relatedReferenceElements.addAll(inverseRelatedReferenceElements);
+
+                dataElementDAO.batchCreateVocabularyBoundElements(vocabularyIdToDataElementId, BATCH_SIZE);
+                dataElementDAO.batchCreateInverseRelations(relatedReferenceElements, BATCH_SIZE);
+            }
         }
     }
 
@@ -1525,4 +1660,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
         dataElementDAO.batchCreateInverseElements(relatedReferenceElements, batchSize);
     }
 
+    @Override
+    public boolean hasVocabularyWorkingCopy(String folderName, String identifier) {
+        VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, true);
+        return (vocabulary != null) ? true : false;
+    }
 }

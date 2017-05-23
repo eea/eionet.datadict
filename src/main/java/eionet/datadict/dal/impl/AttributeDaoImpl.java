@@ -4,8 +4,6 @@ import eionet.datadict.model.Attribute;
 import eionet.datadict.model.enums.Enumerations.AttributeDataType;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -19,8 +17,10 @@ import eionet.datadict.model.RdfNamespace;
 import eionet.datadict.model.SimpleAttributeValues;
 import eionet.datadict.util.data.DataConverter;
 import eionet.meta.dao.domain.VocabularyFolder;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -70,7 +70,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);
 
-        int count = getNamedParameterJdbcTemplate().queryForInt(sql, params);
+        int count = getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
         if (count > 0) {
             return true;
         } else {
@@ -153,7 +153,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         String sql = "select count(Distinct(PARENT_TYPE), DATAELEM_ID) from ATTRIBUTE where M_ATTRIBUTE_ID = :id and not PARENT_TYPE = ''";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", attributeId);
-        return getNamedParameterJdbcTemplate().queryForInt(sql, params);
+        return getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
     }
 
     @Override
@@ -201,7 +201,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         Map<String, Object> params = this.createParameterMap();
         params.put("attributeId", attributeId);
         try {
-            return this.getNamedParameterJdbcTemplate().queryForInt(sql, params);
+            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
         } catch (IncorrectResultSizeDataAccessException ex) {
             return null;
         }

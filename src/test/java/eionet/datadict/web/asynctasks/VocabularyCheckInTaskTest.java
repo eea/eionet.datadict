@@ -53,7 +53,7 @@ public class VocabularyCheckInTaskTest {
         
         String resultUrl = this.task.composeResultUrl(null, null);
         
-        assertThat(resultUrl, is(equalTo(String.format("/vocabulary/%s/%s/", vocabularySetIdentifier, vocabularyIdentifier))));
+        assertThat(resultUrl, is(equalTo(String.format("/vocabulary/%s/%s", vocabularySetIdentifier, vocabularyIdentifier))));
         verify(this.task, times(1)).getVocabularySetIdentifier();
         verify(this.task, times(1)).getVocabularyIdentifier();
     }

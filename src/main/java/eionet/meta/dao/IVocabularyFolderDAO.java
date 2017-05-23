@@ -29,6 +29,7 @@ import eionet.meta.dao.domain.VocabularySet;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
+import java.util.Collection;
 
 /**
  * Vocabulary DAO interface.
@@ -114,7 +115,7 @@ public interface IVocabularyFolderDAO {
      *            vocabulary identifier
      * @param workingCopy
      *            if to return working copy
-     * @return Vocabulary folder
+     * @return Vocabulary folder or null Object if No VocabularyFolder Is Found
      */
     VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy);
 
@@ -258,7 +259,7 @@ public interface IVocabularyFolderDAO {
      *          the vocabulary ID
      * @return a vocabulary set
      */
-    VocabularySet getVocabularySet( int vocabularyID );
+    VocabularySet getVocabularySet(int vocabularyID);
     
 
     /**
@@ -268,7 +269,7 @@ public interface IVocabularyFolderDAO {
      * @param vocabularyID
      * @return list of Triple
      */
-    List<Triple<Integer,Integer,Integer>> getVocabulariesRelation( int vocabularyID );
+    List<Triple<Integer,Integer,Integer>> getVocabulariesRelation(int vocabularyID);
 
     /**
      * Returns a list of Vocabulary Concept elements IDs with which the Vocabulary Concept identified by vocabularyConceptID is related to
@@ -278,5 +279,10 @@ public interface IVocabularyFolderDAO {
      * @param relatedVocabularyID a specific related vocabulary ID
      * @return 
      */
-    List<Integer> getRelatedVocabularyConcepts( int vocabularyConceptID, int relationshipElementID, int relatedVocabularyID );
+    List<Integer> getRelatedVocabularyConcepts(int vocabularyConceptID, int relationshipElementID, int relatedVocabularyID);
+
+    Collection<Integer> getVocabularyIds(Collection<Integer> vocabularyConceptIds);
+
+    Collection<Integer> getWorkingCopyIds(Collection<Integer> vocabularyIds);
+
 }

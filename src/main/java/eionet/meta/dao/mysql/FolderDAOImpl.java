@@ -88,7 +88,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
         sql.append("select count(ID) from VOCABULARY_SET ");
         sql.append("where IDENTIFIER = :identifier and ID != :excludedId");
 
-        int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
+        int result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), parameters,Integer.class);
 
         return result == 0;
     }
@@ -123,7 +123,7 @@ public class FolderDAOImpl extends GeneralDAOImpl implements IFolderDAO {
         sql.append("select count(VOCABULARY_ID) from VOCABULARY ");
         sql.append("where FOLDER_ID = :folderId ");
 
-        int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
+        int result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), parameters,Integer.class);
 
         return result == 0;
     }

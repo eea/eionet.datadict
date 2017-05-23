@@ -514,7 +514,7 @@
 
         function openElements(uri){
             //uri = uri + "&open=true";
-            wElems = window.open(uri,"TableElements","height=500,width=750,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=yes");
+            wElems = window.open(uri,"TableElements","height=800,width=1200,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=yes");
             if (window.focus) {wElems.focus()}
         }
 
@@ -570,7 +570,7 @@
             
 
             var url='/search_table.jsp?ctx=popup';
-            wAdd = window.open(context+url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
+            wAdd = window.open(context+url,"Search","height=800,width=1200,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
             if (window.focus){wAdd.focus();}
         }
 
@@ -1281,7 +1281,7 @@ else if (mode.equals("add"))
                                                         <td colspan="3">
                                                             <input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
                                                             <input type="submit" class="mediumbuttonb" value="Copy"
-                                                                onclick="copyTbl('<%=request.getContextPath()%>')"
+                                                                onclick="copyTbl('<%=request.getContextPath()%>'); return false;"
                                                                 title="Copies table structure and attributes from existing dataset table"/>
                                                         </td>
                                                     </tr><%

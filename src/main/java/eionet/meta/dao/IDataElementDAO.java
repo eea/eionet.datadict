@@ -31,6 +31,7 @@ import eionet.meta.service.data.DataElementsFilter;
 
 import java.sql.SQLException;
 import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
+import eionet.util.Pair;
 import eionet.util.Triple;
 import java.util.Collection;
 import java.util.List;
@@ -340,7 +341,7 @@ public interface IDataElementDAO {
      *            element id
      * @return data element id or null if no inverse element
      */
-    Integer getInverseElementID(int dataElementId);
+    int getInverseElementID(int dataElementId);
 
     /**
      * deletes references in other vocabularies for this vocabulary concepts.
@@ -461,5 +462,11 @@ public interface IDataElementDAO {
     List<Integer> getOrphanNonCommonDataElementIds();
 
     int delete(List<Integer> ids);
+
+    void deleteRelatedConcepts(int dataElementId, Collection<Integer> relatedConceptIds);
+
+    int[][] batchCreateVocabularyBoundElements(List<Pair<Integer, Integer>> vocabularyIdToDataElementId, int batchSize);
+
+    int[][] batchCreateInverseRelations(List<Triple<Integer, Integer, Integer>> relatedReferenceElements, int batchSize);
 
 }

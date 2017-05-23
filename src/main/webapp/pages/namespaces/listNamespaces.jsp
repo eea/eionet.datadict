@@ -36,7 +36,7 @@
                 <c:out value="${actionBean.sitePrefix}namespace.jsp?ns_id=${datasetNamespace.ID}" />
             </display:column>
             <display:column title="Identifier">
-                <c:out value="${datasetNamespace.shortName}" />
+                <c:out value="${datasetNamespace.fullName}" />
             </display:column>
         </display:table>
 

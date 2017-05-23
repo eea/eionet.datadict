@@ -53,7 +53,7 @@ public class VocabularyCheckInTask implements AsyncTask {
 
     @Override
     public String composeResultUrl(String taskId, Object result) {
-        return String.format("/vocabulary/%s/%s/", this.getVocabularySetIdentifier(), this.getVocabularyIdentifier());
+        return String.format("/vocabulary/%s/%s", this.getVocabularySetIdentifier(), this.getVocabularyIdentifier());
     }
 
     @Override

@@ -49,7 +49,7 @@ public class DatasetTableDaoImpl extends JdbcDaoBase implements DatasetTableDao 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("tableId", tableId);
         try {
-            return this.getNamedParameterJdbcTemplate().queryForInt(sql, params);
+            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
         }catch (EmptyResultDataAccessException ex) {
             return null;
         }          

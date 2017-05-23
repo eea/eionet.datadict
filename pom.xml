@@ -10,8 +10,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <env>default</env>
-        <java_version>1.6</java_version>
-        <spring.version>3.2.2.RELEASE</spring.version>
+        <java_version>1.8</java_version>
+        <spring.version>4.3.5.RELEASE</spring.version>
+       <spring-security-version>4.2.0.RELEASE</spring-security-version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
         <sesame.openrdf.version>2.7.10</sesame.openrdf.version>
         <jackson-version>2.4.0</jackson-version>
@@ -62,7 +63,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.5.1</version>
                 <inherited>true</inherited>
                 <configuration>
                     <verbose>false</verbose>
@@ -197,7 +198,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
@@ -208,11 +208,10 @@
                     </formats>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.5</version>
+                <version>1.8</version>
                 <configuration>
                     <source>${java_version}</source>
                     <target>${java_version}</target>
@@ -233,13 +232,11 @@
                     </execution>
                 </executions>
             </plugin>
-
             <!-- FindBugs Static Analysis
                  Find Security Bugs: https://github.com/h3xstream/find-sec-bugs/wiki/Maven-configuration
                  To only find security bugs, add these filters
                  <includeFilterFile>${session.executionRootDirectory}/doc/findbugs-security-include.xml</includeFilterFile>
                  <excludeFilterFile>${session.executionRootDirectory}/doc/findbugs-security-exclude.xml</excludeFilterFile>
-
             -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -404,6 +401,26 @@
             <version>${spring.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+         </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${spring-security-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring-security-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>${spring-security-version}</version>
+        </dependency>
+        <dependency>
             <groupId>net.sourceforge.stripes</groupId>
             <artifactId>stripes</artifactId>
             <version>1.5.6</version>
@@ -420,8 +437,10 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
+
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -439,7 +458,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
-            <version>1.7.3</version>
+            <version>1.8.7</version>
         </dependency>
         <dependency>
             <groupId>javax.persistence</groupId>
@@ -513,7 +532,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.5-FINAL</version>
+            <version>3.15</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
@@ -671,7 +690,7 @@
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-            <version>2.3.19</version>
+            <version>2.3.23</version>
         </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
@@ -787,7 +806,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -859,7 +878,9 @@
             <groupId>org.httpunit</groupId>
             <artifactId>httpunit</artifactId>
             <version>1.7.2</version>
+            <scope>test</scope>
         </dependency>
+       
         <dependency>
             <groupId>nl.bitwalker</groupId>
             <artifactId>UserAgentUtils</artifactId>
@@ -897,6 +918,28 @@
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
             <version>1.5</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Dependency Needed for spring Framework AOP -->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.8.9</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.0</version>
+        </dependency>
+         <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>6.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

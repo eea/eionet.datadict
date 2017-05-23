@@ -162,6 +162,10 @@ public interface PropsIF {
      * Maximum amount available site codes to reserve.
      */
     String SITE_CODES_MAX_RESERVE_AMOUNT = "siteCode.reserve.maxAmount";
+
+    // Site code LDAP parent roles
+    String SITE_CODE_PARENT_ROLES = "siteCode.parent.roles";
+
     /**
      * Data Dictionary Working Language.
      */
@@ -234,4 +238,5 @@ public interface PropsIF {
     /** Name of DD's own status vocabulary (that lives inside {@link PropsIF#DD_OWN_VOCABULARIES_FOLDER_NAME}). */
     String DD_OWN_STATUS_VOCABULARY_IDENTIFIER = "dd.ownStatusVocabularyIdentifier";
 
+    String NOTIFICATION_EMAIL_FROM="notification.email.from";
 }

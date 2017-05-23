@@ -358,7 +358,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         });
 
         String totalSql = "SELECT FOUND_ROWS()";
-        int totalItems = getJdbcTemplate().queryForInt(totalSql);
+        int totalItems = getJdbcTemplate().queryForObject(totalSql,Integer.class);
 
         SchemasResult result = new SchemasResult(resultList, totalItems, searchFilter);
         return result;
@@ -546,7 +546,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("filename", filename);
 
-        int count = getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+        int count = getNamedParameterJdbcTemplate().queryForObject(sql, parameters,Integer.class);
         return count > 0;
     }
 
@@ -733,7 +733,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         parameters.put("fileName", fileName);
         parameters.put("schemaSetId", schemaSetId);
 
-        int count = getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+        int count = getNamedParameterJdbcTemplate().queryForObject(sql, parameters,Integer.class);
         return count > 0;
     }
 

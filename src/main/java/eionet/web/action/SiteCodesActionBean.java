@@ -47,6 +47,7 @@ import eionet.meta.service.IEmailService;
 import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.SiteCodeServiceImpl;
 import eionet.meta.service.data.AllocationResult;
 import eionet.meta.service.data.CountryAllocations;
 import eionet.meta.service.data.PagedRequest;
@@ -473,7 +474,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      */
     public boolean isAllocateRightAsCountry() throws ServiceException {
         if (getUser() != null) {
-            List<String> countriesByRole = SecurityUtil.getUserCountriesFromRoles(getUser(), ISiteCodeService.COUNTRY_USER_ROLES);
+            List<String> countriesByRole = SecurityUtil.getUserCountriesFromRoles(getUser(), SiteCodeServiceImpl.getSiteCodeParentRoles());
             return countriesByRole != null && countriesByRole.size() > 0;
         }
 

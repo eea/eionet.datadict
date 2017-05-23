@@ -188,7 +188,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         });
 
         String totalSql = "SELECT FOUND_ROWS()";
-        int totalItems = getJdbcTemplate().queryForInt(totalSql);
+        int totalItems = getJdbcTemplate().queryForObject(totalSql,Integer.class);
 
         SchemaSetsResult result = new SchemaSetsResult(items, totalItems, searchFilter);
         return result;
@@ -201,7 +201,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     public List<SchemaSet> getSchemaSets(String userName) {
 
         // Get the ID of 'Name' attribute beforehand.
-        int nameAttrId = getJdbcTemplate().queryForInt("select M_ATTRIBUTE_ID from M_ATTRIBUTE where SHORT_NAME='Name'");
+        int nameAttrId = getJdbcTemplate().queryForObject("select M_ATTRIBUTE_ID from M_ATTRIBUTE where SHORT_NAME='Name'",Integer.class);
 
         // Now build the main sql, joining to ATTRIBUTE table via above-found ID of 'Name'.
 
@@ -599,7 +599,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("identifier", schemaSetIdentifier);
 
-        int count = getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+        int count = getNamedParameterJdbcTemplate().queryForObject(sql, parameters,Integer.class);
         return count > 0;
     }
 

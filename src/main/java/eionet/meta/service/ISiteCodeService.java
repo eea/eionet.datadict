@@ -16,10 +16,6 @@ import java.util.List;
  */
 public interface ISiteCodeService {
 
-    /** List of roles which is used for calculating users permissions on country level */
-    public static final String[] COUNTRY_USER_ROLES = {"eionet-nfp-cc", "eionet-nfp-mc", "eionet-nrc-biodivdata-cc",
-            "eionet-nrc-biodivdata-mc"};
-
     /**
      * Returns all site code countries.
      *
@@ -90,4 +86,5 @@ public interface ISiteCodeService {
      * @throws ServiceException
      */
     List<CountryAllocations> getCountryAllocations(List<FixedValue> countries) throws ServiceException;
+
 }

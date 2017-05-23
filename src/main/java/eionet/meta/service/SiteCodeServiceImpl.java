@@ -40,7 +40,10 @@ import eionet.meta.service.data.AllocationResult;
 import eionet.meta.service.data.CountryAllocations;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Site code service implementation.
@@ -77,6 +80,14 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
         }
     }
 
+    public static String[] getSiteCodeParentRoles() {
+        String siteCodeParentRolesProperty = Props.getProperty(PropsIF.SITE_CODE_PARENT_ROLES);
+        if (!StringUtils.isBlank(siteCodeParentRolesProperty)) {
+            return siteCodeParentRolesProperty.split("\\s*,\\s*");
+        }
+        return null;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -88,7 +99,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             if (user.hasPermission("/sitecodes", "u")) {
                 return allCountries;
             } else {
-                List<String> userCountries = SecurityUtil.getUserCountriesFromRoles(user, COUNTRY_USER_ROLES);
+                List<String> userCountries = SecurityUtil.getUserCountriesFromRoles(user, getSiteCodeParentRoles());
                 if (userCountries != null) {
                     List<FixedValue> userCountryFixedValues = new ArrayList<FixedValue>();
                     for (FixedValue countryFxv : allCountries) {

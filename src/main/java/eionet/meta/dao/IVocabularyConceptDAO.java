@@ -21,12 +21,15 @@
 
 package eionet.meta.dao;
 
+import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
+import java.util.Collection;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Vocabulary concept DAO interface.
@@ -273,5 +276,9 @@ public interface IVocabularyConceptDAO {
      * Returns an array containing for each batch another array containing the numbers of rows affected by each update in the batch
      */
     int[][] batchUpdateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize);
+
+    Map<Integer, DataElement> getVocabularyConceptAttributes(int vocabularyId);
+
+    Map<Integer, Integer> getCheckedOutToOriginalMappings(Collection<Integer> conceptIds);
 
 }

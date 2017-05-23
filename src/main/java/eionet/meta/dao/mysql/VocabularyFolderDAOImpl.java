@@ -43,6 +43,8 @@ import eionet.meta.dao.domain.VocabularyType;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
+import java.util.Collection;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  * Vocabulary folder DAO.
@@ -354,33 +356,36 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         sql.append("left join VOCABULARY_SET f on f.ID=v.FOLDER_ID ");
         sql.append("where v.IDENTIFIER=:identifier and v.WORKING_COPY=:workingCopy and f.IDENTIFIER=:folderIdentifier");
 
-        VocabularyFolder result =
-                getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyFolder>() {
-            @Override
-            public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
-                VocabularyFolder vf = new VocabularyFolder();
-                vf.setId(rs.getInt("v.VOCABULARY_ID"));
-                vf.setIdentifier(rs.getString("v.IDENTIFIER"));
-                vf.setLabel(rs.getString("v.LABEL"));
-                vf.setRegStatus(RegStatus.fromString(rs.getString("v.REG_STATUS")));
-                vf.setType(VocabularyType.valueOf(rs.getString("v.VOCABULARY_TYPE")));
-                vf.setWorkingCopy(rs.getBoolean("v.WORKING_COPY"));
-                vf.setWorkingUser(rs.getString("v.WORKING_USER"));
-                vf.setDateModified(rs.getTimestamp("v.DATE_MODIFIED"));
-                vf.setUserModified(rs.getString("v.USER_MODIFIED"));
-                vf.setCheckedOutCopyId(rs.getInt("v.CHECKEDOUT_COPY_ID"));
-                vf.setContinuityId(rs.getString("v.CONTINUITY_ID"));
-                vf.setNumericConceptIdentifiers(rs.getBoolean("v.CONCEPT_IDENTIFIER_NUMERIC"));
-                vf.setNotationsEqualIdentifiers(rs.getBoolean("NOTATIONS_EQUAL_IDENTIFIERS"));
-                vf.setBaseUri(rs.getString("v.BASE_URI"));
-                vf.setFolderId(rs.getShort("f.ID"));
-                vf.setFolderName(rs.getString("f.IDENTIFIER"));
-                vf.setFolderLabel(rs.getString("f.LABEL"));
-                return vf;
-            }
-        });
-
-        return result;
+        try {
+            VocabularyFolder result
+                    = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyFolder>() {
+                        @Override
+                        public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
+                            VocabularyFolder vf = new VocabularyFolder();
+                            vf.setId(rs.getInt("v.VOCABULARY_ID"));
+                            vf.setIdentifier(rs.getString("v.IDENTIFIER"));
+                            vf.setLabel(rs.getString("v.LABEL"));
+                            vf.setRegStatus(RegStatus.fromString(rs.getString("v.REG_STATUS")));
+                            vf.setType(VocabularyType.valueOf(rs.getString("v.VOCABULARY_TYPE")));
+                            vf.setWorkingCopy(rs.getBoolean("v.WORKING_COPY"));
+                            vf.setWorkingUser(rs.getString("v.WORKING_USER"));
+                            vf.setDateModified(rs.getTimestamp("v.DATE_MODIFIED"));
+                            vf.setUserModified(rs.getString("v.USER_MODIFIED"));
+                            vf.setCheckedOutCopyId(rs.getInt("v.CHECKEDOUT_COPY_ID"));
+                            vf.setContinuityId(rs.getString("v.CONTINUITY_ID"));
+                            vf.setNumericConceptIdentifiers(rs.getBoolean("v.CONCEPT_IDENTIFIER_NUMERIC"));
+                            vf.setNotationsEqualIdentifiers(rs.getBoolean("NOTATIONS_EQUAL_IDENTIFIERS"));
+                            vf.setBaseUri(rs.getString("v.BASE_URI"));
+                            vf.setFolderId(rs.getShort("f.ID"));
+                            vf.setFolderName(rs.getString("f.IDENTIFIER"));
+                            vf.setFolderLabel(rs.getString("f.LABEL"));
+                            return vf;
+                        }
+                    });
+            return result;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     /**
@@ -541,7 +546,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
             parameters.put("excludedVocabularyFolderIds", excluded);
         }
 
-        int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
+        int result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), parameters,Integer.class);
 
         return result == 0;
     }
@@ -738,7 +743,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                 });
 
         String totalSql = "SELECT FOUND_ROWS()";
-        int totalItems = getJdbcTemplate().queryForInt(totalSql);
+        int totalItems = getJdbcTemplate().queryForObject(totalSql,Integer.class);
 
         VocabularyResult result = new VocabularyResult(items, totalItems, filter);
 
@@ -781,7 +786,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         sql.append("select count(1) from VOCABULARY ");
         sql.append("where BASE_URI IS NOT NULL and VOCABULARY_ID IN (:vocabularyIds) ");
 
-        int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
+        int result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), parameters,Integer.class);
 
         return result > 0;
     }
@@ -939,4 +944,21 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         });
         return result;
     }
+
+    @Override
+    public Collection<Integer> getVocabularyIds(Collection<Integer> vocabularyConceptIds) {
+        String sql = "select distinct VOCABULARY_ID from VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds)";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyConceptIds", vocabularyConceptIds);
+        return getNamedParameterJdbcTemplate().queryForList(sql, params, Integer.class);
+    }
+
+    @Override
+    public Collection<Integer> getWorkingCopyIds(Collection<Integer> vocabularyIds) {
+        String sql = "select VOCABULARY_ID from VOCABULARY where CHECKEDOUT_COPY_ID in (:vocabularyIds)";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyIds", vocabularyIds);
+        return getNamedParameterJdbcTemplate().queryForList(sql, params, Integer.class);
+    }
+
 }

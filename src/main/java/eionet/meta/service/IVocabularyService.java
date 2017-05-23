@@ -689,4 +689,8 @@ public interface IVocabularyService {
 
     void deleteVocabularyConcepts(int vocabularyFolderId);
 
+    /**
+    *Check if a Vocabulary is in working Copy Status. 
+    **/
+    boolean hasVocabularyWorkingCopy(String folderName, String identifier);
 }

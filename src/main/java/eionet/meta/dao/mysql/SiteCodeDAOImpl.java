@@ -82,7 +82,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         });
 
         String totalSql = "SELECT FOUND_ROWS()";
-        int totalItems = getJdbcTemplate().queryForInt(totalSql);
+        int totalItems = getJdbcTemplate().queryForObject(totalSql,Integer.class);
 
         SiteCodeResult result = new SiteCodeResult(resultList, totalItems, filter);
 
@@ -238,7 +238,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("type", VocabularyType.SITE_CODE.name());
 
-        return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
+        return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
 
     /**
@@ -252,7 +252,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("status", SiteCodeStatus.AVAILABLE.name());
 
-        return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
+        return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
 
     /**
@@ -271,7 +271,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             sql.append("and (INITIAL_SITE_NAME is null or INITIAL_SITE_NAME = '') ");
         }
 
-        return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
+        return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
 
     /**
@@ -288,7 +288,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sql.append("select count(VOCABULARY_CONCEPT_ID) from T_SITE_CODE where STATUS in (:statuses) ");
         sql.append("and CC_ISO2 = :countryCode");
 
-        return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
+        return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
 
     /**
@@ -302,7 +302,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("type", VocabularyType.SITE_CODE.name());
 
-        return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params) > 0;
+        return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class) > 0;
     }
 
 }

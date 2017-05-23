@@ -85,23 +85,23 @@ public class DataSetDAOImpl extends GeneralDAOImpl implements IDataSetDAO {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("parentType", DElemAttribute.ParentType.DATASET.toString());
 
-        sql.append("select distinct DATASET.* ");
+        sql.append("select distinct * ");
         sql.append("from DATASET ");
-        sql.append("where CORRESP_NS is not null and DATASET.DELETED is null ");
-        sql.append("and DATASET.WORKING_COPY='N' ");
+        sql.append("where CORRESP_NS is not null and DELETED is null ");
+        sql.append("and WORKING_COPY='N' ");
 
         if (StringUtils.isNotEmpty(datasetFilter.getIdentifier())) {
-            sql.append("and dst.IDENTIFIER like :identifier ");
+            sql.append("and IDENTIFIER like :identifier ");
             params.put("identifier", "%" + datasetFilter.getIdentifier() + "%");
         }
 
         if (StringUtils.isNotEmpty(datasetFilter.getShortName())) {
-            sql.append("and dst.SHORT_NAME like :shortName ");
+            sql.append("and SHORT_NAME like :shortName ");
             params.put("shortName", "%" + datasetFilter.getShortName() + "%");
         }
         // registration statuses into constraints
         if (datasetFilter.getRegStatuses() != null && datasetFilter.getRegStatuses().size() > 0) {
-            sql.append(" and REG_STATUS IN ( :regStatuses ) ");
+            sql.append("and REG_STATUS IN (:regStatuses) ");
             params.put("regStatuses", datasetFilter.getRegStatuses());
         }
 
@@ -109,7 +109,7 @@ public class DataSetDAOImpl extends GeneralDAOImpl implements IDataSetDAO {
         sql.append(getComplexAttrsSqlConstraintAndAppendParams(datasetFilter, params, "DATASET_ID"));
 
         if (datasetFilter.getRodIds() != null && datasetFilter.getRodIds().size() > 0) {
-            sql.append(" and DATASET_ID IN (SELECT DATASET_ID FROM DST2ROD WHERE ACTIVITY_ID IN ( :rodIds ) ");
+            sql.append(" and DATASET_ID IN (SELECT DATASET_ID FROM DST2ROD WHERE ACTIVITY_ID IN (:rodIds)) ");
             params.put("rodIds", datasetFilter.getRodIds());
         }
 
