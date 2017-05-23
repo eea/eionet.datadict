@@ -519,7 +519,7 @@
                 }
                 else{ %>
                     // now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
-                    openNoYes("../yesno_dialog.html", "Do you want the dataset to be deleted permanently (answering No will enable to restore it later)?", delDialogReturn,100, 400);
+                    openNoYes("${pageContext.request.contextPath}/yesno_dialog.html", "Do you want the dataset to be deleted permanently (answering No will enable to restore it later)?", delDialogReturn,100, 400);
                     return;<%
                 }
                 %>
