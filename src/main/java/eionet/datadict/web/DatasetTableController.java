@@ -73,7 +73,7 @@ public class DatasetTableController {
 
     }
 
-    @RequestMapping(value = "/{id}/schemaInstance", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(value = "/{id}/instance", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public void getDataSetTableInstance(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
 
@@ -109,6 +109,14 @@ public class DatasetTableController {
         HashMap<String, String> errorResult = new HashMap<String, String>();
         errorResult.put("error message", exception.getMessage());
         return new ResponseEntity<HashMap<String, String>>(errorResult, HttpStatus.BAD_REQUEST);
+    }
+    
+      @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<HashMap<String,String>> HandleResourceNotFoundException(Exception exception) {
+        exception.printStackTrace();
+        HashMap<String,String> errorResult = new HashMap<String,String>();
+        errorResult.put("error message",exception.getMessage());
+        return new ResponseEntity<HashMap<String,String>>(errorResult,HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({IOException.class, TransformerConfigurationException.class, TransformerException.class, XmlExportException.class})

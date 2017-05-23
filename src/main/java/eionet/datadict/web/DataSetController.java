@@ -6,6 +6,7 @@ import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.services.DataSetService;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ import org.w3c.dom.Document;
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
 @Controller
-@RequestMapping(value = "/datasets")
+@RequestMapping(value = "/dataset")
 public class DataSetController {
 
     private final DataSetService dataSetService;
@@ -100,15 +101,24 @@ public class DataSetController {
       @ExceptionHandler(EmptyParameterException.class)
     public ResponseEntity<HashMap<String,String>> HandleEmptyParameterException(Exception exception) {
         exception.printStackTrace();
-        HashMap<String,String> errorResult = new HashMap<String,String>();
+        HashMap<String,String> errorResult = new LinkedHashMap<String,String>();
         errorResult.put("error message",exception.getMessage());
         return new ResponseEntity<HashMap<String,String>>(errorResult,HttpStatus.BAD_REQUEST);
     }
     
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<HashMap<String,String>> HandleResourceNotFoundException(Exception exception) {
+        exception.printStackTrace();
+        HashMap<String,String> errorResult = new LinkedHashMap<String,String>();
+        errorResult.put("error message",exception.getMessage());
+        return new ResponseEntity<HashMap<String,String>>(errorResult,HttpStatus.NOT_FOUND);
+    }
+    
+    
       @ExceptionHandler({IOException.class, TransformerConfigurationException.class,TransformerException.class,XmlExportException.class})
     public ResponseEntity<HashMap<String,String>> HandleFatalExceptions(Exception exception) {
         exception.printStackTrace();
-        HashMap<String,String> errorResult = new HashMap<String,String>();
+        HashMap<String,String> errorResult = new LinkedHashMap<String,String>();
         errorResult.put("error message",exception.getMessage());
         return new ResponseEntity<HashMap<String,String>>(errorResult,HttpStatus.INTERNAL_SERVER_ERROR);
     }

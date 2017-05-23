@@ -153,7 +153,6 @@ public class DataSetServiceImpl implements DataSetService {
                 List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dsTable.getId());
                 for (DataElement dataElement : dataElements) {
                     Element xmlDataElement = doc.createElementNS(tableNS, dataElement.getShortName());
-                    //Value: &#x200B; Represents the empty node
                     xmlDataElement.appendChild(doc.createTextNode(""));
                     row.appendChild(xmlDataElement);
                 }
