@@ -549,13 +549,15 @@ public class DatasetHandler extends BaseHandler {
             }
         }
 
-        if (identifiers.size() == 0) {
+        if (identifiers.isEmpty()) {
             return;
         }
 
-        int i = 0;
-        for (Iterator iter = identifiers.iterator(); iter.hasNext(); i++) {
-            AccessController.removeAcl("/datasets/" + (String) iter.next());
+        for (Iterator it = identifiers.iterator(); it.hasNext();) {
+            String aclPath = "/datasets/" + (String) it.next();
+            if (AccessController.aclExists(aclPath)) {
+                AccessController.removeAcl(aclPath);
+            }
         }
     }
 
