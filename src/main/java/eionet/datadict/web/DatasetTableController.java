@@ -7,7 +7,6 @@ import eionet.datadict.model.DatasetTable;
 import eionet.datadict.services.DataSetTableService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import java.io.IOException;
-import java.util.HashMap;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -19,16 +18,17 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.w3c.dom.Document;
 
 /**
@@ -41,6 +41,7 @@ public class DatasetTableController {
 
     private final DataSetTableService dataSetTableService;
     private final DatasetTableDataService datasetTableDataService;
+    private static final Logger LOGGER = Logger.getLogger(DatasetTableController.class);
 
     @Autowired
     public DatasetTableController(DataSetTableService dataSetTableService, DatasetTableDataService datasetTableDataService) {
@@ -103,27 +104,17 @@ public class DatasetTableController {
         return dTable;
     }
 
-    @ExceptionHandler(EmptyParameterException.class)
-    public ResponseEntity<HashMap<String, String>> HandleEmptyParameterException(Exception exception) {
-        exception.printStackTrace();
-        HashMap<String, String> errorResult = new HashMap<String, String>();
-        errorResult.put("error message", exception.getMessage());
-        return new ResponseEntity<HashMap<String, String>>(errorResult, HttpStatus.BAD_REQUEST);
-    }
-    
-      @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<HashMap<String,String>> HandleResourceNotFoundException(Exception exception) {
-        exception.printStackTrace();
-        HashMap<String,String> errorResult = new HashMap<String,String>();
-        errorResult.put("error message",exception.getMessage());
-        return new ResponseEntity<HashMap<String,String>>(errorResult,HttpStatus.NOT_FOUND);
+     @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND,
+            reason = "DataSet Table with given id Not Found")
+    public void HandleResourceNotFoundException(Exception exception) {
+        LOGGER.error(exception.getMessage(), exception.getCause());
     }
 
     @ExceptionHandler({IOException.class, TransformerConfigurationException.class, TransformerException.class, XmlExportException.class})
-    public ResponseEntity<HashMap<String, String>> HandleFatalExceptions(Exception exception) {
-        exception.printStackTrace();
-        HashMap<String, String> errorResult = new HashMap<String, String>();
-        errorResult.put("error message", exception.getMessage());
-        return new ResponseEntity<HashMap<String, String>>(errorResult, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR,
+            reason = "Internal Server Error while processing the Request.")
+    public void HandleFatalExceptions(Exception exception) {
     }
+    
 }
