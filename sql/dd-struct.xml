@@ -2672,7 +2672,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropUniqueConstraint tableName="VOCABULARY_CONCEPT_ELEMENT" constraintName="UNIQ_ATTR_MD5" />
         <addUniqueConstraint tableName="VOCABULARY_CONCEPT_ELEMENT" columnNames="VOCABULARY_CONCEPT_ID, DATAELEM_ID, ATTR_MD5" constraintName="UNIQ_ATTR_MD5" />
     </changeSet>
-         <changeSet id="rev-194" author="vskiadas90">
+
+    <changeSet id="rev-194" author="vskiadas90">
         <createTable tableName="ASYNC_TASK_ENTRY_HISTORY">
             <column name="ID" type="BIGINT" autoIncrement="true">            
             <constraints nullable="false" primaryKey="true" primaryKeyName="PK_ASYNC_TASK_ENTRY_HISTORY" />
@@ -2706,4 +2707,10 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
         </modifySql>
     </changeSet>
+
+    <changeSet author="stamojoh" id="rev-195">
+        <dropTable tableName="ROD_ACTIVITIES" />
+        <dropTable tableName="DST2ROD" />
+    </changeSet>
+
 </databaseChangeLog>

@@ -63,15 +63,6 @@ public interface PropsIF {
     String XLS_SCHEMA_URL_SHEET = "xls.schema-url-sheet";
     String XLS_DROPDOWN_FXV_SHEET = "xls.schema-dropdown-fxv-sheet";
 
-    String INSERV_PREFIX = "inserv.";
-    String INSERV_NAME = ".name";
-    String INSERV_URL = ".url";
-    String INSERV_USR = ".usr";
-    String INSERV_PSW = ".psw";
-
-    String INSERV_ROD_RA_URLPATTERN = "inserv.webrod.ra-url-pattern";
-    String INSERV_ROD_RA_IDPATTERN = "<RA_ID>";
-
     String OUTSERV_ELM_URLPATTERN = "outserv.elm-details-url";
     String OUTSERV_ELM_IDPATTERN = "<ELM_ID>";
     String OUTSERV_ROD_OBLIG_URL = "outserv.rod-obligation-url";

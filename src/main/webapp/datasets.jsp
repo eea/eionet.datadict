@@ -180,7 +180,7 @@
 
         String version = request.getParameter("version");
         
-HashSet statuses = null;
+        HashSet statuses = null;
         String requestedStatus = request.getParameter("regStatus");
         if (requestedStatus!=null && requestedStatus.length()>0) {
             String[] statusesArray = requestedStatus.split(",");

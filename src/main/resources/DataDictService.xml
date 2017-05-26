@@ -10,18 +10,12 @@
 						<Array Type="STRUCT"/>
 					</Value>
 			</Method>
-			<Method Name="getObligationsWithDatasets" Auth="false">
+			<Method Name="getDSTables" Auth="false">
 					<Parameters/>
 					<Value Type="ARRAY">
 						<Array Type="STRUCT"/>
 					</Value>
 			</Method>
-			<Method Name="getDSTables" Auth="false">
-					<Parameters/>						
-					<Value Type="ARRAY">
-						<Array Type="STRUCT"/>
-					</Value>
-			</Method>	
 			<Method Name="getDatasetWithReleaseInfo" Auth="false">
 					<Parameters>
 						<Parameter Name="objType" Type="STRING"/>
@@ -29,6 +23,6 @@
 					</Parameters>
 					<Value Type="STRUCT"/>
 			</Method>
-		</Methods>		
+		</Methods>
 	</Service>
 </Services>

@@ -74,7 +74,6 @@ public class CopyHandlerTest extends DDDatabaseTestCase {
         compareSimpleAttributes("DS", oldDstId, newDstId);
         compareComplexAttributes("DS", oldDstId, newDstId);
         compareDocs("dst", oldDstId, newDstId);
-        compareDst2Rod(oldDstId, newDstId);
 
         Map<String, String> oldNewTables = copyHandler.getOldNewTables();
         assertEquals(2, oldNewTables.size());
@@ -237,28 +236,6 @@ public class CopyHandlerTest extends DDDatabaseTestCase {
         queryDataSet.addTable("NEW", "select * from DOC where OWNER_ID=" + newId + " and OWNER_TYPE='" + parentType + "'");
 
         ColumnFilterImpl colFilter = new ColumnFilterImpl("OWNER_ID");
-        ITable tableOld = new SortedTable(new ColumnFilterTable(queryDataSet.getTable("OLD"), colFilter));
-        ITable tableNew = new SortedTable(new ColumnFilterTable(queryDataSet.getTable("NEW"), colFilter));
-
-        assertEquals(tableOld.getRowCount(), tableNew.getRowCount());
-
-        DbUnitAssert dbUnitAssert = new DbUnitAssert();
-        dbUnitAssert.assertEquals(tableOld, tableNew);
-    }
-
-    /**
-     *
-     * @param oldId
-     * @param newId
-     * @throws Exception
-     */
-    private void compareDst2Rod(String oldId, String newId) throws Exception {
-
-        QueryDataSet queryDataSet = new QueryDataSet(getConnection());
-        queryDataSet.addTable("OLD", "select * from DST2ROD where DATASET_ID=" + oldId);
-        queryDataSet.addTable("NEW", "select * from DST2ROD where DATASET_ID=" + newId);
-
-        ColumnFilterImpl colFilter = new ColumnFilterImpl("DATASET_ID");
         ITable tableOld = new SortedTable(new ColumnFilterTable(queryDataSet.getTable("OLD"), colFilter));
         ITable tableNew = new SortedTable(new ColumnFilterTable(queryDataSet.getTable("NEW"), colFilter));
 

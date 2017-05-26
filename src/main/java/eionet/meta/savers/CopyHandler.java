@@ -108,7 +108,6 @@ public class CopyHandler extends OldCopyHandler {
         copySimpleAttributes();
         copyComplexAttributes();
         copyDocuments();
-        copyDstToRodRelations();
         copyFixedValues();
         copyFkRelations();
         copyDstToTblRelations();
@@ -792,52 +791,6 @@ public class CopyHandler extends OldCopyHandler {
                         + SQL.toLiteral(absPath) + "," + SQL.toLiteral(title) + ")";
                 }
 
-            }
-            SQL.close(rs);
-
-            if (insertSQL.length() > insertSQLLengthBefore) {
-                stmt.executeUpdate(insertSQL);
-            }
-        } finally {
-            SQL.close(rs);
-            SQL.close(stmt);
-        }
-    }
-
-    /**
-     *
-     * @throws SQLException if database access fails
-     */
-    private void copyDstToRodRelations() throws SQLException {
-
-        LOGGER.debug("Copying all dataset-to-ROD relations ...");
-
-        if (oldNewDatasets.isEmpty()) {
-            return;
-        }
-
-        String selectSQL = "select * from DST2ROD where DATASET_ID in (" + Util.toCSV(oldNewDatasets.keySet()) + ")";
-        String insertSQL = "insert into DST2ROD (DATASET_ID,ACTIVITY_ID) values ";
-        int insertSQLLengthBefore = insertSQL.length();
-
-        ResultSet rs = null;
-        Statement stmt = null;
-        try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(selectSQL);
-            while (rs.next()) {
-
-                String oldDstId = rs.getString("DATASET_ID");
-                String activityId = rs.getString("ACTIVITY_ID");
-
-                String newDstId = oldNewDatasets.get(oldDstId);
-                if (!Util.isEmpty(newDstId)) {
-
-                    if (insertSQL.length() > insertSQLLengthBefore) {
-                        insertSQL = insertSQL + ",";
-                    }
-                    insertSQL = insertSQL + "(" + newDstId + "," + activityId + ")";
-                }
             }
             SQL.close(rs);
 

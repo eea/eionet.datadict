@@ -14,7 +14,6 @@ Disallow: /GetXls
 Disallow: /ImgUpload
 Disallow: /DsVisualUpload
 Disallow: /HarvestingServlet
-Disallow: /InServices
 Disallow: /Import
 Disallow: /GetImportResults
 Disallow: /CodelistServlet

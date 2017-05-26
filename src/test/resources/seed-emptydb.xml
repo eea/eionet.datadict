@@ -10,7 +10,6 @@
 	<DATASET/>
 	<DOC/>
 	<DS_TABLE/>
-	<DST2ROD/>
 	<DST2TBL/>
 	<FK_RELATION/>
 	<FXV/>
@@ -22,7 +21,6 @@
 	<M_COMPLEX_ATTR/>
 	<M_COMPLEX_ATTR_FIELD/>
 	<NAMESPACE/>
-	<ROD_ACTIVITIES/>
 	<TBL2ELEM/>
 	<API_KEY/>
 </dataset>

@@ -496,8 +496,8 @@ public abstract class Schema implements SchemaIF {
         return buf.toString();
     }
     
-     //Needed in order to fetch the labels of the vocabulary attributes. If not used, then the vocabulary-concept id will be printed out
-    protected void processAttributeValues (Vector v, DataDictEntity attributeValuesOwner) throws ResourceNotFoundException, EmptyParameterException{
+    // needed in order to fetch the labels of the vocabulary attributes. If not used, then the vocabulary-concept id will be printed out
+    protected void processAttributeValues (Vector v, DataDictEntity attributeValuesOwner) throws ResourceNotFoundException, EmptyParameterException {
         for (Object attribute : v) {
             if (attribute instanceof DElemAttribute){
                 DElemAttribute attr = (DElemAttribute) attribute;

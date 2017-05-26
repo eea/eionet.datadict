@@ -108,11 +108,6 @@ public class DataSetDAOImpl extends GeneralDAOImpl implements IDataSetDAO {
         sql.append(getAttributesSqlConstraintAndAppendParams(datasetFilter, params, "DATASET_ID"));
         sql.append(getComplexAttrsSqlConstraintAndAppendParams(datasetFilter, params, "DATASET_ID"));
 
-        if (datasetFilter.getRodIds() != null && datasetFilter.getRodIds().size() > 0) {
-            sql.append(" and DATASET_ID IN (SELECT DATASET_ID FROM DST2ROD WHERE ACTIVITY_ID IN (:rodIds)) ");
-            params.put("rodIds", datasetFilter.getRodIds());
-        }
-
         sql.append(" order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc");
 
         DataSetRowCallbackHandler dataSetRowCallbackHandler = new DataSetRowCallbackHandler();

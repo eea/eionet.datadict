@@ -364,10 +364,6 @@
         <servlet-class>eionet.meta.HarvestingServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>InServicesServlet</servlet-name>
-        <servlet-class>eionet.meta.inservices.InServicesServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>Import</servlet-name>
         <servlet-class>eionet.meta.Import</servlet-class>
     </servlet>
@@ -482,10 +478,6 @@
     <servlet-mapping>
         <servlet-name>HarvestingServlet</servlet-name>
         <url-pattern>/HarvestingServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>InServicesServlet</servlet-name>
-        <url-pattern>/InServices</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Import</servlet-name>

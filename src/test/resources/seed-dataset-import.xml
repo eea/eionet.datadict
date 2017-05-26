@@ -24,8 +24,6 @@
   <EEAissue_2><![CDATA[]]></EEAissue_2>
   <EEAissue_3><![CDATA[]]></EEAissue_3>
   <EEAissue_4><![CDATA[]]></EEAissue_4>
-  <ROD_name_1><![CDATA[]]></ROD_name_1>
-  <ROD_url_1><![CDATA[]]></ROD_url_1>
   <Methodology><![CDATA[The data requested  for Nitrates Directive should be derived from existing national and/or regional monitoring networks within each Member State.
 The combination of the fields CountryCode, NationalStationCode and type must be a unique record in the table. No duplicate records should exist with this combination.
 Please consider the following when compiling your data delivery:
