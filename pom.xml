@@ -53,11 +53,92 @@
 
     </repositories>
 
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <valid.images>mysql</valid.images>
+            </properties>
+        </profile>
+        <profile>
+            <id>local</id>
+            <properties>
+                <docker.host.address>localhost</docker.host.address>
+                <valid.images>none</valid.images>
+            </properties>
+        </profile>
+    </profiles>
     <!-- the build configuration -->
+
 
     <build>
         <plugins>
 
+             <!-- Docker maven plugin-->
+            
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.15.16</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <image>${valid.images}</image>
+                    <images>
+                        <image>
+                            <alias>mysql</alias>
+                            <name>mysql:5.5</name>
+                            <run>
+                                <ports>
+                                    <port>3336:3306</port>
+                                </ports>
+                                <env>
+                                    <MYSQL_ROOT_PASSWORD>12345</MYSQL_ROOT_PASSWORD>
+                                    <MYSQL_DATABASE>datadict</MYSQL_DATABASE>
+                                    <MYSQL_USER>testuser</MYSQL_USER>
+                                    <MYSQL_PASSWORD>testpassword</MYSQL_PASSWORD>
+                                </env>
+                                <wait>
+                                    <tcp>
+                                        <mode>direct</mode>
+                                        <ports>
+                                            <port>3306</port>
+                                        </ports>
+                                    </tcp>
+                                    <time>10000</time>
+                                </wait>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <!--skip>${maven.test.skip}</skip-->
+                        </configuration>
+                        <id>start</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                            <goal>build</goal>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <configuration>
+                            <!--skip>${maven.test.skip}</skip-->
+                        </configuration>
+                        <id>stop</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>logs</goal>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Configure maven compiler -->
 
             <plugin>
@@ -95,9 +176,33 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
+                   <skipTests>${skipUTs}</skipTests>
                 </configuration>
             </plugin>
 
+ <!-- Configure Failsafe plugin (for executing integration tests) -->
+        
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <docker.host.address>${docker.host.address}</docker.host.address>
+                    </systemPropertyVariables>
+                    <includes>
+                        <include>**/*IT.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Configure WAR plugin (for building WAR application) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -159,6 +264,7 @@
                         </goals>
                         <configuration>
                             <skip>${maven.test.skip}</skip>
+                            <!--skip>${skipUTs}</skip-->
                             <propertyFile>target/test-classes/liquibase.properties</propertyFile>
                         </configuration>
                     </execution>

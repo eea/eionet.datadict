@@ -21,6 +21,8 @@
     <context:component-scan base-package="eionet.meta, eionet.datadict, eionet.web, eionet.doc">
     <context:exclude-filter type="aspectj" expression="eionet.datadict.aop.*" />  
  </context:component-scan>
+     <context:annotation-config/>
+
     <context:spring-configured/>
       <aop:aspectj-autoproxy>
       </aop:aspectj-autoproxy>
