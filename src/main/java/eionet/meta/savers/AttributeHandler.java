@@ -146,14 +146,6 @@ public class AttributeHandler extends BaseHandler {
             }
         }
 
-        // complex attribute specific fields
-        if (type != null && type.equals(DElemAttribute.TYPE_COMPLEX)) {
-            String harvesterID = req.getParameter("harv_id");
-            if (harvesterID != null && !harvesterID.equals("null")) {
-                map.put("HARVESTER_ID", inParams.add(harvesterID));
-            }
-        }
-
         PreparedStatement stmt = null;
         String tableName = (type == null || type.equals(DElemAttribute.TYPE_SIMPLE)) ? "M_ATTRIBUTE" : "M_COMPLEX_ATTR";
         try {
@@ -237,12 +229,6 @@ public class AttributeHandler extends BaseHandler {
             }
         }
 
-        // complex attribute specific fields
-        if (type != null && type.equals(DElemAttribute.TYPE_COMPLEX)) {
-            String harvesterID = req.getParameter("harv_id");
-            map.put("HARVESTER_ID", inParams.add(harvesterID == null || harvesterID.equals("null") ? null : harvesterID));
-        }
-
         PreparedStatement stmt = null;
         try {
             StringBuffer buf = new StringBuffer(SQL.updateStatement(tableName, map));
@@ -251,23 +237,6 @@ public class AttributeHandler extends BaseHandler {
 
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             stmt.executeUpdate();
-
-            // if this is a compelx attribute and harvester link is being
-            // removed, set all links to harvested rows to NULL as well
-            if (type != null && type.equals(DElemAttribute.TYPE_COMPLEX)) {
-
-                String harvesterID = req.getParameter("harv_id");
-                if (harvesterID == null || harvesterID.equals("null")) {
-
-                    inParams = new INParameters();
-                    map = new LinkedHashMap();
-
-                    String s = "update COMPLEX_ATTR_ROW set HARV_ATTR_ID=NULL where M_COMPLEX_ATTR_ID=" + inParams.add(attr_id, Types.INTEGER);
-                    SQL.close(stmt);
-                    stmt = SQL.preparedStatement(s, inParams, conn);
-                    stmt.executeUpdate();
-                }
-            }
         } finally {
             SQL.close(stmt);
         }

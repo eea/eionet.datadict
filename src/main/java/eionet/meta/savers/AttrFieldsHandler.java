@@ -34,7 +34,6 @@ public class AttrFieldsHandler extends BaseHandler {
 
     private boolean versioning = true;
 
-    private String harvAttrID = null;
 
     public AttrFieldsHandler(Connection conn, HttpServletRequest req, ServletContext ctx) {
         this(conn, new Parameters(req), ctx);
@@ -50,8 +49,6 @@ public class AttrFieldsHandler extends BaseHandler {
         this.m_attr_id = req.getParameter("attr_id");
         this.del_rows = req.getParameterValues("del_row");
         this.del_attrs = req.getParameterValues("del_attr");
-
-        harvAttrID = req.getParameter("harv_attr_id");
 
         if (ctx != null) {
             String _versioning = ctx.getInitParameter("versioning");
@@ -107,11 +104,12 @@ public class AttrFieldsHandler extends BaseHandler {
         Enumeration params = req.getParameterNames();
         if (params == null || !params.hasMoreElements()) return;
 
-        if (Util.isEmpty(harvAttrID) && !hasFields()) return;
+        if (!hasFields()) { 
+            return;
+        }
 
         String row_id = insertRow();
-        if (Util.isEmpty(harvAttrID))
-            insertFields(row_id, params);
+        insertFields(row_id, params);
     }
 
     /**
@@ -134,8 +132,6 @@ public class AttrFieldsHandler extends BaseHandler {
 
         String rowID = parent_id + parent_type + m_attr_id + position;
         map.put("ROW_ID", "md5(" + inParams.add(rowID) + ")");
-        if (!Util.isEmpty(harvAttrID))
-            map.put("HARV_ATTR_ID", inParams.add(harvAttrID));
 
         SQL.executeUpdate(SQL.insertStatement("COMPLEX_ATTR_ROW", map), inParams, conn);
 

@@ -95,12 +95,6 @@ public class MAttrFieldsHandler extends BaseHandler {
         map.put("DEFINITION", inParams.add(definition));
         map.put("POSITION", inParams.add(position, Types.INTEGER));
 
-        String harvFld = req.getParameter("harv_fld");
-        if (harvFld != null && !harvFld.equals("null"))
-            map.put("HARV_ATTR_FLD_NAME", inParams.add(harvFld));
-        else
-            map.put("HARV_ATTR_FLD_NAME", "NULL");
-
         SQL.executeUpdate(SQL.insertStatement("M_COMPLEX_ATTR_FIELD", map), inParams, conn);
     }
 
@@ -161,12 +155,6 @@ public class MAttrFieldsHandler extends BaseHandler {
 
         map.put("DEFINITION", inParams.add(definition));
         map.put("PRIORITY", inParams.add(priority));
-
-        String harvFld = req.getParameter("harv_fld");
-        if (harvFld != null && !harvFld.equals("null"))
-            map.put("HARV_ATTR_FLD_NAME", inParams.add(harvFld));
-        else
-            map.put("HARV_ATTR_FLD_NAME", "NULL");
 
         StringBuffer buf = new StringBuffer(SQL.updateStatement("M_COMPLEX_ATTR_FIELD", map));
         buf.append(" where M_COMPLEX_ATTR_FIELD_ID=").append(inParams.add(field_id, Types.INTEGER));

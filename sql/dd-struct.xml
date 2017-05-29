@@ -2711,6 +2711,11 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     <changeSet author="stamojoh" id="rev-195">
         <dropTable tableName="ROD_ACTIVITIES" />
         <dropTable tableName="DST2ROD" />
+        <dropTable tableName="HARV_ATTR" />
+        <dropTable tableName="HARV_ATTR_FIELD" />
+        <dropColumn tableName="M_COMPLEX_ATTR" columnName="HARVESTER_ID" />
+        <dropColumn tableName="M_COMPLEX_ATTR_FIELD" columnName="HARV_ATTR_FLD_NAME" />
+        <dropColumn tableName="COMPLEX_ATTR_ROW" columnName="HARV_ATTR_ID" />		
     </changeSet>
 
 </databaseChangeLog>

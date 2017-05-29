@@ -363,13 +363,6 @@
                     'divided into two contexts: those originating from ISO11179 and those specific to Data Dictionary.');
         }
 
-        function harvest(){
-            var msg = "This might take a couple of minutes, depending on the harvestign connection speed and " +
-                        "the amount of objects to harvest!";
-            wHarvest = window.open("HarvestingServlet","Harvest","height=200,width=300,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
-            if (window.focus) {wHarvest.focus()}
-        }
-
         // ]]>
     </script>
 </head>
@@ -985,7 +978,7 @@ else
                 <%
             }
 
-            if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
+            if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)) {
                 %>
                 <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                     <th scope="row" class="scope-row">Display height</th>
@@ -1072,82 +1065,9 @@ else
                         </c:if>
                     </td>
                 </tr>
-                <%
+            <%
             }
-
-
-            // start HARVESTER LINK
-
-            boolean dispHarvesterID = false;
-            String harvesterID = null;
-            if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
-
-                if (!mode.equals("add"))
-                    harvesterID = attribute.getHarvesterID();
-
-                if (mode.equals("view")){
-                    if (!Util.isEmpty(harvesterID))
-                        dispHarvesterID = true;
-                }
-                else
-                    dispHarvesterID = true;
-            }
-
-            if (dispHarvesterID){
-
-                Vector harvesters = null;
-                if (!mode.equals("view"))
-                    harvesters = searchEngine.getHarvesters();
-
-                %>
-
-                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
-                    <th scope="row" class="scope-row">Linked harvester</th>
-                            <%
-                            displayed++;
-                            if (!mode.equals("view")){
-                                %>
-                                <td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
-                                <%
-                            }
-                            %>
-                    <td>
-                        <%
-                        if (!mode.equals("view")){
-                            String noLinkSelected = Util.isEmpty(harvesterID) ? "selected=\"selected\"" : "";
-                            %>
-                            <select class="small" name="harv_id">
-                                <option <%=noLinkSelected%> value="null">-- no link --</option>
-                                <%
-                                for (int i=0; harvesters!=null && i<harvesters.size(); i++){
-                                    String harvID = (String)harvesters.get(i);
-                                    String selected = "";
-                                    if (!Util.isEmpty(harvesterID) && harvesterID.equals(harvID))
-                                        selected = "selected=\"selected\"";
-                                    %>
-                                    <option <%=selected%> value="<%=harvID%>"><%=harvID%></option><%
-                                }
-                                %>
-                            </select><%
-
-                            if (user!=null && user.isAuthentic()){ %>
-                                <input type="button" class="smallbutton" value="Harvest" onclick="harvest()" /><%
-                            }
-                        }
-                        else { %>
-                            <%=harvesterID%>
-                        <%
-                        }
-                        %>
-                    </td>
-                </tr>
-                <%
-            }
-
-            // end HARVESTER LINK
-            %>
-
-        <% if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX) && !mode.equals("add")){ // if COMPLEX and mode=add
+            if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX) && !mode.equals("add")){ // if COMPLEX and mode=add
         %>
         <tr>
             <th scope="row" class="scope-row">Fields</th>

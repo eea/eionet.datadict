@@ -8,129 +8,106 @@
 
 <%@ include file="history.jsp" %>
 
-<%!
+<%
+    response.setHeader("Pragma", "No-cache");
+    response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
+    response.setHeader("Expires", Util.getExpiresDateString());
 
-private String legalizeAlert(String in){
+    request.setCharacterEncoding("UTF-8");
 
-    in = (in != null ? in : "");
-    StringBuffer ret = new StringBuffer();
+    ServletContext ctx = getServletContext();
 
-    for (int i = 0; i < in.length(); i++) {
-        char c = in.charAt(i);
-        if (c == '\'')
-            ret.append("\\'");
-        else if (c == '\\')
-            ret.append("\\\\");
-        else
-            ret.append(c);
+    DDUser user = SecurityUtil.getUser(request);
+
+    if (request.getMethod().equals("POST")){
+          if (user == null){
+              %>
+                  <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+                  <body>
+                      <h1>Error</h1><b>Not authorized to post any data!</b>
+                  </body>
+                  </html>
+              <%
+              return;
+          }
     }
 
-    return ret.toString();
-}
+    String field_id = request.getParameter("field_id");
 
+    String attr_name = request.getParameter("attr_name");
+    String attr_id = request.getParameter("attr_id");
+
+    if (attr_id == null || attr_id.length()==0){ %>
+        <b>Attribute ID is missing!</b> <%
+        return;
+    }
+    if (field_id == null || field_id.length()==0){ %>
+        <b>Attribute field ID is missing!</b> <%
+        return;
+    }
+
+    if (attr_name == null) attr_name = "?";
+
+
+    mode = request.getParameter("mode");
+    if (mode == null || mode.trim().length()==0) {
+        mode = "view";
+    }
+
+    if (request.getMethod().equals("POST")){
+
+        Connection userConn = null;
+
+        try{
+            userConn = user.getConnection();
+
+            MAttrFieldsHandler handler = new MAttrFieldsHandler(userConn, request, ctx);
+
+            try{
+                handler.execute();
+            }
+            catch (Exception e){
+                %>
+                <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><body><b><%=e.toString()%></b></body></html>
+                <%
+                return;
+            }
+        }
+        finally{
+            try { if (userConn!=null) userConn.close();
+            } catch (SQLException e) {}
+        }
+        String redirUrl=null;
+        if (mode.equals("delete")){
+            String    deleteUrl = history.gotoLastNotMatching("m_attr_field.jsp");
+            redirUrl = (deleteUrl!=null && deleteUrl.length() > 0) ? deleteUrl : request.getContextPath();
+            //redirUrl = "" +
+            //                "/m_attr_fields.jsp?mode=edit&attr_id=" + attr_id + "&attr_name=" + attr_name;
+        }
+        else {
+            redirUrl=currentUrl;
+            //redirUrl = "" +
+            //                "/m_attr_field.jsp?mode=edit&attr_id=" + attr_id + "&attr_name=" + attr_name + "&field_id=" + field_id;
+        }
+        response.sendRedirect(redirUrl);
+        return;
+    }
+
+    Connection conn = null;
+
+    try { // start the whole page try block
+
+    conn = ConnectionUtil.getConnection();
+    DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
+
+    attrField = searchEngine.getAttrField(field_id);
+    if (attrField == null) attrField = new Hashtable();
+    String disabled = user == null ? "disabled='disabled'" : "";
+
+    String name = (String)attrField.get("name");
+    String definition = (String)attrField.get("definition");
+    String priority = (String)attrField.get("priority");
 %>
-
-            <%
-            response.setHeader("Pragma", "No-cache");
-            response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
-            response.setHeader("Expires", Util.getExpiresDateString());
-
-            request.setCharacterEncoding("UTF-8");
-
-            ServletContext ctx = getServletContext();
-
-            DDUser user = SecurityUtil.getUser(request);
-
-            if (request.getMethod().equals("POST")){
-                  if (user == null){
-                      %>
-                          <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-                          <body>
-                              <h1>Error</h1><b>Not authorized to post any data!</b>
-                          </body>
-                          </html>
-                      <%
-                      return;
-                  }
-            }
-
-            String field_id = request.getParameter("field_id");
-
-            String attr_name = request.getParameter("attr_name");
-            String attr_id = request.getParameter("attr_id");
-
-            if (attr_id == null || attr_id.length()==0){ %>
-                <b>Attribute ID is missing!</b> <%
-                return;
-            }
-            if (field_id == null || field_id.length()==0){ %>
-                <b>Attribute field ID is missing!</b> <%
-                return;
-            }
-
-            if (attr_name == null) attr_name = "?";
-
-
-            mode = request.getParameter("mode");
-            if (mode == null || mode.trim().length()==0) {
-                mode = "view";
-            }
-
-            if (request.getMethod().equals("POST")){
-
-                Connection userConn = null;
-
-                try{
-                    userConn = user.getConnection();
-
-                    MAttrFieldsHandler handler = new MAttrFieldsHandler(userConn, request, ctx);
-
-                    try{
-                        handler.execute();
-                    }
-                    catch (Exception e){
-                        %>
-                        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><body><b><%=e.toString()%></b></body></html>
-                        <%
-                        return;
-                    }
-                }
-                finally{
-                    try { if (userConn!=null) userConn.close();
-                    } catch (SQLException e) {}
-                }
-                String redirUrl=null;
-                if (mode.equals("delete")){
-                    String    deleteUrl = history.gotoLastNotMatching("m_attr_field.jsp");
-                    redirUrl = (deleteUrl!=null && deleteUrl.length() > 0) ? deleteUrl : request.getContextPath();
-                    //redirUrl = "" +
-                    //                "/m_attr_fields.jsp?mode=edit&attr_id=" + attr_id + "&attr_name=" + attr_name;
-                }
-                else {
-                    redirUrl=currentUrl;
-                    //redirUrl = "" +
-                    //                "/m_attr_field.jsp?mode=edit&attr_id=" + attr_id + "&attr_name=" + attr_name + "&field_id=" + field_id;
-                }
-                response.sendRedirect(redirUrl);
-                return;
-            }
-
-            Connection conn = null;
-
-            try { // start the whole page try block
-
-            conn = ConnectionUtil.getConnection();
-            DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
-
-            attrField = searchEngine.getAttrField(field_id);
-            if (attrField == null) attrField = new Hashtable();
-            String disabled = user == null ? "disabled='disabled'" : "";
-
-            String name = (String)attrField.get("name");
-            String definition = (String)attrField.get("definition");
-            String priority = (String)attrField.get("priority");
-
-            %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
@@ -218,39 +195,7 @@ private String legalizeAlert(String in){
                     </select>
                 </td>
             </tr>
-            <%
-            HashSet includeFields = new HashSet();
-            String harvFld = (String)attrField.get("harv_fld");
-            if (harvFld!=null)
-                includeFields.add(harvFld);
-            Vector harvFlds = searchEngine.getHarvesterFieldsByAttr(attr_id, false, includeFields);
-            if (harvFlds!=null && harvFlds.size()>0){
-                %>
-                <tr>
-                    <th scope="row" class="scope-row">
-                        Linked harvester field
-                    </th>
-                    <td>
-                        <%
-
-                        %>
-                        <select <%=disabled%> name="harv_fld" class="small">
-                            <option value="null"></option>
-                            <%
-                            for (int i=0; harvFlds!=null && i<harvFlds.size(); i++){
-                                String s = (String)harvFlds.get(i);
-                                String strSelected = harvFld!=null && harvFld.equals(s) ? "selected=\"selected\"" : "";
-                                %>
-                                <option <%=strSelected%> value="<%=Util.processForDisplay(s, true)%>"><%=Util.processForDisplay(s)%></option> <%
-                            }
-                            %>
-                        </select>
-                    </td>
-                </tr><%
-            }
-            %>
-
-    </table>
+        </table>
         <div>
         <%
         if (user==null){

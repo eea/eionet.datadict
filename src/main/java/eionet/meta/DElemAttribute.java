@@ -67,8 +67,6 @@ public class DElemAttribute {
     private String displayHeight = "1";
     private String displayMultiple = "0";
     private String inheritable = "0";
-    private String harvesterID = null;
-    private String harvAttrID = null;
 
     private Vector fields = null;
     private Vector rows = null;
@@ -226,14 +224,6 @@ public class DElemAttribute {
 
     public void setInheritable(String value) {
         this.inheritable = value;
-    }
-
-    public void setHarvesterID(String harvesterID) {
-        this.harvesterID = harvesterID;
-    }
-
-    public String getHarvesterID() {
-        return this.harvesterID;
     }
 
     public void setDisplayType(String displayType) {

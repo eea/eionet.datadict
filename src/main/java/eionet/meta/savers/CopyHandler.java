@@ -652,7 +652,7 @@ public class CopyHandler extends OldCopyHandler {
         selectSQL = selectSQL + " order by COMPLEX_ATTR_ROW.ROW_ID";
 
         String insertRowSQL =
-            "insert into COMPLEX_ATTR_ROW (PARENT_ID,PARENT_TYPE,M_COMPLEX_ATTR_ID,POSITION,ROW_ID,HARV_ATTR_ID) values ";
+            "insert into COMPLEX_ATTR_ROW (PARENT_ID,PARENT_TYPE,M_COMPLEX_ATTR_ID,POSITION,ROW_ID) values ";
         String insertFldSQL = "insert into COMPLEX_ATTR_FIELD (M_COMPLEX_ATTR_FIELD_ID,VALUE,ROW_ID) values ";
         int insertRowSQLLengthBefore = insertRowSQL.length();
         int insertFldSQLLengthBefore = insertFldSQL.length();
@@ -686,7 +686,6 @@ public class CopyHandler extends OldCopyHandler {
 
                     String mAttrId = rs.getString("M_COMPLEX_ATTR_ID");
                     String position = rs.getString("POSITION");
-                    String harvAttrId = rs.getString("HARV_ATTR_ID");
                     currentRowId = rs.getString("ROW_ID");
 
                     if (!currentRowId.equals(previousRowId)) {
@@ -697,17 +696,15 @@ public class CopyHandler extends OldCopyHandler {
                             LOGGER.trace("Created MD5 hash for '" + md5Input + "': " + newRowId);
                         }
 
-                        String preparedHarvAttrId = harvAttrId == null ? "NULL" : SQL.toLiteral(harvAttrId);
                         if (insertRowSQL.length() > insertRowSQLLengthBefore) {
                             insertRowSQL = insertRowSQL + ",";
                         }
                         insertRowSQL =
                             insertRowSQL + "(" + newId + "," + SQL.toLiteral(parentType) + "," + mAttrId + "," + position
-                            + "," + SQL.toLiteral(newRowId) + "," + preparedHarvAttrId + ")";
+                            + "," + SQL.toLiteral(newRowId) + ")";
                     }
 
                     if (newRowId != null) {
-
                         String mFieldId = rs.getString("M_COMPLEX_ATTR_FIELD_ID");
                         String value = rs.getString("VALUE");
 

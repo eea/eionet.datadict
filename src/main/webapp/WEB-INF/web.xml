@@ -360,10 +360,6 @@
         <servlet-class>eionet.meta.ImgUpload</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>HarvestingServlet</servlet-name>
-        <servlet-class>eionet.meta.HarvestingServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>Import</servlet-name>
         <servlet-class>eionet.meta.Import</servlet-class>
     </servlet>
@@ -474,10 +470,6 @@
     <servlet-mapping>
         <servlet-name>DsVisualUpload</servlet-name>
         <url-pattern>/DsVisualUpload</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>HarvestingServlet</servlet-name>
-        <url-pattern>/HarvestingServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Import</servlet-name>

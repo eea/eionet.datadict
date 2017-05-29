@@ -13,7 +13,6 @@ Disallow: /GetXForm
 Disallow: /GetXls
 Disallow: /ImgUpload
 Disallow: /DsVisualUpload
-Disallow: /HarvestingServlet
 Disallow: /Import
 Disallow: /GetImportResults
 Disallow: /CodelistServlet

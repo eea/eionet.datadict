@@ -49,10 +49,6 @@ public interface PropsIF {
     String DB_UNITTEST_USR = "db.unitest.usr";
     String DB_UNITTEST_PWD = "db.unitest.psw";
 
-    /** */
-    String HRV_LOG = "harvester.log";
-    String HRV_LOGLEV = "harvester.log-level";
-
     String UNI_FONT = "pdf.uni-font";
 
     String XFORMS_NSS = "xforms.nss";
