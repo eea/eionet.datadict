@@ -92,7 +92,7 @@
                             <name>mysql:5.5</name>
                             <run>
                                 <ports>
-                                    <port>3336:3306</port>
+                                    <port>53336:3306</port>
                                 </ports>
                                 <env>
                                     <MYSQL_ROOT_PASSWORD>12345</MYSQL_ROOT_PASSWORD>
@@ -263,8 +263,8 @@
                             <goal>dropAll</goal>
                         </goals>
                         <configuration>
-                            <skip>${maven.test.skip}</skip>
-                            <!--skip>${skipUTs}</skip-->
+                            <!--skip>${maven.test.skip}</skip-->
+                            <skip>${skipUTs}</skip>
                             <propertyFile>target/test-classes/liquibase.properties</propertyFile>
                         </configuration>
                     </execution>
