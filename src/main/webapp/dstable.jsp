@@ -1292,7 +1292,7 @@ else if (mode.equals("add"))
                                                         <td colspan="3">
                                                             <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>
                                                             <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>
-                                                            <input type="submit" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=tableID%>')"/>
+                                                            <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=tableID%>')"/>
                                                         </td>
                                                     </tr>
                                             <%

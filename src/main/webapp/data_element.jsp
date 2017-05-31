@@ -2399,7 +2399,7 @@
                                                     <td colspan="3">
                                                         <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>
                                                         <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>
-                                                        <input type="submit" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=delem_id%>')"/>
+                                                        <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=delem_id%>')"/>
                                                     </td>
                                                 </tr>
                                                     <%
