@@ -109,7 +109,7 @@ public class DstXls extends TblXls {
      * @throws Exception
      */
     private void addTable(DsTable tbl) throws Exception {
-        sheet = wb.getSheet(tbl.getIdentifier());
+        sheet = this.getSheet(wb, tbl.getIdentifier());
         if (sheet == null) {
             sheet = wb.createSheet(tbl.getIdentifier());
         }

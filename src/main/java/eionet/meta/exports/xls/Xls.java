@@ -17,8 +17,11 @@ import eionet.meta.DsTable;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
+import org.apache.commons.lang.StringUtils;
 
 public abstract class Xls implements XlsIF {
+
+    public static final int MAX_SHEET_NAME_LENGTH = 31; // 
 
     protected static final String FILE_EXT = ".xls";
 
@@ -164,4 +167,13 @@ public abstract class Xls implements XlsIF {
         cellTypes.put("double", new Integer(HSSFCell.CELL_TYPE_NUMERIC));
         cellTypes.put("decimal", new Integer(HSSFCell.CELL_TYPE_NUMERIC));
     }
+
+    /**
+     * http://poi.apache.org/apidocs/org/apache/poi/ss/usermodel/Workbook.html#createSheet(java.lang.String)
+     * POI's SpreadsheetAPI silently truncates the input argument to 31 characters.
+     */
+    public HSSFSheet getSheet(HSSFWorkbook workbook, String sheetName) {
+        return workbook.getSheet(StringUtils.left(sheetName, MAX_SHEET_NAME_LENGTH));
+    }
+
 }

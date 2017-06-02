@@ -197,7 +197,7 @@ public class TblXls extends Xls implements CachableIF {
         // illegal for a filename
         fileName = tbl.getDstIdentifier() + "_" + tbl.getIdentifier() + FILE_EXT;
 
-        sheet = wb.getSheet(tbl.getIdentifier());
+        sheet = this.getSheet(wb, tbl.getIdentifier());
         if (sheet == null) {
             sheet = wb.createSheet(tbl.getIdentifier());
         }
