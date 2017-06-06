@@ -239,17 +239,17 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
 
     @Override
     public List<AttributeValue> getAttributesValuesOfDataTable(int tableId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Map<Integer, Set<Attribute>> getAttributesOfDataElementsInTable(int tableId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); 
     }
 
     @Override
     public List<SimpleAttributeValues> getSimpleAttributesValuesOfDataElementsInTable(int tableId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); 
     }
 
     @Override

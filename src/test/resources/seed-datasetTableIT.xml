@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <DS_TABLE TABLE_ID="3" IDENTIFIER="NiD_GW_Stat" SHORT_NAME="GW_MonitoringStations" NAME="List of groundwater monitoring stations" CORRESP_NS="4"/>
+    <DS_TABLE TABLE_ID="4" IDENTIFIER="NiD_GW_Conc" SHORT_NAME="GW_NO3_concentrations" NAME="NO3 concentrations in groundwater" CORRESP_NS="1"/>
+    <DS_TABLE TABLE_ID="5" IDENTIFIER="NiD_SW_Stat" SHORT_NAME="SW_MonitoringStations" NAME="List of surface monitoring stations" CORRESP_NS="2"/>
+    <DS_TABLE TABLE_ID="6" IDENTIFIER="NiD_SW_Conc" SHORT_NAME="SW_NO3_concentrations" NAME="NO3 concentrations in surface water" CORRESP_NS="4"/>
+    <DS_TABLE TABLE_ID="7" IDENTIFIER="NiD_SW_EutroMeas" SHORT_NAME="SW_Eutrophication_measurements" NAME="Eutrophication parameters in surface water" CORRESP_NS="3"/>
+    <DS_TABLE TABLE_ID="8" IDENTIFIER="NiD_SW_EutroState" SHORT_NAME="SW_Eutrophication_state" NAME="Trophic state of surfacewater" CORRESP_NS="2"/>
+    <DST2TBL TABLE_ID="3" DATASET_ID="4" />
+    <DST2TBL TABLE_ID="4" DATASET_ID="4" />
+    <DST2TBL TABLE_ID="6" DATASET_ID="5" />
+    <DST2TBL TABLE_ID="7" DATASET_ID="14" />
+    <DST2TBL TABLE_ID="8" DATASET_ID="22" />    
+    
+    <NAMESPACE NAMESPACE_ID="1" SHORT_NAME="short_name_1" FULL_NAME="Full Name 1"/>
+    <NAMESPACE NAMESPACE_ID="2" SHORT_NAME="short_name_2" FULL_NAME="Full Name 2"/>
+    <NAMESPACE NAMESPACE_ID="3" SHORT_NAME="short_name_3" FULL_NAME="Full Name 3"/>
+    <NAMESPACE NAMESPACE_ID="4" SHORT_NAME="short_name_4" FULL_NAME="Full Name 4"/>
+
+</dataset>

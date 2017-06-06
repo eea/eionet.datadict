@@ -1,32 +1,49 @@
 package eionet.datadict.dal;
 
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import eionet.config.ApplicationTestContext;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.Attribute.DisplayType;
 import eionet.datadict.model.Attribute.ObligationType;
 import eionet.datadict.model.Attribute.TargetEntity;
 import eionet.datadict.model.Attribute.ValueInheritanceMode;
+import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
 import eionet.meta.service.DBUnitHelper;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.unitils.UnitilsJUnit4;
-import org.unitils.spring.annotation.SpringApplicationContext;
-import org.unitils.spring.annotation.SpringBeanByType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-@SpringApplicationContext("mock-spring-context.xml")
-public class AttributeDaoTest extends UnitilsJUnit4{
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {ApplicationTestContext.class})
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
+    TransactionalTestExecutionListener.class,
+    DbUnitTestExecutionListener.class})
+@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
+            value ="classpath:seed-attribute.xml")
+public class AttributeDaoTestIT extends UnitilsJUnit4{
     
-    @SpringBeanByType
+    @Autowired
     AttributeDao attributeDao;
     
     public static final int DISPLAY_WIDTH_DEFAULT = 20;
@@ -164,7 +181,7 @@ public class AttributeDaoTest extends UnitilsJUnit4{
     @Test 
     public void testCountAttributeValues() {
         int count = this.attributeDao.countAttributeValues(37);
-        assertEquals(5, count); 
+        assertEquals(6, count); 
     }
     
    
@@ -187,6 +204,32 @@ public class AttributeDaoTest extends UnitilsJUnit4{
         assertEquals(0, this.attributeDao.countAttributeValues(37));
     }
     
+    @Test
+    public void testGetVocabularyBinding(){
+       Integer expectedVocabularyID=1;
+       Integer actualVocabularyID = this.attributeDao.getVocabularyBinding(37);
+       assertEquals(expectedVocabularyID,actualVocabularyID);
+    }
+    
+    @Test
+    public void testGetCombinedDatasetAndDataTableAttributes(){
+        List<Attribute> actualAttributes = this.attributeDao.getCombinedDataSetAndDataTableAttributes(1692, 738);
+        assertEquals(2,actualAttributes.size());
+    }
+    
+    
+    @Test
+    public void testGetAttributesOfDataTable(){
+        List<Attribute> actualAttributes = this.attributeDao.getCombinedDataSetAndDataTableAttributes(1692, 738);
+        assertEquals(2,actualAttributes.size());
+    }
+    
+    
+    @Test
+    public void testGetByDatadictDataSetEntity(){
+    List<Attribute> actualAttributes = this.attributeDao.getByDataDictEntity(new DataDictEntity(740, DataDictEntity.Entity.DS));
+    assertEquals(2,actualAttributes.size());
+    }
     
     private Attribute createAttributeObject(
             String name, String shortName, String definition, Integer displayOrder,

@@ -263,8 +263,8 @@
                             <goal>dropAll</goal>
                         </goals>
                         <configuration>
-                            <!--skip>${maven.test.skip}</skip-->
-                            <skip>${skipUTs}</skip>
+                            <skip>${maven.test.skip}</skip>
+                            <!--skip>${skipUTs}</skip-->
                             <propertyFile>target/test-classes/liquibase.properties</propertyFile>
                         </configuration>
                     </execution>
@@ -1020,6 +1020,24 @@
             <artifactId>xmlunit</artifactId>
             <version>1.5</version>
             <scope>test</scope>
+        </dependency>
+          <dependency>
+            <groupId>com.github.springtestdbunit</groupId>
+            <artifactId>spring-test-dbunit</artifactId>
+            <version>1.2.1</version>
+            <scope>test</scope>
+        </dependency>
+             <dependency>
+            <groupId>org.dbunit</groupId>
+            <artifactId>dbunit</artifactId>
+            <version>2.5.1</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>junit</artifactId>
+                    <groupId>junit</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- Dependency Needed for spring Framework AOP -->
         <dependency>
