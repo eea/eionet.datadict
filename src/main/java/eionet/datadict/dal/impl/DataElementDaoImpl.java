@@ -85,10 +85,7 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
         }
     }
 
-    @Override
-    public List<DatasetTableElement> getDatasetTableElementsOfDatasetTable(int tableId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+
     
     public static class DataElementRowMapper implements RowMapper<DataElement> {
 
@@ -97,46 +94,46 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
             DataElement dataElement = new DataElement() {
                 @Override
                 public DataElement.ValueType getValueType() {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    throw new UnsupportedOperationException("Not supported yet."); 
                 }
 
                 @Override
                 public boolean supportsValueList() {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    throw new UnsupportedOperationException("Not supported yet."); 
                 }
 
                 @Override
                 public Iterable<? extends ValueListItem> getValueList() {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    throw new UnsupportedOperationException("Not supported yet."); 
                 }
 
 
                 @Override
                 public AttributeOwnerCategory getAttributeOwnerCategory() {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    throw new UnsupportedOperationException("Not supported yet."); 
                 }
 
                 @Override
                 public Set<Attribute> getAttributes() {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    throw new UnsupportedOperationException("Not supported yet."); 
                 }
 
                 @Override
                 public void setAttributes(Set<Attribute> attributes) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    throw new UnsupportedOperationException("Not supported yet."); 
                 }
 
                 @Override
                 public Set<AttributeValue> getAttributesValues() {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    throw new UnsupportedOperationException("Not supported yet."); 
                 }
 
                 @Override
                 public void setAttributesValues(Set<AttributeValue> attributesValues) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    throw new UnsupportedOperationException("Not supported yet."); 
                 }
             };
-            dataElement.setType(DataElementType.getFromString(rs.getString("DATAELEM.TYPE")));
+         //   dataElement.setType(DataElementType.getFromString(rs.getString("DATAELEM.TYPE")));
             
             Namespace namespace = new Namespace();
             namespace.setId(rs.getInt("DATAELEM.NAMESPACE_ID"));
@@ -160,7 +157,7 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
                 dataElement.setTopNS(null);
             }
             
-            
+            dataElement.setType(DataElementType.resolveTypeFromName(rs.getString("DATAELEM.TYPE")));
             dataElement.setId(rs.getInt("DATAELEM.DATAELEM_ID"));
             dataElement.setShortName(rs.getString("DATAELEM.SHORT_NAME"));
             dataElement.setWorkingUser(rs.getString("DATAELEM.WORKING_USER"));

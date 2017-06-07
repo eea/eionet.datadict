@@ -14,7 +14,6 @@ public interface DataElementDao {
      **/
     List<DataElement> getDataElementsOfDatasetTable(int tableId);
     
-    List<DatasetTableElement> getDatasetTableElementsOfDatasetTable(int tableId);
 
     /**
      * Fetches the data element with the given id.
