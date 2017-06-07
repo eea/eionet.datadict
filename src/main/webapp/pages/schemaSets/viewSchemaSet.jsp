@@ -244,12 +244,31 @@
                             <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE"></a>
                         </th>
                         <td style="word-wrap:break-word;wrap-option:emergency" class="simple_attr_value">
-                            <c:if test="${not attribute.displayMultiple}">
-                                <c:out value="${attribute.value}"/>
-                            </c:if>
-                            <c:if test="${attribute.displayMultiple}">
-                                <c:out value="${ddfn:join(attribute.values, ', ')}"/>
-                            </c:if>
+                            <c:choose>
+                                <c:when test="${attribute.displayType=='vocabulary'}">
+                                    <c:set var="vocabularyConcepts" value="${actionBean.getVocabularyConcepts(attribute)}" />
+                                    <c:set var="vocabularyBindingFolder" value="${actionBean.getVocabularyBindingFolder(attribute.ID)}" />
+                                    <c:if test="${not empty vocabularyConcepts}">
+                                        <ul class="stripedmenu">
+                                            <c:forEach var="vocabularyConcept" items="${vocabularyConcepts}">
+                                                <li>
+                                                    <stripes:link href="/vocabularyconcept/${vocabularyBindingFolder.folderName}/${vocabularyBindingFolder.identifier}/${vocabularyConcept.identifier}/view" title="${vocabularyConcept.label}">
+                                                        <c:out value="${vocabularyConcept.label}"/>
+                                                    </stripes:link>
+                                                </li>
+                                            </c:forEach>
+                                        </ul>
+                                    </c:if>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:if test="${not attribute.displayMultiple}">
+                                        <c:out value="${attribute.value}"/>
+                                    </c:if>
+                                    <c:if test="${attribute.displayMultiple}">
+                                        <c:out value="${ddfn:join(attribute.values, ', ')}"/>
+                                    </c:if>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                     </tr>
                 </c:if>
@@ -262,7 +281,7 @@
     <h2>Schemas and documents</h2>
 
     <c:if test="${empty actionBean.schemas}">
-        <div style="margin-top:3em">No schemas defined for this schema set yet!</div>
+        <p class='not-found'>No schemas defined for this schema set yet!</p>
     </c:if>
 
     <c:if test="${not empty actionBean.schemas}">

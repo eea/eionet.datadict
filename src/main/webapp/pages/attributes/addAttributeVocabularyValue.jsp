@@ -138,7 +138,6 @@
                             <stripes:submit name="saveAdd" value="Add selected concepts" />
                         </td>
                     </tr>
-
                 </display:footer>
             </display:table>
         </stripes:form>

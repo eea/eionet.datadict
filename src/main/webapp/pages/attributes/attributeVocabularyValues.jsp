@@ -15,7 +15,7 @@
                 <c:set var="ddEntity" value="${actionBean.dataElement}"/>
                 <c:set var="backLabel" value="Back to data element edit page"/>
                 <c:set var="backLink" value="${actionBean.contextPath}/dataelements/${ddEntity.id}/edit"/>
-                 <c:set var="ddEntityUrl" value="${actionBean.contextPath}/dataelements/${ddEntity.id}"/>
+                <c:set var="ddEntityUrl" value="${actionBean.contextPath}/dataelements/${ddEntity.id}"/>
             </c:when>
             <c:when test="${actionBean.attrOwnerType eq 'table'}">
                 <c:set var="ddEntity" value="${actionBean.datasetTable}"/>
@@ -23,10 +23,16 @@
                 <c:set var="backLink" value="${actionBean.contextPath}/tables/${ddEntity.id}/edit"/>
                 <c:set var="ddEntityUrl" value="${actionBean.contextPath}/tables/${ddEntity.id}"/>
             </c:when>
+            <c:when test="${actionBean.attrOwnerType eq 'schemaset'}">
+                <c:set var="ddEntity" value="${actionBean.schemaSet}"/>
+                <c:set var="backLabel" value="Back to schema set edit page"/>
+                <c:set var="backLink" value="${actionBean.contextPath}/schemaset/${ddEntity.identifier}/edit"/>
+                <c:set var="ddEntityUrl" value="${actionBean.contextPath}/schemaset/${ddEntity.identifier}/view?workingCopy=true"/>
+            </c:when>
         </c:choose>
         <h1>Values for the <c:out value="${actionBean.attribute.shortName}"/> attribute corresponding to the 
             <stripes:link href="${ddEntityUrl}">
-                <c:out value="${ddEntity.shortName}" />
+               <c:out value="${ddEntity.identifier}" />
             </stripes:link> 
             <c:out value="${actionBean.attrOwnerType}" />
         </h1>
@@ -67,7 +73,7 @@
                         <tr>
                             <th>Identifier</th>
                             <th>Label</th>
-                            <th>&nbsp;</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>

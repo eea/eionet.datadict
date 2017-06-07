@@ -119,14 +119,8 @@
                     <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
                     <td>
                         <c:forEach var="inherit" items="${ddfn:getEnumValues('eionet.datadict.model.Attribute$ValueInheritanceMode')}">
-                            <c:choose>
-                                <c:when test="${inherit.label eq 'No inheritance'}">
-                                    <stripes:radio name="attribute.valueInheritanceMode" value="${inherit}"/>${inherit.label}<br/>
-                                </c:when>
-                                <c:otherwise>
-                                    <stripes:radio name="attribute.valueInheritanceMode" value="${inherit}"/>${inherit.label}<br/>
-                                </c:otherwise>
-                            </c:choose>
+                            <stripes:radio id="${inherit}" name="attribute.valueInheritanceMode" value="${inherit}" />
+                            <label for="${fn:escapeXml(inherit)}">${fn:escapeXml(inherit.label)}<br/>
                         </c:forEach>
                     </td>
                 </tr>
@@ -151,12 +145,12 @@
                     <td id="display-some-targetEntities">
                         <c:forEach var="displayForType" items="${ddfn:getEnumValues('eionet.datadict.model.Attribute$TargetEntity')}"> 
                             <c:set var="targetEntityDisplay" value ="display: block"/>
-                            <c:if test="${(displayForType.value eq 128 or displayForType.value eq 256 or displayForType.value eq 1024) and filterTargetEntities}">
+                            <c:if test="${(displayForType.value eq 1024) and filterTargetEntities}">
                                 <c:set var="targetEntityDisplay" value ="display: none"/>
                             </c:if>
-                            <div id="target-entity-${displayForType.value}" style="${targetEntityDisplay}">
-                               <stripes:checkbox name="attribute.targetEntities" value="${displayForType}" checked="${actionBean.attribute.targetEntities}"/>
-                               ${displayForType.label}
+                            <div id="targetEntitySection-${displayForType.value}" style="${targetEntityDisplay}">
+                               <stripes:checkbox id="targetEntity-${displayForType.value}" name="attribute.targetEntities" value="${displayForType}" checked="${actionBean.attribute.targetEntities}"/>
+                               <label for="targetEntity-${displayForType.value}">${fn:escapeXml(displayForType.label)}</label>
                             </div>
                         </c:forEach>
                     </td>

@@ -21,14 +21,10 @@
                 showOnLoadSpecific(currentDisplayType);
             }
             if (elem.value === 'VOCABULARY') {
-                document.getElementById('target-entity-128').style.display = "none";
-                document.getElementById('target-entity-256').style.display = "none";
-                document.getElementById('target-entity-1024').style.display = "none";
+                document.getElementById('targetEntitySection-1024').style.display = "none";
             }
             else {
-                document.getElementById('target-entity-128').style.display = "block";
-                document.getElementById('target-entity-256').style.display = "block";
-                document.getElementById('target-entity-1024').style.display = "block";
+                document.getElementById('targetEntitySection-1024').style.display = "block";
             }
         }
         
@@ -44,15 +40,15 @@
         function validateMandatoryEditorFields () {
             var list = document.getElementsByClassName("mandatory_field");
             var invalidList = "";
-           for (var i = 0; i < list.length; i++) {
+            for (var i = 0; i < list.length; i++) {
                 var entry = list[i];
                 if (!entry.value || 0 === entry.value.length) {
                     invalidList = invalidList + entry.id + "\n";
-                    console.log("Entry invalid: "+entry.id);
+                    console.log("Entry invalid: "+ entry.id);
                 }   
             }
             if (invalidList.length !== 0){
-                alert("Please insert values for fields: \n"+invalidList);
+                alert("Please insert values for fields: \n" + invalidList);
                 return false;
             }
             return true;

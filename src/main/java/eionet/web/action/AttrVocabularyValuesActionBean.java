@@ -17,8 +17,10 @@ import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DatasetDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import eionet.meta.DDUser;
+import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.ISchemaService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
@@ -64,7 +66,8 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     private Dataset dataset;
     private DatasetTable datasetTable;
     private DataElement dataElement;
-    
+    private SchemaSet schemaSet;
+
     // The Attribute object
     private Attribute attribute;
     
@@ -81,6 +84,8 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     private DatasetTableDataService datasetTableDataService;
     @SpringBean
     private DataElementDataService dataElementDataService;
+    @SpringBean
+    private ISchemaService schemaService;
 
     /**
      * Vocabulary concept filter.
@@ -155,8 +160,13 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             if (!this.dataset.getWorkingCopy() || (this.dataset.getWorkingUser() != null && !this.dataset.getWorkingUser().equals(user.getUserName()))) {
                 throw new UserAuthorizationException("You are not authorized to edit this dataset.");
             }
+        } else if (attrOwnerType.equals("schemaset")) {
+            configureSchemaSet();
+            if (!this.schemaSet.isWorkingCopy() || (this.schemaSet.getWorkingUser() != null && !this.schemaSet.getWorkingUser().equals(user.getUserName()))) {
+                throw new UserAuthorizationException("You are not authorized to edit this schema set.");
+            }
         }
-        
+
         this.attribute = attributeDataService.getAttribute(Integer.parseInt(attributeId));
         
         if(attribute.getVocabulary() == null) {
@@ -407,7 +417,16 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         this.currentSection = "tables";
         this.datasetTable = this.datasetTableDataService.getDatasetTable(this.attributeOwnerEntity.getId());
     }
-    
+
+    protected void configureSchemaSet() throws ResourceNotFoundException {
+        this.currentSection = "schemas";
+        try {
+            this.schemaSet = this.schemaService.getSchemaSet(this.attributeOwnerEntity.getId());
+        } catch (ServiceException ex) {
+            throw new ResourceNotFoundException("Schema set with id: " + this.attributeOwnerEntity.getId() + " does not exist.", ex);
+        }
+    }
+
     //----------------- Getters and Setters ------------------------------
     
     public String getAttributeId() {
@@ -441,7 +460,15 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     public void setDataElement(DataElement dataElement) {
         this.dataElement = dataElement;
     }
-    
+
+    public SchemaSet getSchemaSet() {
+        return schemaSet;
+    }
+
+    public void setSchemaSet(SchemaSet schemaSet) {
+        this.schemaSet = schemaSet;
+    }
+
     public DataDictEntity getAttributeOwnerEntity() {
         return attributeOwnerEntity;
     }

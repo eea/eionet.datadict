@@ -4725,11 +4725,9 @@ public class DDSearchEngine {
      */
     public List<VocabularyConcept> getAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity, String inheritanceModeCode) 
             throws ResourceNotFoundException, EmptyParameterException {
-        Attribute.ValueInheritanceMode inheritanceMode = convertValueInheritanceModeCode(inheritanceModeCode);
         AttributeService attributeService = springContext.getBean(AttributeService.class);
-        return attributeService.getAttributeVocabularyConcepts(attributeId, ddEntity, inheritanceMode);
+        return attributeService.getAttributeVocabularyConcepts(attributeId, ddEntity, Attribute.ValueInheritanceMode.getInstance(inheritanceModeCode));
     }
-    
     
     /*
      * Method Created to support data_element.jsp and dstable.jsp with the AttributeService spring bean.
@@ -4750,21 +4748,5 @@ public class DDSearchEngine {
         Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
         return vocabularyId != null;
     }
-    
-    private Attribute.ValueInheritanceMode convertValueInheritanceModeCode(String inheritanceModeCode) {
-        Attribute.ValueInheritanceMode inheritanceMode;
-        if (inheritanceModeCode.equals("0")) {
-                inheritanceMode = Attribute.ValueInheritanceMode.NONE;
-        }
-        else if (inheritanceModeCode.equals("1")){
-            inheritanceMode = Attribute.ValueInheritanceMode.PARENT_WITH_EXTEND;
-        } 
-        else if (inheritanceModeCode.equals("2")) {
-            inheritanceMode = Attribute.ValueInheritanceMode.PARENT_WITH_OVERRIDE;
-        }
-        else {
-            throw new IllegalArgumentException(String.format("Unknown value inheritance mode"));
-        }
-        return inheritanceMode;
-    }
+
 }

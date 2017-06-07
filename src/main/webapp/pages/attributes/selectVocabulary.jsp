@@ -29,16 +29,16 @@
                             <c:if test="${not empty folder.items}">
                                 <ul class="menu">
                                     <c:forEach var="item" items="${folder.items}" varStatus="itemLoop">
-                                        <li>
-                                            <c:if test="${not item.workingCopy}">
+                                        <c:if test="${not item.workingCopy}">
+                                            <li>
                                                 <stripes:radio id="radio" name="vocabularyId" value="${item.id}" />
                                                 <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" class="link-folder">
                                                     <stripes:param name="vocabularyFolder.folderName" value="${item.folderName}" />
                                                     <stripes:param name="vocabularyFolder.identifier" value="${item.identifier}" />
                                                     <c:out value="${item.identifier}"/>
                                                 </stripes:link>
-                                            </c:if>
-                                        </li>
+                                            </li>
+                                        </c:if>
                                     </c:forEach>
                                 </ul>
                             </c:if>

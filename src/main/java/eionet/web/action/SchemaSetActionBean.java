@@ -1,5 +1,11 @@
 package eionet.web.action;
 
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.model.Attribute;
+import eionet.datadict.model.DataDictEntity;
+import eionet.datadict.services.AttributeService;
+import eionet.datadict.services.data.AttributeDataService;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,8 +50,11 @@ import eionet.meta.dao.DAOException;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.schemas.SchemaRepository;
 import eionet.meta.service.ISchemaService;
+import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
@@ -77,6 +86,15 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /** Schema repository. */
     @SpringBean
     private SchemaRepository schemaRepository;
+
+    @SpringBean
+    private AttributeService attributeService;
+
+    @SpringBean
+    private AttributeDataService attributeDataService;
+
+    @SpringBean
+    private IVocabularyService vocabularyService;
 
     /** Simple attributes of this schema set. */
     private SchemaSet schemaSet;
@@ -1139,4 +1157,23 @@ public class SchemaSetActionBean extends AbstractActionBean {
     public HashMap<String, Vector> getComplexAttributeFields() {
         return complexAttributeFields;
     }
+
+    public Integer getVocabularyBinding(int attributeId) {
+       return attributeDataService.getVocabularyBinding(attributeId);
+    }
+
+    public List<VocabularyConcept> getVocabularyConcepts(DElemAttribute attribute) throws ResourceNotFoundException, EmptyParameterException {
+        DataDictEntity ddEntity = new DataDictEntity(schemaSet.getId(), DataDictEntity.Entity.SCS);
+        Attribute.ValueInheritanceMode valueInheritanceMode = Attribute.ValueInheritanceMode.getInstance(attribute.getInheritable());
+        return attributeService.getAttributeVocabularyConcepts(Integer.parseInt(attribute.getID()), ddEntity, valueInheritanceMode);
+    }
+
+    public VocabularyFolder getVocabularyBindingFolder(int attributeId) throws ServiceException {
+        Integer boundVocabularyId = getVocabularyBinding(attributeId);
+        if (boundVocabularyId != null) {
+            return vocabularyService.getVocabularyFolder(boundVocabularyId);
+        }
+        return null;
+    }
+
 }
