@@ -41,7 +41,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     DbUnitTestExecutionListener.class})
 @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
         value = "classpath:seed-attribute.xml")
-public class AttributeDaoTestIT extends UnitilsJUnit4 {
+public class AttributeDaoTestIT {
 
     @Autowired
     AttributeDao attributeDao;
@@ -50,16 +50,6 @@ public class AttributeDaoTestIT extends UnitilsJUnit4 {
     public static final int DISPLAY_HEIGHT_DEFAULT = 1;
     public static final int DISPLAY_ORDER_DEFAULT = 999;
     public static final int NAMESPACE_ID_DEFAULT = 3;
-
-    @Before
-    public void setUp() throws Exception {
-        DBUnitHelper.loadData("seed-attribute.xml");
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        DBUnitHelper.deleteData("seed-attribute.xml");
-    }
 
     @Test
     public void testGetByIdForSimpleFields() {
