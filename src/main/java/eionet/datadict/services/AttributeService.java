@@ -83,7 +83,7 @@ public interface AttributeService {
      * @throws eionet.datadict.errors.EmptyParameterException  
      */
     public List<VocabularyConcept> getAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity, ValueInheritanceMode inheritanceMode)
-            throws ResourceNotFoundException, EmptyParameterException ; 
+            throws ResourceNotFoundException, EmptyParameterException; 
     
     /**
      * First fetches the vocabulary which is bound to the attribute with the given id. Then fetches all the vocabulary values of this  
