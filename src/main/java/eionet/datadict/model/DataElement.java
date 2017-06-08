@@ -188,7 +188,6 @@ public abstract class DataElement implements AttributeOwner {
 
         public static DataElementType resolveTypeFromName(String string) {
             for (DataElementType type : DataElementType.values()) {
-                System.out.println("DataElem TYpe:"+type.name());
                 if (type.name().equals(string)) {
                     return type;
                 }

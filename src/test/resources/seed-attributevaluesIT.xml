@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+
+    <ATTRIBUTE M_ATTRIBUTE_ID="37" DATAELEM_ID="1299" VALUE="Nature conservation and biodiversity" PARENT_TYPE="DS"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="37" DATAELEM_ID="1300" VALUE="Nature conservation and biodiversity" PARENT_TYPE="DS"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="37" DATAELEM_ID="1301" VALUE="Nature conservation and biodiversity" PARENT_TYPE="DS"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="37" DATAELEM_ID="1302" VALUE="Nature conservation and biodiversity" PARENT_TYPE="DS"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="37" DATAELEM_ID="1303" VALUE="Nature conservation and biodiversity" PARENT_TYPE="DS"/>    
+    <ATTRIBUTE M_ATTRIBUTE_ID="40" DATAELEM_ID="2002" VALUE="Nature conservation and biodiversity" PARENT_TYPE="T"/>    
+
+    <ATTRIBUTE M_ATTRIBUTE_ID="40" DATAELEM_ID="1694" VALUE="KoizuopjmiJunichiro1.jpg" PARENT_TYPE="T"/>
+  <ATTRIBUTE M_ATTRIBUTE_ID="40" DATAELEM_ID="1695" VALUE="KoizumiJuniro1.jpg" PARENT_TYPE="T"/>
+  <ATTRIBUTE M_ATTRIBUTE_ID="40" DATAELEM_ID="1729" VALUE="KoizumiJunichiro1.jpg" PARENT_TYPE="T"/>
+  <ATTRIBUTE M_ATTRIBUTE_ID="40" DATAELEM_ID="2002" VALUE="KoizumiJklnklnunichiro1.jpg" PARENT_TYPE="T"/>
+        
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="37" NAME="EEA Issue" OBLIGATION="O" DEFINITION="An issue form the EEA environmental issues list." SHORT_NAME="EEAissue" NAMESPACE_ID="3" DISP_TYPE="select" DISP_ORDER="6" DISP_WHEN="75" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="1"/>
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="40" NAME="Descriptive image" OBLIGATION="O" DEFINITION="DEF" SHORT_NAME="Descriptive_image" NAMESPACE_ID="3" DISP_TYPE="image" DISP_ORDER="999" DISP_WHEN="67" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="0"/>
+
+</dataset>

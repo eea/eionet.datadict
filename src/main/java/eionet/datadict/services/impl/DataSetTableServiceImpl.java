@@ -81,7 +81,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             dsAnnotation.appendChild(dsDocumentation);
 
             for (Attribute dataSetTableAttribute : dataSetTable.getAttributes()) {
-                AttributeValue attributeValue = attributeValueDao.getByAttributeAndEntityId(dataSetTableAttribute.getId(), dataSetTable.getId());
+                AttributeValue attributeValue = attributeValueDao.getByAttributeAndOwner(dataSetTableAttribute.getId(), new DataDictEntity(dataSetTable.getId(),DataDictEntity.Entity.T)).get(0);
                 Element attributeElement = elMaker.createElement(dataSetTableAttribute.getShortName().replace(" ", ""), null, dataSetTableAttribute.getNamespace().getShortName().replace("_", ""));
 
                 if (attributeValue != null) {
@@ -92,11 +92,11 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             List<Attribute> dataSetAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
             List<AttributeValue> dataSetAttributesValues = new ArrayList<AttributeValue>();
             for (Attribute dataSetAttribute : dataSetAttributes) {
-                AttributeValue attributeValue = attributeValueDao.getByAttributeAndEntityId(dataSetAttribute.getId(), datasetId);
-                dataSetAttributesValues.add(attributeValue);
+                List<AttributeValue> attributeValues = attributeValueDao.getByAttributeAndOwner(dataSetAttribute.getId(), new DataDictEntity(datasetId,DataDictEntity.Entity.DS));
+                dataSetAttributesValues.add(attributeValues.get(0));
                 Element attributeElement = elMaker.createElement(dataSetAttribute.getShortName().replace(" ", ""), null, dataSetAttribute.getNamespace().getShortName().replace("_", ""));
-                if (attributeValue != null) {
-                    attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
+                if (attributeValues.get(0) != null) {
+                    attributeElement.appendChild(doc.createTextNode(attributeValues.get(0).getValue()));
                 }
                 dsDocumentation.appendChild(attributeElement);
             }

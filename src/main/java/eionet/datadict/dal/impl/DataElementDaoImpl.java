@@ -5,7 +5,6 @@ import eionet.datadict.dal.impl.converters.BooleanToMysqlEnumYesNoConverter;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataElement.DataElementType;
-import eionet.datadict.model.DatasetTableElement;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.AttributeOwnerCategory;
 import eionet.datadict.model.AttributeValue;

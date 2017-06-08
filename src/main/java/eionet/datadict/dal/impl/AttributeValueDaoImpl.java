@@ -122,23 +122,6 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
         }
     }
 
-    @Override
-    public AttributeValue getByAttributeAndEntityId(int attributeId, int dataDictEntityId) {
-        String sql = "SELECT "
-                + "ATTRIBUTE.* "
-                + "FROM ATTRIBUTE "
-                + "WHERE M_ATTRIBUTE_ID = :attributeId AND DATAELEM_ID = :ddEntityId";
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("attributeId", attributeId);
-        params.put("ddEntityId", dataDictEntityId);
-
-        try {
-            List<AttributeValue> attrValues = getNamedParameterJdbcTemplate().query(sql, params, new AttributeValueRowMapper());
-            return IterableUtils.firstOrDefault(attrValues);
-        } catch (EmptyResultDataAccessException ex) {
-            return null;
-        }
-    }
 
     public static class AttributeValueRowMapper implements RowMapper {
 
@@ -159,7 +142,6 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
             
             }
             
-            
             attrValue.setParentEntity(parentEntity);
             attrValue.setValue(rs.getString("VALUE"));
             Attribute at= new Attribute();
@@ -169,5 +151,4 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
         }
 
     }
-
 }
