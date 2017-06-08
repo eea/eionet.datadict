@@ -17,6 +17,7 @@ import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DatasetDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import eionet.meta.DDUser;
+import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -67,6 +68,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     private DatasetTable datasetTable;
     private DataElement dataElement;
     private SchemaSet schemaSet;
+    private Schema schema;
 
     // The Attribute object
     private Attribute attribute;
@@ -165,6 +167,13 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             if (!this.schemaSet.isWorkingCopy() || (this.schemaSet.getWorkingUser() != null && !this.schemaSet.getWorkingUser().equals(user.getUserName()))) {
                 throw new UserAuthorizationException("You are not authorized to edit this schema set.");
             }
+        } else if (attrOwnerType.equals("schema")) {
+            configureSchema();
+            // check for root level schemas
+            if (this.schema.getSchemaSetId() <= 0 && 
+                    (!this.schema.isWorkingCopy() || (this.schema.getWorkingUser() != null && !this.schema.getWorkingUser().equals(user.getUserName())))) {
+                throw new UserAuthorizationException("You are not authorized to edit this schema.");
+            }
         }
 
         this.attribute = attributeDataService.getAttribute(Integer.parseInt(attributeId));
@@ -226,8 +235,20 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             if (!this.dataset.getWorkingCopy() || this.dataset.getWorkingUser() != null && !this.dataset.getWorkingUser().equals(user.getUserName())) {
                 throw new UserAuthorizationException("You are not authorized to edit this dataset.");
             }
+        } else if (attrOwnerType.equals("schemaset")) {
+            configureSchemaSet();
+            if (!this.schemaSet.isWorkingCopy() || (this.schemaSet.getWorkingUser() != null && !this.schemaSet.getWorkingUser().equals(user.getUserName()))) {
+                throw new UserAuthorizationException("You are not authorized to edit this schema set.");
+            }
+        } else if (attrOwnerType.equals("schema")) {
+            configureSchema();
+            // check for root level schemas
+            if (this.schema.getSchemaSetId() <= 0 && 
+                    (!this.schema.isWorkingCopy() || (this.schema.getWorkingUser() != null && !this.schema.getWorkingUser().equals(user.getUserName())))) {
+                throw new UserAuthorizationException("You are not authorized to edit this schema.");
+            }
         }
-        
+
         this.attribute = attributeDataService.getAttribute(Integer.parseInt(attributeId));
         
         try {
@@ -427,6 +448,22 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         }
     }
 
+    protected void configureSchema() throws ResourceNotFoundException {
+        this.currentSection = "schemas";
+        try {
+            this.schema = this.schemaService.getSchema(this.attributeOwnerEntity.getId());
+            if (this.schema != null && this.schema.getSchemaSetId() > 0) {
+                SchemaSet parent = schemaService.getSchemaSet(schema.getSchemaSetId());
+                if (parent != null) {
+                    schema.setSchemaSetId(parent.getId());
+                    schema.setSchemaSetIdentifier(parent.getIdentifier());
+                }
+            }
+        } catch (ServiceException ex) {
+            throw new ResourceNotFoundException("Schema with id: " + this.attributeOwnerEntity.getId() + " does not exist.", ex);
+        }
+    }
+
     //----------------- Getters and Setters ------------------------------
     
     public String getAttributeId() {
@@ -467,6 +504,14 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
 
     public void setSchemaSet(SchemaSet schemaSet) {
         this.schemaSet = schemaSet;
+    }
+
+    public Schema getSchema() {
+        return schema;
+    }
+
+    public void setSchema(Schema schema) {
+        this.schema = schema;
     }
 
     public DataDictEntity getAttributeOwnerEntity() {
