@@ -88,7 +88,7 @@ public class AttributeServiceImpl implements AttributeService {
             throws ResourceNotFoundException, EmptyParameterException {
         Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
         if (vocabularyId != null) {
-             List<VocabularyConcept> vocabularyConcepts = attributeDataService.getVocabularyConceptsAsAttributeValues(vocabularyId, attributeId, ddEntity, inheritanceMode);
+             List<VocabularyConcept> vocabularyConcepts = attributeDataService.getVocabularyConceptsAsAttributeValues(attributeId, ddEntity, inheritanceMode);
              return vocabularyConcepts;
         }
         return null;
@@ -99,7 +99,7 @@ public class AttributeServiceImpl implements AttributeService {
     public List<VocabularyConcept> getInherittedAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity) throws ResourceNotFoundException, EmptyParameterException {
         Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
         if (vocabularyId != null) {
-            List<VocabularyConcept> vocabularyConcepts = attributeDataService.getVocabularyConceptsAsInheritedAttributeValues(vocabularyId, attributeId, ddEntity);
+            List<VocabularyConcept> vocabularyConcepts = attributeDataService.getVocabularyConceptsAsInheritedAttributeValues(attributeId, ddEntity);
             return vocabularyConcepts;
         }
         return null;

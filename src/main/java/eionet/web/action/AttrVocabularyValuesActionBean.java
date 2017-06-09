@@ -50,7 +50,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     private final static String ATTRIBUTE_VOCABULARY_VALUES_ADD = "/pages/attributes/addAttributeVocabularyValue.jsp";
     
     // block of post parameters
-    private List<String> conceptIdentifiers = new ArrayList<String>();
+    private List<String> conceptIds = new ArrayList<String>();
 
     // block of url parameters
     private String attributeId;
@@ -181,8 +181,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         if(attribute.getVocabulary() == null) {
             throw new BadRequestException("No vocabulary binding exists for this attribute.");
         }
-        this.vocabularyConcepts = this.attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(
-                attribute.getVocabulary().getId(), attribute.getId(), attributeOwnerEntity);
+        this.vocabularyConcepts = this.attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(attribute.getId(), attributeOwnerEntity);
         
         return new ForwardResolution(ATTRIBUTE_VOCABULARY_VALUES);
     }
@@ -325,26 +324,25 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             throw new BadRequestException("Malformend request. " + attrOwnerId + " is not a valid datadict entity id.");
         }
         
-        if (!conceptIdentifiers.isEmpty()) {
+        if (!conceptIds.isEmpty()) {
             this.attribute = attributeDataService.getAttribute(Integer.parseInt(attributeId));
             if (attribute.getVocabulary() == null) {
                 throw new BadRequestException("No vocabulary binding exists for this attribute.");
             }
             this.attributeOwnerEntity = new DataDictEntity(Integer.parseInt(attrOwnerId), DataDictEntity.Entity.getFromString(attrOwnerType));
-            this.vocabularyConcepts = this.attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(
-                    attribute.getVocabulary().getId(), attribute.getId(), attributeOwnerEntity);
+            this.vocabularyConcepts = this.attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(attribute.getId(), attributeOwnerEntity);
 
-            Set noDuplicateConceptIdentifiers = new LinkedHashSet(conceptIdentifiers);
-            Set<String> existingIdentifiers = new HashSet<String>();
+            Set<String> noDuplicateConceptIds = new LinkedHashSet<String>(conceptIds);
+            Set<String> existingIds = new HashSet<String>();
             for (Iterator<VocabularyConcept> it = vocabularyConcepts.iterator(); it.hasNext();) {
                 VocabularyConcept concept = it.next();
-                existingIdentifiers.add(concept.getIdentifier());
+                existingIds.add(String.valueOf(concept.getId()));
             }
 
-            noDuplicateConceptIdentifiers.removeAll(existingIdentifiers);
-            conceptIdentifiers = new ArrayList(noDuplicateConceptIdentifiers);
+            noDuplicateConceptIds.removeAll(existingIds);
+            conceptIds = new ArrayList(noDuplicateConceptIds);
 
-            this.attributeDataService.createAttributeValues(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIdentifiers);
+            this.attributeDataService.createAttributeValues(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIds);
         }
         return new RedirectResolution("/vocabularyvalues/attribute/" + attributeId + "/" + attrOwnerType + "/" + attrOwnerId);
     }
@@ -378,12 +376,12 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             throw new BadRequestException("Malformend request. " + attrOwnerId + " is not a valid datadict entity id.");
         }
         
-        if (conceptIdentifiers.isEmpty()) {
+        if (conceptIds.isEmpty()) {
             throw new BadRequestException("Malformed request: Attribute value missing.");
         }
         
         this.attributeOwnerEntity = new DataDictEntity(Integer.parseInt(attrOwnerId), DataDictEntity.Entity.getFromString(attrOwnerType));
-        this.attributeService.deleteAttributeValue(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIdentifiers.iterator().next(), user);
+        this.attributeService.deleteAttributeValue(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIds.iterator().next(), user);
         return new RedirectResolution("/vocabularyvalues/attribute/" + attributeId + "/" + attrOwnerType + "/" + attrOwnerId);
     }
     
@@ -566,12 +564,12 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         return vocabularyConcepts;
     }
 
-    public List<String> getConceptIdentifiers() {
-        return conceptIdentifiers;
+    public List<String> getConceptIds() {
+        return conceptIds;
     }
 
-    public void setConceptIdentifiers(List<String> conceptIdentifiers) {
-        this.conceptIdentifiers = conceptIdentifiers;
+    public void setConceptIds(List<String> conceptIds) {
+        this.conceptIds = conceptIds;
     }
 
     public VocabularyConceptResult getVocabularyConceptResult() {

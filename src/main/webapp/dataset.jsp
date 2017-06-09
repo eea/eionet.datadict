@@ -1410,7 +1410,7 @@ else if (mode.equals("add"))
                                                                         if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
                                                                             <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
                                                                         <% } else {%>
-                                                                            [Manage links to the vocabulary]         
+                                                                            [Manage links to the vocabulary]
                                                                         <%}
                                                                     }else {%>
                                                                     Unknown display type!<%
@@ -1522,7 +1522,7 @@ else if (mode.equals("add"))
                                             if (mode.equals("add")) { %>
                                                 <tr>
                                                     <th></th>
-                                                    <td colspan="3"><input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/></td>
+                                                    <td colspan="3"><input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/></td>
                                                 </tr>
                                             <%
                                             }

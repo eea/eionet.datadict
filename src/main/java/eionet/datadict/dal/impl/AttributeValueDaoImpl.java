@@ -6,6 +6,7 @@ import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
         try {
             return this.getNamedParameterJdbcTemplate().query(sql, params, new AttributeValueRowMapper());
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            return Collections.EMPTY_LIST;
         }
     }
 

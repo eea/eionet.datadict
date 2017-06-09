@@ -2718,4 +2718,16 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropColumn tableName="COMPLEX_ATTR_ROW" columnName="HARV_ATTR_ID" />		
     </changeSet>
 
+    <changeSet author="stamojoh" id="rev-196">
+        <comment>
+            Refs #85821 Attributes with vocabulary values should store concept id instead of identifier
+        </comment>
+        <sql>
+            update ATTRIBUTE join (select * from M_ATTRIBUTE_VOCABULARY) as vocabularyAttribute 
+                on attribute.M_ATTRIBUTE_ID=vocabularyAttribute.M_ATTRIBUTE_ID 
+                set value=(select VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT 
+                where VOCABULARY_ID=vocabularyAttribute.vocabulary_id and IDENTIFIER=VALUE);
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

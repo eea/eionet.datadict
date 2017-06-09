@@ -110,7 +110,7 @@
                                 <td>
                                     <stripes:form beanclass="${actionBean['class']}" 
                                                   onclick="return confirm('Are you sure you want to remove this attribute value?');" >
-                                        <stripes:hidden name="conceptIdentifiers[0]" value="${concept.identifier}"/>
+                                        <stripes:hidden name="conceptIds[0]" value="${concept.id}"/>
                                         <stripes:hidden name="attributeId"/>
                                         <stripes:hidden name="attrOwnerType"/>
                                         <stripes:hidden name="attrOwnerId"/>

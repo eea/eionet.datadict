@@ -1,5 +1,7 @@
 package eionet.datadict.model;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class AttributeValue {
     
     private Integer attributeId;
@@ -30,6 +32,25 @@ public class AttributeValue {
         this.parentEntity = parentEntity;
     }
 
-    
-    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof AttributeValue)) {
+            return false;
+        }
+        return this.hashCode()==obj.hashCode();
+    }
+
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().
+                append(attributeId).
+                append(value).
+                append(parentEntity.getId()).
+                append(parentEntity.getType().name()).
+                toHashCode();
+    }
+
 }
