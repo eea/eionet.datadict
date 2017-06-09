@@ -2727,6 +2727,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
                 on attribute.M_ATTRIBUTE_ID=vocabularyAttribute.M_ATTRIBUTE_ID 
                 set value=(select VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT 
                 where VOCABULARY_ID=vocabularyAttribute.vocabulary_id and IDENTIFIER=VALUE);
+            delete from attribute where value='' and M_ATTRIBUTE_ID in (select M_ATTRIBUTE_ID from M_ATTRIBUTE_VOCABULARY);
         </sql>
     </changeSet>
 
