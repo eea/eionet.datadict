@@ -47,15 +47,30 @@ public class DataSetServiceTestIT {
 
     @Test
     public void testGetDataSetXMLSchema() throws XmlExportException, ResourceNotFoundException, TransformerConfigurationException, TransformerException, SAXException, ParserConfigurationException, IOException {
-        Document expectedXMlDocument = dataSetService.getDataSetXMLSchema(2827);
+        Document XMlDocument = dataSetService.getDataSetXMLSchema(2827);
         javax.xml.transform.Transformer transformer = TransformerFactory.newInstance().newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         StreamResult actualXMLResult = new StreamResult(new StringWriter());
-        DOMSource source = new DOMSource(expectedXMlDocument);
+        DOMSource source = new DOMSource(XMlDocument);
         transformer.transform(source, actualXMLResult);
         ClassLoader classLoader = getClass().getClassLoader();
-        String exmpectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetXMLSChemaExampleTestIT.xml"));
+        String exmpectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetXMLSChemaTestIT.xsd"));
+        Diff diff = new Diff(exmpectedXMLResultString, actualXMLResult.getWriter().toString());
+        assertTrue(diff.similar());
+    }
+
+    @Test
+    public void testGetDataSetXMLInstance() throws XmlExportException, TransformerException, SAXException, IOException {
+        Document XMlDocument = dataSetService.getDataSetXMLInstance(2827);
+        javax.xml.transform.Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+        StreamResult actualXMLResult = new StreamResult(new StringWriter());
+        DOMSource source = new DOMSource(XMlDocument);
+        transformer.transform(source, actualXMLResult);
+        ClassLoader classLoader = getClass().getClassLoader();
+        String exmpectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetXMLInstanceTestIT.xml"));
         Diff diff = new Diff(exmpectedXMLResultString, actualXMLResult.getWriter().toString());
         assertTrue(diff.similar());
     }

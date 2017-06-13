@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NoiseDirectiveDF1 xmlns="http://dd.eionet.europa.eu/namespaces/688"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://dd.eionet.europa.eu/namespaces/688  schema-dst-2827.xsd">
+   <DF1_MAir xmlns="http://dd.eionet.europa.eu/namespaces/689">
+      <row>
+         <ReportingEntityUniqueCode></ReportingEntityUniqueCode>
+         <AirportName></AirportName>
+         <IcaoCode></IcaoCode>
+      </row>
+   </DF1_MAir>
+   <DF1_MRoad xmlns="http://dd.eionet.europa.eu/namespaces/690">
+      <row>
+         <ReportingEntityUniqueCode></ReportingEntityUniqueCode>
+         <EuRoadId></EuRoadId>
+         <NationalRoadId></NationalRoadId>
+      </row>
+   </DF1_MRoad>
+</NoiseDirectiveDF1>
