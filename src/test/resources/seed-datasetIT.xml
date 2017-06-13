@@ -1,8 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
 
-    <DATASET DATASET_ID="4" IDENTIFIER="NiD_test" SHORT_NAME="NiD_water" VERSION="2007" REG_STATUS="Incomplete" />
-        <VOCABULARY_SET ID="1" IDENTIFIER="common" LABEL="Common" />
+    <DATASET DATASET_ID="4" IDENTIFIER="NiD_test" SHORT_NAME="NiD_water" VERSION="2007" REG_STATUS="Incomplete" WORKING_COPY="N" DATE="1272974730726" CORRESP_NS="688"   DISP_CREATE_LINKS="43"/>
+    <VOCABULARY_SET ID="1" IDENTIFIER="common" LABEL="Common" />
     <VOCABULARY VOCABULARY_ID="1" CONTINUITY_ID="123" IDENTIFIER="tco99" LABEL="test1" REG_STATUS="Draft" DATE_MODIFIED="2014-06-21 06:48:20" WORKING_COPY="0" FOLDER_ID="1" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/common/test_vocabulary1/"/>
+
+    
+    <DS_TABLE TABLE_ID="6661" SHORT_NAME="DF1_MAir"  NAME=" "  WORKING_COPY="N" VERSION="1" DATE="1272974686859"  USER="roug"
+              CORRESP_NS="689"  PARENT_NS="688"  IDENTIFIER="DF1_MAir" />
+    
+    <NAMESPACE NAMESPACE_ID="689" SHORT_NAME="DF1_MAir_tbl__dst"  FULL_NAME="DF1_MAir table in  dataset" DEFINITION="The namespace of DF1_MAir table in  dataset"  PARENT_NS="688"/>
+    <NAMESPACE NAMESPACE_ID="688"  SHORT_NAME="NoiseDirectiveDF1_dst"  FULL_NAME="NoiseDirectiveDF1 dataset" DEFINITION="The namespace of NoiseDirectiveDF1 dataset"/>
+        
+        
+    <DS_TABLE TABLE_ID="6662" SHORT_NAME="DF1_MRoad" NAME=" " WORKING_COPY="N" DATE="1272974689453" CORRESP_NS="690" PARENT_NS="688" IDENTIFIER="DF1_MRoad" VERSION="1" />
+        
+    <NAMESPACE  NAMESPACE_ID="690" SHORT_NAME="DF1_MRoad_tbl__dst" FULL_NAME="DF1_MRoad table in  dataset" DEFINITION="The namespace of DF1_MRoad table in  dataset" 
+                PARENT_NS="688"/>
+
+     <T_RDF_NAMESPACE ID="2" URI="http://www.w3.org/2002/07/owl#"  NAME_PREFIX="owl"/>
+     
+
+     <NAMESPACE NAMESPACE_ID="2" SHORT_NAME="iso_attrs" FULL_NAME="ISO11179 attributes namespace" DEFINITION="The parent namespace for 
+attributes originating from ISO11179" PARENT_NS="1" />
+
+         
+    <ATTRIBUTE M_ATTRIBUTE_ID="1" DATAELEM_ID="2827" VALUE="Noise Directive Dataflow 1" PARENT_TYPE="DS"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="4" DATAELEM_ID="2827"  VALUE="Major roads, major railways, major airports and agglomerations designated by MS and concerned by 1st implementation step"  PARENT_TYPE="DS"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="5"  DATAELEM_ID="2827" VALUE="Noise"  PARENT_TYPE="DS"/>
+
+
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="1" NAME="Name" OBLIGATION="M" DEFINITION="Single or multi word designation assigned to a data element. Source: ISO 11179." SHORT_NAME="Name" 
+                 NAMESPACE_ID="2"  DISP_TYPE="text" DISP_ORDER="1" DISP_WHEN="459"  DISP_WIDTH="80"  DISP_HEIGHT="1"  DISP_MULTIPLE="0"  INHERIT="0"  LANGUAGE_USED="0" />
+
+
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="4"  NAME="Definition" OBLIGATION="O"  DEFINITION="Statement that expresses the essential nature of a data element and permits its differentiation from all other data elements. Source: ISO 11179."
+                 SHORT_NAME="Definition"  NAMESPACE_ID="2"  DISP_TYPE="textarea" DISP_ORDER="8" DISP_WHEN="1483" DISP_WIDTH="60" DISP_HEIGHT="4" 
+                 DISP_MULTIPLE="0" INHERIT="0"  LANGUAGE_USED="0"  />
+
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="5" NAME="Keywords" OBLIGATION="O"  DEFINITION="One or more significant words used for retrieval of data elements. Source: ISO 11179." 
+                 SHORT_NAME="Keyword"  NAMESPACE_ID="2" DISP_TYPE="text" DISP_ORDER="5" DISP_WHEN="8" DISP_WIDTH="40"  DISP_HEIGHT="1"  DISP_MULTIPLE="1"  INHERIT="1"  LANGUAGE_USED="0" />
+
+    
+    <DATASET DATASET_ID="2827" SHORT_NAME="NoiseDirectiveDF1" VERSION="5" WORKING_COPY="N"   REG_STATUS="Released" DATE="1272974730726" CORRESP_NS="688"  IDENTIFIER="NoiseDirectiveDF1" DISP_CREATE_LINKS="43"/>
+
+    
+    <DST2TBL DATASET_ID="2827" TABLE_ID="6661" POSITION="1"/>
+    <DST2TBL DATASET_ID="2827"  TABLE_ID="6662"  POSITION="2"/>
 
 </dataset>
