@@ -12,9 +12,9 @@ import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataSet;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.services.AttributeService;
+import eionet.datadict.services.DataSetService;
 import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.services.data.DataElementDataService;
-import eionet.datadict.services.data.DatasetDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import eionet.meta.DDUser;
 import eionet.meta.dao.domain.StandardGenericStatus;
@@ -76,7 +76,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     @SpringBean
     private IVocabularyService vocabularyService;
     @SpringBean
-    private DatasetDataService datasetDataService;
+    private DataSetService datasetService;
     @SpringBean
     private DatasetTableDataService datasetTableDataService;
     @SpringBean
@@ -395,7 +395,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     
     protected void configureDataset() throws ResourceNotFoundException {
         this.currentSection = "datasets";
-        this.dataSet = this.datasetDataService.getDataset(this.attributeOwnerEntity.getId());
+        this.dataSet = this.datasetService.getDataset(this.attributeOwnerEntity.getId());
     }
     
     protected void configureDataElement() throws ResourceNotFoundException {
