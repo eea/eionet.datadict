@@ -1,20 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-    <DS_TABLE TABLE_ID="3" IDENTIFIER="NiD_GW_Stat" SHORT_NAME="GW_MonitoringStations" NAME="List of groundwater monitoring stations" CORRESP_NS="4"/>
-    <DS_TABLE TABLE_ID="4" IDENTIFIER="NiD_GW_Conc" SHORT_NAME="GW_NO3_concentrations" NAME="NO3 concentrations in groundwater" CORRESP_NS="1"/>
-    <DS_TABLE TABLE_ID="5" IDENTIFIER="NiD_SW_Stat" SHORT_NAME="SW_MonitoringStations" NAME="List of surface monitoring stations" CORRESP_NS="2"/>
-    <DS_TABLE TABLE_ID="6" IDENTIFIER="NiD_SW_Conc" SHORT_NAME="SW_NO3_concentrations" NAME="NO3 concentrations in surface water" CORRESP_NS="4"/>
-    <DS_TABLE TABLE_ID="7" IDENTIFIER="NiD_SW_EutroMeas" SHORT_NAME="SW_Eutrophication_measurements" NAME="Eutrophication parameters in surface water" CORRESP_NS="3"/>
-    <DS_TABLE TABLE_ID="8" IDENTIFIER="NiD_SW_EutroState" SHORT_NAME="SW_Eutrophication_state" NAME="Trophic state of surfacewater" CORRESP_NS="2"/>
-    <DST2TBL TABLE_ID="3" DATASET_ID="4" />
-    <DST2TBL TABLE_ID="4" DATASET_ID="4" />
-    <DST2TBL TABLE_ID="6" DATASET_ID="5" />
-    <DST2TBL TABLE_ID="7" DATASET_ID="14" />
-    <DST2TBL TABLE_ID="8" DATASET_ID="22" />    
+    <DS_TABLE TABLE_ID="3" IDENTIFIER="NiD_GW_Stat" SHORT_NAME="GW_MonitoringStations" NAME="List of groundwater monitoring stations" CORRESP_NS="4" WORKING_COPY="N"  DATE="1272974730726" VERSION="5" PARENT_NS="689"/>
+    <DS_TABLE TABLE_ID="4" IDENTIFIER="NiD_GW_Conc" SHORT_NAME="GW_NO3_concentrations" NAME="NO3 concentrations in groundwater" CORRESP_NS="1" WORKING_COPY="N"  DATE="1272974730726" VERSION="5"  PARENT_NS="689"/>
+    <DS_TABLE TABLE_ID="5" IDENTIFIER="NiD_SW_Stat" SHORT_NAME="SW_MonitoringStations" NAME="List of surface monitoring stations" CORRESP_NS="2" WORKING_COPY="N"  DATE="1272974730726" VERSION="5"  PARENT_NS="689"/>
+    <DS_TABLE TABLE_ID="6" IDENTIFIER="NiD_SW_Conc" SHORT_NAME="SW_NO3_concentrations" NAME="NO3 concentrations in surface water" CORRESP_NS="4" WORKING_COPY="N"  DATE="1272974730726" VERSION="5"  PARENT_NS="689"/>
+    <DS_TABLE TABLE_ID="7" IDENTIFIER="NiD_SW_EutroMeas" SHORT_NAME="SW_Eutrophication_measurements" NAME="Eutrophication parameters in surface water" CORRESP_NS="3" WORKING_COPY="N"  DATE="1272974730726" VERSION="5" PARENT_NS="689" />
+    <DS_TABLE TABLE_ID="8" IDENTIFIER="NiD_SW_EutroState" SHORT_NAME="SW_Eutrophication_state" NAME="Trophic state of surfacewater" CORRESP_NS="2"  WORKING_COPY="N" DATE="1272974730726" VERSION="5"  PARENT_NS="689"/>
+    <DST2TBL TABLE_ID="3" DATASET_ID="4" POSITION="1" />
+    <DST2TBL TABLE_ID="4" DATASET_ID="4" POSITION="1" />
+    <DST2TBL TABLE_ID="6" DATASET_ID="5" POSITION="1" />
+    <DST2TBL TABLE_ID="7" DATASET_ID="14" POSITION="1"/>
+    <DST2TBL TABLE_ID="8" DATASET_ID="22" POSITION="1"/>    
     
-    <NAMESPACE NAMESPACE_ID="1" SHORT_NAME="short_name_1" FULL_NAME="Full Name 1"/>
-    <NAMESPACE NAMESPACE_ID="2" SHORT_NAME="short_name_2" FULL_NAME="Full Name 2"/>
-    <NAMESPACE NAMESPACE_ID="3" SHORT_NAME="short_name_3" FULL_NAME="Full Name 3"/>
-    <NAMESPACE NAMESPACE_ID="4" SHORT_NAME="short_name_4" FULL_NAME="Full Name 4"/>
+    <NAMESPACE NAMESPACE_ID="1" SHORT_NAME="short_name_1" FULL_NAME="Full Name 1" DEFINITION="DEF"/>
+    <NAMESPACE NAMESPACE_ID="2" SHORT_NAME="iso_attrs" FULL_NAME="ISO11179 attributes namespace" DEFINITION="The parent namespace for attributes originating from ISO11179" PARENT_NS="1" />
+    <NAMESPACE NAMESPACE_ID="4" SHORT_NAME="short_name_4" FULL_NAME="Full Name 4" DEFINITION="DEF"/>
+
+    <NAMESPACE NAMESPACE_ID="3"  SHORT_NAME="dd_attrs" FULL_NAME="DD attributes namespace" DEFINITION="The parent namespace for DD-specific attributes" PARENT_NS="1" />
+
+    <TBL2ELEM TABLE_ID="6661" DATAELEM_ID="47863" POSITION="1" />
+    <TBL2ELEM TABLE_ID="6661"  DATAELEM_ID="47864" POSITION="2"/>
+    <TBL2ELEM TABLE_ID="6661"  DATAELEM_ID="47865" POSITION="3" />
+
+    
+    <DST2TBL DATASET_ID="2827" TABLE_ID="6661" POSITION="1"/>
+
+        
+    <DATASET DATASET_ID="2827" SHORT_NAME="NoiseDirectiveDF1" VERSION="5" WORKING_COPY="N"   REG_STATUS="Released" DATE="1272974730726" CORRESP_NS="688"  IDENTIFIER="NoiseDirectiveDF1" DISP_CREATE_LINKS="43"/>
+    <DATAELEM TYPE="CH2" DATAELEM_ID="47863" NAMESPACE_ID="1" SHORT_NAME="ReportingEntityUniqueCode" WORKING_COPY="N" REG_STATUS="Incomplete" VERSION="5" USER="roug" DATE="12729102" PARENT_NS="689" TOP_NS="688" IDENTIFIER="ReportingEntityUniqueCode" />
+    <DATAELEM TYPE="CH2" DATAELEM_ID="47864" NAMESPACE_ID="1" SHORT_NAME="AirportName" WORKING_COPY="N" REG_STATUS="Incomplete" VERSION="5" USER="roug" DATE="4687449" PARENT_NS="689" TOP_NS="688" IDENTIFIER="AirportName" />
+    <DATAELEM TYPE="CH2" DATAELEM_ID="47865" NAMESPACE_ID="1" SHORT_NAME="IcaoCode" WORKING_COPY="N" REG_STATUS="Incomplete" VERSION="5" USER="roug" DATE="12793" PARENT_NS="689" TOP_NS="688" IDENTIFIER="IcaoCode" />
+    
+    
+    
+    
+    <DS_TABLE TABLE_ID="6661" SHORT_NAME="DF1_MAir"  NAME=" "  WORKING_COPY="N" VERSION="1" DATE="1272974686859"  USER="roug"
+              CORRESP_NS="689"  PARENT_NS="688"  IDENTIFIER="DF1_MAir" />
+    
+    
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="1" NAME="Name" OBLIGATION="M" DEFINITION="Single or multi word designation assigned to a data element. Source: ISO 11179." SHORT_NAME="Name" 
+                 NAMESPACE_ID="2"  DISP_TYPE="text" DISP_ORDER="1" DISP_WHEN="459"  DISP_WIDTH="80"  DISP_HEIGHT="1"  DISP_MULTIPLE="0"  INHERIT="0"  LANGUAGE_USED="0" />
+    
+    <ATTRIBUTE M_ATTRIBUTE_ID="17" DATAELEM_ID="6661" VALUE="European Parliament and Council Directive 2002/49/EC, relating to the assessment and management of environmental noise requires data and reports from Member States to be supplied to the European Commission.  In Data Flow 1 (and 5), for Major Airports, Member States must report the general description of the Major Airports, their location and traffic.  This data specification details the table structure for Member States to supply this information. The table must be supplied with supporting xml metadata compliant with the current European Environment Agency, Dublin Core Metadata Element Set (http://cr.eionet.europa.eu/dcmes.jsp)." PARENT_TYPE="T"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="15" DATAELEM_ID="6661" VALUE="Data Flow 1 (and 5), Source definition - Major Airports" PARENT_TYPE="T"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="4"  DATAELEM_ID="6661" VALUE="This dataset allows Member States to define Major Airports and their traffic." PARENT_TYPE="T"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="1"  DATAELEM_ID="6661" VALUE="DF1_MAir" PARENT_TYPE="T"/>
+
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="4"  NAME="Definition" OBLIGATION="O"  DEFINITION="Statement that expresses the essential nature of a data element and permits its differentiation from all other data elements. Source: ISO 11179."
+                 SHORT_NAME="Definition"  NAMESPACE_ID="2"  DISP_TYPE="textarea" DISP_ORDER="8" DISP_WHEN="1483" DISP_WIDTH="60" DISP_HEIGHT="4" 
+                 DISP_MULTIPLE="0" INHERIT="0"  LANGUAGE_USED="0"  />
+
+
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="15" NAME="Short Description" OBLIGATION="O" DEFINITION="Brief text about the content of the dataset." SHORT_NAME="ShortDescription" NAMESPACE_ID="3" DISP_TYPE="textarea" DISP_ORDER="7" DISP_WHEN="72" DISP_WIDTH="60"  DISP_HEIGHT="1" DISP_MULTIPLE="0" INHERIT="0" LANGUAGE_USED="0" />
+
+
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="17" NAME="Methodology for obtaining data" OBLIGATION="O" DEFINITION="Brief description of methodology for obtaining data in dataset." SHORT_NAME="Methodology" NAMESPACE_ID="3" DISP_TYPE="textarea" DISP_ORDER="20" DISP_WHEN="75" DISP_WIDTH="60" DISP_HEIGHT="6" DISP_MULTIPLE="0" INHERIT="0" LANGUAGE_USED="0" />
+
+
 
 </dataset>

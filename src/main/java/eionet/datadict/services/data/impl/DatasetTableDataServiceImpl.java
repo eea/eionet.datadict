@@ -73,7 +73,6 @@ public class DatasetTableDataServiceImpl implements DatasetTableDataService {
             throw new ResourceNotFoundException(String.format("Table with id %d could not be found.", tableId));
         }
         Integer datasetId = this.datasetTableDao.getParentDatasetId(tableId);
-        Integer parentDatasetId = this.datasetTableDao.getParentDatasetId(tableId);
 
         DataSet dataSet = datasetDao.getById(datasetId);
         datasetTable.setDataSet(dataSet);

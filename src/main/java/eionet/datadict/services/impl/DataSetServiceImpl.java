@@ -64,7 +64,7 @@ public class DataSetServiceImpl implements DataSetService {
             Document doc = docBuilder.newDocument();
             Element schemaRoot = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.SCHEMA);
             schemaRoot.setAttributeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
-                    DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, XMLConstants.W3C_XML_SCHEMA_NS_URI + XMLConstants.W3C_XML_SCHEMA_NS_URI+".xsd");
+                    DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, XMLConstants.W3C_XML_SCHEMA_NS_URI +" " + XMLConstants.W3C_XML_SCHEMA_NS_URI+".xsd");
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.XS_PREFIX, XMLConstants.W3C_XML_SCHEMA_NS_URI);
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.DATASETS, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + DataDictXMLConstants.DATASETS_NAMESPACE_ID);
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.ISO_ATTRS, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + DataDictXMLConstants.ISOATTRS_NAMESPACE_ID);
