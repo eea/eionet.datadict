@@ -1,4 +1,4 @@
-package eionet.datadict.services;
+package eionet.datadict.services.impl;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseOperation;
@@ -6,6 +6,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import eionet.config.ApplicationTestContext;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
+import eionet.datadict.services.DataSetTableService;
 import java.io.IOException;
 import java.io.StringWriter;
 import javax.xml.transform.OutputKeys;
