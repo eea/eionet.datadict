@@ -446,7 +446,7 @@ public class SchemaActionBean extends AbstractActionBean {
             LinkedHashMap<Integer, DElemAttribute> attributesMap = getAttributes();
             for (DElemAttribute attribute : attributesMap.values()) {
 
-                if (attribute.isMandatory()) {
+                if (attribute.isMandatory() && !attribute.getDisplayType().equals("vocabulary")) {
                     Integer attrId = Integer.valueOf(attribute.getID());
                     Set<String> attrValues = getSaveAttributeValues().get(attrId);
                     if (attrValues == null || attrValues.isEmpty() || StringUtils.isBlank(attrValues.iterator().next())) {
@@ -508,27 +508,25 @@ public class SchemaActionBean extends AbstractActionBean {
 
     }
 
-    /**
-     *
-     * @throws DAOException
-     */
     @ValidationMethod(on = {"save", "saveAndClose"}, priority = 2)
-    public void validateSave() throws DAOException {
-
-        LOGGER.trace("Method entered");
-
+    public void validateSave() throws DAOException, ResourceNotFoundException, EmptyParameterException {
         if (isGetOrHeadRequest()) {
             return;
         }
 
         LinkedHashMap<Integer, DElemAttribute> attributesMap = getAttributes();
         for (DElemAttribute attribute : attributesMap.values()) {
-
             if (attribute.isMandatory()) {
-                Integer attrId = Integer.valueOf(attribute.getID());
-                Set<String> attrValues = getSaveAttributeValues().get(attrId);
-                if (attrValues == null || attrValues.isEmpty() || StringUtils.isBlank(attrValues.iterator().next())) {
-                    addGlobalValidationError(attribute.getShortName() + " is missing!");
+                if (attribute.getDisplayType().equals("vocabulary") && !StringUtils.equals(getContext().getEventName(), "add")) {
+                    if (getVocabularyConcepts(attribute).isEmpty()) {
+                        addGlobalValidationError(attribute.getShortName() + " is missing!");
+                    }
+                } else {
+                    Integer attrId = Integer.valueOf(attribute.getID());
+                    Set<String> attrValues = getSaveAttributeValues().get(attrId);
+                    if (attrValues == null || attrValues.isEmpty() || StringUtils.isBlank(attrValues.iterator().next())) {
+                        addGlobalValidationError(attribute.getShortName() + " is missing!");
+                    }
                 }
             }
         }

@@ -473,16 +473,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
                 .addParameter("workingCopy", true);
     }
 
-    /**
-     *
-     * @throws DAOException
-     *             if operation fails
-     * @throws ServiceException
-     *             if operation fails
-     */
     @ValidationMethod(on = {"add", "save", "saveAndClose"})
-    public void validateAddSave() throws DAOException, ServiceException {
-
+    public void validateAddSave() throws DAOException, ServiceException, ResourceNotFoundException, EmptyParameterException {
         if (isGetOrHeadRequest()) {
             return;
         }
@@ -505,10 +497,16 @@ public class SchemaSetActionBean extends AbstractActionBean {
         for (DElemAttribute attribute : attributesMap.values()) {
 
             if (attribute.isMandatory()) {
-                Integer attrId = Integer.valueOf(attribute.getID());
-                Set<String> attrValues = getSaveAttributeValues().get(attrId);
-                if (attrValues == null || attrValues.isEmpty() || StringUtils.isBlank(attrValues.iterator().next())) {
-                    addGlobalValidationError(attribute.getShortName() + " is missing!");
+                if (attribute.getDisplayType().equals("vocabulary") && !StringUtils.equals(getContext().getEventName(), "add")) {
+                    if (getVocabularyConcepts(attribute).isEmpty()) {
+                        addGlobalValidationError(attribute.getShortName() + " is missing!");
+                    }
+                } else {
+                    Integer attrId = Integer.valueOf(attribute.getID());
+                    Set<String> attrValues = getSaveAttributeValues().get(attrId);
+                    if (attrValues == null || attrValues.isEmpty() || StringUtils.isBlank(attrValues.iterator().next())) {
+                        addGlobalValidationError(attribute.getShortName() + " is missing!");
+                    }
                 }
             }
         }
@@ -1034,7 +1032,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                         searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
                 if (attrsMap != null) {
                     for (DElemAttribute attribute : attrsMap.values()) {
-                        if (attribute.isMandatory()) {
+                        if (attribute.isMandatory() && !attribute.getDisplayType().equals("vocabulary")) {
                             mandatorySchemaAttributes.add(attribute);
                         }
                     }
