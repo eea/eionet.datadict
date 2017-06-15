@@ -5,16 +5,15 @@ import eionet.datadict.dal.AttributeValueDao;
 import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DatasetDao;
 import eionet.datadict.dal.DatasetTableDao;
-import eionet.datadict.model.DatasetTable;
+import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.model.DataSet;
 import eionet.datadict.services.DataSetService;
-import java.util.ArrayList;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
+import org.mockito.Mockito;
+import static org.mockito.Mockito.times;
 import org.mockito.MockitoAnnotations;
 
 /**
@@ -36,7 +35,7 @@ public class DatasetServiceTest {
 
     @Mock
     private DataElementDao dataElementDao;
-    
+
     private DataSetService dataSetService;
 
     @Before
@@ -45,16 +44,18 @@ public class DatasetServiceTest {
         this.dataSetService = new DataSetServiceImpl(datasetDao, datasetTableDao, attributeValueDao, attributeDao, dataElementDao);
     }
 
-    
     @Test
-    @Ignore
-    public void testGetDataSetXMLSchema(){
-    
-        Integer datasetId = 2127;
-        DatasetTable dsTable = new DatasetTable();
-        List<DatasetTable> dsTables = new ArrayList<DatasetTable>();
-        when(datasetTableDao.getAllByDatasetId(Matchers.anyInt())).thenReturn(dsTables);
-        
+    public void testGetDatasetSuccessfully() throws ResourceNotFoundException {
+        DataSet dataset = new DataSet();
+        dataset.setId(2827);
+        Mockito.doReturn(dataset).when(datasetDao).getById(2827);
+        DataSet actualDataSet = dataSetService.getDataset(2827);
+        assertEquals(dataset.getId(), actualDataSet.getId());
+        Mockito.verify(datasetDao, times(1)).getById(2827);
     }
 
+    @Test(expected = ResourceNotFoundException.class)
+    public void testGetDatasetFailure() throws ResourceNotFoundException {
+        dataSetService.getDataset(2827);
+    }
 }
