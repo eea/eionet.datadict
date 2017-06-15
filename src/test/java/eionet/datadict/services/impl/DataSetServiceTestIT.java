@@ -62,7 +62,7 @@ public class DataSetServiceTestIT {
     }
 
     @Test
-    public void testGetDataSetXMLInstance() throws XmlExportException, TransformerException, SAXException, IOException {
+    public void testGetDataSetXMLInstance() throws XmlExportException, TransformerException, SAXException, IOException, ResourceNotFoundException {
         Document XMlDocument = dataSetService.getDataSetXMLInstance(2827);
         javax.xml.transform.Transformer transformer = TransformerFactory.newInstance().newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");

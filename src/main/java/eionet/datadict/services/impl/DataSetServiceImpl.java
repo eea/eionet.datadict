@@ -129,7 +129,7 @@ public class DataSetServiceImpl implements DataSetService {
     }
 
     @Override
-    public Document getDataSetXMLInstance(int id) throws XmlExportException {
+    public Document getDataSetXMLInstance(int id) throws XmlExportException , ResourceNotFoundException{
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
         try {
@@ -159,8 +159,6 @@ public class DataSetServiceImpl implements DataSetService {
             }
             doc.appendChild(schemaRoot);
             return doc;
-        } catch (ResourceNotFoundException ex) {
-            Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
