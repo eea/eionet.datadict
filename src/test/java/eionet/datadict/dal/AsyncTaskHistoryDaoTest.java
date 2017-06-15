@@ -34,7 +34,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
-@SpringApplicationContext("mock-spring-context.xml")
+    @SpringApplicationContext("mock-spring-context.xml")
 public class AsyncTaskHistoryDaoTest extends UnitilsJUnit4 {
 
     @SpringBeanByType

@@ -53,7 +53,7 @@ public class DataSetController {
 
     @RequestMapping(value = "/{id}/schema", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
-    public void getDataSetSchema(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
+    public void getDataSetSchema(@PathVariable int id, HttpServletResponse response) throws ResourceNotFoundException, ServletException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
 
         Document xml = this.dataSetService.getDataSetXMLSchema(id);
         String fileName = "schema-dst-".concat(String.valueOf(id)).concat(".xsd");
@@ -76,7 +76,7 @@ public class DataSetController {
 
     @RequestMapping(value = "/{id}/instance", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
-    public void getDataSetInstance(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
+    public void getDataSetInstance(@PathVariable int id, HttpServletResponse response) throws ResourceNotFoundException, ServletException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
 
         Document xml = this.dataSetService.getDataSetXMLInstance(id);
         String fileName = "dataset-instance.xml";
