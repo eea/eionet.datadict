@@ -474,6 +474,10 @@
             o = document.forms["form1"].idfier;
             if (o!=null && o.value.length == 0) return false;
 
+            if ($("#form1 .vocabularyAttributeMandatoryValidationError").length) {
+                return false;
+            }
+
             var elems = document.forms["form1"].elements;
             for (var i=0; elems!=null && i<elems.length; i++){
                 var elem = elems[i];
@@ -489,7 +493,6 @@
                     }
                 }
             }
-
             return true;
         }
 
@@ -1063,7 +1066,7 @@ else if (mode.equals("add"))
                                                     else if (mode.equals("view") && dispType.equals("vocabulary")) {
                                                         DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
                                                         List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
-                                                        if (vocabularyConcepts != null) { %>
+                                                        if (vocabularyConcepts != null && !vocabularyConcepts.isEmpty()) { %>
                                                             <ul class="stripedmenu">
                                                             <%
                                                                 VocabularyFolder vf = null;
@@ -1085,7 +1088,7 @@ else if (mode.equals("add"))
                                                         <%=Util.processForDisplay(attrValue)%><%
                                                     }
                                                     // if non-view mode, display input
-                                                    else{
+                                                    else {
 
                                                         // inherited value(s)
                                                         if (inherit && dispType.equals("vocabulary")){
@@ -1167,16 +1170,21 @@ else if (mode.equals("add"))
                                                             </div><%
                                                         }
                                                         else if (dispMultiple && dispType.equals("vocabulary")) {
-                                                            if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) { %>
-                                                              <%DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
+                                                            if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) {
+                                                                DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
                                                                 List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
-                                                                %>
+                                                                if (vocabularyConcepts != null && !vocabularyConcepts.isEmpty()) {
+                                                            %>
                                                                 <ul class="stripedmenu">
                                                                     <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
                                                                         <li><c:out value="${vocabularyConcept.label}"/></li>
                                                                     </c:forEach>
                                                                 </ul>
+                                                            <%}%>
                                                                 <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
+                                                                <% if (attribute.isMandatory() && !inherit && (vocabularyConcepts == null || vocabularyConcepts.isEmpty())) { %>
+                                                                    <input type="hidden" class="vocabularyAttributeMandatoryValidationError" />
+                                                                <%}%>
                                                             <%} else { %>
                                                                 [Manage links to the vocabulary]
                                                             <%}
@@ -1232,17 +1240,22 @@ else if (mode.equals("add"))
                                                                 </select>
                                                                     <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID + "/" + ("view".equals(mode) ? "view" : "edit")%>"></a>
                                                                 <%
-                                                            }else if (dispType.equals("vocabulary")){ 
-                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
-                                                                          <%DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
+                                                            }else if (dispType.equals("vocabulary")) { 
+                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) {
+                                                                            DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(tableID), DataDictEntity.Entity.T);
                                                                             List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
-                                                                          %>
+                                                                            if (vocabularyConcepts != null && !vocabularyConcepts.isEmpty()) {
+                                                                        %>
                                                                             <ul class="stripedmenu">
                                                                                 <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
                                                                                     <li><c:out value="${vocabularyConcept.label}"/></li>
                                                                                 </c:forEach>
                                                                             </ul>
+                                                                        <%}%>
                                                                             <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/table/<%=dsTable.getID()%>">[Manage links to the vocabulary]</a>
+                                                                            <% if (attribute.isMandatory() && !inherit && (vocabularyConcepts == null || vocabularyConcepts.isEmpty())) { %>
+                                                                                <input type="hidden" class="vocabularyAttributeMandatoryValidationError" />
+                                                                            <%}%>
                                                                       <%} else { %>
                                                                             [Manage links to the vocabulary]
                                                                         <%}
@@ -1279,7 +1292,7 @@ else if (mode.equals("add"))
                                                     <tr>
                                                         <th></th>
                                                         <td colspan="3">
-                                                            <input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
+                                                            <input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add'); return false;"/>
                                                             <input type="submit" class="mediumbuttonb" value="Copy"
                                                                 onclick="copyTbl('<%=request.getContextPath()%>'); return false;"
                                                                 title="Copies table structure and attributes from existing dataset table"/>
@@ -1290,8 +1303,8 @@ else if (mode.equals("add"))
                                                     <tr>
                                                         <th></th>
                                                         <td colspan="3">
-                                                            <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>
-                                                            <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>
+                                                            <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit'); return false;"/>
+                                                            <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose'); return false;"/>
                                                             <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=tableID%>')"/>
                                                         </td>
                                                     </tr>

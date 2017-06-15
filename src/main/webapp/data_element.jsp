@@ -1006,6 +1006,10 @@
             o = document.forms["form1"].idfier;
             if (o!=null && o.value.length == 0) return false;
 
+            if ($("#form1 .vocabularyAttributeMandatoryValidationError").length) {
+                return false;
+            }
+
             var elems = document.forms["form1"].elements;
             for (var i=0; elems!=null && i<elems.length; i++){
                 var elem = elems[i];
@@ -1021,7 +1025,6 @@
                     }
                 }
             }
-
             return true;
         }
 
@@ -2001,7 +2004,7 @@
                                                                     DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
                                                                     if(mode.equals("view")){
                                                                         List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
-                                                                        if (concepts!=null) { %>
+                                                                        if (concepts!=null && !concepts.isEmpty()) { %>
                                                                             <ul class="stripedmenu">
                                                                             <%
                                                                                 VocabularyFolder vf = null;
@@ -2039,9 +2042,9 @@
                                                                                 </br>
                                                                           <%}
                                                                         }
-                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) { %>
-                                                                          <%List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
-                                                                            if(concepts!=null){ %>
+                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) {
+                                                                            List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
+                                                                            if(concepts!=null && !concepts.isEmpty()) { %>
                                                                                 <ul class="stripedmenu">
                                                                                     <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
                                                                                         <li><c:out value="${concept.label}"/></li>
@@ -2049,6 +2052,9 @@
                                                                                 </ul>
                                                                             <%}%>
                                                                             <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
+                                                                            <% if (attribute.isMandatory() && !inherit && (concepts == null || concepts.isEmpty())) { %>
+                                                                                <input type="hidden" class="vocabularyAttributeMandatoryValidationError" />
+                                                                            <%}%>
                                                                         <%} else {%>
                                                                             [Manage links to the vocabulary]
                                                                         <%}
@@ -2236,9 +2242,9 @@
                                                                     <%
                                                                         } else if (dispType.equals("vocabulary")) {
                                                                                 DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
-                                                                                if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
-                                                                                <%List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
-                                                                                if(concepts!=null) { %>
+                                                                                if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) {
+                                                                                  List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
+                                                                                  if(concepts!=null && !concepts.isEmpty()) { %>
                                                                                     <ul class="stripedmenu">
                                                                                         <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
                                                                                             <li><c:out value="${concept.label}"/></li>
@@ -2246,6 +2252,9 @@
                                                                                     </ul>
                                                                               <%}%>
                                                                               <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
+                                                                              <% if (attribute.isMandatory() && !inherit && (concepts == null || concepts.isEmpty())) { %>
+                                                                                <input type="hidden" class="vocabularyAttributeMandatoryValidationError" />
+                                                                              <%}%>
                                                                             <%} else {%>
                                                                                 [Manage links to the vocabulary]
                                                                             <%}
@@ -2384,7 +2393,7 @@
                                                 <tr>
                                                     <th></th>
                                                     <td colspan="3">
-                                                        <input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
+                                                        <input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add'); return false;"/>
                                                         <input type="submit" class="mediumbuttonb" value="Copy"
                                                             onclick="copyElem(); return false;"
                                                             title="Opens an element search window, and from the search results you can select an element to copy."/>
@@ -2397,8 +2406,8 @@
                                                 <tr>
                                                     <th></th>
                                                     <td colspan="3">
-                                                        <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>
-                                                        <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>
+                                                        <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit'); return false;"/>
+                                                        <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose'); return false;"/>
                                                         <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=delem_id%>')"/>
                                                     </td>
                                                 </tr>

@@ -567,6 +567,10 @@
             var o = document.forms["form1"].ds_name;
             if (o!=null && o.value.length == 0) return false;
 
+            if ($("#form1 .vocabularyAttributeMandatoryValidationError").length) {
+                return false;
+            }
+
             var elems = document.forms["form1"].elements;
             for (var i=0; elems!=null && i<elems.length; i++) {
                 var elem = elems[i];
@@ -582,7 +586,6 @@
                     }
                 }
             }
-
             return true;
         }
 
@@ -1262,7 +1265,7 @@ else if (mode.equals("add"))
                                                         if (mode.equals("view") && dispType.equals("vocabulary")) {
                                                             DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
                                                             List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
-                                                            if(vocabularyConcepts != null) { %>
+                                                            if(vocabularyConcepts != null && !vocabularyConcepts.isEmpty()) { %>
                                                                 <ul class="stripedmenu">
                                                                 <%
                                                                     VocabularyFolder vf = null;
@@ -1340,7 +1343,7 @@ else if (mode.equals("add"))
                                                                 if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) { %>
                                                                   <%DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
                                                                     List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
-                                                                    if(vocabularyConcepts != null) {%>
+                                                                    if (vocabularyConcepts != null && !vocabularyConcepts.isEmpty()) {%>
                                                                         <ul class="stripedmenu">
                                                                             <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
                                                                                 <li><c:out value="${vocabularyConcept.label}"/></li>
@@ -1348,6 +1351,9 @@ else if (mode.equals("add"))
                                                                         </ul>
                                                                     <%}%>
                                                                     <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
+                                                                    <% if (attribute.isMandatory() && (vocabularyConcepts == null || vocabularyConcepts.isEmpty())) { %>
+                                                                        <input type="hidden" class="vocabularyAttributeMandatoryValidationError" />
+                                                                    <%}%>
                                                               <%} else {%>
                                                                     [Manage links to the vocabulary]
                                                               <%}
@@ -1522,7 +1528,7 @@ else if (mode.equals("add"))
                                             if (mode.equals("add")) { %>
                                                 <tr>
                                                     <th></th>
-                                                    <td colspan="3"><input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/></td>
+                                                    <td colspan="3"><input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add'); return false;"/></td>
                                                 </tr>
                                             <%
                                             }
@@ -1533,8 +1539,8 @@ else if (mode.equals("add"))
                                                     <tr>
                                                         <th></th>
                                                         <td colspan="3">
-                                                            <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>
-                                                            <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>
+                                                            <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit'); return false;"/>
+                                                            <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose'); return false;"/>
                                                             <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=ds_id%>')"/>
                                                         </td>
                                                     </tr>
