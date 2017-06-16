@@ -15,6 +15,7 @@ import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.services.DataSetTableService;
 import eionet.datadict.services.data.DatasetTableDataService;
+import eionet.meta.dao.domain.DataSetTable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -64,7 +65,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             NameTypeElementMaker elMaker = new NameTypeElementMaker(DataDictXMLConstants.XS_PREFIX + ":", doc);
             Element schemaRoot = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.SCHEMA);
             schemaRoot.setAttributeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
-                    DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, XMLConstants.W3C_XML_SCHEMA_NS_URI +"  "+ XMLConstants.W3C_XML_SCHEMA_NS_URI + ".xsd");
+                    DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, XMLConstants.W3C_XML_SCHEMA_NS_URI + "  " + XMLConstants.W3C_XML_SCHEMA_NS_URI + ".xsd");
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.ISO_ATTRS, DataDictXMLConstants.ISOATTRS_NAMESPACE);
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.DD_ATTRS, DataDictXMLConstants.DDATTRS_NAMESPACE);
@@ -80,7 +81,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             dsAnnotation.appendChild(dsDocumentation);
 
             for (Attribute dataSetTableAttribute : dataSetTable.getAttributes()) {
-                AttributeValue attributeValue = attributeValueDao.getByAttributeAndOwner(dataSetTableAttribute.getId(), new DataDictEntity(dataSetTable.getId(),DataDictEntity.Entity.T)).get(0);
+                AttributeValue attributeValue = attributeValueDao.getByAttributeAndOwner(dataSetTableAttribute.getId(), new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T)).get(0);
                 Element attributeElement = elMaker.createElement(dataSetTableAttribute.getShortName().replace(" ", ""), null, dataSetTableAttribute.getNamespace().getShortName().replace("_", ""));
 
                 if (attributeValue != null) {
@@ -91,7 +92,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             List<Attribute> dataSetAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
             List<AttributeValue> dataSetAttributesValues = new ArrayList<AttributeValue>();
             for (Attribute dataSetAttribute : dataSetAttributes) {
-                List<AttributeValue> attributeValues = attributeValueDao.getByAttributeAndOwner(dataSetAttribute.getId(), new DataDictEntity(datasetId,DataDictEntity.Entity.DS));
+                List<AttributeValue> attributeValues = attributeValueDao.getByAttributeAndOwner(dataSetAttribute.getId(), new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
                 dataSetAttributesValues.add(attributeValues.get(0));
                 Element attributeElement = elMaker.createElement(dataSetAttribute.getShortName().replace(" ", ""), null, dataSetAttribute.getNamespace().getShortName().replace("_", ""));
                 if (attributeValues.get(0) != null) {
@@ -207,16 +208,16 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     }
 
     @Override
-    public Document getDataSetTableXMLInstance(int id) throws XmlExportException {
+    public Document getDataSetTableXMLInstance(int id) throws XmlExportException, ResourceNotFoundException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
-        DatasetTable dataSetTable = this.datasetTableDao.getById(id);
+        DatasetTable dataSetTable = this.getDatasetTable(id);
         try {
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
             Element schemaRoot = doc.createElement(dataSetTable.getShortName());
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
-            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE +":"+ DataDictXMLConstants.XSI_PREFIX, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.XSI_PREFIX, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataSetTable.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
             List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dataSetTable.getId());
             String tableNS = DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId();
@@ -235,6 +236,16 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
         }
 
+    }
+
+    @Override
+    public DatasetTable getDatasetTable(int id) throws ResourceNotFoundException {
+        DatasetTable datasetTable = this.datasetTableDao.getById(id);
+        if (datasetTable != null) {
+            return datasetTable;
+        } else {
+            throw new ResourceNotFoundException("DatasetTable with id:" + id + "does not exist");
+        }
     }
 
     private static class NameTypeElementMaker {

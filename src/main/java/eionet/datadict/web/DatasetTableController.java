@@ -52,7 +52,7 @@ public class DatasetTableController {
     
     @RequestMapping(value = "/{id}/schema", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
-    public void getDatasetTableSchema(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
+    public void getDatasetTableSchema(@PathVariable int id, HttpServletResponse response) throws ResourceNotFoundException, ServletException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
 
         Document xml = this.dataSetTableService.getDataSetTableXMLSchema(id);
         String fileName = "schema-tbl-".concat(String.valueOf(id)).concat(".xsd");
@@ -76,7 +76,7 @@ public class DatasetTableController {
 
     @RequestMapping(value = "/{id}/instance", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
-    public void getDataSetTableInstance(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
+    public void getDataSetTableInstance(@PathVariable int id,  HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
 
         Document xml = this.dataSetTableService.getDataSetTableXMLInstance(id);
         String fileName = "table" + id + "-instance.xml";
