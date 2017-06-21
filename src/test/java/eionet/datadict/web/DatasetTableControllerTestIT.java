@@ -3,6 +3,7 @@ package eionet.datadict.web;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import eionet.config.ApplicationTestContext;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.Diff;
@@ -25,6 +26,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 /**
  *
@@ -37,7 +42,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
     DbUnitTestExecutionListener.class})
 @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
         value = "classpath:seed-datasetTableIT.xml")
-public class DataSetTableControllerTestIT {
+@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
+        value = "classpath:seed-datasetTableIT.xml")
+public class DatasetTableControllerTestIT {
 
     private MockMvc mockMvc;
 

@@ -3,6 +3,7 @@ package eionet.datadict.infrastructure.asynctasks;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import eionet.config.ApplicationTestContext;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.enums.Enumerations;
@@ -32,6 +33,8 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class})
 @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
+            value ="classpath:seed-datasetIT.xml")
+@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
             value ="classpath:seed-datasetIT.xml")
 public class AsyncTaskManagerTestIT {
     

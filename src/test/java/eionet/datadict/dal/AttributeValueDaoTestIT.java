@@ -3,6 +3,7 @@ package eionet.datadict.dal;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import eionet.config.ApplicationTestContext;
 import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
@@ -33,6 +34,8 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     DbUnitTestExecutionListener.class})
 @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
         value = "classpath:seed-attributevaluesIT.xml")
+@DatabaseTearDown(type= DatabaseOperation.DELETE_ALL,
+       value = "classpath:seed-attributevaluesIT.xml")
 public class AttributeValueDaoTestIT {
 
     @Autowired
@@ -40,21 +43,21 @@ public class AttributeValueDaoTestIT {
 
     @Test
     public void testGetByAttributeAndOwner() {
-        List<AttributeValue> actualAttrValues = attributeValueDao.getByAttributeAndOwner(37, new DataDictEntity(1301, DataDictEntity.Entity.DS));
+        List<AttributeValue> actualAttrValues = attributeValueDao.getByAttributeAndOwner(38, new DataDictEntity(1301, DataDictEntity.Entity.DS));
         assertEquals(1, actualAttrValues.size());
     }
 
     @Test
     public void testDeleteAttributeValue() {
-        attributeValueDao.deleteAttributeValue(37, new DataDictEntity(1301, DataDictEntity.Entity.DS), "Nature conservation and biodiversity");
-        List<AttributeValue> actualAttrValues = attributeValueDao.getByAttributeAndOwner(37, new DataDictEntity(1301, DataDictEntity.Entity.DS));
+        attributeValueDao.deleteAttributeValue(38, new DataDictEntity(1301, DataDictEntity.Entity.DS), "Nature conservation and biodiversity");
+        List<AttributeValue> actualAttrValues = attributeValueDao.getByAttributeAndOwner(38, new DataDictEntity(1301, DataDictEntity.Entity.DS));
         assertTrue(actualAttrValues.isEmpty());
     }
 
     @Test
-    public void testDeleteAttributeValues() {
-        attributeValueDao.deleteAllAttributeValues(40, new DataDictEntity(1694, DataDictEntity.Entity.T));
-        List<AttributeValue> actualAttrValues = attributeValueDao.getByAttributeAndOwner(40, new DataDictEntity(1694, DataDictEntity.Entity.T));
+    public void testDeleteAttributeValues() throws InterruptedException {
+        attributeValueDao.deleteAllAttributeValues(41, new DataDictEntity(1694, DataDictEntity.Entity.T));
+        List<AttributeValue> actualAttrValues = attributeValueDao.getByAttributeAndOwner(41, new DataDictEntity(1694, DataDictEntity.Entity.T));
         assertTrue(actualAttrValues.isEmpty());
     }
 
@@ -73,9 +76,9 @@ public class AttributeValueDaoTestIT {
 
     @Test
     public void testAttributeValueRowMapperMapRow() {
-        List<AttributeValue> actualAttrValues = attributeValueDao.getByAttributeAndOwner(40, new DataDictEntity(1729, DataDictEntity.Entity.T));
+        List<AttributeValue> actualAttrValues = attributeValueDao.getByAttributeAndOwner(41, new DataDictEntity(1729, DataDictEntity.Entity.T));
         AttributeValue attrValueToTest = actualAttrValues.get(0);
         assertEquals("KoizumiJunichiro1.jpg", attrValueToTest.getValue());
-        assertThat(40,is(equalTo(attrValueToTest.getAttribute().getId())));
+        assertThat(41,is(equalTo(attrValueToTest.getAttribute().getId())));
     }
 }

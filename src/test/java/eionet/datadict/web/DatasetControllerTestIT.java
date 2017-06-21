@@ -3,6 +3,7 @@ package eionet.datadict.web;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import eionet.config.ApplicationTestContext;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.Diff;
@@ -36,6 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class})
 @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
+        value = "classpath:seed-datasetIT.xml")
+@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
         value = "classpath:seed-datasetIT.xml")
 public class DatasetControllerTestIT {
 

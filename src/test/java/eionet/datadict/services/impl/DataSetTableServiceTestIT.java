@@ -3,6 +3,7 @@ package eionet.datadict.services.impl;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import eionet.config.ApplicationTestContext;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
@@ -40,6 +41,8 @@ import org.xml.sax.SAXException;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class})
 @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
+        value = "classpath:seed-datasetTableIT.xml")
+@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
         value = "classpath:seed-datasetTableIT.xml")
 public class DataSetTableServiceTestIT {
 

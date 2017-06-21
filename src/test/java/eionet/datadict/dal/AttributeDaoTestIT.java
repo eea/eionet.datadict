@@ -3,6 +3,7 @@ package eionet.datadict.dal;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import eionet.config.ApplicationTestContext;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.Attribute.DisplayType;
@@ -40,6 +41,8 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class})
 @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
+        value = "classpath:seed-attribute.xml")
+@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
         value = "classpath:seed-attribute.xml")
 public class AttributeDaoTestIT {
 

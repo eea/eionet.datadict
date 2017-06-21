@@ -3,6 +3,7 @@ package eionet.datadict.dal;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import eionet.config.ApplicationTestContext;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.Namespace;
@@ -28,6 +29,8 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     DbUnitTestExecutionListener.class})
 @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
             value ="classpath:seed-datasetTableIT.xml")
+@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
+            value ="classpath:seed-datasetTableIT.xml")
 public class DatasetTableDaoTestIT {
 
     @Autowired
@@ -50,7 +53,7 @@ public class DatasetTableDaoTestIT {
      }
      
      @Test
-     public void testParentDatasetId(){
+     public void testGetParentDatasetId(){
         Integer expectedDatasetId = 4;
         Integer actualDatasetId = datasetTableDao.getParentDatasetId(3);
         Assert.assertEquals(expectedDatasetId,actualDatasetId);
