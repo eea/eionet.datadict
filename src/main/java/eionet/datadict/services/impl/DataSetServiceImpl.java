@@ -27,6 +27,7 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -138,8 +139,8 @@ public class DataSetServiceImpl implements DataSetService {
             docFactory.setNamespaceAware(true);
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
-            Element schemaRoot = doc.createElement(dataset.getShortName().replace(" ", ""));
-            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
+            Element schemaRoot = doc.createElement(dataset.getShortName().replace(" ", " "));
+           schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE +":"+ DataDictXMLConstants.XSI_PREFIX, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX+":" + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataset.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
 
@@ -161,8 +162,8 @@ public class DataSetServiceImpl implements DataSetService {
             return doc;
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new XmlExportException("Error while parsing XML File",ex);
         }
-        return null;
     }
 
     @Override
