@@ -1907,7 +1907,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 int identifier = vocabularyService.getNextIdentifierValue(vocabularyFolder.getId());
                 return Integer.toString(identifier);
             } catch (ServiceException e) {
-                LOGGER.error(e);
+                LOGGER.error(e.getMessage(), e);
                 return "";
             }
         }

@@ -16,8 +16,6 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-
 import eionet.acl.AccessController;
 import eionet.acl.SignOnException;
 import eionet.datadict.errors.BadRequestException;
@@ -30,6 +28,9 @@ import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,7 @@ import java.util.List;
 public class DatasetHandler extends BaseHandler {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(DatasetHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatasetHandler.class);
 
     public static String ATTR_PREFIX = "attr_";
     public static String ATTR_MULT_PREFIX = "attr_mult_";

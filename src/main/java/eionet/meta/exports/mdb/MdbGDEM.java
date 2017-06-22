@@ -14,6 +14,8 @@ import com.healthmarketscience.jackcess.Table;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DsTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author jaanus
@@ -22,6 +24,7 @@ import eionet.meta.DsTable;
  */
 public class MdbGDEM {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdbGDEM.class);
     /** */
 public static final String METADATA_TABLENAME = "Metadata_for_GDEM_(NOT_TO_BE_DELETED)";
     //public static final String METADATA_TABLENAME = "Metadata_for_GDEM";
@@ -151,9 +154,9 @@ public static final String METADATA_TABLENAME = "Metadata_for_GDEM_(NOT_TO_BE_DE
         try {
             mdbGDEM.printRows();
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            LOGGER.error(e.getMessage(), e);
         }
 
-        System.out.println("KONETS");
+        LOGGER.info("KONETS");
     }
 }

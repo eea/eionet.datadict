@@ -18,10 +18,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import eionet.meta.filestore.FileStore;
 import eionet.meta.schemas.SchemaRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This servlet provides download services for file stored in DD's file store. The service is provided through
@@ -42,7 +43,7 @@ public class DownloadServlet extends HttpServlet {
     private static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
-    private static final Logger LOGGER = Logger.getLogger(DownloadServlet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DownloadServlet.class);
 
     // Properties ---------------------------------------------------------------------------------
 

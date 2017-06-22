@@ -8,15 +8,15 @@ import java.util.LinkedHashMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MAttrFieldsHandler extends BaseHandler {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(MAttrFieldsHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MAttrFieldsHandler.class);
 
     public static String POS_PREFIX = "pos_";
     public static String OLDPOS_PREFIX = "oldpos_";

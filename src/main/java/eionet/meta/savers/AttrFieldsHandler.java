@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,6 +25,7 @@ import eionet.util.sql.SQL;
  */
 public class AttrFieldsHandler extends BaseHandler {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AttrFieldsHandler.class);
     public static final String FLD_PREFIX = "field_";
 
     String mode = null;
@@ -171,11 +174,13 @@ public class AttrFieldsHandler extends BaseHandler {
                 stmt.executeUpdate();
             } while (params.hasMoreElements());
         } catch (SQLException sqle) {
-            sqle.printStackTrace(System.out);
+            LOGGER.error(sqle.getMessage(), sqle);
         } finally {
             try {
                 if (stmt != null) stmt.close();
-            } catch (SQLException e) {}
+            } catch (SQLException sqle) {
+                LOGGER.error(sqle.getMessage(), sqle);
+            }
         }
     }
 

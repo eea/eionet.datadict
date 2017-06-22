@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.log4j.Logger;
 
 import eionet.acl.AccessController;
 import eionet.acl.SignOnException;
@@ -40,6 +39,8 @@ import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -54,7 +55,7 @@ public class DataElementHandler extends BaseHandler {
     private IRdfNamespaceDAO rdfNamespaceDAO;
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(DataElementHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataElementHandler.class);
 
     /** */
     public static LinkedHashMap valueDelimiters;
@@ -472,7 +473,7 @@ public class DataElementHandler extends BaseHandler {
             try {
                 AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }
@@ -1600,11 +1601,12 @@ public class DataElementHandler extends BaseHandler {
                 stmt.executeUpdate(sqlBuf.toString());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             if (stmt != null) {
                 try {
                     stmt.close();
                 } catch (SQLException sqle) {
+                    LOGGER.error(sqle.getMessage(), sqle);
                 }
             }
         }
@@ -1686,13 +1688,14 @@ public class DataElementHandler extends BaseHandler {
             // copy fixed values
             copyHandler.copyFxv(lastInsertID, copyElmID, "elem");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             throw e;
         } finally {
             if (stmt != null) {
                 try {
                     stmt.close();
                 } catch (SQLException sqle) {
+                    LOGGER.error(sqle.getMessage(), sqle);
                 }
             }
         }
@@ -1985,7 +1988,7 @@ public class DataElementHandler extends BaseHandler {
                 rs = stmt.executeQuery();
                 tblNamespaceID = rs.next() ? rs.getString(1) : null;
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
                 try {
                     if (stmt != null) {
                         stmt.close();
@@ -1994,6 +1997,7 @@ public class DataElementHandler extends BaseHandler {
                         rs.close();
                     }
                 } catch (SQLException sqle) {
+                    LOGGER.error(sqle.getMessage(), sqle);
                 }
             }
         }
@@ -2023,7 +2027,7 @@ public class DataElementHandler extends BaseHandler {
                 rs = stmt.executeQuery();
                 dstNamespaceID = rs.next() ? rs.getString(1) : null;
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
                 try {
                     if (stmt != null) {
                         stmt.close();
@@ -2032,6 +2036,7 @@ public class DataElementHandler extends BaseHandler {
                         rs.close();
                     }
                 } catch (SQLException sqle) {
+                    LOGGER.error(sqle.getMessage(), sqle);
                 }
             }
         }

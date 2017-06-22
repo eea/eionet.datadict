@@ -25,9 +25,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
-import org.apache.log4j.Logger;
-
 import eionet.meta.dao.DAOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -37,7 +37,7 @@ import eionet.meta.dao.DAOException;
 public class SQLTransaction implements Transaction {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(SQLTransaction.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SQLTransaction.class);
 
     /** */
     private boolean isRunningInAnotherTransaction = false;
@@ -216,8 +216,8 @@ public class SQLTransaction implements Transaction {
             if (conn != null) {
                 try {
                     conn.rollback();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
+                } catch (SQLException sqle) {
+                    LOGGER.error(sqle.getMessage(), sqle);
                 }
             }
         } finally {
@@ -225,7 +225,7 @@ public class SQLTransaction implements Transaction {
                 try {
                     conn.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    LOGGER.error(e.getMessage(), e);
                 }
             }
         }

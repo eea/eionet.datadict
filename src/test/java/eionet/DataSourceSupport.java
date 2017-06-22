@@ -7,11 +7,15 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Support functions to set up MySQL data source
  */
 public class DataSourceSupport {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceSupport.class);
 
     public static DataSource getDataSource() {
         Properties props = new Properties();
@@ -25,7 +29,7 @@ public class DataSourceSupport {
             ds.setUsername(props.getProperty("username"));
             ds.setPassword(props.getProperty("password"));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
         return ds;
     }

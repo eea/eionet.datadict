@@ -8,14 +8,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Hashtable;
 import java.util.Vector;
-
-import org.apache.log4j.Logger;
-
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,7 +24,7 @@ import eionet.util.sql.SQLGenerator;
 public abstract class OldCopyHandler {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(OldCopyHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OldCopyHandler.class);
 
     /**  */
     protected Connection conn = null;
@@ -315,7 +314,7 @@ public abstract class OldCopyHandler {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace(System.out);
+                LOGGER.error(e.getMessage(), e);
                 throw e;
             } finally {
                 try {
@@ -323,6 +322,7 @@ public abstract class OldCopyHandler {
                         stmt.close();
                     }
                 } catch (SQLException e) {
+                    LOGGER.error(e.getMessage(), e);
                 }
             }
         }

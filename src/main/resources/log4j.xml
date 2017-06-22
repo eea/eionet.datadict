@@ -19,6 +19,22 @@
         </layout>
     </appender>
 
+
+    <appender name="graylog2" class="org.graylog2.log.GelfAppender">
+        <param name="graylogHost" value="127.0.0.1"/>
+        <param name="port" value="9000"/>
+        <param name="originHost" value="my.machine.example.com"/>
+        <param name="extractStacktrace" value="true"/>
+        <param name="addExtendedInformation" value="true"/>
+        <param name="facility" value="gelf-java"/>
+        <param name="Threshold" value="INFO"/>
+        <param name="additionalFields" value="{'environment': 'DEV', 'application': 'MyAPP'}"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%-5p] %d{dd.MM.yy HH:mm:ss} - %c - %m%n" />
+        </layout>
+    </appender>
+
+
     <logger name="eionet">
         <level value="debug" />
     </logger>
@@ -47,6 +63,24 @@
         <priority value="info" />
         <appender-ref ref="console" />
         <appender-ref ref="file" />
+        <appender-ref ref="graylog2"/>
     </root>
 
 </log4j:configuration>
+
+
+<!--<Gelf name="gelf" host="udp:localhost" port="12201" version="1.0" extractStackTrace="true"-->
+      <!--filterStackTrace="true" mdcProfiling="true" includeFullMdc="true" maximumMessageSize="8192"-->
+      <!--originHost="my.host.name" additionalFieldTypes="fieldName1=String,fieldName2=Double,fieldName3=Long"-->
+      <!--ignoreExceptions="true">-->
+    <!--<Field name="timestamp" pattern="%d{dd MMM yyyy HH:mm:ss,SSS}" />-->
+    <!--<Field name="level" pattern="%level" />-->
+    <!--<Field name="simpleClassName" pattern="%C{1}" />-->
+    <!--<Field name="className" pattern="%C" />-->
+    <!--<Field name="server" pattern="%host" />-->
+    <!--<Field name="server.fqdn" pattern="%host{fqdn}" />-->
+    <!--<Field name="fieldName2" literal="fieldValue2" /> &lt;!&ndash; This is a static field &ndash;&gt;-->
+    <!--<Field name="mdcField2" mdc="mdcField2" /> &lt;!&ndash; This is a field using MDC &ndash;&gt;-->
+    <!--<DynamicMdcFields regex="mdc.*" />-->
+    <!--<DynamicMdcFields regex="(mdc|MDC)fields" />-->
+<!--</Gelf>-->

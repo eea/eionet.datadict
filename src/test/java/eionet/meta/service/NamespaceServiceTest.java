@@ -26,10 +26,11 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
@@ -50,7 +51,7 @@ public class NamespaceServiceTest extends UnitilsJUnit4 {
     private static final String SEED_FILE = "seed-namespaces.xml";
 
     /** Logger. */
-    protected static final Logger LOGGER = Logger.getLogger(NamespaceServiceTest.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(NamespaceServiceTest.class);
 
     @SpringBeanByType
     private INamespaceService namespaceService;

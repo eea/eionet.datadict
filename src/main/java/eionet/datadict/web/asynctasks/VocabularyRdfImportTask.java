@@ -12,7 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -41,7 +42,7 @@ public class VocabularyRdfImportTask implements AsyncTask {
         return parameters;
     }
     
-    private static final Logger LOGGER = Logger.getLogger(VocabularyRdfImportTask.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyRdfImportTask.class);
     
     private final IVocabularyService vocabularyService;
     private final IRDFVocabularyImportService vocabularyRdfImportService;

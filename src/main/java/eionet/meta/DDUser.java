@@ -31,10 +31,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-
-
 import eionet.acl.AccessControlListIF;
 import eionet.acl.AccessController;
 import eionet.acl.AclNotFoundException;
@@ -46,6 +42,8 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.util.sql.ConnectionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -55,7 +53,7 @@ import eionet.util.sql.ConnectionUtil;
 public class DDUser {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(DDUser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DDUser.class);
 
     /** */
     public static final String ACL_UPDATE_PRM = "u";

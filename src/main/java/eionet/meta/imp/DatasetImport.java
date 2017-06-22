@@ -19,6 +19,8 @@ import eionet.meta.savers.DatasetHandler;
 import eionet.meta.savers.DsTableHandler;
 import eionet.meta.savers.FixedValuesHandler;
 import eionet.meta.savers.Parameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is the core worker when importing definitions from XML into DD. The XML is
@@ -29,6 +31,7 @@ import eionet.meta.savers.Parameters;
  */
 public class DatasetImport {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatasetImport.class);
     /** */
     public static final String SEPARATOR = "_";
     public static final String IMPORT_TYPE_FXV_ONLY = "fixedValues";
@@ -90,7 +93,6 @@ public class DatasetImport {
      * @param handler
      * @param conn
      * @param ctx
-     * @param type
      */
     public DatasetImport(DatasetImportHandler handler, Connection conn, ServletContext ctx) {
         this.handler = handler;
@@ -885,7 +887,7 @@ public class DatasetImport {
         errorCount++;
 
         if (t != null) {
-            t.printStackTrace();
+            LOGGER.error(t.getMessage(), t);
         }
 
         if (errMsg != null) {
@@ -903,7 +905,7 @@ public class DatasetImport {
         warningCount++;
 
         if (t != null) {
-            t.printStackTrace();
+            LOGGER.warn(t.getMessage(), t);
         }
 
         if (errMsg != null) {

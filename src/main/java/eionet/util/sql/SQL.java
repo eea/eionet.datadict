@@ -9,7 +9,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,7 +21,7 @@ import org.apache.log4j.Logger;
 public class SQL {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(SQL.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SQL.class);
 
     /**
      *
