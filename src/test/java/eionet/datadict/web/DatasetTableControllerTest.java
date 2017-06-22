@@ -1,5 +1,6 @@
 package eionet.datadict.web;
 
+import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.services.DataSetTableService;
@@ -10,6 +11,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -36,6 +38,7 @@ public class DatasetTableControllerTest {
 
      DatasetTableController datasetTableController;
 
+    @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         this.datasetTableController = new DatasetTableController(dataSetTableService, datasetTableDataService);
@@ -51,10 +54,10 @@ public class DatasetTableControllerTest {
     }
 
     @Test
-    public void successToGetDatasetTableXMLInstance() throws ResourceNotFoundException, ServletException, IOException, TransformerException, TransformerConfigurationException, XmlExportException {
+    public void successToGetDatasetTableXMLInstance() throws ResourceNotFoundException, ServletException, IOException, TransformerException, TransformerConfigurationException, XmlExportException, EmptyParameterException {
         ArgumentCaptor<Integer> datasetTableIdCaptor = ArgumentCaptor.forClass(Integer.class);
-        datasetTableController.getDatasetTableSchema(6661, new MockHttpServletResponse());
+        datasetTableController.getDataSetTableInstance(6661, new MockHttpServletResponse());
         verify(dataSetTableService, times(1)).getDataSetTableXMLInstance(datasetTableIdCaptor.capture());
         assertThat(datasetTableIdCaptor.getValue(), equalTo(6661));
-    }
+    }           
 }

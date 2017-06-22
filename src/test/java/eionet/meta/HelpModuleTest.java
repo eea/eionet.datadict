@@ -21,7 +21,7 @@ public class HelpModuleTest extends DDDatabaseTestCase {
     @Test
     public void testSimpleValues() throws Exception {
         Helps.load();
-        String html = Helps.get("documentation", "doc1", "");
+        String html = Helps.get("documentation", "doc1", "lang");
         assertEquals("<h1>Data Dictionary - functions</h1>", html);
     }
 

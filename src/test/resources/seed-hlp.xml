@@ -7,18 +7,18 @@
 	AREA_ID="doc1"
 	SCREEN_ID="documentation"
 	DESCRIPTION="Data Dictionary - functions (from seed-hlp.xml)"
-	LANGUAGE=""
+	LANGUAGE="lang"
 	HTML="&lt;h1>Data Dictionary - functions&lt;/h1>"
-	MD5=""
+	MD5="5"
 	POPUP_WIDTH="400"
 	POPUP_LENGTH="400"/>
   <HLP_AREA
 	AREA_ID="doc2"
 	SCREEN_ID="documentation"
 	DESCRIPTION="Concepts &amp; terms - datasets, tables, data elements"
-	LANGUAGE=""
+	LANGUAGE="lang"
 	HTML="&lt;h1>Concepts &amp;amp; terms - datasets&lt;/h1>"
-	MD5=""
+	MD5="5"
 	POPUP_WIDTH="400"
 	POPUP_LENGTH="400"/>
 </dataset>

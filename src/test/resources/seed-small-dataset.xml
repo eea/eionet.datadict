@@ -20,12 +20,12 @@
     <DATAELEM DATAELEM_ID="114" IDENTIFIER="ND_AvgValue" SHORT_NAME="AverageValue" TYPE="CH2" />
     <DATAELEM DATAELEM_ID="115" IDENTIFIER="ND_TrophicState" SHORT_NAME="TrophicState" TYPE="CH1" />
     
-    <FXV FXV_ID="8" OWNER_ID="111" VALUE="5" DEFINITION="Lake water" SHORT_DESC="" />
-    <FXV FXV_ID="9" OWNER_ID="111" VALUE="6" DEFINITION="Transitional water" SHORT_DESC="" />
-    <FXV FXV_ID="23" OWNER_ID="115" VALUE="Ultra-oligotrophic" DEFINITION="Ultra-oligotrophic" SHORT_DESC="" />
-    <FXV FXV_ID="24" OWNER_ID="115" VALUE="Oligotrophic" DEFINITION="Oligotrophic" SHORT_DESC="" />
-    <FXV FXV_ID="25" OWNER_ID="115" VALUE="Mesotrophic" DEFINITION="Mesotrophic" SHORT_DESC="" />
-    <FXV FXV_ID="26" OWNER_ID="115" VALUE="Eutrophic" DEFINITION="Eutrophic" SHORT_DESC="" />
-    <FXV FXV_ID="27" OWNER_ID="115" VALUE="Hypertrophic" DEFINITION="Hypertrophic" SHORT_DESC="" />
+    <FXV FXV_ID="8" OWNER_ID="111" VALUE="5" DEFINITION="Lake water" SHORT_DESC="desc" />
+    <FXV FXV_ID="9" OWNER_ID="111" VALUE="6" DEFINITION="Transitional water" SHORT_DESC="desc" />
+    <FXV FXV_ID="23" OWNER_ID="115" VALUE="Ultra-oligotrophic" DEFINITION="Ultra-oligotrophic" SHORT_DESC="desc" />
+    <FXV FXV_ID="24" OWNER_ID="115" VALUE="Oligotrophic" DEFINITION="Oligotrophic" SHORT_DESC="desc" />
+    <FXV FXV_ID="25" OWNER_ID="115" VALUE="Mesotrophic" DEFINITION="Mesotrophic" SHORT_DESC="desc" />
+    <FXV FXV_ID="26" OWNER_ID="115" VALUE="Eutrophic" DEFINITION="Eutrophic" SHORT_DESC="desc" />
+    <FXV FXV_ID="27" OWNER_ID="115" VALUE="Hypertrophic" DEFINITION="Hypertrophic" SHORT_DESC="desc" />
     
 </dataset>
