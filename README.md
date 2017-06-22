@@ -129,7 +129,7 @@ Installing these applications is done by similar steps:
 Please find more detailed information in documentation of these applications.
 
 ### Logging  to Graylog [Optional]
-
+#### Development Process
 An optional process has been added, so the developer can drive the logs to Graylog Server. In order to achieve this, there are 2 prerequisites :
 
 1. A Graylog server running in 9000, with exposed port 12201.
@@ -137,7 +137,6 @@ An optional process has been added, so the developer can drive the logs to Grayl
 ```sh
 -Dlog4j.configurationFile=path_to_resources\log4j2-gelf.xml
 ```
-
 A way to run a Graylog Server is described below:
 1. Docker install
 2. In bin folder of Docker create a file named "docker-compose.yml" and paste there the following script:
