@@ -138,7 +138,7 @@ public class DataSetServiceImpl implements DataSetService {
             docFactory.setNamespaceAware(true);
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
-            Element schemaRoot = doc.createElement(dataset.getShortName());
+            Element schemaRoot = doc.createElement(dataset.getShortName().replace(" ", ""));
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE +":"+ DataDictXMLConstants.XSI_PREFIX, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX+":" + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataset.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
