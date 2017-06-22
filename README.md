@@ -127,3 +127,40 @@ Installing these applications is done by similar steps:
   More detailed information about ACL's is available at: http://taskman.eionet.europa.eu/projects/reportnet/wiki/AccessControlLists
 7. Copy the created war files to tomcat webapps folder and start tomcat
 Please find more detailed information in documentation of these applications.
+
+### Logging  to Graylog [Optional]
+#### Development Process
+An optional process has been added, so the developer can drive the logs to Graylog Server. In order to achieve this, there are 2 prerequisites :
+
+1. A Graylog server running in 9000, with exposed port 12201.
+2. A VM option has to be added so the project loads [log4j2-gelf.xml] instead of the default [log4j2.xml] that has no gelf appender: 
+```sh
+-Dlog4j.configurationFile=path_to_resources\log4j2-gelf.xml
+```
+A way to run a Graylog Server is through docker file "docker-compose.yml". An indicative file will be the example below:
+ ```sh
+  version: '2'
+services:
+  some-mongo:
+    image: "mongo:3"
+  some-elasticsearch:
+    image: "elasticsearch:2"
+    command: "elasticsearch -Des.cluster.name='graylog'"
+  graylog:
+    image: graylog2/server:2.1.1-1
+    environment:
+      GRAYLOG_PASSWORD_SECRET: somepasswordpepper
+      GRAYLOG_ROOT_PASSWORD_SHA2: 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      GRAYLOG_WEB_ENDPOINT_URI: http://127.0.0.1:9000/api
+    links:
+      - some-mongo:mongo
+      - some-elasticsearch:elasticsearch
+    ports:
+      - "9000:9000"
+      - "12201:12201"
+ ```
+3. Run the following command line: 
+```sh
+docker-compose up
+```
+4. Graylog is now running in [localhost:9000]
