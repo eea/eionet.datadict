@@ -128,12 +128,17 @@ Installing these applications is done by similar steps:
 7. Copy the created war files to tomcat webapps folder and start tomcat
 Please find more detailed information in documentation of these applications.
 
-### Logging (Configuration)
-#### Development
-Log4j version 2 is now used. So a new configuration file (log4j2.xml) is added. This is the default file that the project loads for logging, and logs to the console.
+### Logging  to Graylog [Optional]
 
-An optional process has been added, so the developer can drive the logs to Graylog. In order to achieve this, there are some prerequisites :
+An optional process has been added, so the developer can drive the logs to Graylog Server. In order to achieve this, there are 2 prerequisites :
 
+1. A Graylog server running in 9000, with exposed port 12201.
+2. A VM option has to be added so the project loads [log4j2-gelf.xml] instead of the default [log4j2.xml] that has no gelf appender: 
+```sh
+-Dlog4j.configurationFile=path_to_resources\log4j2-gelf.xml
+```
+
+A way to run a Graylog Server is described below:
 1. Docker install
 2. In bin folder of Docker create a file named "docker-compose.yml" and paste there the following script:
  ```sh
@@ -162,7 +167,3 @@ services:
 docker-compose up
 ```
 4. Graylog is now running in [localhost:9000]
-5. A VM option has to be added so the project loads [log4j2-gelf.xml] instead of the default [log4j2.xml] that has no gelf appender: 
-```sh
--Dlog4j.configurationFile=path_to_resources\log4j2-gelf.xml
-```
