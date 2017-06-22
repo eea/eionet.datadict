@@ -7,6 +7,12 @@
         </Console>
     </Appenders>
     <Loggers>
+        <logger name="eionet" level="debug"/>
+        <logger name="eionet.meta.DDSearchEngine" level="info"/>
+        <logger name="org.apache" level="info"/>
+        <logger name="org.springframework" level="warn"/>
+        <logger name="org.displaytag" level="warn"/>
+        <logger name="net.sourceforge.stripes" level="warn"/>
         <Root level="INFO">
             <AppenderRef ref="console" />
         </Root>
