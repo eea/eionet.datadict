@@ -137,9 +137,7 @@ An optional process has been added, so the developer can drive the logs to Grayl
 ```sh
 -Dlog4j.configurationFile=path_to_resources\log4j2-gelf.xml
 ```
-A way to run a Graylog Server is described below:
-1. Docker install
-2. In bin folder of Docker create a file named "docker-compose.yml" and paste there the following script:
+A way to run a Graylog Server is through docker file "docker-compose.yml". An indicative file will be the example below:
  ```sh
   version: '2'
 services:
@@ -161,7 +159,7 @@ services:
       - "9000:9000"
       - "12201:12201"
  ```
-3. In the same folder run the following command: 
+3. Run the following command line: 
 ```sh
 docker-compose up
 ```
