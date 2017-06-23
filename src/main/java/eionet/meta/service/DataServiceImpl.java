@@ -16,7 +16,6 @@ import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.DataElementsFilter;
-import eionet.meta.service.data.DataElementsResult;
 import eionet.util.IrrelevantAttributes;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;

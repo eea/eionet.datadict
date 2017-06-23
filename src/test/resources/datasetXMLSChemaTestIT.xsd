@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:dd690="http://dd.eionet.europa.eu/namespaces/690"
+           xmlns:isoattrs="http://dd.eionet.europa.eu/namespaces/2"
+           xmlns:ddattrs="http://dd.eionet.europa.eu/namespaces/3"
+           xmlns:dd689="http://dd.eionet.europa.eu/namespaces/689"
+           xmlns:dd688="http://dd.eionet.europa.eu/namespaces/688"
+           xmlns:datasets="http://dd.eionet.europa.eu/namespaces/1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified"
+           targetNamespace="http://dd.eionet.europa.eu/namespaces/688"
+           xsi:schemaLocation="http://www.w3.org/2001/XMLSchema  http://www.w3.org/2001/XMLSchema.xsd">
+   <xs:import namespace="http://dd.eionet.europa.eu/namespaces/689"
+              schemaLocation="schema-tbl-6661.xsd"/>
+   <xs:import namespace="http://dd.eionet.europa.eu/namespaces/690"
+              schemaLocation="schema-tbl-6662.xsd"/>
+   <xs:element name="NoiseDirectiveDF1">
+      <xs:annotation>
+         <xs:documentation xml:lang="en">
+            <isoattrs:Name>Noise Directive Dataflow 1</isoattrs:Name>
+            <isoattrs:Definition>Major roads, major railways, major airports and agglomerations designated by MS and concerned by 1st implementation step</isoattrs:Definition>
+            <isoattrs:Keyword>Noise</isoattrs:Keyword>
+         </xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="1" ref="dd689:DF1_MAir"/>
+            <xs:element maxOccurs="1" minOccurs="1" ref="dd690:DF1_MRoad"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+</xs:schema>

@@ -763,30 +763,30 @@
   <ATTRIBUTE M_ATTRIBUTE_ID="40" DATAELEM_ID="32233" VALUE="rel_code_ex2_gif.gif" PARENT_TYPE="E"/>
   <ATTRIBUTE M_ATTRIBUTE_ID="40" DATAELEM_ID="32259" VALUE="rel_code_ex2_gif.gif" PARENT_TYPE="E"/>
 
-  <FXV FXV_ID="1280" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Acidification" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1281" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Air quality and air pollution" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1282" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Climate change" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1283" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Natural resources (degradation and use of)" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1284" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Eutrophication " IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1285" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Genetically modified organisms and alien species" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1286" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Nature conservation and biodiversity" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1287" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Noise" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1288" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Ozone layer (stratospheric ozone) " IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1289" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Photochemical oxidants, (tropospheric ozone) " IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1290" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Pollution by metals " IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1291" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Chemicals" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1292" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Soil degradation and pollution" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1293" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Urban environment" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1294" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Waste and material flow" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1295" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Water" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1296" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Hazards" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
-  <FXV FXV_ID="1297" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Economic development" IS_DEFAULT="N" DEFINITION="" SHORT_DESC=""/>
+  <FXV FXV_ID="1280" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Acidification" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1281" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Air quality and air pollution" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1282" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Climate change" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1283" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Natural resources (degradation and use of)" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1284" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Eutrophication " IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1285" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Genetically modified organisms and alien species" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1286" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Nature conservation and biodiversity" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1287" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Noise" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1288" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Ozone layer (stratospheric ozone) " IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1289" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Photochemical oxidants, (tropospheric ozone) " IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1290" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Pollution by metals " IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1291" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Chemicals" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1292" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Soil degradation and pollution" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1293" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Urban environment" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1294" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Waste and material flow" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1295" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Water" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1296" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Hazards" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
+  <FXV FXV_ID="1297" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Economic development" IS_DEFAULT="N" DEFINITION="demo" SHORT_DESC="demo"/>
 
 <!-- Lines that must be left behind when we delete item # 37 -->
   <FXV FXV_ID="2074" OWNER_ID="38" OWNER_TYPE="attr" VALUE="NatRawData" IS_DEFAULT="N" DEFINITION="For reporting from the national level" SHORT_DESC="National Raw Dataset"/>
   <FXV FXV_ID="2075" OWNER_ID="38" OWNER_TYPE="attr" VALUE="EuroRawData" IS_DEFAULT="N" DEFINITION="For reporting at the European level" SHORT_DESC="European Raw Dataset"/>
 
   <M_ATTRIBUTE M_ATTRIBUTE_ID="37" NAME="EEA Issue" OBLIGATION="O" DEFINITION="An issue form the EEA environmental issues list." SHORT_NAME="EEAissue" NAMESPACE_ID="3" DISP_TYPE="select" DISP_ORDER="6" DISP_WHEN="75" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="1"/>
-  <M_ATTRIBUTE M_ATTRIBUTE_ID="40" NAME="Descriptive image" OBLIGATION="O" DEFINITION="" SHORT_NAME="Descriptive_image" NAMESPACE_ID="3" DISP_TYPE="image" DISP_ORDER="999" DISP_WHEN="67" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="0"/>
+  <M_ATTRIBUTE M_ATTRIBUTE_ID="40" NAME="Descriptive image" OBLIGATION="O" DEFINITION="demo" SHORT_NAME="Descriptive_image" NAMESPACE_ID="3" DISP_TYPE="image" DISP_ORDER="999" DISP_WHEN="67" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="1" INHERIT="0"/>
 
 </dataset>

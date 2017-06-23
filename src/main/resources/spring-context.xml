@@ -3,8 +3,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:aop="http://www.springframework.org/schema/aop"
-           xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
@@ -12,19 +13,24 @@
         http://www.springframework.org/schema/context/spring-context-3.0.xsd
         http://www.springframework.org/schema/tx
         http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
         http://www.springframework.org/schema/aop
         http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
+
     <!-- Scans within the base package of the application for @Components
-        to configure as beans -->
-       <context:annotation-config/>
+    to configure as beans -->
+    <context:annotation-config/>
     <context:component-scan base-package="eionet.meta, eionet.datadict, eionet.web, eionet.doc,eionet.datadict.security"/>
     <context:spring-configured/>
     <aop:aspectj-autoproxy>
     </aop:aspectj-autoproxy>
     <task:annotation-driven/>
+    <mvc:annotation-driven/>
+
 
     <bean id="appConfigDefinitionProvider" class="eionet.propertyplaceholderresolver.ConfigurationDefinitionProviderImpl">
         <constructor-arg index="0">
@@ -54,7 +60,7 @@
         <constructor-arg ref="configurationPropertyResolver" />
     </bean>
     
-     <bean id="aclProperties" class="eionet.acl.AclProperties">
+    <bean id="aclProperties" class="eionet.acl.AclProperties">
         <property name="ownerPermission" value="${owner.permission}" />
         <property name="anonymousAccess" value="${anonymous.access}" />
         <property name="authenticatedAccess" value="${authenticated.access}" />
@@ -97,14 +103,14 @@
     </bean>
 
 
-     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
           destroy-method="close" primary="true">
-		<property name="driverClassName" value="${db.drv}"/>
-		<property name="url" value="${db.url}"/>
-		<property name="username" value="${db.usr}"/>
-		<property name="password" value="${db.psw}"/>
+        <property name="driverClassName" value="${db.drv}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="username" value="${db.usr}"/>
+        <property name="password" value="${db.psw}"/>
         <!-- The following two properties required because MySQL kills idle
-            connections after 8 hours. -->
+        connections after 8 hours. -->
         <property name="validationQuery" value="SELECT 1"/>
         <property name="testOnBorrow" value="true"/>
     </bean>
@@ -115,7 +121,7 @@
         <property name="username" value="${db.usr}"/>
         <property name="password" value="${db.psw}"/>
         <!-- The following two properties required because MySQL kills idle
-            connections after 8 hours. -->
+        connections after 8 hours. -->
         <property name="validationQuery" value="SELECT 1"/>
         <property name="testOnBorrow" value="true"/>
     </bean>
@@ -142,7 +148,7 @@
         <property name="password" value="${smtp.password}"/>
         <property name="javaMailProperties">
             <props>
-               <prop key="mail.smtp.starttls.enable">${smtp.tls}</prop>
+                <prop key="mail.smtp.starttls.enable">${smtp.tls}</prop>
             </props>
         </property>
     </bean>
@@ -170,6 +176,8 @@
         <property name="changeLog" value="classpath:sql/dd-struct-and-seeddata.xml" />
     </bean>
     
+    
+	
     <util:properties id="quartzProperties" location="classpath:quartz.properties" />
 
 </beans>

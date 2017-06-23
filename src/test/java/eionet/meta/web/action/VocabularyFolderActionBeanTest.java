@@ -81,7 +81,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         // escapeIRI(contextRoot + elem.getRelatedConceptIdentifier()
 
         Assert.assertTrue("Incorrect size of bound elements",
-                StringUtils.contains(output, "\"skos:relatedMatch\",\"skos:relatedMatch\",\"skos:relatedMatch\""));
+                StringUtils.contains(output, "\"skos:relatedMatch@lang\",\"skos:relatedMatch@lang\",\"skos:relatedMatch@lang\""));
         Assert.assertTrue("Output does not contain correct SKOSRelatedMatch",
                 StringUtils.contains(output, "\"http://url1.com\",\"http://url2.com\""));
         Assert.assertTrue("Output does not contain correct SKOSRelatedMatch",
@@ -90,7 +90,7 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
 
         Assert.assertTrue("Output does not contain correct geo:lat", StringUtils.contains(output, "\"2.2\",\"3\",\"4.5\",\"1\""));
         Assert.assertTrue("Incorrect size of bound elements",
-                StringUtils.contains(output, "\"geo:lat\",\"geo:lat\",\"geo:lat\",\"geo:lat\""));
+                StringUtils.contains(output, "\"geo:lat@lang\",\"geo:lat@lang\",\"geo:lat@lang\",\"geo:lat@lang\""));
 
         Assert.assertTrue("Output does not contain correct geo:long", StringUtils.contains(output, "\"1.1\""));
         Assert.assertTrue("Incorrect size of bound elements", StringUtils.contains(output, "\"geo:long\""));
@@ -167,19 +167,19 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         concept3.add("");
 
         // 7. column
-        header.add("AnotherCode");
+        header.add("AnotherCode@lang");
         concept1.add("");
         concept2.add("");
         concept3.add("HCO2_csv_test_concept_3");
 
         // 8. column
-        header.add("AnotherCode");
+        header.add("AnotherCode@lang");
         concept1.add("");
         concept2.add("");
         concept3.add("HCO2_2_csv_test_concept_3");
 
         // 9. column
-        header.add("geo:lat");
+        header.add("geo:lat@lang");
         concept1.add("");
         concept2.add("");
         concept3.add("HCO3_csv_test_concept_3");
@@ -319,19 +319,16 @@ public class VocabularyFolderActionBeanTest extends DDDatabaseTestCase {
         concept2.add("");
 
         // 7. column
-        header.add("skos:relatedMatch");
+        header.add("skos:relatedMatch@lang");
         concept1.add("http://url0.com");
         concept2.add(expectedRelatedInternal + "destination");
 
         // 8. column
-        header.add("skos:relatedMatch");
+        header.add("skos:relatedMatch@lang");
         concept1.add(BASE_URL + "/vocabulary/wise/BWClosed/YP");
         concept2.add("");
 
-        // 9. column
-        header.add("skos:relatedMatch");
-        concept1.add("");
-        concept2.add("");
+ 
 
         String outputCleared = output.replaceAll("[\"]", "");
         String lines[] = outputCleared.split("\\r?\\n");

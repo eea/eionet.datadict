@@ -1,69 +1,55 @@
 package eionet.datadict.model;
 
+import java.util.Set;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import eionet.meta.dao.domain.DatasetRegStatus;
 
-public class DataElement {
-    
-    public static enum DataElementType {
-        
-        CH1(2, "Data elements with fixed values (code list and elements from a vocabulary)"), // Data elements with fixed values (code list and elements from a vocabulary)
-        CH2(1, "Data elements with quantitative values"), // Data elements with quantitative values
-        CH3(2, "Data elements with fixed values (code list and elements from a vocabulary)"), // Data elements with fixed values (code list and elements from a vocabulary)
-        ;
-        
-        private final int value;
-        private final String label;
-        
-        private DataElementType(int value, String label) {
-            this.value = value;
-            this.label = label;
-        }
-        
-        public static DataElementType getFromString(String string){
-            for (DataElementType type : DataElementType.values()){
-                if (type.getLabel().equals(string)){
-                    return type;
-                }
-            }
-            return null;
-        }
-        
-        public int getValue() {
-            return this.value;
-        }
-        
-        public String getLabel() {
-            return this.label;
-        }
-        
+public abstract class DataElement implements AttributeOwner {
+
+    public static enum ValueType {
+        FIXED,
+        QUANTITATIVE,
+        VOCABULARY
     }
-    
-    private DataElementType type;
+
+    public static enum Status {
+        INCOMPLETE,
+        CANDIDATE,
+        RECORDED,
+        QUALIFIED,
+        RELEASED
+    }
+
+    @Id
     private Integer id;
-    private Namespace namespace;
-    private String shortName;
-    private String workingUser;
-    private Boolean workingCopy;
-    private DatasetRegStatus regStatus;
-    private Integer version;
-    private String user;
-    private Integer date;
-    private Namespace parentNS;
-    private Namespace topNS;
     private String identifier;
-    private Integer checkedOutCopyId;
-    private Integer vocabularyId;
-    private Boolean allConceptsLegal;
-  
+    private String shortName;
+    private Status status;
+    private String workingUser;
+    private boolean workingCopy;
 
-    public DataElementType getType() {
-        return type;
+    @ManyToOne
+    private DatasetTable datasetTable;
+    @ManyToOne
+    private Namespace namespace;
+    @OneToOne(mappedBy = "dataElement")
+    private DatasetTableElement datasetTableElement;
+    private Set<Attribute> attributes;
+    @OneToMany(mappedBy = "owner")
+    private Set<AttributeValue> atributesValues;
+
+    public DataElement() {
+        super();
     }
 
-    public void setType(DataElementType type) {
-        this.type = type;
+    public DataElement(Integer id) {
+        this.id = id;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -72,12 +58,12 @@ public class DataElement {
         this.id = id;
     }
 
-    public Namespace getNamespace() {
-        return namespace;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setNamespace(Namespace namespace) {
-        this.namespace = namespace;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public String getShortName() {
@@ -88,12 +74,155 @@ public class DataElement {
         this.shortName = shortName;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public String getWorkingUser() {
         return workingUser;
     }
 
     public void setWorkingUser(String workingUser) {
         this.workingUser = workingUser;
+    }
+
+    public boolean isWorkingCopy() {
+        return workingCopy;
+    }
+
+    public void setWorkingCopy(boolean workingCopy) {
+        this.workingCopy = workingCopy;
+    }
+
+    public Namespace getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(Namespace namespace) {
+        this.namespace = namespace;
+    }
+
+    public DatasetTableElement getDatasetTableElement() {
+        return datasetTableElement;
+    }
+
+    public void setDatasetTableElement(DatasetTableElement datasetTableElement) {
+        this.datasetTableElement = datasetTableElement;
+    }
+
+    public Set<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Set<Attribute> attributes) {
+        this.attributes = attributes;
+    }
+
+    public Set<AttributeValue> getAtributesValues() {
+        return atributesValues;
+    }
+
+    public void setAtributesValues(Set<AttributeValue> atributesValues) {
+        this.atributesValues = atributesValues;
+    }
+
+    
+
+    public abstract ValueType getValueType();
+
+    public abstract boolean supportsValueList();
+
+    public abstract Iterable<? extends ValueListItem> getValueList();
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof DataElement)) {
+            return false;
+        }
+
+        if (this.id == null) {
+            return false;
+        }
+
+        DataElement other = (DataElement) obj;
+
+        return this.id.equals(other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id == null ? super.hashCode() : this.id.hashCode();
+    }
+
+    public static enum DataElementType {
+
+        CH1(2, "Data elements with fixed values (code list and elements from a vocabulary)"), // Data elements with fixed values (code list and elements from a vocabulary)
+        CH2(1, "Data elements with quantitative values"), // Data elements with quantitative values
+        CH3(2, "Data elements with fixed values (code list and elements from a vocabulary)"), // Data elements with fixed values (code list and elements from a vocabulary)
+        ;
+
+        private final int value;
+        private final String label;
+
+        private DataElementType(int value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        public static DataElementType getFromString(String string) {
+            for (DataElementType type : DataElementType.values()) {
+                if (type.getLabel().equals(string)) {
+                    return type;
+                }
+            }
+            return null;
+        }
+
+        public static DataElementType resolveTypeFromName(String string) {
+            for (DataElementType type : DataElementType.values()) {
+                if (type.name().equals(string)) {
+                    return type;
+                }
+            }
+            return null;
+        }
+        
+        
+        public int getValue() {
+            return this.value;
+        }
+
+        public String getLabel() {
+            return this.label;
+        }
+
+    }
+
+    private DataElementType type;
+    private DatasetRegStatus regStatus;
+    private Integer version;
+    private String user;
+    private Integer date;
+    private Namespace parentNS;
+    private Namespace topNS;
+    private Integer checkedOutCopyId;
+    private Integer vocabularyId;
+    private Boolean allConceptsLegal;
+
+    public DataElementType getType() {
+        return type;
+    }
+
+    public void setType(DataElementType type) {
+        this.type = type;
     }
 
     public Boolean getWorkingCopy() {
@@ -135,7 +264,7 @@ public class DataElement {
     public void setDate(Integer date) {
         this.date = date;
     }
-    
+
     public Namespace getParentNS() {
         return parentNS;
     }
@@ -150,14 +279,6 @@ public class DataElement {
 
     public void setTopNS(Namespace topNS) {
         this.topNS = topNS;
-    }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
     }
 
     public Integer getCheckedOutCopyId() {
@@ -182,6 +303,14 @@ public class DataElement {
 
     public void setAllConceptsLegal(Boolean allConceptsLegal) {
         this.allConceptsLegal = allConceptsLegal;
+    }
+
+    public DatasetTable getDatasetTable() {
+        return datasetTable;
+    }
+
+    public void setDatasetTable(DatasetTable datasetTable) {
+        this.datasetTable = datasetTable;
     }
 
 }

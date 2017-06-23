@@ -732,7 +732,7 @@ else if (mode.equals("add"))
                                             // XML Schema link
                                             if (dispAll || dispXmlSchema){ %>
                                                 <li>
-                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=TBL<%=tableID%>" class="xsd">
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/v2/datasetTable/<%=tableID%>/schema" class="xsd">
                                                         Create an XML Schema for this table
                                                     </a>
                                                 </li><%
@@ -741,7 +741,7 @@ else if (mode.equals("add"))
                                             // XML Instance link
                                             if (dispAll || dispXmlInstance){ %>
                                                 <li>
-                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetXmlInstance?id=<%=tableID%>&amp;type=tbl" class="xml">
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/v2/datasetTable/<%=tableID%>/instance" class="xml">
                                                         Create an instance XML for this table
                                                     </a>
                                                 </li><%

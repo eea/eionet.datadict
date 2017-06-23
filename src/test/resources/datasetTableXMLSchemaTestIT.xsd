@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://dd.eionet.europa.eu/namespaces/689"
+           xmlns:isoattrs="http://dd.eionet.europa.eu/namespaces/2"
+           xmlns:ddattrs="http://dd.eionet.europa.eu/namespaces/3"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified"
+           targetNamespace="http://dd.eionet.europa.eu/namespaces/689"
+           xsi:schemaLocation="http://www.w3.org/2001/XMLSchema  http://www.w3.org/2001/XMLSchema.xsd">
+   <xs:element name="DF1_MAir">
+      <xs:annotation>
+         <xs:documentation xml:lang="en">
+            <isoattrs:Name>DF1_MAir</isoattrs:Name>
+            <isoattrs:Definition>This dataset allows Member States to define Major Airports and their traffic.</isoattrs:Definition>
+            <ddattrs:ShortDescription>Data Flow 1 (and 5), Source definition - Major Airports</ddattrs:ShortDescription>
+            <ddattrs:Methodology>European Parliament and Council Directive 2002/49/EC, relating to the assessment and management of environmental noise requires data and reports from Member States to be supplied to the European Commission.  In Data Flow 1 (and 5), for Major Airports, Member States must report the general description of the Major Airports, their location and traffic.  This data specification details the table structure for Member States to supply this information. The table must be supplied with supporting xml metadata compliant with the current European Environment Agency, Dublin Core Metadata Element Set (http://cr.eionet.europa.eu/dcmes.jsp).</ddattrs:Methodology>
+         </xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="1" name="Row">
+               <xs:complexType>
+                  <xs:sequence>
+                     <xs:element maxOccurs="1" minOccurs="1" ref="ReportingEntityUniqueCode"/>
+                     <xs:element maxOccurs="1" minOccurs="1" ref="AirportName"/>
+                     <xs:element maxOccurs="1" minOccurs="1" ref="IcaoCode"/>
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="ReportingEntityUniqueCode">
+      <xs:annotation>
+         <xs:documentation xml:lang="en"/>
+      </xs:annotation>
+      <xs:simpleType>
+         <xs:restriction base="xs:"/>
+      </xs:simpleType>
+   </xs:element>
+   <xs:element name="AirportName">
+      <xs:annotation>
+         <xs:documentation xml:lang="en"/>
+      </xs:annotation>
+      <xs:simpleType>
+         <xs:restriction base="xs:"/>
+      </xs:simpleType>
+   </xs:element>
+   <xs:element name="IcaoCode">
+      <xs:annotation>
+         <xs:documentation xml:lang="en"/>
+      </xs:annotation>
+      <xs:simpleType>
+         <xs:restriction base="xs:"/>
+      </xs:simpleType>
+   </xs:element>
+</xs:schema>
+

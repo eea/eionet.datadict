@@ -1,9 +1,13 @@
 package eionet.datadict.dal.impl;
 
-
+import eionet.datadict.commons.util.IterableUtils;
 import eionet.datadict.dal.AttributeValueDao;
+import eionet.datadict.model.Attribute;
 import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
+import eionet.datadict.model.DataElement;
+import eionet.datadict.model.DataSet;
+import eionet.datadict.model.DatasetTable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -23,7 +27,7 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
     public AttributeValueDaoImpl(DataSource dataSource) {
         super(dataSource);
     }
-    
+
     @Override
     public List<AttributeValue> getByAttributeAndOwner(int attributeId, DataDictEntity ddEntity) {
         String sql = "SELECT "
@@ -34,7 +38,7 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
         params.put("attributeId", attributeId);
         params.put("parentType", ddEntity.getType().toString());
         params.put("ddEntityId", ddEntity.getId());
-        
+
         try {
             return this.getNamedParameterJdbcTemplate().query(sql, params, new AttributeValueRowMapper());
         } catch (EmptyResultDataAccessException ex) {
@@ -54,22 +58,22 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
         params.put("parentType", ddEntity.getType().toString());
         params.put("ddEntityId", ddEntity.getId());
         params.put("value", value);
-        
+
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
-    
+
     @Override
     public void deleteAllAttributeValues(int attributeId, DataDictEntity ddEntity) {
         String sql = "DELETE FROM ATTRIBUTE WHERE "
                 + "M_ATTRIBUTE_ID = :attributeId "
                 + "AND PARENT_TYPE = :parentType "
                 + "AND DATAELEM_ID = :ddEntityId";
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("attributeId", attributeId);
         params.put("parentType", ddEntity.getType().toString());
         params.put("ddEntityId", ddEntity.getId());
-        
+
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
 
@@ -77,13 +81,13 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
     public void deleteAllAttributeValues(int attributeId) {
         String sql = "DELETE FROM ATTRIBUTE WHERE "
                 + "M_ATTRIBUTE_ID = :attributeId ";
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("attributeId", attributeId);
-        
+
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
-    
+
     @Override
     public void addAttributeValues(int attributeId, DataDictEntity ownerEntity, List<String> values) {
         String sql = "INSERT INTO ATTRIBUTE VALUES(:attributeId, :ownerId, :value, :ownerType)";
@@ -101,7 +105,24 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
 
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
     }
-    
+
+    @Override
+    public List<AttributeValue> getByOwner(DataDictEntity owner) {
+        String sql = "SELECT "
+                + "ATTRIBUTE.* "
+                + "FROM ATTRIBUTE "
+                + "WHERE PARENT_TYPE = :parentType AND DATAELEM_ID = :ddEntityId";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("parentType", owner.getType().toString());
+        params.put("ddEntityId", owner.getId());
+
+        try {
+            return this.getNamedParameterJdbcTemplate().query(sql, params, new AttributeValueRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
+
     public static class AttributeValueRowMapper implements RowMapper {
 
         @Override
@@ -111,11 +132,25 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
             String parentType = rs.getString("PARENT_TYPE");
             Integer parentId = rs.getInt("DATAELEM_ID");
             DataDictEntity parentEntity = new DataDictEntity(parentId, DataDictEntity.Entity.getFromString(parentType));
+
+            switch (DataDictEntity.Entity.getFromString(parentType)) {
+
+                case DS:
+                    attrValue.setOwner((DataSet) new DataSet(parentId));
+                    break;
+                case T:
+                    attrValue.setOwner((DatasetTable) new DatasetTable(parentId));
+                    break;
+
+            }
+
             attrValue.setParentEntity(parentEntity);
             attrValue.setValue(rs.getString("VALUE"));
+            Attribute at = new Attribute();
+            at.setId(rs.getInt("M_ATTRIBUTE_ID"));
+            attrValue.setAttribute(at);
             return attrValue;
         }
-        
+
     }
-    
 }

@@ -1,5 +1,6 @@
 package eionet.datadict.dal;
 
+import eionet.datadict.model.Vocabulary;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -50,5 +51,7 @@ public interface VocabularyDao {
     boolean exists(Integer vocabularySetId, String vocabularyIdentifier);
     
     boolean exists(String vocabularySetIdentifier, String vocabularyIdentifier);
+    
+    List<Vocabulary> getValueListCodesOfDataElementsInTable(int tableId);
     
 }

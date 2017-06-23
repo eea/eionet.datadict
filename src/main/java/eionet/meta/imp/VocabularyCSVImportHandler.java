@@ -23,8 +23,6 @@ package eionet.meta.imp;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,7 +51,7 @@ import eionet.util.VocabularyCSVOutputHelper;
  *
  * @author enver
  */
-// @Configurable
+ //@Configurable
 public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
     /** Static logger for this class. */
