@@ -37,8 +37,6 @@ public class DatasetTableDataServiceImpl implements DatasetTableDataService {
         this.dataElementDao = dataElementDao;
         this.attributeValueDao = attributeValueDao;
     }
-    
-    
 
     @Override
     public DatasetTable getDatasetTable(int id) throws ResourceNotFoundException {
@@ -80,89 +78,20 @@ public class DatasetTableDataServiceImpl implements DatasetTableDataService {
             throw new ResourceNotFoundException(String.format("Dataset with id %d could not be found", datasetTable.getDataSet().getId()));
         }
         OrmUtils.link(dataSet, datasetTable);
-       
-        
+
         List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(datasetTable.getId());
         datasetTable.setDataElements(OrmCollectionUtils.createChildCollection(dataElements));
-         OrmUtils.link(datasetTable, dataElements);
-       
-         
-         List<Attribute> dataSetTableAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(datasetTable.getId(), DataDictEntity.Entity.T));
+        OrmUtils.link(datasetTable, dataElements);
 
-        
+        List<Attribute> dataSetTableAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(datasetTable.getId(), DataDictEntity.Entity.T));
+
         datasetTable.setAttributes(OrmCollectionUtils.createChildCollection(dataSetTableAttributes));
-    
-        
+
         List<AttributeValue> datasetTableAttributeValues = attributeValueDao.getByOwner(new DataDictEntity(datasetTable.getId(), DataDictEntity.Entity.T));
-        
-        OrmUtils.link(dataSetTableAttributes,datasetTableAttributeValues);
+
+        OrmUtils.link(dataSetTableAttributes, datasetTableAttributeValues);
         datasetTable.setAttributesValues(OrmCollectionUtils.createChildCollection(datasetTableAttributeValues));
         OrmUtils.link(datasetTable, datasetTableAttributeValues);
-        //  List<SimpleAttributeValues> datasetTableAttributeValues = this.attributeDao.getSimpleAttributesValuesOfDataElementsInTable(tableId);
-        //  OrmUtils.link(datasetTableAttributes, datasetTableAttributeValues);
-        //   OrmUtils.link(datasetTable, datasetTableAttributeValues);
-
-        /**
-        List<DatasetTableElement> datasetTableElements
-                = this.dataElementDao.getDatasetTableElementsOfDatasetTable(tableId);
-        OrmUtils.link(datasetTable, datasetTableElements);
-
-        List<DataElement> dataElements
-                = IterableUtils.select(datasetTableElements, new Selector<DatasetTableElement, DataElement>() {
-
-                    @Override
-                    public DataElement select(DatasetTableElement obj) {
-                        return obj.getDataElement();
-                    }
-
-                });
-        List<DataElement> dataElementsWithFixedValues
-                = this.filterDataElementsByType(dataElements,
-                        DataElement.ValueType.FIXED);
-        List<DataElement> dataElementsWithQuantitativeValues
-                = this.filterDataElementsByType(dataElements,
-                        DataElement.ValueType.QUANTITATIVE);
-        List<DataElement> dataElementsWithVocabularyValues
-                = this.filterDataElementsByType(dataElements,
-                        DataElement.ValueType.VOCABULARY);
-
-        if (!dataElementsWithFixedValues.isEmpty()
-                || !dataElementsWithQuantitativeValues.isEmpty()) {
-            List<FixedValue> fixedValues
-                    = this.fixedValuesDao.getValueListCodesOfDataElementsInTable(tableId);
-
-            if (!dataElementsWithFixedValues.isEmpty()) {
-                OrmUtils.link(dataElementsWithFixedValues, fixedValues);
-            }
-
-            if (!dataElementsWithQuantitativeValues.isEmpty()) {
-                OrmUtils.link(dataElementsWithQuantitativeValues, fixedValues);
-            }
-        }
-
-        if (!dataElementsWithVocabularyValues.isEmpty()) {
-            List<Vocabulary> vocabularies
-                    = this.vocabularyDao.getValueListCodesOfDataElementsInTable(tableId);
-            OrmUtils.link(vocabularies, dataElementsWithVocabularyValues);
-        }
-
-        Map<Integer, Set<Attribute>> attributesPerDataElement
-                = this.attributeDao.getAttributesOfDataElementsInTable(tableId);
-        Set<Attribute> dataElementAttributes = new HashSet<Attribute>();
-
-        for (DataElement dataElement : dataElements) {
-            if (attributesPerDataElement.containsKey(dataElement.getId())) {
-                dataElement.setAttributes(attributesPerDataElement.get(dataElement.getId()));
-                dataElementAttributes.addAll(dataElement.getAttributes());
-            }
-        }
-
-        List<SimpleAttributeValues> dataElementAttributeValues
-                = this.attributeDao.getSimpleAttributesValuesOfDataElementsInTable(tableId);
-        OrmUtils.link(dataElements, dataElementAttributeValues);
-        OrmUtils.link(new ArrayList<Attribute>(dataElementAttributes),
-                dataElementAttributeValues);
-     **/
         return datasetTable;
     }
 

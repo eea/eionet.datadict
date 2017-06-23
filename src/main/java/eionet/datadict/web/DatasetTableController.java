@@ -17,9 +17,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 
@@ -44,14 +43,12 @@ public class DatasetTableController {
     private static final Logger LOGGER = Logger.getLogger(DatasetTableController.class);
     private static final String GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL = "/datadict/error.action?type=INTERNAL_SERVER_ERROR&message=";
 
-
     @Autowired
     public DatasetTableController(DataSetTableService dataSetTableService, DatasetTableDataService datasetTableDataService) {
         this.dataSetTableService = dataSetTableService;
         this.datasetTableDataService = datasetTableDataService;
     }
- 
-    
+
     @RequestMapping(value = "/{id}/schema", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public void getDatasetTableSchema(@PathVariable int id, HttpServletResponse response) throws ResourceNotFoundException, ServletException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
@@ -78,7 +75,7 @@ public class DatasetTableController {
 
     @RequestMapping(value = "/{id}/instance", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
-    public void getDataSetTableInstance(@PathVariable int id,  HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
+    public void getDataSetTableInstance(@PathVariable int id, HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
 
         Document xml = this.dataSetTableService.getDataSetTableXMLInstance(id);
         String fileName = "table" + id + "-instance.xml";
@@ -98,22 +95,24 @@ public class DatasetTableController {
         outStream.flush();
         outStream.close();
     }
+
     @RequestMapping(value = "{id}/json", method = RequestMethod.GET)
     @ResponseBody
     public DatasetTable getDataSetTable(@PathVariable int id) throws ResourceNotFoundException {
 
-        DatasetTable dTable =  this.datasetTableDataService.getFullDatasetTableDefinition(id);
+        DatasetTable dTable = this.datasetTableDataService.getFullDatasetTableDefinition(id);
         return dTable;
     }
 
-     @ExceptionHandler(ResourceNotFoundException.class)
+    @ExceptionHandler(ResourceNotFoundException.class)
     public void HandleResourceNotFoundException(Exception exception, HttpServletResponse response) throws IOException {
         response.sendRedirect(GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL + exception.getMessage());
     }
 
-      @ExceptionHandler({IOException.class, TransformerConfigurationException.class, TransformerException.class, XmlExportException.class, DOMException.class})
+    @ExceptionHandler({IOException.class, TransformerConfigurationException.class, TransformerException.class, XmlExportException.class, DOMException.class})
     public void HandleFatalExceptions(Exception exception, HttpServletResponse response) throws IOException {
+        LOGGER.log(Level.ERROR, null, exception);
         response.sendRedirect(GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL + "error exporting XML. " + exception.getMessage());
     }
-    
+
 }
