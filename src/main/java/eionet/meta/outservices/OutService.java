@@ -51,28 +51,6 @@ public class OutService {
     }
 
     /**
-     * This method returns the identifiers and titles of all obligations that have a released dataset definition present in DD.
-     * Returns vector of identifier-title pairs, given as hash maps where the key of identifier is
-     * "http://purl.org/dc/elements/1.1/identifier" and the key of title is "http://purl.org/dc/elements/1.1/title".
-     *
-     * @return Vector of identifier-title pairs, given as hash maps.
-     * @throws Exception When any sort of error happens.
-     */
-    @SuppressWarnings("rawtypes")
-    public Vector getObligationsWithDatasets() throws Exception {
-
-        try {
-            if (conn == null) {
-                getConnection();
-            }
-            DDSearchEngine searchEngine = new DDSearchEngine(conn);
-            return searchEngine.getObligationsWithDatasets();
-        } finally {
-            closeConnection();
-        }
-    }
-
-    /**
      * Created by Dusko Kolundzija(ED).
      * Modified by Jaanus Heinlaid (<a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>)
      *
@@ -235,4 +213,5 @@ public class OutService {
 
         return reply.getHashTable();
     }
+
 }

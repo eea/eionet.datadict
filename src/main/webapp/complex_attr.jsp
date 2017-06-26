@@ -224,11 +224,6 @@ private String legalizeAlert(String in){
                 document.forms["form1"].submit();
             }
 
-            function openHarvested(id){
-                document.forms["form1"].action = "pick_harvattr.jsp";
-                document.forms["form1"].submit();
-            }
-
             function doLoad(){
                 var attrName = document.forms["form1"].elements["attrName"].value;
                 var allowToAdd = document.forms["form1"].elements["allowToAdd"].value;
@@ -279,7 +274,6 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
     }
 
     boolean inherit = attribute.getInheritable().equals("0") ? false:true;
-    String harvesterID = attribute.getHarvesterID();
 
     String attrName = attribute.getShortName();
     int position = 0;
@@ -361,16 +355,12 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
         %>
         <div>
             <%
-            if (user!=null){
+            if (user!=null) {
                 %>
                 <input class="smallbutton" type="button" name="addbutton" value="Add" onclick="submitForm('add')" />
                 <input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')" />
                 <%
-                if (harvesterID!=null && harvesterID.length()>0){ %>
-                    <input class="smallbutton" type="button" value="Get harvested"  onclick="openHarvested('<%=attr_id%>')" /><%
-                }
-            }
-            else{
+            } else {
                 %>
                 <input class="smallbutton" type="button" value="Add" disabled="disabled"/><%
             }

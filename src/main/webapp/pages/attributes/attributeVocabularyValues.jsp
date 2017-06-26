@@ -7,26 +7,43 @@
         <c:choose>
             <c:when test="${actionBean.attrOwnerType eq 'dataset'}">
                 <c:set var="ddEntity" value="${actionBean.dataset}"/>
+                <c:set var="ddEntityTitle" value="${ddEntity.shortName}"/>
                 <c:set var="backLabel" value="Back to dataset edit page"/>
                 <c:set var="backLink" value="${actionBean.contextPath}/datasets/${ddEntity.id}/edit"/>
                 <c:set var="ddEntityUrl" value="${actionBean.contextPath}/datasets/${ddEntity.id}"/>
             </c:when>
             <c:when test="${actionBean.attrOwnerType eq 'dataelement'}">
                 <c:set var="ddEntity" value="${actionBean.dataElement}"/>
+                <c:set var="ddEntityTitle" value="${ddEntity.shortName}"/>
                 <c:set var="backLabel" value="Back to data element edit page"/>
                 <c:set var="backLink" value="${actionBean.contextPath}/dataelements/${ddEntity.id}/edit"/>
-                 <c:set var="ddEntityUrl" value="${actionBean.contextPath}/dataelements/${ddEntity.id}"/>
+                <c:set var="ddEntityUrl" value="${actionBean.contextPath}/dataelements/${ddEntity.id}"/>
             </c:when>
             <c:when test="${actionBean.attrOwnerType eq 'table'}">
                 <c:set var="ddEntity" value="${actionBean.datasetTable}"/>
+                <c:set var="ddEntityTitle" value="${ddEntity.shortName}"/>
                 <c:set var="backLabel" value="Back to dataset table edit page"/>
                 <c:set var="backLink" value="${actionBean.contextPath}/tables/${ddEntity.id}/edit"/>
                 <c:set var="ddEntityUrl" value="${actionBean.contextPath}/tables/${ddEntity.id}"/>
             </c:when>
+            <c:when test="${actionBean.attrOwnerType eq 'schemaset'}">
+                <c:set var="ddEntity" value="${actionBean.schemaSet}"/>
+                <c:set var="ddEntityTitle" value="${ddEntity.identifier}"/>
+                <c:set var="backLabel" value="Back to schema set edit page"/>
+                <c:set var="backLink" value="${actionBean.contextPath}/schemaset/${ddEntity.identifier}/edit"/>
+                <c:set var="ddEntityUrl" value="${actionBean.contextPath}/schemaset/${ddEntity.identifier}/view?workingCopy=true"/>
+            </c:when>
+            <c:when test="${actionBean.attrOwnerType eq 'schema'}">
+                <c:set var="ddEntity" value="${actionBean.schema}"/>
+                <c:set var="ddEntityTitle" value="${ddEntity.fileName}"/>
+                <c:set var="backLabel" value="Back to schema edit page"/>
+                <c:set var="backLink" value="${actionBean.contextPath}/schema/${ddEntity.schemaSetId > 0 ? ddEntity.schemaSetIdentifier : 'root'}/${ddEntity.fileName}/edit?workingCopy=true"/>
+                <c:set var="ddEntityUrl" value="${actionBean.contextPath}/schema/${ddEntity.schemaSetId > 0 ? ddEntity.schemaSetIdentifier : 'root'}/${ddEntity.fileName}/view?workingCopy=true"/>
+            </c:when>
         </c:choose>
         <h1>Values for the <c:out value="${actionBean.attribute.shortName}"/> attribute corresponding to the 
             <stripes:link href="${ddEntityUrl}">
-                <c:out value="${ddEntity.shortName}" />
+               <c:out value="${ddEntityTitle}" />
             </stripes:link> 
             <c:out value="${actionBean.attrOwnerType}" />
         </h1>
@@ -67,7 +84,7 @@
                         <tr>
                             <th>Identifier</th>
                             <th>Label</th>
-                            <th>&nbsp;</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -93,7 +110,7 @@
                                 <td>
                                     <stripes:form beanclass="${actionBean['class']}" 
                                                   onclick="return confirm('Are you sure you want to remove this attribute value?');" >
-                                        <stripes:hidden name="conceptIdentifiers[0]" value="${concept.identifier}"/>
+                                        <stripes:hidden name="conceptIds[0]" value="${concept.id}"/>
                                         <stripes:hidden name="attributeId"/>
                                         <stripes:hidden name="attrOwnerType"/>
                                         <stripes:hidden name="attrOwnerId"/>

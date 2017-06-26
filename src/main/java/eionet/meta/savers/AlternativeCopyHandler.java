@@ -329,20 +329,6 @@ public class AlternativeCopyHandler extends OldCopyHandler {
      *
      * @param oldId
      * @param newId
-     * @param ownerType
-     * @return
-     */
-    protected static String rodLinksCopyStatement(String oldId, String newId) {
-
-        Map<String, Object> newValues = toValueMap("DATASET_ID", newId);
-        String whereClause = "DATASET_ID=" + oldId;
-        return rowsCopyStatement("DST2ROD", whereClause, newValues);
-    }
-
-    /**
-     *
-     * @param oldId
-     * @param newId
      * @return
      */
     protected static String fixedValuesCopyStatement(String oldId, String newId) {
@@ -603,17 +589,14 @@ public class AlternativeCopyHandler extends OldCopyHandler {
             boolean isEmptyBatch = true;
 
             for (Entry<String, String> entry : oldNewDatasets.entrySet()) {
-
                 stmt.addBatch(simpleAttrsCopyStatement(entry.getKey(), entry.getValue(), "DS"));
                 isEmptyBatch = false;
                 stmt.addBatch(complexAttrRowsCopyStatement(entry.getKey(), entry.getValue(), "DS"));
                 stmt.addBatch(complexAttrFieldsCopyStatement(entry.getKey(), entry.getValue(), "DS"));
                 stmt.addBatch(documentsCopyStatement(entry.getKey(), entry.getValue(), "dst"));
-                stmt.addBatch(rodLinksCopyStatement(entry.getKey(), entry.getValue()));
             }
 
             for (Entry<String, String> entry : oldNewTables.entrySet()) {
-
                 stmt.addBatch(simpleAttrsCopyStatement(entry.getKey(), entry.getValue(), "T"));
                 isEmptyBatch = false;
                 stmt.addBatch(complexAttrRowsCopyStatement(entry.getKey(), entry.getValue(), "T"));
@@ -622,7 +605,6 @@ public class AlternativeCopyHandler extends OldCopyHandler {
             }
 
             for (Entry<String, String> entry : oldNewElements.entrySet()) {
-
                 stmt.addBatch(simpleAttrsCopyStatement(entry.getKey(), entry.getValue(), "E"));
                 isEmptyBatch = false;
                 stmt.addBatch(complexAttrRowsCopyStatement(entry.getKey(), entry.getValue(), "E"));

@@ -91,61 +91,71 @@
                 <p class="actions">
                     <stripes:submit class="mediumbuttonb searchButton" name="search" value="Search"/>
                     <input class="mediumbuttonb" type="reset" value="Reset" />
-                    <c:if test="${actionBean.schemaSetId != 0}">
-                       <stripes:submit name="copyToSchemaSet" value="Copy to schema set" />
-                       <stripes:submit name="cancelCopy" value="Cancel" />
-                    </c:if>
                 </p>
             </div>
         </stripes:form>
 
-        <display:table name="actionBean.schemasResult" class="datatable results" id="item" requestURI="/schema/search/">
-            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No schemas found.</p>" />
-            <c:if test="${actionBean.schemaSetId != 0}">
-                <display:column title="" sortable="false">
-                    <stripes:radio value="${item.id}" name="schemaId" />
-                </display:column>
-            </c:if>
-            <display:column title="Name" sortable="true" sortName="sortName" sortProperty="NAME_ATTR">
-                <stripes:link beanclass="eionet.web.action.SchemaActionBean">
-                    <c:if test="${item.schemaSetId > 0}">
-                        <stripes:param name="schemaSet.identifier" value="${item.schemaSetIdentifier}" />
-                    </c:if>
-                    <stripes:param name="schema.fileName" value="${item.fileName}" />
-                    <c:if test="${item.workingCopy || item.schemaSetWorkingCopy}"><stripes:param name="workingCopy" value="true"/></c:if>
-                    <c:choose>
-                        <c:when test="${not empty item.nameAttribute}">
-                            <c:out value="${item.nameAttribute}" />
-                        </c:when>
-                        <c:otherwise>
-                            <c:out value="${item.fileName}" />
-                        </c:otherwise>
-                    </c:choose>
-                </stripes:link>
-                <c:if test="${not empty actionBean.userName && item.workingCopy && actionBean.userName==item.workingUser}">
-                    <span title="Your working copy" class="checkedout"><strong>*</strong></span>
+        <stripes:form action="/schema/search/" method="get">
+            <display:table name="actionBean.schemasResult" class="datatable results" id="item" requestURI="/schema/search/">
+                <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No schemas found.</p>" />
+                <c:if test="${actionBean.schemaSetId != 0}">
+                    <display:column title="" sortable="false">
+                        <stripes:radio value="${item.id}" name="schemaId" />
+                    </display:column>
                 </c:if>
-            </display:column>
-            <display:column title="Schema set name" sortable="true" sortProperty="SS_NAME_ATTR">
-                <c:if test="${item.schemaSetId > 0}">
-                    <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
-                        <stripes:param name="schemaSet.identifier" value="${item.schemaSetIdentifier}" />
-                        <c:if test="${item.schemaSetWorkingCopy}"><stripes:param name="workingCopy" value="true"/></c:if>
+                <display:column title="Name" sortable="true" sortName="sortName" sortProperty="NAME_ATTR">
+                    <stripes:link beanclass="eionet.web.action.SchemaActionBean">
+                        <c:if test="${item.schemaSetId > 0}">
+                            <stripes:param name="schemaSet.identifier" value="${item.schemaSetIdentifier}" />
+                        </c:if>
+                        <stripes:param name="schema.fileName" value="${item.fileName}" />
+                        <c:if test="${item.workingCopy || item.schemaSetWorkingCopy}"><stripes:param name="workingCopy" value="true"/></c:if>
                         <c:choose>
-                            <c:when test="${not empty item.schemaSetNameAttribute}">
-                                <c:out value="${item.schemaSetNameAttribute}" />
+                            <c:when test="${not empty item.nameAttribute}">
+                                <c:out value="${item.nameAttribute}" />
                             </c:when>
                             <c:otherwise>
-                                <c:out value="${item.schemaSetIdentifier}" />
+                                <c:out value="${item.fileName}" />
                             </c:otherwise>
                         </c:choose>
                     </stripes:link>
-                    <c:if test="${not empty actionBean.userName && item.schemaSetWorkingCopy && actionBean.userName==item.schemaSetWorkingUser}">
+                    <c:if test="${not empty actionBean.userName && item.workingCopy && actionBean.userName==item.workingUser}">
                         <span title="Your working copy" class="checkedout"><strong>*</strong></span>
                     </c:if>
+                </display:column>
+                <display:column title="Schema set name" sortable="true" sortProperty="SS_NAME_ATTR">
+                    <c:if test="${item.schemaSetId > 0}">
+                        <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
+                            <stripes:param name="schemaSet.identifier" value="${item.schemaSetIdentifier}" />
+                            <c:if test="${item.schemaSetWorkingCopy}"><stripes:param name="workingCopy" value="true"/></c:if>
+                            <c:choose>
+                                <c:when test="${not empty item.schemaSetNameAttribute}">
+                                    <c:out value="${item.schemaSetNameAttribute}" />
+                                </c:when>
+                                <c:otherwise>
+                                    <c:out value="${item.schemaSetIdentifier}" />
+                                </c:otherwise>
+                            </c:choose>
+                        </stripes:link>
+                        <c:if test="${not empty actionBean.userName && item.schemaSetWorkingCopy && actionBean.userName==item.schemaSetWorkingUser}">
+                            <span title="Your working copy" class="checkedout"><strong>*</strong></span>
+                        </c:if>
+                    </c:if>
+                </display:column>
+                <c:if test="${actionBean.schemaSetId > 0}">
+                    <display:footer>
+                        <tr>
+                            <td></td>
+                            <td colspan="2">
+                                <stripes:hidden name="schemaSetId" value="${actionBean.schemaSetId}" />
+                                <stripes:submit name="copyToSchemaSet" value="Copy to schema set" />
+                                <stripes:submit name="cancelCopy" value="Cancel" />
+                            </td>
+                        </tr>
+                    </display:footer>
                 </c:if>
-            </display:column>
-        </display:table>
+            </display:table>
+        </stripes:form>
 
         <div id="newNameDialog" title="New file name">
             In the schema set, there is already schema with such name.

@@ -49,10 +49,6 @@ public interface PropsIF {
     String DB_UNITTEST_USR = "db.unitest.usr";
     String DB_UNITTEST_PWD = "db.unitest.psw";
 
-    /** */
-    String HRV_LOG = "harvester.log";
-    String HRV_LOGLEV = "harvester.log-level";
-
     String UNI_FONT = "pdf.uni-font";
 
     String XFORMS_NSS = "xforms.nss";
@@ -62,15 +58,6 @@ public interface PropsIF {
     String XLS_SCHEMA_URL = "xls.schema-url";
     String XLS_SCHEMA_URL_SHEET = "xls.schema-url-sheet";
     String XLS_DROPDOWN_FXV_SHEET = "xls.schema-dropdown-fxv-sheet";
-
-    String INSERV_PREFIX = "inserv.";
-    String INSERV_NAME = ".name";
-    String INSERV_URL = ".url";
-    String INSERV_USR = ".usr";
-    String INSERV_PSW = ".psw";
-
-    String INSERV_ROD_RA_URLPATTERN = "inserv.webrod.ra-url-pattern";
-    String INSERV_ROD_RA_IDPATTERN = "<RA_ID>";
 
     String OUTSERV_ELM_URLPATTERN = "outserv.elm-details-url";
     String OUTSERV_ELM_IDPATTERN = "<ELM_ID>";

@@ -282,17 +282,7 @@ public abstract class OldCopyHandler {
                     gen.setFieldExpr("ROW_ID", rowID);
                     gen.setFieldExpr("POSITION", rowPos);
 
-                    // JH131103 - here we need to know if the attribute is linked to
-                    // an harvested one
-                    String harvAttrID = (String) rowHash.get("harv_attr_id");
-                    if (harvAttrID != null) {
-                        gen.setField("HARV_ATTR_ID", harvAttrID);
-                    }
-
                     stmt.executeUpdate(gen.insertStatement());
-                    if (harvAttrID != null) {
-                        continue;
-                    }
 
                     // get the value of each field in the given row
                     int insertedFields = 0;

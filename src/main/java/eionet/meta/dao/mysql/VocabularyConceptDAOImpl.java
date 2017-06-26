@@ -46,6 +46,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -568,6 +569,40 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 });
 
         return result;
+    }
+
+    @Override
+    public List<VocabularyConcept> getVocabularyConcepts(List<Integer> ids) {
+        if (ids.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        }
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ids", ids);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, STATUS, ");
+        sql.append("ACCEPTED_DATE, NOT_ACCEPTED_DATE, STATUS_MODIFIED ");
+        sql.append("from VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID in (:ids)");
+
+        return getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyConcept>() {
+                    @Override
+                    public VocabularyConcept mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyConcept vc = new VocabularyConcept();
+                        vc.setId(rs.getInt("VOCABULARY_CONCEPT_ID"));
+                        vc.setVocabularyId(rs.getInt("VOCABULARY_ID"));
+                        vc.setIdentifier(rs.getString("IDENTIFIER"));
+                        vc.setLabel(rs.getString("LABEL"));
+                        vc.setDefinition(rs.getString("DEFINITION"));
+                        vc.setNotation(rs.getString("NOTATION"));
+                        vc.setStatus(rs.getInt("STATUS"));
+                        vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
+                        vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
+                        vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
+                        return vc;
+                    }
+                }
+        );
     }
 
     @Override

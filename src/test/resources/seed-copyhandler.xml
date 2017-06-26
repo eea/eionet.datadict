@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
 
-    <!-- The dataset and its simple-complex attributes, documents and links to ROD -->
+    <!-- The dataset and its simple-complex attributes and documents -->
 
     <DATASET DATASET_ID="111" IDENTIFIER="dataset1" SHORT_NAME="dataset1" USER="heinlja" CORRESP_NS="100" VERSION="1" REG_STATUS="Incomplete"/>
     <ATTRIBUTE PARENT_TYPE="DS" DATAELEM_ID="111" M_ATTRIBUTE_ID="25" VALUE="gbgbgbgbgb"/>
@@ -14,8 +14,6 @@
     <COMPLEX_ATTR_FIELD M_COMPLEX_ATTR_FIELD_ID="62" VALUE="111222asas" ROW_ID="ac7cf1b6c8f89516413a0c02e8a1c0cb"/>
     <DOC OWNER_ID="111" OWNER_TYPE="dst" ABS_PATH="/some/path/file1.txt" MD5_PATH="288ab3ab9021a495801afe6fd00799f7" TITLE="doc1"/>
     <DOC OWNER_ID="111" OWNER_TYPE="dst" ABS_PATH="/some/path/file2.txt" MD5_PATH="a64e475833e6071de53e84a3a61cda8a" TITLE="doc2"/>
-    <DST2ROD DATASET_ID="111" ACTIVITY_ID="460"/>
-    <DST2ROD DATASET_ID="111" ACTIVITY_ID="461"/>
 
     <!-- Table 1 and its simple-complex attributes and documents -->
 

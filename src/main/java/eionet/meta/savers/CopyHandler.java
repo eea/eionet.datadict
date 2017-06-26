@@ -108,7 +108,6 @@ public class CopyHandler extends OldCopyHandler {
         copySimpleAttributes();
         copyComplexAttributes();
         copyDocuments();
-        copyDstToRodRelations();
         copyFixedValues();
         copyFkRelations();
         copyDstToTblRelations();
@@ -653,7 +652,7 @@ public class CopyHandler extends OldCopyHandler {
         selectSQL = selectSQL + " order by COMPLEX_ATTR_ROW.ROW_ID";
 
         String insertRowSQL =
-            "insert into COMPLEX_ATTR_ROW (PARENT_ID,PARENT_TYPE,M_COMPLEX_ATTR_ID,POSITION,ROW_ID,HARV_ATTR_ID) values ";
+            "insert into COMPLEX_ATTR_ROW (PARENT_ID,PARENT_TYPE,M_COMPLEX_ATTR_ID,POSITION,ROW_ID) values ";
         String insertFldSQL = "insert into COMPLEX_ATTR_FIELD (M_COMPLEX_ATTR_FIELD_ID,VALUE,ROW_ID) values ";
         int insertRowSQLLengthBefore = insertRowSQL.length();
         int insertFldSQLLengthBefore = insertFldSQL.length();
@@ -687,7 +686,6 @@ public class CopyHandler extends OldCopyHandler {
 
                     String mAttrId = rs.getString("M_COMPLEX_ATTR_ID");
                     String position = rs.getString("POSITION");
-                    String harvAttrId = rs.getString("HARV_ATTR_ID");
                     currentRowId = rs.getString("ROW_ID");
 
                     if (!currentRowId.equals(previousRowId)) {
@@ -698,17 +696,15 @@ public class CopyHandler extends OldCopyHandler {
                             LOGGER.trace("Created MD5 hash for '" + md5Input + "': " + newRowId);
                         }
 
-                        String preparedHarvAttrId = harvAttrId == null ? "NULL" : SQL.toLiteral(harvAttrId);
                         if (insertRowSQL.length() > insertRowSQLLengthBefore) {
                             insertRowSQL = insertRowSQL + ",";
                         }
                         insertRowSQL =
                             insertRowSQL + "(" + newId + "," + SQL.toLiteral(parentType) + "," + mAttrId + "," + position
-                            + "," + SQL.toLiteral(newRowId) + "," + preparedHarvAttrId + ")";
+                            + "," + SQL.toLiteral(newRowId) + ")";
                     }
 
                     if (newRowId != null) {
-
                         String mFieldId = rs.getString("M_COMPLEX_ATTR_FIELD_ID");
                         String value = rs.getString("VALUE");
 
@@ -792,52 +788,6 @@ public class CopyHandler extends OldCopyHandler {
                         + SQL.toLiteral(absPath) + "," + SQL.toLiteral(title) + ")";
                 }
 
-            }
-            SQL.close(rs);
-
-            if (insertSQL.length() > insertSQLLengthBefore) {
-                stmt.executeUpdate(insertSQL);
-            }
-        } finally {
-            SQL.close(rs);
-            SQL.close(stmt);
-        }
-    }
-
-    /**
-     *
-     * @throws SQLException if database access fails
-     */
-    private void copyDstToRodRelations() throws SQLException {
-
-        LOGGER.debug("Copying all dataset-to-ROD relations ...");
-
-        if (oldNewDatasets.isEmpty()) {
-            return;
-        }
-
-        String selectSQL = "select * from DST2ROD where DATASET_ID in (" + Util.toCSV(oldNewDatasets.keySet()) + ")";
-        String insertSQL = "insert into DST2ROD (DATASET_ID,ACTIVITY_ID) values ";
-        int insertSQLLengthBefore = insertSQL.length();
-
-        ResultSet rs = null;
-        Statement stmt = null;
-        try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(selectSQL);
-            while (rs.next()) {
-
-                String oldDstId = rs.getString("DATASET_ID");
-                String activityId = rs.getString("ACTIVITY_ID");
-
-                String newDstId = oldNewDatasets.get(oldDstId);
-                if (!Util.isEmpty(newDstId)) {
-
-                    if (insertSQL.length() > insertSQLLengthBefore) {
-                        insertSQL = insertSQL + ",";
-                    }
-                    insertSQL = insertSQL + "(" + newDstId + "," + activityId + ")";
-                }
             }
             SQL.close(rs);
 

@@ -74,6 +74,25 @@ public class TblXlsTest extends DDDatabaseTestCase {
         }
     }
 
+    public void testGetSheet() {
+        String sheetName = "Sheet name";
+        String longSheetName = "A sheet name that is above the 31 character limit";
+        
+        try {
+            classInstanceUnderTest.create(objId);
+            classInstanceUnderTest.write();
+            
+            HSSFWorkbook testWb = new HSSFWorkbook(new ByteArrayInputStream(baos.toByteArray()));
+            HSSFSheet sheet1 = testWb.createSheet(sheetName);
+            HSSFSheet sheet2 = testWb.createSheet(longSheetName);
+            
+            assertEquals(sheet1, classInstanceUnderTest.getSheet(testWb, sheetName));
+            assertEquals(sheet2, classInstanceUnderTest.getSheet(testWb, longSheetName));
+        } catch (Exception e) {
+            Assert.fail("Was not expecting any exceptions, but catched " + e.toString());
+        }
+    }
+
     /**
      * order of values change, so instead of following strict order, all elements checked
      * 
@@ -101,7 +120,7 @@ public class TblXlsTest extends DDDatabaseTestCase {
 
             // check for columns in each sheet
             for (int i = 0; i < dataSheetValues.length; i++) {
-                HSSFSheet dataSheet = testWb.getSheet(sheetNames[i]);
+                HSSFSheet dataSheet = classInstanceUnderTest.getSheet(testWb, sheetNames[i]);
                 HSSFRow dataRow = dataSheet.getRow(0); // it is always first row
                 temp = new ArrayList<String>(Arrays.asList(dataSheetValues[i]));
                 for (int j = 0; j < dataSheetValues[i].length; j++) {
@@ -172,7 +191,7 @@ public class TblXlsTest extends DDDatabaseTestCase {
 
             // check for columns in each sheet
             for (int i = 0; i < dataSheetValues.length; i++) {
-                HSSFSheet dataSheet = testWb.getSheet(sheetNames[i]);
+                HSSFSheet dataSheet = classInstanceUnderTest.getSheet(testWb, sheetNames[i]);
                 HSSFRow dataRow = dataSheet.getRow(0); // it is always first row
                 temp = new ArrayList<String>(Arrays.asList(dataSheetValues[i]));
                 for (int j = 0; j < dataSheetValues[i].length; j++) {

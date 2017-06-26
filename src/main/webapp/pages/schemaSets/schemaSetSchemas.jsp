@@ -89,7 +89,7 @@
         </c:if>
 
         <c:if test="${empty actionBean.schemas}">
-            <div style="margin-top:3em">No schemas defined for this schema set yet! Use operations menu to upload one.</div>
+            <p class='not-found'>No schemas defined for this schema set yet! Use operations menu to upload one.</p>
         </c:if>
 
         <div id="uploadSchemaDialog" title="Upload schema">

@@ -357,9 +357,8 @@
         complexAttrs = searchEngine.getComplexAttributes(ds_id, "DS");
         if (complexAttrs == null) complexAttrs = new Vector();
 
-        // get the dataset's tables and links to ROD
+        // get the dataset's tables
         tables = searchEngine.getDatasetTables(ds_id, true);
-        Vector rodLinks = dataset == null ? null : searchEngine.getRodLinks(dataset.getID());
 
         // init version manager object
         VersionManager verMan = new VersionManager(conn, searchEngine, user);
@@ -568,6 +567,10 @@
             var o = document.forms["form1"].ds_name;
             if (o!=null && o.value.length == 0) return false;
 
+            if ($("#form1 .vocabularyAttributeMandatoryValidationError").length) {
+                return false;
+            }
+
             var elems = document.forms["form1"].elements;
             for (var i=0; elems!=null && i<elems.length; i++) {
                 var elem = elems[i];
@@ -583,7 +586,6 @@
                     }
                 }
             }
-
             return true;
         }
 
@@ -741,9 +743,6 @@ else if (mode.equals("add"))
                 if (complexAttrs != null && complexAttrs.size() > 0) {
                     quicklinks.add("Complex attributes | cattrs");
                 }
-                if (rodLinks != null && rodLinks.size( )> 0) {
-                    quicklinks.add("Obligations in ROD | rodlinks");
-                }
                 request.setAttribute("quicklinks", quicklinks);
         %>
             <jsp:include page="quicklinks.jsp" flush="true" />
@@ -779,14 +778,10 @@ else if (mode.equals("add"))
                             if (mode.equals("view") && dataset!=null && dataset.isWorkingCopy()) {
                                 if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())) {
                             %>
-                                <%
-                                String dstrodLink = request.getContextPath() + "/dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&amp;dst_id=" + dataset.getID() + "&amp;dst_name=" + dataset.getShortName();
-                                %>
                                 <li class="edit"><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/edit">Edit metadata</a></li>
                                 <li class="edit"><a href="<%=request.getContextPath()%>/complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.processForDisplay(ds_name)%>&amp;ds=true">Edit complex attributes</a></li>
                                 <li class="manage"><a href="<%=request.getContextPath()%>/dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.processForDisplay(ds_name)%>">Manage tables</a></li>
                                 <li class="manage"><a href="<%=request.getContextPath()%>/dsvisual.jsp?ds_id=<%=ds_id%>">Manage model</a></li>
-                                <li class="manage"><a href="<%=dstrodLink%>">Manage links to ROD</a></li>
                                 <li class="checkin"><a href="javascript:checkIn()">Check in</a></li>
                                 <li class="undo"><a href="javascript:submitForm('delete')">Undo checkout</a></li>
                             <%
@@ -1270,7 +1265,7 @@ else if (mode.equals("add"))
                                                         if (mode.equals("view") && dispType.equals("vocabulary")) {
                                                             DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
                                                             List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
-                                                            if(vocabularyConcepts != null) { %>
+                                                            if(vocabularyConcepts != null && !vocabularyConcepts.isEmpty()) { %>
                                                                 <ul class="stripedmenu">
                                                                 <%
                                                                     VocabularyFolder vf = null;
@@ -1348,7 +1343,7 @@ else if (mode.equals("add"))
                                                                 if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) { %>
                                                                   <%DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
                                                                     List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
-                                                                    if(vocabularyConcepts != null) {%>
+                                                                    if (vocabularyConcepts != null && !vocabularyConcepts.isEmpty()) {%>
                                                                         <ul class="stripedmenu">
                                                                             <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
                                                                                 <li><c:out value="${vocabularyConcept.label}"/></li>
@@ -1356,6 +1351,9 @@ else if (mode.equals("add"))
                                                                         </ul>
                                                                     <%}%>
                                                                     <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
+                                                                    <% if (attribute.isMandatory() && (vocabularyConcepts == null || vocabularyConcepts.isEmpty())) { %>
+                                                                        <input type="hidden" class="vocabularyAttributeMandatoryValidationError" />
+                                                                    <%}%>
                                                               <%} else {%>
                                                                     [Manage links to the vocabulary]
                                                               <%}
@@ -1418,7 +1416,7 @@ else if (mode.equals("add"))
                                                                         if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
                                                                             <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
                                                                         <% } else {%>
-                                                                            [Manage links to the vocabulary]         
+                                                                            [Manage links to the vocabulary]
                                                                         <%}
                                                                     }else {%>
                                                                     Unknown display type!<%
@@ -1530,7 +1528,7 @@ else if (mode.equals("add"))
                                             if (mode.equals("add")) { %>
                                                 <tr>
                                                     <th></th>
-                                                    <td colspan="3"><input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/></td>
+                                                    <td colspan="3"><input type="submit" class="mediumbuttonb" value="Add" onclick="submitForm('add'); return false;"/></td>
                                                 </tr>
                                             <%
                                             }
@@ -1541,8 +1539,8 @@ else if (mode.equals("add"))
                                                     <tr>
                                                         <th></th>
                                                         <td colspan="3">
-                                                            <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>
-                                                            <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>
+                                                            <input type="submit" class="mediumbuttonb" value="Save" onclick="submitForm('edit'); return false;"/>
+                                                            <input type="submit" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose'); return false;"/>
                                                             <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=ds_id%>')"/>
                                                         </td>
                                                     </tr>
@@ -1651,64 +1649,6 @@ else if (mode.equals("add"))
                                             }
                                         }
                                         %>
-
-                                        <!-- rod links -->
-
-                                        <%
-                                        if (mode.equals("edit") || (mode.equals("view") && rodLinks!=null && rodLinks.size()>0)) {
-
-                                            %>
-
-                                                <!-- title & link part -->
-
-                                                <!-- table part -->
-                                                <%
-                                                if (mode.equals("view") && rodLinks!=null && rodLinks.size()>0) {%>
-                                                <h2 id="rodlinks">
-                                                        Obligations in ROD
-                                                </h2>
-                                                            <table class="datatable results">
-                                                                <col style="width:20%"/>
-                                                                <col style="width:40%"/>
-                                                                <col style="width:40%"/>
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Obligation</th>
-                                                                        <th>Legal instrument</th>
-                                                                        <th>Details</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                <%
-                                                                // rows
-                                                                for (int i=0; i<rodLinks.size(); i++) {
-
-                                                                    Hashtable rodLink = (Hashtable)rodLinks.get(i);
-                                                                    String raTitle = (String)rodLink.get("ra-title");
-                                                                    String liTitle = (String)rodLink.get("li-title");
-                                                                    String raDetails = (String)rodLink.get("ra-url");
-
-                                                                    %>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <%=Util.processForDisplay(raTitle)%>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%=Util.processForDisplay(liTitle)%>
-                                                                        </td>
-                                                                        <td>
-                                                                            <a  href="<%=Util.processForDisplay(raDetails, true)%>"><%=Util.processForDisplay(raDetails, true)%></a>
-                                                                        </td>
-                                                                    </tr><%
-                                                                }
-                                                                %>
-                                                                </tbody>
-                                                            </table>
-                                                    <%
-                                                }
-                                        }
-                                        %>
-
 
                                         <!-- complex attributes -->
 

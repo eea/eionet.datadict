@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +36,6 @@ import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IDataSetDAO;
 import eionet.meta.dao.ITableDAO;
 import eionet.meta.dao.domain.Attribute;
-import eionet.meta.dao.domain.ComplexAttribute;
-import eionet.meta.dao.domain.ComplexAttributeField;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.DataSetTable;
 import eionet.meta.dao.domain.DatasetRegStatus;
@@ -111,8 +108,8 @@ public class TableServiceImpl implements ITableService {
      */
     @Override
     public List<DataSetTable> getTablesForObligation(String obligationId, boolean releasedOnly) throws ServiceException {
-
         List<DataSet> datasets = new ArrayList<DataSet>();
+
         try {
             DatasetFilter datasetFilter = new DatasetFilter();
             if (releasedOnly) {
@@ -121,36 +118,16 @@ public class TableServiceImpl implements ITableService {
                 datasetFilter.setRegStatuses(Arrays.asList(DatasetRegStatus.RELEASED.toString(),
                         DatasetRegStatus.RECORDED.toString()));
             }
-            // Search datasets by ROD numeric IDs from DST2ROD table
-            if (obligationId.startsWith(Props.getRequiredProperty(PropsIF.OUTSERV_ROD_OBLIG_URL))) {
-                int rodId =
-                        NumberUtils.toInt(StringUtils.substringAfter(obligationId,
-                                Props.getRequiredProperty(PropsIF.OUTSERV_ROD_OBLIG_URL)));
-                if (rodId > 0) {
-                    List<Integer> rodIds = new ArrayList<Integer>();
-                    rodIds.add(Integer.valueOf(rodId));
-                    datasetFilter.setRodIds(rodIds);
+
+            Attribute rodAttribute = attributeDAO.getAttributeByName("obligation");
+            if (rodAttribute != null) {
+                if (obligationId.startsWith(Props.getRequiredProperty(PropsIF.OUTSERV_ROD_OBLIG_URL))) {
+                    obligationId =  StringUtils.substringAfter(obligationId, Props.getRequiredProperty(PropsIF.OUTSERV_ROD_OBLIG_URL));
                 }
-                // search datasets
-                List<DataSet> datasets1 = datasetDAO.searchDatasets(datasetFilter);
-                datasets.addAll(datasets1);
-                datasetFilter.setRodIds(null);
+                rodAttribute.setValue(obligationId);
+                datasetFilter.setAttributes(Arrays.asList(new Attribute[] {rodAttribute}));
+                datasets = datasetDAO.searchDatasets(datasetFilter);
             }
-
-            // Search datasets by ROD URLs stored in complex attributes
-            ComplexAttribute rodAttr = attributeDAO.getComplexAttributeByName("ROD");
-            ComplexAttributeField field = rodAttr.getField("url");
-            if (field != null) {
-                field.setValue(obligationId);
-                field.setExactMatchInSearch(true);
-            }
-            List<ComplexAttribute> complexAttributes = new ArrayList<ComplexAttribute>();
-            complexAttributes.add(rodAttr);
-            datasetFilter.setComplexAttributes(complexAttributes);
-
-            // search datasets
-            List<DataSet> datasets2 = datasetDAO.searchDatasets(datasetFilter);
-            datasets.addAll(datasets2);
 
             if (datasets != null && datasets.size() > 0) {
                 return tableDAO.listForDatasets(datasets);

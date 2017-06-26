@@ -2,9 +2,10 @@ package eionet.datadict.model;
 
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class AttributeValue {
-    
+
     private Integer attributeId;
     private String value;
     private DataDictEntity parentEntity;
@@ -13,8 +14,7 @@ public class AttributeValue {
     private AttributeOwner owner;
     @ManyToOne
     private Attribute attribute;
-    
-    
+
     public Integer getAttributeId() {
         return attributeId;
     }
@@ -53,6 +53,30 @@ public class AttributeValue {
 
     public void setAttribute(Attribute attribute) {
         this.attribute = attribute;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof AttributeValue)) {
+            return false;
+        }
+        return this.hashCode() == obj.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().
+                append(attributeId).
+                append(value).
+                append(parentEntity.getId()).
+                append(parentEntity.getType().name()).
+                toHashCode();
     }
 
 }

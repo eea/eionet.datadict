@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 import eionet.acl.AccessController;
 import eionet.acl.SignOnException;
 import eionet.datadict.errors.BadRequestException;
-import eionet.meta.DDSearchEngine;
 
 import eionet.meta.DDUser;
 import eionet.meta.Dataset;
@@ -482,7 +481,6 @@ public class DatasetHandler extends BaseHandler {
         // delete dataset dependencies
         deleteAttributes(false);
         deleteComplexAttributes();
-        deleteRodLinks();
         deleteCache();
         deleteDocs();
         deleteTablesAndElements();
@@ -718,30 +716,6 @@ public class DatasetHandler extends BaseHandler {
             } catch (Exception e) {
                 throw new SQLException(e.toString());
             }
-        }
-    }
-
-    /**
-     *
-     * @throws SQLException
-     */
-    private void deleteRodLinks() throws SQLException {
-
-        INParameters inParams = new INParameters();
-        StringBuffer buf = new StringBuffer("delete from DST2ROD where ");
-        for (int i = 0; i < ds_ids.length; i++) {
-            if (i > 0) {
-                buf.append(" or ");
-            }
-            buf.append("DATASET_ID=").append(inParams.add(ds_ids[i], Types.INTEGER));
-        }
-
-        PreparedStatement stmt = null;
-        try {
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            stmt.executeUpdate();
-        } finally {
-            SQL.close(stmt);
         }
     }
 
@@ -1112,17 +1086,6 @@ public class DatasetHandler extends BaseHandler {
             inParams = new INParameters();
             gen.clear();
             gen.setTable("DST2TBL");
-            gen.setFieldExpr("DATASET_ID", newID);
-            buf = new StringBuffer(gen.updateStatement());
-            buf.append(" where DATASET_ID=").
-            append(inParams.add(oldID, Types.INTEGER));
-
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            stmt.executeUpdate();
-
-            inParams = new INParameters();
-            gen.clear();
-            gen.setTable("DST2ROD");
             gen.setFieldExpr("DATASET_ID", newID);
             buf = new StringBuffer(gen.updateStatement());
             buf.append(" where DATASET_ID=").

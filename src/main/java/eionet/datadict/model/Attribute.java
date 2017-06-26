@@ -5,6 +5,7 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import java.util.Set;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import org.apache.commons.lang.StringUtils;
 
 public class Attribute {
 
@@ -76,20 +77,36 @@ public class Attribute {
     }
     
     public static enum ValueInheritanceMode {
-        NONE("No inheritance"),
-        PARENT_WITH_EXTEND("Inherit attribute values from parent level with possibilty to add new values"),
-        PARENT_WITH_OVERRIDE("Inherit attribute values from parent level with possibilty to overwrite them");
-        
+        NONE("0", "No inheritance"),
+        PARENT_WITH_EXTEND("1", "Inherit attribute values from parent level with possibilty to add new values"),
+        PARENT_WITH_OVERRIDE("2", "Inherit attribute values from parent level with possibilty to overwrite them");
+       
+        private final String key;
         private final String label;
         
-        private ValueInheritanceMode(String label) {
+        private ValueInheritanceMode(String key, String label) {
+            this.key = key;
             this.label = label;
         }
-        
+
+        public String getKey() {
+            return this.key;
+        }
+
         public String getLabel() {
             return this.label;
         }
         
+        public static ValueInheritanceMode getInstance(String key) {
+            if (StringUtils.isNotBlank(key)) {
+                for (ValueInheritanceMode inheritanceMode : ValueInheritanceMode.values()) {
+                    if (inheritanceMode.getKey().equalsIgnoreCase(key)) {
+                        return inheritanceMode;
+                    }
+                }
+            }
+            return NONE;  // default fall-back
+        }
     }
     @Id
     private Integer id;

@@ -120,7 +120,7 @@
                 <display:setProperty name="paging.banner.items_name" value="concepts" />
 
                 <display:column style="width: 5%" title="<input type='checkbox' class='massSelector'  />">
-                    <stripes:checkbox name="conceptIdentifiers" class="selectable conceptSelector" value="${concept.identifier}" />
+                    <stripes:checkbox name="conceptIds" class="selectable conceptSelector" value="${concept.id}" />
                 </display:column>
                 <display:column title="Identifier" class="${actionBean.attribute.vocabulary.numericConceptIdentifiers ? 'number' : ''}" style="min-width:30px">
                     <c:out value="${concept.identifier}" />
@@ -138,7 +138,6 @@
                             <stripes:submit name="saveAdd" value="Add selected concepts" />
                         </td>
                     </tr>
-
                 </display:footer>
             </display:table>
         </stripes:form>

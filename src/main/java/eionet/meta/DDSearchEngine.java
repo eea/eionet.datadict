@@ -15,7 +15,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -1515,7 +1514,6 @@ public class DDSearchEngine {
                     attr.setRdfPropertyName(rs.getString("RDF_PROPERTY_NAME"));
                 } else {
                     attr.setDisplayProps(null, rs.getInt("DISP_ORDER"), rs.getInt("DISP_WHEN"), null, null, null);
-                    attr.setHarvesterID(rs.getString("HARVESTER_ID"));
                 }
 
                 attr.setInheritable(rs.getString("INHERIT"));
@@ -1696,11 +1694,6 @@ public class DDSearchEngine {
                 hash.put("position", rs.getString("POSITION"));
                 hash.put("priority", rs.getString("PRIORITY"));
 
-                String harvAttrFldName = rs.getString("HARV_ATTR_FLD_NAME");
-                if (harvAttrFldName != null) {
-                    hash.put("harv_fld", harvAttrFldName);
-                }
-
                 v.add(hash);
             }
         } finally {
@@ -1748,11 +1741,6 @@ public class DDSearchEngine {
                 hash.put("definition", rs.getString("DEFINITION"));
                 hash.put("position", rs.getString("POSITION"));
                 hash.put("priority", rs.getString("PRIORITY"));
-
-                String harvAttrFldName = rs.getString("HARV_ATTR_FLD_NAME");
-                if (harvAttrFldName != null) {
-                    hash.put("harv_fld", harvAttrFldName);
-                }
             }
         } finally {
             try {
@@ -1828,28 +1816,17 @@ public class DDSearchEngine {
         buf.append("M_COMPLEX_ATTR.SHORT_NAME as ATTR_NAME, ");
         buf.append("M_COMPLEX_ATTR.NAME as NAME, ");
         buf.append("M_COMPLEX_ATTR.INHERIT as INHERIT, ");
-        buf.append("M_COMPLEX_ATTR.HARVESTER_ID as HARVESTER_ID, ");
         buf.append("M_COMPLEX_ATTR.OBLIGATION as OBLIGATION, ");
         buf.append("NAMESPACE.SHORT_NAME as NS, ");
         buf.append("COMPLEX_ATTR_ROW.POSITION as ROW_POS, ");
         buf.append("COMPLEX_ATTR_ROW.ROW_ID as ROW_ID, ");
-        buf.append("COMPLEX_ATTR_ROW.HARV_ATTR_ID as HARV_ATTR_ID, ");
         buf.append("COMPLEX_ATTR_ROW.PARENT_TYPE as PARENT_TYPE, ");
         buf.append("COMPLEX_ATTR_FIELD.M_COMPLEX_ATTR_FIELD_ID as FIELD_ID, ");
-        buf.append("COMPLEX_ATTR_FIELD.VALUE as FIELD_VALUE, ");
-        buf.append("HARV_ATTR_FIELD.FLD_NAME, ");
-        buf.append("HARV_ATTR_FIELD.FLD_VALUE ");
+        buf.append("COMPLEX_ATTR_FIELD.VALUE as FIELD_VALUE ");
         buf.append("from ");
         buf.append("COMPLEX_ATTR_ROW ");
         buf.append("left outer join COMPLEX_ATTR_FIELD on ");
-        buf.append("COMPLEX_ATTR_ROW.ROW_ID=COMPLEX_ATTR_FIELD.ROW_ID ");
-
-        buf.append("left outer join HARV_ATTR on ");
-        buf.append("COMPLEX_ATTR_ROW.HARV_ATTR_ID=");
-        buf.append("HARV_ATTR.LOGICAL_ID ");
-
-        buf.append("left outer join HARV_ATTR_FIELD on ");
-        buf.append("HARV_ATTR.MD5KEY=HARV_ATTR_FIELD.HARV_ATTR_MD5, ");
+        buf.append("COMPLEX_ATTR_ROW.ROW_ID=COMPLEX_ATTR_FIELD.ROW_ID, ");
 
         buf.append("M_COMPLEX_ATTR left outer join NAMESPACE ");
         buf.append("on M_COMPLEX_ATTR.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID ");
@@ -1897,8 +1874,6 @@ public class DDSearchEngine {
             Hashtable attrs = new Hashtable();
             Hashtable fields = new Hashtable();
 
-            Hashtable harvFieldsHash = null;
-
             int prvRow = -1;
             String prvType = "";
             while (rs.next()) {
@@ -1918,12 +1893,10 @@ public class DDSearchEngine {
                         prvType = "";
                     }
 
-                    harvFieldsHash = null;
                     attr =
                             new DElemAttribute(attrID, rs.getString("NAME"), rs.getString("ATTR_NAME"),
                                     DElemAttribute.TYPE_COMPLEX, null, null, rs.getString("OBLIGATION"));
                     attr.setInheritable(rs.getString("INHERIT"));
-                    attr.setHarvesterID(rs.getString("HARVESTER_ID"));
 
                     Namespace ns = new Namespace(null, rs.getString("NS"), null, null, null);
                     attr.setNamespace(ns);
@@ -1947,25 +1920,6 @@ public class DDSearchEngine {
 
                 String fldID = rs.getString("FIELD_ID");
                 String fldValue = rs.getString("FIELD_VALUE");
-
-                // JH111103
-                String harvAttrID = rs.getString("HARV_ATTR_ID");
-                if (harvAttrID != null) {
-
-                    rowHash.put("harv_attr_id", harvAttrID);
-
-                    String harvAttrFldName = rs.getString("FLD_NAME");
-                    if (harvAttrFldName != null) {
-                        if (harvFieldsHash == null) {
-                            harvFieldsHash = getHarvestedAttrFieldsHash(attr.getID());
-                        }
-
-                        fldID = (String) harvFieldsHash.get(harvAttrFldName);
-                        if (fldID != null) {
-                            fldValue = rs.getString("FLD_VALUE");
-                        }
-                    }
-                }
 
                 if (fldID != null && fldValue != null) {
                     rowHash.put(fldID, fldValue);
@@ -3903,357 +3857,6 @@ public class DDSearchEngine {
 
     /**
      *
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getHarvesters() throws SQLException {
-
-        String q = "select distinct HARVESTER_ID from HARV_ATTR";
-
-        Vector v = new Vector();
-        Statement stmt = null;
-        ResultSet rs = null;
-        try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(q);
-            while (rs.next()) {
-                v.add(rs.getString("HARVESTER_ID"));
-            }
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-            }
-        }
-
-        return v;
-    }
-
-    /**
-     *
-     * @param attrID
-     *            - attribute ID
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getHarvesterFieldsByAttr(String attrID) throws SQLException {
-        return getHarvesterFieldsByAttr(attrID, true);
-    }
-
-    /**
-     *
-     * @param attrID
-     *            - attribute ID
-     * @param all
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getHarvesterFieldsByAttr(String attrID, boolean all) throws SQLException {
-        return getHarvesterFieldsByAttr(attrID, all, null);
-    }
-
-    /**
-     *
-     * @param attrID
-     *            - attribute ID
-     * @param all
-     * @param includeFields
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getHarvesterFieldsByAttr(String attrID, boolean all, HashSet includeFields) throws SQLException {
-
-        String q = null;
-        Vector v = new Vector();
-        HashSet taken = new HashSet();
-
-        // fields must be returned in the following order
-        Vector order = new Vector();
-        order.add("ID");
-        order.add("NAME");
-        order.add("COUNTRY");
-        order.add("URL");
-        order.add("ADDRESS");
-        order.add("PHONE");
-        order.add("DESCRIPTION");
-
-        INParameters inParams = new INParameters();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            if (!all) {
-                q =
-                        "select distinct HARV_ATTR_FLD_NAME from " + "M_COMPLEX_ATTR_FIELD where HARV_ATTR_FLD_NAME is not null "
-                                + "and M_COMPLEX_ATTR_ID=" + inParams.add(attrID, Types.INTEGER);
-                stmt = SQL.preparedStatement(q, inParams, conn);
-                rs = stmt.executeQuery();
-                while (rs.next()) {
-                    taken.add(rs.getString(1));
-                }
-            }
-
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-            }
-
-            inParams = new INParameters();
-            q =
-                    "select distinct HARV_ATTR_FIELD.FLD_NAME " + "from " + "M_COMPLEX_ATTR " + "left outer join HARV_ATTR on "
-                            + "M_COMPLEX_ATTR.HARVESTER_ID=HARV_ATTR.HARVESTER_ID " + "left outer join HARV_ATTR_FIELD on "
-                            + "HARV_ATTR.MD5KEY=HARV_ATTR_FIELD.HARV_ATTR_MD5 " + "where M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID="
-                            + inParams.add(attrID, Types.INTEGER) + " and M_COMPLEX_ATTR.HARVESTER_ID is not null "
-                            + "order by HARV_ATTR_FIELD.FLD_NAME asc";
-
-            stmt = SQL.preparedStatement(q, inParams, conn);
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                String fldName = rs.getString("FLD_NAME");
-                if (fldName != null) {
-                    if ((includeFields != null && includeFields.contains(fldName)) || !taken.contains(fldName)) {
-
-                        // ordering logic
-                        String uc = new String(fldName);
-                        int pos = order.indexOf(uc.toUpperCase());
-                        if (pos == -1) {
-                            v.add(fldName);
-                        } else {
-                            if (pos > v.size() - 1) {
-                                v.setSize(pos + 1);
-                            }
-                            v.add(pos, fldName);
-                        }
-                    }
-                }
-            }
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-            }
-        }
-
-        // ordering might have left some null objects in there
-        for (int i = 0; i < v.size(); i++) {
-            if (v.get(i) == null) {
-                v.remove(i--);
-            }
-        }
-
-        return v;
-    }
-
-    /**
-     *
-     * @param attrID
-     *            - attribute ID
-     * @param parentID
-     * @param unUsed
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public HashSet getHarvestedAttrIDs(String attrID, String parentID, String unUsed) throws SQLException {
-
-        INParameters inParams = new INParameters();
-        String q =
-                "select distinct HARV_ATTR_ID from COMPLEX_ATTR_ROW where M_COMPLEX_ATTR_ID="
-                        + inParams.add(attrID, Types.INTEGER) + " and PARENT_ID=" + inParams.add(parentID, Types.INTEGER)
-                        + " and PARENT_TYPE='DS'";
-
-        HashSet hashSet = new HashSet();
-        ResultSet rs = null;
-        PreparedStatement stmt = null;
-        try {
-            stmt = SQL.preparedStatement(q, inParams, conn);
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                String id = rs.getString(1);
-                if (id != null) {
-                    hashSet.add(id);
-                }
-            }
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-            }
-        }
-
-        return hashSet;
-    }
-
-    /**
-     *
-     * @param attrID
-     *            - attribute ID
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getHarvestedAttrs(String attrID) throws SQLException {
-
-        INParameters inParams = new INParameters();
-        String q =
-                "select distinct HARVESTED " + "from " + "M_COMPLEX_ATTR " + "left outer join HARV_ATTR on "
-                        + "M_COMPLEX_ATTR.HARVESTER_ID=HARV_ATTR.HARVESTER_ID " + "where M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID="
-                        + inParams.add(attrID, Types.INTEGER) + " and M_COMPLEX_ATTR.HARVESTER_ID is not null "
-                        + "order by HARVESTED desc";
-
-        Vector vv = new Vector();
-        String lastHarvested = null;
-
-        ResultSet rs = null;
-        PreparedStatement stmt = null;
-        try {
-            stmt = SQL.preparedStatement(q, inParams, conn);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                lastHarvested = rs.getString(1);
-            }
-
-            if (Util.isEmpty(lastHarvested)) {
-                return vv;
-            }
-
-            inParams = new INParameters();
-            q =
-                    "select distinct MD5KEY, LOGICAL_ID " + "from " + "M_COMPLEX_ATTR " + "left outer join HARV_ATTR on "
-                            + "M_COMPLEX_ATTR.HARVESTER_ID=HARV_ATTR.HARVESTER_ID " + "where M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID="
-                            + inParams.add(attrID, Types.INTEGER) + " and M_COMPLEX_ATTR.HARVESTER_ID is not null "
-                            + " and HARVESTED=" + inParams.add(lastHarvested, Types.BIGINT);
-
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-            }
-
-            Hashtable harvAttrs = new Hashtable();
-            stmt = SQL.preparedStatement(q, inParams, conn);
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                harvAttrs.put(rs.getString("MD5KEY"), rs.getString("LOGICAL_ID"));
-            }
-
-            inParams = new INParameters();
-            q = "select distinct FLD_NAME, FLD_VALUE from HARV_ATTR_FIELD " + "where HARV_ATTR_MD5=?";
-
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-            }
-
-            stmt = conn.prepareStatement(q);
-            Enumeration enumer = harvAttrs.keys();
-            while (enumer.hasMoreElements()) {
-                String md5key = (String) enumer.nextElement();
-                String harvAttrID = (String) harvAttrs.get(md5key);
-
-                Hashtable hash = new Hashtable();
-                hash.put("harv_attr_id", harvAttrID);
-
-                stmt.setString(1, md5key);
-                rs = stmt.executeQuery();
-                while (rs.next()) {
-                    hash.put(rs.getString("FLD_NAME"), rs.getString("FLD_VALUE"));
-                }
-
-                vv.add(hash);
-            }
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-            }
-        }
-
-        // order the results by the NAME field
-        for (int i = 1; i < vv.size(); i++) {
-            Hashtable ih = (Hashtable) vv.get(i);
-            String iname = (String) ih.get("NAME");
-            if (iname == null) {
-                continue;
-            }
-            for (int j = 0; j < i; j++) {
-                Hashtable jh = (Hashtable) vv.get(j);
-                String jname = (String) jh.get("NAME");
-                if (jname == null) {
-                    continue;
-                }
-                if (iname.compareToIgnoreCase(jname) < 0) {
-                    vv.remove(i);
-                    vv.add(j, ih);
-                    break;
-                }
-            }
-        }
-
-        return vv;
-    }
-
-    /**
-     *
-     * @param attrID
-     *            - attribute ID
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Hashtable getHarvestedAttrFieldsHash(String attrID) throws SQLException {
-        Hashtable hash = new Hashtable();
-        Vector v = getAttrFields(attrID);
-        for (int i = 0; v != null && i < v.size(); i++) {
-            Hashtable fld = (Hashtable) v.get(i);
-            String harvAttrFldName = (String) fld.get("harv_fld");
-            if (harvAttrFldName != null) {
-                hash.put(harvAttrFldName, fld.get("id"));
-            }
-        }
-
-        return hash;
-    }
-
-    /**
-     *
      * @param ownerID
      * @return
      * @throws SQLException
@@ -4568,142 +4171,6 @@ public class DDSearchEngine {
         }
 
         return result;
-    }
-
-    /**
-     *
-     * @param dstID
-     * @return
-     * @throws Exception
-     */
-    public Vector getRodLinks(String dstID) throws Exception {
-
-        if (Util.isEmpty(dstID)) {
-            throw new Exception("getRodLinks(): dstID missing!");
-        }
-
-        Vector v = new Vector();
-
-        INParameters inParams = new INParameters();
-        StringBuffer buf =
-                new StringBuffer("select distinct ROD_ACTIVITIES.* from DST2ROD, ROD_ACTIVITIES where ").append(
-                        "DST2ROD.ACTIVITY_ID=ROD_ACTIVITIES.ACTIVITY_ID and DST2ROD.DATASET_ID=").append(
-                        inParams.add(dstID, Types.INTEGER));
-
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                Hashtable hash = new Hashtable();
-                String raID = rs.getString("ACTIVITY_ID");
-                hash.put("ra-id", raID);
-                hash.put("ra-title", rs.getString("ACTIVITY_TITLE"));
-                hash.put("li-id", rs.getString("LEGINSTR_ID"));
-                hash.put("li-title", rs.getString("LEGINSTR_TITLE"));
-
-                String raURL = Props.getProperty(PropsIF.INSERV_ROD_RA_URLPATTERN);
-                int i = raURL.indexOf(PropsIF.INSERV_ROD_RA_IDPATTERN);
-                if (i == -1) {
-                    throw new Exception("Invalid property " + PropsIF.INSERV_ROD_RA_URLPATTERN);
-                }
-                raURL = new StringBuffer(raURL).replace(i, i + PropsIF.INSERV_ROD_RA_IDPATTERN.length(), raID).toString();
-
-                hash.put("ra-url", raURL);
-
-                v.add(hash);
-            }
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException sqle) {
-            }
-        }
-
-        return v;
-    }
-
-    /**
-     * This one returns the IDs and titles of all ogligations that have a released dataset definition present in DD.
-     *
-     * @return
-     * @throws Exception
-     */
-    public Vector getObligationsWithDatasets() throws Exception {
-
-        Vector obligations = new Vector();
-
-        Vector datasets = getDatasets(null, null, null, null, null, false);
-        Vector releasedDatasets = new Vector();
-        for (int i = 0; datasets != null && i < datasets.size(); i++) {
-            Dataset dst = (Dataset) datasets.get(i);
-            String status = dst.getStatus();
-            if (status == null || !status.equals("Released")) {
-                continue;
-            }
-
-            // see from ROD links
-            Vector rodLinks = getRodLinks(dst.getID());
-            for (int j = 0; rodLinks != null && j < rodLinks.size(); j++) {
-                Hashtable rodLink = (Hashtable) rodLinks.get(j);
-                String obligID = (String) rodLink.get("ra-id");
-                String obligTitle = (String) rodLink.get("ra-title");
-                if (obligTitle == null) {
-                    obligTitle = "";
-                }
-                if (obligID != null && obligID.length() > 0) {
-
-                    obligID = rodObligUrl + obligID;
-
-                    Hashtable hash = new Hashtable();
-                    hash.put(predIdentifier, obligID.trim());
-                    hash.put(predTitle, obligTitle.trim());
-
-                    if (!obligations.contains(hash)) {
-                        obligations.add(hash);
-                    }
-                }
-            }
-
-            // see from the ROD complex attribute
-            if (obligations.size() == 0) {
-                Vector v = getComplexAttrValueRowHashes("ROD", dst.getID(), "DS");
-                for (int k = 0; v != null && k < v.size(); k++) {
-                    Hashtable valueRowHash = (Hashtable) v.get(k);
-
-                    String obligID = null;
-                    String obligUrl = (String) valueRowHash.get("url");
-                    if (obligUrl != null && obligUrl.length() > 0) {
-                        obligID = eionet.util.Util.getObligationID(obligUrl);
-                    }
-
-                    String obligTitle = (String) valueRowHash.get("name");
-                    if (obligTitle == null) {
-                        obligTitle = "";
-                    }
-                    if (obligID != null && obligID.length() > 0) {
-
-                        obligID = rodObligUrl + obligID;
-
-                        Hashtable hash = new Hashtable();
-                        hash.put(predIdentifier, obligID.trim());
-                        hash.put(predTitle, obligTitle.trim());
-
-                        if (!obligations.contains(hash)) {
-                            obligations.add(hash);
-                        }
-                    }
-                }
-            }
-        }
-
-        return obligations;
     }
 
     /**
@@ -5258,11 +4725,9 @@ public class DDSearchEngine {
      */
     public List<VocabularyConcept> getAttributeVocabularyConcepts(int attributeId, DataDictEntity ddEntity, String inheritanceModeCode) 
             throws ResourceNotFoundException, EmptyParameterException {
-        Attribute.ValueInheritanceMode inheritanceMode = convertValueInheritanceModeCode(inheritanceModeCode);
         AttributeService attributeService = springContext.getBean(AttributeService.class);
-        return attributeService.getAttributeVocabularyConcepts(attributeId, ddEntity, inheritanceMode);
+        return attributeService.getAttributeVocabularyConcepts(attributeId, ddEntity, Attribute.ValueInheritanceMode.getInstance(inheritanceModeCode));
     }
-    
     
     /*
      * Method Created to support data_element.jsp and dstable.jsp with the AttributeService spring bean.
@@ -5283,21 +4748,5 @@ public class DDSearchEngine {
         Integer vocabularyId = attributeDataService.getVocabularyBinding(attributeId);
         return vocabularyId != null;
     }
-    
-    private Attribute.ValueInheritanceMode convertValueInheritanceModeCode(String inheritanceModeCode) {
-        Attribute.ValueInheritanceMode inheritanceMode;
-        if (inheritanceModeCode.equals("0")) {
-                inheritanceMode = Attribute.ValueInheritanceMode.NONE;
-        }
-        else if (inheritanceModeCode.equals("1")){
-            inheritanceMode = Attribute.ValueInheritanceMode.PARENT_WITH_EXTEND;
-        } 
-        else if (inheritanceModeCode.equals("2")) {
-            inheritanceMode = Attribute.ValueInheritanceMode.PARENT_WITH_OVERRIDE;
-        }
-        else {
-            throw new IllegalArgumentException(String.format("Unknown value inheritance mode"));
-        }
-        return inheritanceMode;
-    }
+
 }

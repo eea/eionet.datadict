@@ -17,8 +17,11 @@ import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import eionet.meta.DDUser;
+import eionet.meta.dao.domain.Schema;
+import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.ISchemaService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
@@ -47,7 +50,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     private final static String ATTRIBUTE_VOCABULARY_VALUES_ADD = "/pages/attributes/addAttributeVocabularyValue.jsp";
     
     // block of post parameters
-    private List<String> conceptIdentifiers = new ArrayList<String>();
+    private List<String> conceptIds = new ArrayList<String>();
 
     // block of url parameters
     private String attributeId;
@@ -64,7 +67,9 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     private DataSet dataSet;
     private DatasetTable datasetTable;
     private DataElement dataElement;
-    
+    private SchemaSet schemaSet;
+    private Schema schema;
+
     // The Attribute object
     private Attribute attribute;
     
@@ -81,6 +86,8 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     private DatasetTableDataService datasetTableDataService;
     @SpringBean
     private DataElementDataService dataElementDataService;
+    @SpringBean
+    private ISchemaService schemaService;
 
     /**
      * Vocabulary concept filter.
@@ -155,15 +162,26 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             if (!this.dataSet.getWorkingCopy() || (this.dataSet.getWorkingUser() != null && !this.dataSet.getWorkingUser().equals(user.getUserName()))) {
                 throw new UserAuthorizationException("You are not authorized to edit this dataset.");
             }
+        } else if (attrOwnerType.equals("schemaset")) {
+            configureSchemaSet();
+            if (!this.schemaSet.isWorkingCopy() || (this.schemaSet.getWorkingUser() != null && !this.schemaSet.getWorkingUser().equals(user.getUserName()))) {
+                throw new UserAuthorizationException("You are not authorized to edit this schema set.");
+            }
+        } else if (attrOwnerType.equals("schema")) {
+            configureSchema();
+            // check for root level schemas
+            if (this.schema.getSchemaSetId() <= 0 && 
+                    (!this.schema.isWorkingCopy() || (this.schema.getWorkingUser() != null && !this.schema.getWorkingUser().equals(user.getUserName())))) {
+                throw new UserAuthorizationException("You are not authorized to edit this schema.");
+            }
         }
-        
+
         this.attribute = attributeDataService.getAttribute(Integer.parseInt(attributeId));
         
         if(attribute.getVocabulary() == null) {
             throw new BadRequestException("No vocabulary binding exists for this attribute.");
         }
-        this.vocabularyConcepts = this.attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(
-                attribute.getVocabulary().getId(), attribute.getId(), attributeOwnerEntity);
+        this.vocabularyConcepts = this.attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(attribute.getId(), attributeOwnerEntity);
         
         return new ForwardResolution(ATTRIBUTE_VOCABULARY_VALUES);
     }
@@ -216,8 +234,20 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             if (!this.dataSet.getWorkingCopy() || this.dataSet.getWorkingUser() != null && !this.dataSet.getWorkingUser().equals(user.getUserName())) {
                 throw new UserAuthorizationException("You are not authorized to edit this dataset.");
             }
+        } else if (attrOwnerType.equals("schemaset")) {
+            configureSchemaSet();
+            if (!this.schemaSet.isWorkingCopy() || (this.schemaSet.getWorkingUser() != null && !this.schemaSet.getWorkingUser().equals(user.getUserName()))) {
+                throw new UserAuthorizationException("You are not authorized to edit this schema set.");
+            }
+        } else if (attrOwnerType.equals("schema")) {
+            configureSchema();
+            // check for root level schemas
+            if (this.schema.getSchemaSetId() <= 0 && 
+                    (!this.schema.isWorkingCopy() || (this.schema.getWorkingUser() != null && !this.schema.getWorkingUser().equals(user.getUserName())))) {
+                throw new UserAuthorizationException("You are not authorized to edit this schema.");
+            }
         }
-        
+
         this.attribute = attributeDataService.getAttribute(Integer.parseInt(attributeId));
         
         try {
@@ -294,26 +324,25 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             throw new BadRequestException("Malformend request. " + attrOwnerId + " is not a valid datadict entity id.");
         }
         
-        if (!conceptIdentifiers.isEmpty()) {
+        if (!conceptIds.isEmpty()) {
             this.attribute = attributeDataService.getAttribute(Integer.parseInt(attributeId));
             if (attribute.getVocabulary() == null) {
                 throw new BadRequestException("No vocabulary binding exists for this attribute.");
             }
             this.attributeOwnerEntity = new DataDictEntity(Integer.parseInt(attrOwnerId), DataDictEntity.Entity.getFromString(attrOwnerType));
-            this.vocabularyConcepts = this.attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(
-                    attribute.getVocabulary().getId(), attribute.getId(), attributeOwnerEntity);
+            this.vocabularyConcepts = this.attributeDataService.getVocabularyConceptsAsOriginalAttributeValues(attribute.getId(), attributeOwnerEntity);
 
-            Set noDuplicateConceptIdentifiers = new LinkedHashSet(conceptIdentifiers);
-            Set<String> existingIdentifiers = new HashSet<String>();
+            Set<String> noDuplicateConceptIds = new LinkedHashSet<String>(conceptIds);
+            Set<String> existingIds = new HashSet<String>();
             for (Iterator<VocabularyConcept> it = vocabularyConcepts.iterator(); it.hasNext();) {
                 VocabularyConcept concept = it.next();
-                existingIdentifiers.add(concept.getIdentifier());
+                existingIds.add(String.valueOf(concept.getId()));
             }
 
-            noDuplicateConceptIdentifiers.removeAll(existingIdentifiers);
-            conceptIdentifiers = new ArrayList(noDuplicateConceptIdentifiers);
+            noDuplicateConceptIds.removeAll(existingIds);
+            conceptIds = new ArrayList(noDuplicateConceptIds);
 
-            this.attributeDataService.createAttributeValues(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIdentifiers);
+            this.attributeDataService.createAttributeValues(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIds);
         }
         return new RedirectResolution("/vocabularyvalues/attribute/" + attributeId + "/" + attrOwnerType + "/" + attrOwnerId);
     }
@@ -347,12 +376,12 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             throw new BadRequestException("Malformend request. " + attrOwnerId + " is not a valid datadict entity id.");
         }
         
-        if (conceptIdentifiers.isEmpty()) {
+        if (conceptIds.isEmpty()) {
             throw new BadRequestException("Malformed request: Attribute value missing.");
         }
         
         this.attributeOwnerEntity = new DataDictEntity(Integer.parseInt(attrOwnerId), DataDictEntity.Entity.getFromString(attrOwnerType));
-        this.attributeService.deleteAttributeValue(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIdentifiers.iterator().next(), user);
+        this.attributeService.deleteAttributeValue(Integer.parseInt(attributeId), attributeOwnerEntity, conceptIds.iterator().next(), user);
         return new RedirectResolution("/vocabularyvalues/attribute/" + attributeId + "/" + attrOwnerType + "/" + attrOwnerId);
     }
     
@@ -407,7 +436,32 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         this.currentSection = "tables";
         this.datasetTable = this.datasetTableDataService.getDatasetTable(this.attributeOwnerEntity.getId());
     }
-    
+
+    protected void configureSchemaSet() throws ResourceNotFoundException {
+        this.currentSection = "schemas";
+        try {
+            this.schemaSet = this.schemaService.getSchemaSet(this.attributeOwnerEntity.getId());
+        } catch (ServiceException ex) {
+            throw new ResourceNotFoundException("Schema set with id: " + this.attributeOwnerEntity.getId() + " does not exist.", ex);
+        }
+    }
+
+    protected void configureSchema() throws ResourceNotFoundException {
+        this.currentSection = "schemas";
+        try {
+            this.schema = this.schemaService.getSchema(this.attributeOwnerEntity.getId());
+            if (this.schema != null && this.schema.getSchemaSetId() > 0) {
+                SchemaSet parent = schemaService.getSchemaSet(schema.getSchemaSetId());
+                if (parent != null) {
+                    schema.setSchemaSetId(parent.getId());
+                    schema.setSchemaSetIdentifier(parent.getIdentifier());
+                }
+            }
+        } catch (ServiceException ex) {
+            throw new ResourceNotFoundException("Schema with id: " + this.attributeOwnerEntity.getId() + " does not exist.", ex);
+        }
+    }
+
     //----------------- Getters and Setters ------------------------------
     
     public String getAttributeId() {
@@ -441,7 +495,23 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     public void setDataElement(DataElement dataElement) {
         this.dataElement = dataElement;
     }
-    
+
+    public SchemaSet getSchemaSet() {
+        return schemaSet;
+    }
+
+    public void setSchemaSet(SchemaSet schemaSet) {
+        this.schemaSet = schemaSet;
+    }
+
+    public Schema getSchema() {
+        return schema;
+    }
+
+    public void setSchema(Schema schema) {
+        this.schema = schema;
+    }
+
     public DataDictEntity getAttributeOwnerEntity() {
         return attributeOwnerEntity;
     }
@@ -494,12 +564,12 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         return vocabularyConcepts;
     }
 
-    public List<String> getConceptIdentifiers() {
-        return conceptIdentifiers;
+    public List<String> getConceptIds() {
+        return conceptIds;
     }
 
-    public void setConceptIdentifiers(List<String> conceptIdentifiers) {
-        this.conceptIdentifiers = conceptIdentifiers;
+    public void setConceptIds(List<String> conceptIds) {
+        this.conceptIds = conceptIds;
     }
 
     public VocabularyConceptResult getVocabularyConceptResult() {

@@ -2672,7 +2672,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropUniqueConstraint tableName="VOCABULARY_CONCEPT_ELEMENT" constraintName="UNIQ_ATTR_MD5" />
         <addUniqueConstraint tableName="VOCABULARY_CONCEPT_ELEMENT" columnNames="VOCABULARY_CONCEPT_ID, DATAELEM_ID, ATTR_MD5" constraintName="UNIQ_ATTR_MD5" />
     </changeSet>
-         <changeSet id="rev-194" author="vskiadas90">
+
+    <changeSet id="rev-194" author="vskiadas90">
         <createTable tableName="ASYNC_TASK_ENTRY_HISTORY">
             <column name="ID" type="BIGINT" autoIncrement="true">            
             <constraints nullable="false" primaryKey="true" primaryKeyName="PK_ASYNC_TASK_ENTRY_HISTORY" />
@@ -2706,4 +2707,27 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
         </modifySql>
     </changeSet>
+
+    <changeSet author="stamojoh" id="rev-195">
+        <dropTable tableName="ROD_ACTIVITIES" />
+        <dropTable tableName="DST2ROD" />
+        <dropTable tableName="HARV_ATTR" />
+        <dropTable tableName="HARV_ATTR_FIELD" />
+        <dropColumn tableName="M_COMPLEX_ATTR" columnName="HARVESTER_ID" />
+        <dropColumn tableName="M_COMPLEX_ATTR_FIELD" columnName="HARV_ATTR_FLD_NAME" />
+        <dropColumn tableName="COMPLEX_ATTR_ROW" columnName="HARV_ATTR_ID" />		
+    </changeSet>
+
+    <changeSet author="stamojoh" id="rev-196">
+        <comment>
+            Refs #85821 Attributes with vocabulary values should store concept id instead of identifier
+        </comment>
+        <sql>
+            update ATTRIBUTE join M_ATTRIBUTE_VOCABULARY on ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE_VOCABULARY.M_ATTRIBUTE_ID 
+                set ATTRIBUTE.VALUE=(select IFNULL((select VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT 
+            where VOCABULARY_ID=M_ATTRIBUTE_VOCABULARY.VOCABULARY_ID and IDENTIFIER=VALUE), ''));
+            delete from ATTRIBUTE where VALUE='' and M_ATTRIBUTE_ID in (select M_ATTRIBUTE_ID from M_ATTRIBUTE_VOCABULARY);
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

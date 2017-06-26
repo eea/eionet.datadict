@@ -66,22 +66,21 @@ public interface AttributeDataService {
             throws ResourceNotFoundException, EmptyParameterException;
     
     /**
-     * Fetches the vocabulary concepts of the vocabulary of the given id, which are attribute values of the attribute with the given id, owned by the specified owner.
+     * Fetches the vocabulary concepts which are attribute values of the attribute with the given id, owned by the specified owner.
      * 
-     * @param vocabularyId the id of the vocabulary whose concepts are to be fetched.
      * @param attributeId the id of the attribute 
      * @param attributeOwner
      * @return
      * @throws ResourceNotFoundException
      * @throws EmptyParameterException 
      */
-    List<VocabularyConcept>  getVocabularyConceptsAsOriginalAttributeValues( int vocabularyId, int attributeId, DataDictEntity attributeOwner) 
+    List<VocabularyConcept>  getVocabularyConceptsAsOriginalAttributeValues(int attributeId, DataDictEntity attributeOwner) 
             throws ResourceNotFoundException, EmptyParameterException;
     
-    List<VocabularyConcept>  getVocabularyConceptsAsInheritedAttributeValues(int vocabularyId, int attributeId, DataDictEntity attributeOwner) 
+    List<VocabularyConcept>  getVocabularyConceptsAsInheritedAttributeValues(int attributeId, DataDictEntity attributeOwner) 
             throws ResourceNotFoundException, EmptyParameterException;
 
-    List<VocabularyConcept>  getVocabularyConceptsAsAttributeValues(int vocabularyId, int attributeId, DataDictEntity attributeOwner, ValueInheritanceMode inheritanceMode) 
+    List<VocabularyConcept>  getVocabularyConceptsAsAttributeValues(int attributeId, DataDictEntity attributeOwner, ValueInheritanceMode inheritanceMode) 
             throws ResourceNotFoundException, EmptyParameterException;
     
     /**

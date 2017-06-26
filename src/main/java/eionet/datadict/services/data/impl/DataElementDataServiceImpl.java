@@ -31,7 +31,7 @@ public class DataElementDataServiceImpl implements DataElementDataService{
         if (dataElement!=null) {
             return dataElement;
         } else {
-            throw new ResourceNotFoundException("Data element with id: "+dataElementId+" does not exist.");
+            throw new ResourceNotFoundException("Data element with id: " + dataElementId + " does not exist.");
         }
     }
 
@@ -44,7 +44,7 @@ public class DataElementDataServiceImpl implements DataElementDataService{
             return true;
         }
         
-        //non-common dataelement
+        // non-common dataelement
         Integer parentTableId = this.dataElementDao.getParentTableId(dataElement.getId());
         Integer parentDatasetId = this.datasetTableDao.getParentDatasetId(parentTableId);
         DataSet parentDataset = this.datasetDao.getById(parentDatasetId);

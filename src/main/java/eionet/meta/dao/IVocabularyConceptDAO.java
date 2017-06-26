@@ -76,6 +76,8 @@ public interface IVocabularyConceptDAO {
      */
     VocabularyConcept getVocabularyConcept(int vocabularyConceptId);
 
+    List<VocabularyConcept> getVocabularyConcepts(List<Integer> ids);
+
     /**
      * Creates new vocabulary concept into database.
      *

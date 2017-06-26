@@ -1069,7 +1069,6 @@
 	}
 	input[type="submit"]{
 	/*	border: 1px solid #00446A; */
-                width: 100px;
 		background: #00446A;
 		color: #fff;
 		cursor: pointer;

@@ -1487,13 +1487,12 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
     @Override
     public int getInverseElementID(int dataElementId) {
-
         String sql = "select GetInverseElemId(:elemId)";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("elemId", dataElementId);
-        return getNamedParameterJdbcTemplate().queryForObject(sql, params, Integer.class);
-        
+        Integer inverseElementId = getNamedParameterJdbcTemplate().queryForObject(sql, params, Integer.class);
+        return inverseElementId != null ? inverseElementId : 0;
     }
 
 }

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+  <changeSet author="roug" id="rev-1" context="initial">
+    <preConditions>
+      <sqlCheck expectedResult="0">SELECT COUNT(*) FROM HLP_SCREEN</sqlCheck>
+    </preConditions>
+
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="datasets"/>
+      <column name="DESCRIPTION" value="Lists all available datasets"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="tables"/>
+      <column name="DESCRIPTION" value="Lists all available tables"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="search_dataset"/>
+      <column name="DESCRIPTION" value="search datasets"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="complex_attr_edit"/>
+      <column name="DESCRIPTION" value="Complex attribute value edit page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="search_table"/>
+      <column name="DESCRIPTION" value="search table"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="search_element"/>
+      <column name="DESCRIPTION" value="search an element"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="dataset_tables"/>
+      <column name="DESCRIPTION" value="List dataset tables"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="attributes"/>
+      <column name="DESCRIPTION" value="list all attributes"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="history"/>
+      <column name="DESCRIPTION" value="history of an item"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="table_elements"/>
+      <column name="DESCRIPTION" value="The list of table elements"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="dataset_model"/>
+      <column name="DESCRIPTION" value="dataset model"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="fixed_value"/>
+      <column name="DESCRIPTION" value="Fixed value view/edit page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="foreign_key_rel"/>
+      <column name="DESCRIPTION" value="Foreign key relation page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="foreign_keys"/>
+      <column name="DESCRIPTION" value="Foreign key relations view/edit page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="simple_attr_def_view"/>
+      <column name="DESCRIPTION" value="Simple attribute definition view"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="complex_attr_def_view"/>
+      <column name="DESCRIPTION" value="Complex attribute definition view"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="complex_attr_view"/>
+      <column name="DESCRIPTION" value="Complex attribute value view page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="import"/>
+      <column name="DESCRIPTION" value="Data import page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="elements"/>
+      <column name="DESCRIPTION" value="elements search result list"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="restore_datasets"/>
+      <column name="DESCRIPTION" value="List of datasets in recycle bin"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="dataset"/>
+      <column name="DESCRIPTION" value="Dataset view page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="dataset_edit"/>
+      <column name="DESCRIPTION" value="Dataset edit page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="dataset_add"/>
+      <column name="DESCRIPTION" value="Dataset add page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="table"/>
+      <column name="DESCRIPTION" value="Table view page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="table_edit"/>
+      <column name="DESCRIPTION" value="Table edit page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="table_add"/>
+      <column name="DESCRIPTION" value="Table add page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="element"/>
+      <column name="DESCRIPTION" value="Element view page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="element_edit"/>
+      <column name="DESCRIPTION" value="Element edit page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="element_add"/>
+      <column name="DESCRIPTION" value="Element add page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="complex_attr_def_edit"/>
+      <column name="DESCRIPTION" value="Compelx attribute definition edit page."/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="complex_attr_def_add"/>
+      <column name="DESCRIPTION" value="Complex attribute definition add page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="attr_def_add"/>
+      <column name="DESCRIPTION" value="The page for defining a new attribute"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="simple_attr_def_edit"/>
+      <column name="DESCRIPTION" value="Simple attribute definition edit page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="simple_attr_def_add"/>
+      <column name="DESCRIPTION" value="Simple attribute definition add page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="complex_attrs"/>
+      <column name="DESCRIPTION" value="The list of complex attributes, with edit buttons"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="fixed_values_view"/>
+      <column name="DESCRIPTION" value="Fixed values view list"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="fixed_values_edit"/>
+      <column name="DESCRIPTION" value="Fixed values edit page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="suggested_value"/>
+      <column name="DESCRIPTION" value="Suggested value view/edit page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="suggested_values_view"/>
+      <column name="DESCRIPTION" value="Suggested values view page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="suggested_values_edit"/>
+      <column name="DESCRIPTION" value="Suggested values edit page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="complex_attr_fields"/>
+      <column name="DESCRIPTION" value="The list of complex attribute fields"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="complex_attr_field"/>
+      <column name="DESCRIPTION" value="Complex attribute field view"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="front_page"/>
+      <column name="DESCRIPTION" value="DD opening page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="doc1"/>
+      <column name="DESCRIPTION" value="The first section of general DD docs (doc1.jsp)"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="doc2"/>
+      <column name="DESCRIPTION" value="The first section of general DD docs (doc2.jsp)"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="doc3"/>
+      <column name="DESCRIPTION" value="The first section of general DD docs (doc3.jsp)"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="dataset_rod"/>
+      <column name="DESCRIPTION" value="The page of dataset-rod links"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="dataset_working_copy"/>
+      <column name="DESCRIPTION" value="The view page of dataset working copy"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="common_element"/>
+      <column name="DESCRIPTION" value="The common element view page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="common_element_working_copy"/>
+      <column name="DESCRIPTION" value="The view page of common element working copy"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="common_element_add"/>
+      <column name="DESCRIPTION" value="Common element add page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="common_element_edit"/>
+      <column name="DESCRIPTION" value="Common element edit page"/>
+    </insert>
+    <insert tableName="HLP_SCREEN">
+      <column name="SCREEN_ID" value="common_element_search_results"/>
+      <column name="DESCRIPTION" value="The search result page of common elements"/>
+    </insert>
+  </changeSet>
+
+
+  <changeSet author="roug" id="rev-2" context="initial">
+    <preConditions>
+      <sqlCheck expectedResult="0">SELECT COUNT(*) FROM HLP_AREA</sqlCheck>
+    </preConditions>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="datasets"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="datasets.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+  </changeSet>
+
+</databaseChangeLog>

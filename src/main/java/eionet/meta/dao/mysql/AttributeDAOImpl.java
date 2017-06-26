@@ -270,7 +270,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
     public void copyComplexAttributes(int parentId, final String parentType, final int newParentId) {
 
         String sqlQuery =
-                "select M_COMPLEX_ATTR_ID, COMPLEX_ATTR_ROW.ROW_ID, POSITION, HARV_ATTR_ID, M_COMPLEX_ATTR_FIELD_ID, VALUE "
+                "select M_COMPLEX_ATTR_ID, COMPLEX_ATTR_ROW.ROW_ID, POSITION, M_COMPLEX_ATTR_FIELD_ID, VALUE "
                         + "from COMPLEX_ATTR_ROW, COMPLEX_ATTR_FIELD where PARENT_ID=:parentId and PARENT_TYPE=:parentType "
                         + "and COMPLEX_ATTR_ROW.ROW_ID=COMPLEX_ATTR_FIELD.ROW_ID "
                         + "order by COMPLEX_ATTR_ROW.ROW_ID, M_COMPLEX_ATTR_FIELD_ID";
@@ -280,8 +280,8 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         queryParams.put("parentType", parentType);
 
         final String sqlInsertRow =
-                "insert into COMPLEX_ATTR_ROW " + "(PARENT_ID, PARENT_TYPE, M_COMPLEX_ATTR_ID, POSITION, HARV_ATTR_ID, ROW_ID) "
-                        + "values (:parentId, :parentType, :attrId, :position, :harvAttrId, :rowId)";
+                "insert into COMPLEX_ATTR_ROW " + "(PARENT_ID, PARENT_TYPE, M_COMPLEX_ATTR_ID, POSITION, ROW_ID) "
+                        + "values (:parentId, :parentType, :attrId, :position, :rowId)";
 
         final Map<String, Object> insertRowParams = new HashMap<String, Object>();
         insertRowParams.put("parentId", newParentId);
@@ -305,13 +305,11 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
                 int fieldId = rs.getInt("M_COMPLEX_ATTR_FIELD_ID");
                 String value = rs.getString("VALUE");
                 int position = rs.getInt("POSITION");
-                int harvAttrId = rs.getInt("HARV_ATTR_ID");
 
                 if (!rowId.equals(previousRowId)) {
 
                     insertRowParams.put("attrId", attrId);
                     insertRowParams.put("position", position);
-                    insertRowParams.put("harvAttrId", harvAttrId);
 
                     String md5Input = newParentId + parentType + attrId + position;
                     newRowId = DigestUtils.md5Hex(md5Input);

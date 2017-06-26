@@ -15,7 +15,7 @@ public class DataDictEntity {
         T("Table"),
         DS("Dataset"),
         SCH("Schema"),
-        SCS("Schema set"),
+        SCS("Schemaset"),
         VCF("Vocabulary");
         
         private final String label;

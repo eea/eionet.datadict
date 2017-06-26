@@ -43,9 +43,6 @@ public class DatasetFilter implements IObjectWithDynamicAttrs {
 
     private List<String> regStatuses;
 
-    /** List of ROD obligation IDs. */
-    private List<Integer> rodIds;
-
     /**
      * @return the shortName
      */
@@ -121,20 +118,6 @@ public class DatasetFilter implements IObjectWithDynamicAttrs {
      */
     public void setRegStatuses(List<String> regStatuses) {
         this.regStatuses = regStatuses;
-    }
-
-    /**
-     * @return the rodIds
-     */
-    public List<Integer> getRodIds() {
-        return rodIds;
-    }
-
-    /**
-     * @param rodIds the rodIds to set
-     */
-    public void setRodIds(List<Integer> rodIds) {
-        this.rodIds = rodIds;
     }
 
 }

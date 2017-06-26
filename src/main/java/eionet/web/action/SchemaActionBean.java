@@ -3,6 +3,12 @@
  */
 package eionet.web.action;
 
+import eionet.datadict.errors.EmptyParameterException;
+import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.model.Attribute;
+import eionet.datadict.model.DataDictEntity;
+import eionet.datadict.services.AttributeService;
+import eionet.datadict.services.data.AttributeDataService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -46,8 +52,11 @@ import eionet.meta.dao.DAOException;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.schemas.SchemaRepository;
 import eionet.meta.service.ISchemaService;
+import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.IXmlConvService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SchemaConversionsData;
@@ -115,6 +124,15 @@ public class SchemaActionBean extends AbstractActionBean {
     /** Schema repository. */
     @SpringBean
     private SchemaRepository schemaRepository;
+
+    @SpringBean
+    private AttributeService attributeService;
+
+    @SpringBean
+    private AttributeDataService attributeDataService;
+
+    @SpringBean
+    private IVocabularyService vocabularyService;
 
     /** Schema file contents to show in web page. */
     private String schemaString;
@@ -428,7 +446,7 @@ public class SchemaActionBean extends AbstractActionBean {
             LinkedHashMap<Integer, DElemAttribute> attributesMap = getAttributes();
             for (DElemAttribute attribute : attributesMap.values()) {
 
-                if (attribute.isMandatory()) {
+                if (attribute.isMandatory() && !attribute.getDisplayType().equals("vocabulary")) {
                     Integer attrId = Integer.valueOf(attribute.getID());
                     Set<String> attrValues = getSaveAttributeValues().get(attrId);
                     if (attrValues == null || attrValues.isEmpty() || StringUtils.isBlank(attrValues.iterator().next())) {
@@ -490,27 +508,25 @@ public class SchemaActionBean extends AbstractActionBean {
 
     }
 
-    /**
-     *
-     * @throws DAOException
-     */
     @ValidationMethod(on = {"save", "saveAndClose"}, priority = 2)
-    public void validateSave() throws DAOException {
-
-        LOGGER.trace("Method entered");
-
+    public void validateSave() throws DAOException, ResourceNotFoundException, EmptyParameterException {
         if (isGetOrHeadRequest()) {
             return;
         }
 
         LinkedHashMap<Integer, DElemAttribute> attributesMap = getAttributes();
         for (DElemAttribute attribute : attributesMap.values()) {
-
             if (attribute.isMandatory()) {
-                Integer attrId = Integer.valueOf(attribute.getID());
-                Set<String> attrValues = getSaveAttributeValues().get(attrId);
-                if (attrValues == null || attrValues.isEmpty() || StringUtils.isBlank(attrValues.iterator().next())) {
-                    addGlobalValidationError(attribute.getShortName() + " is missing!");
+                if (attribute.getDisplayType().equals("vocabulary") && !StringUtils.equals(getContext().getEventName(), "add")) {
+                    if (getVocabularyConcepts(attribute).isEmpty()) {
+                        addGlobalValidationError(attribute.getShortName() + " is missing!");
+                    }
+                } else {
+                    Integer attrId = Integer.valueOf(attribute.getID());
+                    Set<String> attrValues = getSaveAttributeValues().get(attrId);
+                    if (attrValues == null || attrValues.isEmpty() || StringUtils.isBlank(attrValues.iterator().next())) {
+                        addGlobalValidationError(attribute.getShortName() + " is missing!");
+                    }
                 }
             }
         }
@@ -1076,4 +1092,23 @@ public class SchemaActionBean extends AbstractActionBean {
     public HashMap getComplexAttributeFields() {
         return complexAttributeFields;
     }
+
+    public Integer getVocabularyBinding(int attributeId) {
+       return attributeDataService.getVocabularyBinding(attributeId);
+    }
+
+    public List<VocabularyConcept> getVocabularyConcepts(DElemAttribute attribute) throws ResourceNotFoundException, EmptyParameterException {
+        DataDictEntity ddEntity = new DataDictEntity(schema.getId(), DataDictEntity.Entity.SCH);
+        Attribute.ValueInheritanceMode valueInheritanceMode = Attribute.ValueInheritanceMode.getInstance(attribute.getInheritable());
+        return attributeService.getAttributeVocabularyConcepts(Integer.parseInt(attribute.getID()), ddEntity, valueInheritanceMode);
+    }
+
+    public VocabularyFolder getVocabularyBindingFolder(int attributeId) throws ServiceException {
+        Integer boundVocabularyId = getVocabularyBinding(attributeId);
+        if (boundVocabularyId != null) {
+            return vocabularyService.getVocabularyFolder(boundVocabularyId);
+        }
+        return null;
+    }
+
 }

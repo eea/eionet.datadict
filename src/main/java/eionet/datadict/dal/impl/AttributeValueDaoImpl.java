@@ -1,15 +1,14 @@
 package eionet.datadict.dal.impl;
 
-import eionet.datadict.commons.util.IterableUtils;
 import eionet.datadict.dal.AttributeValueDao;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
-import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataSet;
 import eionet.datadict.model.DatasetTable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValueDao {
     
+
     @Autowired
     public AttributeValueDaoImpl(DataSource dataSource) {
         super(dataSource);
@@ -41,7 +41,7 @@ public class AttributeValueDaoImpl extends JdbcDaoBase implements AttributeValue
         try {
             return this.getNamedParameterJdbcTemplate().query(sql, params, new AttributeValueRowMapper());
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            return Collections.EMPTY_LIST;
         }
     }
 

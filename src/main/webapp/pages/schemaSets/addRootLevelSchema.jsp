@@ -12,7 +12,7 @@
 
     <stripes:form method="post" beanclass="${actionBean['class'].name}">
         <div id="outerframe">
-            <table class="datatable">
+            <table class="datatable results">
                 <colgroup>
                     <col style="width:30%"/>
                     <col style="width:4%"/>
@@ -32,7 +32,7 @@
                 </tr>
                 <c:forEach items="${actionBean.attributes}" var="attributesEntry">
                     <c:set var="attribute" value="${attributesEntry.value}"/>
-                    <c:if test="${attribute.mandatory}">
+                    <c:if test="${attribute.mandatory && attribute.displayType!='vocabulary'}">
                         <tr>
                             <th scope="row" class="scope-row simple_attr_title">
                                 <c:out value="${attribute.shortName}"/>

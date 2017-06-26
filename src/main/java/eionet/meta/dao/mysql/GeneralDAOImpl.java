@@ -112,7 +112,6 @@ public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implem
                     params.put(idKey, a.getId());
                     params.put(valueKey, "%" + a.getValue() + "%");
                 }
-
             }
         }
         return sql;
