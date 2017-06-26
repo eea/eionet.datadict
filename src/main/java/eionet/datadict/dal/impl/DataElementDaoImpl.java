@@ -132,7 +132,6 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
                     throw new UnsupportedOperationException("Not supported yet."); 
                 }
             };
-         //   dataElement.setType(DataElementType.getFromString(rs.getString("DATAELEM.TYPE")));
             
             Namespace namespace = new Namespace();
             namespace.setId(rs.getInt("DATAELEM.NAMESPACE_ID"));

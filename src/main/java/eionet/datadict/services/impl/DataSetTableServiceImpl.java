@@ -15,7 +15,6 @@ import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.services.DataSetTableService;
 import eionet.datadict.services.data.DatasetTableDataService;
-import eionet.meta.dao.domain.DataSetTable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

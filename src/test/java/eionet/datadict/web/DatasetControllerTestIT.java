@@ -57,7 +57,7 @@ public class DatasetControllerTestIT {
     public void testFailToGetDatasetXMLSchemaBecauseOfNotFoundDatasetWithGivenId() throws Exception {
         MockHttpServletRequestBuilder request = get("/dataset/4242/schema");
         request.contentType(MediaType.APPLICATION_JSON);
-        mockMvc.perform(request).andExpect(status().isNotFound());
+        mockMvc.perform(request).andExpect(status().is3xxRedirection());
         mockMvc.perform(request).andDo(print());
     }
 
@@ -80,7 +80,7 @@ public class DatasetControllerTestIT {
     public void testFailToGetDatasetXMLInstanceBecauseOfNotFoundDatasetWithGivenId() throws Exception {
         MockHttpServletRequestBuilder request = get("/dataset/4242/instance");
         request.contentType(MediaType.APPLICATION_JSON);
-        mockMvc.perform(request).andExpect(status().isNotFound());
+        mockMvc.perform(request).andExpect(status().is3xxRedirection());
         mockMvc.perform(request).andDo(print());
     }
 

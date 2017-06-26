@@ -9,6 +9,7 @@ import eionet.datadict.services.data.DatasetTableDataService;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -41,7 +42,7 @@ public class DatasetTableController {
     private final DataSetTableService dataSetTableService;
     private final DatasetTableDataService datasetTableDataService;
     private static final Logger LOGGER = Logger.getLogger(DatasetTableController.class);
-    private static final String GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL = "/datadict/error.action?type=INTERNAL_SERVER_ERROR&message=";
+    private static final String GENERIC_DD_ERROR_PAGE_URL = "/error.action?type=INTERNAL_SERVER_ERROR&message=";
 
     @Autowired
     public DatasetTableController(DataSetTableService dataSetTableService, DatasetTableDataService datasetTableDataService) {
@@ -105,14 +106,15 @@ public class DatasetTableController {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public void HandleResourceNotFoundException(Exception exception, HttpServletResponse response) throws IOException {
-        response.sendRedirect(GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL + exception.getMessage());
+    public void HandleResourceNotFoundException(Exception exception,HttpServletRequest request, HttpServletResponse response) throws IOException {
+        LOGGER.log(Level.ERROR, null, exception);
+        response.sendRedirect(request.getContextPath()+GENERIC_DD_ERROR_PAGE_URL +"  "+ exception.getMessage());
     }
 
     @ExceptionHandler({IOException.class, TransformerConfigurationException.class, TransformerException.class, XmlExportException.class, DOMException.class})
-    public void HandleFatalExceptions(Exception exception, HttpServletResponse response) throws IOException {
+    public void HandleFatalExceptions(Exception exception,HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.log(Level.ERROR, null, exception);
-        response.sendRedirect(GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL + "error exporting XML. " + exception.getMessage());
+        response.sendRedirect(request.getContextPath()+GENERIC_DD_ERROR_PAGE_URL + "error exporting XML. " + exception.getMessage());
     }
 
 }

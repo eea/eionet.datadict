@@ -6,6 +6,7 @@ import eionet.datadict.services.DataSetService;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -14,9 +15,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 
@@ -38,7 +38,7 @@ public class DataSetController {
 
     private final DataSetService dataSetService;
     private static final Logger LOGGER = Logger.getLogger(DataSetController.class);
-    private static final String GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL = "/datadict/error.action?type=INTERNAL_SERVER_ERROR&message=";
+    private static final String GENERIC_DD_ERROR_PAGE_URL = "/error.action?type=INTERNAL_SERVER_ERROR&message=";
 
     @Autowired
     public DataSetController(DataSetService dataSetService) {
@@ -98,12 +98,14 @@ public class DataSetController {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public void HandleResourceNotFoundException(Exception exception, HttpServletResponse response) throws IOException {
-        response.sendRedirect(GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL + exception.getMessage());
+    public void HandleResourceNotFoundException(Exception exception,HttpServletRequest request, HttpServletResponse response) throws IOException {
+        LOGGER.log(Level.ERROR, null, exception);
+        response.sendRedirect(request.getContextPath()+GENERIC_DD_ERROR_PAGE_URL + exception.getMessage());
     }
 
     @ExceptionHandler({IOException.class, TransformerConfigurationException.class, TransformerException.class, XmlExportException.class, DOMException.class})
-    public void HandleFatalExceptions(Exception exception, HttpServletResponse response) throws IOException {
-        response.sendRedirect(GENERIC_DD_UNAUTHORIZED_ACCESS_PAGE_URL + "error exporting XML. " + exception.getMessage());
+    public void HandleFatalExceptions(Exception exception,HttpServletRequest request, HttpServletResponse response) throws IOException {
+        LOGGER.log(Level.ERROR, null, exception);
+        response.sendRedirect(request.getContextPath()+GENERIC_DD_ERROR_PAGE_URL + "error exporting XML. " + exception.getMessage());
     }
 }
