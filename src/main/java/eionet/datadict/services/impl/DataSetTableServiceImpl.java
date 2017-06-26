@@ -99,11 +99,8 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
                 dsDocumentation.appendChild(attributeElement);
             }
-
             Element complexType = elMaker.createElement(DataDictXMLConstants.COMPLEX_TYPE);
-
             tableRootElement.appendChild(complexType);
-
             Element sequence = elMaker.createElement(DataDictXMLConstants.SEQUENCE);
             complexType.appendChild(sequence);
             Element rowElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
@@ -193,11 +190,8 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     Element maxLengthElement = elMaker.createElement("maxLength");
                     maxLengthElement.setAttribute("value", MaxSize);
                     dataElementRestriction.appendChild(maxLengthElement);
-
                 }
-
             }
-
             doc.appendChild(schemaRoot);
             return doc;
         } catch (ParserConfigurationException ex) {
@@ -232,7 +226,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(DataSetTableServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new XmlExportException(ex);
-
         }
 
     }
@@ -287,7 +280,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         public Element createElement(String elementName) {
             return createElement(elementName, null, null, null);
         }
-
     }
 
 }
