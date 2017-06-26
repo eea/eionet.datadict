@@ -89,16 +89,18 @@ $ mvn -Denv=unittest -Dmaven.test.skip=false test
 
 The integration tests mechanism uses maven failsafe plugin and docker to create a dockerized test mysql database which will be used for the tests. Note that if the unit tests fail, maven will stop there and not procceed to run the integration
 tests. If you wish to run only the Integration tests see below.
+```sh
 $ cd cd$CHECKOUT_HOME
-
 $mvn  clean verify  -Denv=unittest
+```
+
 
 ### Integration Tests only
 
 If you wish to skip unit tests and run only integration tests you may do so using the flag: -DskipUTs=true as shown below:
-
+```sh
 $mvn clean verify -DskipUTs=true -Denv=unittest
-
+```
 
 ### Build for docker
 
