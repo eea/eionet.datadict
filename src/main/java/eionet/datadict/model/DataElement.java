@@ -6,7 +6,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import eionet.meta.dao.domain.DatasetRegStatus;
+import javax.persistence.Table;
 
+@Table(name = "DATAELEM")
 public abstract class DataElement implements AttributeOwner {
 
     public static enum ValueType {
@@ -30,6 +32,16 @@ public abstract class DataElement implements AttributeOwner {
     private Status status;
     private String workingUser;
     private boolean workingCopy;
+    private DataElementType type;
+    private DatasetRegStatus regStatus;
+    private Integer version;
+    private String user;
+    private Integer date;
+    private Namespace parentNS;
+    private Namespace topNS;
+    private Integer checkedOutCopyId;
+    private Integer vocabularyId;
+    private Boolean allConceptsLegal;
 
     @ManyToOne
     private DatasetTable datasetTable;
@@ -114,23 +126,25 @@ public abstract class DataElement implements AttributeOwner {
         this.datasetTableElement = datasetTableElement;
     }
 
+    @Override
     public Set<Attribute> getAttributes() {
         return attributes;
     }
 
+    @Override
     public void setAttributes(Set<Attribute> attributes) {
         this.attributes = attributes;
     }
 
-    public Set<AttributeValue> getAtributesValues() {
+    @Override
+    public void setAttributesValues(Set<AttributeValue> attributesValues) {
+        this.atributesValues = attributesValues;
+    }
+
+    @Override
+    public Set<AttributeValue> getAttributesValues() {
         return atributesValues;
     }
-
-    public void setAtributesValues(Set<AttributeValue> atributesValues) {
-        this.atributesValues = atributesValues;
-    }
-
-    
 
     public abstract ValueType getValueType();
 
@@ -194,8 +208,7 @@ public abstract class DataElement implements AttributeOwner {
             }
             return null;
         }
-        
-        
+
         public int getValue() {
             return this.value;
         }
@@ -205,17 +218,6 @@ public abstract class DataElement implements AttributeOwner {
         }
 
     }
-
-    private DataElementType type;
-    private DatasetRegStatus regStatus;
-    private Integer version;
-    private String user;
-    private Integer date;
-    private Namespace parentNS;
-    private Namespace topNS;
-    private Integer checkedOutCopyId;
-    private Integer vocabularyId;
-    private Boolean allConceptsLegal;
 
     public DataElementType getType() {
         return type;

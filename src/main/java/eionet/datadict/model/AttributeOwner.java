@@ -4,7 +4,7 @@ import java.util.Set;
 
 public interface AttributeOwner {
 
-    AttributeOwnerCategory getAttributeOwnerCategory();
+    AttributeOwnerType getAttributeOwnerType();
     
     Comparable getId();
     

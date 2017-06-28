@@ -2,8 +2,10 @@ package eionet.datadict.model;
 
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+@Table(name="ATTRIBUTE")
 public class AttributeValue {
 
     private Integer attributeId;

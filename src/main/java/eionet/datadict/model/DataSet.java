@@ -5,7 +5,9 @@ import java.util.Set;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
+@Table(name="DATASET")
 public class DataSet implements AttributeOwner {
 
     @Id
@@ -42,8 +44,8 @@ public class DataSet implements AttributeOwner {
     }
 
     @Override
-    public AttributeOwnerCategory getAttributeOwnerCategory() {
-        return AttributeOwnerCategory.DATA_SET;
+    public AttributeOwnerType getAttributeOwnerType() {
+        return new AttributeOwnerType(id,AttributeOwnerType.Type.DS);
     }
 
     @Override

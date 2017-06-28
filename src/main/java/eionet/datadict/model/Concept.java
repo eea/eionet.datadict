@@ -2,8 +2,10 @@ package eionet.datadict.model;
 
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import org.apache.commons.lang.StringUtils;
 
+@Table(name="VOCABULARY_CONCEPT")
 public class Concept implements ValueListItem {
 
     @ManyToOne

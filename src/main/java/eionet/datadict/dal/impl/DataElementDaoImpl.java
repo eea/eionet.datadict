@@ -6,7 +6,7 @@ import eionet.datadict.model.Attribute;
 import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataElement.DataElementType;
 import eionet.datadict.model.Namespace;
-import eionet.datadict.model.AttributeOwnerCategory;
+import eionet.datadict.model.AttributeOwnerType;
 import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.ValueListItem;
@@ -108,7 +108,7 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
 
 
                 @Override
-                public AttributeOwnerCategory getAttributeOwnerCategory() {
+                public AttributeOwnerType getAttributeOwnerType() {
                     throw new UnsupportedOperationException("Not supported yet."); 
                 }
 

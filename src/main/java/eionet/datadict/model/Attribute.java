@@ -5,8 +5,10 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import java.util.Set;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import org.apache.commons.lang.StringUtils;
 
+@Table(name="M_ATTRIBUTE")
 public class Attribute {
 
     

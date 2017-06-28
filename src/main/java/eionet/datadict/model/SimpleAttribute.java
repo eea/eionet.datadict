@@ -34,7 +34,7 @@ public abstract class SimpleAttribute {
     private ObligationType obligation;
     private boolean displayMultiple;
     private InheritanceMode inheritanceMode;
-    private Set<AttributeOwnerCategory> targetEntities;
+    private Set<AttributeOwnerType> targetEntities;
     private Integer displayOrder;
     private Integer displayWidth;
     
@@ -105,11 +105,11 @@ public abstract class SimpleAttribute {
         this.inheritanceMode = inheritanceMode;
     }
 
-    public Set<AttributeOwnerCategory> getTargetEntities() {
+    public Set<AttributeOwnerType> getTargetEntities() {
         return targetEntities;
     }
 
-    public void setTargetEntities(Set<AttributeOwnerCategory> targetEntities) {
+    public void setTargetEntities(Set<AttributeOwnerType> targetEntities) {
         this.targetEntities = targetEntities;
     }
 
