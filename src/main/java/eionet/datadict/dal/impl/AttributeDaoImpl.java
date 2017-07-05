@@ -14,7 +14,6 @@ import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
-import eionet.datadict.model.SimpleAttributeValues;
 import eionet.datadict.util.data.DataConverter;
 import eionet.meta.dao.domain.VocabularyFolder;
 import java.util.HashMap;
@@ -247,10 +246,6 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public List<SimpleAttributeValues> getSimpleAttributesValuesOfDataElementsInTable(int tableId) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
     @Override
     public List<Attribute> getByDataDictEntity(DataDictEntity ownerEntity) {
