@@ -10,4 +10,6 @@ public interface FixedValuesOwner {
     
     void setFixedValues(Set<FixedValue> fixedValues);
     
+    FixedValuesOwnerType getFixedValuesOwnerType();
+    
 }

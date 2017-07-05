@@ -54,6 +54,12 @@ public class DatasetServiceTest {
         Mockito.verify(datasetDao, times(1)).getById(2827);
     }
 
+    @Test
+    public void testGetDatasetXMlSchemaFailureDueTomissingDSparams(){
+    
+    }
+    
+    
     @Test(expected = ResourceNotFoundException.class)
     public void testGetDatasetFailure() throws ResourceNotFoundException {
         dataSetService.getDataset(2827);

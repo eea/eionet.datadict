@@ -1,5 +1,6 @@
 package eionet.datadict.web;
 
+import eionet.datadict.errors.BadRequestException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
@@ -7,6 +8,7 @@ import eionet.datadict.model.DatasetTable;
 import eionet.datadict.services.DataSetTableService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import java.io.IOException;
+import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +45,7 @@ public class DatasetTableController {
     private final DatasetTableDataService datasetTableDataService;
     private static final Logger LOGGER = Logger.getLogger(DatasetTableController.class);
     private static final String GENERIC_DD_ERROR_PAGE_URL = "/error.action?type=INTERNAL_SERVER_ERROR&message=";
+    private static final String SCHEMA_DATASET_TABLE_FILE_NAME_PREFIX = "schema-tbl-";
 
     @Autowired
     public DatasetTableController(DataSetTableService dataSetTableService, DatasetTableDataService datasetTableDataService) {
@@ -53,7 +56,6 @@ public class DatasetTableController {
     @RequestMapping(value = "/{id}/schema", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public void getDatasetTableSchema(@PathVariable int id, HttpServletResponse response) throws ResourceNotFoundException, ServletException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
-
         Document xml = this.dataSetTableService.getDataSetTableXMLSchema(id);
         String fileName = "schema-tbl-".concat(String.valueOf(id)).concat(".xsd");
         response.setContentType("application/xml");
@@ -74,10 +76,40 @@ public class DatasetTableController {
 
     }
 
+    @RequestMapping(value = "/{id}/{variable:.+}")
+    @ResponseBody
+    public void getDatasetTableSchemaByFileName(@PathVariable int id, @PathVariable String variable, HttpServletResponse response) throws XmlExportException, IOException, ResourceNotFoundException, TransformerConfigurationException, TransformerException, BadRequestException {
+        Document xml = null;
+        Pattern TableFileNamePattern = Pattern.compile("\\b" + SCHEMA_DATASET_TABLE_FILE_NAME_PREFIX + "\\d+.xsd");
+
+        if (TableFileNamePattern.matcher(variable).matches()) {
+            int tableId = Integer.parseInt(variable.replace(SCHEMA_DATASET_TABLE_FILE_NAME_PREFIX, "").replace(".xsd", "").trim());
+            xml = this.dataSetTableService.getDataSetTableXMLSchema(tableId);
+            String fileName = SCHEMA_DATASET_TABLE_FILE_NAME_PREFIX.concat(String.valueOf(tableId)).concat(".xsd");
+            response.setContentType("application/xml");
+            response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+        } else {
+            throw new BadRequestException("Could not retrieve schema with the given filename: " + variable);
+        }
+        ServletOutputStream outStream = response.getOutputStream();
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+        DOMSource source = new DOMSource(xml);
+        StreamResult result = new StreamResult(outStream);
+        transformer.transform(source, result);
+        outStream.flush();
+        outStream.close();
+    }
+
+    
     @RequestMapping(value = "/{id}/instance", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public void getDataSetTableInstance(@PathVariable int id, HttpServletResponse response) throws ResourceNotFoundException, ServletException, EmptyParameterException, IOException, TransformerConfigurationException, TransformerException, XmlExportException {
-
         Document xml = this.dataSetTableService.getDataSetTableXMLInstance(id);
         String fileName = "table" + id + "-instance.xml";
         response.setContentType("application/xml");
@@ -97,7 +129,7 @@ public class DatasetTableController {
         outStream.close();
     }
 
-    @RequestMapping(value = "{id}/json", method = RequestMethod.GET)
+    @RequestMapping(value = "{id}/json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public DatasetTable getDataSetTable(@PathVariable int id) throws ResourceNotFoundException {
 
@@ -106,15 +138,15 @@ public class DatasetTableController {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public void HandleResourceNotFoundException(Exception exception,HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void HandleResourceNotFoundException(Exception exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.log(Level.ERROR, null, exception);
-        response.sendRedirect(request.getContextPath()+GENERIC_DD_ERROR_PAGE_URL +"  "+ exception.getMessage());
+        response.sendRedirect(request.getContextPath() + GENERIC_DD_ERROR_PAGE_URL + "  " + exception.getMessage());
     }
 
     @ExceptionHandler({IOException.class, TransformerConfigurationException.class, TransformerException.class, XmlExportException.class, DOMException.class})
-    public void HandleFatalExceptions(Exception exception,HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void HandleFatalExceptions(Exception exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.log(Level.ERROR, null, exception);
-        response.sendRedirect(request.getContextPath()+GENERIC_DD_ERROR_PAGE_URL + "error exporting XML. " + exception.getMessage());
+        response.sendRedirect(request.getContextPath() + GENERIC_DD_ERROR_PAGE_URL + "error exporting XML. " + exception.getMessage());
     }
 
 }

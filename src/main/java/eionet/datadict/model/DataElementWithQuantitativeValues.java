@@ -47,5 +47,10 @@ public class DataElementWithQuantitativeValues extends DataElement implements Fi
         this.fixedValues = fixedValues;
     }
 
+    @Override
+    public FixedValuesOwnerType getFixedValuesOwnerType() {
+        return new FixedValuesOwnerType((super.getId()), FixedValuesOwnerType.Type.elem);
+    }
+
     
 }

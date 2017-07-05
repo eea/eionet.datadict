@@ -158,6 +158,8 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                         MaxInclusiveValue = attributeValue.getValue();
                         continue;
                     }
+                    System.out.println("Attribute ShortName :" +attribute.getShortName());
+                    System.out.println("Attribute Namespace :" +attribute.getNamespace().getShortName().replace("_", ""));
                     Element attributeElement = elMaker.createElement(attribute.getShortName().replace(" ", ""), null, attribute.getNamespace().getShortName().replace("_", ""));
                     attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                     elemDocumentation.appendChild(attributeElement);
