@@ -21,16 +21,16 @@
             </div>
 
             <stripes:form beanclass="${actionBean.viewModel.actionBeanName}">
-                <table class="datatable" style="width:auto">
+                <table class="datatable results">
                     <tbody>
                         <tr>
-                            <th scope="row">Code:</th>
+                            <th scope="row" class="scope-row">Code</th>
                             <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
                             <td><stripes:text name="viewModel.fixedValue.value" /></td>
                         </tr>
                         <c:if test="${actionBean.viewModel.defaultValueRequired}">
                             <tr>
-                                <th scope="row">Default:</th>
+                                <th scope="row" class="scope-row">Default</th>
                                 <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
                                 <td>
                                     <stripes:checkbox name="viewModel.fixedValue.defaultValue" />
@@ -38,14 +38,14 @@
                             </tr>
                         </c:if>
                         <tr>
-                            <th scope="row">Label:</th>
+                            <th scope="row" class="scope-row">Label</th>
                             <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
-                            <td><stripes:textarea class="small" rows="3" cols="60" name="viewModel.fixedValue.shortDescription" /></td>
+                            <td><stripes:textarea class="small" rows="3" cols="50" name="viewModel.fixedValue.shortDescription" /></td>
                         </tr>
                         <tr>
-                            <th scope="row">Definition:</th>
+                            <th scope="row" class="scope-row">Definition</th>
                             <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
-                            <td><stripes:textarea class="small" rows="3" cols="60" name="viewModel.fixedValue.definition" /></td>
+                            <td><stripes:textarea class="small" rows="3" cols="50" name="viewModel.fixedValue.definition" /></td>
                         </tr>
                         <tr>
                             <td></td>
