@@ -21,10 +21,6 @@
       <column name="DESCRIPTION" value="search datasets"/>
     </insert>
     <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_edit"/>
-      <column name="DESCRIPTION" value="Complex attribute value edit page"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="search_table"/>
       <column name="DESCRIPTION" value="search table"/>
     </insert>
@@ -67,14 +63,6 @@
     <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="simple_attr_def_view"/>
       <column name="DESCRIPTION" value="Simple attribute definition view"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_def_view"/>
-      <column name="DESCRIPTION" value="Complex attribute definition view"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_view"/>
-      <column name="DESCRIPTION" value="Complex attribute value view page"/>
     </insert>
     <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="import"/>
@@ -125,14 +113,6 @@
       <column name="DESCRIPTION" value="Element add page"/>
     </insert>
     <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_def_edit"/>
-      <column name="DESCRIPTION" value="Compelx attribute definition edit page."/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_def_add"/>
-      <column name="DESCRIPTION" value="Complex attribute definition add page"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="attr_def_add"/>
       <column name="DESCRIPTION" value="The page for defining a new attribute"/>
     </insert>
@@ -143,10 +123,6 @@
     <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="simple_attr_def_add"/>
       <column name="DESCRIPTION" value="Simple attribute definition add page"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attrs"/>
-      <column name="DESCRIPTION" value="The list of complex attributes, with edit buttons"/>
     </insert>
     <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="fixed_values_view"/>
@@ -169,14 +145,6 @@
       <column name="DESCRIPTION" value="Suggested values edit page"/>
     </insert>
     <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_fields"/>
-      <column name="DESCRIPTION" value="The list of complex attribute fields"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_field"/>
-      <column name="DESCRIPTION" value="Complex attribute field view"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="front_page"/>
       <column name="DESCRIPTION" value="DD opening page"/>
     </insert>
@@ -191,10 +159,6 @@
     <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="doc3"/>
       <column name="DESCRIPTION" value="The first section of general DD docs (doc3.jsp)"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="dataset_rod"/>
-      <column name="DESCRIPTION" value="The page of dataset-rod links"/>
     </insert>
     <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="dataset_working_copy"/>
